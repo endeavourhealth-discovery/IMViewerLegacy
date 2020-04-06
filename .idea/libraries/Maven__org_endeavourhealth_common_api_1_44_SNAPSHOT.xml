@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.endeavourhealth.common:api:1.44-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/endeavourhealth/common/api/1.44-SNAPSHOT/api-1.44-20200225.132128-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/endeavourhealth/common/api/1.44-SNAPSHOT/api-1.44-20200225.132128-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/endeavourhealth/common/api/1.44-SNAPSHOT/api-1.44-20200225.132128-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

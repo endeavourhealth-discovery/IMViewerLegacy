@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - IP=$(curl http://checkip.amazonaws.com)/32
+      - echo $IP of CodeBuild Instance
+  build:
+    commands:
+      - chmod +x aws_scripts/build.sh
+      - echo IM Build started on `date`
+      - aws_scripts/build.sh mvn -B deploy
+      - mvn sonar:sonar
+  post_build:
+    commands:
+      - IP=$(curl http://checkip.amazonaws.com)/32
+      - echo $IP of CodeBuild Instance
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - appspec.yml
+    - aws_scripts/**/*
+    - api/target/api/**/*
+    - FrontEndv8/dist/FrontEndv8/**/*

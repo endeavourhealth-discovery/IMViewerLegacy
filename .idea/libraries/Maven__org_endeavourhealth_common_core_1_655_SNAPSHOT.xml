@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.endeavourhealth.common:core:1.655-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/endeavourhealth/common/core/1.655-SNAPSHOT/core-1.655-20200403.114342-3.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/endeavourhealth/common/core/1.655-SNAPSHOT/core-1.655-20200403.114342-3-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/endeavourhealth/common/core/1.655-SNAPSHOT/core-1.655-20200403.114342-3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
