@@ -20,6 +20,26 @@ public class ViewerEndpoint {
     private static final Logger LOG = LoggerFactory.getLogger(ViewerEndpoint.class);
 
     @GET
+    @Path("/Search")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response search(@Context SecurityContext sc,
+                           @QueryParam("root") String root,
+                           @QueryParam("term") String term,
+                           @QueryParam("relationship") List<String> relationships) throws Exception {
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.search")) {
+            LOG.debug("search");
+
+            List<Concept> result = new ViewerJDBCDAL().search(term, root, relationships);
+
+            return Response
+                .ok()
+                .entity(result)
+                .build();
+        }
+    }
+
+    @GET
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -38,12 +58,32 @@ public class ViewerEndpoint {
     }
 
     @GET
+    @Path("/{id}/Tree")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTree(@Context SecurityContext sc,
+                               @PathParam("id") String id,
+                               @QueryParam("root") String root,
+                               @QueryParam("relationship") List<String> relationships) throws Exception {
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getTargets")) {
+            LOG.debug("getTargets");
+
+            List<RelatedConcept> result = new ViewerJDBCDAL().getTree(id, root, relationships);
+
+            return Response
+                .ok()
+                .entity(result)
+                .build();
+        }
+    }
+
+    @GET
     @Path("/{id}/Targets")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTargets(@Context SecurityContext sc,
-                                @PathParam("id") String id,
-                                @QueryParam("relationship") List<String> relationships) throws Exception {
+                               @PathParam("id") String id,
+                               @QueryParam("relationship") List<String> relationships) throws Exception {
         try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getTargets")) {
             LOG.debug("getTargets");
 

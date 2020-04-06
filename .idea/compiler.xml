@@ -7,14 +7,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="FrontEndv8" />
-        <module name="api" />
+        <module name="API" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="api" target="1.8" />
       <module name="common" target="1.8" />
-      <module name="FrontEndv8" target="1.5" />
-      <module name="informationmodel" target="1.5" />
+      <module name="FrontEndv8" target="1.8" />
+      <module name="IMViewer" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

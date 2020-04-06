@@ -19,7 +19,10 @@ export class RecordModelLibraryComponent implements OnInit {
   selectedNode: TreeNode;
   searchTerm: string;
   searchResults: any[];
+  searching: boolean = false;
   searchSize = 64;
+  root = 'SN_363787002';
+  relationships = ['SN_116680003'];
 
   getLevel = (node: TreeNode) => node.level;
   isExpandable = (node: TreeNode) => node.expandable;
@@ -27,29 +30,38 @@ export class RecordModelLibraryComponent implements OnInit {
 
   constructor(private service: RecordModelService) {
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
-    this.dataSource = new TreeSource(this.treeControl, service, ['SN_116680003']);
-
-    this.dataSource.data = [new TreeNode('SN_363787002', 'Test', 0, true)];
+    this.dataSource = new TreeSource(this.treeControl, service, this.relationships);
   }
 
   ngOnInit() {
+    this.service.getConcept(this.root).subscribe(
+      (result) => this.dataSource.data = [new TreeNode(result.id, result.name, 0, true)],
+      (error) => console.error(error)
+    );
   }
 
   clear() {
     this.searchTerm = '';
     this.searchSize = 64;
+    this.searching = false;
   }
 
   search() {
-    this.service.search(this.searchTerm).subscribe(
+    this.searchResults = null;
+    this.searching = true;
+    this.service.search(this.searchTerm, this.root, this.relationships).subscribe(
       (result) => this.showResults(result),
-      (error) => console.error(error)
+      (error) => {
+        console.error(error);
+        this.searching = false;
+      }
     );
-    this.searchSize = 256;
   }
 
   showResults(searchResults: any[]) {
     this.searchResults = searchResults;
+    this.searchSize = 256;
+    this.searching = false;
   }
 
   selectNode(node: TreeNode) {
@@ -65,4 +77,19 @@ export class RecordModelLibraryComponent implements OnInit {
     );
   }
 
+  selectResult(concept: Concept) {
+    this.service.loadTree(this.root, concept.id, this.relationships).subscribe(
+      (result) => this.buildTree(concept, result),
+      (error) => console.error(error)
+    );
+  }
+
+  buildTree(concept: Concept, related: Related[]) {
+    let i =0;
+    this.dataSource.data =
+    related
+      .reverse()
+      .map(r => new TreeNode(r.concept.id, r.concept.name, i++, true))
+      .concat(new TreeNode(concept.id, concept.name, i++, true));
+  }
 }

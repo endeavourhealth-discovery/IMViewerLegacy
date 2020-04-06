@@ -121,4 +121,96 @@ public class ViewerJDBCDAL {
             ConnectionPool.getInstance().push(conn);
         }
     }
+
+    public List<Concept> search(String term, String root, List<String> relationships) throws SQLException {
+        List<Concept> result = new ArrayList<>();
+
+        String sql = "SELECT c.id, c.name\n" +
+            "FROM concept c\n" +
+            "JOIN concept_tct tct ON tct.source = c.dbid\n" +
+            "JOIN concept p ON p.dbid = tct.property\n" +
+            "JOIN concept t ON t.dbid = tct.target\n" +
+            "WHERE c.name LIKE ?\n" +
+            "AND t.id = ?\n";
+
+        if (relationships != null && relationships.size() > 0)
+            sql += "AND p.id IN (" + DALHelper.inListParams(relationships.size()) + ")\n";
+
+        sql += "ORDER BY LENGTH(c.name)\n" +
+            "LIMIT 10";
+
+        Connection conn = ConnectionPool.getInstance().pop();
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            int i = 1;
+            stmt.setString(i++, '%' + term + '%');
+            stmt.setString(i++, root);
+
+            if (relationships != null)
+                for(String relationship: relationships)
+                    stmt.setString(i++, relationship);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    result.add(new Concept()
+                    .setId(rs.getString("id"))
+                        .setName(rs.getString("name"))
+                    );
+                }
+            }
+        } finally {
+            ConnectionPool.getInstance().push(conn);
+        }
+
+        return result;
+    }
+
+    public List<RelatedConcept> getTree(String id, String root, List<String> relationships) throws SQLException {
+        List<RelatedConcept> result = new ArrayList<>();
+
+        String sql = "SELECT p.id AS r_id, p.name AS r_name, t.id AS c_id, t.name AS c_name\n" +
+            "FROM concept c\n" +
+            "JOIN concept_tct tct ON tct.source = c.dbid\n" +
+            "JOIN concept p ON p.dbid = tct.property\n" +
+            "JOIN concept t ON t.dbid = tct.target\n" +
+            "WHERE c.id = ?\n";
+
+        if (relationships != null && relationships.size() > 0)
+            sql += "AND p.id IN (" + DALHelper.inListParams(relationships.size()) + ")\n";
+
+        sql += "ORDER by tct.level";
+
+        Connection conn = ConnectionPool.getInstance().pop();
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            int i = 1;
+            stmt.setString(i++, id);
+
+            if (relationships != null)
+                for(String relationship: relationships)
+                    stmt.setString(i++, relationship);
+
+            try(ResultSet rs = stmt.executeQuery()) {
+                boolean rootFound = false;
+                while (rs.next() && !rootFound) {
+                    result.add(new RelatedConcept()
+                        .setRelationship(new Concept()
+                            .setId(rs.getString("r_id"))
+                            .setName(rs.getString("r_name"))
+                        )
+                        .setConcept(
+                            new Concept()
+                                .setId(rs.getString("c_id"))
+                                .setName(rs.getString("c_name"))
+                        )
+                    );
+
+                    rootFound = rs.getString("c_id").equals(root);
+                }
+            }
+        } finally {
+            ConnectionPool.getInstance().push(conn);
+        }
+
+        return result;
+    }
 }

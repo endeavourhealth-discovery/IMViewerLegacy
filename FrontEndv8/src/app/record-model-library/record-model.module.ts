@@ -15,19 +15,19 @@ import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
   declarations: [RecordModelLibraryComponent],
-    imports: [
-        CommonModule,
-        MatCardModule,
-        MatFormFieldModule,
-        FormsModule,
-        MatInputModule,
-        FlexModule,
-        AngularSplitModule,
-        MatTreeModule,
-        MatProgressBarModule,
-        MatIconModule,
-        MatButtonModule,
-        MatTableModule,
-    ]
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    FormsModule,
+    MatInputModule,
+    FlexModule,
+    AngularSplitModule,
+    MatTreeModule,
+    MatProgressBarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTableModule,
+  ]
 })
 export class RecordModelModule { }

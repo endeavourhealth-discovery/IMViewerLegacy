@@ -33,9 +33,24 @@ export class RecordModelService {
     return this.http.get<Concept>('public/Viewer/' + id);
   }
 
-  search(searchTerm: string) {
+  search(searchTerm: string, root: string, relationships: string[]) {
     let params = new HttpParams();
     params = params.append('term', searchTerm);
-    return this.http.get<any>('public/Viewer/search', {params});
+    params = params.append('root', root);
+    if (relationships != null) {
+      relationships.forEach(r => params = params.append('relationship', r));
+    }
+
+    return this.http.get<any>('public/Viewer/Search', {params});
+  }
+
+  loadTree(root: string, id: string, relationships: string[]) {
+    let params = new HttpParams();
+    params = params.append('root', root);
+    if (relationships != null) {
+      relationships.forEach(r => params = params.append('relationship', r));
+    }
+
+    return this.http.get<Related[]>('public/Viewer/' + id + '/Tree', {params});
   }
 }
