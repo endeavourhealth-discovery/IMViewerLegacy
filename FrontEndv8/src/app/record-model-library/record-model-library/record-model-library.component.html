@@ -20,7 +20,7 @@
                   <div style="height: calc(100% - 85px); overflow-y: auto">
                     <table class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" >
                       <tbody>
-                        <tr *ngFor="let p of searchResults" class="mat-row hover-highlight" (click)="selectResult(p)">
+                        <tr *ngFor="let p of searchResults" class="mat-row hover-highlight" (click)="showConceptTree(p)">
                           <td class="mat-cell">{{p.name}}</td>
                         </tr>
                       </tbody>

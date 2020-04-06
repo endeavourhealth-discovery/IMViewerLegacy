@@ -5,6 +5,14 @@ import {RecordModelLibraryComponent} from './record-model-library/record-model-l
 import {RecordModelModule} from './record-model-library/record-model.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {HttpClientModule} from '@angular/common/http';
+import {RouterModule} from '@angular/router';
+import { AppRoot } from './app-root';
+
+const routes = [
+  {path: '', redirectTo: '/recordModel', pathMatch: 'full'},
+  {path: 'recordModel', component: RecordModelLibraryComponent},
+  {path: 'recordModel/:id', component: RecordModelLibraryComponent},
+];
 
 @NgModule({
   imports: [
@@ -13,8 +21,11 @@ import {HttpClientModule} from '@angular/common/http';
 
     HttpClientModule,
     RecordModelModule,
+
+    RouterModule.forRoot(routes, {useHash: true})
   ],
   providers: [],
-  bootstrap: [RecordModelLibraryComponent]
+  declarations: [AppRoot],
+  bootstrap: [AppRoot],
 })
 export class AppModule { }
