@@ -3,7 +3,7 @@ os: linux
 files:
   - source: /FrontEndv8/dist/FrontEndv8
     destination: //opt/tomcat/webapps/imviewer
-  - source: /api/target/API
+  - source: /API/target/api
     destination: //opt/tomcat/webapps/imviewer
 hooks:
   BeforeInstall:
