@@ -30,7 +30,7 @@
   <!-- ===== STARTUP ===== -->
   <context-param>
     <param-name>app_id</param-name>
-    <param-value>information-model</param-value>
+    <param-value>imviewer</param-value>
   </context-param>
 
   <listener>
