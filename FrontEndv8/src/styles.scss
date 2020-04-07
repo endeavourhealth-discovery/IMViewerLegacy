@@ -58,3 +58,27 @@ $teal-theme: mat-light-theme($teal-primary, $teal-accent, $teal-warn);
 }
 
 // TODO: Move to common/ng8
+.mat-form-field-flex {
+  min-height: 54px;
+}
+.as-split-area-content {
+  padding: 8px;
+}
+.as-horizontal > .as-split-gutter {
+  background: unset;
+//  flex-basis: 22px !important;
+  > .as-split-gutter-icon {
+    background-color: mat-color($primary, 100);
+  //  width: 50% !important;
+    background-image: url('assets/resize-h.png') !important;
+  }
+}
+.as-vertical > .as-split-gutter {
+  background: unset;
+//  flex-basis: 22px !important;
+  > .as-split-gutter-icon {
+    background-color: mat-color($primary, 100);
+  //  height: 50% !important;
+    background-image: url('assets/resize-v.png') !important;
+  }
+}

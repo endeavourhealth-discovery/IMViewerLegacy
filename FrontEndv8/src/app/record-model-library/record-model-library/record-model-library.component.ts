@@ -17,11 +17,12 @@ export class RecordModelLibraryComponent implements OnInit {
   dataSource: TreeSource;
   concept: Concept;
   definition: Related[];
+  properties: Related[];
   selectedNode: TreeNode;
   searchTerm: string;
   searchResults: any[];
   searching: boolean = false;
-  searchSize = 64;
+  searchSize = 72;
   root = 'rm:RecordModel';
   relationships = ['sn:SN_116680003'];
 
