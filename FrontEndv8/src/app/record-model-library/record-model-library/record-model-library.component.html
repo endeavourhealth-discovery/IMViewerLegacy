@@ -15,11 +15,11 @@
                 <div class="as-split-area-content">
                   <mat-form-field appearance="outline" style="width: 100%">
                     <mat-label>Search terms</mat-label>
-                    <input matInput [(ngModel)]="searchTerm" placeholder="<Enter> to search" (keyup.enter)="search()" [disabled]="searching">
+                    <input matInput [(ngModel)]="searchTerm" placeholder="<Enter> to search" (keyup.enter)="search()" [disabled]="searching" id="searchInput">
                     <mat-icon matSuffix (click)="clear()" style="cursor: pointer">clear</mat-icon>
                   </mat-form-field>
                   <div style="height: calc(100% - 85px); overflow-y: auto">
-                    <table class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" >
+                    <table class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" id="searchResults">
                       <tbody>
                         <tr *ngFor="let p of searchResults" class="mat-row hover-highlight" (click)="showConceptTree(p)">
                           <td class="mat-cell">{{p.name}}</td>
@@ -31,7 +31,7 @@
               </as-split-area>
               <as-split-area>
                 <div class="as-split-area-content">
-                  <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree-compact scroll">
+                  <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree-compact scroll" id="conceptTree">
                   <mat-tree-node
                     *matTreeNodeDef="let node"
                     matTreeNodePadding
@@ -73,15 +73,15 @@
                   <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
                   <mat-form-field appearance="outline" fxFlex="70">
                     <mat-label>Name</mat-label>
-                    <input matInput [value]="concept?.name" placeholder="Concept name" readonly>
+                    <input matInput [value]="concept?.name" placeholder="Concept name" readonly id="conceptName">
                   </mat-form-field>
                   <mat-form-field appearance="outline" fxFlex="30">
                     <mat-label>Id</mat-label>
-                    <input matInput [value]="concept?.id" placeholder="Concept ID" readonly>
+                    <input matInput [value]="concept?.id" placeholder="Concept ID" readonly id="conceptId">
                   </mat-form-field>
                   <mat-form-field appearance="outline" fxFlex="100">
                     <mat-label>Description</mat-label>
-                    <input matInput [value]="concept?.description" placeholder="Concept description" readonly>
+                    <input matInput [value]="concept?.description" placeholder="Concept description" readonly id="conceptDescription">
                   </mat-form-field>
                 </div>
                 </div>

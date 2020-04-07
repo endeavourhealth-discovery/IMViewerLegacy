@@ -43,7 +43,7 @@ export class RecordModelLibraryComponent implements OnInit {
 
   clear() {
     this.searchTerm = '';
-    this.searchSize = 64;
+    this.searchSize = 72;
     this.searching = false;
   }
 
