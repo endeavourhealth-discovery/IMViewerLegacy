@@ -46,27 +46,34 @@ export class TreeSource implements DataSource<TreeNode> {
    * Toggle the node, remove from display list
    */
   toggleNode(node: TreeNode, expand: boolean) {
-    const index = this.data.indexOf(node);
+    const index = this.data.indexOf(node) + 1;
     node.isLoading = true;
+
+    // Get count of nodes at this level
+    let count = 0;
+    for (let i = index; i < this.data.length && this.data[i].level > node.level; i++, count++) {
+    }
 
     if (expand) {
       this.database.getSources(node.id, this.relationships).subscribe(
-      (children) => {
-        const nodes = children.map(related =>
-          new TreeNode(related.concept.id, related.concept.name, node.level + 1, true));
-        this.data.splice(index + 1, 0, ...nodes);
+        (children) => {
 
-        // notify the change
-        this.dataChange.next(this.data);
-        node.isLoading = false;
-      },
-      (error) => console.error(error)
-    );
+          const existing = this.data.slice(index, index + count);
+
+          const nodes = children
+            .filter(c => existing.findIndex(v => v.id === c.concept.id) === -1)
+            .map(related => new TreeNode(related.concept.id, related.concept.name, node.level + 1, true));
+          this.data.splice(index, 0, ...nodes);
+
+          // notify the change
+          this.dataChange.next(this.data);
+          node.isLoading = false;
+        },
+        (error) => console.error(error)
+      );
     } else {
-      let count = 0;
-      for (let i = index + 1; i < this.data.length
-      && this.data[i].level > node.level; i++, count++) {}
-      this.data.splice(index + 1, count);
+
+      this.data.splice(index, count);
       this.dataChange.next(this.data);
       node.isLoading = false;
     }
