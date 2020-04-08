@@ -12,7 +12,9 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatTableModule} from '@angular/material/table';
-import {ControlsModule} from '../mat-wrapper/controls.module';
+import {ControlsModule} from 'dds-angular8/controls';
+import {LoggerModule} from 'dds-angular8/logger';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [RecordModelLibraryComponent],
@@ -29,7 +31,9 @@ import {ControlsModule} from '../mat-wrapper/controls.module';
     MatIconModule,
     MatButtonModule,
     MatTableModule,
+    MatSnackBarModule,
     ControlsModule,
+    LoggerModule
   ]
 })
 export class RecordModelModule { }

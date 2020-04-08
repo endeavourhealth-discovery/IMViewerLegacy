@@ -10,10 +10,12 @@ import {AngularSplitModule} from 'angular-split';
 import {MatTreeModule} from '@angular/material/tree';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatIconModule} from '@angular/material/icon';
-import {ControlsModule} from '../../mat-wrapper/controls.module';
+import {ControlsModule} from 'dds-angular8/controls';
 import {RecordModelService} from '../record-model.service';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {LoggerModule} from 'dds-angular8/logger';
 
 describe('RecordModelLibraryComponent', () => {
   let component: RecordModelLibraryComponent;
@@ -31,7 +33,9 @@ describe('RecordModelLibraryComponent', () => {
           MatTreeModule,
           MatProgressBarModule,
           MatIconModule,
+          MatSnackBarModule,
           ControlsModule,
+          LoggerModule,
 
           HttpClientTestingModule,
           RouterTestingModule

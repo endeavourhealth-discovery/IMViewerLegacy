@@ -4,6 +4,7 @@ import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {RecordModelService} from '../record-model.service';
 import {map} from 'rxjs/operators';
+import {LoggerService} from 'dds-angular8/logger';
 
 export class TreeSource implements DataSource<TreeNode> {
 
@@ -17,6 +18,7 @@ export class TreeSource implements DataSource<TreeNode> {
 
   constructor(private treeControl: FlatTreeControl<TreeNode>,
               private database: RecordModelService,
+              private log: LoggerService,
               private relationships: string[]) {}
 
   connect(collectionViewer: CollectionViewer): Observable<TreeNode[]> {
@@ -69,7 +71,7 @@ export class TreeSource implements DataSource<TreeNode> {
           this.dataChange.next(this.data);
           node.isLoading = false;
         },
-        (error) => console.error(error)
+        (error) => this.log.error(error)
       );
     } else {
 

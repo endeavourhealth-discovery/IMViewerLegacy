@@ -6,6 +6,7 @@ import {TreeSource} from './TreeSource';
 import {Concept} from '../../models/Concept';
 import {Related} from '../../models/Related';
 import {ActivatedRoute} from '@angular/router';
+import {LoggerService} from 'dds-angular8/logger';
 
 @Component({
   selector: 'app-record-model-library',
@@ -21,7 +22,7 @@ export class RecordModelLibraryComponent implements OnInit {
   selectedNode: TreeNode;
   searchTerm: string;
   searchResults: any[];
-  searching: boolean = false;
+  searching = false;
   searchSize = 72;
   root = 'rm:RecordModel';
   relationships = ['sn:SN_116680003'];
@@ -30,9 +31,11 @@ export class RecordModelLibraryComponent implements OnInit {
   isExpandable = (node: TreeNode) => node.expandable;
   hasChild = (_: number, nodeData: TreeNode) => nodeData.expandable;
 
-  constructor(private service: RecordModelService, private route: ActivatedRoute) {
+  constructor(private service: RecordModelService,
+              private route: ActivatedRoute,
+              private log: LoggerService) {
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
-    this.dataSource = new TreeSource(this.treeControl, service, this.relationships);
+    this.dataSource = new TreeSource(this.treeControl, service, log, this.relationships);
   }
 
   ngOnInit() {
@@ -53,7 +56,7 @@ export class RecordModelLibraryComponent implements OnInit {
     this.service.search(this.searchTerm, this.root, this.relationships).subscribe(
       (result) => this.showResults(result),
       (error) => {
-        console.error(error);
+        this.log.error(error);
         this.searching = false;
       }
     );
@@ -69,26 +72,26 @@ export class RecordModelLibraryComponent implements OnInit {
     this.selectedNode = node;
     this.service.getConcept(node.id).subscribe(
       (result) => this.concept = result,
-      (error) => console.error(error)
+      (error) => this.log.error(error)
     );
 
     this.service.getTargets(node.id, []).subscribe(
       (result) => this.definition = result,
-      (error) => console.error(error)
+      (error) => this.log.error(error)
     );
   }
 
   showConceptTree(concept: Concept) {
     this.service.loadTree(this.root, concept.id, this.relationships).subscribe(
       (result) => this.buildTree(concept, result),
-      (error) => console.error(error)
+      (error) => this.log.error(error)
     );
   }
 
   buildTree(concept: Concept, related: Related[]) {
-    let i =0;
+    let i = 0;
 
-    let node:TreeNode = new TreeNode(concept.id, concept.name, related.length, true);
+    const node: TreeNode = new TreeNode(concept.id, concept.name, related.length, true);
 
     this.dataSource.data =
     related
@@ -103,12 +106,12 @@ export class RecordModelLibraryComponent implements OnInit {
     if (id) {
       this.service.getConcept(id).subscribe(
         (result) => this.showConceptTree(result),
-        (error) => console.error(error)
+        (error) => this.log.error(error)
       );
     } else {
       this.service.getConcept(this.root).subscribe(
         (result) => this.dataSource.data = [new TreeNode(result.id, result.name, 0, true)],
-        (error) => console.error(error)
+        (error) => this.log.error(error)
       );
     }
   }
