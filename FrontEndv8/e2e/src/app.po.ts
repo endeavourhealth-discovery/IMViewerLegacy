@@ -17,9 +17,12 @@ export class AppPage {
     return element.all(by.css('#searchResults tbody tr'));
   }
 
-  selectSearchResult(index: number) {
-    const rows = this.getSearchResultRows();
-    return rows.get(index).click();
+  selectSearchResult(text: string) {
+    const row = this.getSearchResultRows()
+      .all(by.css('td'))
+      .filter(td => td.getText().then(v => v === text))
+      .first();
+    return row.click();
   }
 
   getTreeRows() {

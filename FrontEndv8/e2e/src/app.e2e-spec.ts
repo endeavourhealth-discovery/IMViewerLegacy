@@ -19,7 +19,7 @@ describe('IM Viewer App', () => {
   });
 
   it('should open the tree (4 nodes) on selecting a match', () => {
-    page.selectSearchResult(1);
+    page.selectSearchResult('Hospital discharge (encounter record)');
     expect(page.getTreeRows().count()).toEqual(4);
   });
 
