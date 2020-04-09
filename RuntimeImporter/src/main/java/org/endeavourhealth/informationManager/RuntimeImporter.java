@@ -120,8 +120,8 @@ public class RuntimeImporter {
             br.readLine();
             int i = 1;
 
-            String sql = "REPLACE INTO concept_data_model (id, property, min_cardinality, max_cardinality, value_type, property_level, property_owner) \n" +
-                "SELECT c.id, p.id, ?, ?, v.id, ?, o.id\n" +
+            String sql = "REPLACE INTO concept_data_model (id, property, min_cardinality, max_cardinality, value_type, property_level, property_owner, inverse) \n" +
+                "SELECT c.id, p.id, ?, ?, v.id, ?, o.id, ?\n" +
                 "FROM concept c\n" +
                 "JOIN concept p\n" +
                 "JOIN concept v\n" +
@@ -138,10 +138,11 @@ public class RuntimeImporter {
                     stmt.setString(1, fields[3].isEmpty() ? null : fields[3]);
                     stmt.setString(2, fields[4].isEmpty() ? null : fields[4]);
                     stmt.setString(3, fields[5]);
-                    stmt.setString(4, fields[0]);
-                    stmt.setString(5, fields[1]);
-                    stmt.setString(6, fields[2]);
-                    stmt.setString(7, fields[6]);
+                    stmt.setBoolean(4, fields.length == 8 && !fields[7].isEmpty() && Boolean.parseBoolean(fields[7]));
+                    stmt.setString(5, fields[0]);
+                    stmt.setString(6, fields[1]);
+                    stmt.setString(7, fields[2]);
+                    stmt.setString(8, fields[6]);
                     if (stmt.executeUpdate() == 0)
                         System.err.println("Error upserting concept_data_model row " + (i+1) + " - [" + line + "]");
 

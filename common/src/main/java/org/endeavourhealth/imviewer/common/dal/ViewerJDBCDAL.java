@@ -49,7 +49,7 @@ public class ViewerJDBCDAL {
             "JOIN concept p ON p.id = o.property\n" +
             "JOIN concept c ON c.id = o.id\n";
 
-        if (relationships != null && relationships.size() > 0)
+        if (relationships != null && !relationships.isEmpty())
             sql += "WHERE p.iri IN (" + DALHelper.inListParams(relationships.size()) + ")";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -96,7 +96,7 @@ public class ViewerJDBCDAL {
             "WHERE c.name LIKE ?\n" +
             "AND t.iri = ?\n";
 
-        if (relationships != null && relationships.size() > 0)
+        if (relationships != null && !relationships.isEmpty())
             sql += "AND p.iri IN (" + DALHelper.inListParams(relationships.size()) + ")\n";
 
         sql += "ORDER BY LENGTH(c.name)\n" +
@@ -131,7 +131,7 @@ public class ViewerJDBCDAL {
             "JOIN concept t ON t.id = tct.target\n" +
             "WHERE c.iri = ?\n";
 
-        if (relationships != null && relationships.size() > 0)
+        if (relationships != null && !relationships.isEmpty())
             sql += "AND p.iri IN (" + DALHelper.inListParams(relationships.size()) + ")\n";
 
         sql += "ORDER by tct.level";

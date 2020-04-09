@@ -53,13 +53,14 @@ CREATE TABLE concept_property_object (
 
 DROP TABLE IF EXISTS concept_data_model;
 CREATE TABLE concept_data_model (
-    id              INT NOT NULL    COMMENT 'Concept id',
-    property        INT NOT NULL    COMMENT 'Property concept id',
-    min_cardinality INT             COMMENT 'Minimum cardinality',
-    max_cardinality INT             COMMENT 'Maximum cardinality',
-    value_type      INT NOT NULL    COMMENT 'Value type concept id',
-    property_level  INT NOT NULL    COMMENT 'Level at which the property occurs',
-    property_owner  INT NOT NULL    COMMENT 'Concept id of the property owner',
+    id              INT NOT NULL        COMMENT 'Concept id',
+    property        INT NOT NULL        COMMENT 'Property concept id',
+    min_cardinality INT                 COMMENT 'Minimum cardinality',
+    max_cardinality INT                 COMMENT 'Maximum cardinality',
+    value_type      INT NOT NULL        COMMENT 'Value type concept id',
+    property_level  INT NOT NULL        COMMENT 'Level at which the property occurs',
+    property_owner  INT NOT NULL        COMMENT 'Concept id of the property owner',
+    inverse         BOOLEAN NOT NULL    COMMENT 'Inverse relationship',
 
     INDEX concept_data_model_idx (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -99,9 +99,10 @@ export class RecordModelLibraryComponent implements OnInit {
 
     const node: TreeNode = new TreeNode(concept.iri, concept.name, related.length, true);
 
+    related.reverse();
+
     this.dataSource.data =
     related
-      .reverse()
       .map(r => new TreeNode(r.concept.iri, r.concept.name, i++, true))
       .concat(node);
 

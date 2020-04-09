@@ -18,7 +18,7 @@
     <sonar.ts.tslint.configPath>tslint.json</sonar.ts.tslint.configPath>
     <sonar.tests>.</sonar.tests>
     <sonar.test.inclusions>**/*.spec.ts,*/*.ts</sonar.test.inclusions>
-    <sonar.exclusions>**/node_modules/**, **/environments/**/*</sonar.exclusions>
+    <sonar.exclusions>**/node_modules/**, **/environments/**/*, **/*.service.ts</sonar.exclusions>
     <sonar.javascript.lcov.reportPaths>coverage/FrontEndv8/lcov.info</sonar.javascript.lcov.reportPaths>
   </properties>
 

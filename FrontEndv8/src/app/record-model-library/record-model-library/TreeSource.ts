@@ -23,9 +23,8 @@ export class TreeSource implements DataSource<TreeNode> {
 
   connect(collectionViewer: CollectionViewer): Observable<TreeNode[]> {
     this.treeControl.expansionModel.changed.subscribe(change => {
-      if ((change as SelectionChange<TreeNode>).added ||
-        (change as SelectionChange<TreeNode>).removed) {
-        this.handleTreeControl(change as SelectionChange<TreeNode>);
+      if (change.added || change.removed) {
+        this.handleTreeControl(change);
       }
     });
 
@@ -53,7 +52,8 @@ export class TreeSource implements DataSource<TreeNode> {
 
     // Get count of nodes at this level
     let count = 0;
-    for (let i = index; i < this.data.length && this.data[i].level > node.level; i++, count++) {
+    for (let i = index; i < this.data.length && this.data[i].level > node.level; i++) {
+      count++;
     }
 
     if (expand) {
