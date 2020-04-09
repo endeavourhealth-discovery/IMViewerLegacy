@@ -1,4 +1,4 @@
-package org.endeavourhealth.im.models;
+package org.endeavourhealth.imviewer.common.models;
 
 public class RelatedConcept {
     private Concept relationship;

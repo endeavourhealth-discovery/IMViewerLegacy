@@ -1,7 +1,7 @@
 package org.endeavourhealth.informationManager;
 
 import org.endeavourhealth.common.config.ConfigManager;
-import org.endeavourhealth.informationmanager.common.dal.ConnectionPool;
+import org.endeavourhealth.imviewer.common.dal.ConnectionPool;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

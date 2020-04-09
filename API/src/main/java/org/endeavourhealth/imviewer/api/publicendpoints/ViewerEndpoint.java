@@ -1,11 +1,11 @@
-package org.endeavourhealth.im.api.publicendpoints;
+package org.endeavourhealth.imviewer.api.publicendpoints;
 
 import org.endeavourhealth.common.utility.MetricsHelper;
 import org.endeavourhealth.common.utility.MetricsTimer;
-import org.endeavourhealth.im.dal.ViewerJDBCDAL;
-import org.endeavourhealth.im.models.Concept;
-import org.endeavourhealth.im.models.Property;
-import org.endeavourhealth.im.models.RelatedConcept;
+import org.endeavourhealth.imviewer.common.dal.ViewerJDBCDAL;
+import org.endeavourhealth.imviewer.common.models.Concept;
+import org.endeavourhealth.imviewer.common.models.Property;
+import org.endeavourhealth.imviewer.common.models.RelatedConcept;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

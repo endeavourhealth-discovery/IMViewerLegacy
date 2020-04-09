@@ -1,4 +1,4 @@
-package org.endeavourhealth.im.dal;
+package org.endeavourhealth.imviewer.common.dal;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

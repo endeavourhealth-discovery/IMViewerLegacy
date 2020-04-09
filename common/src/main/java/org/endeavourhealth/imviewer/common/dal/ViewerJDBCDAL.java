@@ -1,8 +1,8 @@
-package org.endeavourhealth.im.dal;
+package org.endeavourhealth.imviewer.common.dal;
 
-import org.endeavourhealth.im.models.Concept;
-import org.endeavourhealth.im.models.Property;
-import org.endeavourhealth.im.models.RelatedConcept;
+import org.endeavourhealth.imviewer.common.models.Concept;
+import org.endeavourhealth.imviewer.common.models.Property;
+import org.endeavourhealth.imviewer.common.models.RelatedConcept;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,4 +1,4 @@
-package org.endeavourhealth.im.dal;
+package org.endeavourhealth.imviewer.common.dal;
 
 class DALException extends RuntimeException {
     public DALException(String message) {
