@@ -25,8 +25,23 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
     singleRun: true,
-    restartOnFileChange: true
+    restartOnFileChange: true,
+
+    listenAddress: 'localhost',
+    hostname: 'localhost',
+    browsers: ['ChromeHeadlessNoSandbox'],
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: [
+          '--headless',
+          '--no-sandbox',
+          '--password-store=basic',
+          '--enable-logging',
+          '--v=1'
+        ],
+      },
+    }
   });
 };

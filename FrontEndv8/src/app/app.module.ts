@@ -8,12 +8,6 @@ import {HttpClientModule} from '@angular/common/http';
 import {RouterModule} from '@angular/router';
 import { AppRoot } from './app-root';
 
-const routes = [
-  {path: '', redirectTo: '/recordModel', pathMatch: 'full'},
-  {path: 'recordModel', component: RecordModelLibraryComponent},
-  {path: 'recordModel/:id', component: RecordModelLibraryComponent},
-];
-
 @NgModule({
   imports: [
     BrowserModule,
@@ -22,7 +16,12 @@ const routes = [
     HttpClientModule,
     RecordModelModule,
 
-    RouterModule.forRoot(routes, {useHash: true})
+    RouterModule.forRoot([
+        {path: '', redirectTo: '/recordModel', pathMatch: 'full'},
+        {path: 'recordModel', component: RecordModelLibraryComponent},
+        {path: 'recordModel/:id', component: RecordModelLibraryComponent},
+      ],
+      {useHash: true})
   ],
   providers: [],
   declarations: [AppRoot],

@@ -92,11 +92,11 @@
                   <mat-form-field appearance="outline" fxFlex="calc(100% - 16px)">
                     <mat-label>Definition</mat-label>
                     <mat-wrapper>
-                      <table *ngIf="definition && definition.length > 0" class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100">
+                      <table *ngIf="definition && definition.length > 0" class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" role="presentation">
                         <thead>
                           <tr class="mat-header-row">
-                            <th class="mat-header-cell">Relationship</th>
-                            <th class="mat-header-cell">Concept</th>
+                            <th scope="col" class="mat-header-cell">Relationship</th>
+                            <th scope="col" class="mat-header-cell">Concept</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -112,13 +112,13 @@
                   <mat-form-field appearance="outline" fxFlex="100">
                     <mat-label>Properties</mat-label>
                     <mat-wrapper>
-                      <table *ngIf="properties && properties.length > 0" class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100">
+                      <table *ngIf="properties && properties.length > 0" class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" role="presentation">
                         <thead>
                           <tr class="mat-header-row">
-                            <th class="mat-header-cell">Property</th>
-                            <th class="mat-header-cell">Card.</th>
-                            <th class="mat-header-cell">Type</th>
-                            <th class="mat-header-cell">Inherits</th>
+                            <th scope="col" class="mat-header-cell">Property</th>
+                            <th scope="col" class="mat-header-cell">Card.</th>
+                            <th scope="col" class="mat-header-cell">Type</th>
+                            <th scope="col" class="mat-header-cell">Inherits</th>
                           </tr>
                         </thead>
                         <tbody>
