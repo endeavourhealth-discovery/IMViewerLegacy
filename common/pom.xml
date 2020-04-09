@@ -13,6 +13,11 @@
 
   <artifactId>common</artifactId>
 
+  <properties>
+    <sonar.projectKey>endeavourhealth-discovery_IMViewer::common</sonar.projectKey>
+    <sonar.exclusions>**/docs/**/*</sonar.exclusions>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.endeavourhealth.common</groupId>

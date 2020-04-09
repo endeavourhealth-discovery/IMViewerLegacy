@@ -13,6 +13,11 @@
 
   <artifactId>RuntimeImporter</artifactId>
 
+  <properties>
+    <sonar.projectKey>endeavourhealth-discovery_IMViewer::RuntimeImporter</sonar.projectKey>
+    <sonar.exclusions>**/docs/**/*</sonar.exclusions>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.endeavourhealth.imviewer</groupId>
