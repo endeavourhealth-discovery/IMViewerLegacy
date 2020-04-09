@@ -34,6 +34,7 @@
     <sonar.login>8ddba9bbb23a08a7cff43ecc620be3738a152b65</sonar.login>
     <sonar.coverage.exclusions>**/api/**/*, **/dal/**/*, **/models/**/*</sonar.coverage.exclusions>
     <sonar.junit.reportPaths>target/surefire-reports</sonar.junit.reportPaths>
+    <sonar.scm.provider>git</sonar.scm.provider>
   </properties>
 
   <dependencyManagement>
