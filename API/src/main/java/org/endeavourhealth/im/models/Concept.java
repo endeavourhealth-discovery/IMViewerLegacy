@@ -1,17 +1,23 @@
 package org.endeavourhealth.im.models;
 
 public class Concept {
-    private String id;
+    private String iri;
     private String name;
     private String description;
-    private Short status;
 
-    public String getId() {
-        return id;
+    public Concept() {}
+
+    public Concept(String iri, String name) {
+        this.iri = iri;
+        this.name = name;
     }
 
-    public Concept setId(String id) {
-        this.id = id;
+    public String getIri() {
+        return iri;
+    }
+
+    public Concept setIri(String iri) {
+        this.iri = iri;
         return this;
     }
 
@@ -30,15 +36,6 @@ public class Concept {
 
     public Concept setDescription(String description) {
         this.description = description;
-        return this;
-    }
-
-    public Short getStatus() {
-        return status;
-    }
-
-    public Concept setStatus(Short status) {
-        this.status = status;
         return this;
     }
 }

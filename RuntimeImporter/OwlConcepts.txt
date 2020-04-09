@@ -1,0 +1,2 @@
+iri	name	status	description
+cm:Concept	Top level concept	cm:CoreActive	Top level concept

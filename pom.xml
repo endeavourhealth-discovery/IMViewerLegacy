@@ -10,6 +10,7 @@
   <modules>
     <module>API</module>
     <module>FrontEndv8</module>
+    <module>RuntimeImporter</module>
   </modules>
 
   <properties>

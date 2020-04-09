@@ -1,5 +1,5 @@
 export class Concept {
-  id: string;
+  iri: string;
   name: string;
   description: string;
 }

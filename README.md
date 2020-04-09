@@ -2,7 +2,7 @@
 ![Version](https://s3.eu-west-2.amazonaws.com/endeavour-codebuild/badges/IMViewer/version.svg)
 ![Build Status](https://s3.eu-west-2.amazonaws.com/endeavour-codebuild/badges/IMViewer/build.svg)
 ![Unit Tests](https://s3.eu-west-2.amazonaws.com/endeavour-codebuild/badges/IMViewer/unit-test.svg)
-[<img src="https://sonarcloud.io/api/project_badges/measure?project=endeavourhealth-discovery_IMViewer&metric=alert_status">](https://sonarcloud.io/dashboard?id=endeavourhealth-discovery_InformationModel)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=endeavourhealth-discovery_IMViewer&metric=alert_status)](https://sonarcloud.io/dashboard?id=endeavourhealth-discovery_IMViewer)
 ## Build Angular Frontend
 
 Checkout from GIT

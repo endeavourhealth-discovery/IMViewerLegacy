@@ -63,8 +63,8 @@ export class TreeSource implements DataSource<TreeNode> {
           const existing = this.data.slice(index, index + count);
 
           const nodes = children
-            .filter(c => existing.findIndex(v => v.id === c.concept.id) === -1)
-            .map(related => new TreeNode(related.concept.id, related.concept.name, node.level + 1, true));
+            .filter(c => existing.findIndex(v => v.id === c.concept.iri) === -1)
+            .map(related => new TreeNode(related.concept.iri, related.concept.name, node.level + 1, true));
           this.data.splice(index, 0, ...nodes);
 
           // notify the change

@@ -4,6 +4,7 @@ import org.endeavourhealth.common.utility.MetricsHelper;
 import org.endeavourhealth.common.utility.MetricsTimer;
 import org.endeavourhealth.im.dal.ViewerJDBCDAL;
 import org.endeavourhealth.im.models.Concept;
+import org.endeavourhealth.im.models.Property;
 import org.endeavourhealth.im.models.RelatedConcept;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,15 +41,15 @@ public class ViewerEndpoint {
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/{iri}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getConcept(@Context SecurityContext sc,
-                               @PathParam("id") String id) throws Exception {
+                               @PathParam("iri") String iri) throws Exception {
         try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getConcept")) {
             LOG.debug("getConcept");
 
-            Concept result = new ViewerJDBCDAL().getConcept(id);
+            Concept result = new ViewerJDBCDAL().getConcept(iri);
 
             return Response
                 .ok()
@@ -58,17 +59,17 @@ public class ViewerEndpoint {
     }
 
     @GET
-    @Path("/{id}/Tree")
+    @Path("/{iri}/Tree")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTree(@Context SecurityContext sc,
-                               @PathParam("id") String id,
+                               @PathParam("iri") String iri,
                                @QueryParam("root") String root,
                                @QueryParam("relationship") List<String> relationships) throws Exception {
         try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getTargets")) {
             LOG.debug("getTargets");
 
-            List<RelatedConcept> result = new ViewerJDBCDAL().getTree(id, root, relationships);
+            List<RelatedConcept> result = new ViewerJDBCDAL().getTree(iri, root, relationships);
 
             return Response
                 .ok()
@@ -78,16 +79,15 @@ public class ViewerEndpoint {
     }
 
     @GET
-    @Path("/{id}/Targets")
+    @Path("/{iri}/Properties")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTargets(@Context SecurityContext sc,
-                               @PathParam("id") String id,
-                               @QueryParam("relationship") List<String> relationships) throws Exception {
-        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getTargets")) {
-            LOG.debug("getTargets");
+    public Response getProperties(@Context SecurityContext sc,
+                               @PathParam("iri") String iri) throws Exception {
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getProperties")) {
+            LOG.debug("getProperties");
 
-            List<RelatedConcept> result = new ViewerJDBCDAL().getTargets(id, relationships);
+            List<Property> result = new ViewerJDBCDAL().getProperties(iri);
 
             return Response
                 .ok()
@@ -97,16 +97,34 @@ public class ViewerEndpoint {
     }
 
     @GET
-    @Path("/{id}/Sources")
+    @Path("/{iri}/Definition")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getDefinition(@Context SecurityContext sc,
+                               @PathParam("iri") String iri) throws Exception {
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getDefinition")) {
+            LOG.debug("getDefinition");
+
+            List<RelatedConcept> result = new ViewerJDBCDAL().getDefinition(iri);
+
+            return Response
+                .ok()
+                .entity(result)
+                .build();
+        }
+    }
+
+    @GET
+    @Path("/{iri}/Sources")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSources(@Context SecurityContext sc,
-                               @PathParam("id") String id,
+                               @PathParam("iri") String iri,
                                @QueryParam("relationship") List<String> relationships) throws Exception {
         try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getSources")) {
             LOG.debug("getSources");
 
-            List<RelatedConcept> result = new ViewerJDBCDAL().getSources(id, relationships);
+            List<RelatedConcept> result = new ViewerJDBCDAL().getSources(iri, relationships);
 
             return Response
                 .ok()

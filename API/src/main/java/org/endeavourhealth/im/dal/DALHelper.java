@@ -4,7 +4,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static java.sql.Types.*;
@@ -20,6 +23,7 @@ public class DALHelper {
         }
     }
 
+    // SET methods
     public static void setLong(PreparedStatement stmt, int i, Long value) {
         try {
             if (value == null)
@@ -75,6 +79,17 @@ public class DALHelper {
         }
     }
 
+    public static void setShort(PreparedStatement stmt, int i, Short value) {
+        try {
+            if (value == null)
+                stmt.setNull(i, TINYINT);
+            else
+                stmt.setShort(i, value);
+        } catch (SQLException e) {
+            throw new DALException("Error setting SHORT value", e);
+        }
+    }
+
     public static void setString(PreparedStatement stmt, int i, String value) {
         try {
             if (value == null)
@@ -83,6 +98,30 @@ public class DALHelper {
                 stmt.setString(i, value);
         } catch (SQLException e) {
             throw new DALException("Error setting STRING value", e);
+        }
+    }
+
+    public static void setTimestamp(PreparedStatement stmt, int i, Date value) {
+        try {
+            if (value == null)
+                stmt.setNull(i, TIMESTAMP);
+            else
+                stmt.setTimestamp(i, new Timestamp(value.getTime()));
+        } catch (SQLException e) {
+            throw new DALException("Error setting TIMESTAMP value", e);
+        }
+    }
+
+    public static void setTimestamp(PreparedStatement stmt, int i, String value) {
+        try {
+            if (value == null)
+                stmt.setNull(i, TIMESTAMP);
+            else {
+                SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");
+                stmt.setTimestamp(i, new Timestamp(sd.parse(value).getTime()));
+            }
+        } catch (SQLException | ParseException e) {
+            throw new DALException("Error setting TIMESTAMP value", e);
         }
     }
 
@@ -111,5 +150,21 @@ public class DALHelper {
         } catch (SQLException e) {
             throw new DALException("Error setting LONG array", e);
         }
+    }
+
+    // GET methods
+    public static Integer getInt(ResultSet rs, String field) throws SQLException {
+        int result = rs.getInt(field);
+        return rs.wasNull() ? null : result;
+    }
+
+    public static String getString(ResultSet rs, String field) throws SQLException {
+        String result = rs.getString(field);
+        return rs.wasNull() ? null : result;
+    }
+
+    public static Date getDate(ResultSet rs, String field) throws SQLException {
+        Date result = rs.getDate(field);
+        return rs.wasNull() ? null : result;
     }
 }

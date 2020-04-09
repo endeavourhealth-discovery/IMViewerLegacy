@@ -1,0 +1,57 @@
+class	property	range	min	max	level	property_owner
+rm:AandEEncounterEntry	rm:aAndEDepartmentType	cm:AccidentAndEmergencySetting	1	1	0	rm:AandEEncounterEntry
+rm:AandEEncounterEntry	rm:aeAttendanceCategory	cm:AEAttendanceCat	1	1	0	rm:AandEEncounterEntry
+rm:AandEEncounterEntry	rm:aeAttendanceSource	sn:SN_999002991000000109	1	1	0	rm:AandEEncounterEntry
+rm:AandEEncounterEntry	rm:arrivalMode	sn:SN_999002981000000107	1	1	0	rm:AandEEncounterEntry
+rm:AandEEncounterEntry	rm:hasType	cm:AandEAttendance	1	1	0	rm:AandEEncounterEntry
+rm:AandEEncounterEntry	rm:treatmentFunctionAdmit	sn:SN_224930009	1	1	0	rm:AandEEncounterEntry
+rm:AandEEncounterEntry	rm:isSubcomponentOf	rm:EncounterEntry		1	1	rm:EncounterEntry
+rm:AandEEncounterEntry	rm:hasSubject	rm:Patient	1	1	2	rm:HealthEvent
+rm:AandEEncounterEntry	rm:hasDataController	rm:Organisation	1	1	3	rm:RecordEntry
+rm:CriticalCareEntry	rm:hasCriticalCareUnitFunction	cm:CriticalCareUnit	1	1	0	rm:CriticalCareEntry
+rm:CriticalCareEntry	rm:hasType	cm:CriticalCareEncounter	1	1	0	rm:CriticalCareEntry
+rm:CriticalCareEntry	rm:sourceOfAdmission	cm:CriticalCareAdmissionSource	1	1	0	rm:CriticalCareEntry
+rm:CriticalCareEntry	rm:isSubcomponentOf	rm:EncounterEntry		1	1	rm:EncounterEntry
+rm:CriticalCareEntry	rm:hasSubject	rm:Patient	1	1	2	rm:HealthEvent
+rm:CriticalCareEntry	rm:hasDataController	rm:Organisation	1	1	3	rm:RecordEntry
+rm:EncounterEntry	rm:hasType	cm:EncounterType	1	1	0	rm:EncounterEntry
+rm:EncounterEntry	rm:isSubcomponentOf	rm:EncounterEntry		1	0	rm:EncounterEntry
+rm:EncounterEntry	rm:hasSubject	rm:Patient	1	1	1	rm:HealthEvent
+rm:EncounterEntry	rm:hasDataController	rm:Organisation	1	1	2	rm:RecordEntry
+rm:HealthEvent	rm:hasSubject	rm:Patient	1	1	0	rm:HealthEvent
+rm:HealthEvent	rm:hasDataController	rm:Organisation	1	1	1	rm:RecordEntry
+rm:HospitalAdmitEntry	rm:adminCategoryonAdmission	cm:AdminCategory	1	1	0	rm:HospitalAdmitEntry
+rm:HospitalAdmitEntry	rm:admissionPatientClassification	cm:AdmissionPatientClass	1	1	0	rm:HospitalAdmitEntry
+rm:HospitalAdmitEntry	rm:hasType	cm:HospitalAdmissionEncounter	1	1	0	rm:HospitalAdmitEntry
+rm:HospitalAdmitEntry	rm:isSubcomponentOf	rm:HospitalInpEntry	1	1	0	rm:HospitalAdmitEntry
+rm:HospitalAdmitEntry	rm:methodOfAdmssion	cm:AdmissionMethod	1	1	0	rm:HospitalAdmitEntry
+rm:HospitalAdmitEntry	rm:sourceOfAdmission	cm:AdmissionSource	1	1	0	rm:HospitalAdmitEntry
+rm:HospitalAdmitEntry	rm:hasSubject	rm:Patient	1	1	2	rm:HealthEvent
+rm:HospitalAdmitEntry	rm:hasDataController	rm:Organisation	1	1	3	rm:RecordEntry
+rm:HospitalDischEntry	rm:hasDischargeDestination	cm:DisDest0	1	1	0	rm:HospitalDischEntry
+rm:HospitalDischEntry	rm:hasDischargeMethod	cm:DisMethod0	1	1	0	rm:HospitalDischEntry
+rm:HospitalDischEntry	rm:hasType	cm:HospitalDischargeEncounter	1	1	0	rm:HospitalDischEntry
+rm:HospitalDischEntry	rm:isSubcomponentOf	rm:HospitalInpEntry	1	1	0	rm:HospitalDischEntry
+rm:HospitalDischEntry	rm:hasSubject	rm:Patient	1	1	2	rm:HealthEvent
+rm:HospitalDischEntry	rm:hasDataController	rm:Organisation	1	1	3	rm:RecordEntry
+rm:HospitalInpEntry	rm:administrativePaymentCategory	cm:AdminCategory	1	1	0	rm:HospitalInpEntry
+rm:HospitalInpEntry	rm:hasType	cm:HospitalInpEncounter	1	1	0	rm:HospitalInpEntry
+rm:HospitalInpEntry	rm:treatmentSpecialty	sn:SN_224930009	1	1	0	rm:HospitalInpEntry
+rm:HospitalInpEntry	rm:isSubcomponentOf	rm:EncounterEntry		1	1	rm:EncounterEntry
+rm:HospitalInpEntry	rm:hasSubject	rm:Patient	1	1	2	rm:HealthEvent
+rm:HospitalInpEntry	rm:hasDataController	rm:Organisation	1	1	3	rm:RecordEntry
+rm:HospitalOpdEntry	rm:attendanceStatus	cm:AEAttNotAtt0	1	1	0	rm:HospitalOpdEntry
+rm:HospitalOpdEntry	rm:hasAttendanceOutcome	cm:AttOutcome0	1	1	0	rm:HospitalOpdEntry
+rm:HospitalOpdEntry	rm:hasType	cm:HospOpdEncounter	1	1	0	rm:HospitalOpdEntry
+rm:HospitalOpdEntry	rm:treatmentSpecialty	sn:SN_224930009	1	1	0	rm:HospitalOpdEntry
+rm:HospitalOpdEntry	rm:isSubcomponentOf	rm:EncounterEntry		1	1	rm:EncounterEntry
+rm:HospitalOpdEntry	rm:hasSubject	rm:Patient	1	1	2	rm:HealthEvent
+rm:HospitalOpdEntry	rm:hasDataController	rm:Organisation	1	1	3	rm:RecordEntry
+rm:ObservationEntry	rm:hasType	cm:ObservationType	1	1	0	rm:ObservationEntry
+rm:ObservationEntry	rm:isSubcomponentOf	rm:ObservationEntry		1	0	rm:ObservationEntry
+rm:ObservationEntry	rm:isUnderHeadingOf	rm:RecordSection		1	0	rm:ObservationEntry
+rm:ObservationEntry	rm:partOfEncounter	rm:EncounterEntry		1	0	rm:ObservationEntry
+rm:ObservationEntry	rm:hasSubject	rm:Patient	1	1	1	rm:HealthEvent
+rm:ObservationEntry	rm:hasDataController	rm:Organisation	1	1	2	rm:RecordEntry
+rm:Patient	rm:hasDataController	rm:Organisation	1	1	0	rm:Patient
+rm:RecordEntry	rm:hasDataController	rm:Organisation	1	1	0	rm:RecordEntry

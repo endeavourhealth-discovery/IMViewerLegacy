@@ -7,6 +7,7 @@ import {Concept} from '../../models/Concept';
 import {Related} from '../../models/Related';
 import {ActivatedRoute} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
+import {Property} from '../../models/Property';
 
 @Component({
   selector: 'app-record-model-library',
@@ -18,7 +19,7 @@ export class RecordModelLibraryComponent implements OnInit {
   dataSource: TreeSource;
   concept: Concept;
   definition: Related[];
-  properties: Related[];
+  properties: Property[];
   selectedNode: TreeNode;
   searchTerm: string;
   searchResults: any[];
@@ -40,7 +41,7 @@ export class RecordModelLibraryComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe(
-      (params) => this.loadTree(params['id'])
+      (params) => this.loadTree(params.id)
     );
   }
 
@@ -75,14 +76,19 @@ export class RecordModelLibraryComponent implements OnInit {
       (error) => this.log.error(error)
     );
 
-    this.service.getTargets(node.id, []).subscribe(
+    this.service.getDefinition(node.id).subscribe(
       (result) => this.definition = result,
+      (error) => this.log.error(error)
+    );
+
+    this.service.getProperties(node.id).subscribe(
+      (result) => this.properties = result,
       (error) => this.log.error(error)
     );
   }
 
   showConceptTree(concept: Concept) {
-    this.service.loadTree(this.root, concept.id, this.relationships).subscribe(
+    this.service.loadTree(this.root, concept.iri, this.relationships).subscribe(
       (result) => this.buildTree(concept, result),
       (error) => this.log.error(error)
     );
@@ -91,12 +97,12 @@ export class RecordModelLibraryComponent implements OnInit {
   buildTree(concept: Concept, related: Related[]) {
     let i = 0;
 
-    const node: TreeNode = new TreeNode(concept.id, concept.name, related.length, true);
+    const node: TreeNode = new TreeNode(concept.iri, concept.name, related.length, true);
 
     this.dataSource.data =
     related
       .reverse()
-      .map(r => new TreeNode(r.concept.id, r.concept.name, i++, true))
+      .map(r => new TreeNode(r.concept.iri, r.concept.name, i++, true))
       .concat(node);
 
     this.selectNode(node);
@@ -110,7 +116,7 @@ export class RecordModelLibraryComponent implements OnInit {
       );
     } else {
       this.service.getConcept(this.root).subscribe(
-        (result) => this.dataSource.data = [new TreeNode(result.id, result.name, 0, true)],
+        (result) => this.dataSource.data = [new TreeNode(result.iri, result.name, 0, true)],
         (error) => this.log.error(error)
       );
     }
