@@ -1,7 +1,7 @@
 import { Before, Given, Then, When } from 'cucumber';
 import { expect } from 'chai';
 
-import { AppPage } from '../../app.po';
+import { AppPage } from '../app.po';
 
 let page: AppPage;
 
