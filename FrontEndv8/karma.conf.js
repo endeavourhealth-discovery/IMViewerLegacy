@@ -30,7 +30,8 @@ module.exports = function (config) {
 
     listenAddress: 'localhost',
     hostname: 'localhost',
-    browsers: ['ChromeHeadlessNoSandbox'],
+    browsers: ['Chrome']
+/*    browsers: ['ChromeHeadlessNoSandbox'],
     customLaunchers: {
       ChromeHeadlessNoSandbox: {
         base: 'ChromeHeadless',
@@ -42,6 +43,6 @@ module.exports = function (config) {
           '--v=1'
         ],
       },
-    }
+    }*/
   });
 };

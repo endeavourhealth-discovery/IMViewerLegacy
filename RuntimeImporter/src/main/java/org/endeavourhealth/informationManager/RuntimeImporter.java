@@ -36,11 +36,13 @@ public class RuntimeImporter {
         System.out.println("Importing ontologies...");
         try (BufferedReader br = new BufferedReader(new FileReader("./Ontology.txt"))) {
             // header
-            br.readLine();
+            String line = br.readLine();
+            if (line.split("\t").length != 2)
+                throw new IndexOutOfBoundsException("Ontology file should contain 2 fields");
+
             int i = 1;
 
             try (PreparedStatement stmt = conn.prepareStatement("REPLACE INTO ontology (prefix, iri) VALUES (?, ?)")) {
-                String line;
                 while ((line = br.readLine()) != null) {
                     String[] fields = line.split("\t");
                     stmt.setString(1, fields[0]);
@@ -58,11 +60,13 @@ public class RuntimeImporter {
         System.out.println("Importing concepts...");
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             // header
-            br.readLine();
+            String line = br.readLine();
+            if (line.split("\t").length != 4)
+                throw new IndexOutOfBoundsException("Concept file [" + fileName + "] should contain 4 fields");
+
             int i = 1;
 
             try (PreparedStatement stmt = conn.prepareStatement("REPLACE INTO concept (iri, name, description, ontology) SELECT ?, ?, ?, id FROM ontology WHERE prefix = ?")) {
-                String line;
                 while ((line = br.readLine()) != null) {
                     String[] fields = line.split("\t");
                     stmt.setString(1, fields[0]);
@@ -84,7 +88,10 @@ public class RuntimeImporter {
         System.out.println("Importing concept property objects...");
         try (BufferedReader br = new BufferedReader(new FileReader("./ConceptPropertyObject.txt"))) {
             // header
-            br.readLine();
+            String line = br.readLine();
+            if (line.split("\t").length != 4)
+                throw new IndexOutOfBoundsException("ConceptPropertyObject file should contain 4 fields");
+
             int i = 1;
             String sql = "REPLACE INTO concept_property_object (id, property, value)\n" +
                 "SELECT c.id, p.id, v.id\n" +
@@ -96,7 +103,6 @@ public class RuntimeImporter {
                 "AND v.iri = ?\n";
 
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                String line;
                 while ((line = br.readLine()) != null) {
                     String[] fields = line.split("\t");
                     stmt.setString(1, fields[0]);
@@ -117,7 +123,10 @@ public class RuntimeImporter {
         System.out.println("Importing concept data models...");
         try (BufferedReader br = new BufferedReader(new FileReader("./DataModel.txt"))) {
             // header
-            br.readLine();
+            String line = br.readLine();
+            if (line.split("\t").length != 7)
+                throw new IndexOutOfBoundsException("ConceptDataModel file should contain 7 fields");
+
             int i = 1;
 
             String sql = "REPLACE INTO concept_data_model (id, property, min_cardinality, max_cardinality, value_type, property_level, property_owner, inverse) \n" +
@@ -132,7 +141,6 @@ public class RuntimeImporter {
                 "AND o.iri = ?\n";
 
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                String line;
                 while ((line = br.readLine()) != null) {
                     String[] fields = line.split("\t");
                     stmt.setString(1, fields[3].isEmpty() ? null : fields[3]);

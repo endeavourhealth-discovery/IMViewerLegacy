@@ -10,7 +10,7 @@ export class AppPage {
   }
 
   search(text: string) {
-    browser.findElement(by.id('searchInput')).sendKeys(text);
+    return browser.findElement(by.id('searchInput')).sendKeys(text + '\n');
   }
 
   getSearchResultRows() {
