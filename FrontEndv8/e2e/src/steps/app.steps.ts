@@ -23,20 +23,12 @@ When('I select search result {string}', async (result) => {
   await page.selectSearchResult(result);
 });
 
-When('I select tree node {int}', async (nodeIndex) => {
-  await page.selectNode(nodeIndex);
+When('I select tree node {string}', async (nodeText) => {
+  await page.selectNode(nodeText);
 });
 
 Then('I should see the title', async () => {
   expect(await page.getTitleText()).to.equal('IM Viewer');
-});
-
-Then('I should get {int} search results', async (resultCount) => {
-  expect(await page.getSearchResultRows().count()).to.equal(resultCount);
-});
-
-Then('I should get {int} tree nodes', async (nodeCount) => {
-  expect(await page.getTreeRows().count()).to.equal(nodeCount);
 });
 
 Then('I should get concept ID {string}', async (id) => {
@@ -49,4 +41,10 @@ Then('I should get concept name {string}', async (name) => {
 
 Then('I should get concept description {string}', async (description) => {
   expect(await page.getConceptDescription()).to.equal(description);
+});
+Then('I should get the following search results', async (table) => {
+  expect(await page.getSearchResultRowValues()).to.deep.equal(table.rawTable.flat());
+});
+Then('I should get the following tree nodes', async (table) => {
+  expect(await page.getTreeRowValues()).to.deep.equal(table.rawTable.flat());
 });

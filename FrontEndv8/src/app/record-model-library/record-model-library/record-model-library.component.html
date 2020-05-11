@@ -6,6 +6,10 @@
       </div>
       <mat-card-title>Record model</mat-card-title>
       <mat-card-subtitle>Clinical record model viewer & navigator</mat-card-subtitle>
+      <div fxFlex></div>
+      <div fxLayoutAlign="center" class="mat-action" matRipple (click)="logout()" matTooltip="Edit concept details">
+        <i class="fas fa-fw fa-pencil"></i>
+      </div>
     </mat-card-header>
     <mat-card-content style="height: calc(100vh - 109px); padding: 0">
       <as-split direction="horizontal">
@@ -41,7 +45,7 @@
                     (click)="selectNode(node)"
                     style="cursor: pointer">
                     <button mat-icon-button disabled></button>
-                    {{node.name}}
+                    <span>{{node.name}}</span>
                   </mat-tree-node>
                   <mat-tree-node
                     *matTreeNodeDef="let node; when: hasChild"
@@ -56,7 +60,7 @@
                         {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
                       </mat-icon>
                     </button>
-                    {{node.name}}
+                    <span>{{node.name}}</span>
                     <mat-progress-bar *ngIf="node.isLoading"
                                       mode="indeterminate"
                                       class="example-tree-progress-bar"></mat-progress-bar>

@@ -1,0 +1,44 @@
+<div style="height: 100%; display: flex; align-items: center; justify-content: center;">
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar>
+        <span class="fad fa-user"></span>
+      </div>
+      <mat-card-title>Create account</mat-card-title>
+      <mat-card-subtitle></mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-form-field appearance="outline" style="width: 100%">
+        <mat-label>Username</mat-label>
+        <input matInput [(ngModel)]="username" placeholder="Username" id="username">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="width: 49%">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" [(ngModel)]="password1" placeholder="Password" id="password1">
+      </mat-form-field>
+      &nbsp;
+      &nbsp;
+      <mat-form-field appearance="outline" style="width: 49%">
+        <mat-label>Repeat Password</mat-label>
+        <input matInput type="password" [(ngModel)]="password2" placeholder="Repeat password" id="password2">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="width: 49%">
+        <mat-label>First name</mat-label>
+        <input matInput [(ngModel)]="firstName" placeholder="First name" id="firstName">
+      </mat-form-field>
+      &nbsp;
+      &nbsp;
+      <mat-form-field appearance="outline" style="width: 49%">
+        <mat-label>Last name</mat-label>
+        <input matInput [(ngModel)]="lastName" placeholder="Last name" id="lastName">
+      </mat-form-field>
+      <div *ngIf="error" class="alert alert-danger mt-3 mb-0">{{error}}</div>
+
+    </mat-card-content>
+    <mat-card-footer style="margin: 16px" align="end">
+      <button mat-flat-button (click)="onSubmit()">Create account</button>
+    </mat-card-footer>
+  </mat-card>
+</div>

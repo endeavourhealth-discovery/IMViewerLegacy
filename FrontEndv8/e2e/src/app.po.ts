@@ -14,12 +14,16 @@ export class AppPage {
   }
 
   getSearchResultRows() {
-    return element.all(by.css('#searchResults tbody tr'));
+    return element.all(by.css('#searchResults tbody tr td'));
+  }
+
+  getSearchResultRowValues() {
+    return this.getSearchResultRows()
+      .map(r => r.getText());
   }
 
   selectSearchResult(text: string) {
     const row = this.getSearchResultRows()
-      .all(by.css('td'))
       .filter(td => td.getText().then(v => v === text))
       .first();
     return row.click();
@@ -29,9 +33,17 @@ export class AppPage {
     return element.all(by.css('#conceptTree mat-tree-node'));
   }
 
-  selectNode(index: number) {
-    const nodes = this.getTreeRows();
-    return nodes.get(index).click();
+  getTreeRowValues() {
+    return this.getTreeRows()
+      .map(r => r.all(by.css('span')).get(1).getText());
+  }
+
+  selectNode(text: string) {
+    const node = this.getTreeRows()
+      .filter(r => r.all(by.css('span')).get(1).getText().then(t => t === text))
+      .first();
+
+    return node.click();
   }
 
   getConceptName() {

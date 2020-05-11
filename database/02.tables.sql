@@ -45,6 +45,9 @@ CREATE TABLE concept_property_object (
     `group`     INT NOT NULL DEFAULT '0' COMMENT 'Property group id',
     property    INT NOT NULL COMMENT 'Property concept id',
     value       INT NOT NULL COMMENT 'Property value concept id',
+    min_cardinality INT      COMMENT 'Minimum cardinality',
+    max_cardinality INT      COMMENT 'Maximum cardinality',
+    operator    VARCHAR(5)   COMMENT 'Group operator',
     updated     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     INDEX concept_property_object_idx (id),
@@ -54,13 +57,12 @@ CREATE TABLE concept_property_object (
 DROP TABLE IF EXISTS concept_data_model;
 CREATE TABLE concept_data_model (
     id              INT NOT NULL        COMMENT 'Concept id',
-    property        INT NOT NULL        COMMENT 'Property concept id',
+    type            CHAR(1) NOT NULL    COMMENT '(P)roperty/(R)elationship',
+    attribute       INT NOT NULL        COMMENT 'Attribute concept id',
+    value_type      INT NOT NULL        COMMENT 'Value type concept id',
     min_cardinality INT                 COMMENT 'Minimum cardinality',
     max_cardinality INT                 COMMENT 'Maximum cardinality',
-    value_type      INT NOT NULL        COMMENT 'Value type concept id',
-    property_level  INT NOT NULL        COMMENT 'Level at which the property occurs',
-    property_owner  INT NOT NULL        COMMENT 'Concept id of the property owner',
-    inverse         BOOLEAN NOT NULL    COMMENT 'Inverse relationship',
+    inverse         INT NOT NULL        COMMENT 'Inverse relationship',
 
     INDEX concept_data_model_idx (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -76,4 +78,15 @@ CREATE TABLE concept_tct (
     INDEX concept_tct_source_property_idx (source, property),
     INDEX concept_tct_property_level_idx (property, level),
     INDEX concept_tct_property_target_idx (property, target)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
+    username VARCHAR(150) NOT NULL,
+    password VARCHAR(200) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    token VARCHAR(250),
+
+    PRIMARY KEY user_pk (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

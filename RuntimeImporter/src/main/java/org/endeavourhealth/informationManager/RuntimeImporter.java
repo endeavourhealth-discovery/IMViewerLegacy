@@ -20,8 +20,8 @@ public class RuntimeImporter {
         try {
             System.out.println("Importing...");
             loadOntologies();
-            loadConcepts("./OwlConcepts.txt");
-            loadConcepts("./CoreConcepts.txt");
+            // loadConcepts("./OwlConcepts.txt");
+            loadConcepts("./IMCore_Concepts.txt");
             loadConcepts("./SnomedConcepts.txt");
             loadConceptPropertyObject();
             loadConceptDataModel();
@@ -61,19 +61,27 @@ public class RuntimeImporter {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             // header
             String line = br.readLine();
-            if (line.split("\t").length != 4)
-                throw new IndexOutOfBoundsException("Concept file [" + fileName + "] should contain 4 fields");
+            if (line.split("\t").length != 6)
+                throw new IndexOutOfBoundsException("Concept file [" + fileName + "] should contain 6 fields");
 
             int i = 1;
 
-            try (PreparedStatement stmt = conn.prepareStatement("REPLACE INTO concept (iri, name, description, ontology) SELECT ?, ?, ?, id FROM ontology WHERE prefix = ?")) {
+            String sql = "REPLACE INTO concept (iri, name, description, code, scheme, ontology)\n" +
+                "SELECT ?, ?, ?, ?, s.id, o.id\n" +
+                "FROM ontology o\n" +
+                "LEFT JOIN concept s ON s.iri = ?\n" +
+                "WHERE o.prefix = ?";
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 while ((line = br.readLine()) != null) {
                     String[] fields = line.split("\t");
                     stmt.setString(1, fields[0]);
                     stmt.setString(2, fields[1]);
                     // status = fields[2]
-                    stmt.setString(3, (fields.length == 4) ? fields[3] : null);
-                    stmt.setString(4, getPrefix(fields[0]));
+                    stmt.setString(3, (fields.length > 3) ? fields[3] : null);
+                    stmt.setString(4, (fields.length > 4) ? fields[4] : null);
+                    stmt.setString(5, (fields.length > 5) ? fields[5] : null);
+                    stmt.setString(6, getPrefix(fields[0]));
                     if (stmt.executeUpdate() == 0)
                         System.err.println("Error upserting concept row " + (i+1) + " - [" + line + "]");
 
@@ -86,15 +94,15 @@ public class RuntimeImporter {
 
     private void loadConceptPropertyObject() throws IOException, SQLException {
         System.out.println("Importing concept property objects...");
-        try (BufferedReader br = new BufferedReader(new FileReader("./ConceptPropertyObject.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("./IMCore_ConceptPropertyObject.txt"))) {
             // header
             String line = br.readLine();
-            if (line.split("\t").length != 4)
-                throw new IndexOutOfBoundsException("ConceptPropertyObject file should contain 4 fields");
+            if (line.split("\t").length != 7)
+                throw new IndexOutOfBoundsException("ConceptPropertyObject file should contain 7 fields");
 
             int i = 1;
-            String sql = "REPLACE INTO concept_property_object (id, property, value)\n" +
-                "SELECT c.id, p.id, v.id\n" +
+            String sql = "REPLACE INTO concept_property_object (id, `group`, property, value, min_cardinality, max_cardinality, operator)\n" +
+                "SELECT c.id, ?, p.id, v.id, ?, ?, ?\n" +
                 "FROM concept c\n" +
                 "JOIN concept p\n" +
                 "JOIN concept v\n" +
@@ -105,10 +113,13 @@ public class RuntimeImporter {
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 while ((line = br.readLine()) != null) {
                     String[] fields = line.split("\t");
-                    stmt.setString(1, fields[0]);
-                    // group = fields[1]
-                    stmt.setString(2, fields[2]);
-                    stmt.setString(3, fields[3]);
+                    stmt.setString(1, fields[1]);
+                    stmt.setString(2, fields[4].isEmpty() ? null : fields[4]);
+                    stmt.setString(3, fields[5].isEmpty() ? null : fields[5]);
+                    stmt.setString(4, fields[6]);
+                    stmt.setString(5, fields[0]);
+                    stmt.setString(6, fields[2]);
+                    stmt.setString(7, fields[3]);
                     if (stmt.executeUpdate() == 0)
                         System.err.println("Error upserting concept_property_object row " + (i+1) + " - [" + line + "]");
 
@@ -121,36 +132,32 @@ public class RuntimeImporter {
 
     private void loadConceptDataModel() throws IOException, SQLException {
         System.out.println("Importing concept data models...");
-        try (BufferedReader br = new BufferedReader(new FileReader("./DataModel.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("./DMCORE_DataModel.txt"))) {
             // header
             String line = br.readLine();
-            if (line.split("\t").length != 7)
-                throw new IndexOutOfBoundsException("ConceptDataModel file should contain 7 fields");
+            if (line.split("\t").length != 8)
+                throw new IndexOutOfBoundsException("ConceptDataModel file should contain 8 fields");
 
             int i = 1;
 
-            String sql = "REPLACE INTO concept_data_model (id, property, min_cardinality, max_cardinality, value_type, property_level, property_owner, inverse) \n" +
-                "SELECT c.id, p.id, ?, ?, v.id, ?, o.id, ?\n" +
+            String sql = "REPLACE INTO concept_data_model (id, type, attribute, value_type, min_cardinality, max_cardinality, inverse) \n" +
+                "SELECT c.id, ?, a.id, v.id, ?, ?, i.id\n" +
                 "FROM concept c\n" +
-                "JOIN concept p\n" +
-                "JOIN concept v\n" +
-                "JOIN concept o\n" +
-                "WHERE c.iri = ?\n" +
-                "AND p.iri = ?\n" +
-                "AND v.iri = ?\n" +
-                "AND o.iri = ?\n";
+                "JOIN concept a ON a.iri = ?\n" +
+                "JOIN concept v ON v.iri = ?\n" +
+                "LEFT JOIN concept i ON i.iri = ?\n" +
+                "WHERE c.iri = ?\n";
 
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 while ((line = br.readLine()) != null) {
                     String[] fields = line.split("\t");
-                    stmt.setString(1, fields[3].isEmpty() ? null : fields[3]);
-                    stmt.setString(2, fields[4].isEmpty() ? null : fields[4]);
-                    stmt.setString(3, fields[5]);
-                    stmt.setBoolean(4, fields.length == 8 && !fields[7].isEmpty() && Boolean.parseBoolean(fields[7]));
-                    stmt.setString(5, fields[0]);
-                    stmt.setString(6, fields[1]);
-                    stmt.setString(7, fields[2]);
-                    stmt.setString(8, fields[6]);
+                    stmt.setString(1, fields[2].substring(1,1));
+                    stmt.setString(2, fields[5].isEmpty() ? null : fields[5]);
+                    stmt.setString(3, fields[6].isEmpty() ? null : fields[6]);
+                    stmt.setString(4, fields[3]);
+                    stmt.setString(5, fields[4]);
+                    stmt.setString(6, fields.length < 8 ? null : fields[7]);
+                    stmt.setString(7, fields[1]);
                     if (stmt.executeUpdate() == 0)
                         System.err.println("Error upserting concept_data_model row " + (i+1) + " - [" + line + "]");
 

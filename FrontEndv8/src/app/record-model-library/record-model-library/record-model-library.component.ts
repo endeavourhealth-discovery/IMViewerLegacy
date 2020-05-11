@@ -8,6 +8,7 @@ import {Related} from '../../models/Related';
 import {ActivatedRoute} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import {Property} from '../../models/Property';
+import {AuthenticationService} from '../../security/auth.service';
 
 @Component({
   selector: 'app-record-model-library',
@@ -25,7 +26,7 @@ export class RecordModelLibraryComponent implements OnInit {
   searchResults: any[];
   searching = false;
   searchSize = 72;
-  root = 'rm:RecordModel';
+  root: string;
   relationships = ['sn:SN_116680003'];
 
   getLevel = (node: TreeNode) => node.level;
@@ -33,10 +34,16 @@ export class RecordModelLibraryComponent implements OnInit {
   hasChild = (_: number, nodeData: TreeNode) => nodeData.expandable;
 
   constructor(private service: RecordModelService,
+              private auth: AuthenticationService,
               private route: ActivatedRoute,
               private log: LoggerService) {
-    this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
-    this.dataSource = new TreeSource(this.treeControl, service, log, this.relationships);
+    this.route.data.subscribe(
+      (data) => {
+        this.root = data.root;
+        this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
+        this.dataSource = new TreeSource(this.treeControl, service, log, this.relationships);
+      }
+    );
   }
 
   ngOnInit() {
@@ -121,5 +128,9 @@ export class RecordModelLibraryComponent implements OnInit {
         (error) => this.log.error(error)
       );
     }
+  }
+
+  logout() {
+    this.auth.logout();
   }
 }
