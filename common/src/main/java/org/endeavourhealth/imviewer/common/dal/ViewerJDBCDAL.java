@@ -20,13 +20,13 @@ public class ViewerJDBCDAL {
 
         String sql = "SELECT p.iri AS r_iri, p.name AS r_name, v.iri AS c_iri, v.name AS c_name\n" +
             "FROM concept_property_object o\n" +
-            "JOIN concept c ON c.id = o.id AND c.iri = ?\n" +
+            "JOIN concept c ON c.id = o.concept AND c.iri = ?\n" +
             "JOIN concept p ON p.id = o.property\n" +
-            "JOIN concept v ON v.id = o.value\n" +
+            "JOIN concept v ON v.id = o.object\n" +
             "WHERE NOT EXISTS (\n" +
             "\tSELECT 1 \n" +
             "    FROM concept_tct tct \n" +
-            "    JOIN concept tt ON tt.iri IN ('rm:isDMObjectProperty', 'rm:isDMDataProperty')\n" +
+            "    JOIN concept tt ON tt.iri IN (':DM_ObjectProperty', ':DM_DataProperty')\n" +
             "    WHERE tct.source = p.id AND tct.target = tt.id\n" +
             ");\n";
 
@@ -46,9 +46,9 @@ public class ViewerJDBCDAL {
 
         String sql = "SELECT p.iri AS r_iri, p.name AS r_name, c.iri AS c_iri, c.name AS c_name\n" +
             "FROM concept_property_object o\n" +
-            "JOIN concept v ON v.id = o.value AND v.iri = ?\n" +
+            "JOIN concept v ON v.id = o.object AND v.iri = ?\n" +
             "JOIN concept p ON p.id = o.property\n" +
-            "JOIN concept c ON c.id = o.id\n";
+            "JOIN concept c ON c.id = o.concept\n";
 
         if (relationships != null && !relationships.isEmpty())
             sql += "WHERE p.iri IN (" + DALHelper.inListParams(relationships.size()) + ")";
@@ -165,21 +165,17 @@ public class ViewerJDBCDAL {
 
         String sql = "SELECT p.iri AS p_iri, p.name AS p_name,\n" +
             "d.min_cardinality, d.max_cardinality,\n" +
-            "v.iri as v_iri, v.name AS v_name,\n" +
-            "d.property_level,\n" +
-            "o.iri AS o_iri, o.name AS o_name\n" +
+            "v.iri as v_iri, v.name AS v_name\n" +
             "FROM concept c\n" +
             "JOIN concept_data_model d ON d.id = c.id\n" +
-            "JOIN concept p ON p.id = d.property\n" +
+            "JOIN concept p ON p.id = d.attribute\n" +
             "JOIN concept v ON v.id = d.value_type\n" +
-            "JOIN concept o ON o.id = d.property_owner\n" +
 /*
             "JOIN concept tp ON tp.iri = 'sn:SN_116680003'\n" +
             "JOIN concept tt ON tt.iri IN ('rm:isDMObjectProperty', 'rm:isDMDataProperty')\n" +
             "JOIN concept_tct t ON t.source = p.id AND t.property = tp.id AND t.target = tt.id\n" +
 */
-            "WHERE c.iri = ?\n" +
-            "ORDER BY d.property_level DESC\n";
+            "WHERE c.iri = ?\n";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, iri);

@@ -30,8 +30,8 @@ import {FlexModule} from '@angular/flex-layout';
 
     RouterModule.forRoot([
         {path: '', redirectTo: '/recordModel', pathMatch: 'full', canActivate: [AuthGuard]},
-        {path: 'recordModel', component: RecordModelLibraryComponent, data: {root: 'rm:RecordModel'}, canActivate: [AuthGuard]},
-        {path: 'recordModel/:id', component: RecordModelLibraryComponent, data: {root: 'rm:RecordModel'}, canActivate: [AuthGuard]},
+        {path: 'recordModel', component: RecordModelLibraryComponent, data: {root: ':DM_RecordModel'}, canActivate: [AuthGuard]},
+        {path: 'recordModel/:id', component: RecordModelLibraryComponent, data: {root: ':DM_RecordModel'}, canActivate: [AuthGuard]},
         {path: 'dataModel', component: RecordModelLibraryComponent, data: {root: ':DM_DataModel'}, canActivate: [AuthGuard]},
         {path: 'dataModel/:id', component: RecordModelLibraryComponent, data: {root: ':DM_DataModel'}, canActivate: [AuthGuard]},
 

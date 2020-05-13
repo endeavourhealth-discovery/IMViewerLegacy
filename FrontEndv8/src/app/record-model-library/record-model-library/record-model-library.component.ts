@@ -27,7 +27,7 @@ export class RecordModelLibraryComponent implements OnInit {
   searching = false;
   searchSize = 72;
   root: string;
-  relationships = ['sn:SN_116680003'];
+  relationships = [':SN_116680003'];
 
   getLevel = (node: TreeNode) => node.level;
   isExpandable = (node: TreeNode) => node.expandable;

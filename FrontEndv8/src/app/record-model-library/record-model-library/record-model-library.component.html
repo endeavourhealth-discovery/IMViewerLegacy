@@ -122,7 +122,6 @@
                             <th scope="col" class="mat-header-cell">Property</th>
                             <th scope="col" class="mat-header-cell">Card.</th>
                             <th scope="col" class="mat-header-cell">Type</th>
-                            <th scope="col" class="mat-header-cell">Inherits</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -130,7 +129,6 @@
                             <td class="mat-cell">{{p.property.name}}</td>
                             <td class="mat-cell">{{p.minCardinality}} : {{p.maxCardinality}}</td>
                             <td class="mat-cell">{{p.valueType.name}}</td>
-                            <td class="mat-cell"><span *ngIf="p.owner.iri != concept.iri">{{p.owner.name}}</span></td>
                           </tr>
                         </tbody>
                       </table>
