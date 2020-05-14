@@ -1,4 +1,4 @@
-package org.endeavourhealth.imviewer.api.publicendpoints;
+package org.endeavourhealth.imviewer.api.endpoints;
 
 import org.endeavourhealth.common.utility.MetricsHelper;
 import org.endeavourhealth.common.utility.MetricsTimer;
@@ -14,55 +14,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.util.List;
 
-@Path("/Viewer")
+@Path("/")
 public class ViewerEndpoint {
     private static final Logger LOG = LoggerFactory.getLogger(ViewerEndpoint.class);
-
-    @POST
-    @Path("/Authenticate")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response authenticate(@Context SecurityContext sc,
-                                 UserCredentials userCredentials) throws Exception {
-        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.authenticate")) {
-            LOG.debug("authenticate");
-
-            UserDetails result = new ViewerJDBCDAL().authenticate(userCredentials.getUsername(), userCredentials.getPassword());
-
-            if (result != null)
-                return Response
-                .ok()
-                .entity(result)
-                .build();
-            else
-                return Response
-                    .status(Response.Status.UNAUTHORIZED)
-                    .build();
-        }
-    }
-
-    @POST
-    @Path("/Register")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response register(@Context SecurityContext sc,
-                                 UserRegistration userRegistration) throws Exception {
-        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.register")) {
-            LOG.debug("register");
-
-            UserDetails result = new ViewerJDBCDAL().register(userRegistration);
-
-            if (result != null)
-                return Response
-                    .ok()
-                    .entity(result)
-                    .build();
-            else
-                return Response
-                    .status(Response.Status.UNAUTHORIZED)
-                    .build();
-        }
-    }
 
     @GET
     @Path("/Search")
@@ -77,9 +31,6 @@ public class ViewerEndpoint {
             LOG.debug("search");
 
             ViewerJDBCDAL dal = new ViewerJDBCDAL();
-            if (!dal.validate(authString))
-                return Response.status(Response.Status.UNAUTHORIZED).build();
-
             List<Concept> result = dal.search(term, root, relationships);
 
             return Response
@@ -100,9 +51,6 @@ public class ViewerEndpoint {
             LOG.debug("getConcept");
 
             ViewerJDBCDAL dal = new ViewerJDBCDAL();
-            if (!dal.validate(authString))
-                return Response.status(Response.Status.UNAUTHORIZED).build();
-
             Concept result = dal.getConcept(iri);
 
             return Response
@@ -125,9 +73,6 @@ public class ViewerEndpoint {
             LOG.debug("getTargets");
 
             ViewerJDBCDAL dal = new ViewerJDBCDAL();
-            if (!dal.validate(authString))
-                return Response.status(Response.Status.UNAUTHORIZED).build();
-
             List<RelatedConcept> result = dal.getTree(iri, root, relationships);
 
             return Response
@@ -148,9 +93,6 @@ public class ViewerEndpoint {
             LOG.debug("getProperties");
 
             ViewerJDBCDAL dal = new ViewerJDBCDAL();
-            if (!dal.validate(authString))
-                return Response.status(Response.Status.UNAUTHORIZED).build();
-
             List<Property> result = dal.getProperties(iri);
 
             return Response
@@ -171,9 +113,6 @@ public class ViewerEndpoint {
             LOG.debug("getDefinition");
 
             ViewerJDBCDAL dal = new ViewerJDBCDAL();
-            if (!dal.validate(authString))
-                return Response.status(Response.Status.UNAUTHORIZED).build();
-
             List<RelatedConcept> result = dal.getDefinition(iri);
 
             return Response
@@ -195,9 +134,6 @@ public class ViewerEndpoint {
             LOG.debug("getSources");
 
             ViewerJDBCDAL dal = new ViewerJDBCDAL();
-            if (!dal.validate(authString))
-                return Response.status(Response.Status.UNAUTHORIZED).build();
-
             List<RelatedConcept> result = dal.getSources(iri, relationships);
 
             return Response

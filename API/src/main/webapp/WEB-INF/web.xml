@@ -26,6 +26,27 @@
     <url-pattern>/public/*</url-pattern>
   </servlet-mapping>
 
+  <!-- ===== Private API SERVLET ===== -->
+  <servlet>
+    <servlet-name>Private Resources</servlet-name>
+    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>jersey.config.server.provider.packages</param-name>
+      <param-value>org.endeavourhealth.imviewer.api.endpoints</param-value>
+    </init-param>
+    <init-param>
+      <param-name>jersey.config.server.provider.classnames</param-name>
+      <param-value>org.glassfish.jersey.jackson.JacksonFeature,
+        org.endeavourhealth.ui.framework.exceptions.BaseExceptionMapper</param-value>
+    </init-param>
+
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>Private Resources</servlet-name>
+    <url-pattern>/api/*</url-pattern>
+  </servlet-mapping>
 
   <!-- ===== STARTUP ===== -->
   <context-param>
@@ -38,6 +59,17 @@
       org.endeavourhealth.coreui.framework.StartupConfig
     </listener-class>
   </listener>
+
+  <!-- ===== COGNITO FILTERING ===== -->
+  <filter>
+    <filter-name>CognitoFilter</filter-name>
+    <filter-class>org.endeavourhealth.imviewer.api.CognitoFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>CognitoFilter</filter-name>
+    <url-pattern>/api/*</url-pattern>
+  </filter-mapping>
+
 
   <!-- ===== CORS FILTERING ===== -->
   <filter>

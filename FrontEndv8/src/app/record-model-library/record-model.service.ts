@@ -13,11 +13,11 @@ export class RecordModelService {
   constructor(private http: HttpClient) { }
 
   getProperties(iri: string): Observable<Property[]> {
-    return this.http.get<Property[]>('public/Viewer/' + iri + '/Properties');
+    return this.http.get<Property[]>('api/' + iri + '/Properties');
   }
 
   getDefinition(iri: string): Observable<Related[]> {
-    return this.http.get<Related[]>('public/Viewer/' + iri + '/Definition');
+    return this.http.get<Related[]>('api/' + iri + '/Definition');
   }
 
   getSources(iri: string, relationships: string[]): Observable<Related[]> {
@@ -26,11 +26,11 @@ export class RecordModelService {
       relationships.forEach(r => params = params.append('relationship', r));
     }
 
-    return this.http.get<Related[]>('public/Viewer/' + iri + '/Sources', {params});
+    return this.http.get<Related[]>('api/' + iri + '/Sources', {params});
   }
 
   getConcept(iri: string): Observable<Concept> {
-    return this.http.get<Concept>('public/Viewer/' + iri);
+    return this.http.get<Concept>('api/' + iri);
   }
 
   search(searchTerm: string, root: string, relationships: string[]) {
@@ -41,7 +41,7 @@ export class RecordModelService {
       relationships.forEach(r => params = params.append('relationship', r));
     }
 
-    return this.http.get<any>('public/Viewer/Search', {params});
+    return this.http.get<any>('api/Search', {params});
   }
 
   loadTree(root: string, iri: string, relationships: string[]) {
@@ -51,6 +51,6 @@ export class RecordModelService {
       relationships.forEach(r => params = params.append('relationship', r));
     }
 
-    return this.http.get<Related[]>('public/Viewer/' + iri + '/Tree', {params});
+    return this.http.get<Related[]>('api/' + iri + '/Tree', {params});
   }
 }

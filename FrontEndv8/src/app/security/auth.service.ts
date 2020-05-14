@@ -19,7 +19,7 @@ export class AuthenticationService {
   }
 
   login(username: string, password: string) {
-    return this.http.post<User>('public/Viewer/Authenticate', { username, password })
+    return this.http.post<User>('public/Authenticate', { username, password })
       .pipe(map(user => {
         // store user details and basic auth credentials in local storage to keep user logged in between page refreshes
         // user.authData = window.btoa(username + ':' + user.token);
@@ -35,7 +35,7 @@ export class AuthenticationService {
       lastName,
       password
     };
-    return this.http.post<User>('public/Viewer/Register', body)
+    return this.http.post<User>('public/Register', body)
       .pipe(map(user => {
         // store user details and basic auth credentials in local storage to keep user logged in between page refreshes
         // user.authData = window.btoa(username + ':' + user.token);
