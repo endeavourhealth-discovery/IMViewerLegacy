@@ -20,12 +20,22 @@ import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {FlexModule} from '@angular/flex-layout';
 
+/* Add Amplify imports */
+import Amplify from 'aws-amplify';
+import awsconfig from '../aws-exports';
+import {SecurityModule} from './security/security.module';
+import {ConfirmComponent} from './security/confirm/confirm.component';
+
+/* Configure Amplify resources */
+Amplify.configure(awsconfig);
+
 @NgModule({
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
 
     HttpClientModule,
+    SecurityModule,
     RecordModelModule,
 
     RouterModule.forRoot([
@@ -37,6 +47,7 @@ import {FlexModule} from '@angular/flex-layout';
 
         {path: 'login', component: LoginComponent},
         {path: 'register', component: RegisterComponent},
+        {path: 'confirm/:username', component: ConfirmComponent},
       ],
       {useHash: true}),
     FormsModule,
@@ -51,7 +62,7 @@ import {FlexModule} from '@angular/flex-layout';
     { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
-  declarations: [AppRoot, LoginComponent, RegisterComponent],
+  declarations: [AppRoot],
   bootstrap: [AppRoot],
 })
 export class AppModule { }

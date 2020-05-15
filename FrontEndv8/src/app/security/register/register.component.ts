@@ -9,10 +9,8 @@ import {Router} from '@angular/router';
 })
 export class RegisterComponent implements OnInit {
   username: string;
-  password1: string;
-  password2: string;
-  firstName: string;
-  lastName: string;
+  password: string;
+  email: string;
   loading: boolean;
   error: string;
 
@@ -22,21 +20,12 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.password1 !== this.password2) {
-      this.error = 'Passwords do not match';
-      return;
-    }
-
-    this.authSvc.register(this.username, this.firstName, this.lastName, this.password1).subscribe(
-      (data) => {
-        if (data.token) {
-          this.router.navigate(['']);
-        } else {
-          this.error = data.message;
-          this.loading = false;
-        }
+    this.authSvc.register(this.username, this.password, this.email).subscribe(
+      (result) => {
+          this.router.navigate(['confirm', this.username]);
       },
       (error) => {
+        this.error = error.message;
       }
     );
   }

@@ -29,27 +29,23 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
+    this.error = '';
     // stop here if form is invalid
     if (!this.valid()) {
       return;
     }
 
-    this.loading = true;
-    this.authenticationService.login(this.username, this.password)
-      .pipe(first())
-      .subscribe(
-        data => {
-          if (data.token) {
-            this.router.navigate([this.returnUrl]);
-          } else {
-            this.error = data.message;
-            this.loading = false;
-          }
-        },
-        error => {
-          this.error = error;
-          this.loading = false;
-        });
+//    this.loading = true;
+
+    this.authenticationService.login(this.username, this.password).subscribe(
+      (result) => this.router.navigate([this.returnUrl]),
+      (error) => {
+        if (error.message === 'User is not confirmed.')
+          this.router.navigate(['confirm', this.username]);
+        else
+          this.error = error.message;
+      }
+    );
   }
 
   valid(): boolean {

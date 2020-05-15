@@ -1,54 +1,58 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import {User} from './User';
+import { Auth } from 'aws-amplify';
+import { from } from 'rxjs/internal/observable/from';
+import { SignUpParams } from '@aws-amplify/auth/lib-esm/types';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
   constructor(private http: HttpClient) {
   }
 
-  public getUser(): User {
+  public getUser(): any {
     return JSON.parse(localStorage.getItem('currentUser'));
   }
 
   public getToken(): string {
     const u = this.getUser();
-    return window.btoa(u.username + ':' + u.token);
+    return u.signInUserSession.accessToken.jwtToken;
   }
 
   login(username: string, password: string) {
-    return this.http.post<User>('public/Authenticate', { username, password })
-      .pipe(map(user => {
-        // store user details and basic auth credentials in local storage to keep user logged in between page refreshes
-        // user.authData = window.btoa(username + ':' + user.token);
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        return user;
-      }));
+    return from(Auth.signIn(username, password))
+      .pipe(
+        map(user => {
+          localStorage.setItem('currentUser', JSON.stringify(user));
+        })
+      );
   }
 
-  register(username: string, firstName: string, lastName: string, password: string) {
-    const body = {
-      username,
-      firstName,
-      lastName,
-      password
+  register(username: string, password: string, email: string) {
+    const params: SignUpParams = {
+      username: username,
+      password: password,
+      attributes: {
+        email: email
+      }
     };
-    return this.http.post<User>('public/Register', body)
-      .pipe(map(user => {
-        // store user details and basic auth credentials in local storage to keep user logged in between page refreshes
-        // user.authData = window.btoa(username + ':' + user.token);
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        return user;
-      }));
+    return from(Auth.signUp(params));
+  }
+
+  confirm(username: string, code: string) {
+    return from(Auth.confirmSignUp(username, code));
   }
 
 
-  logout() {
+  async logout() {
     // remove user from local storage to log user out
-    console.log('Logging out');
-    localStorage.removeItem('currentUser');
-    location.reload(true);
+    try {
+      console.log('Logging out');
+      const user = await Auth.signOut();
+      localStorage.removeItem('currentUser');
+      location.reload(true);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

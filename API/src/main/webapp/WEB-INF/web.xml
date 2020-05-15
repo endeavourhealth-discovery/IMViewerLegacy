@@ -64,6 +64,14 @@
   <filter>
     <filter-name>CognitoFilter</filter-name>
     <filter-class>org.endeavourhealth.imviewer.api.CognitoFilter</filter-class>
+    <init-param>
+      <param-name>region</param-name>
+      <param-value>eu-west-2</param-value>
+    </init-param>
+    <init-param>
+      <param-name>pool</param-name>
+      <param-value>eu-west-2_9KWXGWs8l</param-value>
+    </init-param>
   </filter>
   <filter-mapping>
     <filter-name>CognitoFilter</filter-name>

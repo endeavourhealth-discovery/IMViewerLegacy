@@ -16,7 +16,7 @@
         <mat-label>Password</mat-label>
         <input type="password" matInput [(ngModel)]="password" placeholder="Password" id="password" (keyup.enter)="onSubmit()">
       </mat-form-field>
-      <div *ngIf="error" class="alert alert-danger mt-3 mb-0">{{error}}</div>
+      <mat-error *ngIf="error" class="error.main">{{error}}</mat-error>
     </mat-card-content>
     <mat-card-footer style="margin: 16px" align="end">
       <button mat-flat-button (click)="register()">Create account</button>

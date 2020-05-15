@@ -1,0 +1,20 @@
+{
+    "angular": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-frontendv8-angular-131400-authRole",
+            "UnauthRoleArn": "arn:aws:iam::566049556229:role/amplify-frontendv8-angular-131400-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::566049556229:role/amplify-frontendv8-angular-131400-authRole",
+            "Region": "eu-west-2",
+            "DeploymentBucketName": "amplify-frontendv8-angular-131400-deployment",
+            "UnauthRoleName": "amplify-frontendv8-angular-131400-unauthRole",
+            "StackName": "amplify-frontendv8-angular-131400",
+            "StackId": "arn:aws:cloudformation:eu-west-2:566049556229:stack/amplify-frontendv8-angular-131400/65e59570-95dc-11ea-865c-0622cd7b28da",
+            "AmplifyAppId": "d3c4xswexxnkfh"
+        },
+        "categories": {
+            "auth": {
+                "frontendv8b7ee5bea": {}
+            }
+        }
+    }
+}

@@ -18,22 +18,22 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [RecordModelLibraryComponent],
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatFormFieldModule,
-    FormsModule,
-    MatInputModule,
-    FlexModule,
-    AngularSplitModule,
-    MatTreeModule,
-    MatProgressBarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTableModule,
-    MatSnackBarModule,
-    ControlsModule,
+    imports: [
+        CommonModule,
+        MatCardModule,
+        MatFormFieldModule,
+        FormsModule,
+        MatInputModule,
+        FlexModule,
+        AngularSplitModule,
+        MatTreeModule,
+        MatProgressBarModule,
+        MatIconModule,
+        MatButtonModule,
+        MatTableModule,
+        MatSnackBarModule,
+        ControlsModule,
     LoggerModule
-  ]
+    ]
 })
 export class RecordModelModule { }
