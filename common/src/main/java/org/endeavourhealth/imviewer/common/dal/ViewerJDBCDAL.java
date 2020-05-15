@@ -1,16 +1,9 @@
 package org.endeavourhealth.imviewer.common.dal;
 
 import org.endeavourhealth.imviewer.common.models.*;
-import sun.misc.BASE64Decoder;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 
 public class ViewerJDBCDAL {
@@ -186,117 +179,5 @@ public class ViewerJDBCDAL {
         } finally {
             ConnectionPool.getInstance().push(conn);
         }
-    }
-
-    public UserDetails authenticate(String username, String password) throws SQLException, NoSuchAlgorithmException {
-        UserDetails result = new UserDetails()
-            .setUsername(username);
-
-        String token = UUID.randomUUID().toString();
-
-        Connection conn = ConnectionPool.getInstance().pop();
-        try {
-            try (PreparedStatement stmt = conn.prepareStatement("SELECT first_name, last_name FROM users WHERE username = ? AND password = ?")) {
-                stmt.setString(1, username);
-                stmt.setString(2, passwordHash(password));
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (!rs.next())
-                        return result.setMessage("Incorrect username/password");
-
-                    result.setFirstName(rs.getString("first_name"))
-                        .setLastName(rs.getString("last_name"));
-                }
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement("UPDATE users SET token = ? WHERE username = ? AND password = ?")) {
-                stmt.setString(1, token);
-                stmt.setString(2, username);
-                stmt.setString(3, passwordHash(password));
-
-                if (stmt.executeUpdate() != 1)
-                    return result.setMessage("Unable to generate token");
-            }
-
-            return result.setToken(token);
-        } finally {
-            ConnectionPool.getInstance().push(conn);
-        }
-    }
-
-    public UserDetails register(UserRegistration userRegistration) throws SQLException, NoSuchAlgorithmException {
-        Connection conn = ConnectionPool.getInstance().pop();
-        try {
-            try (PreparedStatement stmt = conn.prepareStatement("INSERT INTO users (username, first_name, last_name, password) VALUES (?, ?, ?, ?)")) {
-                stmt.setString(1, userRegistration.getUsername());
-                stmt.setString(2, userRegistration.getFirstName());
-                stmt.setString(3, userRegistration.getLastName());
-                stmt.setString(4, passwordHash(userRegistration.getPassword()));
-                try {
-                    stmt.executeUpdate();
-                    return authenticate(userRegistration.getUsername(), userRegistration.getPassword());
-                } catch (SQLIntegrityConstraintViolationException e) {
-                    return userRegistration.setMessage("User name already exists");
-                } catch (Exception e) {
-                    return userRegistration.setMessage(e.toString());
-                }
-            }
-        } finally {
-            ConnectionPool.getInstance().push(conn);
-        }
-    }
-
-    public boolean validate(String authString) throws SQLException {
-        if (authString == null)
-            return false;
-
-        try {
-            String decodedAuth = "";
-            // Header is in the format "Basic 5tyc0uiDat4"
-            // We need to extract data before decoding it back to original string
-            String[] authParts = authString.split("\\s+");
-            String authInfo = authParts[1];
-            // Decode the data back to original string
-            byte[] bytes = null;
-            try {
-                bytes = new BASE64Decoder().decodeBuffer(authInfo);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            decodedAuth = new String(bytes);
-            authParts = decodedAuth.split(":");
-
-            String username = authParts[0];
-            String token = authParts[1];
-
-            Connection conn = ConnectionPool.getInstance().pop();
-            try {
-                try (PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM users WHERE username = ? AND token = ?")) {
-                    stmt.setString(1, username);
-                    stmt.setString(2, token);
-                    try (ResultSet rs = stmt.executeQuery()) {
-                        return rs.next();
-                    }
-                }
-            } finally {
-                ConnectionPool.getInstance().push(conn);
-            }
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private String passwordHash(String password) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-
-        byte[] hash = digest.digest(
-            password.getBytes(StandardCharsets.UTF_8));
-        StringBuilder hexString = new StringBuilder();
-        for (byte b : hash) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) hexString.append('0');
-            hexString.append(hex);
-        }
-        return hexString.toString();
     }
 }
