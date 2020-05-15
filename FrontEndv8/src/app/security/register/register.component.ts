@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {AuthenticationService} from '../auth.service';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -13,16 +13,21 @@ export class RegisterComponent implements OnInit {
   email: string;
   loading: boolean;
   error: string;
+  returnUrl: string;
 
-  constructor(private authSvc: AuthenticationService, private router: Router) { }
+  constructor(private authSvc: AuthenticationService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit() {
+    this.returnUrl = this.route.snapshot.queryParams.returnUrl || '/';
+    this.route.params.subscribe(
+      (params) => this.username = params.username
+    );
   }
 
   onSubmit() {
     this.authSvc.register(this.username, this.password, this.email).subscribe(
       (result) => {
-          this.router.navigate(['confirm', this.username]);
+          this.router.navigate(['confirm', this.username], { queryParams: { returnUrl: this.returnUrl } });
       },
       (error) => {
         this.error = error.message;

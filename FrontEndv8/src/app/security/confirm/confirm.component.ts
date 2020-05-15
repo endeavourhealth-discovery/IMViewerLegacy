@@ -11,10 +11,12 @@ export class ConfirmComponent implements OnInit {
   username: string;
   code: string;
   error: string;
+  returnUrl: string;
 
   constructor(private authSvc: AuthenticationService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit() {
+    this.returnUrl = this.route.snapshot.queryParams.returnUrl || '/';
     this.route.params.subscribe(
       (params) => this.username = params.username
     );
@@ -23,7 +25,7 @@ export class ConfirmComponent implements OnInit {
   onSubmit() {
     this.error = '';
     this.authSvc.confirm(this.username, this.code).subscribe(
-      (result) => this.router.navigate(['/login']),
+      (result) => this.router.navigate(['/login', this.username], {queryParams: {returnUrl: this.returnUrl}}),
       (error) => this.error = error.message
     );
   }

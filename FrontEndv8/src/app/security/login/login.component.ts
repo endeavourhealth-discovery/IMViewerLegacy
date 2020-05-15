@@ -25,6 +25,10 @@ export class LoginComponent implements OnInit {
     this.returnUrl = this.route.snapshot.queryParams.returnUrl || '/';
     if (this.authenticationService.getUser()) {
       this.router.navigate([this.returnUrl]);
+    } else {
+      this.route.params.subscribe(
+        (params) => this.username = params.username
+      );
     }
   }
 
@@ -35,15 +39,17 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-//    this.loading = true;
+    this.loading = true;
 
     this.authenticationService.login(this.username, this.password).subscribe(
       (result) => this.router.navigate([this.returnUrl]),
       (error) => {
-        if (error.message === 'User is not confirmed.')
-          this.router.navigate(['confirm', this.username]);
-        else
+        this.loading = false;
+        if (error.message === 'User is not confirmed.') {
+          this.router.navigate(['confirm', this.username], {queryParams: {returnUrl: this.returnUrl}});
+        } else {
           this.error = error.message;
+        }
       }
     );
   }
@@ -54,6 +60,6 @@ export class LoginComponent implements OnInit {
   }
 
   register() {
-    this.router.navigate(['register'], { queryParams: { returnUrl: this.returnUrl } });
+    this.router.navigate(['register', this.username], { queryParams: { returnUrl: this.returnUrl } });
   }
 }
