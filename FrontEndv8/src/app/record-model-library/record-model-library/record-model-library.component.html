@@ -16,7 +16,7 @@
         <as-split-area size="30">
           <as-split direction="vertical" unit="pixel">
             <as-split-area [size]="searchSize" minSize="72" style="height: 100%; overflow: hidden">
-              <div class="as-split-area-content">
+              <div class="as-split-area-content" style="height: inherit">
                 <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Search terms</mat-label>
                   <input matInput [(ngModel)]="searchTerm" placeholder="<Enter> to search" (keyup.enter)="search()" [disabled]="searching" id="searchInput">
