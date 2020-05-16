@@ -60,6 +60,10 @@ export class LoginComponent implements OnInit {
   }
 
   register() {
-    this.router.navigate(['register', this.username], { queryParams: { returnUrl: this.returnUrl } });
+    if (this.username && this.username !== '') {
+      this.router.navigate(['register', this.username], {queryParams: {returnUrl: this.returnUrl}});
+    } else {
+      this.router.navigate(['register'], {queryParams: {returnUrl: this.returnUrl}});
+    }
   }
 }

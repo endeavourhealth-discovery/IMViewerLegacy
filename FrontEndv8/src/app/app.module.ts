@@ -46,7 +46,9 @@ Amplify.configure(awsconfig);
         {path: 'dataModel/:id', component: RecordModelLibraryComponent, data: {root: ':DM_DataModel'}, canActivate: [AuthGuard]},
 
         {path: 'login', component: LoginComponent},
+        {path: 'login/:username', component: LoginComponent},
         {path: 'register', component: RegisterComponent},
+        {path: 'register/:username', component: RegisterComponent},
         {path: 'confirm/:username', component: ConfirmComponent},
       ],
       {useHash: true}),
