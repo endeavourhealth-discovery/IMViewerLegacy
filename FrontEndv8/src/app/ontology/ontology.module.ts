@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RecordModelLibraryComponent } from './record-model-library/record-model-library.component';
 import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormsModule} from '@angular/forms';
@@ -15,9 +14,11 @@ import {MatTableModule} from '@angular/material/table';
 import {ControlsModule} from 'dds-angular8/controls';
 import {LoggerModule} from 'dds-angular8/logger';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {ComponentsModule} from '../components/components.module';
+import {OntologyLibraryComponent} from './ontology-library/ontology-library.component';
 
 @NgModule({
-  declarations: [RecordModelLibraryComponent],
     imports: [
         CommonModule,
         MatCardModule,
@@ -33,7 +34,12 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
         MatTableModule,
         MatSnackBarModule,
         ControlsModule,
-    LoggerModule
-    ]
+        LoggerModule,
+        MatTooltipModule,
+        ComponentsModule
+    ],
+  declarations: [
+    OntologyLibraryComponent
+  ]
 })
-export class RecordModelModule { }
+export class OntologyModule { }

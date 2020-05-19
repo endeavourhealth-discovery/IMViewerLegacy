@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RecordModelLibraryComponent } from './record-model-library.component';
+import { DataModelLibraryComponent } from './data-model-library.component';
 import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormsModule} from '@angular/forms';
@@ -10,19 +10,19 @@ import {MatTreeModule} from '@angular/material/tree';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatIconModule} from '@angular/material/icon';
 import {ControlsModule} from 'dds-angular8/controls';
-import {RecordModelService} from '../record-model.service';
+import {ConceptService} from '../../concept.service';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {LoggerModule} from 'dds-angular8/logger';
 
 describe('RecordModelLibraryComponent', () => {
-  let component: RecordModelLibraryComponent;
-  let fixture: ComponentFixture<RecordModelLibraryComponent>;
+  let component: DataModelLibraryComponent;
+  let fixture: ComponentFixture<DataModelLibraryComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RecordModelLibraryComponent ],
+      declarations: [ DataModelLibraryComponent ],
         imports: [
           MatCardModule,
           MatFormFieldModule,
@@ -39,13 +39,13 @@ describe('RecordModelLibraryComponent', () => {
           HttpClientTestingModule,
           RouterTestingModule
         ],
-      providers: [RecordModelService]
+      providers: [ConceptService]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RecordModelLibraryComponent);
+    fixture = TestBed.createComponent(DataModelLibraryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

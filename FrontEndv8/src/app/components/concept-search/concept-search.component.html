@@ -1,0 +1,14 @@
+<mat-form-field appearance="outline" style="width: 100%">
+  <mat-label>Search terms</mat-label>
+  <input matInput [(ngModel)]="searchTerm" placeholder="<Enter> to search" (keyup.enter)="search()" [disabled]="searching" id="searchInput">
+  <mat-icon matSuffix (click)="clear()" style="cursor: pointer">clear</mat-icon>
+</mat-form-field>
+<div style="height: calc(100% - 85px); overflow-y: auto">
+  <table class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" id="searchResults" aria-hidden="true">
+    <tbody>
+      <tr *ngFor="let p of searchResults" class="mat-row hover-highlight" (click)="selectResult(p)">
+        <td class="mat-cell">{{p.name}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

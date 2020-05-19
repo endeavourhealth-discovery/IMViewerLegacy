@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Concept} from '../models/Concept';
-import {Related} from '../models/Related';
-import {Property} from '../models/Property';
+import {Concept} from './models/Concept';
+import {Related} from './models/Related';
+import {Property} from './models/Property';
 
 @Injectable({
   providedIn: 'root'
 })
-export class RecordModelService {
+export class ConceptService {
 
   constructor(private http: HttpClient) { }
 

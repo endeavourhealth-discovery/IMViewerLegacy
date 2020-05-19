@@ -58,6 +58,16 @@ $teal-theme: mat-light-theme($teal-primary, $teal-accent, $teal-warn);
 }
 
 // TODO: Move to common/ng8
+div#home-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;                        /*  changed  */
+  border: 16px solid transparent;
+  box-sizing: border-box;               /*  added, to avoid scroll and make
+                                              border size be included in set height  */
+}
+
 .mat-form-field-flex {
   min-height: 54px;
 }

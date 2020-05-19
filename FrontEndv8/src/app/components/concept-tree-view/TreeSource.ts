@@ -2,9 +2,9 @@ import {TreeNode} from '../../models/TreeNode';
 import {CollectionViewer, DataSource, SelectionChange} from '@angular/cdk/collections';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {RecordModelService} from '../record-model.service';
 import {map} from 'rxjs/operators';
 import {LoggerService} from 'dds-angular8/logger';
+import {ConceptService} from '../../concept.service';
 
 export class TreeSource implements DataSource<TreeNode> {
 
@@ -17,7 +17,7 @@ export class TreeSource implements DataSource<TreeNode> {
   }
 
   constructor(private treeControl: FlatTreeControl<TreeNode>,
-              private database: RecordModelService,
+              private database: ConceptService,
               private log: LoggerService,
               private relationships: string[]) {}
 

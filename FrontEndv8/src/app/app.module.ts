@@ -1,8 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import {RecordModelLibraryComponent} from './record-model-library/record-model-library/record-model-library.component';
-import {RecordModelModule} from './record-model-library/record-model.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {RouterModule} from '@angular/router';
@@ -25,6 +23,15 @@ import Amplify from 'aws-amplify';
 import awsconfig from '../aws-exports';
 import {SecurityModule} from './security/security.module';
 import {ConfirmComponent} from './security/confirm/confirm.component';
+import {MainPageModule} from './main-page/main-page.module';
+import {MainPageComponent} from './main-page/main-page.component';
+import {ComponentsModule} from './components/components.module';
+import {DataModelModule} from './data-model/data-model.module';
+import {DataModelLibraryComponent} from './data-model/data-model-library/data-model-library.component';
+import {ValueSetModule} from './value-sets/value-set.module';
+import {ValueSetLibraryComponent} from './value-sets/value-set-library/value-set-library.component';
+import {OntologyModule} from './ontology/ontology.module';
+import {OntologyLibraryComponent} from './ontology/ontology-library/ontology-library.component';
 
 /* Configure Amplify resources */
 Amplify.configure(awsconfig);
@@ -36,20 +43,31 @@ Amplify.configure(awsconfig);
 
     HttpClientModule,
     SecurityModule,
-    RecordModelModule,
+    ComponentsModule,
+    MainPageModule,
+    OntologyModule,
+    DataModelModule,
+    ValueSetModule,
 
     RouterModule.forRoot([
-        {path: '', redirectTo: '/recordModel', pathMatch: 'full', canActivate: [AuthGuard]},
-        {path: 'recordModel', component: RecordModelLibraryComponent, data: {root: ':DM_RecordModel'}, canActivate: [AuthGuard]},
-        {path: 'recordModel/:id', component: RecordModelLibraryComponent, data: {root: ':DM_RecordModel'}, canActivate: [AuthGuard]},
-        {path: 'dataModel', component: RecordModelLibraryComponent, data: {root: ':DM_DataModel'}, canActivate: [AuthGuard]},
-        {path: 'dataModel/:id', component: RecordModelLibraryComponent, data: {root: ':DM_DataModel'}, canActivate: [AuthGuard]},
+        {path: '', redirectTo: '/mainPage', pathMatch: 'full', canActivate: [AuthGuard]},
 
         {path: 'login', component: LoginComponent},
         {path: 'login/:username', component: LoginComponent},
         {path: 'register', component: RegisterComponent},
         {path: 'register/:username', component: RegisterComponent},
         {path: 'confirm/:username', component: ConfirmComponent},
+
+        {path: 'mainPage', component: MainPageComponent, canActivate: [AuthGuard]},
+
+        {path: 'ontology', component: OntologyLibraryComponent, canActivate: [AuthGuard]},
+        {path: 'ontology/:id', component: OntologyLibraryComponent, canActivate: [AuthGuard]},
+
+        {path: 'dataModel', component: DataModelLibraryComponent, canActivate: [AuthGuard]},
+        {path: 'dataModel/:id', component: DataModelLibraryComponent, canActivate: [AuthGuard]},
+
+        {path: 'valueSets', component: ValueSetLibraryComponent, canActivate: [AuthGuard]},
+        {path: 'valueSets/:id', component: ValueSetLibraryComponent, canActivate: [AuthGuard]},
       ],
       {useHash: true}),
     FormsModule,
