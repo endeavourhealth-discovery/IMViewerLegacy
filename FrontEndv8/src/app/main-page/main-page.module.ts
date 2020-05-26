@@ -7,6 +7,7 @@ import {MatRippleModule} from '@angular/material/core';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatButtonModule} from '@angular/material/button';
 import {RouterModule} from '@angular/router';
+import {ComponentsModule} from '../components/components.module';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import {RouterModule} from '@angular/router';
         MatRippleModule,
         MatTooltipModule,
         MatButtonModule,
-        RouterModule
+        RouterModule,
+        ComponentsModule
     ]
 })
 export class MainPageModule { }

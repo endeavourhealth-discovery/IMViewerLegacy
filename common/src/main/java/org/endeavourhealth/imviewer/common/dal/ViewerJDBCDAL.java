@@ -34,7 +34,7 @@ public class ViewerJDBCDAL {
         }
     }
 
-    public List<RelatedConcept> getSources(String iri, List<String> relationships) throws SQLException {
+    public List<RelatedConcept> getSources(String iri, List<String> relationships, int limit, int page) throws SQLException {
         Connection conn = ConnectionPool.getInstance().pop();
 
         String sql = "SELECT p.iri AS r_iri, p.name AS r_name, c.iri AS c_iri, c.name AS c_name\n" +
@@ -44,7 +44,14 @@ public class ViewerJDBCDAL {
             "JOIN concept c ON c.id = o.concept\n";
 
         if (relationships != null && !relationships.isEmpty())
-            sql += "WHERE p.iri IN (" + DALHelper.inListParams(relationships.size()) + ")";
+            sql += "WHERE p.iri IN (" + DALHelper.inListParams(relationships.size()) + ")\n";
+
+        if (limit > 0) {
+            sql += "LIMIT ?";
+            if (page > 0) {
+                sql += ",?";
+            }
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             int i = 1;
@@ -53,6 +60,15 @@ public class ViewerJDBCDAL {
             if (relationships != null)
                 for(String relationship: relationships)
                     stmt.setString(i++, relationship);
+
+            if (limit > 0) {
+                if (page == 0) {
+                    stmt.setInt(i++, limit);
+                } else {
+                    stmt.setInt(i++, (page - 1) * limit);
+                    stmt.setInt(i++, limit);
+                }
+            }
 
             try(ResultSet rs = stmt.executeQuery()) {
                 return Hydrator.createRelatedConceptList(rs);

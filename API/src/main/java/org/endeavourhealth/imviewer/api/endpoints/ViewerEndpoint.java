@@ -25,8 +25,7 @@ public class ViewerEndpoint {
     public Response search(@Context SecurityContext sc,
                            @QueryParam("root") String root,
                            @QueryParam("term") String term,
-                           @QueryParam("relationship") List<String> relationships,
-                           @HeaderParam("authorization") String authString) throws Exception {
+                           @QueryParam("relationship") List<String> relationships) throws Exception {
         try (MetricsTimer t = MetricsHelper.recordTime("Viewer.search")) {
             LOG.debug("search");
 
@@ -45,8 +44,7 @@ public class ViewerEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getConcept(@Context SecurityContext sc,
-                               @PathParam("iri") String iri,
-                               @HeaderParam("authorization") String authString) throws Exception {
+                               @PathParam("iri") String iri) throws Exception {
         try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getConcept")) {
             LOG.debug("getConcept");
 
@@ -67,8 +65,7 @@ public class ViewerEndpoint {
     public Response getTree(@Context SecurityContext sc,
                                @PathParam("iri") String iri,
                                @QueryParam("root") String root,
-                               @QueryParam("relationship") List<String> relationships,
-                            @HeaderParam("authorization") String authString) throws Exception {
+                               @QueryParam("relationship") List<String> relationships) throws Exception {
         try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getTargets")) {
             LOG.debug("getTargets");
 
@@ -87,8 +84,7 @@ public class ViewerEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProperties(@Context SecurityContext sc,
-                               @PathParam("iri") String iri,
-                                  @HeaderParam("authorization") String authString) throws Exception {
+                               @PathParam("iri") String iri) throws Exception {
         try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getProperties")) {
             LOG.debug("getProperties");
 
@@ -107,8 +103,7 @@ public class ViewerEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDefinition(@Context SecurityContext sc,
-                               @PathParam("iri") String iri,
-                                  @HeaderParam("authorization") String authString) throws Exception {
+                               @PathParam("iri") String iri) throws Exception {
         try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getDefinition")) {
             LOG.debug("getDefinition");
 
@@ -129,12 +124,17 @@ public class ViewerEndpoint {
     public Response getSources(@Context SecurityContext sc,
                                @PathParam("iri") String iri,
                                @QueryParam("relationship") List<String> relationships,
-                               @HeaderParam("authorization") String authString) throws Exception {
+                               @QueryParam("limit") Integer limit,
+                               @QueryParam("page") Integer page) throws Exception {
+
+        limit = (limit == null) ? 0 : limit;
+        page = (page == null) ? 0 : page;
+
         try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getSources")) {
             LOG.debug("getSources");
 
             ViewerJDBCDAL dal = new ViewerJDBCDAL();
-            List<RelatedConcept> result = dal.getSources(iri, relationships);
+            List<RelatedConcept> result = dal.getSources(iri, relationships, limit, page);
 
             return Response
                 .ok()

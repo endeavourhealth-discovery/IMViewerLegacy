@@ -43,7 +43,7 @@ public class CognitoFilter implements Filter {
             Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
 
             Verification verifier = JWT.require(algorithm);
-            verifier.build().verify(decodedJWT);
+            verifier.acceptLeeway(30 * 1000).build().verify(decodedJWT);
 
             validateToken(jwt);
 
@@ -59,6 +59,8 @@ public class CognitoFilter implements Filter {
             HttpPost post = new HttpPost("https://cognito-idp." + this.region + ".amazonaws.com/");
             post.addHeader("x-amz-target", "AWSCognitoIdentityProviderService.GetUser");
             post.addHeader("content-type", "application/x-amz-json-1.1");
+            post.addHeader("Prama", "no-cache");
+            post.addHeader("Cache-Control", "no-cache");
             post.setEntity(new StringEntity("{ \"AccessToken\": \"" + token + "\" }"));
             try (CloseableHttpResponse response = client.execute(post)) {
                 if (response.getStatusLine().getStatusCode() != 200)

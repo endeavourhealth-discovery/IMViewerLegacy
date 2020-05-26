@@ -16,8 +16,6 @@ import {ConceptTreeViewComponent} from '../../components/concept-tree-view/conce
 })
 export class DataModelLibraryComponent implements OnInit {
   concept: Concept;
-  definition: Related[];
-  properties: Property[];
   selectedNode: TreeNode;
   searchSize = 72;
   root = ':DM_DataModel';
@@ -49,16 +47,6 @@ export class DataModelLibraryComponent implements OnInit {
     this.selectedNode = node;
     this.service.getConcept(node.id).subscribe(
       (result) => this.concept = result,
-      (error) => this.log.error(error)
-    );
-
-    this.service.getDefinition(node.id).subscribe(
-      (result) => this.definition = result,
-      (error) => this.log.error(error)
-    );
-
-    this.service.getProperties(node.id).subscribe(
-      (result) => this.properties = result,
       (error) => this.log.error(error)
     );
   }

@@ -20,11 +20,13 @@ export class ConceptService {
     return this.http.get<Related[]>('api/' + iri + '/Definition');
   }
 
-  getSources(iri: string, relationships: string[]): Observable<Related[]> {
+  getSources(iri: string, relationships: string[], limit: number = 0, page: number = 1): Observable<Related[]> {
     let params = new HttpParams();
     if (relationships != null) {
       relationships.forEach(r => params = params.append('relationship', r));
     }
+    params = params.append('limit', limit.toString());
+    params = params.append('page', page.toString());
 
     return this.http.get<Related[]>('api/' + iri + '/Sources', {params});
   }

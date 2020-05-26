@@ -4,9 +4,11 @@ import { map } from 'rxjs/operators';
 import { Auth } from 'aws-amplify';
 import { from } from 'rxjs/internal/observable/from';
 import { SignUpParams } from '@aws-amplify/auth/lib-esm/types';
+const debug = (message: string) => {}; // console.log(message);
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
+
   constructor(private http: HttpClient) {
   }
 
@@ -16,13 +18,16 @@ export class AuthenticationService {
 
   public getToken(): string {
     const u = this.getUser();
+    debug('Token: ' + u.signInUserSession.accessToken.jwtToken);
     return u.signInUserSession.accessToken.jwtToken;
   }
 
   login(username: string, password: string) {
+    debug('logging in');
     return from(Auth.signIn(username, password))
       .pipe(
         map(user => {
+          debug('storing token ' + JSON.stringify(user))
           localStorage.setItem('currentUser', JSON.stringify(user));
         })
       );
@@ -47,9 +52,11 @@ export class AuthenticationService {
   async logout() {
     // remove user from local storage to log user out
     try {
-      console.log('Logging out');
-      const user = await Auth.signOut();
+      debug('Deleting token');
       localStorage.removeItem('currentUser');
+      debug('Sign out');
+      const user = await Auth.signOut();
+      debug('Reload');
       location.reload(true);
     } catch (error) {
       console.error(error);

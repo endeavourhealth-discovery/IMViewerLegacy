@@ -47,7 +47,9 @@
               </div>
             </as-split-area>
             <as-split-area>
-              <div class="as-split-area-content">
+              <div class="as-split-area-content" style="height: calc(100% - 16px);">
+                <app-data-model-navigator [conceptIri]="concept?.iri" (selection)="selectResult($event)"></app-data-model-navigator>
+<!--
                 <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
                   <mat-form-field appearance="outline" fxFlex="calc(100% - 16px)">
                     <mat-label id="definition-label">Definition</mat-label>
@@ -91,6 +93,7 @@
                     </mat-wrapper>
                   </mat-form-field>
                 </div>
+-->
               </div>
             </as-split-area>
           </as-split>
