@@ -17,6 +17,7 @@ import org.apache.http.impl.client.HttpClients;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.NotAuthorizedException;
 import java.io.IOException;
 import java.net.URL;
 import java.security.interfaces.RSAPublicKey;
@@ -32,7 +33,7 @@ public class CognitoFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         try {
             String jwt = ((HttpServletRequest) servletRequest).getHeader("authorization").replace("Bearer ", "");
@@ -46,12 +47,12 @@ public class CognitoFilter implements Filter {
             verifier.acceptLeeway(30 * 1000).build().verify(decodedJWT);
 
             validateToken(jwt);
-
-            httpResponse.setStatus(200);
-            filterChain.doFilter(servletRequest, servletResponse);
         } catch (Exception e) {
-            httpResponse.sendError(401, e.toString());
+            throw new NotAuthorizedException(e.toString());
         }
+
+//         httpResponse.setStatus(200);
+        filterChain.doFilter(servletRequest, servletResponse);
     }
 
     private void validateToken(String token) throws IOException {

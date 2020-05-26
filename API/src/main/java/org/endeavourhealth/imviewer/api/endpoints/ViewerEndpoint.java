@@ -84,12 +84,14 @@ public class ViewerEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProperties(@Context SecurityContext sc,
-                               @PathParam("iri") String iri) throws Exception {
+                               @PathParam("iri") String iri,
+                                  @QueryParam("inherited") Boolean inherited
+                                  ) throws Exception {
         try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getProperties")) {
             LOG.debug("getProperties");
 
             ViewerJDBCDAL dal = new ViewerJDBCDAL();
-            List<Property> result = dal.getProperties(iri);
+            List<Property> result = dal.getProperties(iri, (inherited == null) ? false : inherited);
 
             return Response
                 .ok()
