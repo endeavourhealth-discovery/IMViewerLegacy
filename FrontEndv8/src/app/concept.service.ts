@@ -12,8 +12,13 @@ export class ConceptService {
 
   constructor(private http: HttpClient) { }
 
-  getProperties(iri: string): Observable<Property[]> {
-    return this.http.get<Property[]>('api/' + iri + '/Properties');
+  getProperties(iri: string, inherited: boolean = false): Observable<Property[]> {
+    let params = new HttpParams();
+    if (inherited) {
+      params = params.append('inherited', 'true');
+    }
+
+    return this.http.get<Property[]>('api/' + iri + '/Properties', {params});
   }
 
   getDefinition(iri: string): Observable<Related[]> {

@@ -5,6 +5,8 @@ public class Property {
     private Integer minCardinality;
     private Integer maxCardinality;
     private Concept valueType;
+    private Integer level;
+    private Concept owner;
 
     public Concept getProperty() {
         return property;
@@ -39,6 +41,24 @@ public class Property {
 
     public Property setValueType(Concept valueType) {
         this.valueType = valueType;
+        return this;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public Property setLevel(Integer level) {
+        this.level = level;
+        return this;
+    }
+
+    public Concept getOwner() {
+        return owner;
+    }
+
+    public Property setOwner(Concept owner) {
+        this.owner = owner;
         return this;
     }
 }

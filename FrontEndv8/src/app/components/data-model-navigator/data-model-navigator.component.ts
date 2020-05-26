@@ -64,7 +64,7 @@ export class DataModelNavigatorComponent implements OnInit {
       (error) => this.log.error(error)
     );
 
-    this.service.getProperties(this.iri).subscribe(
+    this.service.getProperties(this.iri, true).subscribe(
       (result) => {
         this.properties = result;
         this.redraw();
@@ -79,16 +79,6 @@ export class DataModelNavigatorComponent implements OnInit {
       },
       (error) => this.log.error(error)
     );
-  }
-
-
-
-  onResized(event) {
-    // this.redraw();
-  }
-
-  navigate(iri: string) {
-    this.selection.emit(iri);
   }
 
   redraw() {
@@ -121,6 +111,10 @@ export class DataModelNavigatorComponent implements OnInit {
       s += '|\n';
       this.properties.forEach((prp, i) => {
         s += prp.property.name + ': ' + prp.valueType.name;
+        if (prp.level > 0) {
+          s += ' (*' + prp.owner.name + ')';
+        }
+
         if (i < this.properties.length - 1) {
           s += ';\n';
         } else {
@@ -167,166 +161,4 @@ export class DataModelNavigatorComponent implements OnInit {
       item.addEventListener('click', () => this.selection.emit(c), false);
     });
   }
-
-  /*
-  buildSvg() {
-    const svg = d3.select('svg');
-    svg.selectAll('*').remove();
-
-    const src = this.buildRelated(svg, this.sources, '15.67%');
-
-    const def = this.buildRelated(svg, this.definition, '84.33%');
-
-    const cpt = this.buildConcept(svg);
-
-    this.buildConnectors(svg, '15.67%', src / 2, -cpt / 2, this.sources);
-    this.buildConnectors(svg, '84.33%', -def / 2, cpt / 2, this.definition);
-
-  }
-
-  buildConnectors(svg, x1, w1, w2, rel: Related[]) {
-    const c = rel.length;
-
-    const wg = svg.append('g');
-    const ts = wg.append('svg');
-
-    for (let i = 0; i < c; i++) {
-      const y = i * 30;
-      // Lines
-      ts.append('line')
-        .attr('x1', 'calc(' + x1 + ' + ' + w1 + ')')
-        .attr('y1', (30 * i) + 15)
-        .attr('x2', 'calc(50% + ' + (w2 * 1.5) + ')')
-        .attr('y2', (30 * i) + 15)
-        .attr('stroke', 'red');
-
-      ts.append('line')
-        .attr('x1', 'calc(50% + ' + (w2 * 1.5) + ')')
-        .attr('y1', (30 * i) + 15)
-        .attr('x2', 'calc(50% + ' + (w2 * 1.5) + ')')
-        .attr('y2', (15 * (c - 1)) + 15)
-        .attr('stroke', 'red');
-
-      ts.append('line')
-        .attr('x1', 'calc(50% + ' + (w2 * 1.5) + ')')
-        .attr('y1', (15 * (c - 1)) + 15)
-        .attr('x2', 'calc(50% + ' + w2 + ')')
-        .attr('y2', (15 * (c - 1)) + 15)
-        .attr('stroke', 'red');
-
-      // Text
-      const t = ts.append('text')
-        .text(rel[i].relationship.name)
-        .attr('x', x1)
-        .attr('y', y + 10);
-
-      if (w1 > 0) {
-        t.attr('transform', 'translate(' + (w1 + this.pad) + ' 0)');
-      } else {
-        const l = t.node().getComputedTextLength();
-        t.attr('transform', 'translate(' + (w1 - this.pad - l) + ' 0)');
-      }
-    }
-
-    ts.attr('y', 'calc(50% - ' + (c * 15)  + ')');
-  }
-
-  buildRelated(svg, relList: Related[], xPos) {
-    const wg = svg.append('g');
-    const ws = wg.append('svg')
-    .attr('x', xPos)
-      .attr('y', '50%');
-    let w = 0;
-    for (let i = 0; i < relList.length; i++) {
-      const rel = relList[i];
-
-      const g = ws.append('g');
-
-      const s = g.append('svg')
-        .on('click', (e) => this.nodeClick(rel.concept));
-
-      const r = s.append('rect')
-        .attr('rx', 6)
-        .attr('ry', 6)
-        .attr('height', 25)
-        .attr('fill', 'green')
-        .attr('stroke', 'black');
-
-      const t = s.append('text')
-        .text(rel.concept.name)
-        .attr('x', this.pad)
-        .attr('y', 18);
-
-      const l = t.node().getComputedTextLength() + (this.pad * 2);
-
-      if (l > w) {
-        w = l;
-      }
-
-      s.attr('y', i * 30);
-    }
-    ws.selectAll('rect')
-      .attr('width', w);
-
-    wg.attr('transform', 'translate(-' + (w / 2) + ' -' + (relList.length * 15) + ')');
-
-    return w;
-  }
-
-  buildConcept(svg) {
-    const g = svg.append('g');
-
-    const s  = g.append('svg')
-      .attr('x', '50%')
-      .attr('y', '50%');
-
-    const r = s.append('rect')
-      .attr('rx', 6)
-      .attr('ry', 6)
-      .attr('height', 25 + (25 * this.properties.length))
-      .attr('fill', 'lightblue')
-      .attr('stroke', 'black');
-
-    const t = s.append('text')
-      .text(this.concept.name)
-      .attr('font-weight', 'bold')
-      .attr('x', this.pad)
-      .attr('y', 18);
-
-    let w = t.node().getComputedTextLength() + (this.pad * 2);
-
-    for (let i = 0; i < this.properties.length; i++) {
-      const p = s.append('text')
-        .text(this.properties[i].property.name + ' -> ' + this.properties[i].valueType.name)
-        .attr('x', this.pad)
-        .attr('y', 43 + (25 * i));
-
-      const l = p.node().getComputedTextLength() + (this.pad * 2);
-
-      if (l > w) {
-        w = l;
-      }
-    }
-
-    w = Math.round(w);
-
-    if (this.properties.length > 0) {
-      s.append('line')
-        .attr('x1', '0')
-        .attr('y1', '25')
-        .attr('x2', w)
-        .attr('y2', 25)
-        .attr('stroke', 'black');
-    }
-
-    r.attr('width', w);
-    g.attr('transform', 'translate(-' + (w / 2) + ' -' + ((this.properties.length * 15) + 15) + ')');
-
-    return w;
-  }
-
-  nodeClick(concept: any) {
-    console.log('Click! : [' + concept.iri + ']');
-    this.selection.emit(concept);
-  }*/
 }

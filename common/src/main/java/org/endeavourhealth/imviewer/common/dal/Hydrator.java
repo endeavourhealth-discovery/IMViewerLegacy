@@ -74,6 +74,8 @@ public class Hydrator {
             .setProperty(new Concept(rs.getString("p_iri"), rs.getString("p_name")))
             .setMinCardinality(rs.getInt("min_cardinality"))
             .setMaxCardinality(rs.getInt("max_cardinality"))
-            .setValueType(new Concept(rs.getString("v_iri"), rs.getString("v_name")));
+            .setValueType(new Concept(rs.getString("v_iri"), rs.getString("v_name")))
+            .setLevel(rs.getInt("level"))
+            .setOwner(new Concept(rs.getString("o_iri"), rs.getString("o_name")));
     }
 }

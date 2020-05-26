@@ -5,6 +5,6 @@ export class Property {
   minCardinality: number;
   maxCardinality: number;
   valueType: Concept;
-  propertyLevel: number;
+  level: number;
   owner: Concept;
 }

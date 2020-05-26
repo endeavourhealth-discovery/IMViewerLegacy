@@ -169,25 +169,37 @@ public class ViewerJDBCDAL {
         return result;
     }
 
-    public List<Property> getProperties(String iri) throws SQLException {
+    public List<Property> getProperties(String iri, boolean inherited) throws SQLException {
         Connection conn = ConnectionPool.getInstance().pop();
 
         String sql = "SELECT p.iri AS p_iri, p.name AS p_name,\n" +
             "d.min_cardinality, d.max_cardinality,\n" +
-            "v.iri as v_iri, v.name AS v_name\n" +
+            "v.iri as v_iri, v.name AS v_name,\n" +
+            "0 as level, c.iri as o_iri, c.name AS o_name\n" +
             "FROM concept c\n" +
             "JOIN concept_data_model d ON d.id = c.id\n" +
             "JOIN concept p ON p.id = d.attribute\n" +
             "JOIN concept v ON v.id = d.value_type\n" +
-/*
-            "JOIN concept tp ON tp.iri = 'sn:SN_116680003'\n" +
-            "JOIN concept tt ON tt.iri IN ('rm:isDMObjectProperty', 'rm:isDMDataProperty')\n" +
-            "JOIN concept_tct t ON t.source = p.id AND t.property = tp.id AND t.target = tt.id\n" +
-*/
+            "WHERE c.iri = ?\n";
+
+        if (inherited)
+            sql += "UNION SELECT p.iri AS p_iri, p.name AS p_name,\n" +
+            "d.min_cardinality, d.max_cardinality,\n" +
+            "v.iri as v_iri, v.name AS v_name,\n" +
+            "tct.level, o.iri as o_iri, o.name AS o_name\n" +
+            "FROM concept c\n" +
+            "JOIN concept_tct tct ON tct.source = c.id\n" +
+            "JOIN concept tp ON tp.id = tct.property AND tp.iri = ':SN_116680003'\n" +
+            "JOIN concept o ON o.id = tct.target\n" +
+            "JOIN concept_data_model d ON d.id = o.id\n" +
+            "JOIN concept p ON p.id = d.attribute\n" +
+            "JOIN concept v ON v.id = d.value_type\n" +
             "WHERE c.iri = ?\n";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, iri);
+            if (inherited)
+                stmt.setString(2, iri);
 
             try(ResultSet rs = stmt.executeQuery()) {
                 return Hydrator.createPropertyList(rs);
