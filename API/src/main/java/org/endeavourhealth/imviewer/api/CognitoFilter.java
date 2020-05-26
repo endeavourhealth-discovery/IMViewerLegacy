@@ -48,10 +48,10 @@ public class CognitoFilter implements Filter {
 
             validateToken(jwt);
         } catch (Exception e) {
-            throw new NotAuthorizedException(e.toString());
+            ((HttpServletResponse) servletResponse).sendError(401, e.toString());
+            return;
         }
 
-//         httpResponse.setStatus(200);
         filterChain.doFilter(servletRequest, servletResponse);
     }
 

@@ -111,7 +111,7 @@ export class DataModelNavigatorComponent implements OnInit {
       s += '|\n';
       this.properties.forEach((prp, i) => {
         s += prp.property.name + ': ' + prp.valueType.name;
-        if (prp.level > 0) {
+        if (prp.level >= 0) {
           s += ' (*' + prp.owner.name + ')';
         }
 
@@ -149,7 +149,7 @@ export class DataModelNavigatorComponent implements OnInit {
 
     // Inject ids
     this.clickData.forEach((c, i) => {
-      svg = svg.replace('>{' + i + '}', ' id="click_' + i + '">');
+      svg = svg.replace('>{' + i + '}', ' cursor="pointer" id="click_' + i + '">');
     });
 
     // Add to dom

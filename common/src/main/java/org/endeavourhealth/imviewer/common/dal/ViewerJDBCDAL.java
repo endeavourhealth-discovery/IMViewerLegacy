@@ -175,7 +175,7 @@ public class ViewerJDBCDAL {
         String sql = "SELECT p.iri AS p_iri, p.name AS p_name,\n" +
             "d.min_cardinality, d.max_cardinality,\n" +
             "v.iri as v_iri, v.name AS v_name,\n" +
-            "0 as level, c.iri as o_iri, c.name AS o_name\n" +
+            "-1 as level, c.iri as o_iri, c.name AS o_name\n" +
             "FROM concept c\n" +
             "JOIN concept_data_model d ON d.id = c.id\n" +
             "JOIN concept p ON p.id = d.attribute\n" +
