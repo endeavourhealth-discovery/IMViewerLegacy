@@ -74,7 +74,7 @@ export class DataModelNavigatorComponent implements OnInit {
 
     this.service.getSources(this.iri, [], 15, 1).subscribe(
       (result) => {
-        this.sources = result;
+        this.sources = result.result;
         this.redraw();
       },
       (error) => this.log.error(error)
@@ -131,7 +131,7 @@ export class DataModelNavigatorComponent implements OnInit {
 
     // Targets
     this.definition.forEach((def, i) => {
-      s += '[<concept> ' + this.concept.name + '] ' + def.relationship.name + ' +-> [<related> ' + this.addClick(def.concept) + ']\n';
+      s += '[<concept> ' + this.concept.name + '] +-> ' + def.relationship.name + ' [<related> ' + this.addClick(def.concept) + ']\n';
     });
 
     this.render(s);

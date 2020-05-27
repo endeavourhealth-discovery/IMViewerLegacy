@@ -1,9 +1,6 @@
 package org.endeavourhealth.imviewer.common.dal;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -166,5 +163,15 @@ public class DALHelper {
     public static Date getDate(ResultSet rs, String field) throws SQLException {
         Date result = rs.getDate(field);
         return rs.wasNull() ? null : result;
+    }
+
+    public static Integer getCalculatedRows(Connection conn) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement("SELECT FOUND_ROWS()");
+        ResultSet rs = stmt.executeQuery()) {
+            if (rs.next())
+                return rs.getInt(1);
+            else
+                return null;
+        }
     }
 }

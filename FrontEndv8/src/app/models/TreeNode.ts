@@ -3,5 +3,7 @@ export class TreeNode {
               public name: string,
               public level = 1,
               public expandable = false,
-              public isLoading = false) {}
+              public parentNode: TreeNode = null,
+              public isLoading = false,
+              public page = 1) {}
 }

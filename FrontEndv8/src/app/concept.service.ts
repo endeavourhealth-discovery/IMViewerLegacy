@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {Concept} from './models/Concept';
 import {Related} from './models/Related';
 import {Property} from './models/Property';
+import {PagedResultSet} from './models/PagedResultSet';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,7 @@ export class ConceptService {
     return this.http.get<Related[]>('api/' + iri + '/Definition');
   }
 
-  getSources(iri: string, relationships: string[], limit: number = 0, page: number = 1): Observable<Related[]> {
+  getSources(iri: string, relationships: string[], limit: number = 0, page: number = 1): Observable<PagedResultSet<Related>> {
     let params = new HttpParams();
     if (relationships != null) {
       relationships.forEach(r => params = params.append('relationship', r));
@@ -33,7 +34,7 @@ export class ConceptService {
     params = params.append('limit', limit.toString());
     params = params.append('page', page.toString());
 
-    return this.http.get<Related[]>('api/' + iri + '/Sources', {params});
+    return this.http.get<PagedResultSet<Related>>('api/' + iri + '/Sources', {params});
   }
 
   getConcept(iri: string): Observable<Concept> {

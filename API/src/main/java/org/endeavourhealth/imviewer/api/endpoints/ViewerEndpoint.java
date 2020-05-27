@@ -136,7 +136,7 @@ public class ViewerEndpoint {
             LOG.debug("getSources");
 
             ViewerJDBCDAL dal = new ViewerJDBCDAL();
-            List<RelatedConcept> result = dal.getSources(iri, relationships, limit, page);
+            PagedResultSet<RelatedConcept> result = dal.getSources(iri, relationships, limit, page);
 
             return Response
                 .ok()

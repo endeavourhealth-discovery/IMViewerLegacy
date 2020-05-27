@@ -7,24 +7,15 @@
     [class.selected]="selectedNode == node"
     (click)="selectNode(node)"
     style="cursor: pointer">
-    <button mat-icon-button disabled></button>
-    <span>{{node.name}}</span>
-  </mat-tree-node>
-  <mat-tree-node
-    *matTreeNodeDef="let node; when: hasChild"
-    matTreeNodePadding
-    matTreeNodePaddingIndent="15"
-    class="hover-highlight" [class.selected]="selectedNode == node"
-    (click)="selectNode(node)"
-    style="cursor: pointer">
-    <button mat-icon-button
-            [attr.aria-label]="'toggle ' + node.filename" matTreeNodeToggle>
+    <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename" matTreeNodeToggle [disabled]="!node.expandable">
       <mat-icon class="mat-icon-rtl-mirror">
-        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+        {{getNodeIcon(node)}}
       </mat-icon>
     </button>
-    <span>{{node.name}}</span>
+    <span *ngIf="node.id === '_LOADMORE_'"><b><i>{{node.name}}</i></b></span>
+    <span *ngIf="node.id !== '_LOADMORE_'">{{node.name}}</span>
     <mat-progress-bar *ngIf="node.isLoading"
+                      style="width: 50%"
                       mode="indeterminate"
                       class="example-tree-progress-bar"></mat-progress-bar>
   </mat-tree-node>

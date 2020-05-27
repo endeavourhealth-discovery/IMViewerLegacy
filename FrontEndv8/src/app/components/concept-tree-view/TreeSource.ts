@@ -47,37 +47,79 @@ export class TreeSource implements DataSource<TreeNode> {
    * Toggle the node, remove from display list
    */
   toggleNode(node: TreeNode, expand: boolean) {
-    const index = this.data.indexOf(node) + 1;
-    node.isLoading = true;
+    if (!node.isLoading) {
+      node.isLoading = true;
+      const index = this.data.indexOf(node) + 1;
 
-    // Get count of nodes at this level
-    let count = 0;
-    for (let i = index; i < this.data.length && this.data[i].level > node.level; i++) {
-      count++;
+      // Get count of nodes at this level
+      let count = 0;
+      for (let i = index; i < this.data.length && this.data[i].level > node.level; i++) {
+        count++;
+      }
+
+      if (expand) {
+        if (node.id === '_LOADMORE_')
+          this.loadMore(node, index, count);
+        else
+          this.expandChildren(node, index, count);
+      } else {
+
+        this.data.splice(index, count);
+        this.dataChange.next(this.data);
+        node.isLoading = false;
+      }
     }
+  }
 
-    if (expand) {
-      this.database.getSources(node.id, this.relationships).subscribe(
-        (children) => {
+  private loadMore(node: TreeNode, index: number, count: number) {
+    console.error('Loading more...');
+    this.database.getSources(node.parentNode.id, this.relationships, 15, node.page).subscribe(
+      (result) => {
+        const nodes = result
+          .result
+          .map(related => new TreeNode(related.concept.iri, related.concept.name, node.level, true, node.parentNode));
 
+        // Add in paging node if required
+        if (result.page * result.pageSize < result.totalRecords) {
+          nodes.push(new TreeNode('_LOADMORE_', 'Load more...', node.level, false, node.parentNode, false, result.page + 1));
+        }
+        this.data.splice((index - 1), 1, ...nodes);
+
+        // notify the change
+        this.dataChange.next(this.data);
+        node.isLoading = false;
+      },
+      (error) => this.log.error(error)
+    );
+  }
+
+  private expandChildren(node: TreeNode, index: number, count: number) {
+    this.database.getSources(node.id, this.relationships, 15, node.page).subscribe(
+      (result) => {
+
+        if (node.page === 1 && result.result.length === 0) {
+          console.error('End of tree');
+          node.expandable = false;
+        } else {
           const existing = this.data.slice(index, index + count);
 
-          const nodes = children
+          const nodes = result
+            .result
             .filter(c => existing.findIndex(v => v.id === c.concept.iri) === -1)
-            .map(related => new TreeNode(related.concept.iri, related.concept.name, node.level + 1, true));
+            .map(related => new TreeNode(related.concept.iri, related.concept.name, node.level + 1, true, node));
+
+          // Add in paging node if required
+          if (result.page * result.pageSize < result.totalRecords) {
+            nodes.push(new TreeNode('_LOADMORE_', 'Load more...', node.level + 1, false, node, false, result.page + 1));
+          }
+
           this.data.splice(index, 0, ...nodes);
-
-          // notify the change
-          this.dataChange.next(this.data);
-          node.isLoading = false;
-        },
-        (error) => this.log.error(error)
-      );
-    } else {
-
-      this.data.splice(index, count);
-      this.dataChange.next(this.data);
-      node.isLoading = false;
-    }
+        }
+        // notify the change
+        this.dataChange.next(this.data);
+        node.isLoading = false;
+      },
+      (error) => this.log.error(error)
+    );
   }
 }

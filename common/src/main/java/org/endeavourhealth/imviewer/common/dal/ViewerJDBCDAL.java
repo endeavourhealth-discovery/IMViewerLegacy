@@ -5,7 +5,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class ViewerJDBCDAL {
     public List<RelatedConcept> getDefinition(String iri) throws SQLException {
         Connection conn = ConnectionPool.getInstance().pop();
@@ -34,10 +33,10 @@ public class ViewerJDBCDAL {
         }
     }
 
-    public List<RelatedConcept> getSources(String iri, List<String> relationships, int limit, int page) throws SQLException {
+    public PagedResultSet<RelatedConcept> getSources(String iri, List<String> relationships, int limit, int page) throws SQLException {
         Connection conn = ConnectionPool.getInstance().pop();
 
-        String sql = "SELECT p.iri AS r_iri, p.name AS r_name, c.iri AS c_iri, c.name AS c_name\n" +
+        String sql = "SELECT SQL_CALC_FOUND_ROWS p.iri AS r_iri, p.name AS r_name, c.iri AS c_iri, c.name AS c_name\n" +
             "FROM concept_property_object o\n" +
             "JOIN concept v ON v.id = o.object AND v.iri = ?\n" +
             "JOIN concept p ON p.id = o.property\n" +
@@ -53,29 +52,39 @@ public class ViewerJDBCDAL {
             }
         }
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            int i = 1;
-            stmt.setString(i++, iri);
+        PagedResultSet<RelatedConcept> result = new PagedResultSet<RelatedConcept>()
+            .setPage(page)
+            .setPageSize(limit);
 
-            if (relationships != null)
-                for(String relationship: relationships)
-                    stmt.setString(i++, relationship);
+        try {
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                int i = 1;
+                stmt.setString(i++, iri);
 
-            if (limit > 0) {
-                if (page == 0) {
-                    stmt.setInt(i++, limit);
-                } else {
-                    stmt.setInt(i++, (page - 1) * limit);
-                    stmt.setInt(i++, limit);
+                if (relationships != null)
+                    for (String relationship : relationships)
+                        stmt.setString(i++, relationship);
+
+                if (limit > 0) {
+                    if (page == 0) {
+                        stmt.setInt(i++, limit);
+                    } else {
+                        stmt.setInt(i++, (page - 1) * limit);
+                        stmt.setInt(i++, limit);
+                    }
+                }
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    result.setResult(Hydrator.createRelatedConceptList(rs));
                 }
             }
 
-            try(ResultSet rs = stmt.executeQuery()) {
-                return Hydrator.createRelatedConceptList(rs);
-            }
+            result.setTotalRecords(DALHelper.getCalculatedRows(conn));
         } finally {
             ConnectionPool.getInstance().push(conn);
         }
+
+        return result;
     }
 
     public Concept getConcept(String iri) throws SQLException {

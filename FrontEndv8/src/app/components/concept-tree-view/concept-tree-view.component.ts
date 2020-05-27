@@ -57,23 +57,42 @@ export class ConceptTreeViewComponent implements OnInit {
   }
 
   buildTree(concept: Concept, related: Related[]) {
-    let i = 0;
-
-    const node: TreeNode = new TreeNode(concept.iri, concept.name, related.length, true);
 
     related.reverse();
 
-    this.dataSource.data =
-      related
-        .map(r => new TreeNode(r.concept.iri, r.concept.name, i++, true))
-        .concat(node);
+    const nodes: TreeNode[] = [];
+    let parent: TreeNode = null;
+    for (let i = 0; i < related.length; i++) {
+      const r = related[i];
+      const node = new TreeNode(r.concept.iri, r.concept.name, i, true, parent);
+      nodes.push(node);
+      parent = node;
+    }
+    const conceptNode = new TreeNode(concept.iri, concept.name, related.length, true, parent);
+    nodes.push(conceptNode);
 
-    this.selectNode(node);
+
+    this.dataSource.data = nodes;
+
+    this.selectNode(conceptNode);
   }
 
   selectNode(node: TreeNode) {
-    this.selectedNode = node;
-    this.selection.emit(node);
+    if (node.id !== '_LOADMORE_') {
+      this.selectedNode = node;
+      this.selection.emit(node);
+    } else {
+      node.name = 'Loading...';
+      this.dataSource.toggleNode(node, true);
+    }
   }
 
+  getNodeIcon(node: any) {
+    // node.expandable ? (treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right') : 'remove'
+    if (node.expandable) {
+      return this.treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right';
+    } else {
+      return (node.id === '_LOADMORE_') ? '' : 'remove';
+    }
+  }
 }
