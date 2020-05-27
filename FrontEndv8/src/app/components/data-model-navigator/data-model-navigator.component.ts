@@ -89,20 +89,21 @@ export class DataModelNavigatorComponent implements OnInit {
 
   buildSvg() {
     this.clickData = [];
-    let s = '#font: Calibri\n' +
-      '#fontSize: 10\n' +
+    let s =
+      '#font: Calibri\n' +
+      '#fontSize: 16\n' +
       '#lineWidth: 1\n' +
       '#direction: right\n' +
       '#.hide: visual=hidden empty\n' +
       '#.concept: visual=roundrect fill=lightgreen\n' +
       '#.related: visual=roundrect fill=lightblue\n';
-    if (this.sources.length > 0) {
+//    if (this.sources.length > 0) {
       s += '[<hide> ----------PADDED DISPLAY SOURCE----------]-/-[<hide> ----------PADDED DISPLAY CONCEPT----------]\n';
-    }
+//    }
 
-    if (this.definition.length > 0) {
+//    if (this.definition.length > 0) {
       s += '[<hide> ----------PADDED DISPLAY CONCEPT----------]-/-[<hide> ----------PADDED DISPLAY TARGET----------]\n';
-    }
+//    }
 
     // Concept
     s += '[<concept> ' + this.concept.name;
@@ -131,7 +132,10 @@ export class DataModelNavigatorComponent implements OnInit {
 
     // Targets
     this.definition.forEach((def, i) => {
-      s += '[<concept> ' + this.concept.name + '] +-> ' + def.relationship.name + ' [<related> ' + this.addClick(def.concept) + ']\n';
+      if (this.definition.length === 1)
+        s += '[<concept> ' + this.concept.name + '] ' + def.relationship.name + ' +-> [<related> ' + this.addClick(def.concept) + ']\n';
+      else
+        s += '[<concept> ' + this.concept.name + '] +-> ' + def.relationship.name + ' [<related> ' + this.addClick(def.concept) + ']\n';
     });
 
     this.render(s);
