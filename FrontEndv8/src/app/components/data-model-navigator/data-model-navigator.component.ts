@@ -6,6 +6,7 @@ import {LoggerService} from 'dds-angular8/logger';
 import {Concept} from '../../models/Concept';
 import * as d3 from 'd3';
 import * as dagre from 'dagre';
+import * as svgPanZoom from 'svg-pan-zoom';
 
 @Component({
   selector: 'app-data-model-navigator',
@@ -15,10 +16,8 @@ import * as dagre from 'dagre';
 export class DataModelNavigatorComponent implements OnInit {
   @Input()
   set conceptIri(iri: string) {
-    // if (this.iri !== iri) {
       this.iri = iri;
       this.refresh();
-    // }
   }
   @Output() selection: EventEmitter<any> = new EventEmitter<any>();
 
@@ -41,7 +40,6 @@ export class DataModelNavigatorComponent implements OnInit {
 
   refresh() {
     this.concept = this.definition = this.properties = this.sources = null;
-    this.targetCanvas.nativeElement.innerHTML = 'Loading...';
 
     this.service.getConcept(this.iri).subscribe(
       (result) => {
@@ -84,9 +82,11 @@ export class DataModelNavigatorComponent implements OnInit {
 
 
   buildSvg() {
+    svgPanZoom('#panZoom').reset();
+    this.targetCanvas.nativeElement.innerHTML = '<svg id="panZoom" width="100%" height="100%"></svg>';
+
     // Clear existing
     const svg = d3.select('svg');
-    svg.selectAll('*').remove();
 
     // Layout engine
     const graph = new dagre.graphlib.Graph();
@@ -130,6 +130,13 @@ export class DataModelNavigatorComponent implements OnInit {
       const l = map.get(e.v + '-' + e.w);
       l.attr('x', i.x - (i.width / 2))
         .attr('y', i.y);
+    });
+
+    svgPanZoom('#panZoom', {
+      zoomEnabled: true,
+      controlIconsEnabled: true,
+      fit: false,
+      center: true
     });
   }
 
