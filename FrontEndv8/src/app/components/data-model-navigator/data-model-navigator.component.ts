@@ -4,8 +4,8 @@ import {Property} from '../../models/Property';
 import {ConceptService} from '../../concept.service';
 import {LoggerService} from 'dds-angular8/logger';
 import {Concept} from '../../models/Concept';
-import * as nomnoml from 'nomnoml';
-// import * as d3 from 'd3';
+import * as d3 from 'd3';
+import * as dagre from 'dagre';
 
 @Component({
   selector: 'app-data-model-navigator',
@@ -31,7 +31,6 @@ export class DataModelNavigatorComponent implements OnInit {
   definition: Related[];
   properties: Property[];
   sources: Related[];
-  clickData: Concept[];
 
   constructor(private service: ConceptService,
               private log: LoggerService) {
@@ -87,82 +86,157 @@ export class DataModelNavigatorComponent implements OnInit {
     }
   }
 
+
   buildSvg() {
-    this.clickData = [];
-    let s =
-      '#font: Calibri\n' +
-      '#fontSize: 16\n' +
-      '#lineWidth: 1\n' +
-      '#direction: right\n' +
-      '#.hide: visual=hidden empty\n' +
-      '#.concept: visual=roundrect fill=lightgreen\n' +
-      '#.related: visual=roundrect fill=lightblue\n';
-//    if (this.sources.length > 0) {
-      s += '[<hide> ----------PADDED DISPLAY SOURCE----------]-/-[<hide> ----------PADDED DISPLAY CONCEPT----------]\n';
-//    }
+    // Clear existing
+    const svg = d3.select('svg');
+    svg.selectAll('*').remove();
 
-//    if (this.definition.length > 0) {
-      s += '[<hide> ----------PADDED DISPLAY CONCEPT----------]-/-[<hide> ----------PADDED DISPLAY TARGET----------]\n';
-//    }
+    // Layout engine
+    const graph = new dagre.graphlib.Graph();
+    graph.setGraph({
+      rankdir: 'LR',
+      nodesep: 10
+    });
+    graph.setDefaultEdgeLabel(() => ({}));
 
-    // Concept
-    s += '[<concept> ' + this.concept.name;
+    // Nodemap
+    const map = new Map();
+
+    this.buildConcept(svg, graph, map);
+
+    this.buildRelated(svg, graph, map, this.sources, false);
+
+    this.buildRelated(svg, graph, map, this.definition, true);
+
+    dagre.layout(graph);
+
+    graph.nodes().forEach(v => {
+      const g = map.get(v);
+      const i = graph.node(v);
+      g.attr('x', i.x - (i.width / 2))
+       .attr('y', i.y - (i.height / 2));
+    });
+
+    const lf = d3.line<any>()
+      .x(d => d.x)
+      .y(d => d.y)
+      .curve(d3.curveLinear);
+
+    graph.edges().forEach(e => {
+      const i = graph.edge(e);
+
+      svg.append('path')
+        .attr('d', lf(i.points))
+        .attr('stroke', 'grey')
+        .attr('fill', 'none');
+
+      const l = map.get(e.v + '-' + e.w);
+      l.attr('x', i.x - (i.width / 2))
+        .attr('y', i.y);
+    });
+  }
+
+  buildRelated(svg, graph, map, relList: Related[], reverse: boolean) {
+    for (const rel of relList) {
+
+      const g = svg.append('g');
+
+      const s = g.append('svg')
+        .attr('style', 'cursor: pointer')
+        .on('click', () => this.nodeClick(rel.concept));
+
+      const r = s.append('rect')
+        .attr('rx', 6)
+        .attr('ry', 6)
+        .attr('height', 25)
+        .attr('fill', 'lightgreen')
+        .attr('stroke', 'black');
+
+      const t = s.append('text')
+        .text(rel.concept.name)
+        .attr('font-size', 12)
+        .attr('x', this.pad)
+        .attr('y', 18);
+
+      const w = t.node().getComputedTextLength() + (this.pad * 2);
+      r.attr('width', w);
+
+      const l = svg.append('text')
+        .text(rel.relationship.name)
+        .attr('font-size', 10)
+        .attr('height', 12);
+
+      const lw = l.node().getComputedTextLength();
+      l.attr('width', lw);
+
+      graph.setNode(rel.concept.iri, {label: rel.concept.name, width: w, height: 25});
+      if (reverse) {
+        graph.setEdge(rel.concept.iri, this.concept.iri, {label: rel.relationship.name, width: lw, height: 12});
+        map.set(rel.concept.iri + '-' + this.concept.iri, l);
+      } else {
+        graph.setEdge(this.concept.iri, rel.concept.iri, {label: rel.relationship.name, width: lw, height: 12});
+        map.set(this.concept.iri + '-' + rel.concept.iri, l);
+      }
+
+      map.set(rel.concept.iri, s);
+    }
+  }
+
+  buildConcept(svg, graph, map) {
+    const g = svg.append('g');
+
+    const s  = g.append('svg');
+
+    const r = s.append('rect')
+      .attr('rx', 6)
+      .attr('ry', 6)
+      .attr('height', 25 + (20 * this.properties.length))
+      .attr('fill', 'lightblue')
+      .attr('stroke', 'black');
+
+    const t = s.append('text')
+      .text(this.concept.name)
+      .attr('font-weight', 'bold')
+      .attr('font-size', 12)
+      .attr('x', this.pad)
+      .attr('y', 16);
+
+    let w = t.node().getComputedTextLength() + (this.pad * 2);
+
+    for (let i = 0; i < this.properties.length; i++) {
+      const p = s.append('text')
+        .text(this.properties[i].property.name + ' -> ' + this.properties[i].valueType.name)
+        .attr('font-size', 12)
+        .attr('x', this.pad)
+        .attr('y', 38 + (20 * i));
+
+      const l = p.node().getComputedTextLength() + (this.pad * 2);
+
+      if (l > w) {
+        w = l;
+      }
+    }
+
+    w = Math.round(w);
 
     if (this.properties.length > 0) {
-      s += '|\n';
-      this.properties.forEach((prp, i) => {
-        s += prp.property.name + ': ' + prp.valueType.name;
-        if (prp.level >= 0) {
-          s += ' (*' + prp.owner.name + ')';
-        }
-
-        if (i < this.properties.length - 1) {
-          s += ';\n';
-        } else {
-          s += '\n';
-        }
-      });
+      s.append('line')
+        .attr('x1', 0)
+        .attr('y1', 22)
+        .attr('x2', w)
+        .attr('y2', 22)
+        .attr('stroke', 'black');
     }
-    s += ']\n';
 
-    // Sources
-    this.sources.forEach((src, i) => {
-      s += '[<related> ' + this.addClick(src.concept) + '] ' + src.relationship.name + ' +-> [<concept> ' + this.concept.name + ']\n';
-    });
+    r.attr('width', w);
 
-    // Targets
-    this.definition.forEach((def, i) => {
-      if (this.definition.length === 1)
-        s += '[<concept> ' + this.concept.name + '] ' + def.relationship.name + ' +-> [<related> ' + this.addClick(def.concept) + ']\n';
-      else
-        s += '[<concept> ' + this.concept.name + '] +-> ' + def.relationship.name + ' [<related> ' + this.addClick(def.concept) + ']\n';
-    });
-
-    this.render(s);
+    graph.setNode(this.concept.iri, {label: this.concept.name, width: w, height: 25 + (20 * this.properties.length)});
+    map.set(this.concept.iri, s);
   }
 
-  addClick(concept: Concept) {
-    this.clickData.push(concept);
-    return '{' + (this.clickData.length - 1) + '}' + concept.name;
-  }
-
-  render(s: string) {
-    let svg = nomnoml.renderSvg(s);
-
-    svg = svg.replace('<svg ', '<svg width="100%" height="100%" ');
-
-    // Inject ids
-    this.clickData.forEach((c, i) => {
-      svg = svg.replace('>{' + i + '}', ' cursor="pointer" id="click_' + i + '">');
-    });
-
-    // Add to dom
-    this.targetCanvas.nativeElement.innerHTML = svg;
-
-    // Inject click events
-    this.clickData.forEach((c, i) => {
-      const item = document.querySelector('#click_' + i);
-      item.addEventListener('click', () => this.selection.emit(c), false);
-    });
+  nodeClick(concept: any) {
+    console.log('Click! : [' + concept.iri + ']');
+    this.selection.emit(concept);
   }
 }
