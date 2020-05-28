@@ -85,8 +85,22 @@ export class DataModelNavigatorComponent implements OnInit {
     svgPanZoom('#panZoom').reset();
     this.targetCanvas.nativeElement.innerHTML = '<svg id="panZoom" width="100%" height="100%"></svg>';
 
-    // Clear existing
+    // D3
     const svg = d3.select('svg');
+
+    // Arrowhead
+    svg.append('defs')
+      .append('marker')
+      .attr('id', 'arrow')
+      .attr('viewBox', '[0, 0, 10, 10]')
+      .attr('refX', 10)
+      .attr('refY', 5)
+      .attr('markerWidth', 10)
+      .attr('markerHeight', 10)
+      .attr('orient', 'auto-start-reverse')
+      .append('path')
+      .attr('d', d3.line()([[0, 0], [0, 10], [10, 5]]))
+      .attr('stroke', 'black');
 
     // Layout engine
     const graph = new dagre.graphlib.Graph();
@@ -125,7 +139,8 @@ export class DataModelNavigatorComponent implements OnInit {
       svg.append('path')
         .attr('d', lf(i.points))
         .attr('stroke', 'grey')
-        .attr('fill', 'none');
+        .attr('fill', 'none')
+        .attr('marker-start', 'url(#arrow)');
 
       const l = map.get(e.v + '-' + e.w);
       l.attr('x', i.x - (i.width / 2))
