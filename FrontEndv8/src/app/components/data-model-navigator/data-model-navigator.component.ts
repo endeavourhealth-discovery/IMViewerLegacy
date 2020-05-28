@@ -42,10 +42,6 @@ export class DataModelNavigatorComponent implements OnInit {
   refresh() {
     this.concept = this.definition = this.properties = this.sources = null;
     this.targetCanvas.nativeElement.innerHTML = 'Loading...';
-/*
-    const svg = d3.select('svg');
-    svg.selectAll('*').remove();
-*/
 
     this.service.getConcept(this.iri).subscribe(
       (result) => {
@@ -210,6 +206,10 @@ export class DataModelNavigatorComponent implements OnInit {
         .attr('font-size', 12)
         .attr('x', this.pad)
         .attr('y', 38 + (20 * i));
+
+      if (this.properties[i].level >= 0) {
+        p.attr('fill', 'grey');
+      }
 
       const l = p.node().getComputedTextLength() + (this.pad * 2);
 
