@@ -258,7 +258,6 @@ export class DataModelNavigatorComponent implements OnInit {
   }
 
   nodeClick(concept: any) {
-    console.log('Click! : [' + concept.iri + ']');
     this.selection.emit(concept);
   }
 }

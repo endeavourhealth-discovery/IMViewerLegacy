@@ -5,7 +5,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {RouterModule} from '@angular/router';
 import { AppRoot } from './app-root';
-import {ErrorInterceptor} from './security/error-intercept';
 import {BasicAuthInterceptor} from './security/auth-intercept';
 import {AuthGuard} from './security/auth-guard';
 import { LoginComponent } from './security/login/login.component';
@@ -80,7 +79,7 @@ Amplify.configure(awsconfig);
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    // { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
   declarations: [AppRoot],
   bootstrap: [AppRoot],

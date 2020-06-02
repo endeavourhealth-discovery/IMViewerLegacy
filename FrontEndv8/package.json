@@ -25,7 +25,7 @@
     "angular-split": "^3.0.3",
     "d3": "^5.16.0",
     "dagre": "^0.8.5",
-    "dds-angular8": "https://github.com/endeavourhealth-discovery/Angular8/blob/master/dds-angular8-1.0.29.tgz?raw=true",
+    "dds-angular8": "https://github.com/endeavourhealth-discovery/Angular8/blob/master/dds-angular8-1.0.31.tgz?raw=true",
     "hammerjs": "^2.0.8",
     "rxjs": "~6.4.0",
     "svg-pan-zoom": "github:ariutta/svg-pan-zoom",
