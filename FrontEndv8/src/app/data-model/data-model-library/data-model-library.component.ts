@@ -47,7 +47,7 @@ export class DataModelLibraryComponent implements OnInit {
   }
 
   goto(iri: string) {
-    if (iri != this.selectedIri) {
+    if (iri !== this.selectedIri) {
       this.router.navigate(['dataModel', iri]);
     }
   }

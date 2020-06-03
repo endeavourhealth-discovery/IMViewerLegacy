@@ -3,7 +3,7 @@ import {ConceptService} from '../../concept.service';
 import {TreeNode} from '../../models/TreeNode';
 import {Concept} from '../../models/Concept';
 import {Related} from '../../models/Related';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import {Property} from '../../models/Property';
 import {AuthenticationService} from '../../security/auth.service';
@@ -18,7 +18,7 @@ export class OntologyLibraryComponent implements OnInit {
   concept: Concept;
   definition: Related[];
   properties: Property[];
-  selectedNode: TreeNode;
+  selectedIri: string;
   searchSize = 72;
   root = ':CM_ValueTerminology';
   relationships = [':SN_116680003'];
@@ -26,6 +26,7 @@ export class OntologyLibraryComponent implements OnInit {
 
   constructor(private service: ConceptService,
               private auth: AuthenticationService,
+              private router: Router,
               private route: ActivatedRoute,
               private log: LoggerService) {
   }
@@ -33,34 +34,39 @@ export class OntologyLibraryComponent implements OnInit {
   ngOnInit() {
     // Direct URL nav - need to push to tree
     this.route.params.subscribe(
-      (params) => this.treeView.displayNode((params.id) ? params.id : this.root)
+      (params) => this.displayConcept((params.id) ? params.id : this.root),
+      (error) => this.log.error(error)
     );
+  }
+
+  displayConcept(iri: string) {
+    if (this.selectedIri !== iri) {
+      this.selectedIri = iri;
+      this.service.getConcept(iri).subscribe(
+        (result) => this.concept = result,
+        (error) => this.log.error(error)
+      );
+
+      this.service.getDefinition(iri).subscribe(
+        (result) => this.definition = result,
+        (error) => this.log.error(error)
+      );
+
+      this.service.getProperties(iri).subscribe(
+        (result) => this.properties = result,
+        (error) => this.log.error(error)
+      );
+    }
+  }
+
+  goto(iri: string) {
+    if (iri !== this.selectedIri) {
+      this.router.navigate(['ontology', iri]);
+    }
   }
 
   hasResults(displayed: boolean) {
     this.searchSize = displayed ? 256 : 72;
-  }
-
-  selectResult(item: any) {
-    this.treeView.displayNode(item.iri);
-  }
-
-  selectNode(node: TreeNode) {
-    this.selectedNode = node;
-    this.service.getConcept(node.id).subscribe(
-      (result) => this.concept = result,
-      (error) => this.log.error(error)
-    );
-
-    this.service.getDefinition(node.id).subscribe(
-      (result) => this.definition = result,
-      (error) => this.log.error(error)
-    );
-
-    this.service.getProperties(node.id).subscribe(
-      (result) => this.properties = result,
-      (error) => this.log.error(error)
-    );
   }
 
   home() {

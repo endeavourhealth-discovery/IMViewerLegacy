@@ -35,6 +35,7 @@ export class AuthenticationService {
       .pipe(
         map(user => {
           debug('storing token ' + JSON.stringify(user));
+          localStorage.removeItem('currentUser');
           localStorage.setItem('currentUser', JSON.stringify(user));
         })
       );
@@ -101,6 +102,7 @@ export class AuthenticationService {
             && cu.getSignInUserSession().getAccessToken().getJwtToken()) {
             // We now have a token
             debug('storing token ' + JSON.stringify(cu));
+            localStorage.removeItem('currentUser');
             localStorage.setItem('currentUser', JSON.stringify(cu));
             obs.next(cu.getSignInUserSession().getAccessToken().getJwtToken());
           } else {

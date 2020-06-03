@@ -72,7 +72,7 @@ export class TreeSource implements DataSource<TreeNode> {
   }
 
   private loadMore(node: TreeNode, index: number, count: number) {
-    console.error('Loading more...');
+
     this.database.getSources(node.parentNode.id, this.relationships, 15, node.page).subscribe(
       (result) => {
         const nodes = result

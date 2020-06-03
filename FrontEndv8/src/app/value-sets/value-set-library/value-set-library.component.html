@@ -16,12 +16,12 @@
           <as-split direction="vertical" unit="pixel">
             <as-split-area [size]="searchSize" minSize="72" style="height: 100%; overflow: hidden">
               <div class="as-split-area-content" style="height: inherit">
-                <app-concept-search [root]="root" [relationships]="relationships" (selection)="selectResult($event)" (hasResults)="hasResults($event)"></app-concept-search>
+                <app-concept-search [root]="root" [relationships]="relationships" (selection)="goto($event.iri)" (hasResults)="hasResults($event)"></app-concept-search>
               </div>
             </as-split-area>
             <as-split-area>
               <div class="as-split-area-content">
-                <app-concept-tree-view [root]="root" (selection)="selectNode($event)"></app-concept-tree-view>
+                <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)"></app-concept-tree-view>
               </div>
             </as-split-area>
           </as-split>
