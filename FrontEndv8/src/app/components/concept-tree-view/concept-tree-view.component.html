@@ -4,7 +4,7 @@
     matTreeNodePadding
     matTreeNodePaddingIndent="15"
     class="hover-highlight"
-    [class.selected]="selectedNode == node"
+    [class.selected]="selectedIri == node.id"
     (click)="selectNode(node)"
     style="cursor: pointer">
     <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename" matTreeNodeToggle [disabled]="!node.expandable">

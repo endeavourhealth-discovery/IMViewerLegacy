@@ -16,12 +16,12 @@
           <as-split direction="vertical" unit="pixel">
             <as-split-area [size]="searchSize" minSize="72" style="height: 100%; overflow: hidden">
               <div class="as-split-area-content" style="height: inherit">
-                <app-concept-search [root]="root" [relationships]="relationships" (selection)="selectResult($event)" (hasResults)="hasResults($event)"></app-concept-search>
+                <app-concept-search [root]="root" [relationships]="relationships" (selection)="goto($event.iri)" (hasResults)="hasResults($event)"></app-concept-search>
               </div>
             </as-split-area>
             <as-split-area>
               <div class="as-split-area-content">
-                <app-concept-tree-view [root]="root" (selection)="selectNode($event)"></app-concept-tree-view>
+                <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)"></app-concept-tree-view>
               </div>
             </as-split-area>
           </as-split>
@@ -48,7 +48,7 @@
             </as-split-area>
             <as-split-area>
               <div class="as-split-area-content" style="height: calc(100% - 16px);">
-                <app-data-model-navigator [conceptIri]="concept?.iri" (selection)="selectResult($event)"></app-data-model-navigator>
+                <app-data-model-navigator [conceptIri]="selectedIri" (selection)="goto($event.iri)"></app-data-model-navigator>
 <!--
                 <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
                   <mat-form-field appearance="outline" fxFlex="calc(100% - 16px)">

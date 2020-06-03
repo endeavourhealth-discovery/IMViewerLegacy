@@ -33,7 +33,7 @@ export class ValueSetLibraryComponent implements OnInit {
   ngOnInit() {
     // Direct URL nav - need to push to tree
     this.route.params.subscribe(
-      (params) => this.treeView.loadTree((params.id) ? params.id : this.root)
+      (params) => this.treeView.displayNode((params.id) ? params.id : this.root)
     );
   }
 
@@ -42,7 +42,7 @@ export class ValueSetLibraryComponent implements OnInit {
   }
 
   selectResult(item: any) {
-    this.treeView.loadTree(item.iri);
+    this.treeView.displayNode(item.iri);
   }
 
   selectNode(node: TreeNode) {

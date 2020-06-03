@@ -98,7 +98,6 @@ export class TreeSource implements DataSource<TreeNode> {
       (result) => {
 
         if (node.page === 1 && result.result.length === 0) {
-          console.error('End of tree');
           node.expandable = false;
         } else {
           const existing = this.data.slice(index, index + count);

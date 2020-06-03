@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNode} from '../../models/TreeNode';
 import {TreeSource} from './TreeSource';
@@ -12,14 +12,18 @@ import {ConceptService} from '../../concept.service';
   templateUrl: './concept-tree-view.component.html',
   styleUrls: ['./concept-tree-view.component.scss']
 })
-export class ConceptTreeViewComponent implements OnInit {
+export class ConceptTreeViewComponent implements AfterViewInit {
   @Input()  root: string;
-  @Output() selection: EventEmitter<any> = new EventEmitter<any>();
+  @Input()
+  set conceptIri(iri: string) {
+    this.displayNode(iri);
+  }
+  @Output() selection: EventEmitter<string> = new EventEmitter<string>();
 
 
+  selectedIri: string;
   treeControl: FlatTreeControl<TreeNode>;
   dataSource: TreeSource;
-  selectedNode: TreeNode;
   relationships = [':SN_116680003'];
 
   getLevel = (node: TreeNode) => node.level;
@@ -32,24 +36,41 @@ export class ConceptTreeViewComponent implements OnInit {
     this.dataSource = new TreeSource(this.treeControl, service, log, this.relationships);
   }
 
-  ngOnInit() {
+  ngAfterViewInit() {
+    this.selectedIri = this.root;
+    this.service.getConcept(this.root).subscribe(
+      (result) => this.dataSource.data = [new TreeNode(result.iri, result.name, 0, true)],
+      (error) => this.log.error(error)
+    );
   }
 
-  loadTree(id: string) {
-    if (id) {
-      this.service.getConcept(id).subscribe(
-        (result) => this.showConceptTree(result),
-        (error) => this.log.error(error)
-      );
-    } else if (this.root) {
-      this.service.getConcept(this.root).subscribe(
-        (result) => this.dataSource.data = [new TreeNode(result.iri, result.name, 0, true)],
-        (error) => this.log.error(error)
-      );
+  displayNode(id: string) {
+    if (id !== this.selectedIri) {
+      this.selectedIri = id;
+
+      if (id) {
+        // Load clean tree if selection not currently loaded
+        if (this.dataSource.data.findIndex((v) => v.id === id) === -1) {
+          this.service.getConcept(id).subscribe(
+            (result) => this.loadConceptTree(result),
+            (error) => this.log.error(error)
+          );
+        }
+      }
     }
   }
 
-  showConceptTree(concept: Concept) {
+  selectNode(node: TreeNode) {
+    if (node.id === '_LOADMORE_') {
+      node.name = 'Loading...';
+      this.dataSource.toggleNode(node, true);
+    } else {
+      this.selectedIri = node.id;
+      this.selection.emit(node.id);
+    }
+  }
+
+  loadConceptTree(concept: Concept) {
     this.service.loadTree(this.root, concept.iri, this.relationships).subscribe(
       (result) => this.buildTree(concept, result),
       (error) => this.log.error(error)
@@ -75,16 +96,6 @@ export class ConceptTreeViewComponent implements OnInit {
     this.dataSource.data = nodes;
 
     this.selectNode(conceptNode);
-  }
-
-  selectNode(node: TreeNode) {
-    if (node.id !== '_LOADMORE_') {
-      this.selectedNode = node;
-      this.selection.emit(node);
-    } else {
-      node.name = 'Loading...';
-      this.dataSource.toggleNode(node, true);
-    }
   }
 
   getNodeIcon(node: any) {

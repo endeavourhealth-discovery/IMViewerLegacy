@@ -2,12 +2,11 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConceptService} from '../../concept.service';
 import {TreeNode} from '../../models/TreeNode';
 import {Concept} from '../../models/Concept';
-import {Related} from '../../models/Related';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
-import {Property} from '../../models/Property';
 import {AuthenticationService} from '../../security/auth.service';
 import {ConceptTreeViewComponent} from '../../components/concept-tree-view/concept-tree-view.component';
+const debug = (message: string) => { console.log(message); };
 
 @Component({
   selector: 'app-data-model-library',
@@ -16,13 +15,14 @@ import {ConceptTreeViewComponent} from '../../components/concept-tree-view/conce
 })
 export class DataModelLibraryComponent implements OnInit {
   concept: Concept;
-  selectedNode: TreeNode;
+  selectedIri: string;
   searchSize = 72;
   root = ':DM_DataModel';
   relationships = [':SN_116680003'];
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
 
   constructor(private service: ConceptService,
+              private router: Router,
               private auth: AuthenticationService,
               private route: ActivatedRoute,
               private log: LoggerService) {
@@ -31,24 +31,29 @@ export class DataModelLibraryComponent implements OnInit {
   ngOnInit() {
     // Direct URL nav - need to push to tree
     this.route.params.subscribe(
-      (params) => this.treeView.loadTree((params.id) ? params.id : this.root)
+      (params) => this.displayConcept((params.id) ? params.id : this.root),
+      (error) => this.log.error(error)
     );
+  }
+
+  displayConcept(iri: string) {
+    if (this.selectedIri !== iri) {
+      this.selectedIri = iri;
+      this.service.getConcept(iri).subscribe(
+        (result) => this.concept = result,
+        (error) => this.log.error(error)
+      );
+    }
+  }
+
+  goto(iri: string) {
+    if (iri != this.selectedIri) {
+      this.router.navigate(['dataModel', iri]);
+    }
   }
 
   hasResults(displayed: boolean) {
     this.searchSize = displayed ? 256 : 72;
-  }
-
-  selectResult(item: any) {
-    this.treeView.loadTree(item.iri);
-  }
-
-  selectNode(node: TreeNode) {
-    this.selectedNode = node;
-    this.service.getConcept(node.id).subscribe(
-      (result) => this.concept = result,
-      (error) => this.log.error(error)
-    );
   }
 
   home() {

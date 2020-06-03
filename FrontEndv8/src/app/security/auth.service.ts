@@ -73,7 +73,7 @@ export class AuthenticationService {
   refreshToken() {
     debug('Refreshing token');
     const u = this.getUser();
-    console.log(u);
+    debug(u);
 
     if (u === null || u.signInUserSession === null) {
       // No user data or no session, force logout

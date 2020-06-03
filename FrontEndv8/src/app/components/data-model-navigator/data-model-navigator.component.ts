@@ -40,6 +40,8 @@ export class DataModelNavigatorComponent implements OnInit {
 
   refresh() {
     this.concept = this.definition = this.properties = this.sources = null;
+    svgPanZoom('#panZoom').reset();
+    this.targetCanvas.nativeElement.innerHTML = '<svg id="panZoom" width="100%" height="100%"></svg>';
 
     this.service.getConcept(this.iri).subscribe(
       (result) => {
@@ -82,9 +84,6 @@ export class DataModelNavigatorComponent implements OnInit {
 
 
   buildSvg() {
-    svgPanZoom('#panZoom').reset();
-    this.targetCanvas.nativeElement.innerHTML = '<svg id="panZoom" width="100%" height="100%"></svg>';
-
     // D3
     const svg = d3.select('svg');
 

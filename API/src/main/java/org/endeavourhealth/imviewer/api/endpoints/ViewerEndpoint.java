@@ -26,10 +26,10 @@ public class ViewerEndpoint {
                            @QueryParam("root") String root,
                            @QueryParam("term") String term,
                            @QueryParam("relationship") List<String> relationships) throws Exception {
-        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.search")) {
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.search");
+             ViewerJDBCDAL dal = new ViewerJDBCDAL()) {
             LOG.debug("search");
 
-            ViewerJDBCDAL dal = new ViewerJDBCDAL();
             List<Concept> result = dal.search(term, root, relationships);
 
             return Response
@@ -45,10 +45,10 @@ public class ViewerEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getConcept(@Context SecurityContext sc,
                                @PathParam("iri") String iri) throws Exception {
-        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getConcept")) {
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getConcept");
+             ViewerJDBCDAL dal = new ViewerJDBCDAL()) {
             LOG.debug("getConcept");
 
-            ViewerJDBCDAL dal = new ViewerJDBCDAL();
             Concept result = dal.getConcept(iri);
 
             return Response
@@ -66,10 +66,10 @@ public class ViewerEndpoint {
                                @PathParam("iri") String iri,
                                @QueryParam("root") String root,
                                @QueryParam("relationship") List<String> relationships) throws Exception {
-        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getTargets")) {
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getTargets");
+             ViewerJDBCDAL dal = new ViewerJDBCDAL()) {
             LOG.debug("getTargets");
 
-            ViewerJDBCDAL dal = new ViewerJDBCDAL();
             List<RelatedConcept> result = dal.getTree(iri, root, relationships);
 
             return Response
@@ -87,10 +87,10 @@ public class ViewerEndpoint {
                                @PathParam("iri") String iri,
                                   @QueryParam("inherited") Boolean inherited
                                   ) throws Exception {
-        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getProperties")) {
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getProperties");
+             ViewerJDBCDAL dal = new ViewerJDBCDAL()) {
             LOG.debug("getProperties");
 
-            ViewerJDBCDAL dal = new ViewerJDBCDAL();
             List<Property> result = dal.getProperties(iri, (inherited == null) ? false : inherited);
 
             return Response
@@ -106,10 +106,10 @@ public class ViewerEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDefinition(@Context SecurityContext sc,
                                @PathParam("iri") String iri) throws Exception {
-        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getDefinition")) {
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getDefinition");
+             ViewerJDBCDAL dal = new ViewerJDBCDAL()) {
             LOG.debug("getDefinition");
 
-            ViewerJDBCDAL dal = new ViewerJDBCDAL();
             List<RelatedConcept> result = dal.getDefinition(iri);
 
             return Response
@@ -132,10 +132,10 @@ public class ViewerEndpoint {
         limit = (limit == null) ? 0 : limit;
         page = (page == null) ? 0 : page;
 
-        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getSources")) {
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getSources");
+             ViewerJDBCDAL dal = new ViewerJDBCDAL()) {
             LOG.debug("getSources");
 
-            ViewerJDBCDAL dal = new ViewerJDBCDAL();
             PagedResultSet<RelatedConcept> result = dal.getSources(iri, relationships, limit, page);
 
             return Response
