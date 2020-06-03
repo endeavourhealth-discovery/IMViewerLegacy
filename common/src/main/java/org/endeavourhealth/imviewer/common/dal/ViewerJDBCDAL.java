@@ -5,11 +5,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ViewerJDBCDAL {
+public class ViewerJDBCDAL extends BaseJDBCDAL {
     public List<RelatedConcept> getDefinition(String iri) throws SQLException {
-        Connection conn = ConnectionPool.getInstance().pop();
-
-
         String sql = "SELECT p.iri AS r_iri, p.name AS r_name, v.iri AS c_iri, v.name AS c_name\n" +
             "FROM concept_property_object o\n" +
             "JOIN concept c ON c.id = o.concept AND c.iri = ?\n" +
@@ -28,14 +25,10 @@ public class ViewerJDBCDAL {
              try(ResultSet rs = stmt.executeQuery()) {
                  return Hydrator.createRelatedConceptList(rs);
              }
-        } finally {
-            ConnectionPool.getInstance().push(conn);
         }
     }
 
     public PagedResultSet<RelatedConcept> getSources(String iri, List<String> relationships, int limit, int page) throws SQLException {
-        Connection conn = ConnectionPool.getInstance().pop();
-
         String sql = "SELECT SQL_CALC_FOUND_ROWS p.iri AS r_iri, p.name AS r_name, c.iri AS c_iri, c.name AS c_name\n" +
             "FROM concept_property_object o\n" +
             "JOIN concept v ON v.id = o.object AND v.iri = ?\n" +
@@ -56,39 +49,34 @@ public class ViewerJDBCDAL {
             .setPage(page)
             .setPageSize(limit);
 
-        try {
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                int i = 1;
-                stmt.setString(i++, iri);
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            int i = 1;
+            stmt.setString(i++, iri);
 
-                if (relationships != null)
-                    for (String relationship : relationships)
-                        stmt.setString(i++, relationship);
+            if (relationships != null)
+                for (String relationship : relationships)
+                    stmt.setString(i++, relationship);
 
-                if (limit > 0) {
-                    if (page == 0) {
-                        stmt.setInt(i++, limit);
-                    } else {
-                        stmt.setInt(i++, (page - 1) * limit);
-                        stmt.setInt(i++, limit);
-                    }
-                }
-
-                try (ResultSet rs = stmt.executeQuery()) {
-                    result.setResult(Hydrator.createRelatedConceptList(rs));
+            if (limit > 0) {
+                if (page == 0) {
+                    stmt.setInt(i++, limit);
+                } else {
+                    stmt.setInt(i++, (page - 1) * limit);
+                    stmt.setInt(i++, limit);
                 }
             }
 
-            result.setTotalRecords(DALHelper.getCalculatedRows(conn));
-        } finally {
-            ConnectionPool.getInstance().push(conn);
+            try (ResultSet rs = stmt.executeQuery()) {
+                result.setResult(Hydrator.createRelatedConceptList(rs));
+            }
         }
+
+        result.setTotalRecords(DALHelper.getCalculatedRows(conn));
 
         return result;
     }
 
     public Concept getConcept(String iri) throws SQLException {
-        Connection conn = ConnectionPool.getInstance().pop();
 
         String sql = "SELECT iri, name, description FROM concept WHERE iri = ?";
 
@@ -100,9 +88,6 @@ public class ViewerJDBCDAL {
                 else
                     return Hydrator.createConcept(rs);
             }
-
-        } finally {
-            ConnectionPool.getInstance().push(conn);
         }
     }
 
@@ -121,8 +106,6 @@ public class ViewerJDBCDAL {
         sql += "ORDER BY LENGTH(c.name)\n" +
             "LIMIT 10";
 
-        Connection conn = ConnectionPool.getInstance().pop();
-
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             int i = 1;
             stmt.setString(i++, '%' + term + '%');
@@ -135,8 +118,6 @@ public class ViewerJDBCDAL {
             try (ResultSet rs = stmt.executeQuery()) {
                 return Hydrator.createConceptList(rs);
             }
-        } finally {
-            ConnectionPool.getInstance().push(conn);
         }
     }
 
@@ -155,7 +136,6 @@ public class ViewerJDBCDAL {
 
         sql += "ORDER by tct.level";
 
-        Connection conn = ConnectionPool.getInstance().pop();
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             int i = 1;
             stmt.setString(i++, iri);
@@ -171,16 +151,12 @@ public class ViewerJDBCDAL {
                     rootFound = rs.getString("c_iri").equals(root);
                 }
             }
-        } finally {
-            ConnectionPool.getInstance().push(conn);
         }
 
         return result;
     }
 
     public List<Property> getProperties(String iri, boolean inherited) throws SQLException {
-        Connection conn = ConnectionPool.getInstance().pop();
-
         String sql = "SELECT p.iri AS p_iri, p.name AS p_name,\n" +
             "d.min_cardinality, d.max_cardinality,\n" +
             "v.iri as v_iri, v.name AS v_name,\n" +
@@ -213,8 +189,6 @@ public class ViewerJDBCDAL {
             try(ResultSet rs = stmt.executeQuery()) {
                 return Hydrator.createPropertyList(rs);
             }
-        } finally {
-            ConnectionPool.getInstance().push(conn);
         }
     }
 }

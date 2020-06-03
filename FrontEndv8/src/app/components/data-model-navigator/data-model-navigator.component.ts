@@ -92,7 +92,7 @@ export class DataModelNavigatorComponent implements OnInit {
     svg.append('defs')
       .append('marker')
       .attr('id', 'arrow')
-      .attr('viewBox', '[0, 0, 10, 10]')
+      .attr('viewBox', '0, 0, 10, 10')
       .attr('refX', 10)
       .attr('refY', 5)
       .attr('markerWidth', 10)
