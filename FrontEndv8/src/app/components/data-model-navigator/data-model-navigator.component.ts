@@ -19,7 +19,7 @@ export class DataModelNavigatorComponent implements OnInit {
       this.iri = iri;
       this.refresh();
   }
-  @Output() selection: EventEmitter<any> = new EventEmitter<any>();
+  @Output() selection: EventEmitter<string> = new EventEmitter<string>();
 
   @ViewChild('svg', {static: true}) targetCanvas: ElementRef;
 
@@ -160,8 +160,8 @@ export class DataModelNavigatorComponent implements OnInit {
       const g = svg.append('g');
 
       const s = g.append('svg')
-        .attr('style', 'cursor: pointer')
-        .on('click', () => this.nodeClick(rel.concept));
+        .attr('class', 'clickable')
+        .on('click', () => this.nodeClick(rel.concept.iri));
 
       const r = s.append('rect')
         .attr('rx', 6)
@@ -184,7 +184,9 @@ export class DataModelNavigatorComponent implements OnInit {
       const l = svg.append('text')
         .text(relName)
         .attr('font-size', 10)
-        .attr('height', 12);
+        .attr('height', 12)
+        .attr('class', 'clickable')
+        .on('click', () => this.nodeClick(rel.relationship.iri));
 
       const lw = l.node().getComputedTextLength();
       l.attr('width', lw);
@@ -227,16 +229,32 @@ export class DataModelNavigatorComponent implements OnInit {
       const property = this.properties[i];
 
       const p = s.append('text')
-        .text(property.property.name + ': ' + property.valueType.name + this.cardText(property.minCardinality, property.maxCardinality))
+        .text(property.property.name + ': ')
         .attr('font-size', 12)
         .attr('x', this.pad)
-        .attr('y', 38 + (20 * i));
+        .attr('y', 38 + (20 * i))
+        .attr('class', 'clickable')
+        .on('click', () => this.nodeClick(property.property.iri));
 
       if (property.level >= 0) {
         p.attr('fill', 'grey');
       }
 
-      const l = p.node().getComputedTextLength() + (this.pad * 2);
+      let l = p.node().getComputedTextLength() + (this.pad) + 4;
+
+      const pt = s.append('text')
+        .text(property.valueType.name + this.cardText(property.minCardinality, property.maxCardinality))
+        .attr('font-size', 12)
+        .attr('x', l)
+        .attr('y', 38 + (20 * i))
+        .attr('class', 'clickable')
+        .on('click', () => this.nodeClick(property.valueType.iri));
+
+      if (property.level >= 0) {
+        pt.attr('fill', 'grey');
+      }
+
+      l += pt.node().getComputedTextLength() + (this.pad);
 
       if (l > w) {
         w = l;
@@ -279,7 +297,7 @@ export class DataModelNavigatorComponent implements OnInit {
     return '[' + card + ']';
   }
 
-  nodeClick(concept: any) {
-    this.selection.emit(concept);
+  nodeClick(iri: string) {
+    this.selection.emit(iri);
   }
 }

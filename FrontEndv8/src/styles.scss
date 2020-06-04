@@ -76,19 +76,22 @@ div#home-content {
 }
 .as-horizontal > .as-split-gutter {
   background: unset;
-//  flex-basis: 22px !important;
   > .as-split-gutter-icon {
     background-color: mat-color($primary, 100);
-  //  width: 50% !important;
     background-image: url('assets/resize-h.png') !important;
   }
 }
 .as-vertical > .as-split-gutter {
   background: unset;
-//  flex-basis: 22px !important;
   > .as-split-gutter-icon {
     background-color: mat-color($primary, 100);
-  //  height: 50% !important;
     background-image: url('assets/resize-v.png') !important;
   }
+}
+
+.clickable {
+  cursor: pointer
+}
+.clickable:hover {
+  font-weight: bold;
 }
