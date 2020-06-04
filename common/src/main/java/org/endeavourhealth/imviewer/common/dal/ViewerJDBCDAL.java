@@ -7,7 +7,9 @@ import java.util.List;
 
 public class ViewerJDBCDAL extends BaseJDBCDAL {
     public List<RelatedConcept> getDefinition(String iri) throws SQLException {
-        String sql = "SELECT p.iri AS r_iri, p.name AS r_name, v.iri AS c_iri, v.name AS c_name\n" +
+        String sql = "SELECT o.minCardinality, o.maxCardinality,\n" +
+            "p.iri AS r_iri, p.name AS r_name,\n" +
+            "v.iri AS c_iri, v.name AS c_name\n" +
             "FROM concept_property_object o\n" +
             "JOIN concept c ON c.id = o.concept AND c.iri = ?\n" +
             "JOIN concept p ON p.id = o.property\n" +
@@ -29,7 +31,10 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
     }
 
     public PagedResultSet<RelatedConcept> getSources(String iri, List<String> relationships, int limit, int page) throws SQLException {
-        String sql = "SELECT SQL_CALC_FOUND_ROWS p.iri AS r_iri, p.name AS r_name, c.iri AS c_iri, c.name AS c_name\n" +
+        String sql = "SELECT SQL_CALC_FOUND_ROWS\n" +
+            "o.minCardinality, o.maxCardinality,\n" +
+            "p.iri AS r_iri, p.name AS r_name,\n" +
+            "c.iri AS c_iri, c.name AS c_name\n" +
             "FROM concept_property_object o\n" +
             "JOIN concept v ON v.id = o.object AND v.iri = ?\n" +
             "JOIN concept p ON p.id = o.property\n" +
@@ -124,7 +129,9 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
     public List<RelatedConcept> getTree(String iri, String root, List<String> relationships) throws SQLException {
         List<RelatedConcept> result = new ArrayList<>();
 
-        String sql = "SELECT p.iri AS r_iri, p.name AS r_name, t.iri AS c_iri, t.name AS c_name\n" +
+        String sql = "SELECT null AS minCardinality, null AS maxCardinality,\n" +
+            "p.iri AS r_iri, p.name AS r_name,\n" +
+            "t.iri AS c_iri, t.name AS c_name\n" +
             "FROM concept c\n" +
             "JOIN concept_tct tct ON tct.source = c.id\n" +
             "JOIN concept p ON p.id = tct.property\n" +

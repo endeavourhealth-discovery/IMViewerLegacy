@@ -45,6 +45,8 @@ public class Hydrator {
 
     public static RelatedConcept populate(RelatedConcept c, ResultSet rs) throws SQLException {
         return c
+            .setMinCardinality(DALHelper.getInt(rs, "minCardinality"))
+            .setMaxCardinality(DALHelper.getInt(rs, "maxCardinality"))
             .setRelationship(new Concept()
                 .setIri(rs.getString("r_iri"))
                 .setName(rs.getString("r_name"))

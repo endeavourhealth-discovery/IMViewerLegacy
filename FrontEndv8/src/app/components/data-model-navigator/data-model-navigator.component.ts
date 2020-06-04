@@ -179,8 +179,10 @@ export class DataModelNavigatorComponent implements OnInit {
       const w = t.node().getComputedTextLength() + (this.pad * 2);
       r.attr('width', w);
 
+      const relName = rel.relationship.name + this.cardText(rel.minCardinality, rel.maxCardinality);
+
       const l = svg.append('text')
-        .text(rel.relationship.name)
+        .text(relName)
         .attr('font-size', 10)
         .attr('height', 12);
 
@@ -189,10 +191,10 @@ export class DataModelNavigatorComponent implements OnInit {
 
       graph.setNode(rel.concept.iri, {label: rel.concept.name, width: w, height: 25});
       if (reverse) {
-        graph.setEdge(rel.concept.iri, this.concept.iri, {label: rel.relationship.name, width: lw, height: 12});
+        graph.setEdge(rel.concept.iri, this.concept.iri, {label: relName, width: lw, height: 12});
         map.set(rel.concept.iri + '-' + this.concept.iri, l);
       } else {
-        graph.setEdge(this.concept.iri, rel.concept.iri, {label: rel.relationship.name, width: lw, height: 12});
+        graph.setEdge(this.concept.iri, rel.concept.iri, {label: relName, width: lw, height: 12});
         map.set(this.concept.iri + '-' + rel.concept.iri, l);
       }
 
@@ -222,13 +224,15 @@ export class DataModelNavigatorComponent implements OnInit {
     let w = t.node().getComputedTextLength() + (this.pad * 2);
 
     for (let i = 0; i < this.properties.length; i++) {
+      const property = this.properties[i];
+
       const p = s.append('text')
-        .text(this.properties[i].property.name + ' -> ' + this.properties[i].valueType.name)
+        .text(property.property.name + ': ' + property.valueType.name + this.cardText(property.minCardinality, property.maxCardinality))
         .attr('font-size', 12)
         .attr('x', this.pad)
         .attr('y', 38 + (20 * i));
 
-      if (this.properties[i].level >= 0) {
+      if (property.level >= 0) {
         p.attr('fill', 'grey');
       }
 
@@ -254,6 +258,25 @@ export class DataModelNavigatorComponent implements OnInit {
 
     graph.setNode(this.concept.iri, {label: this.concept.name, width: w, height: 25 + (20 * this.properties.length)});
     map.set(this.concept.iri, s);
+  }
+
+  cardText(min: number, max: number): string {
+    // Same, non-null
+    if (min === max && min != null)
+      return '[' + min + ']';
+
+    // Create in 'm..n' format
+    let card = ((min === null) ? '0' : min)
+      + '..'
+      + ((max === null) ? '*' : max);
+
+    // Replace shorthands
+    if (card === '0..0')
+      card = '0';
+    else if (card === '0..*')
+      card = '*';
+
+    return '[' + card + ']';
   }
 
   nodeClick(concept: any) {
