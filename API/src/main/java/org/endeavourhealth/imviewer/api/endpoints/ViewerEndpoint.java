@@ -144,4 +144,30 @@ public class ViewerEndpoint {
                 .build();
         }
     }
+
+    @GET
+    @Path("/{iri}/Targets")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTargets(@Context SecurityContext sc,
+                               @PathParam("iri") String iri,
+                               @QueryParam("relationship") List<String> relationships,
+                               @QueryParam("limit") Integer limit,
+                               @QueryParam("page") Integer page) throws Exception {
+
+        limit = (limit == null) ? 0 : limit;
+        page = (page == null) ? 0 : page;
+
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getTargets");
+             ViewerJDBCDAL dal = new ViewerJDBCDAL()) {
+            LOG.debug("getTargets");
+
+            PagedResultSet<RelatedConcept> result = dal.getTargets(iri, relationships, limit, page);
+
+            return Response
+                .ok()
+                .entity(result)
+                .build();
+        }
+    }
 }

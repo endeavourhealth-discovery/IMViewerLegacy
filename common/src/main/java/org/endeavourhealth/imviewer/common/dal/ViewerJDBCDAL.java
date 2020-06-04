@@ -81,6 +81,57 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
         return result;
     }
 
+    public PagedResultSet<RelatedConcept> getTargets(String iri, List<String> relationships, int limit, int page) throws SQLException {
+        String sql = "SELECT SQL_CALC_FOUND_ROWS\n" +
+            "o.minCardinality, o.maxCardinality,\n" +
+            "p.iri AS r_iri, p.name AS r_name,\n" +
+            "v.iri AS c_iri, v.name AS c_name\n" +
+            "FROM concept_property_object o\n" +
+            "JOIN concept c ON c.id = o.concept AND c.iri = ?\n" +
+            "JOIN concept p ON p.id = o.property\n" +
+            "JOIN concept v ON v.id = o.object\n";
+
+        if (relationships != null && !relationships.isEmpty())
+            sql += "WHERE p.iri IN (" + DALHelper.inListParams(relationships.size()) + ")\n";
+
+        if (limit > 0) {
+            sql += "LIMIT ?";
+            if (page > 0) {
+                sql += ",?";
+            }
+        }
+
+        PagedResultSet<RelatedConcept> result = new PagedResultSet<RelatedConcept>()
+            .setPage(page)
+            .setPageSize(limit);
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            int i = 1;
+            stmt.setString(i++, iri);
+
+            if (relationships != null)
+                for (String relationship : relationships)
+                    stmt.setString(i++, relationship);
+
+            if (limit > 0) {
+                if (page == 0) {
+                    stmt.setInt(i++, limit);
+                } else {
+                    stmt.setInt(i++, (page - 1) * limit);
+                    stmt.setInt(i++, limit);
+                }
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                result.setResult(Hydrator.createRelatedConceptList(rs));
+            }
+        }
+
+        result.setTotalRecords(DALHelper.getCalculatedRows(conn));
+
+        return result;
+    }
+
     public Concept getConcept(String iri) throws SQLException {
 
         String sql = "SELECT iri, name, description FROM concept WHERE iri = ?";

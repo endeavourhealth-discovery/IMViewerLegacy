@@ -49,51 +49,6 @@
             <as-split-area>
               <div class="as-split-area-content" style="height: calc(100% - 16px);">
                 <app-data-model-navigator [conceptIri]="selectedIri" (selection)="goto($event)"></app-data-model-navigator>
-<!--
-                <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
-                  <mat-form-field appearance="outline" fxFlex="calc(100% - 16px)">
-                    <mat-label id="definition-label">Definition</mat-label>
-                    <mat-wrapper>
-                      <table *ngIf="definition && definition.length > 0" class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" aria-describedby="definition-label">
-                        <thead>
-                          <tr class="mat-header-row">
-                            <th scope="col" class="mat-header-cell">Relationship</th>
-                            <th scope="col" class="mat-header-cell">Concept</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr *ngFor="let p of definition" class="mat-row">
-                            <td class="mat-cell">{{p.relationship.name}}</td>
-                            <td class="mat-cell">{{p.concept.name}}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </mat-wrapper>
-                  </mat-form-field>
-
-                  <mat-form-field appearance="outline" fxFlex="100">
-                    <mat-label id="properties-label">Properties</mat-label>
-                    <mat-wrapper>
-                      <table *ngIf="properties && properties.length > 0" class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" aria-describedby="properties-label">
-                        <thead>
-                          <tr class="mat-header-row">
-                            <th scope="col" class="mat-header-cell">Property</th>
-                            <th scope="col" class="mat-header-cell">Card.</th>
-                            <th scope="col" class="mat-header-cell">Type</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr *ngFor="let p of properties" class="mat-row">
-                            <td class="mat-cell">{{p.property.name}}</td>
-                            <td class="mat-cell">{{p.minCardinality}} : {{p.maxCardinality}}</td>
-                            <td class="mat-cell">{{p.valueType.name}}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </mat-wrapper>
-                  </mat-form-field>
-                </div>
--->
               </div>
             </as-split-area>
           </as-split>

@@ -7,6 +7,7 @@ import {Concept} from '../../models/Concept';
 import * as d3 from 'd3';
 import * as dagre from 'dagre';
 import * as svgPanZoom from 'svg-pan-zoom';
+import {Observable, Subscription, zip} from 'rxjs';
 
 @Component({
   selector: 'app-data-model-navigator',
@@ -30,6 +31,8 @@ export class DataModelNavigatorComponent implements OnInit {
   definition: Related[];
   properties: Property[];
   sources: Related[];
+  targets: Related[];
+  obs: Subscription = null;
 
   constructor(private service: ConceptService,
               private log: LoggerService) {
@@ -39,45 +42,35 @@ export class DataModelNavigatorComponent implements OnInit {
   }
 
   refresh() {
-    this.concept = this.definition = this.properties = this.sources = null;
+    if (this.obs) {
+      this.obs.unsubscribe();
+      this.obs = null;
+    }
+    this.concept = this.definition = this.properties = this.sources = this.targets = null;
     svgPanZoom('#panZoom').reset();
     this.targetCanvas.nativeElement.innerHTML = '<svg id="panZoom" width="100%" height="100%"></svg>';
 
-    this.service.getConcept(this.iri).subscribe(
+    this.obs = zip(this.service.getConcept(this.iri),
+    this.service.getDefinition(this.iri),
+    this.service.getProperties(this.iri, true),
+    this.service.getSources(this.iri, [], 15, 1),
+    this.service.getTargets(this.iri, [], 15, 1)
+    ).subscribe(
       (result) => {
-        this.concept = result;
+        this.concept = result[0];
+        this.definition = result[1];
+        this.properties = result[2];
+        this.sources = result[3].result;
+        this.targets = result[4].result;
         this.redraw();
-      },
-      (error) => this.log.error(error)
-    );
-
-    this.service.getDefinition(this.iri).subscribe(
-      (result) => {
-        this.definition = result;
-        this.redraw();
-      },
-      (error) => this.log.error(error)
-    );
-
-    this.service.getProperties(this.iri, true).subscribe(
-      (result) => {
-        this.properties = result;
-        this.redraw();
-      },
-      (error) => this.log.error(error)
-    );
-
-    this.service.getSources(this.iri, [], 15, 1).subscribe(
-      (result) => {
-        this.sources = result.result;
-        this.redraw();
+        this.obs = null;
       },
       (error) => this.log.error(error)
     );
   }
 
   redraw() {
-    if (this.concept && this.definition && this.properties && this.sources) {
+    if (this.concept && this.definition && this.properties && this.sources && this.targets) {
       this.buildSvg();
     }
   }
@@ -116,7 +109,7 @@ export class DataModelNavigatorComponent implements OnInit {
 
     this.buildRelated(svg, graph, map, this.sources, false);
 
-    this.buildRelated(svg, graph, map, this.definition, true);
+    this.buildRelated(svg, graph, map, this.targets, true);
 
     dagre.layout(graph);
 
@@ -167,8 +160,13 @@ export class DataModelNavigatorComponent implements OnInit {
         .attr('rx', 6)
         .attr('ry', 6)
         .attr('height', 25)
-        .attr('fill', 'lightgreen')
         .attr('stroke', 'black');
+
+      if (rel.relationship.iri === ':SN_116680003')
+        r.attr('fill', 'lightgreen')
+      else
+        r.attr('fill', 'orange')
+
 
       const t = s.append('text')
         .text(rel.concept.name)
@@ -227,11 +225,12 @@ export class DataModelNavigatorComponent implements OnInit {
 
     for (let i = 0; i < this.properties.length; i++) {
       const property = this.properties[i];
+      let l = this.pad;
 
       const p = s.append('text')
         .text(property.property.name + ': ')
         .attr('font-size', 12)
-        .attr('x', this.pad)
+        .attr('x', l)
         .attr('y', 38 + (20 * i))
         .attr('class', 'clickable')
         .on('click', () => this.nodeClick(property.property.iri));
@@ -240,7 +239,7 @@ export class DataModelNavigatorComponent implements OnInit {
         p.attr('fill', 'grey');
       }
 
-      let l = p.node().getComputedTextLength() + (this.pad) + 4;
+      l += p.node().getComputedTextLength() + 4;
 
       const pt = s.append('text')
         .text(property.valueType.name + this.cardText(property.minCardinality, property.maxCardinality))
@@ -254,7 +253,23 @@ export class DataModelNavigatorComponent implements OnInit {
         pt.attr('fill', 'grey');
       }
 
-      l += pt.node().getComputedTextLength() + (this.pad);
+      l += pt.node().getComputedTextLength() + 4;
+
+      if (property.level >= 0) {
+        const o = s.append('text')
+          .text('(inherited)')
+          .attr('font-size', 10)
+          .attr('font-style', 'italic')
+          .attr('x', l)
+          .attr('y', 38 + (20 * i))
+          .attr('class', 'clickable')
+          .attr('fill', 'grey')
+          .on('click', () => this.nodeClick(property.owner.iri));
+        o.insert('title')
+          .text(property.owner.name);
+
+        l += o.node().getComputedTextLength() + (this.pad);
+      }
 
       if (l > w) {
         w = l;

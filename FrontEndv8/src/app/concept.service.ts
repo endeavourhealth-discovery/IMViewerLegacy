@@ -37,6 +37,17 @@ export class ConceptService {
     return this.http.get<PagedResultSet<Related>>('api/' + iri + '/Sources', {params});
   }
 
+  getTargets(iri: string, relationships: string[], limit: number = 0, page: number = 1): Observable<PagedResultSet<Related>> {
+    let params = new HttpParams();
+    if (relationships != null) {
+      relationships.forEach(r => params = params.append('relationship', r));
+    }
+    params = params.append('limit', limit.toString());
+    params = params.append('page', page.toString());
+
+    return this.http.get<PagedResultSet<Related>>('api/' + iri + '/Targets', {params});
+  }
+
   getConcept(iri: string): Observable<Concept> {
     return this.http.get<Concept>('api/' + iri);
   }
