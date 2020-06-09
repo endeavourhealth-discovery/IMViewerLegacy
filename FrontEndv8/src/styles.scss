@@ -71,27 +71,5 @@ div#home-content {
 .mat-form-field-flex {
   min-height: 54px;
 }
-.as-split-area-content {
-  padding: 8px;
-}
-.as-horizontal > .as-split-gutter {
-  background: unset;
-  > .as-split-gutter-icon {
-    background-color: mat-color($primary, 100);
-    background-image: url('assets/resize-h.png') !important;
-  }
-}
-.as-vertical > .as-split-gutter {
-  background: unset;
-  > .as-split-gutter-icon {
-    background-color: mat-color($primary, 100);
-    background-image: url('assets/resize-v.png') !important;
-  }
-}
 
-.clickable {
-  cursor: pointer
-}
-.clickable:hover {
-  font-weight: bold;
-}
+@import "~im-common/assets/scss/styles";

@@ -1,0 +1,29 @@
+.as-split-area-content {
+  padding: 8px;
+}
+.as-horizontal > .as-split-gutter {
+  background: unset;
+  > .as-split-gutter-icon {
+    background-color: mat-color($primary, 100);
+    background-image: url('~im-common/assets/img/resize-h.png') !important;
+  }
+}
+.as-vertical > .as-split-gutter {
+  background: unset;
+  > .as-split-gutter-icon {
+    background-color: mat-color($primary, 100);
+    background-image: url('~im-common/assets/img/resize-v.png') !important;
+  }
+}
+
+.clickable {
+  cursor: pointer
+}
+.clickable:hover {
+  font-weight: bold;
+}
+
+.mat-tree {
+  box-shadow: none;
+  border-radius: 0;
+}

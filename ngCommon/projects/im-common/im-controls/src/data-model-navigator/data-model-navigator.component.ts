@@ -1,7 +1,7 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Related} from '../models/Related';
 import {Property} from '../models/Property';
-import {IMControlsService} from '../i-m-controls.service';
+import {IMControlsService} from '../im-controls.service';
 import {LoggerService} from 'dds-angular8/logger';
 import {Concept} from '../models/Concept';
 import * as d3 from 'd3';

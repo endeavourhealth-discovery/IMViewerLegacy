@@ -4,7 +4,7 @@ import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {map} from 'rxjs/operators';
 import {LoggerService} from 'dds-angular8/logger';
-import {IMControlsService} from '../i-m-controls.service';
+import {IMControlsService} from '../im-controls.service';
 
 export class TreeSource implements DataSource<TreeNode> {
 

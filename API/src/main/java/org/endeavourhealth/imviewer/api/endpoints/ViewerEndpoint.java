@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.util.List;
 
-@Path("/")
+@Path("/concepts")
 public class ViewerEndpoint {
     private static final Logger LOG = LoggerFactory.getLogger(ViewerEndpoint.class);
 
@@ -68,7 +68,7 @@ public class ViewerEndpoint {
                                @QueryParam("relationship") List<String> relationships) throws Exception {
         try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getTargets");
              ViewerJDBCDAL dal = new ViewerJDBCDAL()) {
-            LOG.debug("getTargets");
+            LOG.debug("getTree");
 
             List<RelatedConcept> result = dal.getTree(iri, root, relationships);
 

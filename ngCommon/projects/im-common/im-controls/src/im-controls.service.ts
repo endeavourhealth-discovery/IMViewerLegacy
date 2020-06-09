@@ -19,11 +19,11 @@ export class IMControlsService {
       params = params.append('inherited', 'true');
     }
 
-    return this.http.get<Property[]>('api/' + iri + '/Properties', {params});
+    return this.http.get<Property[]>('api/concepts/' + iri + '/Properties', {params});
   }
 
   getDefinition(iri: string): Observable<Related[]> {
-    return this.http.get<Related[]>('api/' + iri + '/Definition');
+    return this.http.get<Related[]>('api/concepts/' + iri + '/Definition');
   }
 
   getSources(iri: string, relationships: string[], limit: number = 0, page: number = 1): Observable<PagedResultSet<Related>> {
@@ -34,7 +34,7 @@ export class IMControlsService {
     params = params.append('limit', limit.toString());
     params = params.append('page', page.toString());
 
-    return this.http.get<PagedResultSet<Related>>('api/' + iri + '/Sources', {params});
+    return this.http.get<PagedResultSet<Related>>('api/concepts/' + iri + '/Sources', {params});
   }
 
   getTargets(iri: string, relationships: string[], limit: number = 0, page: number = 1): Observable<PagedResultSet<Related>> {
@@ -45,11 +45,11 @@ export class IMControlsService {
     params = params.append('limit', limit.toString());
     params = params.append('page', page.toString());
 
-    return this.http.get<PagedResultSet<Related>>('api/' + iri + '/Targets', {params});
+    return this.http.get<PagedResultSet<Related>>('api/concepts/' + iri + '/Targets', {params});
   }
 
   getConcept(iri: string): Observable<Concept> {
-    return this.http.get<Concept>('api/' + iri);
+    return this.http.get<Concept>('api/concepts/' + iri);
   }
 
   search(searchTerm: string, root: string, relationships: string[]) {
@@ -60,7 +60,7 @@ export class IMControlsService {
       relationships.forEach(r => params = params.append('relationship', r));
     }
 
-    return this.http.get<any>('api/Search', {params});
+    return this.http.get<any>('api/concepts/Search', {params});
   }
 
   loadTree(root: string, iri: string, relationships: string[]) {
@@ -70,6 +70,6 @@ export class IMControlsService {
       relationships.forEach(r => params = params.append('relationship', r));
     }
 
-    return this.http.get<Related[]>('api/' + iri + '/Tree', {params});
+    return this.http.get<Related[]>('api/concepts/' + iri + '/Tree', {params});
   }
 }

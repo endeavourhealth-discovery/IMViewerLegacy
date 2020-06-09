@@ -5,7 +5,7 @@ import {TreeSource} from './TreeSource';
 import {LoggerService} from 'dds-angular8/logger';
 import {Concept} from '../models/Concept';
 import {Related} from '../models/Related';
-import {IMControlsService} from '../i-m-controls.service';
+import {IMControlsService} from '../im-controls.service';
 
 @Component({
   selector: 'app-concept-tree-view',
