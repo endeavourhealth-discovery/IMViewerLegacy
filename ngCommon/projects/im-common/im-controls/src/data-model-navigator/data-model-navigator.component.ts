@@ -1,13 +1,13 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {Related} from '../../models/Related';
-import {Property} from '../../models/Property';
-import {ConceptService} from '../../concept.service';
+import {Related} from '../models/Related';
+import {Property} from '../models/Property';
+import {IMControlsService} from '../i-m-controls.service';
 import {LoggerService} from 'dds-angular8/logger';
-import {Concept} from '../../models/Concept';
+import {Concept} from '../models/Concept';
 import * as d3 from 'd3';
 import * as dagre from 'dagre';
-import * as svgPanZoom from 'svg-pan-zoom';
-import {Observable, Subscription, zip} from 'rxjs';
+import svgPanZoom from 'svg-pan-zoom';
+import {Subscription, zip} from 'rxjs';
 
 @Component({
   selector: 'app-data-model-navigator',
@@ -34,7 +34,7 @@ export class DataModelNavigatorComponent implements OnInit {
   targets: Related[];
   obs: Subscription = null;
 
-  constructor(private service: ConceptService,
+  constructor(private service: IMControlsService,
               private log: LoggerService) {
   }
 
@@ -268,8 +268,10 @@ export class DataModelNavigatorComponent implements OnInit {
         o.insert('title')
           .text(property.owner.name);
 
-        l += o.node().getComputedTextLength() + (this.pad);
+        l += o.node().getComputedTextLength() + 4;
       }
+
+      l += this.pad;
 
       if (l > w) {
         w = l;

@@ -17,27 +17,29 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {ComponentsModule} from '../components/components.module';
 import {DataModelLibraryComponent} from './data-model-library/data-model-library.component';
+import {IMControlsModule} from 'im-common';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        MatCardModule,
-        MatFormFieldModule,
-        FormsModule,
-        MatInputModule,
-        FlexModule,
-        AngularSplitModule,
-        MatTreeModule,
-        MatProgressBarModule,
-        MatIconModule,
-        MatButtonModule,
-        MatTableModule,
-        MatSnackBarModule,
-        ControlsModule,
-        LoggerModule,
-        MatTooltipModule,
-        ComponentsModule
-    ],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    FormsModule,
+    MatInputModule,
+    FlexModule,
+    AngularSplitModule,
+    MatTreeModule,
+    MatProgressBarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTableModule,
+    MatSnackBarModule,
+    ControlsModule,
+    LoggerModule,
+    MatTooltipModule,
+    ComponentsModule,
+    IMControlsModule
+  ],
   declarations: [
     DataModelLibraryComponent
   ]

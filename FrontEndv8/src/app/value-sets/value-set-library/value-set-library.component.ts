@@ -1,13 +1,12 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConceptService} from '../../concept.service';
-import {TreeNode} from '../../models/TreeNode';
 import {Concept} from '../../models/Concept';
 import {Related} from '../../models/Related';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import {Property} from '../../models/Property';
 import {AuthenticationService} from '../../security/auth.service';
-import {ConceptTreeViewComponent} from '../../components/concept-tree-view/concept-tree-view.component';
+import {ConceptTreeViewComponent} from 'im-common/im-controls';
 
 @Component({
   selector: 'app-value-set-library',

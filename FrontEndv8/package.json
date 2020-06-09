@@ -27,6 +27,7 @@
     "dagre": "^0.8.5",
     "dds-angular8": "https://github.com/endeavourhealth-discovery/Angular8/blob/master/dds-angular8-1.0.31.tgz?raw=true",
     "hammerjs": "^2.0.8",
+    "im-common": "https://github.com/endeavourhealth-discovery/IMViewer/blob/master/ngCommon/im-common-1.0.0.tgz?raw=true",
     "rxjs": "~6.4.0",
     "svg-pan-zoom": "github:ariutta/svg-pan-zoom",
     "tslib": "^1.10.0",

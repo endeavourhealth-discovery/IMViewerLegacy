@@ -17,6 +17,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {ComponentsModule} from '../components/components.module';
 import {OntologyLibraryComponent} from './ontology-library/ontology-library.component';
+import {IMControlsModule} from 'im-common';
 
 @NgModule({
     imports: [
@@ -36,7 +37,8 @@ import {OntologyLibraryComponent} from './ontology-library/ontology-library.comp
         ControlsModule,
         LoggerModule,
         MatTooltipModule,
-        ComponentsModule
+        ComponentsModule,
+        IMControlsModule
     ],
   declarations: [
     OntologyLibraryComponent

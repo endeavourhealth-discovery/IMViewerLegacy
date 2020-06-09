@@ -1,11 +1,10 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConceptService} from '../../concept.service';
-import {TreeNode} from '../../models/TreeNode';
 import {Concept} from '../../models/Concept';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import {AuthenticationService} from '../../security/auth.service';
-import {ConceptTreeViewComponent} from '../../components/concept-tree-view/concept-tree-view.component';
+import {ConceptTreeViewComponent} from 'im-common/im-controls';
 const debug = (message: string) => { console.log(message); };
 
 @Component({

@@ -17,6 +17,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {ComponentsModule} from '../components/components.module';
 import {ValueSetLibraryComponent} from './value-set-library/value-set-library.component';
+import {IMControlsModule} from 'im-common';
 
 @NgModule({
     imports: [
@@ -36,7 +37,8 @@ import {ValueSetLibraryComponent} from './value-set-library/value-set-library.co
         ControlsModule,
         LoggerModule,
         MatTooltipModule,
-        ComponentsModule
+        ComponentsModule,
+        IMControlsModule
     ],
   declarations: [
     ValueSetLibraryComponent

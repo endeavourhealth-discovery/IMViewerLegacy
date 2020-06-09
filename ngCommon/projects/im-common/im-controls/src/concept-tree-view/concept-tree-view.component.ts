@@ -1,11 +1,11 @@
 import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {TreeNode} from '../../models/TreeNode';
+import {TreeNode} from '../models/TreeNode';
 import {TreeSource} from './TreeSource';
 import {LoggerService} from 'dds-angular8/logger';
-import {Concept} from '../../models/Concept';
-import {Related} from '../../models/Related';
-import {ConceptService} from '../../concept.service';
+import {Concept} from '../models/Concept';
+import {Related} from '../models/Related';
+import {IMControlsService} from '../i-m-controls.service';
 
 @Component({
   selector: 'app-concept-tree-view',
@@ -30,7 +30,7 @@ export class ConceptTreeViewComponent implements AfterViewInit {
   isExpandable = (node: TreeNode) => node.expandable;
   hasChild = (_: number, nodeData: TreeNode) => nodeData.expandable;
 
-  constructor(private service: ConceptService,
+  constructor(private service: IMControlsService,
               private log: LoggerService) {
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
     this.dataSource = new TreeSource(this.treeControl, service, log, this.relationships);
