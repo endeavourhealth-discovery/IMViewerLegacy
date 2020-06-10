@@ -5,11 +5,12 @@ import {Concept} from './models/Concept';
 import {Related} from './models/Related';
 import {Property} from './models/Property';
 import {PagedResultSet} from './models/PagedResultSet';
+import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ConceptService {
+export class ConceptService implements ConceptTreeViewService, DataModelNavigatorService {
 
   constructor(private http: HttpClient) { }
 

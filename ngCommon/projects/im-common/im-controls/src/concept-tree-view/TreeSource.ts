@@ -4,7 +4,7 @@ import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {map} from 'rxjs/operators';
 import {LoggerService} from 'dds-angular8/logger';
-import {IMControlsService} from '../im-controls.service';
+import {ConceptTreeViewService} from './concept-tree-view.service';
 
 export class TreeSource implements DataSource<TreeNode> {
 
@@ -17,7 +17,7 @@ export class TreeSource implements DataSource<TreeNode> {
   }
 
   constructor(private treeControl: FlatTreeControl<TreeNode>,
-              private database: IMControlsService,
+              private database: ConceptTreeViewService,
               private log: LoggerService,
               private relationships: string[]) {}
 

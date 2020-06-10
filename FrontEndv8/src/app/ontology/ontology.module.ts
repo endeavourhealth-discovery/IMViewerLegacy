@@ -18,6 +18,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {ComponentsModule} from '../components/components.module';
 import {OntologyLibraryComponent} from './ontology-library/ontology-library.component';
 import {IMControlsModule} from 'im-common';
+import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
+import {ConceptService} from '../concept.service';
 
 @NgModule({
     imports: [
@@ -40,6 +42,9 @@ import {IMControlsModule} from 'im-common';
         ComponentsModule,
         IMControlsModule
     ],
+  providers: [
+    { provide: ConceptTreeViewService, useClass: ConceptService }
+  ],
   declarations: [
     OntologyLibraryComponent
   ]

@@ -5,7 +5,7 @@ import {TreeSource} from './TreeSource';
 import {LoggerService} from 'dds-angular8/logger';
 import {Concept} from '../models/Concept';
 import {Related} from '../models/Related';
-import {IMControlsService} from '../im-controls.service';
+import {ConceptTreeViewService} from './concept-tree-view.service';
 
 @Component({
   selector: 'app-concept-tree-view',
@@ -30,7 +30,7 @@ export class ConceptTreeViewComponent implements AfterViewInit {
   isExpandable = (node: TreeNode) => node.expandable;
   hasChild = (_: number, nodeData: TreeNode) => nodeData.expandable;
 
-  constructor(private service: IMControlsService,
+  constructor(private service: ConceptTreeViewService,
               private log: LoggerService) {
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
     this.dataSource = new TreeSource(this.treeControl, service, log, this.relationships);

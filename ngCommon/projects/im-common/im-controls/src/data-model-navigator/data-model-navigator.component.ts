@@ -1,13 +1,13 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Related} from '../models/Related';
 import {Property} from '../models/Property';
-import {IMControlsService} from '../im-controls.service';
 import {LoggerService} from 'dds-angular8/logger';
 import {Concept} from '../models/Concept';
 import * as d3 from 'd3';
 import * as dagre from 'dagre';
 import svgPanZoom from 'svg-pan-zoom';
 import {Subscription, zip} from 'rxjs';
+import {DataModelNavigatorService} from './data-model-navigator.service';
 
 @Component({
   selector: 'app-data-model-navigator',
@@ -34,7 +34,7 @@ export class DataModelNavigatorComponent implements OnInit {
   targets: Related[];
   obs: Subscription = null;
 
-  constructor(private service: IMControlsService,
+  constructor(private service: DataModelNavigatorService,
               private log: LoggerService) {
   }
 
