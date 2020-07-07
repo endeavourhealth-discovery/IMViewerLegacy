@@ -19,9 +19,9 @@ export class MemberDialogComponent implements OnInit {
     return dialogRef.afterClosed();
   }
 
-  private iri: string;
-  private scheme: string;
-  private children: any[];
+  iri: string;
+  scheme: string;
+  children: any[];
 
   constructor(
     private service: ConceptService,
