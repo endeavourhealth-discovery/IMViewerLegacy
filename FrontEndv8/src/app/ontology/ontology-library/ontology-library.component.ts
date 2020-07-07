@@ -51,10 +51,10 @@ export class OntologyLibraryComponent implements OnInit {
         (error) => this.log.error(error)
       );
 
-      this.service.getProperties(iri).subscribe(
+/*      this.service.getProperties(iri).subscribe(
         (result) => this.properties = result,
         (error) => this.log.error(error)
-      );
+      );*/
     }
   }
 

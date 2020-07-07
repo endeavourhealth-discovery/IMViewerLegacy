@@ -13,10 +13,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.util.List;
+import java.util.Map;
 
 @Path("/concepts")
-public class ViewerEndpoint {
-    private static final Logger LOG = LoggerFactory.getLogger(ViewerEndpoint.class);
+public class ConceptEndpoint {
+    private static final Logger LOG = LoggerFactory.getLogger(ConceptEndpoint.class);
 
     @GET
     @Path("/Search")
@@ -163,6 +164,67 @@ public class ViewerEndpoint {
             LOG.debug("getTargets");
 
             PagedResultSet<RelatedConcept> result = dal.getTargets(iri, relationships, limit, page);
+
+            return Response
+                .ok()
+                .entity(result)
+                .build();
+        }
+    }
+
+    @GET
+    @Path("/{iri}/members")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMembers(@Context SecurityContext sc,
+                               @PathParam("iri") String iri) throws Exception {
+
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getMembers");
+             ViewerJDBCDAL dal = new ViewerJDBCDAL()) {
+            LOG.debug("getMembers");
+
+            List<ValueSetMember> result = dal.getValueSetMembers(iri);
+
+            return Response
+                .ok()
+                .entity(result)
+                .build();
+        }
+    }
+
+    @GET
+    @Path("/{iri}/childCountByScheme")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getChildCountByScheme(@Context SecurityContext sc,
+                               @PathParam("iri") String iri) throws Exception {
+
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getChildCountByScheme");
+             ViewerJDBCDAL dal = new ViewerJDBCDAL()) {
+            LOG.debug("getChildCountByScheme");
+
+            List<SchemeCount> result = dal.getChildCountByScheme(iri);
+
+            return Response
+                .ok()
+                .entity(result)
+                .build();
+        }
+    }
+
+    @GET
+    @Path("/{iri}/children")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getChildren(@Context SecurityContext sc,
+                                          @PathParam("iri") String iri,
+                                          @QueryParam("scheme") String scheme) throws Exception {
+
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getChildren");
+             ViewerJDBCDAL dal = new ViewerJDBCDAL()) {
+            LOG.debug("getChildren");
+
+            List<SchemeChildren> result = dal.getChildren(iri, scheme);
 
             return Response
                 .ok()

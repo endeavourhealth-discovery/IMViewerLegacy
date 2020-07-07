@@ -18,6 +18,9 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {ComponentsModule} from '../components/components.module';
 import {ValueSetLibraryComponent} from './value-set-library/value-set-library.component';
 import {IMControlsModule} from 'im-common';
+import {MatExpansionModule} from '@angular/material/expansion';
+import { MemberDialogComponent } from './member-dialog/member-dialog.component';
+import {MatDialogModule} from '@angular/material/dialog';
 
 @NgModule({
     imports: [
@@ -38,10 +41,16 @@ import {IMControlsModule} from 'im-common';
         LoggerModule,
         MatTooltipModule,
         ComponentsModule,
-        IMControlsModule
+        IMControlsModule,
+        MatExpansionModule,
+        MatDialogModule
     ],
   declarations: [
-    ValueSetLibraryComponent
+    ValueSetLibraryComponent,
+    MemberDialogComponent
+  ],
+  entryComponents: [
+    MemberDialogComponent
   ]
 })
 export class ValueSetModule { }

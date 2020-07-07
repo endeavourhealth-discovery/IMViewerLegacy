@@ -50,44 +50,43 @@
               <div class="as-split-area-content">
                 <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
                   <mat-form-field appearance="outline" fxFlex="calc(100% - 16px)">
-                    <mat-label id="definition-label">Definition</mat-label>
+                    <mat-label id="definition-label">Members</mat-label>
                     <mat-wrapper>
-                      <table *ngIf="definition && definition.length > 0" class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" aria-describedby="definition-label">
-                        <thead>
-                          <tr class="mat-header-row">
-                            <th scope="col" class="mat-header-cell">Relationship</th>
-                            <th scope="col" class="mat-header-cell">Concept</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr *ngFor="let p of definition" class="mat-row">
-                            <td class="mat-cell">{{p.relationship.name}}</td>
-                            <td class="mat-cell">{{p.concept.name}}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </mat-wrapper>
-                  </mat-form-field>
 
-                  <mat-form-field appearance="outline" fxFlex="100">
-                    <mat-label id="properties-label">Properties</mat-label>
-                    <mat-wrapper>
-                      <table *ngIf="properties && properties.length > 0" class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" aria-describedby="properties-label">
-                        <thead>
-                          <tr class="mat-header-row">
-                            <th scope="col" class="mat-header-cell">Property</th>
-                            <th scope="col" class="mat-header-cell">Card.</th>
-                            <th scope="col" class="mat-header-cell">Type</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr *ngFor="let p of properties" class="mat-row">
-                            <td class="mat-cell">{{p.property.name}}</td>
-                            <td class="mat-cell">{{p.minCardinality}} : {{p.maxCardinality}}</td>
-                            <td class="mat-cell">{{p.valueType.name}}</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      <mat-accordion>
+                        <ng-container *ngFor="let item of members">
+                        <mat-expansion-panel  (opened)="expand(item)">
+                          <mat-expansion-panel-header>
+                            <mat-panel-title>{{item.name}}</mat-panel-title>
+                          </mat-expansion-panel-header>
+                          <b>Iri: </b>{{item.iri}}
+                          <b>Code: </b>{{item.code}}
+                          <br>
+                          <b>Definition: </b>{{getJson(item.definition)}} (<u (click)="navigateTo('/ontology/' + item.iri,'IMViewer_Ontology')" style="cursor: pointer; color: blue;">view in ontology</u>)
+                          <hr>
+                          <table class="mat-table mat-table-compact" style="width: 100%">
+                            <thead>
+                              <tr class="mat-header-row">
+                                <th class="mat-header-cell">Code scheme</th>
+                                <th class="mat-header-cell">Count</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let i of item.counts" class="mat-row">
+                                <td class="mat-cell">{{(i.name) ? i.name : 'No scheme'}}</td>
+                                <td class="mat-cell">{{i.count}} (<u (click)="viewChildren(item, i.iri)" style="cursor: pointer; color: blue">view</u>)</td>
+                              </tr>
+                              <tr class="mat-row">
+                                <td class="mat-cell"><b>Total</b></td>
+                                <td class="mat-cell">{{sumCounts(item.counts)}} (<u (click)="viewChildren(item)" style="cursor: pointer; color: blue">view</u>)</td>
+                              </tr>
+                            </tbody>
+                          </table>
+
+                        </mat-expansion-panel>
+                        </ng-container>
+                      </mat-accordion>
+
                     </mat-wrapper>
                   </mat-form-field>
                 </div>

@@ -1,9 +1,16 @@
 package org.endeavourhealth.imviewer.common.dal;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import org.endeavourhealth.common.cache.ObjectMapperPool;
 import org.endeavourhealth.imviewer.common.models.*;
+
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ViewerJDBCDAL extends BaseJDBCDAL {
     public List<RelatedConcept> getDefinition(String iri) throws SQLException {
@@ -249,4 +256,118 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
             }
         }
     }
+
+    public List<ValueSetMember> getValueSetMembers(String iri) throws SQLException, IOException {
+        List<ValueSetMember> result = new ArrayList<>();
+
+        String sql = "SELECT v.expression\n" +
+            "FROM value_set v\n" +
+            "JOIN concept c ON c.id = v.concept\n" +
+            "WHERE c.iri = ?";
+
+        String expression;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            DALHelper.setString(stmt, 1, iri);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (!rs.next())
+                    return result;
+
+                expression = rs.getString("expression");
+            }
+        }
+
+        ArrayNode members = (ArrayNode)ObjectMapperPool.getInstance().readTree(expression);
+
+        sql = "SELECT iri, name, code, definition FROM concept WHERE iri = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for( JsonNode node : members) {
+                if (node.has("Class")) {
+                    stmt.setString(1, node.get("Class").textValue());
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next()) {
+                            result.add(new ValueSetMember()
+                                .setIri(rs.getString("iri"))
+                                .setName(rs.getString("name"))
+                                .setCode(rs.getString("code"))
+                                .setDefinition(ObjectMapperPool.getInstance().readTree(rs.getString("definition")))
+                            );
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public List<SchemeCount> getChildCountByScheme(String iri) throws SQLException {
+        List<SchemeCount> result = new ArrayList<>();
+
+        String sql = "SELECT scm.iri, scm.name AS scheme, COUNT(DISTINCT(s.id)) AS cnt\n" +
+            "FROM concept c\n" +
+            "JOIN concept p ON p.iri = ':SN_116680003'\n" +
+            "JOIN concept_tct t ON t.target = c.id AND t.property = p.id\n" +
+            "JOIN concept s ON s.id = t.source\n" +
+            "LEFT JOIN concept scm on scm.id = s.scheme\n" +
+            "WHERE c.iri = ?\n" +
+            "GROUP BY scm.id";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            DALHelper.setString(stmt, 1, iri);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    result.add(new SchemeCount()
+                        .setIri(rs.getString("iri"))
+                        .setName(rs.getString("scheme"))
+                        .setCount(rs.getInt("cnt"))
+                    );
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public List<SchemeChildren> getChildren(String iri, String scheme) throws SQLException {
+        List<SchemeChildren> result = new ArrayList<>();
+
+        String sql = "SELECT DISTINCT scm.iri, scm.name AS scheme, s.iri AS childIri, s.name AS childName, s.code AS childCode\n" +
+            "FROM concept c\n" +
+            "JOIN concept p ON p.iri = ':SN_116680003'\n" +
+            "JOIN concept_tct t ON t.target = c.id AND t.property = p.id\n" +
+            "JOIN concept s ON s.id = t.source\n" +
+            "LEFT JOIN concept scm on scm.id = s.scheme\n" +
+            "WHERE c.iri = ?\n";
+
+        if (scheme != null && !scheme.isEmpty())
+            sql += "AND scm.iri = ?\n";
+
+        sql += "ORDER BY scm.name, s.name\n";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            DALHelper.setString(stmt, 1, iri);
+
+            if (scheme != null && !scheme.isEmpty())
+                DALHelper.setString(stmt, 2, scheme);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                SchemeChildren sc = null;
+
+                while (rs.next()) {
+                    if (sc == null || !rs.getString("iri").equals(sc.getIri())) {
+                        sc = new SchemeChildren()
+                            .setIri(rs.getString("iri"))
+                            .setName(rs.getString("scheme"));
+                        result.add(sc);
+                    }
+                    sc.addChild(new SchemeChild()
+                        .setIri(rs.getString("childIri"))
+                        .setName(rs.getString("childName"))
+                        .setCode(rs.getString("childCode"))
+                    );
+                }
+            }
+        }
+
+        return result;    }
 }

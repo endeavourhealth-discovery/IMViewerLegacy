@@ -6,6 +6,9 @@ import {Related} from './models/Related';
 import {Property} from './models/Property';
 import {PagedResultSet} from './models/PagedResultSet';
 import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
+import {SchemeCount} from './models/SchemeCount';
+import {SchemeChildren} from './models/SchemeChildren';
+import {ValueSetMember} from './models/ValueSetMember';
 
 @Injectable({
   providedIn: 'root'
@@ -72,5 +75,21 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
     }
 
     return this.http.get<Related[]>('api/concepts/' + iri + '/Tree', {params});
+  }
+
+  getValueSetMembers(iri: string): Observable<ValueSetMember[]> {
+    return this.http.get<ValueSetMember[]>('api/concepts/' + iri + '/members');
+  }
+
+  getChildCountByScheme(iri: string): Observable<SchemeCount[]> {
+    return this.http.get<SchemeCount[]>('api/concepts/' + iri + '/childCountByScheme');
+  }
+
+  getChildrenByScheme(iri: string, scheme: string): Observable<SchemeChildren[]> {
+    let params = new HttpParams();
+    if (scheme)
+      params = params.append('scheme', scheme);
+
+    return this.http.get<SchemeChildren[]>('api/concepts/' + iri + '/children', {params});
   }
 }

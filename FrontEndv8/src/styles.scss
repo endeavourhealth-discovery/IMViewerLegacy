@@ -72,4 +72,12 @@ div#home-content {
   min-height: 54px;
 }
 
+td.mat-cell {
+  padding: 0 8px;
+}
+
+th.mat-header-cell {
+  padding: 0 8px;
+}
+
 @import "~im-common/assets/scss/styles";
