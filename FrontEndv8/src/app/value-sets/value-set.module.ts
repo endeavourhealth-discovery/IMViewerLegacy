@@ -21,6 +21,7 @@ import {IMControlsModule} from 'im-common';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { MemberDialogComponent } from './member-dialog/member-dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
+import {RouterModule} from '@angular/router';
 
 @NgModule({
     imports: [
@@ -43,7 +44,8 @@ import {MatDialogModule} from '@angular/material/dialog';
         ComponentsModule,
         IMControlsModule,
         MatExpansionModule,
-        MatDialogModule
+        MatDialogModule,
+        RouterModule
     ],
   declarations: [
     ValueSetLibraryComponent,

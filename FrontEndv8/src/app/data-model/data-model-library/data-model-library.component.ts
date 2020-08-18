@@ -10,7 +10,7 @@ const debug = (message: string) => { console.log(message); };
 @Component({
   selector: 'app-data-model-library',
   templateUrl: './data-model-library.component.html',
-  styleUrls: ['./data-model-library.component.scss']
+  styleUrls: ['./data-model-library.component.scss'],
 })
 export class DataModelLibraryComponent implements OnInit {
   concept: Concept;
@@ -18,6 +18,7 @@ export class DataModelLibraryComponent implements OnInit {
   searchSize = 72;
   root = ':DM_DataModel';
   relationships = [':SN_116680003'];
+
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
 
   constructor(private service: ConceptService,
@@ -29,8 +30,8 @@ export class DataModelLibraryComponent implements OnInit {
 
   ngOnInit() {
     // Direct URL nav - need to push to tree
-    this.route.params.subscribe(
-      (params) => this.displayConcept((params.id) ? params.id : this.root),
+    this.route.queryParamMap.subscribe(
+      (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
       (error) => this.log.error(error)
     );
   }
@@ -47,7 +48,7 @@ export class DataModelLibraryComponent implements OnInit {
 
   goto(iri: string) {
     if (iri !== this.selectedIri) {
-      this.router.navigate(['dataModel', iri]);
+      this.router.navigate(['dataModel'], {queryParams: {id: iri}});
     }
   }
 

@@ -38,10 +38,10 @@ export class ConceptTreeViewComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.selectedIri = this.root;
-    this.service.getConcept(this.root).subscribe(
+/*    this.service.getConcept(this.root).subscribe(
       (result) => this.dataSource.data = [new TreeNode(result.iri, result.name, 0, true)],
       (error) => this.log.error(error)
-    );
+    );*/
   }
 
   displayNode(id: string) {

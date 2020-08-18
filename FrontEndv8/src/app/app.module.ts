@@ -17,9 +17,6 @@ import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {FlexModule} from '@angular/flex-layout';
 
-/* Add Amplify imports */
-import Amplify from 'aws-amplify';
-import awsconfig from '../aws-exports';
 import {SecurityModule} from './security/security.module';
 import {ConfirmComponent} from './security/confirm/confirm.component';
 import {MainPageModule} from './main-page/main-page.module';
@@ -32,6 +29,9 @@ import {ValueSetLibraryComponent} from './value-sets/value-set-library/value-set
 import {OntologyModule} from './ontology/ontology.module';
 import {OntologyLibraryComponent} from './ontology/ontology-library/ontology-library.component';
 
+/* Add Amplify imports */
+import Amplify from 'aws-amplify';
+import awsconfig from '../aws-exports';
 /* Configure Amplify resources */
 Amplify.configure(awsconfig);
 
@@ -60,13 +60,10 @@ Amplify.configure(awsconfig);
         {path: 'mainPage', component: MainPageComponent, canActivate: [AuthGuard]},
 
         {path: 'ontology', component: OntologyLibraryComponent, canActivate: [AuthGuard]},
-        {path: 'ontology/:id', component: OntologyLibraryComponent, canActivate: [AuthGuard]},
 
         {path: 'dataModel', component: DataModelLibraryComponent, canActivate: [AuthGuard]},
-        {path: 'dataModel/:id', component: DataModelLibraryComponent, canActivate: [AuthGuard]},
 
         {path: 'valueSets', component: ValueSetLibraryComponent, canActivate: [AuthGuard]},
-        {path: 'valueSets/:id', component: ValueSetLibraryComponent, canActivate: [AuthGuard]},
       ],
       {useHash: true}),
     FormsModule,
@@ -79,7 +76,6 @@ Amplify.configure(awsconfig);
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true },
-    // { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
   declarations: [AppRoot],
   bootstrap: [AppRoot],

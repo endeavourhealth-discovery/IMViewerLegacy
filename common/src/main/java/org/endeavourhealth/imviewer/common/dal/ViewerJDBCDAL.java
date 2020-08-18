@@ -13,32 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ViewerJDBCDAL extends BaseJDBCDAL {
-    public List<RelatedConcept> getDefinition(String iri) throws SQLException {
-        String sql = "SELECT o.minCardinality, o.maxCardinality,\n" +
-            "p.iri AS r_iri, p.name AS r_name,\n" +
-            "v.iri AS c_iri, v.name AS c_name\n" +
-            "FROM concept_property_object o\n" +
-            "JOIN concept c ON c.id = o.concept AND c.iri = ?\n" +
-            "JOIN concept p ON p.id = o.property\n" +
-            "JOIN concept v ON v.id = o.object\n" +
-            "WHERE NOT EXISTS (\n" +
-            "\tSELECT 1 \n" +
-            "    FROM concept_tct tct \n" +
-            "    JOIN concept tt ON tt.iri IN (':DM_ObjectProperty', ':DM_DataProperty')\n" +
-            "    WHERE tct.source = p.id AND tct.target = tt.id\n" +
-            ");\n";
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, iri);
-
-             try(ResultSet rs = stmt.executeQuery()) {
-                 return Hydrator.createRelatedConceptList(rs);
-             }
-        }
-    }
-
     public PagedResultSet<RelatedConcept> getSources(String iri, List<String> relationships, int limit, int page) throws SQLException {
-        String sql = "SELECT SQL_CALC_FOUND_ROWS\n" +
+        String sql = "SELECT SQL_CALC_FOUND_ROWS DISTINCT\n" +
             "o.minCardinality, o.maxCardinality,\n" +
             "p.iri AS r_iri, p.name AS r_name,\n" +
             "c.iri AS c_iri, c.name AS c_name\n" +
@@ -89,7 +65,7 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
     }
 
     public PagedResultSet<RelatedConcept> getTargets(String iri, List<String> relationships, int limit, int page) throws SQLException {
-        String sql = "SELECT SQL_CALC_FOUND_ROWS\n" +
+        String sql = "SELECT SQL_CALC_FOUND_ROWS DISTINCT\n" +
             "o.minCardinality, o.maxCardinality,\n" +
             "p.iri AS r_iri, p.name AS r_name,\n" +
             "v.iri AS c_iri, v.name AS c_name\n" +
@@ -157,7 +133,7 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
     public List<Concept> search(String term, String root, List<String> relationships) throws SQLException {
         String sql = "SELECT c.iri, c.name, c.description\n" +
             "FROM concept c\n" +
-            "JOIN concept_tct tct ON tct.source = c.id\n" +
+            "JOIN concept_tct tct ON tct.source = c.id AND tct.level > 0\n" +
             "JOIN concept p ON p.id = tct.property\n" +
             "JOIN concept t ON t.id = tct.target\n" +
             "WHERE c.name LIKE ?\n" +
@@ -191,7 +167,7 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
             "p.iri AS r_iri, p.name AS r_name,\n" +
             "t.iri AS c_iri, t.name AS c_name\n" +
             "FROM concept c\n" +
-            "JOIN concept_tct tct ON tct.source = c.id\n" +
+            "JOIN concept_tct tct ON tct.source = c.id AND tct.level > 0\n" +
             "JOIN concept p ON p.id = tct.property\n" +
             "JOIN concept t ON t.id = tct.target\n" +
             "WHERE c.iri = ?\n";
@@ -221,17 +197,43 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
         return result;
     }
 
-    public List<Property> getProperties(String iri, boolean inherited) throws SQLException {
-        String sql = "SELECT p.iri AS p_iri, p.name AS p_name,\n" +
-            "d.min_cardinality, d.max_cardinality,\n" +
+    // **************************************** DATA MODEL ****************************************
+    public List<RelatedConcept> getDefinition(String iri) throws SQLException {
+        String sql = "SELECT DISTINCT o.minCardinality, o.maxCardinality,\n" +
+            "p.iri AS r_iri, p.name AS r_name,\n" +
+            "v.iri AS c_iri, v.name AS c_name\n" +
+            "FROM concept_property_object o\n" +
+            "JOIN concept c ON c.id = o.concept AND c.iri = ?\n" +
+            "JOIN concept p ON p.id = o.property\n" +
+            "JOIN concept v ON v.id = o.object\n" +
+            "WHERE NOT EXISTS (\n" +
+            "\tSELECT 1 \n" +
+            "    FROM concept_tct tct \n" +
+            "    JOIN concept tt ON tt.iri IN (':DM_ObjectProperty', ':DM_DataProperty')\n" +
+            "    WHERE tct.source = p.id AND tct.target = tt.id\n" +
+            ");\n";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, iri);
+
+            try(ResultSet rs = stmt.executeQuery()) {
+                return Hydrator.createRelatedConceptList(rs);
+            }
+        }
+    }
+
+    public List<Property> getProperties(String iri, boolean inherited) throws SQLException, IOException {
+        String sql = "SELECT DISTINCT p.iri AS p_iri, p.name AS p_name,\n" +
+            "d.definition ->> '$.min' AS min_cardinality, \n" +
+            "d.definition ->> '$.max' AS max_cardinality,\n" +
             "v.iri as v_iri, v.name AS v_name,\n" +
             "-1 as level, c.iri as o_iri, c.name AS o_name\n" +
             "FROM concept c\n" +
-            "JOIN concept_data_model d ON d.id = c.id\n" +
-            "JOIN concept p ON p.id = d.attribute\n" +
-            "JOIN concept v ON v.id = d.value_type\n" +
+            "JOIN data_model_attribute d ON d.id = c.id AND d.type = 'P'\n" +
+            "LEFT JOIN concept p ON p.iri = d.definition ->> '$.iri'\n" +
+            "LEFT JOIN concept v ON v.iri = d.definition ->> '$.Range[0]'\n" +
             "WHERE c.iri = ?\n";
-
+/*
         if (inherited)
             sql += "UNION SELECT p.iri AS p_iri, p.name AS p_name,\n" +
             "d.min_cardinality, d.max_cardinality,\n" +
@@ -244,18 +246,20 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
             "JOIN concept_data_model d ON d.id = o.id\n" +
             "JOIN concept p ON p.id = d.attribute\n" +
             "JOIN concept v ON v.id = d.value_type\n" +
-            "WHERE c.iri = ?\n";
+            "WHERE c.iri = ?\n";*/
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, iri);
-            if (inherited)
-                stmt.setString(2, iri);
+/*            if (inherited)
+                stmt.setString(2, iri);*/
 
             try(ResultSet rs = stmt.executeQuery()) {
                 return Hydrator.createPropertyList(rs);
             }
         }
     }
+
+    // **************************************** VALUE SETS ****************************************
 
     public List<ValueSetMember> getValueSetMembers(String iri) throws SQLException, IOException {
         List<ValueSetMember> result = new ArrayList<>();
@@ -306,7 +310,7 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
         String sql = "SELECT scm.iri, scm.name AS scheme, COUNT(DISTINCT(s.id)) AS cnt\n" +
             "FROM concept c\n" +
             "JOIN concept p ON p.iri = ':SN_116680003'\n" +
-            "JOIN concept_tct t ON t.target = c.id AND t.property = p.id\n" +
+            "JOIN concept_tct t ON t.target = c.id AND t.property = p.id AND t.level > 0\n" +
             "JOIN concept s ON s.id = t.source\n" +
             "LEFT JOIN concept scm on scm.id = s.scheme\n" +
             "WHERE c.iri = ?\n" +
@@ -334,7 +338,7 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
         String sql = "SELECT DISTINCT scm.iri, scm.name AS scheme, s.iri AS childIri, s.name AS childName, s.code AS childCode\n" +
             "FROM concept c\n" +
             "JOIN concept p ON p.iri = ':SN_116680003'\n" +
-            "JOIN concept_tct t ON t.target = c.id AND t.property = p.id\n" +
+            "JOIN concept_tct t ON t.target = c.id AND t.property = p.id AND t.level > 0\n" +
             "JOIN concept s ON s.id = t.source\n" +
             "LEFT JOIN concept scm on scm.id = s.scheme\n" +
             "WHERE c.iri = ?\n";

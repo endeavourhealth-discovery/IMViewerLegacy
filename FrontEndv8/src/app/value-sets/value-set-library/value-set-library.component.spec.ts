@@ -16,7 +16,7 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {LoggerModule} from 'dds-angular8/logger';
 
-describe('RecordModelLibraryComponent', () => {
+describe('ValueSetLibraryComponent', () => {
   let component: ValueSetLibraryComponent;
   let fixture: ComponentFixture<ValueSetLibraryComponent>;
 

@@ -18,7 +18,7 @@
           <td class="mat-cell">{{c.name}}</td>
           <td class="mat-cell">{{c.iri}}</td>
           <td class="mat-cell">{{c.code}}</td>
-          <td class="mat-cell">(<u (click)="navigateTo('/ontology/' + c.iri,'IMViewer_Ontology')" style="cursor: pointer; color: blue;">view</u>)</td>
+          <td class="mat-cell">(<a [routerLink]="['/ontology']" [queryParams]="{id: c.iri}" target="IMViewer_Ontology" style="cursor: pointer; color: blue;">view</a>)</td>
         </tr>
       </ng-container>
     </tbody>

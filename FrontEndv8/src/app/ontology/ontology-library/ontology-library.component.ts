@@ -32,8 +32,8 @@ export class OntologyLibraryComponent implements OnInit {
 
   ngOnInit() {
     // Direct URL nav - need to push to tree
-    this.route.params.subscribe(
-      (params) => this.displayConcept((params.id) ? params.id : this.root),
+    this.route.queryParamMap.subscribe(
+      (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
       (error) => this.log.error(error)
     );
   }
@@ -60,7 +60,7 @@ export class OntologyLibraryComponent implements OnInit {
 
   goto(iri: string) {
     if (iri !== this.selectedIri) {
-      this.router.navigate(['ontology', iri]);
+      this.router.navigate(['ontology'], {queryParams: {id: iri}});
     }
   }
 

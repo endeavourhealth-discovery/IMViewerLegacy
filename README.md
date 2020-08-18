@@ -15,4 +15,4 @@ Checkout from GIT
 
 Navigate your browser to `http://localhost:4200`
 
-The proxy is configured to expect the API to be running on localhost:8000
+The proxy expects the API to be running on localhost:8080

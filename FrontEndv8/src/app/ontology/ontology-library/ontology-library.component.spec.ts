@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OntologyComponent } from './ontology.component';
+import { OntologyLibraryComponent } from './ontology-library.component';
 import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormsModule} from '@angular/forms';
@@ -16,13 +16,13 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {LoggerModule} from 'dds-angular8/logger';
 
-describe('RecordModelLibraryComponent', () => {
-  let component: OntologyComponent;
-  let fixture: ComponentFixture<OntologyComponent>;
+describe('OntologyLibraryComponent', () => {
+  let component: OntologyLibraryComponent;
+  let fixture: ComponentFixture<OntologyLibraryComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ OntologyComponent ],
+      declarations: [ OntologyLibraryComponent ],
         imports: [
           MatCardModule,
           MatFormFieldModule,
@@ -45,7 +45,7 @@ describe('RecordModelLibraryComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(OntologyComponent);
+    fixture = TestBed.createComponent(OntologyLibraryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
