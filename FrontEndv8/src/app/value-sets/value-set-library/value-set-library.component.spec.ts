@@ -15,6 +15,11 @@ import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {LoggerModule} from 'dds-angular8/logger';
+import {IMControlsModule} from 'im-common';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {ComponentsModule} from '../../components/components.module';
+import {MatDialogModule} from '@angular/material/dialog';
+import {ConceptTreeViewService} from 'im-common/im-controls';
 
 describe('ValueSetLibraryComponent', () => {
   let component: ValueSetLibraryComponent;
@@ -37,9 +42,15 @@ describe('ValueSetLibraryComponent', () => {
           LoggerModule,
 
           HttpClientTestingModule,
-          RouterTestingModule
+          RouterTestingModule,
+          IMControlsModule,
+          ComponentsModule,
+          MatExpansionModule,
+          MatDialogModule
         ],
-      providers: [ConceptService]
+        providers: [
+          { provide: ConceptTreeViewService, useClass: ConceptService }
+        ]
     })
     .compileComponents();
   }));

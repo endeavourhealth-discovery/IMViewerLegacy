@@ -15,6 +15,9 @@ import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {LoggerModule} from 'dds-angular8/logger';
+import {ComponentsModule} from '../../components/components.module';
+import {IMControlsModule} from 'im-common';
+import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
 
 describe('DataModelLibraryComponent', () => {
   let component: DataModelLibraryComponent;
@@ -37,9 +40,14 @@ describe('DataModelLibraryComponent', () => {
           LoggerModule,
 
           HttpClientTestingModule,
-          RouterTestingModule
+          RouterTestingModule,
+          ComponentsModule,
+          IMControlsModule
         ],
-      providers: [ConceptService]
+        providers: [
+          { provide: ConceptTreeViewService, useClass: ConceptService },
+          { provide: DataModelNavigatorService, useClass: ConceptService }
+        ]
     })
     .compileComponents();
   }));

@@ -1,6 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MemberDialogComponent } from './member-dialog.component';
+import {RouterTestingModule} from '@angular/router/testing';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 describe('MemberDialogComponent', () => {
   let component: MemberDialogComponent;
@@ -8,8 +12,18 @@ describe('MemberDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MemberDialogComponent ]
-    })
+        declarations: [MemberDialogComponent],
+        imports: [
+          RouterTestingModule,
+          HttpClientTestingModule,
+          MatDialogModule,
+          MatSnackBarModule
+        ],
+        providers: [{
+          provide: MatDialogRef,
+          useValue: {}
+        }]
+      })
     .compileComponents();
   }));
 

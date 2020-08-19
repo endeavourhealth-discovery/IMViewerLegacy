@@ -15,6 +15,9 @@ import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {LoggerModule} from 'dds-angular8/logger';
+import {IMControlsModule} from 'im-common';
+import {ComponentsModule} from '../../components/components.module';
+import {ConceptTreeViewService} from 'im-common/im-controls';
 
 describe('OntologyLibraryComponent', () => {
   let component: OntologyLibraryComponent;
@@ -37,9 +40,13 @@ describe('OntologyLibraryComponent', () => {
           LoggerModule,
 
           HttpClientTestingModule,
-          RouterTestingModule
+          RouterTestingModule,
+          IMControlsModule,
+          ComponentsModule
         ],
-      providers: [ConceptService]
+        providers: [
+          { provide: ConceptTreeViewService, useClass: ConceptService }
+        ]
     })
     .compileComponents();
   }));
