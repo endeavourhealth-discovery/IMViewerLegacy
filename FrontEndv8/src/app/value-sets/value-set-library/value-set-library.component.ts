@@ -3,12 +3,12 @@ import {ConceptService} from '../../concept.service';
 import {Concept} from '../../models/Concept';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
-import {AuthenticationService} from '../../security/auth.service';
 import {ConceptTreeViewComponent} from 'im-common/im-controls';
 import {SchemeCount} from '../../models/SchemeCount';
 import {MemberDialogComponent} from '../member-dialog/member-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {ValueSetMember} from '../../models/ValueSetMember';
+import {KeycloakService} from 'keycloak-angular';
 
 @Component({
   selector: 'app-value-set-library',
@@ -26,7 +26,7 @@ export class ValueSetLibraryComponent implements OnInit {
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
 
   constructor(private service: ConceptService,
-              private auth: AuthenticationService,
+              private auth: KeycloakService,
               private router: Router,
               private route: ActivatedRoute,
               private log: LoggerService,

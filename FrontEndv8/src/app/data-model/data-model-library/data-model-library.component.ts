@@ -3,8 +3,8 @@ import {ConceptService} from '../../concept.service';
 import {Concept} from '../../models/Concept';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
-import {AuthenticationService} from '../../security/auth.service';
 import {ConceptTreeViewComponent} from 'im-common/im-controls';
+import {KeycloakService} from 'keycloak-angular';
 const debug = (message: string) => { console.log(message); };
 
 @Component({
@@ -23,7 +23,7 @@ export class DataModelLibraryComponent implements OnInit {
 
   constructor(private service: ConceptService,
               private router: Router,
-              private auth: AuthenticationService,
+              private auth: KeycloakService,
               private route: ActivatedRoute,
               private log: LoggerService) {
   }
@@ -54,10 +54,6 @@ export class DataModelLibraryComponent implements OnInit {
 
   hasResults(displayed: boolean) {
     this.searchSize = displayed ? 256 : 72;
-  }
-
-  home() {
-    window.open('#/mainPage', 'IMViewer_MainPage');
   }
 
   logout() {
