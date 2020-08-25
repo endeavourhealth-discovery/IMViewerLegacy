@@ -24,6 +24,8 @@ import {MainPageComponent} from './main-page/main-page.component';
 import {ComponentsModule} from './components/components.module';
 import {DataModelModule} from './data-model/data-model.module';
 import {DataModelLibraryComponent} from './data-model/data-model-library/data-model-library.component';
+import {DataModelOverviewLibraryComponent} from './data-model-overview/data-model-overview-library/data-model-overview-library.component';
+import {DataModelOverviewModule} from './data-model-overview/data-model-overview.module';
 import {ValueSetModule} from './value-sets/value-set.module';
 import {ValueSetLibraryComponent} from './value-sets/value-set-library/value-set-library.component';
 import {OntologyModule} from './ontology/ontology.module';
@@ -46,6 +48,7 @@ Amplify.configure(awsconfig);
     MainPageModule,
     OntologyModule,
     DataModelModule,
+    DataModelOverviewModule,
     ValueSetModule,
 
     RouterModule.forRoot([
@@ -62,6 +65,8 @@ Amplify.configure(awsconfig);
         {path: 'ontology', component: OntologyLibraryComponent, canActivate: [AuthGuard]},
 
         {path: 'dataModel', component: DataModelLibraryComponent, canActivate: [AuthGuard]},
+
+        {path: 'dataModelOverview', component: DataModelOverviewLibraryComponent, canActivate: [AuthGuard]},
 
         {path: 'valueSets', component: ValueSetLibraryComponent, canActivate: [AuthGuard]},
       ],
