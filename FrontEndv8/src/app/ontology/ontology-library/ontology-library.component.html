@@ -1,15 +1,6 @@
 <div id="home-content">
   <mat-card>
-    <mat-card-header>
-      <div mat-card-avatar>
-        <span class="fad fa-lightbulb"></span>
-      </div>
-      <mat-card-title>Ontology</mat-card-title>
-      <mat-card-subtitle>Discovery ontology viewer & navigator</mat-card-subtitle>
-      <div fxFlex></div>
-      <div fxLayoutAlign="center" class="mat-action" (click)="home()" matTooltip="Home"><i class="fas fa-fw fa-home"></i></div>
-      <div fxLayoutAlign="center" class="mat-action" (click)="logout()" matTooltip="Logout"><i class="fas fa-fw fa-sign-out"></i></div>
-    </mat-card-header>
+    <app-navigation [title]="'Ontology'" [subtitle]="'Discovery ontology viewer & navigator'" [selectedPage]="'ontology'"></app-navigation>
     <mat-card-content style="height: calc(100vh - 109px); padding: 0">
       <as-split direction="horizontal">
         <as-split-area size="30">

@@ -11,13 +11,18 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 import {FlexModule} from '@angular/flex-layout';
 import {GraphNavigatorComponent} from './graph-navigator/graph-navigator.component';
+import {ViewSwitcherComponent} from './view-switcher/view-switcher.component';
 import {ResizeObserverDirective} from './resize-observer.directive';
+import {MatSelectModule} from '@angular/material/select';
+import {NavigationComponent} from './navigation/navigation.component';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   imports: [
     CommonModule,
     MatTreeModule,
     MatProgressBarModule,
+    MatCardModule,
     LoggerModule,
     MatButtonModule,
     MatIconModule,
@@ -26,15 +31,20 @@ import {ResizeObserverDirective} from './resize-observer.directive';
     MatInputModule,
     FlexModule,
     ReactiveFormsModule,
+    MatSelectModule,
   ],
   exports: [
     ConceptSearchComponent,
     GraphNavigatorComponent,
+    ViewSwitcherComponent,
+    NavigationComponent
   ],
   declarations: [
     ConceptSearchComponent,
     GraphNavigatorComponent,
-    ResizeObserverDirective
+    ViewSwitcherComponent,
+    ResizeObserverDirective,
+    NavigationComponent
   ]
 })
 export class ComponentsModule { }

@@ -36,6 +36,7 @@ import {ConceptService} from '../concept.service';
     MatButtonModule,
     MatTableModule,
     MatSnackBarModule,
+    MatInputModule,
     ControlsModule,
     LoggerModule,
     MatTooltipModule,

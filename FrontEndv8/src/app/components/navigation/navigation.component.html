@@ -1,0 +1,11 @@
+<mat-card-header>
+  <div mat-card-avatar>
+    <span class="fad fa-sitemap"></span>
+  </div>
+  <mat-card-title>{{title}}</mat-card-title>
+  <mat-card-subtitle>{{subtitle}}</mat-card-subtitle>
+  <div fxFlex></div>
+  <app-view-switcher [selectedPage]="selectedPage"></app-view-switcher>
+  <div fxLayoutAlign="center" class="mat-action" (click)="home()" matTooltip="Home"><i class="fas fa-fw fa-home"></i></div>
+  <div fxLayoutAlign="center" class="mat-action" (click)="logout()" matTooltip="Logout"><i class="fas fa-fw fa-sign-out"></i></div>
+</mat-card-header>
