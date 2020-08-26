@@ -1,5 +1,4 @@
 import { Component, OnInit, Input} from '@angular/core';
-import { AuthenticationService } from 'src/app/security/auth.service';
 
 @Component({
   selector: 'app-navigation',
@@ -12,19 +11,10 @@ export class NavigationComponent implements OnInit {
   @Input()  selectedPage: string;
 
   constructor(
-    private auth: AuthenticationService
   ) {
   }
 
   ngOnInit() {
-  }
-
-  home() {
-    window.open('#/mainPage', 'IMViewer_MainPage');
-  }
-
-  logout() {
-    this.auth.logout();
   }
 
 }

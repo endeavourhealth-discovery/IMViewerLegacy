@@ -22,13 +22,7 @@ export class MainPageComponent implements OnInit {
     this.auth.logout();
   }
 
-  navigateTo(route: string, target: string) {
-    const url = this.router.serializeUrl(
-      this.router.createUrlTree([route])
-    );
-
-    console.log(url);
-
-    window.open('#' + url, target);
+  navigateTo(route: string) {
+    this.router.navigate([route]);
   }
 }

@@ -1,15 +1,7 @@
 <div id="home-content">
   <mat-card>
-    <mat-card-header>
-      <div mat-card-avatar>
-        <span class="fad fa-sitemap"></span>
-      </div>
-      <mat-card-title>Data model</mat-card-title>
-      <mat-card-subtitle>Discovery data model viewer & navigator</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
     <app-navigation [title]="'Data model'" [subtitle]="'Discovery data model viewer & navigator'" [selectedPage]="'dataModel'"></app-navigation>
-    <mat-card-content style="height: calc(100vh - 109px); padding: 0">
+    <mat-card-content>
       <as-split direction="horizontal">
         <as-split-area size="30">
           <as-split direction="vertical" unit="pixel">

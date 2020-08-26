@@ -16,6 +16,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MainPageModule} from './main-page/main-page.module';
 import {OntologyModule} from './ontology/ontology.module';
 import {ValueSetModule} from './value-sets/value-set.module';
+import {DataModelOverviewModule} from './data-model-overview/data-model-overview.module';
 
 const keycloakService = new KeycloakService();
 

@@ -5,6 +5,7 @@ import {AbstractMenuProvider, CanActivateRouteGuard, LoggerService, MenuOption, 
 import {ActivatedRoute, Route, Router} from '@angular/router';
 import {UserProfile, UserProject} from 'dds-angular8/user-manager';
 import {OverlayContainer} from '@angular/cdk/overlay';
+import {AppMenuService} from './app-menu.service';
 
 @Component({
   selector: 'app-root',
@@ -17,14 +18,16 @@ export class AppRoot implements OnInit {
   title = '';
   user: UserProfile;
   userProjects: UserProject[];
+  homeMenu: MenuOption;
   menuItems: MenuOption[] = [];
+  applications: MenuOption[] = [];
   currentProject: UserProject;
 
   constructor(
     private router: Router,
     private userManagerService: UserManagerService,
     private log: LoggerService,
-    private menuService: AbstractMenuProvider,
+    public menuService: AbstractMenuProvider,
     private routeGuard: CanActivateRouteGuard,
     public overlayContainer: OverlayContainer
   ) { }
@@ -32,7 +35,9 @@ export class AppRoot implements OnInit {
   ngOnInit() {
     CanActivateRouteGuard.secureRoutes(this.router);
     this.title = this.menuService.getApplicationTitle();
+    this.homeMenu = (this.menuService as AppMenuService).getHomeMenu(); // TODO: Extract to framework
     this.menuItems = this.menuService.getMenuOptions();
+    this.applications = (this.menuService as AppMenuService).getApplications();  // TODO: Extract to framework
     this.setMenuOptionAccess();
 
     this.getUserProfile();
@@ -120,8 +125,8 @@ export class AppRoot implements OnInit {
     );
   }
 
-  home() {
-    window.open('#/mainPage', 'IMViewer_MainPage');
+  navigate(state) {
+    this.router.navigate([state]);
   }
 
   getHelp() {
