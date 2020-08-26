@@ -1,0 +1,39 @@
+<div id="home-content">
+    <mat-card class="scrollable-content">
+        <mat-card-header>
+            <div mat-card-avatar>
+                <span class="fad fa-lightbulb"></span>
+            </div>
+            <mat-card-title>Data Model Overview</mat-card-title>
+            <mat-card-subtitle>Discovery data model overview</mat-card-subtitle>
+            <div fxFlex></div>
+            <div fxLayoutAlign="center" class="mat-action" (click)="home()" matTooltip="Home"><i
+                    class="fas fa-fw fa-home"></i></div>
+            <div fxLayoutAlign="center" class="mat-action" (click)="logout()" matTooltip="Logout"><i
+                    class="fas fa-fw fa-sign-out"></i></div>
+        </mat-card-header>
+
+        <!-- need to loop through groups creating cards -->
+        <mat-card-content>
+            <mat-grid-list cols="4">
+                <mat-grid-tile *ngFor="let dataModelConceptGroup of dataModelConceptGroups">
+                    <mat-card class="scrollable-content">
+                        <mat-card-header>
+                            <mat-card-title>{{dataModelConceptGroup.name}}</mat-card-title>
+                            <mat-card-subtitle>{{dataModelConceptGroup.description}}</mat-card-subtitle>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <!-- need to loop through concepts creating list element -->
+                            <mat-nav-list *ngFor="let dataModelConcept of dataModelConceptGroup.concepts">
+                                <mat-list-item>
+                                    <a href="{{getDataModelViewUrl(dataModelConcept.iri)}}"
+                                        target="_blank">{{dataModelConcept.name}}</a>
+                                </mat-list-item>
+                            </mat-nav-list>
+                        </mat-card-content>
+                    </mat-card>
+                </mat-grid-tile>
+            </mat-grid-list>
+        </mat-card-content>
+    </mat-card>
+</div>
