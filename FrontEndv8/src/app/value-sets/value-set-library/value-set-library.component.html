@@ -53,7 +53,7 @@
                           <b>Iri: </b>{{item.iri}}
                           <b>Code: </b>{{item.code}}
                           <br>
-                          <b>Definition: </b>{{getJson(item.definition)}} (<a [routerLink]="['/ontology']" [queryParams]="{id: item.iri}" target="IMViewer_Ontology" style="cursor: pointer; color: blue;">view in ontology</a>)
+                          <b>Definition: </b>{{getJson(item.definition)}} (<a [routerLink]="['/ontology']" [queryParams]="{id: item.iri}" style="cursor: pointer; color: blue;">view in ontology</a>)
                           <hr>
                           <table class="mat-table mat-table-compact" style="width: 100%">
                             <thead>

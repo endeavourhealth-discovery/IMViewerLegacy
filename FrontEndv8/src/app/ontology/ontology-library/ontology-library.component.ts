@@ -68,10 +68,6 @@ export class OntologyLibraryComponent implements OnInit {
     this.searchSize = displayed ? 256 : 72;
   }
 
-  home() {
-    window.open('#/mainPage', 'IMViewer_MainPage');
-  }
-
   logout() {
     this.auth.logout();
   }

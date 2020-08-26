@@ -38,16 +38,6 @@ export class MemberDialogComponent implements OnInit {
       )
   }
 
-  navigateTo(route: string, target: string) {
-    const url = this.router.serializeUrl(
-      this.router.createUrlTree([route])
-    );
-
-    console.log(url);
-
-    window.open('#' + url, target);
-  }
-
   close() {
     this.dialogRef.close();
   }

@@ -101,20 +101,6 @@ export class ValueSetLibraryComponent implements OnInit {
     return iri.substring(iri.indexOf('_') + 1);
   }
 
-  navigateTo(route: string, target: string) {
-    const url = this.router.serializeUrl(
-      this.router.createUrlTree([route])
-    );
-
-    console.log(url);
-
-    window.open('#' + url, target);
-  }
-
-  home() {
-    window.open('#/mainPage', 'IMViewer_MainPage');
-  }
-
   logout() {
     this.auth.logout();
   }
