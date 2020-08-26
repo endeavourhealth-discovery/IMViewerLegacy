@@ -13,13 +13,30 @@
             <as-split-area>
               <div class="as-split-area-content">
 
-                <mat-tab-group style="height: 100%;">
+                <mat-tab-group style="height: 100%;" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">
                   <mat-tab label="Class">
+                    <ng-template mat-tab-label>
+                      <mat-icon class="example-tab-icon">account_tree</mat-icon>
+                      Class
+                    </ng-template>
                     <ng-template matTabContent>
                       <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)"></app-concept-tree-view>
                     </ng-template>
                   </mat-tab>
-                  <mat-tab label="Group"> Group </mat-tab>
+                  <mat-tab label="Group">
+                    <ng-template mat-tab-label>
+                      <mat-icon class="example-tab-icon">dashboard</mat-icon>
+                      Group
+                    </ng-template>
+                    Group
+                  </mat-tab>
+                  <mat-tab label="History">
+                    <ng-template mat-tab-label>
+                      <mat-icon class="example-tab-icon">history</mat-icon>
+                      History
+                    </ng-template>
+                    History
+                  </mat-tab>
                 </mat-tab-group>
 
 
