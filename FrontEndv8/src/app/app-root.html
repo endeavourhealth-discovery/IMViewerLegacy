@@ -2,7 +2,7 @@
   <div class="layout-header">
     <mat-toolbar>
       <span class="title">
-        <span *ngIf="homeMenu" (click)="navigate(homeMenu.state)" matTooltip="{{homeMenu.caption}}"><i class="fa-fw" [ngClass]="homeMenu.icon"></i></span>
+        <span *ngIf="quickMenu" (click)="navigate(quickMenu.home.state)" matTooltip="{{quickMenu.home.caption}}"><i class="fa-fw" [ngClass]="quickMenu.home.icon"></i></span>
         {{title}}</span>
       <span class="toolbar-fill"></span>
 
@@ -38,8 +38,8 @@
         <i class="fas fa-fw fa-2x fa-th"></i>
       </button>
       <mat-menu #appMenu="matMenu" xPosition="before">
-        <ng-container *ngFor="let item of applications">
-          <button mat-menu-item (click)="navigate(item.state)"><i class="fa-fw" [ngClass]="item.icon"></i> {{item.caption}}</button>
+        <ng-container *ngIf="quickMenu">
+          <button *ngFor="let item of quickMenu.applications" mat-menu-item (click)="navigate(item.state)"><i class="fa-fw" [ngClass]="item.icon"></i> {{item.caption}}</button>
         </ng-container>
       </mat-menu>
 

@@ -6,6 +6,7 @@ import {ActivatedRoute, Route, Router} from '@angular/router';
 import {UserProfile, UserProject} from 'dds-angular8/user-manager';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {AppMenuService} from './app-menu.service';
+import {QuickMenu} from './QuickMenu';
 
 @Component({
   selector: 'app-root',
@@ -18,10 +19,9 @@ export class AppRoot implements OnInit {
   title = '';
   user: UserProfile;
   userProjects: UserProject[];
-  homeMenu: MenuOption;
   menuItems: MenuOption[] = [];
-  applications: MenuOption[] = [];
   currentProject: UserProject;
+  quickMenu: QuickMenu;
 
   constructor(
     private router: Router,
@@ -35,9 +35,11 @@ export class AppRoot implements OnInit {
   ngOnInit() {
     CanActivateRouteGuard.secureRoutes(this.router);
     this.title = this.menuService.getApplicationTitle();
-    this.homeMenu = (this.menuService as AppMenuService).getHomeMenu(); // TODO: Extract to framework
     this.menuItems = this.menuService.getMenuOptions();
-    this.applications = (this.menuService as AppMenuService).getApplications();  // TODO: Extract to framework
+    (this.menuService as AppMenuService).loadAppMenu().subscribe(
+      (result) => this.quickMenu = result,
+      (error) => this.log.error(error)
+    );
     this.setMenuOptionAccess();
 
     this.getUserProfile();
@@ -126,7 +128,10 @@ export class AppRoot implements OnInit {
   }
 
   navigate(state) {
-    this.router.navigate([state]);
+    if (state.startsWith('http'))
+      window.open(state, '_blank');
+    else
+      this.router.navigate([state]);
   }
 
   getHelp() {

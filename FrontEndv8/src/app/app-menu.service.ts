@@ -6,6 +6,9 @@ import {OntologyLibraryComponent} from './ontology/ontology-library/ontology-lib
 import {DataModelLibraryComponent} from './data-model/data-model-library/data-model-library.component';
 import {ValueSetLibraryComponent} from './value-sets/value-set-library/value-set-library.component';
 import {DataModelOverviewLibraryComponent} from './data-model-overview/data-model-overview-library/data-model-overview-library.component';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {QuickMenu} from './QuickMenu';
 
 @Injectable()
 export class AppMenuService implements  AbstractMenuProvider {
@@ -18,6 +21,11 @@ export class AppMenuService implements  AbstractMenuProvider {
       {path: 'valueSets', component: ValueSetLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#valueSets'}},
       {path: 'dataModelOverview', component: DataModelOverviewLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#overview'}},
     ];
+  }
+
+  private appMenu: any;
+
+  constructor(private http: HttpClient) {
   }
 
   getClientId(): string {
@@ -38,15 +46,7 @@ export class AppMenuService implements  AbstractMenuProvider {
     this.menu[index].badge = value;
   }
 
-  getHomeMenu(): MenuOption {
-    return {state: 'mainPage', icon: 'fas fa-home'} as MenuOption;
-  }
-
-  getApplications(): MenuOption[] {
-    return [
-      {caption: 'Ontology Viewer', state: 'ontology', icon: 'fas fa-lightbulb'},
-      {caption: 'Data Model Viewer', state: 'dataModel', icon: 'fas fa-sitemap'},
-      {caption: 'Value Set Viewer', state: 'valueSet', icon: 'fas fa-tasks'},
-    ] as MenuOption[];
+  loadAppMenu(): Observable<QuickMenu> {
+    return this.http.get<QuickMenu>('api/config/appMenu');
   }
 }
