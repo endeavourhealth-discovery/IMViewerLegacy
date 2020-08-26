@@ -1,3 +1,7 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @import '~@angular/material/theming';
@@ -85,3 +89,8 @@ th.mat-header-cell {
 .mat-form-field-wrapper {
   padding-bottom: 0 !important;
 }
+
+.mat-tab-body-wrapper {
+  height: inherit!important;
+}
+

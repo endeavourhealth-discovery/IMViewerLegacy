@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Concept} from './models/Concept';
+import {ConceptGroup} from './models/ConceptGroup';
 import {Related} from './models/Related';
 import {Property} from './models/Property';
 import {PagedResultSet} from './models/PagedResultSet';
@@ -91,5 +92,33 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
       params = params.append('scheme', scheme);
 
     return this.http.get<SchemeChildren[]>('api/concepts/' + iri + '/children', {params});
+  }
+
+  getConceptGroups(iri: string): Observable<ConceptGroup[]> {
+    // temp test data until model and backend are worked out
+    let concepts: Concept[] = [
+      {name: 'Concept 1 name', description: 'Concept 1 desc', iri: ':DM_HealthEvent'},
+      {name: 'Concept 2 name', description: 'Concept 2 desc', iri: ':DM_PatientEvent'},
+      {name: 'Concept 3 name', description: 'Concept 3 desc', iri: ':DM_EncounterEntry'},
+      {name: 'Concept 4 name', description: 'Concept 4 desc', iri: 'Concept iri'}
+    ]
+    
+    let conceptGroups: ConceptGroup[] = [
+      {name: 'Concept group 1 name', description: 'Concept group 1 desc', concepts: concepts},
+      {name: 'Concept group 2 name', description: 'Concept group 2 desc', concepts: concepts},
+      {name: 'Concept group 3 name', description: 'Concept group 3 desc', concepts: concepts},
+      {name: 'Concept group 4 name', description: 'Concept group 4 desc', concepts: concepts},
+      {name: 'Concept group 5 name', description: 'Concept group 5 desc', concepts: concepts},
+      {name: 'Concept group 6 name', description: 'Concept group 6 desc', concepts: concepts},
+      {name: 'Concept group 7 name', description: 'Concept group 7 desc', concepts: concepts},
+      {name: 'Concept group 8 name', description: 'Concept group 8 desc', concepts: concepts}
+    ];
+
+    return Observable.create((observer) => {
+      observer.next(conceptGroups);
+    });    
+    
+    //return Observable.create(conceptGroups); //TODO - data
+    //return this.http.get<Concept>('api/concepts/' + iri);
   }
 }

@@ -18,6 +18,7 @@ export class DataModelLibraryComponent implements OnInit {
   searchSize = 72;
   root = ':DM_DataModel';
   relationships = [':SN_116680003'];
+  selected = 'dataModel';
 
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
 

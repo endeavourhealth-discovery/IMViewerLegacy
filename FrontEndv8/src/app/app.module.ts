@@ -29,6 +29,8 @@ const keycloakService = new KeycloakService();
     DataModelModule,
     MainPageModule,
     OntologyModule,
+    DataModelModule,
+    DataModelOverviewModule,
     ValueSetModule,
     RouterModule.forRoot(AppMenuService.getRoutes(), {useHash: true}),
     MatToolbarModule,

@@ -8,6 +8,8 @@
       <mat-card-subtitle>Discovery data model viewer & navigator</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
+    <app-navigation [title]="'Data model'" [subtitle]="'Discovery data model viewer & navigator'" [selectedPage]="'dataModel'"></app-navigation>
+    <mat-card-content style="height: calc(100vh - 109px); padding: 0">
       <as-split direction="horizontal">
         <as-split-area size="30">
           <as-split direction="vertical" unit="pixel">
@@ -18,7 +20,18 @@
             </as-split-area>
             <as-split-area>
               <div class="as-split-area-content">
-                <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)"></app-concept-tree-view>
+
+                <mat-tab-group style="height: 100%;">
+                  <mat-tab label="Class">
+                    <ng-template matTabContent>
+                      <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)"></app-concept-tree-view>
+                    </ng-template>
+                  </mat-tab>
+                  <mat-tab label="Group"> Group </mat-tab>
+                </mat-tab-group>
+
+
+                <!-- <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)"></app-concept-tree-view> -->
               </div>
             </as-split-area>
           </as-split>
@@ -45,7 +58,15 @@
             </as-split-area>
             <as-split-area>
               <div class="as-split-area-content" style="height: calc(100% - 16px);">
-                <app-data-model-navigator [conceptIri]="selectedIri" (selection)="goto($event)"></app-data-model-navigator>
+                <mat-tab-group style="height: 100%;">
+                  <mat-tab label="Graph">
+                    <ng-template matTabContent>
+                      <app-data-model-navigator [conceptIri]="selectedIri" (selection)="goto($event)"></app-data-model-navigator>
+                    </ng-template>
+                  </mat-tab>
+                  <mat-tab label="Object"> Object </mat-tab>
+                  <mat-tab label="Textual"> Textual </mat-tab>
+                </mat-tab-group>
               </div>
             </as-split-area>
           </as-split>

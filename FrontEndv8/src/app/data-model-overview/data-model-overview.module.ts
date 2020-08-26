@@ -1,8 +1,10 @@
 import { NgModule } from '@angular/core';
+import {RouterModule} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
-import {MatTabsModule} from '@angular/material/tabs';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatListModule} from '@angular/material/list'; 
+import {MatGridListModule} from '@angular/material/grid-list';
 import {FormsModule} from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 import {FlexModule} from '@angular/flex-layout';
@@ -17,40 +19,40 @@ import {LoggerModule} from 'dds-angular8/logger';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {ComponentsModule} from '../components/components.module';
-import {DataModelLibraryComponent} from './data-model-library/data-model-library.component';
 import {IMControlsModule} from 'im-common';
 import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
 import {ConceptService} from '../concept.service';
+import { DataModelOverviewLibraryComponent } from './data-model-overview-library/data-model-overview-library.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatFormFieldModule,
-    FormsModule,
-    MatInputModule,
-    FlexModule,
-    AngularSplitModule,
-    MatTreeModule,
-    MatProgressBarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTableModule,
-    MatSnackBarModule,
-    MatInputModule,
-    ControlsModule,
-    LoggerModule,
-    MatTooltipModule,
-    ComponentsModule,
-    IMControlsModule,
-    MatTabsModule
-  ],
+    imports: [
+        CommonModule,
+        MatCardModule,
+        MatListModule,
+        MatGridListModule,
+        RouterModule,
+        MatFormFieldModule,
+        FormsModule,
+        MatInputModule,
+        FlexModule,
+        AngularSplitModule,
+        MatTreeModule,
+        MatProgressBarModule,
+        MatIconModule,
+        MatButtonModule,
+        MatTableModule,
+        MatSnackBarModule,
+        ControlsModule,
+        LoggerModule,
+        MatTooltipModule,
+        ComponentsModule,
+        IMControlsModule
+    ],
   providers: [
-    { provide: ConceptTreeViewService, useClass: ConceptService },
-    { provide: DataModelNavigatorService, useClass: ConceptService }
+    { provide: ConceptTreeViewService, useClass: ConceptService }
   ],
   declarations: [
-    DataModelLibraryComponent
+    DataModelOverviewLibraryComponent
   ]
 })
-export class DataModelModule { }
+export class DataModelOverviewModule { }
