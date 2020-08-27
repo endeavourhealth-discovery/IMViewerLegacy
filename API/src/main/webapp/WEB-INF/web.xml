@@ -4,13 +4,44 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
 
-  <!-- ===== PUBLIC API SERVLET ===== -->
+  <!-- ===== Private API SERVLET ===== -->
+  <servlet>
+    <servlet-name>Private Resources</servlet-name>
+    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>jersey.config.server.provider.packages</param-name>
+      <param-value>org.endeavourhealth.coreui.endpoints,org.endeavourhealth.imviewer.api.endpoints</param-value>
+    </init-param>
+    <init-param>
+      <param-name>jersey.config.server.provider.classnames</param-name>
+      <param-value>org.glassfish.jersey.jackson.JacksonFeature,
+        org.endeavourhealth.common.security.CustomRolesAllowedFeature,
+        org.glassfish.jersey.media.multipart.MultiPartFeature
+      </param-value>
+    </init-param>
+
+    <!-- enable directory listings -->
+    <init-param>
+      <param-name>listings</param-name>
+      <param-value>true</param-value>
+    </init-param>
+
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>Private Resources</servlet-name>
+    <url-pattern>/api/*</url-pattern>
+  </servlet-mapping>
+
+
+  <!-- ===== PUBLIC ENDPOINTS SERVLET ===== -->
   <servlet>
     <servlet-name>Public Resources</servlet-name>
     <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
     <init-param>
       <param-name>jersey.config.server.provider.packages</param-name>
-      <param-value>org.endeavourhealth.imviewer.api.publicendpoints</param-value>
+      <param-value>org.endeavourhealth.coreui.endpoints_public</param-value>
     </init-param>
     <init-param>
       <param-name>jersey.config.server.provider.classnames</param-name>
@@ -26,32 +57,10 @@
     <url-pattern>/public/*</url-pattern>
   </servlet-mapping>
 
-  <!-- ===== Private API SERVLET ===== -->
-  <servlet>
-    <servlet-name>Private Resources</servlet-name>
-    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-    <init-param>
-      <param-name>jersey.config.server.provider.packages</param-name>
-      <param-value>org.endeavourhealth.imviewer.api.endpoints</param-value>
-    </init-param>
-    <init-param>
-      <param-name>jersey.config.server.provider.classnames</param-name>
-      <param-value>org.glassfish.jersey.jackson.JacksonFeature,
-        org.endeavourhealth.ui.framework.exceptions.BaseExceptionMapper</param-value>
-    </init-param>
-
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>Private Resources</servlet-name>
-    <url-pattern>/api/*</url-pattern>
-  </servlet-mapping>
-
   <!-- ===== STARTUP ===== -->
   <context-param>
     <param-name>app_id</param-name>
-    <param-value>imviewer</param-value>
+    <param-value>information-manager</param-value>
   </context-param>
 
   <listener>
@@ -60,24 +69,42 @@
     </listener-class>
   </listener>
 
-  <!-- ===== COGNITO FILTERING ===== -->
-  <filter>
-    <filter-name>CognitoFilter</filter-name>
-    <filter-class>org.endeavourhealth.imviewer.api.CognitoFilter</filter-class>
-    <init-param>
-      <param-name>region</param-name>
-      <param-value>eu-west-2</param-value>
-    </init-param>
-    <init-param>
-      <param-name>pool</param-name>
-      <param-value>eu-west-2_9KWXGWs8l</param-value>
-    </init-param>
-  </filter>
-  <filter-mapping>
-    <filter-name>CognitoFilter</filter-name>
-    <url-pattern>/api/*</url-pattern>
-  </filter-mapping>
+  <!-- set the class to provide keycloak.json -->
+  <context-param>
+    <param-name>keycloak.config.resolver</param-name>
+    <param-value>org.endeavourhealth.common.security.keycloak.KeycloakConfigResolverImpl</param-value>
+  </context-param>
 
+  <!-- API is private and requires the user to authenticate and be an EDS user -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>api</web-resource-name>
+      <url-pattern>/api/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>eds_user</role-name>
+    </auth-constraint>
+  </security-constraint>
+
+  <!-- use Keycloak authentication valve installed in the container -->
+  <login-config>
+    <auth-method>KEYCLOAK</auth-method>
+    <realm-name>Endeavour</realm-name>
+  </login-config>
+
+  <!-- all roles in the system MUST be specified here -->
+  <security-role>
+    <role-name>eds_user</role-name>
+  </security-role>
+
+  <session-config>
+    <session-timeout>60</session-timeout>
+    <cookie-config>
+      <http-only>true</http-only>
+      <secure>true</secure>
+    </cookie-config>
+    <tracking-mode>COOKIE</tracking-mode>
+  </session-config>
 
   <!-- ===== CORS FILTERING ===== -->
   <filter>

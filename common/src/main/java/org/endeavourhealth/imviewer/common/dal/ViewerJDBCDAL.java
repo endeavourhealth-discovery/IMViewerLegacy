@@ -373,5 +373,6 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
             }
         }
 
-        return result;    }
+        return result;
+    }
 }

@@ -5,8 +5,8 @@ import {Related} from '../../models/Related';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import {Property} from '../../models/Property';
-import {AuthenticationService} from '../../security/auth.service';
 import {ConceptTreeViewComponent} from 'im-common/im-controls';
+import {KeycloakService} from 'keycloak-angular';
 
 @Component({
   selector: 'app-ontology-library',
@@ -24,7 +24,7 @@ export class OntologyLibraryComponent implements OnInit {
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
 
   constructor(private service: ConceptService,
-              private auth: AuthenticationService,
+              private auth: KeycloakService,
               private router: Router,
               private route: ActivatedRoute,
               private log: LoggerService) {
@@ -66,10 +66,6 @@ export class OntologyLibraryComponent implements OnInit {
 
   hasResults(displayed: boolean) {
     this.searchSize = displayed ? 256 : 72;
-  }
-
-  home() {
-    window.open('#/mainPage', 'IMViewer_MainPage');
   }
 
   logout() {

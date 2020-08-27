@@ -57,15 +57,21 @@ $teal-theme: mat-light-theme($teal-primary, $teal-accent, $teal-warn);
   @include theme-layout($teal-theme);
 }
 
-// TODO: Move to common/ng8
+// ******************** COMPONENT STYLES ********************
+
+@import "~im-common/assets/scss/styles";
+
+// ******************** TODO: Move to common/ng8 ********************
 div#home-content {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100vh;                        /*  changed  */
-  border: 16px solid transparent;
-  box-sizing: border-box;               /*  added, to avoid scroll and make
-                                              border size be included in set height  */
+  box-sizing: border-box;               /*  added, to avoid scroll and make border size be included in set height  */
+
+  .mat-card-content {
+    height: calc(100vh - 173px);
+    padding: 0;
+  }
 }
 
 .mat-form-field-flex {
@@ -80,7 +86,9 @@ th.mat-header-cell {
   padding: 0 8px;
 }
 
-@import "~im-common/assets/scss/styles";
+.mat-form-field-wrapper {
+  padding-bottom: 0 !important;
+}
 
 .mat-tab-body-wrapper {
   height: inherit!important;

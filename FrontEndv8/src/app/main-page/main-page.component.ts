@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {AuthenticationService} from '../security/auth.service';
 import {Router} from '@angular/router';
+import {KeycloakService} from 'keycloak-angular';
 
 @Component({
   selector: 'app-main-page',
@@ -10,7 +10,7 @@ import {Router} from '@angular/router';
 export class MainPageComponent implements OnInit {
 
   constructor(
-    private auth: AuthenticationService,
+    private auth: KeycloakService,
     private router: Router
   ) {
   }
@@ -22,13 +22,7 @@ export class MainPageComponent implements OnInit {
     this.auth.logout();
   }
 
-  navigateTo(route: string, target: string) {
-    const url = this.router.serializeUrl(
-      this.router.createUrlTree([route])
-    );
-
-    console.log(url);
-
-    window.open('#' + url, target);
+  navigateTo(route: string) {
+    this.router.navigate([route]);
   }
 }
