@@ -4,11 +4,18 @@
   <mat-icon matSuffix (click)="clear()" style="cursor: pointer">clear</mat-icon>
 </mat-form-field>
 <div style="height: calc(100% - 85px); overflow-y: auto">
-  <table class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" id="searchResults" aria-hidden="true">
-    <tbody>
+  <table class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" id="searchResults" aria-hidden="true" *ngIf="searchResults != undefined;">
+    <tbody *ngIf="searchResults.length != 0; else elseBlock">
       <tr *ngFor="let p of searchResults" class="mat-row hover-highlight" (click)="selectResult(p)">
         <td class="mat-cell">{{p.name}}</td>
       </tr>
     </tbody>
+    <ng-template #elseBlock>
+      <tbody>
+        <tr class="mat-row hover-highlight">
+          <td class="mat-cell">No matching data models found for "{{searchTerm}}". Try again</td>
+        </tr>
+      </tbody>
+    </ng-template>
   </table>
 </div>
