@@ -1,3 +1,4 @@
+import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
@@ -21,10 +22,12 @@ import {DataModelLibraryComponent} from './data-model-library/data-model-library
 import {IMControlsModule} from 'im-common';
 import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
 import {ConceptService} from '../concept.service';
+import {MatListModule} from '@angular/material/list';
 
 @NgModule({
   imports: [
     CommonModule,
+    BrowserModule,
     MatCardModule,
     MatFormFieldModule,
     FormsModule,
@@ -43,7 +46,8 @@ import {ConceptService} from '../concept.service';
     MatTooltipModule,
     ComponentsModule,
     IMControlsModule,
-    MatTabsModule
+    MatTabsModule,
+    MatListModule
   ],
   providers: [
     { provide: ConceptTreeViewService, useClass: ConceptService },

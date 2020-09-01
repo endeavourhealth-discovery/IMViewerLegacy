@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConceptService} from '../../concept.service';
 import {Concept} from '../../models/Concept';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import {ConceptTreeViewComponent} from 'im-common/im-controls';
 import {KeycloakService} from 'keycloak-angular';
@@ -20,6 +20,8 @@ export class DataModelLibraryComponent implements OnInit {
   relationships = [':SN_116680003'];
   selected = 'dataModel';
 
+  history = [];
+
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
 
   constructor(private service: ConceptService,
@@ -27,6 +29,21 @@ export class DataModelLibraryComponent implements OnInit {
               private auth: KeycloakService,
               private route: ActivatedRoute,
               private log: LoggerService) {
+
+                this.routeEvent(this.router);
+  }
+
+  routeEvent(router: Router){
+    router.events.subscribe(e => {
+      if(e instanceof NavigationEnd && this.concept != undefined){
+        this.history.unshift(
+          {
+            'url': e.url,
+            'concept': this.concept
+          }
+        );
+      }
+    });
   }
 
   ngOnInit() {

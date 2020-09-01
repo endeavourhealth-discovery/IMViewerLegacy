@@ -35,12 +35,17 @@
                       <mat-icon class="example-tab-icon">history</mat-icon>
                       History
                     </ng-template>
-                    History
+
+                     <mat-selection-list dense multiple="false">
+                      <mat-list-option *ngFor="let item of history" [value]="item" (click)="goto(item.concept.iri)">
+                        <mat-icon mat-list-icon>open_in_browser</mat-icon>
+                        <div mat-line>{{item.concept.name}}</div>
+                        <div mat-line> {{item.concept.description}} </div>
+                      </mat-list-option>
+                     </mat-selection-list>
+
                   </mat-tab>
                 </mat-tab-group>
-
-
-                <!-- <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)"></app-concept-tree-view> -->
               </div>
             </as-split-area>
           </as-split>

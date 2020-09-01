@@ -71,6 +71,7 @@ div#home-content {
   .mat-card-content {
     height: calc(100vh - 173px);
     padding: 0;
+    overflow-y: auto;
   }
 }
 
@@ -92,5 +93,9 @@ th.mat-header-cell {
 
 .mat-tab-body-wrapper {
   height: inherit!important;
+}
+
+.mat-pseudo-checkbox{
+  display: none!important;
 }
 
