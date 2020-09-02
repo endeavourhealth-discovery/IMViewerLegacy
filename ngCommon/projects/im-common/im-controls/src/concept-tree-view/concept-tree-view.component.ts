@@ -61,6 +61,9 @@ export class ConceptTreeViewComponent implements AfterViewInit {
   }
 
   selectNode(node: TreeNode) {
+    if(node.level === 0) {
+      this.dataSource.toggleNode(node, true);
+    }
     if (node.id === '_LOADMORE_') {
       node.name = 'Loading...';
       this.dataSource.toggleNode(node, true);
