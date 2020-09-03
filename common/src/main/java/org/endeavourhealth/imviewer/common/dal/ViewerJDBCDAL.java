@@ -16,8 +16,8 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
     public PagedResultSet<RelatedConcept> getSources(String iri, List<String> relationships, int limit, int page) throws SQLException {
         String sql = "SELECT SQL_CALC_FOUND_ROWS DISTINCT\n" +
             "o.minCardinality, o.maxCardinality,\n" +
-            "p.iri AS r_iri, p.name AS r_name,\n" +
-            "c.iri AS c_iri, c.name AS c_name\n" +
+            "p.iri AS r_iri, p.name AS r_name, p.description AS r_description,\n" +
+            "c.iri AS c_iri, c.name AS c_name, c.description AS c_description\n" +
             "FROM concept_property_object o\n" +
             "JOIN concept v ON v.id = o.object AND v.iri = ?\n" +
             "JOIN concept p ON p.id = o.property\n" +
@@ -33,7 +33,7 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
             }
         }
 
-        PagedResultSet<RelatedConcept> result = new PagedResultSet<RelatedConcept>()
+        PagedResultSet<RelatedConcept> result = new PagedResultSet<RelatedConcept>() 
             .setPage(page)
             .setPageSize(limit);
 

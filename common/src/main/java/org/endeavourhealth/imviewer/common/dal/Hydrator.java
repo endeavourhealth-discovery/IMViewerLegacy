@@ -50,11 +50,13 @@ public class Hydrator {
             .setRelationship(new Concept()
                 .setIri(rs.getString("r_iri"))
                 .setName(rs.getString("r_name"))
+                .setDescription(rs.getString("r_description"))
             )
             .setConcept(
                 new Concept()
                     .setIri(rs.getString("c_iri"))
                     .setName(rs.getString("c_name"))
+                    .setDescription(rs.getString("c_description"))
             );
     }
 
