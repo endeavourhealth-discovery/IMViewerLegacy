@@ -10,26 +10,104 @@
         </mat-card-header>
 
         <!-- need to loop through groups creating cards -->
-        <mat-card-content>
-            <mat-grid-list cols="4">
-                <mat-grid-tile *ngFor="let dataModelConceptGroup of dataModelConceptGroups">
-                    <mat-card class="scrollable-content">
-                        <mat-card-header>
-                            <mat-card-title>{{dataModelConceptGroup.name}}</mat-card-title>
-                            <mat-card-subtitle>{{dataModelConceptGroup.description}}</mat-card-subtitle>
-                        </mat-card-header>
-                        <mat-card-content>
-                            <!-- need to loop through concepts creating list element -->
-                            <mat-nav-list *ngFor="let dataModelConcept of dataModelConceptGroup.concepts">
-                                <mat-list-item>
-                                    <a href="{{getDataModelViewUrl(dataModelConcept.iri)}}"
-                                        target="_blank">{{dataModelConcept.name}}</a>
-                                </mat-list-item>
-                            </mat-nav-list>
-                        </mat-card-content>
-                    </mat-card>
-                </mat-grid-tile>
-            </mat-grid-list>
+        <mat-card-content id="datamodel-overview">
+
+            <mat-grid-list cols="5">
+              <mat-grid-tile>
+                  <mat-card class="scrollable-content">
+                      <mat-card-header (click)="goto('DM_HealthEvent')">
+                          <mat-card-title>HealthEvent</mat-card-title>
+                          <mat-card-subtitle>
+                            DM_HealthEvent
+                          </mat-card-subtitle>
+                      </mat-card-header>
+                      <mat-card-content>
+                          <!-- need to loop through concepts creating list element -->
+                          <mat-selection-list dense>
+                            <mat-list-option *ngFor="let dataModelConcept of DM_HealthEvent.result" (click)="goto(dataModelConcept.concept.iri)">
+                              <mat-icon mat-list-icon>launch</mat-icon>
+                              <div mat-line>{{dataModelConcept.concept.name}}</div>
+                            </mat-list-option>
+                          </mat-selection-list>
+                      </mat-card-content>
+                  </mat-card>
+              </mat-grid-tile>
+
+            <mat-grid-tile>
+                <mat-card class="scrollable-content">
+                    <mat-card-header (click)="goto('DM_IdentifiableEntity')">
+                        <mat-card-title>IdentifiableEntity</mat-card-title>
+                        <mat-card-subtitle>DM_IdentifiableEntity</mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <!-- need to loop through concepts creating list element -->
+                        <mat-selection-list dense>
+                          <mat-list-option *ngFor="let dataModelConcept of DM_IdentifiableEntity.result" (click)="goto(dataModelConcept.concept.iri)">
+                            <mat-icon mat-list-icon>launch</mat-icon>
+                            <div mat-line>{{dataModelConcept.concept.name}}</div>
+                          </mat-list-option>
+                        </mat-selection-list>
+                    </mat-card-content>
+                </mat-card>
+            </mat-grid-tile>
+
+          <mat-grid-tile>
+              <mat-card class="scrollable-content">
+                  <mat-card-header (click)="goto('DM_Provenance')">
+                      <mat-card-title>Provenance</mat-card-title>
+                      <mat-card-subtitle>DM_Provenance</mat-card-subtitle>
+                  </mat-card-header>
+                  <mat-card-content>
+                      <!-- need to loop through concepts creating list element -->
+                      <mat-selection-list dense>
+                        <mat-list-option *ngFor="let dataModelConcept of DM_Provenance.result" (click)="goto(dataModelConcept.concept.iri)">
+                          <mat-icon mat-list-icon>launch</mat-icon>
+                          <div mat-line>{{dataModelConcept.concept.name}}</div>
+                        </mat-list-option>
+                      </mat-selection-list>
+                  </mat-card-content>
+              </mat-card>
+          </mat-grid-tile>
+
+        <mat-grid-tile>
+            <mat-card class="scrollable-content">
+              <mat-card-header (click)="goto('DM_StateEntry')">
+                    <mat-card-title>StateEntry</mat-card-title>
+                    <mat-card-subtitle>DM_StateEntry</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <!-- need to loop through concepts creating list element -->
+                    <mat-selection-list dense>
+                      <mat-list-option *ngFor="let dataModelConcept of DM_StateEntry.result" (click)="goto(dataModelConcept.concept.iri)">
+                        <mat-icon mat-list-icon>launch</mat-icon>
+                        <div mat-line>{{dataModelConcept.concept.name}}</div>
+                      </mat-list-option>
+                    </mat-selection-list>
+                </mat-card-content>
+            </mat-card>
+        </mat-grid-tile>
+
+      <mat-grid-tile>
+          <mat-card class="scrollable-content">
+              <mat-card-header (click)="goto('DM_StructuredArtefact')">
+                  <mat-card-title>StructuredArtefact</mat-card-title>
+                  <mat-card-subtitle>DM_StructuredArtefact</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                  <!-- need to loop through concepts creating list element -->
+                  <mat-selection-list dense>
+                      <mat-list-option *ngFor="let dataModelConcept of DM_StructuredArtefact.result" (click)="goto(dataModelConcept.concept.iri)">
+                        <mat-icon mat-list-icon>launch</mat-icon>
+                        <div mat-line>{{dataModelConcept.concept.name}}</div>
+                      </mat-list-option>
+                  </mat-selection-list>
+              </mat-card-content>
+          </mat-card>
+      </mat-grid-tile>
+
+  </mat-grid-list>
+
+
         </mat-card-content>
     </mat-card>
 </div>

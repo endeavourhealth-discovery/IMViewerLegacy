@@ -102,22 +102,17 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
       {name: 'Concept 3 name', description: 'Concept 3 desc', iri: ':DM_EncounterEntry'},
       {name: 'Concept 4 name', description: 'Concept 4 desc', iri: 'Concept iri'}
     ]
-    
+
     let conceptGroups: ConceptGroup[] = [
-      {name: 'Concept group 1 name', description: 'Concept group 1 desc', concepts: concepts},
-      {name: 'Concept group 2 name', description: 'Concept group 2 desc', concepts: concepts},
-      {name: 'Concept group 3 name', description: 'Concept group 3 desc', concepts: concepts},
-      {name: 'Concept group 4 name', description: 'Concept group 4 desc', concepts: concepts},
-      {name: 'Concept group 5 name', description: 'Concept group 5 desc', concepts: concepts},
-      {name: 'Concept group 6 name', description: 'Concept group 6 desc', concepts: concepts},
-      {name: 'Concept group 7 name', description: 'Concept group 7 desc', concepts: concepts},
-      {name: 'Concept group 8 name', description: 'Concept group 8 desc', concepts: concepts}
+      {name: 'group 1', description: 'description', concepts: concepts},
+      {name: 'group 2', description: 'description', concepts: concepts},
+      {name: 'group 3', description: 'description', concepts: concepts},
     ];
 
     return Observable.create((observer) => {
       observer.next(conceptGroups);
-    });    
-    
+    });
+
     //return Observable.create(conceptGroups); //TODO - data
     //return this.http.get<Concept>('api/concepts/' + iri);
   }

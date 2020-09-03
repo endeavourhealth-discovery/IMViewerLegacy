@@ -1,13 +1,17 @@
-.mat-card.scrollable-content {
+#datamodel-overview .mat-card.scrollable-content {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-  
+    width: 85%;
+    height: 90%!important;
+
     > .mat-card-title-group {
       display: block;
     }
-  
+
     > .mat-card-content {
-      overflow-y: auto;
+      overflow-y: hidden;
+      height: 100%!important;
+      padding: 10px;
     }
   }

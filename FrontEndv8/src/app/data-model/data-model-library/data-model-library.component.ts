@@ -1,3 +1,5 @@
+import { Related } from './../../models/Related';
+import { PagedResultSet } from './../../models/PagedResultSet';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConceptService} from '../../concept.service';
 import {Concept} from '../../models/Concept';
@@ -20,6 +22,11 @@ export class DataModelLibraryComponent implements OnInit {
   relationships = [':SN_116680003'];
   selected = 'dataModel';
 
+  DM_HealthEvent: PagedResultSet<Related>;
+  DM_IdentifiableEntity: PagedResultSet<Related>;
+  DM_Provenance: PagedResultSet<Related>;
+  DM_StateEntry: PagedResultSet<Related>;
+  DM_StructuredArtefact: PagedResultSet<Related>;
   history = [];
 
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
@@ -52,6 +59,33 @@ export class DataModelLibraryComponent implements OnInit {
       (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
       (error) => this.log.error(error)
     );
+
+    this.service.getSources(':DM_HealthEvent', null, 20, 1).subscribe(
+      (result) => this.DM_HealthEvent = result,
+      (error) => this.log.error(error)
+    );
+
+    this.service.getSources(':DM_IdentifiableEntity', null, 20, 1).subscribe(
+      (result) => this.DM_IdentifiableEntity = result,
+      (error) => this.log.error(error)
+    );
+
+    this.service.getSources(':DM_Provenance', null, 20, 1).subscribe(
+      (result) => this.DM_Provenance = result,
+      (error) => this.log.error(error)
+    );
+
+    this.service.getSources(':DM_StateEntry', null, 20, 1).subscribe(
+      (result) => this.DM_StateEntry = result,
+      (error) => this.log.error(error)
+    );
+
+    this.service.getSources(':DM_StructuredArtefact', null, 20, 1).subscribe(
+      (result) => this.DM_StructuredArtefact = result,
+      (error) => this.log.error(error)
+    );
+
+
   }
 
   displayConcept(iri: string) {

@@ -23,12 +23,47 @@
                       <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)"></app-concept-tree-view>
                     </ng-template>
                   </mat-tab>
-                  <mat-tab label="Group">
+                  <mat-tab label="Group" id="group-tab" class="group-tab" name="group-tab">
                     <ng-template mat-tab-label>
                       <mat-icon class="example-tab-icon">dashboard</mat-icon>
                       Group
                     </ng-template>
-                    Group
+
+                    <mat-selection-list dense>
+                      <div mat-subheader>HealthEvent</div>
+                      <mat-list-option *ngFor="let dataModelConcept of DM_HealthEvent.result" (click)="goto(dataModelConcept.concept.iri)">
+                        <mat-icon mat-list-icon>launch</mat-icon>
+                        <div mat-line>{{dataModelConcept.concept.name}}</div>
+                      </mat-list-option>
+                      <mat-divider></mat-divider>
+                      <div mat-subheader>IdentifiableEntity</div>
+                      <mat-list-option *ngFor="let dataModelConcept of DM_IdentifiableEntity.result" (click)="goto(dataModelConcept.concept.iri)">
+                        <mat-icon mat-list-icon>launch</mat-icon>
+                        <div mat-line>{{dataModelConcept.concept.name}}</div>
+                      </mat-list-option>
+                      <mat-divider></mat-divider>
+                      <div mat-subheader>Provenance</div>
+                      <mat-list-option *ngFor="let dataModelConcept of DM_Provenance.result" (click)="goto(dataModelConcept.concept.iri)">
+                        <mat-icon mat-list-icon>launch</mat-icon>
+                        <div mat-line>{{dataModelConcept.concept.name}}</div>
+                      </mat-list-option>
+                      <mat-divider></mat-divider>
+                      <div mat-subheader>StateEntry</div>
+                      <mat-list-option *ngFor="let dataModelConcept of DM_StateEntry.result" (click)="goto(dataModelConcept.concept.iri)">
+                        <mat-icon mat-list-icon>launch</mat-icon>
+                        <div mat-line>{{dataModelConcept.concept.name}}</div>
+                      </mat-list-option>
+                      <mat-divider></mat-divider>
+                      <div mat-subheader>StructuredArtefact</div>
+                      <mat-list-option *ngFor="let dataModelConcept of DM_StructuredArtefact.result" (click)="goto(dataModelConcept.concept.iri)">
+                        <mat-icon mat-list-icon>launch</mat-icon>
+                        <div mat-line>{{dataModelConcept.concept.name}}</div>
+                      </mat-list-option>
+                      <mat-divider></mat-divider>
+                    </mat-selection-list>
+
+
+
                   </mat-tab>
                   <mat-tab label="History">
                     <ng-template mat-tab-label>
@@ -38,7 +73,7 @@
 
                      <mat-selection-list dense multiple="false">
                       <mat-list-option *ngFor="let item of history" [value]="item" (click)="goto(item.concept.iri)">
-                        <mat-icon mat-list-icon>open_in_browser</mat-icon>
+                        <mat-icon mat-list-icon>launch</mat-icon>
                         <div mat-line>{{item.concept.name}}</div>
                         <div mat-line> {{item.concept.description}} </div>
                       </mat-list-option>

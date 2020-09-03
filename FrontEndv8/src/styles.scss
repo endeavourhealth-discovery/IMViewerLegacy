@@ -99,3 +99,10 @@ th.mat-header-cell {
   display: none!important;
 }
 
+.example-stretched-tabs{
+  .mat-tab-body.mat-tab-body-active {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+}
+
