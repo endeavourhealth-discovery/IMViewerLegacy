@@ -1,118 +1,121 @@
 <div id="home-content">
-    <mat-card class="scrollable-content">
-        <mat-card-header>
-            <div mat-card-avatar>
-                <span class="fad fa-lightbulb"></span>
-            </div>
-            <mat-card-title>Data Model Overview</mat-card-title>
-            <mat-card-subtitle>Discovery data model overview</mat-card-subtitle>
-            <div fxFlex></div>
-        </mat-card-header>
+  <mat-card class="scrollable-content">
+    <mat-card-header>
+      <div mat-card-avatar>
+        <span class="fad fa-lightbulb"></span>
+      </div>
+      <mat-card-title>Data Model Overview</mat-card-title>
+      <mat-card-subtitle>Discovery data model overview</mat-card-subtitle>
+      <div fxFlex></div>
+    </mat-card-header>
 
-        <!-- need to loop through groups creating cards -->
-        <mat-card-content id="datamodel-overview">
+    <!-- need to loop through groups creating cards -->
+    <mat-card-content id="datamodel-overview">
 
-            <mat-grid-list cols="5">
-              <mat-grid-tile>
-                  <mat-card class="scrollable-content">
-                      <mat-card-header (click)="goto('DM_HealthEvent')">
-                          <mat-card-title>HealthEvent</mat-card-title>
-                          <mat-card-subtitle>
-                            DM_HealthEvent
-                          </mat-card-subtitle>
-                      </mat-card-header>
-                      <mat-card-content>
-                          <!-- need to loop through concepts creating list element -->
-                          <mat-selection-list dense>
-                            <mat-list-option *ngFor="let dataModelConcept of DM_HealthEvent.result" (click)="goto(dataModelConcept.concept.iri)"
-                            matTooltip="{{dataModelConcept.concept.description}}">
-                              <mat-icon mat-list-icon>launch</mat-icon>
-                              <div mat-line>{{dataModelConcept.concept.name}}</div>
-                            </mat-list-option>
-                          </mat-selection-list>
-                      </mat-card-content>
-                  </mat-card>
-              </mat-grid-tile>
-
-            <mat-grid-tile>
-                <mat-card class="scrollable-content">
-                    <mat-card-header (click)="goto('DM_IdentifiableEntity')">
-                        <mat-card-title>IdentifiableEntity</mat-card-title>
-                        <mat-card-subtitle>DM_IdentifiableEntity</mat-card-subtitle>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <!-- need to loop through concepts creating list element -->
-                        <mat-selection-list dense>
-                          <mat-list-option *ngFor="let dataModelConcept of DM_IdentifiableEntity.result" (click)="goto(dataModelConcept.concept.iri)"
-                          matTooltip="{{dataModelConcept.concept.description}}">
-                            <mat-icon mat-list-icon>launch</mat-icon>
-                            <div mat-line>{{dataModelConcept.concept.name}}</div>
-                          </mat-list-option>
-                        </mat-selection-list>
-                    </mat-card-content>
-                </mat-card>
-            </mat-grid-tile>
-
-          <mat-grid-tile>
-              <mat-card class="scrollable-content">
-                  <mat-card-header (click)="goto('DM_Provenance')">
-                      <mat-card-title>Provenance</mat-card-title>
-                      <mat-card-subtitle>DM_Provenance</mat-card-subtitle>
-                  </mat-card-header>
-                  <mat-card-content>
-                      <!-- need to loop through concepts creating list element -->
-                      <mat-selection-list dense>
-                        <mat-list-option *ngFor="let dataModelConcept of DM_Provenance.result" (click)="goto(dataModelConcept.concept.iri)"
-                        matTooltip="{{dataModelConcept.concept.description}}">
-                          <mat-icon mat-list-icon>launch</mat-icon>
-                          <div mat-line>{{dataModelConcept.concept.name}}</div>
-                        </mat-list-option>
-                      </mat-selection-list>
-                  </mat-card-content>
-              </mat-card>
-          </mat-grid-tile>
-
+      <mat-grid-list cols="5">
         <mat-grid-tile>
-            <mat-card class="scrollable-content">
-              <mat-card-header (click)="goto('DM_StateEntry')">
-                    <mat-card-title>StateEntry</mat-card-title>
-                    <mat-card-subtitle>DM_StateEntry</mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                    <!-- need to loop through concepts creating list element -->
-                    <mat-selection-list dense>
-                      <mat-list-option *ngFor="let dataModelConcept of DM_StateEntry.result" (click)="goto(dataModelConcept.concept.iri)"
-                      matTooltip="{{dataModelConcept.concept.description}}">
-                        <mat-icon mat-list-icon>launch</mat-icon>
-                        <div mat-line>{{dataModelConcept.concept.name}}</div>
-                      </mat-list-option>
-                    </mat-selection-list>
-                </mat-card-content>
-            </mat-card>
+          <mat-card class="scrollable-content">
+            <mat-card-header (click)="goto('DM_HealthEvent')">
+              <mat-card-title>HealthEvent</mat-card-title>
+              <mat-card-subtitle class="text-oneline">
+                A major provenanced entry in a health record. Something relating to health that has happened over a period of time, or is planned to happen at a time in the future.The main differentiator between this and other events is that the state relating to the event lasts as long as the event. States that last longer, such as paient demographics, regisatrion, or problems are modelled in related entities
+              </mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <!-- need to loop through concepts creating list element -->
+              <mat-selection-list dense>
+                <mat-list-option *ngFor="let dataModelConcept of DM_HealthEvent.result"
+                  (click)="goto(dataModelConcept.concept.iri)" matTooltip="{{dataModelConcept.concept.description}}"
+                  matTooltipShowDelay="500" matTooltipHideDelay="0">
+                  <mat-icon mat-list-icon>launch</mat-icon>
+                  <div mat-line>{{dataModelConcept.concept.name}}</div>
+                </mat-list-option>
+              </mat-selection-list>
+            </mat-card-content>
+          </mat-card>
         </mat-grid-tile>
 
-      <mat-grid-tile>
+        <mat-grid-tile>
           <mat-card class="scrollable-content">
-              <mat-card-header (click)="goto('DM_StructuredArtefact')">
-                  <mat-card-title>StructuredArtefact</mat-card-title>
-                  <mat-card-subtitle>DM_StructuredArtefact</mat-card-subtitle>
-              </mat-card-header>
-              <mat-card-content>
-                  <!-- need to loop through concepts creating list element -->
-                  <mat-selection-list dense>
-                      <mat-list-option *ngFor="let dataModelConcept of DM_StructuredArtefact.result" (click)="goto(dataModelConcept.concept.iri)"
-                      matTooltip="{{dataModelConcept.concept.description}}">
-                        <mat-icon mat-list-icon>launch</mat-icon>
-                        <div mat-line>{{dataModelConcept.concept.name}}</div>
-                      </mat-list-option>
-                  </mat-selection-list>
-              </mat-card-content>
+            <mat-card-header (click)="goto('DM_IdentifiableEntity')">
+              <mat-card-title>IdentifiableEntity</mat-card-title>
+              <mat-card-subtitle class="text-oneline">An entity or individual that can be identified in a unique way. May be a living being such as a person, or an instutition, device, or location</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <!-- need to loop through concepts creating list element -->
+              <mat-selection-list dense>
+                <mat-list-option *ngFor="let dataModelConcept of DM_IdentifiableEntity.result"
+                  (click)="goto(dataModelConcept.concept.iri)" matTooltip="{{dataModelConcept.concept.description}}"
+                  matTooltipShowDelay="500" matTooltipHideDelay="0">
+                  <mat-icon mat-list-icon>launch</mat-icon>
+                  <div mat-line>{{dataModelConcept.concept.name}}</div>
+                </mat-list-option>
+              </mat-selection-list>
+            </mat-card-content>
           </mat-card>
-      </mat-grid-tile>
+        </mat-grid-tile>
 
-  </mat-grid-list>
+        <mat-grid-tile>
+          <mat-card class="scrollable-content">
+            <mat-card-header (click)="goto('DM_Provenance')">
+              <mat-card-title>Provenance</mat-card-title>
+              <mat-card-subtitle class="text-oneline">An entry in a record that is related to the provenance of another main entry</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <!-- need to loop through concepts creating list element -->
+              <mat-selection-list dense>
+                <mat-list-option *ngFor="let dataModelConcept of DM_Provenance.result"
+                  (click)="goto(dataModelConcept.concept.iri)" matTooltip="{{dataModelConcept.concept.description}}"
+                  matTooltipShowDelay="500" matTooltipHideDelay="0">
+                  <mat-icon mat-list-icon>launch</mat-icon>
+                  <div mat-line>{{dataModelConcept.concept.name}}</div>
+                </mat-list-option>
+              </mat-selection-list>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
 
+        <mat-grid-tile>
+          <mat-card class="scrollable-content">
+            <mat-card-header (click)="goto('DM_StateEntry')">
+              <mat-card-title>StateEntry</mat-card-title>
+              <mat-card-subtitle class="text-oneline">An entry describing the state of something such as a person demographic entry , an organisation directory, or more abstract things like a problem.They are usually related to an identifiable entity. For example a person demographic is related to a person and an organisation details entry is related to an organisation</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <!-- need to loop through concepts creating list element -->
+              <mat-selection-list dense>
+                <mat-list-option *ngFor="let dataModelConcept of DM_StateEntry.result"
+                  (click)="goto(dataModelConcept.concept.iri)" matTooltip="{{dataModelConcept.concept.description}}"
+                  matTooltipShowDelay="500" matTooltipHideDelay="0">
+                  <mat-icon mat-list-icon>launch</mat-icon>
+                  <div mat-line>{{dataModelConcept.concept.name}}</div>
+                </mat-list-option>
+              </mat-selection-list>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
 
-        </mat-card-content>
-    </mat-card>
+        <mat-grid-tile>
+          <mat-card class="scrollable-content">
+            <mat-card-header (click)="goto('DM_StructuredArtefact')">
+              <mat-card-title>StructuredArtefact</mat-card-title>
+              <mat-card-subtitle class="text-oneline">A specialised structure forming part of a record or directory entry.These sructures canno stand alone i.e. must be part of, or referred to, by a record entry or directory entry</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <!-- need to loop through concepts creating list element -->
+              <mat-selection-list dense>
+                <mat-list-option *ngFor="let dataModelConcept of DM_StructuredArtefact.result"
+                  (click)="goto(dataModelConcept.concept.iri)" matTooltip="{{dataModelConcept.concept.description}}"
+                  matTooltipShowDelay="500" matTooltipHideDelay="0">
+                  <mat-icon mat-list-icon>launch</mat-icon>
+                  <div mat-line>{{dataModelConcept.concept.name}}</div>
+                </mat-list-option>
+              </mat-selection-list>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+      </mat-grid-list>
+
+    </mat-card-content>
+  </mat-card>
 </div>
