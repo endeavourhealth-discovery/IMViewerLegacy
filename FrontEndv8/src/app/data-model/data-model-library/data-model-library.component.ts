@@ -1,16 +1,12 @@
-import { Related } from './../../models/Related';
 import { PagedResultSet } from './../../models/PagedResultSet';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConceptService} from '../../concept.service';
 import {Concept} from '../../models/Concept';
 import {Related} from '../../models/Related';
-import {Property} from '../../models/Property';
 import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import {ConceptTreeViewComponent} from 'im-common/im-controls';
 import {KeycloakService} from 'keycloak-angular';
-import {zip, Observable, Subject} from 'rxjs';
-import { MatTableDataSource } from '@angular/material/table';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import {DataModelTablularViewComponent} from '../../components/data-model-tabular-view/data-model-tabular-view.component';
 

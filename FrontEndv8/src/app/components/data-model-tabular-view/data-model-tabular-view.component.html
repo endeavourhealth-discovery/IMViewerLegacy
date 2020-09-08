@@ -20,7 +20,7 @@
       <b>Parents</b>
     </mat-panel-title>
   </mat-expansion-panel-header>
-  <ng-container *ngIf="dataModelDefinition.hasDirectParents(); else infoNoDataFoundTemplate">
+  <ng-container *ngIf="dataModelDefinition && dataModelDefinition.hasDirectParents(); else infoNoDataFoundTemplate">
     <mat-chip-list>
       <mat-chip *ngFor="let directParent of dataModelDefinition.directParents">
         {{directParent.concept.name}}
@@ -34,7 +34,7 @@
       <b>Children</b>
     </mat-panel-title>
   </mat-expansion-panel-header>
-  <ng-container *ngIf="dataModelDefinition.hasDirectChildren(); else infoNoDataFoundTemplate">
+  <ng-container *ngIf="dataModelDefinition && dataModelDefinition.hasDirectChildren(); else infoNoDataFoundTemplate">
     <mat-chip-list>
       <mat-chip *ngFor="let directChild of dataModelDefinition.directChildren">
         {{directChild.concept.name}}
@@ -50,7 +50,7 @@
     </mat-panel-title>
   </mat-expansion-panel-header>
 
-  <ng-container *ngIf="dataModelPropertyTable.hasRows(); else infoNoDataFoundTemplate">
+  <ng-container *ngIf="dataModelPropertyTable && dataModelPropertyTable.hasRows(); else infoNoDataFoundTemplate">
     <mat-table [dataSource]="dataModelPropertyTable.rows" multiTemplateDataRows>
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
