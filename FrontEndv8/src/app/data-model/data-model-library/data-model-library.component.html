@@ -1,13 +1,15 @@
 <div id="home-content">
   <mat-card>
-    <app-navigation [title]="'Data model'" [subtitle]="'Discovery data model viewer & navigator'" [selectedPage]="'dataModel'"></app-navigation>
+    <app-navigation [title]="'Data model'" [subtitle]="'Discovery data model viewer & navigator'"
+      [selectedPage]="'dataModel'"></app-navigation>
     <mat-card-content>
       <as-split direction="horizontal">
         <as-split-area size="30">
           <as-split direction="vertical" unit="pixel">
             <as-split-area [size]="searchSize" minSize="72" style="height: 100%; overflow: hidden">
               <div class="as-split-area-content" style="height: inherit">
-                <app-concept-search [root]="root" [relationships]="relationships" (selection)="goto($event.iri)" (hasResults)="hasResults($event)"></app-concept-search>
+                <app-concept-search [root]="root" [relationships]="relationships" (selection)="goto($event.iri)"
+                  (hasResults)="hasResults($event)"></app-concept-search>
               </div>
             </as-split-area>
             <as-split-area>
@@ -20,7 +22,8 @@
                       Class
                     </ng-template>
                     <ng-template matTabContent>
-                      <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)"></app-concept-tree-view>
+                      <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)">
+                      </app-concept-tree-view>
                     </ng-template>
                   </mat-tab>
                   <mat-tab label="Group" id="group-tab" class="group-tab" name="group-tab">
@@ -71,13 +74,13 @@
                       History
                     </ng-template>
 
-                     <mat-selection-list dense multiple="false">
+                    <mat-selection-list dense multiple="false">
                       <mat-list-option *ngFor="let item of history" [value]="item" (click)="goto(item.concept.iri)">
                         <mat-icon mat-list-icon>launch</mat-icon>
                         <div mat-line>{{item.concept.name}}</div>
                         <div mat-line> {{item.concept.description}} </div>
                       </mat-list-option>
-                     </mat-selection-list>
+                    </mat-selection-list>
 
                   </mat-tab>
                 </mat-tab-group>
@@ -100,7 +103,8 @@
                   </mat-form-field>
                   <mat-form-field appearance="outline" fxFlex="100">
                     <mat-label>Description</mat-label>
-                    <input matInput [value]="concept?.description" placeholder="Concept description" readonly id="conceptDescription">
+                    <input matInput [value]="concept?.description" placeholder="Concept description" readonly
+                      id="conceptDescription">
                   </mat-form-field>
                 </div>
               </div>
@@ -110,11 +114,17 @@
                 <mat-tab-group style="height: 100%;">
                   <mat-tab label="Graph">
                     <ng-template matTabContent>
-                      <app-data-model-navigator [conceptIri]="selectedIri" (selection)="goto($event)"></app-data-model-navigator>
+                      <app-data-model-navigator [conceptIri]="selectedIri" (selection)="goto($event)">
+                      </app-data-model-navigator>
                     </ng-template>
                   </mat-tab>
-                  <mat-tab label="Object"> Object </mat-tab>
-                  <mat-tab label="Textual"> Textual </mat-tab>
+                  <mat-tab label="Table">
+                    <ng-template matTabContent>
+                      <data-model-tabular-view [conceptIri]="selectedIri" (selection)="goto($event)">
+                      </data-model-tabular-view>
+                    </ng-template>
+                  </mat-tab>
+                  <mat-tab label="Textual"> Textual - TODO</mat-tab>
                 </mat-tab-group>
               </div>
             </as-split-area>

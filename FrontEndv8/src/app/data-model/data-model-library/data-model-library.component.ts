@@ -3,20 +3,36 @@ import { PagedResultSet } from './../../models/PagedResultSet';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConceptService} from '../../concept.service';
 import {Concept} from '../../models/Concept';
+import {Related} from '../../models/Related';
+import {Property} from '../../models/Property';
 import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import {ConceptTreeViewComponent} from 'im-common/im-controls';
 import {KeycloakService} from 'keycloak-angular';
+import {zip, Observable, Subject} from 'rxjs';
+import { MatTableDataSource } from '@angular/material/table';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import {DataModelTablularViewComponent} from '../../components/data-model-tabular-view/data-model-tabular-view.component';
+
 const debug = (message: string) => { console.log(message); };
 
 @Component({
   selector: 'app-data-model-library',
   templateUrl: './data-model-library.component.html',
   styleUrls: ['./data-model-library.component.scss'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({height: '0px', minHeight: '0'})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],  
 })
-export class DataModelLibraryComponent implements OnInit {
-  concept: Concept;
+class DataModelLibraryComponent implements OnInit {
+
   selectedIri: string;
+  concept: Concept;
+
   searchSize = 72;
   root = ':DM_DataModel';
   relationships = [':SN_116680003'];
@@ -30,6 +46,7 @@ export class DataModelLibraryComponent implements OnInit {
   history = [];
 
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
+  @ViewChild(DataModelTablularViewComponent, {static: true}) tableView: DataModelTablularViewComponent;
 
   constructor(private service: ConceptService,
               private router: Router,
@@ -37,7 +54,7 @@ export class DataModelLibraryComponent implements OnInit {
               private route: ActivatedRoute,
               private log: LoggerService) {
 
-                this.routeEvent(this.router);
+              this.routeEvent(this.router);
   }
 
   routeEvent(router: Router){
@@ -111,4 +128,9 @@ export class DataModelLibraryComponent implements OnInit {
   logout() {
     this.auth.logout();
   }
+  
+}
+
+export {
+  DataModelLibraryComponent
 }

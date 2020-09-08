@@ -1,0 +1,105 @@
+<!-- templates -->
+<ng-template #warnNoDataFoundTemplate>
+  <div style="display: flex;vertical-align: middle;">
+    <mat-icon>warning</mat-icon>
+    No data found
+  </div>
+</ng-template>
+
+<ng-template #infoNoDataFoundTemplate>
+  <div style="display: flex;vertical-align: middle;">
+    <mat-icon>info</mat-icon>
+    No data found
+  </div>
+</ng-template>
+
+<!-- main page -->
+<mat-expansion-panel expanded="false" togglePosition="before">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <b>Parents</b>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <ng-container *ngIf="dataModelDefinition.hasDirectParents(); else infoNoDataFoundTemplate">
+    <mat-chip-list>
+      <mat-chip *ngFor="let directParent of dataModelDefinition.directParents">
+        {{directParent.concept.name}}
+      </mat-chip>
+    </mat-chip-list>
+  </ng-container>
+</mat-expansion-panel>
+<mat-expansion-panel expanded="false" togglePosition="before">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <b>Children</b>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <ng-container *ngIf="dataModelDefinition.hasDirectChildren(); else infoNoDataFoundTemplate">
+    <mat-chip-list>
+      <mat-chip *ngFor="let directChild of dataModelDefinition.directChildren">
+        {{directChild.concept.name}}
+      </mat-chip>
+    </mat-chip-list>
+  </ng-container>
+
+</mat-expansion-panel>
+<mat-expansion-panel expanded="true" togglePosition="before">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <b>Properties</b>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <ng-container *ngIf="dataModelPropertyTable.hasRows(); else infoNoDataFoundTemplate">
+    <mat-table [dataSource]="dataModelPropertyTable.rows" multiTemplateDataRows>
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngIf="row.type; else warnNoDataFoundTemplate">
+            {{row.type}}
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="minCardinality">
+        <th mat-header-cell *matHeaderCellDef>Min Cardinality</th>
+        <td mat-cell *matCellDef="let row">
+          <mat-chip>{{row.minCardinality}} </mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="maxCardinality">
+        <th mat-header-cell *matHeaderCellDef>Max Cardinality</th>
+        <td mat-cell *matCellDef="let row">
+          <mat-chip>{{row.maxCardinality}} </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="description">
+        <td mat-cell *matCellDef="let element" [attr.colspan]="dataModelPropertyTable.columns.length">
+          <div class="element-detail"
+            [@detailExpand]="element == dataModelPropertyTable.expandedElement ? 'expanded' : 'collapsed'">
+            <div *ngIf="element.description; else warnNoDataFoundTemplate">
+              {{element.description}}
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="dataModelPropertyTable.columns"></tr>
+
+      <tr mat-row *matRowDef="let element; columns: dataModelPropertyTable.columns;" class="element-row"
+        (click)="dataModelPropertyTable.expandedElement = dataModelPropertyTable.expandedElement === element ? null : element">
+      </tr>
+
+      <tr mat-row *matRowDef="let row; columns: ['description']" class="detail-row"></tr>
+
+    </mat-table>
+  </ng-container>
+</mat-expansion-panel>

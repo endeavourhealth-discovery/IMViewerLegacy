@@ -16,6 +16,11 @@ import {MatSelectModule} from '@angular/material/select';
 import {NavigationComponent} from './navigation/navigation.component';
 import { MatCardModule } from '@angular/material/card';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {DataModelTablularViewComponent} from './data-model-tabular-view/data-model-tabular-view.component';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
     imports: [
@@ -33,17 +38,23 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
         ReactiveFormsModule,
         MatSelectModule,
         MatSlideToggleModule,
+        BrowserAnimationsModule,
+        MatExpansionModule,
+        MatChipsModule,
+        MatTableModule
     ],
   exports: [
     ConceptSearchComponent,
     GraphNavigatorComponent,
-    NavigationComponent
+    NavigationComponent,
+    DataModelTablularViewComponent
   ],
   declarations: [
     ConceptSearchComponent,
     GraphNavigatorComponent,
     ResizeObserverDirective,
-    NavigationComponent
+    NavigationComponent,
+    DataModelTablularViewComponent
   ]
 })
 export class ComponentsModule { }
