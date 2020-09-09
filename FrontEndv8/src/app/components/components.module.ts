@@ -21,6 +21,7 @@ import {DataModelTablularViewComponent} from './data-model-tabular-view/data-mod
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatTableModule} from '@angular/material/table';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
     imports: [
@@ -41,7 +42,8 @@ import {MatTableModule} from '@angular/material/table';
         BrowserAnimationsModule,
         MatExpansionModule,
         MatChipsModule,
-        MatTableModule
+        MatTableModule,
+        MatTooltipModule
     ],
   exports: [
     ConceptSearchComponent,

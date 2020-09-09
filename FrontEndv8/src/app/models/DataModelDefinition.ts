@@ -30,4 +30,60 @@ export class DataModelDefinition {
     hasDirectParents(): boolean {
         return this.directParents && this.directParents.length > 0;
     }
+
+    hasProperties(): boolean {
+        return this.properties && this.properties.length > 0;
+    }
+
+    getDirectParentConcepts(): Concept[] {
+        return this.getConcepts(this.directParents);
+    }
+
+    getDirectChildConcepts(): Concept[] {
+        return this.getConcepts(this.directChildren); 
+    }
+
+    getFlatProperties(): FlatProperty[] {
+        let flatProperies: FlatProperty[] = [];
+
+        if(this.hasProperties()) {
+            flatProperies = this.properties.map((property: Property) => {
+                const dataModelProperty: FlatProperty =  {
+                  name: property.property.name,
+                  description: property.property.description,
+                  iri: property.property.iri,
+                  type: property.valueType.name,
+                  minCardinality: property.minCardinality,
+                  maxCardinality: property.maxCardinality,
+                  source: property
+                };
+          
+                return dataModelProperty;
+              })
+        }
+        
+        return flatProperies;
+    }
+
+    private getConcepts(relateds: Related[]): Concept[] {
+        let concepts: Concept[] = [];
+        
+        if(relateds && relateds.length > 0) {
+            concepts = relateds.map((related: Related) => {
+                return related.concept;
+            });
+        }
+
+        return concepts;
+    }
 }
+
+export interface FlatProperty {
+    name: string;
+    description: string;
+    iri: string;
+    minCardinality: number;
+    maxCardinality: number;
+    type: string; // could be an enum
+    source: Property; // the original source of the FlatProperty
+  }

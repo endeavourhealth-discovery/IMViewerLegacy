@@ -1,11 +1,12 @@
-import {Component, OnInit, ViewChild, Input} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {ConceptService} from '../../concept.service';
-import {DataModelDefinition} from '../../models/DataModelDefinition';
-import {Property} from '../../models/Property';
+import {DataModelDefinition, FlatProperty} from '../../models/DataModelDefinition';
+import {Router} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import { MatTableDataSource } from '@angular/material/table';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Observable } from 'rxjs';
+import { Concept } from 'src/app/models/Concept';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -26,7 +27,13 @@ class DataModelTablularViewComponent {
   private iri: string;
 
   dataModelDefinition: DataModelDefinition;
-  dataModelPropertyTable: DataModelPropertyTable;
+
+  parentsTable: DataTable<Concept>;
+  childrenTable: DataTable<Concept>;
+  propertiesTable: DataTable<FlatProperty>;
+
+  parentsHierarchyTemplateContext: HierarchyTemplateContext;
+  childrenHierarchyTemplateContext: HierarchyTemplateContext;
 
   @Input()
   set conceptIri(iri: string) {
@@ -34,54 +41,76 @@ class DataModelTablularViewComponent {
       this.refresh();
   }
 
-  constructor(private service: ConceptService, private log: LoggerService) { }
+  constructor(private service: ConceptService, private log: LoggerService, private router: Router) { 
+    this.parentsTable = new DataTable<Concept>(["hname", "hiri", "hdescription"]);
+    this.childrenTable = new DataTable<Concept>(["hname", "hiri", "hdescription"]);
+    this.propertiesTable = new DataTable<FlatProperty>(["name", "iri", "description", "type", "minCardinality",  "maxCardinality"]);
+
+    this.parentsHierarchyTemplateContext =  {
+      title: "Parents",
+      table: this.parentsTable
+    };
+
+    this.childrenHierarchyTemplateContext =  {
+      title: "Children",
+      table: this.childrenTable
+    };
+  }
 
   refresh() {
     let dataModelDefinitionObservable: Observable<DataModelDefinition> = this.service.getDataModelDefinition(this.iri);
+   
+    this.parentsTable.clear();
+    this.childrenTable.clear();
+    this.propertiesTable.clear();
     
-    this.dataModelPropertyTable = new DataModelPropertyTable();
     dataModelDefinitionObservable.subscribe(dataModelDefinition => {
       this.dataModelDefinition = dataModelDefinition;
-      this.dataModelPropertyTable.setProperties(this.dataModelDefinition.properties);
+      
+      this.parentsTable.setRows(this.dataModelDefinition.getDirectParentConcepts());
+      this.childrenTable.setRows(this.dataModelDefinition.getDirectChildConcepts());
+      this.propertiesTable.setRows(this.dataModelDefinition.getFlatProperties());
     });
+  }
+
+  openDataModel(iri: string) {
+    this.router.navigate(['dataModel'], {queryParams: {id: iri}});
   }
 }
 
-class DataModelPropertyTable {
+class DataTable<D> {
 
-  public columns: string[] = ["name", "type", "minCardinality",  "maxCardinality"];
-  public rows: MatTableDataSource<DataModelProperty> = new MatTableDataSource<DataModelProperty>();
-  public expandedElement: DataModelProperty | null;
+  public columns: string[]
+  public rows: MatTableDataSource<D> = new MatTableDataSource<D>();
 
-  setProperties(properties: Property[]) {
-    this.rows.data = properties.map((property: Property) => {
-      const dataModelProperty: DataModelProperty =  {
-        name: property.property.name,
-        description: property.property.description,
-        type: property.valueType.name,
-        minCardinality: property.minCardinality,
-        maxCardinality: property.maxCardinality
-      };
+  constructor(columns: string[]) {
+    this.columns = columns;
+  }
 
-      return dataModelProperty;
-    })
+  setRows(rows: D[]){
+    this.rows.data = rows;
+  }
+
+  clear() {
+    this.rows.data = [];
   }
 
   hasRows() : boolean {
     return this.rows && this.rows.data.length > 0;
   }
+
+  getTooltip(concept: Concept): string { 
+    return `IRI - ${concept.iri} Description - ${concept.description ? concept.description : 'no data found'}`;
+  }
 }
 
-interface DataModelProperty {
-  name: string;
-  description: string;
-  minCardinality: number;
-  maxCardinality: number;
-  type: string; // could be an enum
+interface HierarchyTemplateContext {
+  title: string,
+  table: DataTable<Concept>;
 }
 
 export {
   DataModelTablularViewComponent,
-  DataModelPropertyTable,
-  DataModelProperty
+  DataTable,
+  HierarchyTemplateContext
 }

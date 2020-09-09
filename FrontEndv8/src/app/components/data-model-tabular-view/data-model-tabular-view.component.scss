@@ -1,45 +1,26 @@
-.mat-tab-body-wrapper {
-    height: inherit!important;
-  }
+
   
-  table {
-    width: 100%;
-  }
-  
-  .mat-row {
-    height: auto;
-  }
-  
-  .mat-cell {
-    padding: 8px 8px 8px 0;
-  }
-  
-  .mat-chip {
-    font-size: 10px;
-    font-weight: 400;
-  }
-  
-  .mat-expansion-panel {
+.mat-expansion-panel {
     background-color: #eceff1;
-  }
-  
-  tr.detail-row {
-    height: 0;
-  }
-  
-  tr.element-row:hover {
-    background: #ffcc80;
-    cursor: pointer;
-  }
-  
-  .element-row td {
-    border-bottom-width: 0;
-  }
-  
-  .element-detail {
-    overflow: hidden;
-    display: flex;
-  }
-  
+}
+
+.mat-column-hname {
+  flex: none;
+  width: 50%;
+}
+
+.mat-column-hiri {
+  flex: none;
+  width: 30%;
+}
+
+.mat-column-hdescription {
+  width: 20%;
+}
+
+.mat-table {
+  table-layout: fixed;
+}
+
   
   
