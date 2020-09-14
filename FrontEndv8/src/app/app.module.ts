@@ -17,6 +17,8 @@ import {MainPageModule} from './main-page/main-page.module';
 import {OntologyModule} from './ontology/ontology.module';
 import {ValueSetModule} from './value-sets/value-set.module';
 import {DataModelOverviewModule} from './data-model-overview/data-model-overview.module';
+import {AbstractSecurityProvider} from './security/abstract-security-provider';
+import {UsermanagerSecurityService} from './security/usermanager-security-service';
 
 const keycloakService = new KeycloakService();
 
@@ -45,6 +47,7 @@ const keycloakService = new KeycloakService();
   declarations: [AppRoot],
   entryComponents: [AppRoot],
   providers: [
+    { provide: AbstractSecurityProvider, useClass: UsermanagerSecurityService },
     { provide: AbstractMenuProvider, useClass : AppMenuService },
     { provide: KeycloakService, useValue: keycloakService }
   ]

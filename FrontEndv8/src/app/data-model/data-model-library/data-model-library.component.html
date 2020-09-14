@@ -57,7 +57,11 @@
                     </ng-template>
                   </mat-tab>
                   <mat-tab label="Object"> Object </mat-tab>
-                  <mat-tab label="Textual"> Textual </mat-tab>
+                  <mat-tab label="Textual">
+                    <ng-template matTabContent>
+                      <pre>{{getTextual()}}</pre>
+                    </ng-template>
+                  </mat-tab>
                 </mat-tab-group>
               </div>
             </as-split-area>

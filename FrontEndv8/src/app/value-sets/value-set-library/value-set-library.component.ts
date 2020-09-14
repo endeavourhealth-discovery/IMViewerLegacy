@@ -21,7 +21,7 @@ export class ValueSetLibraryComponent implements OnInit {
   selectedIri: string;
   searchSize = 72;
   root = ':VSET_ValueSet';
-  relationships = [':SN_116680003'];
+  relationships = ['sn:116680003'];
   nameCache = {};
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
 

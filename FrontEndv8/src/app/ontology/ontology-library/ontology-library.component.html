@@ -46,14 +46,12 @@
                       <table *ngIf="definition && definition.length > 0" class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" aria-describedby="definition-label">
                         <thead>
                           <tr class="mat-header-row">
-                            <th scope="col" class="mat-header-cell">Relationship</th>
-                            <th scope="col" class="mat-header-cell">Concept</th>
+                            <th scope="col" class="mat-header-cell">Definition</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr *ngFor="let p of definition" class="mat-row">
-                            <td class="mat-cell">{{p.relationship.name}}</td>
-                            <td class="mat-cell">{{p.concept.name}}</td>
+                            <td class="mat-cell">{{json(p)}}</td>
                           </tr>
                         </tbody>
                       </table>

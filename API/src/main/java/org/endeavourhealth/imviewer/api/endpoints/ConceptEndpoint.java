@@ -1,8 +1,10 @@
 package org.endeavourhealth.imviewer.api.endpoints;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.endeavourhealth.common.utility.MetricsHelper;
 import org.endeavourhealth.common.utility.MetricsTimer;
 import org.endeavourhealth.imviewer.common.dal.ViewerJDBCDAL;
+import org.endeavourhealth.imviewer.common.logic.TextFormat;
 import org.endeavourhealth.imviewer.common.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +15,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.util.List;
-import java.util.Map;
 
 @Path("/concepts")
 public class ConceptEndpoint {
@@ -102,6 +103,25 @@ public class ConceptEndpoint {
     }
 
     @GET
+    @Path("/{iri}/Textual")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response getTextual(@Context SecurityContext sc,
+                                  @PathParam("iri") String iri) throws Exception {
+        try (MetricsTimer t = MetricsHelper.recordTime("Viewer.getTextual");
+             ViewerJDBCDAL dal = new ViewerJDBCDAL()) {
+            LOG.debug("getTextual");
+
+            String result = new TextFormat().get(iri);
+
+            return Response
+                .ok()
+                .entity(result)
+                .build();
+        }
+    }
+
+    @GET
     @Path("/{iri}/Definition")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -111,7 +131,7 @@ public class ConceptEndpoint {
              ViewerJDBCDAL dal = new ViewerJDBCDAL()) {
             LOG.debug("getDefinition");
 
-            List<RelatedConcept> result = dal.getDefinition(iri);
+            List<JsonNode> result = dal.getAxioms(iri);
 
             return Response
                 .ok()

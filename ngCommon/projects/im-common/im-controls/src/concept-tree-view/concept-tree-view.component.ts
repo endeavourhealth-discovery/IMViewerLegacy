@@ -24,7 +24,7 @@ export class ConceptTreeViewComponent implements AfterViewInit {
   selectedIri: string;
   treeControl: FlatTreeControl<TreeNode>;
   dataSource: TreeSource;
-  relationships = [':SN_116680003'];
+  relationships = ['sn:116680003'];
 
   getLevel = (node: TreeNode) => node.level;
   isExpandable = (node: TreeNode) => node.expandable;

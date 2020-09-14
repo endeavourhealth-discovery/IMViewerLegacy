@@ -1,27 +1,42 @@
 package org.endeavourhealth.imviewer.common.dal;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.endeavourhealth.common.cache.ObjectMapperPool;
 import org.endeavourhealth.imviewer.common.models.*;
 
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class ViewerJDBCDAL extends BaseJDBCDAL {
+public class ViewerJDBCDAL extends BaseJDBCDAL implements ViewerDAL {
+    private final String IS_A = "sn:116680003";
+    private final String HAS_MEMBER = ":3521000252101";
+
+    public List<JsonNode> getAxioms(String iri) throws SQLException, IOException {
+        List<JsonNode> result = new ArrayList<>();
+
+        String sql = "SELECT a.definition FROM concept c JOIN concept_axiom a ON a.concept = c.dbid WHERE c.iri = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, iri);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    result.add(ObjectMapperPool.getInstance().readTree(rs.getString("definition")));
+                }
+            }
+        }
+        return result;
+    }
+
     public PagedResultSet<RelatedConcept> getSources(String iri, List<String> relationships, int limit, int page) throws SQLException {
         String sql = "SELECT SQL_CALC_FOUND_ROWS DISTINCT\n" +
             "o.minCardinality, o.maxCardinality,\n" +
             "p.iri AS r_iri, p.name AS r_name,\n" +
             "c.iri AS c_iri, c.name AS c_name\n" +
             "FROM concept_property_object o\n" +
-            "JOIN concept v ON v.id = o.object AND v.iri = ?\n" +
-            "JOIN concept p ON p.id = o.property\n" +
-            "JOIN concept c ON c.id = o.concept\n";
+            "JOIN concept v ON v.dbid = o.object AND v.iri = ?\n" +
+            "JOIN concept p ON p.dbid = o.property\n" +
+            "JOIN concept c ON c.dbid = o.concept\n";
 
         if (relationships != null && !relationships.isEmpty())
             sql += "WHERE p.iri IN (" + DALHelper.inListParams(relationships.size()) + ")\n";
@@ -70,9 +85,9 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
             "p.iri AS r_iri, p.name AS r_name,\n" +
             "v.iri AS c_iri, v.name AS c_name\n" +
             "FROM concept_property_object o\n" +
-            "JOIN concept c ON c.id = o.concept AND c.iri = ?\n" +
-            "JOIN concept p ON p.id = o.property\n" +
-            "JOIN concept v ON v.id = o.object\n";
+            "JOIN concept c ON c.dbid = o.concept AND c.iri = ?\n" +
+            "JOIN concept p ON p.dbid = o.property\n" +
+            "JOIN concept v ON v.dbid = o.object\n";
 
         if (relationships != null && !relationships.isEmpty())
             sql += "WHERE p.iri IN (" + DALHelper.inListParams(relationships.size()) + ")\n";
@@ -133,9 +148,9 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
     public List<Concept> search(String term, String root, List<String> relationships) throws SQLException {
         String sql = "SELECT c.iri, c.name, c.description\n" +
             "FROM concept c\n" +
-            "JOIN concept_tct tct ON tct.source = c.id AND tct.level > 0\n" +
-            "JOIN concept p ON p.id = tct.property\n" +
-            "JOIN concept t ON t.id = tct.target\n" +
+            "JOIN concept_tct tct ON tct.source = c.dbid AND tct.level > 0\n" +
+            "JOIN concept p ON p.dbid = tct.property\n" +
+            "JOIN concept t ON t.dbid = tct.target\n" +
             "WHERE c.name LIKE ?\n" +
             "AND t.iri = ?\n";
 
@@ -163,19 +178,23 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
     public List<RelatedConcept> getTree(String iri, String root, List<String> relationships) throws SQLException {
         List<RelatedConcept> result = new ArrayList<>();
 
+        if (iri.equals(root))
+            return result;
+
         String sql = "SELECT null AS minCardinality, null AS maxCardinality,\n" +
             "p.iri AS r_iri, p.name AS r_name,\n" +
             "t.iri AS c_iri, t.name AS c_name\n" +
             "FROM concept c\n" +
-            "JOIN concept_tct tct ON tct.source = c.id AND tct.level > 0\n" +
-            "JOIN concept p ON p.id = tct.property\n" +
-            "JOIN concept t ON t.id = tct.target\n" +
+            "JOIN concept_tct tct ON tct.source = c.dbid AND tct.level >= 0\n" +
+            "JOIN concept p ON p.dbid = tct.property\n" +
+            "JOIN concept t ON t.dbid = tct.target\n" +
             "WHERE c.iri = ?\n";
 
         if (relationships != null && !relationships.isEmpty())
             sql += "AND p.iri IN (" + DALHelper.inListParams(relationships.size()) + ")\n";
 
-        sql += "ORDER by tct.level";
+        sql += "GROUP BY tct.level\n" +
+            "ORDER BY tct.level";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             int i = 1;
@@ -198,19 +217,19 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
     }
 
     // **************************************** DATA MODEL ****************************************
-    public List<RelatedConcept> getDefinition(String iri) throws SQLException {
+/*    public List<RelatedConcept> getDefinition(String iri) throws SQLException {
         String sql = "SELECT DISTINCT o.minCardinality, o.maxCardinality,\n" +
             "p.iri AS r_iri, p.name AS r_name,\n" +
             "v.iri AS c_iri, v.name AS c_name\n" +
             "FROM concept_property_object o\n" +
-            "JOIN concept c ON c.id = o.concept AND c.iri = ?\n" +
-            "JOIN concept p ON p.id = o.property\n" +
-            "JOIN concept v ON v.id = o.object\n" +
+            "JOIN concept c ON c.dbid = o.concept AND c.iri = ?\n" +
+            "JOIN concept p ON p.dbid = o.property\n" +
+            "JOIN concept v ON v.dbid = o.object\n" +
             "WHERE NOT EXISTS (\n" +
             "\tSELECT 1 \n" +
             "    FROM concept_tct tct \n" +
-            "    JOIN concept tt ON tt.iri IN (':DM_ObjectProperty', ':DM_DataProperty')\n" +
-            "    WHERE tct.source = p.id AND tct.target = tt.id\n" +
+            "    JOIN concept tt ON tt.iri IN ('sn:3021000252107', 'sn:3581000252102')\n" +
+            "    WHERE tct.source = p.dbid AND tct.target = tt.dbid\n" +
             ");\n";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -220,38 +239,46 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
                 return Hydrator.createRelatedConceptList(rs);
             }
         }
-    }
+    }*/
 
     public List<Property> getProperties(String iri, boolean inherited) throws SQLException, IOException {
-        String sql = "SELECT DISTINCT p.iri AS p_iri, p.name AS p_name,\n" +
-            "d.definition ->> '$.min' AS min_cardinality, \n" +
-            "d.definition ->> '$.max' AS max_cardinality,\n" +
+        String sql = "SELECT p.iri AS p_iri, p.name AS p_name,\n" +
+            "cpo.minCardinality AS min_cardinality,\n" +
+            "cpo.maxCardinality AS max_cardinality,\n" +
             "v.iri as v_iri, v.name AS v_name,\n" +
             "-1 as level, c.iri as o_iri, c.name AS o_name\n" +
             "FROM concept c\n" +
-            "JOIN data_model_attribute d ON d.id = c.id AND d.type = 'P'\n" +
-            "LEFT JOIN concept p ON p.iri = d.definition ->> '$.iri'\n" +
-            "LEFT JOIN concept v ON v.iri = d.definition ->> '$.Range[0]'\n" +
-            "WHERE c.iri = ?\n";
-/*
+            "JOIN concept_property_object cpo ON cpo.concept = c.dbid\n" +
+            "JOIN concept p ON p.dbid = cpo.property\n" +
+            "JOIN concept v ON v.dbid = cpo.object\n" +
+            "JOIN concept_tct tct ON tct.source = cpo.property\n" +
+            "JOIN concept t ON t.dbid = tct.target\n" +
+            "WHERE c.iri = ?\n" +
+            "AND t.iri IN ('owl:topObjectProperty', 'owl:topDataProperty')\n";
+
         if (inherited)
-            sql += "UNION SELECT p.iri AS p_iri, p.name AS p_name,\n" +
-            "d.min_cardinality, d.max_cardinality,\n" +
-            "v.iri as v_iri, v.name AS v_name,\n" +
-            "tct.level, o.iri as o_iri, o.name AS o_name\n" +
-            "FROM concept c\n" +
-            "JOIN concept_tct tct ON tct.source = c.id\n" +
-            "JOIN concept tp ON tp.id = tct.property AND tp.iri = ':SN_116680003'\n" +
-            "JOIN concept o ON o.id = tct.target\n" +
-            "JOIN concept_data_model d ON d.id = o.id\n" +
-            "JOIN concept p ON p.id = d.attribute\n" +
-            "JOIN concept v ON v.id = d.value_type\n" +
-            "WHERE c.iri = ?\n";*/
+            sql += "UNION\n" +
+                "SELECT p.iri AS p_iri, p.name AS p_name,\n" +
+                "cpo.minCardinality AS min_cardinality,\n" +
+                "cpo.maxCardinality AS max_cardinality,\n" +
+                "v.iri as v_iri, v.name AS v_name,\n" +
+                "i.level as level, h.iri as o_iri, h.name AS o_name\n" +
+                "FROM concept c\n" +
+                "JOIN concept_tct i ON i.source = c.dbid\n" +
+                "JOIN concept_property_object cpo ON cpo.concept = i.target\n" +
+                "JOIN concept h ON h.dbid = cpo.concept\n" +
+                "JOIN concept p ON p.dbid = cpo.property\n" +
+                "JOIN concept v ON v.dbid = cpo.object\n" +
+                "JOIN concept_tct tct ON tct.source = cpo.property\n" +
+                "JOIN concept t ON t.dbid = tct.target\n" +
+                "WHERE c.iri = ?\n" +
+                "AND t.iri IN ('owl:topObjectProperty', 'owl:topDataProperty')\n";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, iri);
-/*            if (inherited)
-                stmt.setString(2, iri);*/
+
+            if (inherited)
+                stmt.setString(2, iri);
 
             try(ResultSet rs = stmt.executeQuery()) {
                 return Hydrator.createPropertyList(rs);
@@ -264,40 +291,22 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
     public List<ValueSetMember> getValueSetMembers(String iri) throws SQLException, IOException {
         List<ValueSetMember> result = new ArrayList<>();
 
-        String sql = "SELECT v.expression\n" +
-            "FROM value_set v\n" +
-            "JOIN concept c ON c.id = v.concept\n" +
-            "WHERE c.iri = ?";
-
-        String expression;
-
+        String sql = "SELECT m.iri, m.name, m.code\n" +
+            "FROM concept v\n" +
+            "JOIN concept p ON p.iri = ?\n" +
+            "JOIN concept_property_object cpo ON cpo.concept = v.dbid AND cpo.property = p.dbid\n" +
+            "JOIN concept m ON m.dbid = cpo.object\n" +
+            "WHERE v.iri = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            DALHelper.setString(stmt, 1, iri);
+            stmt.setString(1, HAS_MEMBER);
+            stmt.setString(2, iri);
             try (ResultSet rs = stmt.executeQuery()) {
-                if (!rs.next())
-                    return result;
-
-                expression = rs.getString("expression");
-            }
-        }
-
-        ArrayNode members = (ArrayNode)ObjectMapperPool.getInstance().readTree(expression);
-
-        sql = "SELECT iri, name, code, definition FROM concept WHERE iri = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            for( JsonNode node : members) {
-                if (node.has("Class")) {
-                    stmt.setString(1, node.get("Class").textValue());
-                    try (ResultSet rs = stmt.executeQuery()) {
-                        if (rs.next()) {
-                            result.add(new ValueSetMember()
-                                .setIri(rs.getString("iri"))
-                                .setName(rs.getString("name"))
-                                .setCode(rs.getString("code"))
-                                .setDefinition(ObjectMapperPool.getInstance().readTree(rs.getString("definition")))
-                            );
-                        }
-                    }
+                while (rs.next()) {
+                    result.add(new ValueSetMember()
+                        .setIri(rs.getString("iri"))
+                        .setName(rs.getString("name"))
+                        .setCode(rs.getString("code"))
+                    );
                 }
             }
         }
@@ -307,17 +316,18 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
     public List<SchemeCount> getChildCountByScheme(String iri) throws SQLException {
         List<SchemeCount> result = new ArrayList<>();
 
-        String sql = "SELECT scm.iri, scm.name AS scheme, COUNT(DISTINCT(s.id)) AS cnt\n" +
+        String sql = "SELECT scm.iri, scm.name AS scheme, COUNT(DISTINCT(s.dbid)) AS cnt\n" +
             "FROM concept c\n" +
-            "JOIN concept p ON p.iri = ':SN_116680003'\n" +
-            "JOIN concept_tct t ON t.target = c.id AND t.property = p.id AND t.level > 0\n" +
-            "JOIN concept s ON s.id = t.source\n" +
-            "LEFT JOIN concept scm on scm.id = s.scheme\n" +
+            "JOIN concept p ON p.iri = ?\n" +
+            "JOIN concept_tct t ON t.target = c.dbid AND t.property = p.dbid AND t.level > 0\n" +
+            "JOIN concept s ON s.dbid = t.source\n" +
+            "LEFT JOIN concept scm on scm.dbid = s.scheme\n" +
             "WHERE c.iri = ?\n" +
-            "GROUP BY scm.id";
+            "GROUP BY scm.dbid";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            DALHelper.setString(stmt, 1, iri);
+            DALHelper.setString(stmt, 1, IS_A);
+            DALHelper.setString(stmt, 2, iri);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     result.add(new SchemeCount()
@@ -337,10 +347,10 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
 
         String sql = "SELECT DISTINCT scm.iri, scm.name AS scheme, s.iri AS childIri, s.name AS childName, s.code AS childCode\n" +
             "FROM concept c\n" +
-            "JOIN concept p ON p.iri = ':SN_116680003'\n" +
-            "JOIN concept_tct t ON t.target = c.id AND t.property = p.id AND t.level > 0\n" +
-            "JOIN concept s ON s.id = t.source\n" +
-            "LEFT JOIN concept scm on scm.id = s.scheme\n" +
+            "JOIN concept p ON p.iri = ?\n" +
+            "JOIN concept_tct t ON t.target = c.dbid AND t.property = p.dbid AND t.level > 0\n" +
+            "JOIN concept s ON s.dbid = t.source\n" +
+            "LEFT JOIN concept scm on scm.dbid = s.scheme\n" +
             "WHERE c.iri = ?\n";
 
         if (scheme != null && !scheme.isEmpty())
@@ -349,16 +359,20 @@ public class ViewerJDBCDAL extends BaseJDBCDAL {
         sql += "ORDER BY scm.name, s.name\n";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            DALHelper.setString(stmt, 1, iri);
+            DALHelper.setString(stmt, 1, IS_A);
+            DALHelper.setString(stmt, 2, iri);
 
             if (scheme != null && !scheme.isEmpty())
-                DALHelper.setString(stmt, 2, scheme);
+                DALHelper.setString(stmt, 3, scheme);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                SchemeChildren sc = null;
+                SchemeChildren sc = new SchemeChildren()
+                    .setIri(null)
+                    .setName("No scheme");
+                result.add(sc);
 
                 while (rs.next()) {
-                    if (sc == null || !rs.getString("iri").equals(sc.getIri())) {
+                    if (sc.getIri() != null && !sc.getIri().equals(rs.getString("iri"))) {
                         sc = new SchemeChildren()
                             .setIri(rs.getString("iri"))
                             .setName(rs.getString("scheme"));

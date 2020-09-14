@@ -16,9 +16,10 @@ export class DataModelLibraryComponent implements OnInit {
   concept: Concept;
   selectedIri: string;
   searchSize = 72;
-  root = ':DM_DataModel';
-  relationships = [':SN_116680003'];
+  root = ':DiscoveryCommonDataModel';
+  relationships = ['sn:116680003'];
   selected = 'dataModel';
+  textual = null;
 
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
 
@@ -40,6 +41,7 @@ export class DataModelLibraryComponent implements OnInit {
   displayConcept(iri: string) {
     if (this.selectedIri !== iri) {
       this.selectedIri = iri;
+      this.textual = null;
       this.service.getConcept(iri).subscribe(
         (result) => this.concept = result,
         (error) => this.log.error(error)
@@ -51,6 +53,18 @@ export class DataModelLibraryComponent implements OnInit {
     if (iri !== this.selectedIri) {
       this.router.navigate(['dataModel'], {queryParams: {id: iri}});
     }
+  }
+
+  getTextual(): string {
+    if (!this.textual) {
+      this.textual = 'Loading...';
+      this.service.getTextual(this.selectedIri).subscribe(
+        (result) => this.textual = result,
+        (error) => this.log.error(error)
+      );
+    }
+
+    return this.textual;
   }
 
   hasResults(displayed: boolean) {

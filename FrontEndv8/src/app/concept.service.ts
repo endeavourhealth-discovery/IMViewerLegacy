@@ -27,6 +27,10 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
     return this.http.get<Property[]>('api/concepts/' + iri + '/Properties', {params});
   }
 
+  getTextual(iri: string): Observable<string> {
+    return this.http.get('api/concepts/' + iri + '/Textual', { responseType: 'text'});
+  }
+
   getDefinition(iri: string): Observable<Related[]> {
     return this.http.get<Related[]>('api/concepts/' + iri + '/Definition');
   }
@@ -102,7 +106,7 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
       {name: 'Concept 3 name', description: 'Concept 3 desc', iri: ':DM_EncounterEntry'},
       {name: 'Concept 4 name', description: 'Concept 4 desc', iri: 'Concept iri'}
     ]
-    
+
     let conceptGroups: ConceptGroup[] = [
       {name: 'Concept group 1 name', description: 'Concept group 1 desc', concepts: concepts},
       {name: 'Concept group 2 name', description: 'Concept group 2 desc', concepts: concepts},
@@ -116,8 +120,8 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
 
     return Observable.create((observer) => {
       observer.next(conceptGroups);
-    });    
-    
+    });
+
     //return Observable.create(conceptGroups); //TODO - data
     //return this.http.get<Concept>('api/concepts/' + iri);
   }
