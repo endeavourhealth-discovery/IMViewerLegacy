@@ -29,7 +29,6 @@ export class DataModelNavigatorComponent implements OnInit {
 
   iri: string;
   concept: Concept;
-  definition: Related[];
   properties: Property[];
   sources: Related[];
   targets: Related[];
@@ -47,22 +46,25 @@ export class DataModelNavigatorComponent implements OnInit {
       this.obs.unsubscribe();
       this.obs = null;
     }
-    this.concept = this.definition = this.properties = this.sources = this.targets = null;
+    this.concept = this.properties = this.sources = this.targets = null;
     svgPanZoom('#panZoom').reset();
     this.targetCanvas.nativeElement.innerHTML = '<svg id="panZoom" width="100%" height="100%"></svg>';
 
-    this.obs = zip(this.service.getConcept(this.iri),
-    this.service.getDefinition(this.iri),
-    this.service.getProperties(this.iri, true),
-    this.service.getSources(this.iri, [], 15, 1),
-    this.service.getTargets(this.iri, [], 15, 1)
+    this.obs = zip(
+        this.service.getConcept(this.iri),
+        this.service.getProperties(this.iri, true),
+        this.service.getSources(this.iri, [], 15, 1),
+        this.service.getTargets(this.iri, [], 15, 1)
     ).subscribe(
       (result) => {
         this.concept = result[0];
-        this.definition = result[1];
-        this.properties = result[2];
-        this.sources = result[3].result;
-        this.targets = result[4].result;
+        this.properties = result[1];
+        this.sources = result[2].result;
+        // Exclude properties from targets list
+        this.targets = result[3].result.filter(
+            (el) => this.properties.findIndex((
+                p) => (p.valueType.iri == el.concept.iri) && (p.property.iri == el.relationship.iri)
+            ) < 0);
         this.redraw();
         this.obs = null;
       },
@@ -71,7 +73,7 @@ export class DataModelNavigatorComponent implements OnInit {
   }
 
   redraw() {
-    if (this.concept && this.definition && this.properties && this.sources && this.targets) {
+    if (this.concept && this.properties && this.sources && this.targets) {
       this.buildSvg();
     }
   }
@@ -104,7 +106,7 @@ export class DataModelNavigatorComponent implements OnInit {
     graph.setDefaultEdgeLabel(() => ({}));
 
     // Nodemap
-    const map = new Map();
+    const map: Map<string, any> = new Map();
 
     this.buildConcept(svg, graph, map);
 
@@ -148,64 +150,69 @@ export class DataModelNavigatorComponent implements OnInit {
     });
   }
 
-  buildRelated(svg, graph, map, relList: Related[], reverse: boolean) {
-    for (const rel of relList) {
+  buildRelated(svg, graph, map: Map<string, any>, relList: Related[], reverse: boolean) {
+      for (const rel of relList) {
+          // Dont add node if already exists
+          if (!map.has(rel.concept.iri)) {
+              const g = svg.append('g');
 
-      const g = svg.append('g');
+              const s = g.append('svg')
+                  .attr('class', 'clickable')
+                  .on('click', () => this.nodeClick(rel.concept.iri));
 
-      const s = g.append('svg')
-        .attr('class', 'clickable')
-        .on('click', () => this.nodeClick(rel.concept.iri))
-        .on('mouseenter', () => this.nodeHover(rel.concept))
-        .on('mouseleave', () => this.nodeHover(null));
+              const r = s.append('rect')
+                  .attr('rx', 6)
+                  .attr('ry', 6)
+                  .attr('height', 25)
+                  .attr('stroke', 'black');
 
-      const r = s.append('rect')
-        .attr('rx', 6)
-        .attr('ry', 6)
-        .attr('height', 25)
-        .attr('stroke', 'black');
-
-      if (rel.relationship.iri === ':SN_116680003')
-        r.attr('fill', 'lightgreen')
-      else
-        r.attr('fill', 'orange')
+              if (rel.relationship.iri === 'sn:116680003')
+                  r.attr('fill', 'lightgreen')
+              else
+                  r.attr('fill', 'orange')
 
 
-      const t = s.append('text')
-        .text(rel.concept.name)
-        .attr('font-size', 12)
-        .attr('x', this.pad)
-        .attr('y', 18);
+              const t = s.append('text')
+                  .text(rel.concept.name)
+                  .attr('font-size', 12)
+                  .attr('x', this.pad)
+                  .attr('y', 18);
 
-      const w = t.node().getComputedTextLength() + (this.pad * 2);
-      r.attr('width', w);
+              const w = t.node().getComputedTextLength() + (this.pad * 2);
+              r.attr('width', w);
+              graph.setNode(rel.concept.iri, {label: rel.concept.name, width: w, height: 25});
 
-      const relName = rel.relationship.name + this.cardText(rel.minCardinality, rel.maxCardinality);
+              map.set(rel.concept.iri, s);
+          }
 
-      const l = svg.append('text')
-        .text(relName)
-        .attr('font-size', 10)
-        .attr('height', 12)
-        .attr('class', 'clickable')
-        .on('click', () => this.nodeClick(rel.relationship.iri));
+          const relId = (reverse) ? rel.concept.iri + '-' + this.concept.iri : this.concept.iri + '-' + rel.concept.iri;
 
-      const lw = l.node().getComputedTextLength();
-      l.attr('width', lw);
+          // Dont add relationship if already exists
+          if (!map.has(relId)) {
+              const relName = rel.relationship.name + this.cardText(rel.minCardinality, rel.maxCardinality);
 
-      graph.setNode(rel.concept.iri, {label: rel.concept.name, width: w, height: 25});
-      if (reverse) {
-        graph.setEdge(rel.concept.iri, this.concept.iri, {label: relName, width: lw, height: 12});
-        map.set(rel.concept.iri + '-' + this.concept.iri, l);
-      } else {
-        graph.setEdge(this.concept.iri, rel.concept.iri, {label: relName, width: lw, height: 12});
-        map.set(this.concept.iri + '-' + rel.concept.iri, l);
+              const l = svg.append('text')
+                  .text(relName)
+                  .attr('font-size', 10)
+                  .attr('height', 12)
+                  .attr('class', 'clickable')
+                  .on('click', () => this.nodeClick(rel.relationship.iri));
+
+              const lw = l.node().getComputedTextLength();
+              l.attr('width', lw);
+
+              if (reverse) {
+                  graph.setEdge(rel.concept.iri, this.concept.iri, {label: relName, width: lw, height: 12});
+                  map.set(relId, l);
+              } else {
+                  graph.setEdge(this.concept.iri, rel.concept.iri, {label: relName, width: lw, height: 12});
+                  map.set(relId, l);
+              }
+          }
       }
-
-      map.set(rel.concept.iri, s);
-    }
   }
 
-  buildConcept(svg, graph, map) {
+  buildConcept(svg, graph, map: Map<string, any>) {
     const g = svg.append('g');
 
     const s  = g.append('svg');
@@ -214,7 +221,6 @@ export class DataModelNavigatorComponent implements OnInit {
     const r = s.append('rect')
       .attr('rx', 6)
       .attr('ry', 6)
-      .attr('height', 25 + (20 * this.properties.length))
       .attr('fill', 'lightblue')
       .attr('stroke', 'black');
 
@@ -228,11 +234,30 @@ export class DataModelNavigatorComponent implements OnInit {
 
     let w = t.node().getComputedTextLength() + (this.pad * 2);
 
-    for (let i = 0; i < this.properties.length; i++) {
-      const property = this.properties[i];
+    let lastOwner = this.concept.iri;
+    let i = 0;
+    for (let property of this.properties) {
+    // for (let i = 0; i < this.properties.length; i++) {
+    //  const property = this.properties[i];
       let l = this.pad;
 
-      // Name
+      if (property.owner.iri != lastOwner) {
+          lastOwner = property.owner.iri;
+          const o = s.append('text')
+              .text('Inherited from ' + property.owner.name + ':')
+              .attr('font-size', 10)
+              .attr('font-style', 'italic')
+              .attr('font-weight', 'bold')
+              .attr('x', l)
+              .attr('y', 38 + (20 * i))
+              .attr('class', 'clickable')
+              .on('click', () => this.nodeClick(property.owner.iri));
+          o.insert('title')
+              .text(property.owner.name);
+
+          i++;
+      }
+
       const p = s.append('text')
         .text(property.property.name + ': ')
         .attr('font-size', 12)
@@ -262,9 +287,9 @@ export class DataModelNavigatorComponent implements OnInit {
 
       l += pt.node().getComputedTextLength() + 4;
 
-      if (property.level >= 0) {
+/*      if (property.level >= 0) {
         const o = s.append('text')
-          .text('(inherited)')
+          .text('(inherited from ' + property.owner.name + ')')
           .attr('font-size', 10)
           .attr('font-style', 'italic')
           .attr('x', l)
@@ -276,13 +301,15 @@ export class DataModelNavigatorComponent implements OnInit {
           .text(property.owner.name);
 
         l += o.node().getComputedTextLength() + 4;
-      }
+      }*/
 
       l += this.pad;
 
       if (l > w) {
         w = l;
       }
+
+      i++;
     }
 
     w = Math.round(w);
@@ -296,9 +323,10 @@ export class DataModelNavigatorComponent implements OnInit {
         .attr('stroke', 'black');
     }
 
-    r.attr('width', w);
+    r.attr('width', w)
+     .attr('height', 25 + (20 * i))
 
-    graph.setNode(this.concept.iri, {label: this.concept.name, width: w, height: 25 + (20 * this.properties.length)});
+    graph.setNode(this.concept.iri, {label: this.concept.name, width: w, height: 25 + (20 * i)});
     map.set(this.concept.iri, s);
   }
 

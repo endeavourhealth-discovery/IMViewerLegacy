@@ -160,6 +160,11 @@
                           Properties
                         </ng-template>
                       </mat-tab>
+                      <mat-tab label="Textual">
+                        <ng-template matTabContent>
+                          <pre>{{getTextual()}}</pre>
+                        </ng-template>
+                      </mat-tab>
                       <mat-tab label="Schema">
                         <ng-template mat-tab-label>
                           <mat-icon class="example-tab-icon">view_module</mat-icon>

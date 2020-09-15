@@ -6,7 +6,6 @@ public class ValueSetMember {
     private String iri;
     private String name;
     private String code;
-    private JsonNode definition;
 
     public String getIri() {
         return iri;
@@ -35,12 +34,4 @@ public class ValueSetMember {
         return this;
     }
 
-    public JsonNode getDefinition() {
-        return definition;
-    }
-
-    public ValueSetMember setDefinition(JsonNode definition) {
-        this.definition = definition;
-        return this;
-    }
 }
