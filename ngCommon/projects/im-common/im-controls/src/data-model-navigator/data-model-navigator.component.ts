@@ -21,6 +21,7 @@ export class DataModelNavigatorComponent implements OnInit {
       this.refresh();
   }
   @Output() selection: EventEmitter<string> = new EventEmitter<string>();
+  @Output() hover = new EventEmitter<Concept>();
 
   @ViewChild('svg', {static: true}) targetCanvas: ElementRef;
 
@@ -154,7 +155,9 @@ export class DataModelNavigatorComponent implements OnInit {
 
       const s = g.append('svg')
         .attr('class', 'clickable')
-        .on('click', () => this.nodeClick(rel.concept.iri));
+        .on('click', () => this.nodeClick(rel.concept.iri))
+        .on('mouseenter', () => this.nodeHover(rel.concept))
+        .on('mouseleave', () => this.nodeHover(null));
 
       const r = s.append('rect')
         .attr('rx', 6)
@@ -207,6 +210,7 @@ export class DataModelNavigatorComponent implements OnInit {
 
     const s  = g.append('svg');
 
+    // Block
     const r = s.append('rect')
       .attr('rx', 6)
       .attr('ry', 6)
@@ -214,6 +218,7 @@ export class DataModelNavigatorComponent implements OnInit {
       .attr('fill', 'lightblue')
       .attr('stroke', 'black');
 
+      // Title
     const t = s.append('text')
       .text(this.concept.name)
       .attr('font-weight', 'bold')
@@ -227,6 +232,7 @@ export class DataModelNavigatorComponent implements OnInit {
       const property = this.properties[i];
       let l = this.pad;
 
+      // Name
       const p = s.append('text')
         .text(property.property.name + ': ')
         .attr('font-size', 12)
@@ -241,6 +247,7 @@ export class DataModelNavigatorComponent implements OnInit {
 
       l += p.node().getComputedTextLength() + 4;
 
+      // Type
       const pt = s.append('text')
         .text(property.valueType.name + this.cardText(property.minCardinality, property.maxCardinality))
         .attr('font-size', 12)
@@ -316,5 +323,17 @@ export class DataModelNavigatorComponent implements OnInit {
 
   nodeClick(iri: string) {
     this.selection.emit(iri);
+  }
+
+  nodeHover(concept: Concept) {
+    if (concept != null || concept !== undefined) {
+      this.hover.emit(concept)
+    } else {
+      this.hover.emit({
+        name: '',
+        description: '',
+        iri: ''
+      });
+    }
   }
 }

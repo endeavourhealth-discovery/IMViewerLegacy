@@ -7,6 +7,7 @@ import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import {ConceptTreeViewComponent} from 'im-common/im-controls';
 import {KeycloakService} from 'keycloak-angular';
+
 const debug = (message: string) => { console.log(message); };
 
 @Component({
@@ -21,13 +22,24 @@ export class DataModelLibraryComponent implements OnInit {
   root = ':DM_DataModel';
   relationships = [':SN_116680003'];
   selected = 'dataModel';
+  showFiller = true;
 
-  DM_HealthEvent: PagedResultSet<Related>;
-  DM_IdentifiableEntity: PagedResultSet<Related>;
-  DM_Provenance: PagedResultSet<Related>;
-  DM_StateEntry: PagedResultSet<Related>;
-  DM_StructuredArtefact: PagedResultSet<Related>;
+  hoveredConcept: Concept = {
+    name: '',
+    description: '',
+    iri: ''
+  };
+
+  DMHealthEvent: PagedResultSet<Related>;
+  DMIdentifiableEntity: PagedResultSet<Related>;
+  DMProvenance: PagedResultSet<Related>;
+  DMStateEntry: PagedResultSet<Related>;
+  DMStructuredArtefact: PagedResultSet<Related>;
   history = [];
+
+  timer: any;
+
+  sidebar = false;
 
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
 
@@ -61,27 +73,27 @@ export class DataModelLibraryComponent implements OnInit {
     );
 
     this.service.getSources(':DM_HealthEvent', null, 20, 1).subscribe(
-      (result) => this.DM_HealthEvent = result,
+      (result) => this.DMHealthEvent = result,
       (error) => this.log.error(error)
     );
 
     this.service.getSources(':DM_IdentifiableEntity', null, 20, 1).subscribe(
-      (result) => this.DM_IdentifiableEntity = result,
+      (result) => this.DMIdentifiableEntity = result,
       (error) => this.log.error(error)
     );
 
     this.service.getSources(':DM_Provenance', null, 20, 1).subscribe(
-      (result) => this.DM_Provenance = result,
+      (result) => this.DMProvenance = result,
       (error) => this.log.error(error)
     );
 
     this.service.getSources(':DM_StateEntry', null, 20, 1).subscribe(
-      (result) => this.DM_StateEntry = result,
+      (result) => this.DMStateEntry = result,
       (error) => this.log.error(error)
     );
 
     this.service.getSources(':DM_StructuredArtefact', null, 20, 1).subscribe(
-      (result) => this.DM_StructuredArtefact = result,
+      (result) => this.DMStructuredArtefact = result,
       (error) => this.log.error(error)
     );
 
@@ -98,8 +110,22 @@ export class DataModelLibraryComponent implements OnInit {
     }
   }
 
+  itemHover(concept: Concept) {
+    const root = this;
+
+    if (concept != null) {
+      this.timer = setTimeout(() => {
+        root.sidebar = true;
+      }, 1000);
+      this.hoveredConcept = concept;
+    } else {
+      clearTimeout(this.timer);
+    }
+  }
+
   goto(iri: string) {
     if (iri !== this.selectedIri) {
+      clearTimeout(this.timer);
       this.router.navigate(['dataModel'], {queryParams: {id: iri}});
     }
   }

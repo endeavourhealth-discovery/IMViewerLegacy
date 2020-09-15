@@ -23,6 +23,7 @@ import {IMControlsModule} from 'im-common';
 import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
 import {ConceptService} from '../concept.service';
 import {MatListModule} from '@angular/material/list';
+import {MatSidenavModule} from '@angular/material/sidenav';
 
 @NgModule({
   imports: [
@@ -47,7 +48,8 @@ import {MatListModule} from '@angular/material/list';
     ComponentsModule,
     IMControlsModule,
     MatTabsModule,
-    MatListModule
+    MatListModule,
+    MatSidenavModule
   ],
   providers: [
     { provide: ConceptTreeViewService, useClass: ConceptService },

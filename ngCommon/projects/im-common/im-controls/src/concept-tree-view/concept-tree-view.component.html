@@ -6,6 +6,7 @@
     class="hover-highlight"
     [class.selected]="selectedIri == node.id"
     (click)="selectNode(node)"
+    (mouseenter)="nodeHover(node)" (mouseleave)="nodeHover(null)"
     style="cursor: pointer">
     <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename" matTreeNodeToggle [disabled]="!node.expandable">
       <mat-icon class="mat-icon-rtl-mirror">
