@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {ConceptService} from '../../concept.service';
 import {DataModelDefinition, FlatProperty} from '../../models/DataModelDefinition';
 import {Router} from '@angular/router';
@@ -6,7 +6,7 @@ import {LoggerService} from 'dds-angular8/logger';
 import { MatTableDataSource } from '@angular/material/table';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Observable } from 'rxjs';
-import { Concept } from 'src/app/models/Concept';
+import { Concept } from '../../models/Concept';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -24,6 +24,8 @@ const debug = (message: string) => { console.log(message); };
 })
 
 class DataModelTablularViewComponent {
+  private static EMPTY_CONCEPT: Concept =  {iri : '', name : '', description : ''};
+  
   private iri: string;
 
   dataModelDefinition: DataModelDefinition;
@@ -39,8 +41,17 @@ class DataModelTablularViewComponent {
       this.refresh();
   }
 
+  @Output() 
+  selection: EventEmitter<string>;
+
+  @Output()
+  hover = new EventEmitter<Concept>();
+
   constructor(private service: ConceptService, private log: LoggerService, private router: Router) { 
-    this.propertiesTable = new DataTable<FlatProperty>(["name", "type", "cardinality", "description", "inheritedFrom"]);
+    this.selection = new EventEmitter<string>();
+    this.hover = new EventEmitter<Concept>();
+    
+    this.propertiesTable = new DataTable<FlatProperty>(["name", "type", "cardinality", "description", "declaredOn"]);
 
     this.parentsChipListTemplateContext =  {
       title: "Parents",
@@ -68,17 +79,18 @@ class DataModelTablularViewComponent {
     });
   }
 
-  // TODO - this needs changing to open Dan's context menu
-  openDataModel(iri: string) {
-    this.router.navigate(['dataModel'], {queryParams: {id: iri}});
+  onSelect(concept: Concept) {
+    this.selection.emit(concept.iri);
   }
 
-  openContextArea(concept: Concept) {
-    console.log("openContextArea to show " + JSON.stringify(concept));
+  onHoverOver(concept: Concept) {
+    console.log(`in onHoverOver ${JSON.stringify(concept)}`);
+    this.hover.emit(concept);
   }
 
-  closeContextArea() {
-    console.log("closeContextArea");
+  onHoverOut() {
+    console.log(`in onHoverOut`);
+    this.hover.emit(DataModelTablularViewComponent.EMPTY_CONCEPT);
   }
 }
 
@@ -101,6 +113,10 @@ class DataTable<D> {
 
   hasRows() : boolean {
     return this.rows && this.rows.data.length > 0;
+  }
+
+  getRowCount(): number {
+    return (this.hasRows) ? this.rows.data.length : 0;
   }
 
   getTooltip(concept: Concept): string { 

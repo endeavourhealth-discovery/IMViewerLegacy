@@ -15,12 +15,12 @@ import {KeycloakService} from 'keycloak-angular';
 })
 export class OntologyLibraryComponent implements OnInit {
   concept: Concept;
-  definition: Related[];
+  definition: any[];
   properties: Property[];
   selectedIri: string;
   searchSize = 72;
-  root = ':CM_ValueTerminology';
-  relationships = [':SN_116680003'];
+  root = ':1301000252100';
+  relationships = ['sn:116680003'];
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
 
   constructor(private service: ConceptService,
@@ -56,6 +56,10 @@ export class OntologyLibraryComponent implements OnInit {
         (error) => this.log.error(error)
       );*/
     }
+  }
+
+  json(object: any): string {
+    return JSON.stringify(object);
   }
 
   goto(iri: string) {

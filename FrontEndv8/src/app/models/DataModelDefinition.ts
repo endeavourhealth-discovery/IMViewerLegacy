@@ -36,6 +36,7 @@ export class DataModelDefinition {
     }
 
     getDirectParentConcepts(): Concept[] {
+        // TODO - maybe filter out non-datamodel parents?
         return this.getConcepts(this.directParents);
     }
 
@@ -54,6 +55,7 @@ export class DataModelDefinition {
                   iri: property.property.iri,
                   type: property.valueType.name,
                   cardinality: `${property.minCardinality} .. ${property.maxCardinality}`,
+                  declaredOn:  this.getDeclaredOn(property),
                   source: property
                 };
           
@@ -62,6 +64,16 @@ export class DataModelDefinition {
         }
         
         return flatProperies;
+    }
+
+    private getDeclaredOn(property: Property): Concept {
+        let declaredOn: Concept = this.concept;
+        
+        if(property.owner.iri != this.concept.iri) {
+            declaredOn = property.owner;
+        }
+
+        return declaredOn;
     }
 
     private getConcepts(relateds: Related[]): Concept[] {
@@ -84,4 +96,5 @@ export interface FlatProperty {
     cardinality: string;
     type: string; // could be an enum
     source: Property; // the original source of the FlatProperty
+    declaredOn?: Concept;
   }

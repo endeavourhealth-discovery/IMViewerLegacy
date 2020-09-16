@@ -7,8 +7,6 @@ import {DataModelLibraryComponent} from './data-model/data-model-library/data-mo
 import {ValueSetLibraryComponent} from './value-sets/value-set-library/value-set-library.component';
 import {DataModelOverviewLibraryComponent} from './data-model-overview/data-model-overview-library/data-model-overview-library.component';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {QuickMenu} from './QuickMenu';
 
 @Injectable()
 export class AppMenuService implements  AbstractMenuProvider {
@@ -39,14 +37,13 @@ export class AppMenuService implements  AbstractMenuProvider {
   menu: MenuOption[] = [];
 
   getMenuOptions(): MenuOption[] {
+    this.http.get<MenuOption[]>('api/config/appMenu').subscribe(
+      (result) => result.forEach(mo => this.menu.push(mo))
+    );
     return this.menu;
   }
 
   setMenuBadge(index: number, value: string) {
     this.menu[index].badge = value;
-  }
-
-  loadAppMenu(): Observable<QuickMenu> {
-    return this.http.get<QuickMenu>('api/config/appMenu');
   }
 }

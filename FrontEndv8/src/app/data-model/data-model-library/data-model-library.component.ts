@@ -7,8 +7,7 @@ import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import {ConceptTreeViewComponent} from 'im-common/im-controls';
 import {KeycloakService} from 'keycloak-angular';
-import { animate, state, style, transition, trigger } from '@angular/animations';
-import {DataModelTablularViewComponent} from '../../components/data-model-tabular-view/data-model-tabular-view.component';
+import { DataModelTablularViewComponent } from '../../components/data-model-tabular-view/data-model-tabular-view.component';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -16,13 +15,6 @@ const debug = (message: string) => { console.log(message); };
   selector: 'app-data-model-library',
   templateUrl: './data-model-library.component.html',
   styleUrls: ['./data-model-library.component.scss'],
-  animations: [
-    trigger('detailExpand', [
-      state('collapsed', style({height: '0px', minHeight: '0'})),
-      state('expanded', style({height: '*'})),
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
-  ],  
 })
 class DataModelLibraryComponent implements OnInit {
 
@@ -30,16 +22,28 @@ class DataModelLibraryComponent implements OnInit {
   concept: Concept;
 
   searchSize = 72;
-  root = ':DM_DataModel';
-  relationships = [':SN_116680003'];
+  root = ':DiscoveryCommonDataModel';
+  relationships = ['sn:116680003'];
   selected = 'dataModel';
+  showFiller = true;
 
-  DM_HealthEvent: PagedResultSet<Related>;
-  DM_IdentifiableEntity: PagedResultSet<Related>;
-  DM_Provenance: PagedResultSet<Related>;
-  DM_StateEntry: PagedResultSet<Related>;
-  DM_StructuredArtefact: PagedResultSet<Related>;
+  hoveredConcept: Concept = {
+    name: '',
+    description: '',
+    iri: ''
+  };
+
+  DMHealthEvent: PagedResultSet<Related>;
+  DMIdentifiableEntity: PagedResultSet<Related>;
+  DMProvenance: PagedResultSet<Related>;
+  DMStateEntry: PagedResultSet<Related>;
+  DMStructuredArtefact: PagedResultSet<Related>;
   history = [];
+
+  timer: any;
+
+  sidebar = false;
+  textual = null;
 
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
   @ViewChild(DataModelTablularViewComponent, {static: true}) tableView: DataModelTablularViewComponent;
@@ -74,27 +78,27 @@ class DataModelLibraryComponent implements OnInit {
     );
 
     this.service.getSources(':DM_HealthEvent', null, 20, 1).subscribe(
-      (result) => this.DM_HealthEvent = result,
+      (result) => this.DMHealthEvent = result,
       (error) => this.log.error(error)
     );
 
     this.service.getSources(':DM_IdentifiableEntity', null, 20, 1).subscribe(
-      (result) => this.DM_IdentifiableEntity = result,
+      (result) => this.DMIdentifiableEntity = result,
       (error) => this.log.error(error)
     );
 
     this.service.getSources(':DM_Provenance', null, 20, 1).subscribe(
-      (result) => this.DM_Provenance = result,
+      (result) => this.DMProvenance = result,
       (error) => this.log.error(error)
     );
 
     this.service.getSources(':DM_StateEntry', null, 20, 1).subscribe(
-      (result) => this.DM_StateEntry = result,
+      (result) => this.DMStateEntry = result,
       (error) => this.log.error(error)
     );
 
     this.service.getSources(':DM_StructuredArtefact', null, 20, 1).subscribe(
-      (result) => this.DM_StructuredArtefact = result,
+      (result) => this.DMStructuredArtefact = result,
       (error) => this.log.error(error)
     );
 
@@ -104,6 +108,7 @@ class DataModelLibraryComponent implements OnInit {
   displayConcept(iri: string) {
     if (this.selectedIri !== iri) {
       this.selectedIri = iri;
+      this.textual = null;
       this.service.getConcept(iri).subscribe(
         (result) => this.concept = result,
         (error) => this.log.error(error)
@@ -111,10 +116,36 @@ class DataModelLibraryComponent implements OnInit {
     }
   }
 
+  itemHover(concept: Concept) {
+    const root = this;
+    console.log(`in itemHover ${JSON.stringify(concept)}`);
+    if (concept != null) {
+      this.timer = setTimeout(() => {
+        root.sidebar = true;
+      }, 1000);
+      this.hoveredConcept = concept;
+    } else {
+      clearTimeout(this.timer);
+    }
+  }
+
   goto(iri: string) {
     if (iri !== this.selectedIri) {
+      clearTimeout(this.timer);
       this.router.navigate(['dataModel'], {queryParams: {id: iri}});
     }
+  }
+
+  getTextual(): string {
+    if (!this.textual) {
+      this.textual = 'Loading...';
+      this.service.getTextual(this.selectedIri).subscribe(
+        (result) => this.textual = result,
+        (error) => this.log.error(error)
+      );
+    }
+
+    return this.textual;
   }
 
   hasResults(displayed: boolean) {

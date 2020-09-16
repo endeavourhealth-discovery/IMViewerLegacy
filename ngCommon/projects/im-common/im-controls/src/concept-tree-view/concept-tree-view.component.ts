@@ -19,12 +19,13 @@ export class ConceptTreeViewComponent implements AfterViewInit {
     this.displayNode(iri);
   }
   @Output() selection: EventEmitter<string> = new EventEmitter<string>();
+  @Output() hover = new EventEmitter<Concept>();
 
 
   selectedIri: string;
   treeControl: FlatTreeControl<TreeNode>;
   dataSource: TreeSource;
-  relationships = [':SN_116680003'];
+  relationships = ['sn:116680003'];
 
   getLevel = (node: TreeNode) => node.level;
   isExpandable = (node: TreeNode) => node.expandable;
@@ -70,6 +71,21 @@ export class ConceptTreeViewComponent implements AfterViewInit {
     } else {
       this.selectedIri = node.id;
       this.selection.emit(node.id);
+    }
+  }
+
+  nodeHover(node: TreeNode) {
+    if (node != null || node !== undefined) {
+      this.service.getConcept(node.id).subscribe(
+        (result) => this.hover.emit(result),
+        (error) => this.log.error(error)
+      );
+    } else {
+      this.hover.emit({
+        name: '',
+        description: '',
+        iri: ''
+      });
     }
   }
 
