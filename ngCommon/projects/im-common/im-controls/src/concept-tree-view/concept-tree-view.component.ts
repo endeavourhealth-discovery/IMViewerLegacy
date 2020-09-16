@@ -75,17 +75,15 @@ export class ConceptTreeViewComponent implements AfterViewInit {
   }
 
   nodeHover(node: TreeNode) {
-    if (node != null || node !== undefined) {
+    if (node !== null) {
+      console.log('enter');
       this.service.getConcept(node.id).subscribe(
         (result) => this.hover.emit(result),
         (error) => this.log.error(error)
       );
     } else {
-      this.hover.emit({
-        name: '',
-        description: '',
-        iri: ''
-      });
+      console.log('exit');
+      this.hover.emit(null);
     }
   }
 

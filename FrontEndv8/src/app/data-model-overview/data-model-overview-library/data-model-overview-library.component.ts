@@ -29,7 +29,7 @@ export class DataModelOverviewLibraryComponent implements OnInit {
 
   populateConcepts(dataModelConcept: PagedResultSet<Related>) {
     dataModelConcept.result.forEach(entry => {
-      const x = {
+      const concept = {
         name: entry.concept.name,
         description: entry.concept.description,
         iri: entry.concept.iri,
@@ -37,11 +37,11 @@ export class DataModelOverviewLibraryComponent implements OnInit {
       };
 
       this.service.getSources(entry.concept.iri, null, 20, 1).subscribe(
-        (result) => x.sources = result.result,
+        (result) => concept.sources = result.result,
         (error) => this.log.error(error)
       );
 
-      this.concepts.push(x);
+      this.concepts.push(concept);
     });
   }
 
