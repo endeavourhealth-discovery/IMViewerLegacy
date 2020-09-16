@@ -24,7 +24,7 @@ const debug = (message: string) => { console.log(message); };
 })
 
 class DataModelTablularViewComponent {
-  private static EMPTY_CONCEPT: Concept =  {iri : '', name : '', description : ''};
+  private static UNDEFINED_CONCEPT: Concept;
   
   private iri: string;
 
@@ -90,7 +90,7 @@ class DataModelTablularViewComponent {
 
   onHoverOut() {
     console.log(`in onHoverOut`);
-    this.hover.emit(DataModelTablularViewComponent.EMPTY_CONCEPT);
+    this.hover.emit(DataModelTablularViewComponent.UNDEFINED_CONCEPT);
   }
 }
 
