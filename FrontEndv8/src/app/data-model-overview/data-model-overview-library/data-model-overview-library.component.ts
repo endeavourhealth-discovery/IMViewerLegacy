@@ -14,43 +14,35 @@ const debug = (message: string) => { console.log(message); };
   styleUrls: ['./data-model-overview-library.component.scss']
 })
 export class DataModelOverviewLibraryComponent implements OnInit {
-
-  DM_HealthEvent: PagedResultSet<Related>;
-  DM_IdentifiableEntity: PagedResultSet<Related>;
-  DM_Provenance: PagedResultSet<Related>;
-  DM_StateEntry: PagedResultSet<Related>;
-  DM_StructuredArtefact: PagedResultSet<Related>;
+  concepts = [];
 
   constructor(private service: ConceptService, private log: LoggerService, private router: Router) { }
 
   ngOnInit() {
 
-    this.service.getSources(':DM_HealthEvent', null, 20, 1).subscribe(
-      (result) => this.DM_HealthEvent = result,
+    this.service.getSources(':RecordEntry', null, 20, 1).subscribe(
+      (result) => this.populateConcepts(result),
       (error) => this.log.error(error)
     );
 
-    this.service.getSources(':DM_IdentifiableEntity', null, 20, 1).subscribe(
-      (result) => this.DM_IdentifiableEntity = result,
-      (error) => this.log.error(error)
-    );
+  }
 
-    this.service.getSources(':DM_Provenance', null, 20, 1).subscribe(
-      (result) => this.DM_Provenance = result,
-      (error) => this.log.error(error)
-    );
+  populateConcepts(dataModelConcept: PagedResultSet<Related>) {
+    dataModelConcept.result.forEach(entry => {
+      const x = {
+        name: entry.concept.name,
+        description: entry.concept.description,
+        iri: entry.concept.iri,
+        sources: []
+      };
 
-    this.service.getSources(':DM_StateEntry', null, 20, 1).subscribe(
-      (result) => this.DM_StateEntry = result,
-      (error) => this.log.error(error)
-    );
+      this.service.getSources(entry.concept.iri, null, 20, 1).subscribe(
+        (result) => x.sources = result.result,
+        (error) => this.log.error(error)
+      );
 
-    this.service.getSources(':DM_StructuredArtefact', null, 20, 1).subscribe(
-      (result) => this.DM_StructuredArtefact = result,
-      (error) => this.log.error(error)
-    );
-
-
+      this.concepts.push(x);
+    });
   }
 
   goto(iri: string) {
