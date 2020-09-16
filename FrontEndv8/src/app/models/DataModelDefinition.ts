@@ -53,8 +53,7 @@ export class DataModelDefinition {
                   description: property.property.description,
                   iri: property.property.iri,
                   type: property.valueType.name,
-                  minCardinality: property.minCardinality,
-                  maxCardinality: property.maxCardinality,
+                  cardinality: `${property.minCardinality} .. ${property.maxCardinality}`,
                   source: property
                 };
           
@@ -82,8 +81,7 @@ export interface FlatProperty {
     name: string;
     description: string;
     iri: string;
-    minCardinality: number;
-    maxCardinality: number;
+    cardinality: string;
     type: string; // could be an enum
     source: Property; // the original source of the FlatProperty
   }

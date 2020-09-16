@@ -28,12 +28,10 @@ class DataModelTablularViewComponent {
 
   dataModelDefinition: DataModelDefinition;
 
-  parentsTable: DataTable<Concept>;
-  childrenTable: DataTable<Concept>;
   propertiesTable: DataTable<FlatProperty>;
 
-  parentsHierarchyTemplateContext: HierarchyTemplateContext;
-  childrenHierarchyTemplateContext: HierarchyTemplateContext;
+  parentsChipListTemplateContext: ChipListTemplateContext;
+  childrenChipListTemplateContext: ChipListTemplateContext;
 
   @Input()
   set conceptIri(iri: string) {
@@ -42,39 +40,45 @@ class DataModelTablularViewComponent {
   }
 
   constructor(private service: ConceptService, private log: LoggerService, private router: Router) { 
-    this.parentsTable = new DataTable<Concept>(["hname", "hiri", "hdescription"]);
-    this.childrenTable = new DataTable<Concept>(["hname", "hiri", "hdescription"]);
-    this.propertiesTable = new DataTable<FlatProperty>(["name", "iri", "description", "type", "minCardinality",  "maxCardinality"]);
+    this.propertiesTable = new DataTable<FlatProperty>(["name", "type", "cardinality", "description", "inheritedFrom"]);
 
-    this.parentsHierarchyTemplateContext =  {
+    this.parentsChipListTemplateContext =  {
       title: "Parents",
-      table: this.parentsTable
+      chips: []
     };
 
-    this.childrenHierarchyTemplateContext =  {
+    this.childrenChipListTemplateContext =  {
       title: "Children",
-      table: this.childrenTable
-    };
+      chips: []
+    }; 
   }
 
   refresh() {
     let dataModelDefinitionObservable: Observable<DataModelDefinition> = this.service.getDataModelDefinition(this.iri);
    
-    this.parentsTable.clear();
-    this.childrenTable.clear();
     this.propertiesTable.clear();
     
     dataModelDefinitionObservable.subscribe(dataModelDefinition => {
       this.dataModelDefinition = dataModelDefinition;
-      
-      this.parentsTable.setRows(this.dataModelDefinition.getDirectParentConcepts());
-      this.childrenTable.setRows(this.dataModelDefinition.getDirectChildConcepts());
+     
+      this.parentsChipListTemplateContext.chips = this.dataModelDefinition.getDirectParentConcepts();
+      this.childrenChipListTemplateContext.chips = this.dataModelDefinition.getDirectChildConcepts();
+
       this.propertiesTable.setRows(this.dataModelDefinition.getFlatProperties());
     });
   }
 
+  // TODO - this needs changing to open Dan's context menu
   openDataModel(iri: string) {
     this.router.navigate(['dataModel'], {queryParams: {id: iri}});
+  }
+
+  openContextArea(concept: Concept) {
+    console.log("openContextArea to show " + JSON.stringify(concept));
+  }
+
+  closeContextArea() {
+    console.log("closeContextArea");
   }
 }
 
@@ -104,13 +108,13 @@ class DataTable<D> {
   }
 }
 
-interface HierarchyTemplateContext {
+interface ChipListTemplateContext {
   title: string,
-  table: DataTable<Concept>;
+  chips: Concept[];
 }
 
 export {
   DataModelTablularViewComponent,
   DataTable,
-  HierarchyTemplateContext
+  ChipListTemplateContext
 }

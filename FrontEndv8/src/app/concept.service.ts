@@ -120,10 +120,12 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
     let dataModelDefintionSubject: Subject<DataModelDefinition> = new Subject<DataModelDefinition>();
     let dataModelDefintion: Observable<DataModelDefinition> = dataModelDefintionSubject.asObservable();
     
+    // TODO - get inherited properties
+
     const responses = zip(
       this.getConcept(iri),
       this.getDefinition(iri),
-      this.getProperties(iri, true),
+      this.getProperties(iri, true), //currently the inherited param is ignored. Will not reinstate for now as DB structure is under change
       this.getSources(iri, [], 15),
       this.getTargets(iri, [], 15)
     );
