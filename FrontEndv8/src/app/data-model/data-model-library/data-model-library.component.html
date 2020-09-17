@@ -73,31 +73,36 @@
 
                 <mat-drawer-container class="example-container" hasBackdrop="true" style="height: calc(100% - 16px);overflow:hidden;">
 
-                  <mat-drawer #drawer class="example-sidenav" mode="side" position="end" [(opened)]="sidebar" style="width: 40%;overflow:hidden;">
+                  <mat-drawer #drawer class="example-sidenav" mode="side" position="end" [(opened)]="sidebar" style="width: 45%;overflow:hidden;">
                     <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
 
-                      <h2 mat-title>Data Model - Summary</h2>
-                      <button mat-icon-button>
+                      <h2 class="mat-title" fxFlex="80">Data Model - Summary</h2>
+                      <button mat-icon-button fxFlex="10">
                         <mat-icon color="primary">open_in_new</mat-icon>
                       </button>
-                      <button mat-icon-button color="primary" (click)="sidebar=false">
+                      <button mat-icon-button color="primary" (click)="sidebar=false" fxFlex="10">
                         <mat-icon color="primary">close</mat-icon>
                       </button>
 
-                      <mat-divider></mat-divider>
+                      <mat-divider fxFlex="100"></mat-divider>
 
-                      <mat-form-field appearance="outline" fxFlex="100">
+                      <mat-form-field appearance="outline" fxFlex="90" style="padding-left: 16px;">
                         <mat-label>Name</mat-label>
                         <input matInput [value]="hoveredConcept.name" placeholder="Concept Name" readonly id="conceptDescription">
                       </mat-form-field>
-                      <mat-form-field appearance="outline" fxFlex="100">
+                      <mat-form-field appearance="outline" fxFlex="90" style="padding: 2px 16px 16px 16px;">
                         <mat-label>Id</mat-label>
                         <input matInput [value]="hoveredConcept.iri" placeholder="Concept ID" readonly id="conceptDescription">
                       </mat-form-field>
-                      <mat-form-field appearance="outline" fxFlex="100">
+                      <mat-form-field appearance="outline" fxFlex="90" style="padding: 2px 16px 16px 16px;">
                         <mat-label>Description</mat-label>
-                        <textarea  matInput [value]="hoveredConcept.description" placeholder="Concept description" readonly id="conceptDescription"></textarea>
+                        <textarea  matInput [value]="hoveredConcept.description" placeholder="Concept description" readonly id="conceptDescription" style="height: 80px;"></textarea>
                       </mat-form-field>
+
+                      <app-properties-table [properties]="properties" *ngIf="properties.length > 0" style="width:100%"></app-properties-table>
+                      <app-defintion-table [definitions]="definitions" *ngIf="properties.length == 0 && definitions.length > 0" style="width:100%"></app-defintion-table>
+                      <app-valueset-table [valuesets]="valuesets" *ngIf="valuesets.length > 0" style="width:100%"></app-valueset-table>
+
                     </div>
                   </mat-drawer>
 

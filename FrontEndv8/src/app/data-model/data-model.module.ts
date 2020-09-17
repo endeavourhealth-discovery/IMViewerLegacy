@@ -1,3 +1,6 @@
+import { DefintionTableComponent } from './../components/defintion-table/defintion-table.component';
+import { PropertiesTableComponent } from './../components/properties-table/properties-table.component';
+import { ValuesetTableComponent } from './../components/valueset-table/valueset-table.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -56,7 +59,10 @@ import {MatSidenavModule} from '@angular/material/sidenav';
     { provide: DataModelNavigatorService, useClass: ConceptService }
   ],
   declarations: [
-    DataModelLibraryComponent
+    DataModelLibraryComponent,
+    PropertiesTableComponent,
+    ValuesetTableComponent,
+    DefintionTableComponent
   ]
 })
 export class DataModelModule { }

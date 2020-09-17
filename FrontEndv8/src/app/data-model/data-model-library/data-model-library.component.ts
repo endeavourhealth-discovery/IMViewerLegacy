@@ -33,12 +33,10 @@ class DataModelLibraryComponent implements OnInit {
     iri: ''
   };
 
-  DMHealthEvent: PagedResultSet<Related>;
-  DMIdentifiableEntity: PagedResultSet<Related>;
-  DMProvenance: PagedResultSet<Related>;
-  DMStateEntry: PagedResultSet<Related>;
-  DMStructuredArtefact: PagedResultSet<Related>;
   history = [];
+  properties = [];
+  definitions = [];
+  valuesets = [];
 
   timer: any;
 
@@ -76,33 +74,6 @@ class DataModelLibraryComponent implements OnInit {
       (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
       (error) => this.log.error(error)
     );
-
-    this.service.getSources(':DM_HealthEvent', null, 20, 1).subscribe(
-      (result) => this.DMHealthEvent = result,
-      (error) => this.log.error(error)
-    );
-
-    this.service.getSources(':DM_IdentifiableEntity', null, 20, 1).subscribe(
-      (result) => this.DMIdentifiableEntity = result,
-      (error) => this.log.error(error)
-    );
-
-    this.service.getSources(':DM_Provenance', null, 20, 1).subscribe(
-      (result) => this.DMProvenance = result,
-      (error) => this.log.error(error)
-    );
-
-    this.service.getSources(':DM_StateEntry', null, 20, 1).subscribe(
-      (result) => this.DMStateEntry = result,
-      (error) => this.log.error(error)
-    );
-
-    this.service.getSources(':DM_StructuredArtefact', null, 20, 1).subscribe(
-      (result) => this.DMStructuredArtefact = result,
-      (error) => this.log.error(error)
-    );
-
-
   }
 
   displayConcept(iri: string) {
@@ -123,6 +94,22 @@ class DataModelLibraryComponent implements OnInit {
         root.sidebar = true;
       }, 1000);
       this.hoveredConcept = concept;
+
+      this.service.getProperties(concept.iri, false).subscribe(
+        (result) => this.properties = result,
+        (error) => this.log.error(error)
+      );
+
+      this.service.getDefinition(concept.iri).subscribe(
+        (result) => this.definitions = result,
+        (error) => this.log.error(error)
+      );
+
+      this.service.getValueSetMembers(concept.iri).subscribe(
+        (result) => this.valuesets = result,
+        (error) => this.log.error(error)
+      );
+
     } else {
       clearTimeout(this.timer);
     }

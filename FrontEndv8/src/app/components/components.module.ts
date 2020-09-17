@@ -20,8 +20,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {DataModelTablularViewComponent} from './data-model-tabular-view/data-model-tabular-view.component';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatChipsModule} from '@angular/material/chips';
-import {MatTableModule} from '@angular/material/table';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
     imports: [
@@ -43,7 +43,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
         MatExpansionModule,
         MatChipsModule,
         MatTableModule,
-        MatTooltipModule
+        MatTooltipModule,
     ],
   exports: [
     ConceptSearchComponent,
