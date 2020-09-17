@@ -16,6 +16,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {NavigationComponent} from './navigation/navigation.component';
 import { MatCardModule } from '@angular/material/card';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
     imports: [
@@ -33,6 +34,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
         ReactiveFormsModule,
         MatSelectModule,
         MatSlideToggleModule,
+        MatTableModule,
     ],
   exports: [
     ConceptSearchComponent,
@@ -43,7 +45,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     ConceptSearchComponent,
     GraphNavigatorComponent,
     ResizeObserverDirective,
-    NavigationComponent
+    NavigationComponent,
   ]
 })
 export class ComponentsModule { }
