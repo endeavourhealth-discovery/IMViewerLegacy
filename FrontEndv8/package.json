@@ -27,7 +27,7 @@
     "dagre": "^0.8.5",
     "dds-angular8": "https://github.com/endeavourhealth-discovery/Angular8/blob/master/dds-angular8-1.0.31.tgz?raw=true",
     "hammerjs": "^2.0.8",
-    "im-common": "https://github.com/endeavourhealth-discovery/IMViewer/blob/master/ngCommon/im-common-1.0.0.tgz?raw=true",
+    "im-common": "https://github.com/endeavourhealth-discovery/IMViewer/blob/develop/ngCommon/im-common-1.0.0.tgz?raw=true",
     "keycloak-angular": "7.0.1",
     "keycloak-js": "4.8.3",
     "rxjs": "~6.4.0",

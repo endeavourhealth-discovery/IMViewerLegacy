@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {zip, Subject, Observable} from 'rxjs';
 import {Concept} from './models/Concept';
 import {ConceptGroup} from './models/ConceptGroup';
 import {Related} from './models/Related';
@@ -10,6 +10,7 @@ import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-co
 import {SchemeCount} from './models/SchemeCount';
 import {SchemeChildren} from './models/SchemeChildren';
 import {ValueSetMember} from './models/ValueSetMember';
+import {DataModelDefinition} from './models/DataModelDefinition';
 
 @Injectable({
   providedIn: 'root'
@@ -115,9 +116,38 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
 
     return Observable.create((observer) => {
       observer.next(conceptGroups);
-    });
+    });  
+  }  
+    
+  // orachstrtes retirevle of all relevent data
+  getDataModelDefinition(iri: string): Observable<DataModelDefinition> {
+    let dataModelDefintionSubject: Subject<DataModelDefinition> = new Subject<DataModelDefinition>();
+    let dataModelDefintion: Observable<DataModelDefinition> = dataModelDefintionSubject.asObservable();
+    
+    // TODO - get inherited properties
 
-    //return Observable.create(conceptGroups); //TODO - data
-    //return this.http.get<Concept>('api/concepts/' + iri);
+    const responses = zip(
+      this.getConcept(iri),
+      this.getDefinition(iri),
+      this.getProperties(iri, true), //currently the inherited param is ignored. Will not reinstate for now as DB structure is under change
+      this.getSources(iri, [], 15),
+      this.getTargets(iri, [], 15)
+    );
+    
+    responses.subscribe(
+      (result) => {
+        dataModelDefintionSubject.next(
+          new DataModelDefinition(      
+             result[0],
+             result[1],
+             result[2],
+             result[3].result,
+             result[4].result,
+          )
+        )
+      }
+    );
+
+    return dataModelDefintion;
   }
 }

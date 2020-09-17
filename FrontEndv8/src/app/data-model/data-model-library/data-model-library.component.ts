@@ -1,12 +1,13 @@
-import { Related } from './../../models/Related';
 import { PagedResultSet } from './../../models/PagedResultSet';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConceptService} from '../../concept.service';
 import {Concept} from '../../models/Concept';
+import {Related} from '../../models/Related';
 import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import {ConceptTreeViewComponent} from 'im-common/im-controls';
 import {KeycloakService} from 'keycloak-angular';
+import { DataModelTablularViewComponent } from '../../components/data-model-tabular-view/data-model-tabular-view.component';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -15,9 +16,11 @@ const debug = (message: string) => { console.log(message); };
   templateUrl: './data-model-library.component.html',
   styleUrls: ['./data-model-library.component.scss'],
 })
-export class DataModelLibraryComponent implements OnInit {
-  concept: Concept;
+class DataModelLibraryComponent implements OnInit {
+
   selectedIri: string;
+  concept: Concept;
+
   searchSize = 72;
   root = ':DiscoveryCommonDataModel';
   relationships = ['sn:116680003'];
@@ -43,6 +46,7 @@ export class DataModelLibraryComponent implements OnInit {
   textual = null;
 
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
+  @ViewChild(DataModelTablularViewComponent, {static: true}) tableView: DataModelTablularViewComponent;
 
   constructor(private service: ConceptService,
               private router: Router,
@@ -50,7 +54,7 @@ export class DataModelLibraryComponent implements OnInit {
               private route: ActivatedRoute,
               private log: LoggerService) {
 
-                this.routeEvent(this.router);
+              this.routeEvent(this.router);
   }
 
   routeEvent(router: Router){
@@ -114,7 +118,6 @@ export class DataModelLibraryComponent implements OnInit {
 
   itemHover(concept: Concept) {
     const root = this;
-
     if (concept != null) {
       this.timer = setTimeout(() => {
         root.sidebar = true;
@@ -151,4 +154,9 @@ export class DataModelLibraryComponent implements OnInit {
   logout() {
     this.auth.logout();
   }
+  
+}
+
+export {
+  DataModelLibraryComponent
 }

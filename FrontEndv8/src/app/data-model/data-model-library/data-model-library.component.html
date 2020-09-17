@@ -1,6 +1,7 @@
-<div id="home-content">
+<div id="home-content"> 
   <mat-card>
-    <app-navigation [title]="'Data model'" [subtitle]="'Discovery data model viewer & navigator'" [selectedPage]="'dataModel'"></app-navigation>
+    <app-navigation [title]="'Data model'" [subtitle]="'Discovery data model viewer & navigator'"
+      [selectedPage]="'dataModel'"></app-navigation>
     <mat-card-content>
       <as-split direction="horizontal">
         <as-split-area size="30">
@@ -36,7 +37,7 @@
                         <mat-icon mat-list-icon>launch</mat-icon>
                         <div mat-line>{{item.concept.name}}</div>
                       </mat-list-option>
-                     </mat-selection-list>
+                    </mat-selection-list>
 
                   </mat-tab>
                 </mat-tab-group>
@@ -48,20 +49,21 @@
                  drop IRI.-->
         <as-split-area size="70">
           <as-split direction="vertical" unit="pixel">
-            <as-split-area size="150" minSize="150" maxSize="150" style="overflow: hidden">
+            <as-split-area size="72" minSize="72" maxSize="72" style="overflow: hidden">
               <div class="as-split-area-content">
                 <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
-                  <mat-form-field appearance="outline" fxFlex="70">
+                  <!-- <mat-form-field appearance="outline" fxFlex="70">
                     <mat-label>Name</mat-label>
                     <input matInput [value]="concept?.name" placeholder="Concept name" readonly id="conceptName">
-                  </mat-form-field>
+                  </mat-form-field> -->
                   <mat-form-field appearance="outline" fxFlex="30">
                     <mat-label>Id</mat-label>
                     <input matInput [value]="concept?.iri" placeholder="Concept ID" readonly id="conceptId">
                   </mat-form-field>
-                  <mat-form-field appearance="outline" fxFlex="100">
+                  <mat-form-field appearance="outline" fxFlex="70">
                     <mat-label>Description</mat-label>
-                    <input matInput [value]="concept?.description" placeholder="Concept description" readonly id="conceptDescription">
+                    <input matInput [value]="concept?.description" placeholder="Concept description" readonly
+                      id="conceptDescription">
                   </mat-form-field>
                 </div>
               </div>
@@ -69,9 +71,9 @@
             <as-split-area>
               <div class="as-split-area-content" style="height: calc(100% - 16px);">
 
-                <mat-drawer-container class="example-container" hasBackdrop="true" style="height: calc(100% - 16px);">
+                <mat-drawer-container class="example-container" hasBackdrop="true" style="height: calc(100% - 16px);overflow:hidden;">
 
-                  <mat-drawer #drawer class="example-sidenav" mode="side" position="end" [(opened)]="sidebar" style="width: 40%;">
+                  <mat-drawer #drawer class="example-sidenav" mode="side" position="end" [(opened)]="sidebar" style="width: 40%;overflow:hidden;">
                     <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
 
                       <h2 mat-title>Data Model - Summary</h2>
@@ -114,8 +116,16 @@
                           <mat-icon class="example-tab-icon">view_module</mat-icon>
                           Properties
                         </ng-template>
+                        <ng-template matTabContent>
+                          <data-model-tabular-view [conceptIri]="selectedIri" (selection)="goto($event)" (hover)="itemHover($event)">
+                          </data-model-tabular-view>
+                        </ng-template>
                       </mat-tab>
                       <mat-tab label="Textual">
+                        <ng-template mat-tab-label>
+                          <mat-icon class="example-tab-icon">view_module</mat-icon>
+                          Textual
+                        </ng-template>
                         <ng-template matTabContent>
                           <pre>{{getTextual()}}</pre>
                         </ng-template>
@@ -124,6 +134,12 @@
                         <ng-template mat-tab-label>
                           <mat-icon class="example-tab-icon">view_module</mat-icon>
                           Schema
+                        </ng-template>
+                      </mat-tab>
+                      <mat-tab label="Schema">
+                        <ng-template mat-tab-label>
+                          <mat-icon class="example-tab-icon">view_module</mat-icon>
+                          API
                         </ng-template>
                       </mat-tab>
                       <mat-tab label="Examples">
