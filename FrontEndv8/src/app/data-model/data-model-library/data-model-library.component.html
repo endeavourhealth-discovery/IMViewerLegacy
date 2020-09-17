@@ -13,7 +13,7 @@
               </div>
             </as-split-area>
             <as-split-area>
-              <div class="as-split-area-content">
+              <div class="as-split-area-content" style="height: 97%;">
 
                 <mat-tab-group style="height: 100%;" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">
                   <mat-tab label="Class">
@@ -25,54 +25,7 @@
                       <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)" (hover)="itemHover($event)"></app-concept-tree-view>
                     </ng-template>
                   </mat-tab>
-                  <mat-tab label="Group" id="group-tab" class="group-tab" name="group-tab">
-                    <ng-template mat-tab-label>
-                      <mat-icon class="example-tab-icon">dashboard</mat-icon>
-                      Group
-                    </ng-template>
 
-                    <!-- <mat-selection-list>
-                      <mat-list-option><app-concept-tree-view [root]="':DMHealthEvent'" [conceptIri]="':DM_HealthEvent'" (selection)="goto($event)" (hover)="itemHover($event)"></app-concept-tree-view></mat-list-option>
-                      <mat-list-option><app-concept-tree-view [root]="':DMIdentifiableEntity'" [conceptIri]="':DM_IdentifiableEntity'" (selection)="goto($event)" (hover)="itemHover($event)"></app-concept-tree-view></mat-list-option>
-                      <mat-list-option><app-concept-tree-view [root]="':DMProvenance'" [conceptIri]="':DM_Provenance'" (selection)="goto($event)" (hover)="itemHover($event)"></app-concept-tree-view></mat-list-option>
-                      <mat-list-option><app-concept-tree-view [root]="':DMStateEntry'" [conceptIri]="':DM_StateEntry'" (selection)="goto($event)" (hover)="itemHover($event)"></app-concept-tree-view></mat-list-option>
-                      <mat-list-option><app-concept-tree-view [root]="':DMStructuredArtefact'" [conceptIri]="':DM_StructuredArtefact'" (selection)="goto($event)" (hover)="itemHover($event)"></app-concept-tree-view></mat-list-option>
-                    </mat-selection-list> -->
-
-                    <mat-selection-list dense>
-                      <div mat-subheader>HealthEvent</div>
-                      <mat-list-option *ngFor="let dataModelConcept of DMHealthEvent.result" (click)="goto(dataModelConcept.concept.iri)" (mouseenter)="itemHover(dataModelConcept.concept)" (mouseleave)="itemHover(null)">
-                        <mat-icon mat-list-icon>launch</mat-icon>
-                        <div mat-line>{{dataModelConcept.concept.name}}</div>
-                      </mat-list-option>
-                      <mat-divider></mat-divider>
-                      <div mat-subheader>IdentifiableEntity</div>
-                      <mat-list-option *ngFor="let dataModelConcept of DMIdentifiableEntity.result" (click)="goto(dataModelConcept.concept.iri)" (mouseenter)="itemHover(dataModelConcept.concept)" (mouseleave)="itemHover(null)">
-                        <mat-icon mat-list-icon>launch</mat-icon>
-                        <div mat-line>{{dataModelConcept.concept.name}}</div>
-                      </mat-list-option>
-                      <mat-divider></mat-divider>
-                      <div mat-subheader>Provenance</div>
-                      <mat-list-option *ngFor="let dataModelConcept of DMProvenance.result" (click)="goto(dataModelConcept.concept.iri)" (mouseenter)="itemHover(dataModelConcept.concept)" (mouseleave)="itemHover(null)">
-                        <mat-icon mat-list-icon>launch</mat-icon>
-                        <div mat-line>{{dataModelConcept.concept.name}}</div>
-                      </mat-list-option>
-                      <mat-divider></mat-divider>
-                      <div mat-subheader>StateEntry</div>
-                      <mat-list-option *ngFor="let dataModelConcept of DMStateEntry.result" (click)="goto(dataModelConcept.concept.iri)" (mouseenter)="itemHover(dataModelConcept.concept)" (mouseleave)="itemHover(null)">
-                        <mat-icon mat-list-icon>launch</mat-icon>
-                        <div mat-line>{{dataModelConcept.concept.name}}</div>
-                      </mat-list-option>
-                      <mat-divider></mat-divider>
-                      <div mat-subheader>StructuredArtefact</div>
-                      <mat-list-option *ngFor="let dataModelConcept of DMStructuredArtefact.result" (click)="goto(dataModelConcept.concept.iri)" (mouseenter)="itemHover(dataModelConcept.concept)" (mouseleave)="itemHover(null)">
-                        <mat-icon mat-list-icon>launch</mat-icon>
-                        <div mat-line>{{dataModelConcept.concept.name}}</div>
-                      </mat-list-option>
-                      <mat-divider></mat-divider>
-                    </mat-selection-list>
-
-                  </mat-tab>
                   <mat-tab label="History">
                     <ng-template mat-tab-label>
                       <mat-icon class="example-tab-icon">history</mat-icon>
@@ -95,18 +48,18 @@
         </as-split-area>
         <as-split-area size="70">
           <as-split direction="vertical" unit="pixel">
-            <as-split-area size="150" minSize="150" maxSize="150" style="overflow: hidden">
+            <as-split-area size="72" minSize="72" maxSize="72" style="overflow: hidden">
               <div class="as-split-area-content">
                 <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
-                  <mat-form-field appearance="outline" fxFlex="70">
+                  <!-- <mat-form-field appearance="outline" fxFlex="70">
                     <mat-label>Name</mat-label>
                     <input matInput [value]="concept?.name" placeholder="Concept name" readonly id="conceptName">
-                  </mat-form-field>
+                  </mat-form-field> -->
                   <mat-form-field appearance="outline" fxFlex="30">
                     <mat-label>Id</mat-label>
                     <input matInput [value]="concept?.iri" placeholder="Concept ID" readonly id="conceptId">
                   </mat-form-field>
-                  <mat-form-field appearance="outline" fxFlex="100">
+                  <mat-form-field appearance="outline" fxFlex="70">
                     <mat-label>Description</mat-label>
                     <input matInput [value]="concept?.description" placeholder="Concept description" readonly
                       id="conceptDescription">
@@ -117,9 +70,9 @@
             <as-split-area>
               <div class="as-split-area-content" style="height: calc(100% - 16px);">
 
-                <mat-drawer-container class="example-container" hasBackdrop="true" style="height: calc(100% - 16px);">
+                <mat-drawer-container class="example-container" hasBackdrop="true" style="height: calc(100% - 16px);overflow:hidden;">
 
-                  <mat-drawer #drawer class="example-sidenav" mode="side" position="end" [(opened)]="sidebar" style="width: 40%;">
+                  <mat-drawer #drawer class="example-sidenav" mode="side" position="end" [(opened)]="sidebar" style="width: 40%;overflow:hidden;">
                     <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
 
                       <h2 mat-title>Data Model - Summary</h2>
@@ -168,6 +121,10 @@
                         </ng-template>
                       </mat-tab>
                       <mat-tab label="Textual">
+                        <ng-template mat-tab-label>
+                          <mat-icon class="example-tab-icon">view_module</mat-icon>
+                          Textual
+                        </ng-template>
                         <ng-template matTabContent>
                           <pre>{{getTextual()}}</pre>
                         </ng-template>
@@ -176,6 +133,12 @@
                         <ng-template mat-tab-label>
                           <mat-icon class="example-tab-icon">view_module</mat-icon>
                           Schema
+                        </ng-template>
+                      </mat-tab>
+                      <mat-tab label="Schema">
+                        <ng-template mat-tab-label>
+                          <mat-icon class="example-tab-icon">view_module</mat-icon>
+                          API
                         </ng-template>
                       </mat-tab>
                       <mat-tab label="Examples">

@@ -118,7 +118,6 @@ class DataModelLibraryComponent implements OnInit {
 
   itemHover(concept: Concept) {
     const root = this;
-    console.log(`in itemHover ${JSON.stringify(concept)}`);
     if (concept != null) {
       this.timer = setTimeout(() => {
         root.sidebar = true;
