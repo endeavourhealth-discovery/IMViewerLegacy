@@ -76,13 +76,11 @@ export class ConceptTreeViewComponent implements AfterViewInit {
 
   nodeHover(node: TreeNode) {
     if (node !== null) {
-      console.log('enter');
-      this.service.getConcept(node.id).subscribe(
-        (result) => this.hover.emit(result),
-        (error) => this.log.error(error)
-      );
+      const concept: Concept = new Concept();
+      concept.name = node.name;
+      concept.iri = node.id;
+      this.hover.emit(concept);
     } else {
-      console.log('exit');
       this.hover.emit(null);
     }
   }

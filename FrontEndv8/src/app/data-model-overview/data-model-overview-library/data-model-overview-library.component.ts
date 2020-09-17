@@ -20,7 +20,7 @@ export class DataModelOverviewLibraryComponent implements OnInit {
 
   ngOnInit() {
 
-    this.service.getSources(':RecordEntry', null, 20, 1).subscribe(
+    this.service.getSources(':HealthRecord', null, 20, 1).subscribe(
       (result) => this.populateConcepts(result),
       (error) => this.log.error(error)
     );

@@ -255,7 +255,9 @@ export class DataModelNavigatorComponent implements OnInit {
               .attr('x', l)
               .attr('y', 38 + (20 * i))
               .attr('class', 'clickable')
-              .on('click', () => this.nodeClick(property.owner.iri));
+              .on('click', () => this.nodeClick(property.owner.iri))
+              .on('mouseenter', () => this.nodeHover(property.owner))
+              .on('mouseleave', () => this.nodeHover(null));
           o.insert('title')
               .text(property.owner.name);
 
@@ -268,7 +270,9 @@ export class DataModelNavigatorComponent implements OnInit {
         .attr('x', l)
         .attr('y', 38 + (20 * i))
         .attr('class', 'clickable')
-        .on('click', () => this.nodeClick(property.property.iri));
+        .on('click', () => this.nodeClick(property.property.iri))
+        .on('mouseenter', () => this.nodeHover(property.property))
+        .on('mouseleave', () => this.nodeHover(null));
 
       if (property.level >= 0) {
         p.attr('fill', 'grey');
@@ -283,7 +287,9 @@ export class DataModelNavigatorComponent implements OnInit {
         .attr('x', l)
         .attr('y', 38 + (20 * i))
         .attr('class', 'clickable')
-        .on('click', () => this.nodeClick(property.valueType.iri));
+        .on('click', () => this.nodeClick(property.valueType.iri))
+        .on('mouseenter', () => this.nodeHover(property.valueType))
+        .on('mouseleave', () => this.nodeHover(null));
 
       if (property.level >= 0) {
         pt.attr('fill', 'grey');
