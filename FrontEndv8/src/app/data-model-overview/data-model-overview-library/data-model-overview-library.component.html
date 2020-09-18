@@ -11,15 +11,15 @@
 
     <!-- need to loop through groups creating cards -->
     <mat-card-content id="datamodel-overview">
-      <mat-grid-list cols="5">
+      <mat-grid-list cols="6">
 
         <mat-grid-tile *ngFor="let dataModelConcept of concepts">
           <mat-card class="scrollable-content">
-            <mat-card-header (click)="goto(dataModelConcept.iri)" style="height: 70px;">
+            <mat-card-header (click)="goto(dataModelConcept.iri)" style="height: 50px;">
               <mat-card-title>{{dataModelConcept.name}}</mat-card-title>
-              <mat-card-subtitle class="text-oneline">
+              <!-- <mat-card-subtitle class="text-oneline">
                 {{dataModelConcept.description}}
-              </mat-card-subtitle>
+              </mat-card-subtitle> -->
             </mat-card-header>
             <mat-card-content>
               <!-- need to loop through concepts creating list element -->

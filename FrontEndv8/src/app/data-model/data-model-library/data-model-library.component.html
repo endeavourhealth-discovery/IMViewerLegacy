@@ -1,4 +1,4 @@
-<div id="home-content"> 
+<div id="home-content">
   <mat-card>
     <app-navigation [title]="'Data model'" [subtitle]="'Discovery data model viewer & navigator'"
       [selectedPage]="'dataModel'"></app-navigation>
@@ -8,15 +8,6 @@
               <div class="as-split-area-content" style="height: 97%;">
 
                 <mat-tab-group style="height: 100%;" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">
-                  <mat-tab label="Search">
-                    <ng-template mat-tab-label>
-                      <mat-icon class="example-tab-icon">search</mat-icon>
-                      Search
-                    </ng-template>
-                    <ng-template matTabContent>
-                      <app-concept-search [root]="root" [relationships]="relationships" (selection)="goto($event.iri)" (hasResults)="hasResults($event)"></app-concept-search>
-                    </ng-template>
-                  </mat-tab>                  
                   <mat-tab label="Browse">
                     <ng-template mat-tab-label>
                       <mat-icon class="example-tab-icon">navigation</mat-icon>
@@ -24,6 +15,15 @@
                     </ng-template>
                     <ng-template matTabContent>
                       <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)" (hover)="itemHover($event)"></app-concept-tree-view>
+                    </ng-template>
+                  </mat-tab>
+                  <mat-tab label="Search">
+                    <ng-template mat-tab-label>
+                      <mat-icon class="example-tab-icon">search</mat-icon>
+                      Search
+                    </ng-template>
+                    <ng-template matTabContent>
+                      <app-concept-search [root]="root" [relationships]="relationships" (selection)="goto($event.iri)" (hasResults)="hasResults($event)"></app-concept-search>
                     </ng-template>
                   </mat-tab>
                   <mat-tab label="History">
@@ -45,7 +45,7 @@
 
             </as-split-area>
 
-            <!-- work on making this part of the whole right hand side 
+            <!-- work on making this part of the whole right hand side
                  drop IRI.-->
         <as-split-area size="70">
           <as-split direction="vertical" unit="pixel">
@@ -73,7 +73,7 @@
 
                 <mat-drawer-container class="example-container" hasBackdrop="true" style="height: calc(100% - 16px);overflow:hidden;">
 
-                  <mat-drawer #drawer class="example-sidenav" mode="side" position="end" [(opened)]="sidebar" style="width: 45%;overflow:hidden;">
+                  <mat-drawer #drawer class="example-sidenav" mode="over" position="end" [(opened)]="sidebar" style="width: 45%;overflow:hidden;">
                     <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
 
                       <h2 class="mat-title" fxFlex="80">Data Model - Summary</h2>
@@ -83,8 +83,6 @@
                       <button mat-icon-button color="primary" (click)="sidebar=false" fxFlex="10">
                         <mat-icon color="primary">close</mat-icon>
                       </button>
-
-                      <mat-divider fxFlex="100"></mat-divider>
 
                       <mat-form-field appearance="outline" fxFlex="90" style="padding-left: 16px;">
                         <mat-label>Name</mat-label>
@@ -99,8 +97,11 @@
                         <textarea  matInput [value]="hoveredConcept.description" placeholder="Concept description" readonly id="conceptDescription" style="height: 80px;"></textarea>
                       </mat-form-field>
 
+                      <h3 fxFlex="80" *ngIf="properties.length > 0">Model Properties - {{properties.length}}</h3>
                       <app-properties-table [properties]="properties" *ngIf="properties.length > 0" style="width:100%"></app-properties-table>
+                      <h3 fxFlex="80" *ngIf="properties.length == 0 && definitions.length > 0">Concept Definitions - {{definitions.length}}</h3>
                       <app-defintion-table [definitions]="definitions" *ngIf="properties.length == 0 && definitions.length > 0" style="width:100%"></app-defintion-table>
+                      <h3 fxFlex="80" *ngIf="valuesets.length > 0">Valueset Members - {{valuesets.length}}</h3>
                       <app-valueset-table [valuesets]="valuesets" *ngIf="valuesets.length > 0" style="width:100%"></app-valueset-table>
 
                     </div>
