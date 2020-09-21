@@ -37,8 +37,9 @@ export class AppMenuService implements  AbstractMenuProvider {
   menu: MenuOption[] = [];
 
   getMenuOptions(): MenuOption[] {
-    this.http.get<MenuOption[]>('api/config/appMenu').subscribe(
-      (result) => result.forEach(mo => this.menu.push(mo))
+    this.http.get<any>('api/config/appMenu').subscribe(
+      (result) => result.applications.forEach(mo => this.menu.push(mo)),
+      (error) => console.log(error)
     );
     return this.menu;
   }
