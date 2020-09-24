@@ -39,8 +39,8 @@ class DataModelLibraryComponent implements OnInit {
   valuesets = [];
 
   timer: any;
-
   sidebar = false;
+
   textual = null;
 
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
@@ -51,17 +51,16 @@ class DataModelLibraryComponent implements OnInit {
               private auth: KeycloakService,
               private route: ActivatedRoute,
               private log: LoggerService) {
-
-              this.routeEvent(this.router);
+                this.routeEvent(this.router);
   }
 
-  routeEvent(router: Router){
+  routeEvent(router: Router) {
     router.events.subscribe(e => {
-      if(e instanceof NavigationEnd && this.concept != undefined){
+      if (e instanceof NavigationEnd && this.concept !== undefined) {
         this.history.unshift(
           {
-            'url': e.url,
-            'concept': this.concept
+            url: e.url,
+            concept: this.concept
           }
         );
       }
@@ -141,7 +140,7 @@ class DataModelLibraryComponent implements OnInit {
   logout() {
     this.auth.logout();
   }
-  
+
 }
 
 export {

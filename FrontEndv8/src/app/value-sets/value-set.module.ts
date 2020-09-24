@@ -1,3 +1,10 @@
+import { AppModule } from './../app.module';
+import { DefintionTableComponent } from './../components/defintion-table/defintion-table.component';
+import { ValuesetTableComponent } from './../components/valueset-table/valueset-table.component';
+import { PropertiesTableComponent } from './../components/properties-table/properties-table.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatTabsModule } from '@angular/material/tabs';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
@@ -45,7 +52,10 @@ import {RouterModule} from '@angular/router';
         IMControlsModule,
         MatExpansionModule,
         MatDialogModule,
-        RouterModule
+        RouterModule,
+        MatTabsModule,
+        MatListModule,
+        MatSidenavModule
     ],
   declarations: [
     ValueSetLibraryComponent,

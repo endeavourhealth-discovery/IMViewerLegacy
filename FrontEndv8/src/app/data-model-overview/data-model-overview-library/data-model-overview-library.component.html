@@ -25,7 +25,7 @@
               <!-- need to loop through concepts creating list element -->
               <mat-selection-list dense>
                 <mat-list-option *ngFor="let source of dataModelConcept.sources"
-                  (click)="goto(source.concept.iri)" [matTooltip]="source.concept.name"
+                  (click)="goto(source.concept.iri)" [matTooltip]="source.concept.description"
                   matTooltipShowDelay="500" matTooltipHideDelay="0">
                   <mat-icon mat-list-icon>launch</mat-icon>
                   <div mat-line>{{source.concept.name}}</div>

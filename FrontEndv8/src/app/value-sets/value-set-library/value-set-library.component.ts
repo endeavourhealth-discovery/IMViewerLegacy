@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConceptService} from '../../concept.service';
 import {Concept} from '../../models/Concept';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import {ConceptTreeViewComponent} from 'im-common/im-controls';
 import {SchemeCount} from '../../models/SchemeCount';
@@ -23,6 +23,17 @@ export class ValueSetLibraryComponent implements OnInit {
   root = ':VSET_ValueSet';
   relationships = ['sn:116680003'];
   nameCache = {};
+  hoveredConcept: Concept = {
+    name: '',
+    description: '',
+    iri: ''
+  };
+  history = [];
+  properties = [];
+  definitions = [];
+  valuesets = [];
+  timer: any;
+  sidebar = false;
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
 
   constructor(private service: ConceptService,
@@ -31,6 +42,20 @@ export class ValueSetLibraryComponent implements OnInit {
               private route: ActivatedRoute,
               private log: LoggerService,
               private dialog: MatDialog) {
+                this.routeEvent(this.router);
+  }
+
+  routeEvent(router: Router) {
+    router.events.subscribe(e => {
+      if (e instanceof NavigationEnd && this.concept !== undefined) {
+        this.history.unshift(
+          {
+            url: e.url,
+            concept: this.concept
+          }
+        );
+      }
+    });
   }
 
   ngOnInit() {
@@ -60,6 +85,34 @@ export class ValueSetLibraryComponent implements OnInit {
 
   getJson(object: any) {
     return JSON.stringify(object);
+  }
+
+  itemHover(concept: Concept) {
+    const root = this;
+    if (concept != null) {
+      this.timer = setTimeout(() => {
+        root.sidebar = true;
+      }, 1000);
+      this.hoveredConcept = concept;
+
+      this.service.getProperties(concept.iri, false).subscribe(
+        (result) => this.properties = result,
+        (error) => this.log.error(error)
+      );
+
+      this.service.getDefinition(concept.iri).subscribe(
+        (result) => this.definitions = result,
+        (error) => this.log.error(error)
+      );
+
+      this.service.getValueSetMembers(concept.iri).subscribe(
+        (result) => this.valuesets = result,
+        (error) => this.log.error(error)
+      );
+
+    } else {
+      clearTimeout(this.timer);
+    }
   }
 
   sumCounts(counts: SchemeCount[]) {

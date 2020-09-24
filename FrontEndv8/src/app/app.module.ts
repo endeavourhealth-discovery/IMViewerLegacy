@@ -44,7 +44,9 @@ const keycloakService = new KeycloakService();
     MatButtonModule,
     MatTooltipModule,
   ],
-  declarations: [AppRoot],
+  declarations: [
+    AppRoot
+  ],
   entryComponents: [AppRoot],
   providers: [
     { provide: AbstractSecurityProvider, useClass: UsermanagerSecurityService },

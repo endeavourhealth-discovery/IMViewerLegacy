@@ -69,9 +69,13 @@ div#home-content {
   box-sizing: border-box;               /*  added, to avoid scroll and make border size be included in set height  */
 
   .mat-card-content {
-    height: calc(100vh - 173px);
+    height: calc(100vh - 64px);
     padding: 0;
     overflow-y: auto;
+  }
+
+  .mat-tab-body-content{
+    padding:8px;
   }
 }
 
@@ -125,3 +129,9 @@ th.mat-header-cell {
   h3 {padding: 2px 16px 16px 16px!important;}
   h4 {padding: 2px 16px 16px 16px!important;}
 }
+
+// .as-horizontal > .as-split-gutter {
+//   flex-direction: row;
+//   cursor: col-resize;
+//   height: auto!important;
+// }

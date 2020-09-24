@@ -1,3 +1,13 @@
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatTabsModule } from '@angular/material/tabs';
+import { IMControlsModule } from 'im-common';
+import { ControlsModule } from 'dds-angular8/controls';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { AngularSplitModule } from 'angular-split';
+import { DefintionTableComponent } from './defintion-table/defintion-table.component';
+import { ValuesetTableComponent } from './valueset-table/valueset-table.component';
+import { PropertiesTableComponent } from './properties-table/properties-table.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {MatTreeModule} from '@angular/material/tree';
@@ -22,6 +32,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatTableModule} from '@angular/material/table';
+import { SideNavComponent } from './side-nav/side-nav.component';
 
 @NgModule({
     imports: [
@@ -44,19 +55,34 @@ import {MatTableModule} from '@angular/material/table';
         MatChipsModule,
         MatTableModule,
         MatTooltipModule,
+        AngularSplitModule,
+        MatSnackBarModule,
+        ControlsModule,
+        IMControlsModule,
+        MatTabsModule,
+        MatListModule,
+        MatSidenavModule
     ],
   exports: [
     ConceptSearchComponent,
     GraphNavigatorComponent,
     NavigationComponent,
-    DataModelTablularViewComponent
+    DataModelTablularViewComponent,
+    PropertiesTableComponent,
+    ValuesetTableComponent,
+    DefintionTableComponent,
+    SideNavComponent
   ],
   declarations: [
     ConceptSearchComponent,
     GraphNavigatorComponent,
     ResizeObserverDirective,
     NavigationComponent,
-    DataModelTablularViewComponent
+    DataModelTablularViewComponent,
+    PropertiesTableComponent,
+    ValuesetTableComponent,
+    DefintionTableComponent,
+    SideNavComponent
   ]
 })
 export class ComponentsModule { }

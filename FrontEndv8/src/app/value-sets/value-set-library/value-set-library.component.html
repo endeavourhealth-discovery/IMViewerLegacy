@@ -1,91 +1,149 @@
 <div id="home-content">
   <mat-card>
-    <app-navigation [title]="'Value Sets'" [subtitle]="'Discovery value set viewer & navigator'" [selectedPage]="'valueSets'"></app-navigation>
     <mat-card-content>
       <as-split direction="horizontal">
-        <as-split-area size="30">
-          <as-split direction="vertical" unit="pixel">
-            <as-split-area [size]="searchSize" minSize="72" style="height: 100%; overflow: hidden">
-              <div class="as-split-area-content" style="height: inherit">
-                <app-concept-search [root]="root" [relationships]="relationships" (selection)="goto($event.iri)" (hasResults)="hasResults($event)"></app-concept-search>
-              </div>
-            </as-split-area>
-            <as-split-area>
-              <div class="as-split-area-content">
-                <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)"></app-concept-tree-view>
-              </div>
-            </as-split-area>
-          </as-split>
+        <!-- LEFT -->
+        <as-split-area size="30" style="height: 97%;">
+          <app-side-nav [root]="root" [relationships]="relationships" [concept]="concept" [selectedIri]="selectedIri" (itemHoverEvent)="itemHover($event)"></app-side-nav>
         </as-split-area>
+
+        <!-- RIGHT -->
         <as-split-area size="70">
-          <as-split direction="vertical" unit="pixel">
-            <as-split-area size="150" minSize="150" maxSize="150" style="overflow: hidden">
-              <div class="as-split-area-content">
-                <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
-                  <mat-form-field appearance="outline" fxFlex="70">
-                    <mat-label>Name</mat-label>
-                    <input matInput [value]="concept?.name" placeholder="Concept name" readonly id="conceptName">
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" fxFlex="30">
-                    <mat-label>Id</mat-label>
-                    <input matInput [value]="concept?.iri" placeholder="Concept ID" readonly id="conceptId">
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" fxFlex="100">
-                    <mat-label>Description</mat-label>
-                    <input matInput [value]="concept?.description" placeholder="Concept description" readonly id="conceptDescription">
-                  </mat-form-field>
-                </div>
-              </div>
-            </as-split-area>
-            <as-split-area>
-              <div class="as-split-area-content">
-                <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
-                  <mat-form-field appearance="outline" fxFlex="calc(100% - 16px)">
-                    <mat-label id="definition-label">Members</mat-label>
-                    <mat-wrapper>
+          <div class="as-split-area-content">
+            <mat-card>
 
-                      <mat-accordion>
-                        <ng-container *ngFor="let item of members">
-                        <mat-expansion-panel  (opened)="expand(item)">
-                          <mat-expansion-panel-header>
-                            <mat-panel-title>{{item.name}}</mat-panel-title>
-                          </mat-expansion-panel-header>
-                          <b>Iri: </b>{{item.iri}}
-                          <b>Code: </b>{{item.code}}
-                          <br>
-<!--
-                          <b>Definition: </b>{{getJson(item.definition)}} (<a [routerLink]="['/ontology']" [queryParams]="{id: item.iri}" style="cursor: pointer; color: blue;">view in ontology</a>)
--->
-                          <hr>
-                          <table class="mat-table mat-table-compact" style="width: 100%">
-                            <thead>
-                              <tr class="mat-header-row">
-                                <th class="mat-header-cell">Code scheme</th>
-                                <th class="mat-header-cell">Count</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr *ngFor="let i of item.counts" class="mat-row">
-                                <td class="mat-cell">{{(i.name) ? i.name : 'No scheme'}}</td>
-                                <td class="mat-cell">{{i.count}} (<u (click)="viewChildren(item, i.iri)" style="cursor: pointer; color: blue">view</u>)</td>
-                              </tr>
-                              <tr class="mat-row">
-                                <td class="mat-cell"><b>Total</b></td>
-                                <td class="mat-cell">{{sumCounts(item.counts)}} (<u (click)="viewChildren(item)" style="cursor: pointer; color: blue">view</u>)</td>
-                              </tr>
-                            </tbody>
-                          </table>
+              <!-- Header -->
+              <app-navigation [title]="'Value Sets - ' + concept.name" [subtitle]="concept.description" [selectedPage]="'valueSets'" style="height: 64px;"></app-navigation>
+              <!-- Dashboard container-->
+              <mat-card-content style="height: calc(100vh - 157px);">
+                <mat-drawer-container class="example-container" hasBackdrop="true"
+                  style="height: calc(100%);overflow:hidden;">
 
-                        </mat-expansion-panel>
-                        </ng-container>
-                      </mat-accordion>
+                  <!-- SideBar -->
+                  <mat-drawer #drawer class="example-sidenav" mode="over" position="end" [(opened)]="sidebar"
+                    style="width: 45%;overflow:hidden;">
+                    <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
 
-                    </mat-wrapper>
-                  </mat-form-field>
-                </div>
-              </div>
-            </as-split-area>
-          </as-split>
+                      <mat-card fxFlex="100">
+                        <mat-card-header>
+                          <mat-card-title>
+                            <span fxFlex="90">Valueset - Summary</span>
+                            <button mat-icon-button fxFlex="5">
+                              <mat-icon color="primary">open_in_new</mat-icon>
+                            </button>
+                            <button mat-icon-button color="primary" (click)="sidebar=false" fxFlex="5">
+                              <mat-icon color="primary">close</mat-icon>
+                            </button>
+                          </mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                          <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
+                            <mat-form-field appearance="outline" fxFlex="90" style="padding-left: 16px;">
+                              <mat-label>Name</mat-label>
+                              <input matInput [value]="hoveredConcept.name" placeholder="Concept Name" readonly
+                                id="conceptDescription">
+                            </mat-form-field>
+                            <mat-form-field appearance="outline" fxFlex="90" style="padding: 2px 16px 16px 16px;">
+                              <mat-label>Id</mat-label>
+                              <input matInput [value]="hoveredConcept.iri" placeholder="Concept ID" readonly
+                                id="conceptDescription">
+                            </mat-form-field>
+                            <mat-form-field appearance="outline" fxFlex="90" style="padding: 2px 16px 16px 16px;">
+                              <mat-label>Description</mat-label>
+                              <textarea matInput [value]="hoveredConcept.description" placeholder="Concept description"
+                                readonly id="conceptDescription" style="height: 80px;"></textarea>
+                            </mat-form-field>
+
+                            <h3 fxFlex="80" *ngIf="properties.length > 0">Model Properties</h3>
+                            <app-properties-table [properties]="properties" *ngIf="properties.length > 0" style="width:100%">
+                            </app-properties-table>
+                            <h3 fxFlex="80" *ngIf="definitions.length > 0">Concept Definitions</h3>
+                            <app-defintion-table [definitions]="definitions" *ngIf="definitions.length > 0" style="width:100%">
+                            </app-defintion-table>
+                            <h3 fxFlex="80" *ngIf="valuesets.length > 0">Valueset Members</h3>
+                            <app-valueset-table [valuesets]="valuesets" *ngIf="valuesets.length > 0" style="width:100%">
+                            </app-valueset-table>
+                          </div>
+                        </mat-card-content>
+                      </mat-card>
+
+                    </div>
+                  </mat-drawer>
+
+                  <!-- Dashboard content-->
+                  <mat-tab-group style="height: 100%;" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">
+                    <mat-tab label="Definition">
+                      <ng-template mat-tab-label>
+                        <mat-icon class="example-tab-icon">account_tree</mat-icon>
+                        Members
+                      </ng-template>
+                      <ng-template matTabContent>
+
+                        <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
+                          <mat-form-field appearance="outline" fxFlex="calc(100% - 16px)">
+                            <mat-label id="definition-label">Members</mat-label>
+                            <mat-wrapper>
+
+                              <mat-accordion>
+                                <ng-container *ngFor="let item of members">
+                                <mat-expansion-panel  (opened)="expand(item)">
+                                  <mat-expansion-panel-header>
+                                    <mat-panel-title>{{item.name}}</mat-panel-title>
+                                  </mat-expansion-panel-header>
+                                  <b>Iri: </b>{{item.iri}}
+                                  <b>Code: </b>{{item.code}}
+                                  <br>
+        <!--
+                                  <b>Definition: </b>{{getJson(item.definition)}} (<a [routerLink]="['/ontology']" [queryParams]="{id: item.iri}" style="cursor: pointer; color: blue;">view in ontology</a>)
+        -->
+                                  <hr>
+                                  <table class="mat-table mat-table-compact" style="width: 100%">
+                                    <thead>
+                                      <tr class="mat-header-row">
+                                        <th class="mat-header-cell">Code scheme</th>
+                                        <th class="mat-header-cell">Count</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr *ngFor="let i of item.counts" class="mat-row">
+                                        <td class="mat-cell">{{(i.name) ? i.name : 'No scheme'}}</td>
+                                        <td class="mat-cell">{{i.count}} (<u (click)="viewChildren(item, i.iri)" style="cursor: pointer; color: blue">view</u>)</td>
+                                      </tr>
+                                      <tr class="mat-row">
+                                        <td class="mat-cell"><b>Total</b></td>
+                                        <td class="mat-cell">{{sumCounts(item.counts)}} (<u (click)="viewChildren(item)" style="cursor: pointer; color: blue">view</u>)</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+
+                                </mat-expansion-panel>
+                                </ng-container>
+                              </mat-accordion>
+
+                            </mat-wrapper>
+                          </mat-form-field>
+                        </div>
+
+
+                      </ng-template>
+                    </mat-tab>
+                    <mat-tab label="View 2">
+                      <ng-template mat-tab-label>
+                        <mat-icon class="example-tab-icon">view_module</mat-icon>
+                        View 2
+                      </ng-template>
+                    </mat-tab>
+                    <mat-tab label="View 3">
+                      <ng-template mat-tab-label>
+                        <mat-icon class="example-tab-icon">view_module</mat-icon>
+                        View 3
+                      </ng-template>
+                    </mat-tab>
+                  </mat-tab-group>
+                </mat-drawer-container>
+              </mat-card-content>
+            </mat-card>
+          </div>
         </as-split-area>
       </as-split>
     </mat-card-content>

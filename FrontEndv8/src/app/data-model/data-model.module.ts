@@ -1,3 +1,4 @@
+import { AppModule } from './../app.module';
 import { DefintionTableComponent } from './../components/defintion-table/defintion-table.component';
 import { PropertiesTableComponent } from './../components/properties-table/properties-table.component';
 import { ValuesetTableComponent } from './../components/valueset-table/valueset-table.component';
@@ -60,9 +61,6 @@ import {MatSidenavModule} from '@angular/material/sidenav';
   ],
   declarations: [
     DataModelLibraryComponent,
-    PropertiesTableComponent,
-    ValuesetTableComponent,
-    DefintionTableComponent
   ]
 })
 export class DataModelModule { }

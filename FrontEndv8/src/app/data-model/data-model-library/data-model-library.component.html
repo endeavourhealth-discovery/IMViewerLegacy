@@ -1,166 +1,131 @@
 <div id="home-content">
   <mat-card>
-    <app-navigation [title]="'Data model'" [subtitle]="'Discovery data model viewer & navigator'"
-      [selectedPage]="'dataModel'"></app-navigation>
     <mat-card-content>
       <as-split direction="horizontal">
-        <as-split-area size="30">
-              <div class="as-split-area-content" style="height: 97%;">
+        <!-- LEFT -->
+        <as-split-area size="30" style="height: 97%;">
+          <app-side-nav [root]="root" [relationships]="relationships" [concept]="concept" [selectedIri]="selectedIri" (itemHoverEvent)="itemHover($event)"></app-side-nav>
+        </as-split-area>
 
-                <mat-tab-group style="height: 100%;" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">
-                  <mat-tab label="Browse">
-                    <ng-template mat-tab-label>
-                      <mat-icon class="example-tab-icon">navigation</mat-icon>
-                      Browse
-                    </ng-template>
-                    <ng-template matTabContent>
-                      <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)" (hover)="itemHover($event)"></app-concept-tree-view>
-                    </ng-template>
-                  </mat-tab>
-                  <mat-tab label="Search">
-                    <ng-template mat-tab-label>
-                      <mat-icon class="example-tab-icon">search</mat-icon>
-                      Search
-                    </ng-template>
-                    <ng-template matTabContent>
-                      <app-concept-search [root]="root" [relationships]="relationships" (selection)="goto($event.iri)" (hasResults)="hasResults($event)"></app-concept-search>
-                    </ng-template>
-                  </mat-tab>
-                  <mat-tab label="History">
-                    <ng-template mat-tab-label>
-                      <mat-icon class="example-tab-icon">history</mat-icon>
-                      History
-                    </ng-template>
-
-                     <mat-selection-list dense multiple="false">
-                      <mat-list-option *ngFor="let item of history" [value]="item" (click)="goto(item.concept.iri)" (mouseenter)="itemHover(item.concept)" (mouseleave)="itemHover(null)">
-                        <mat-icon mat-list-icon>launch</mat-icon>
-                        <div mat-line>{{item.concept.name}}</div>
-                      </mat-list-option>
-                    </mat-selection-list>
-
-                  </mat-tab>
-                </mat-tab-group>
-              </div>
-
-            </as-split-area>
-
-            <!-- work on making this part of the whole right hand side
-                 drop IRI.-->
+        <!-- RIGHT -->
         <as-split-area size="70">
-          <as-split direction="vertical" unit="pixel">
-            <as-split-area size="72" minSize="72" maxSize="72" style="overflow: hidden">
-              <div class="as-split-area-content">
-                <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
-                  <!-- <mat-form-field appearance="outline" fxFlex="70">
-                    <mat-label>Name</mat-label>
-                    <input matInput [value]="concept?.name" placeholder="Concept name" readonly id="conceptName">
-                  </mat-form-field> -->
-                  <mat-form-field appearance="outline" fxFlex="30">
-                    <mat-label>Id</mat-label>
-                    <input matInput [value]="concept?.iri" placeholder="Concept ID" readonly id="conceptId">
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" fxFlex="70">
-                    <mat-label>Description</mat-label>
-                    <input matInput [value]="concept?.description" placeholder="Concept description" readonly
-                      id="conceptDescription">
-                  </mat-form-field>
-                </div>
-              </div>
-            </as-split-area>
-            <as-split-area>
-              <div class="as-split-area-content" style="height: calc(100% - 16px);">
+          <div class="as-split-area-content">
+            <mat-card>
 
-                <mat-drawer-container class="example-container" hasBackdrop="true" style="height: calc(100% - 16px);overflow:hidden;">
+              <!-- Header -->
+              <app-navigation [title]="'Data model - ' + concept.name" [subtitle]="concept.description"
+                [selectedPage]="'dataModel'" style="height: 64px;"></app-navigation>
+              <!-- Dashboard container-->
+              <mat-card-content style="height: calc(100vh - 157px);">
+                <mat-drawer-container class="example-container" hasBackdrop="true"
+                  style="height: calc(100%);overflow:hidden;">
 
-                  <mat-drawer #drawer class="example-sidenav" mode="over" position="end" [(opened)]="sidebar" style="width: 45%;overflow:hidden;">
+                  <!-- SideBar -->
+                  <mat-drawer #drawer class="example-sidenav" mode="over" position="end" [(opened)]="sidebar"
+                    style="width: 45%;overflow:hidden;">
                     <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
 
-                      <h2 class="mat-title" fxFlex="80">Data Model - Summary</h2>
-                      <button mat-icon-button fxFlex="10">
-                        <mat-icon color="primary">open_in_new</mat-icon>
-                      </button>
-                      <button mat-icon-button color="primary" (click)="sidebar=false" fxFlex="10">
-                        <mat-icon color="primary">close</mat-icon>
-                      </button>
+                      <mat-card fxFlex="100">
+                        <mat-card-header>
+                          <mat-card-title>
+                            <span fxFlex="90">Data Model - Summary</span>
+                            <button mat-icon-button fxFlex="5">
+                              <mat-icon color="primary">open_in_new</mat-icon>
+                            </button>
+                            <button mat-icon-button color="primary" (click)="sidebar=false" fxFlex="5">
+                              <mat-icon color="primary">close</mat-icon>
+                            </button>
+                          </mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                          <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
+                            <mat-form-field appearance="outline" fxFlex="90" style="padding-left: 16px;">
+                              <mat-label>Name</mat-label>
+                              <input matInput [value]="hoveredConcept.name" placeholder="Concept Name" readonly
+                                id="conceptDescription">
+                            </mat-form-field>
+                            <mat-form-field appearance="outline" fxFlex="90" style="padding: 2px 16px 16px 16px;">
+                              <mat-label>Id</mat-label>
+                              <input matInput [value]="hoveredConcept.iri" placeholder="Concept ID" readonly
+                                id="conceptDescription">
+                            </mat-form-field>
+                            <mat-form-field appearance="outline" fxFlex="90" style="padding: 2px 16px 16px 16px;">
+                              <mat-label>Description</mat-label>
+                              <textarea matInput [value]="hoveredConcept.description" placeholder="Concept description"
+                                readonly id="conceptDescription" style="height: 80px;"></textarea>
+                            </mat-form-field>
 
-                      <mat-form-field appearance="outline" fxFlex="90" style="padding-left: 16px;">
-                        <mat-label>Name</mat-label>
-                        <input matInput [value]="hoveredConcept.name" placeholder="Concept Name" readonly id="conceptDescription">
-                      </mat-form-field>
-                      <mat-form-field appearance="outline" fxFlex="90" style="padding: 2px 16px 16px 16px;">
-                        <mat-label>Id</mat-label>
-                        <input matInput [value]="hoveredConcept.iri" placeholder="Concept ID" readonly id="conceptDescription">
-                      </mat-form-field>
-                      <mat-form-field appearance="outline" fxFlex="90" style="padding: 2px 16px 16px 16px;">
-                        <mat-label>Description</mat-label>
-                        <textarea  matInput [value]="hoveredConcept.description" placeholder="Concept description" readonly id="conceptDescription" style="height: 80px;"></textarea>
-                      </mat-form-field>
-
-                      <h3 fxFlex="80" *ngIf="properties.length > 0">Model Properties - {{properties.length}}</h3>
-                      <app-properties-table [properties]="properties" *ngIf="properties.length > 0" style="width:100%"></app-properties-table>
-                      <h3 fxFlex="80" *ngIf="properties.length == 0 && definitions.length > 0">Concept Definitions - {{definitions.length}}</h3>
-                      <app-defintion-table [definitions]="definitions" *ngIf="properties.length == 0 && definitions.length > 0" style="width:100%"></app-defintion-table>
-                      <h3 fxFlex="80" *ngIf="valuesets.length > 0">Valueset Members - {{valuesets.length}}</h3>
-                      <app-valueset-table [valuesets]="valuesets" *ngIf="valuesets.length > 0" style="width:100%"></app-valueset-table>
+                            <h3 fxFlex="80" *ngIf="properties.length > 0">Model Properties</h3>
+                            <app-properties-table [properties]="properties" *ngIf="properties.length > 0" style="width:100%">
+                            </app-properties-table>
+                            <h3 fxFlex="80" *ngIf="definitions.length > 0">Concept Definitions</h3>
+                            <app-defintion-table [definitions]="definitions" *ngIf="definitions.length > 0" style="width:100%">
+                            </app-defintion-table>
+                            <h3 fxFlex="80" *ngIf="valuesets.length > 0">Valueset Members</h3>
+                            <app-valueset-table [valuesets]="valuesets" *ngIf="valuesets.length > 0" style="width:100%">
+                            </app-valueset-table>
+                          </div>
+                        </mat-card-content>
+                      </mat-card>
 
                     </div>
                   </mat-drawer>
 
-                    <mat-tab-group style="height: 100%;">
-                      <mat-tab label="Inheritance">
-                        <ng-template mat-tab-label>
-                          <mat-icon class="example-tab-icon">account_tree</mat-icon>
-                          Inheritance
-                        </ng-template>
-                        <ng-template matTabContent>
-                          <app-data-model-navigator [conceptIri]="selectedIri" (selection)="goto($event)" (hover)="itemHover($event)"></app-data-model-navigator>
-                        </ng-template>
-                      </mat-tab>
-                      <mat-tab label="Properties">
-                        <ng-template mat-tab-label>
-                          <mat-icon class="example-tab-icon">view_module</mat-icon>
-                          Properties
-                        </ng-template>
-                        <ng-template matTabContent>
-                          <data-model-tabular-view [conceptIri]="selectedIri" (selection)="goto($event)" (hover)="itemHover($event)">
-                          </data-model-tabular-view>
-                        </ng-template>
-                      </mat-tab>
-                      <mat-tab label="Textual">
-                        <ng-template mat-tab-label>
-                          <mat-icon class="example-tab-icon">view_module</mat-icon>
-                          Textual
-                        </ng-template>
-                        <ng-template matTabContent>
-                          <pre>{{getTextual()}}</pre>
-                        </ng-template>
-                      </mat-tab>
-                      <mat-tab label="Schema">
-                        <ng-template mat-tab-label>
-                          <mat-icon class="example-tab-icon">view_module</mat-icon>
-                          Schema
-                        </ng-template>
-                      </mat-tab>
-                      <mat-tab label="Schema">
-                        <ng-template mat-tab-label>
-                          <mat-icon class="example-tab-icon">view_module</mat-icon>
-                          API
-                        </ng-template>
-                      </mat-tab>
-                      <mat-tab label="Examples">
-                        <ng-template mat-tab-label>
-                          <mat-icon class="example-tab-icon">view_module</mat-icon>
-                          Examples
-                        </ng-template>
-                      </mat-tab>
-                    </mat-tab-group>
-
+                  <!-- Dashboard content-->
+                  <mat-tab-group style="height: 100%;" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">
+                    <mat-tab label="Inheritance">
+                      <ng-template mat-tab-label>
+                        <mat-icon class="example-tab-icon">account_tree</mat-icon>
+                        Inheritance
+                      </ng-template>
+                      <ng-template matTabContent>
+                        <app-data-model-navigator [conceptIri]="selectedIri" (selection)="goto($event)"
+                          (hover)="itemHover($event)"></app-data-model-navigator>
+                      </ng-template>
+                    </mat-tab>
+                    <mat-tab label="Properties">
+                      <ng-template mat-tab-label>
+                        <mat-icon class="example-tab-icon">view_module</mat-icon>
+                        Properties
+                      </ng-template>
+                      <ng-template matTabContent>
+                        <data-model-tabular-view [conceptIri]="selectedIri" (selection)="goto($event)"
+                          (hover)="itemHover($event)">
+                        </data-model-tabular-view>
+                      </ng-template>
+                    </mat-tab>
+                    <mat-tab label="Textual">
+                      <ng-template mat-tab-label>
+                        <mat-icon class="example-tab-icon">view_module</mat-icon>
+                        Textual
+                      </ng-template>
+                      <ng-template matTabContent>
+                        <pre>{{getTextual()}}</pre>
+                      </ng-template>
+                    </mat-tab>
+                    <mat-tab label="Schema">
+                      <ng-template mat-tab-label>
+                        <mat-icon class="example-tab-icon">view_module</mat-icon>
+                        Schema
+                      </ng-template>
+                    </mat-tab>
+                    <mat-tab label="Schema">
+                      <ng-template mat-tab-label>
+                        <mat-icon class="example-tab-icon">view_module</mat-icon>
+                        API
+                      </ng-template>
+                    </mat-tab>
+                    <mat-tab label="Examples">
+                      <ng-template mat-tab-label>
+                        <mat-icon class="example-tab-icon">view_module</mat-icon>
+                        Examples
+                      </ng-template>
+                    </mat-tab>
+                  </mat-tab-group>
                 </mat-drawer-container>
-
-              </div>
-            </as-split-area>
-          </as-split>
+              </mat-card-content>
+            </mat-card>
+          </div>
         </as-split-area>
       </as-split>
     </mat-card-content>
