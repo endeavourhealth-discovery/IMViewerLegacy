@@ -16,14 +16,15 @@ export class SideNavComponent implements OnInit {
   @Input() relationships: string;
   @Input() selectedIri: string;
   @Output() itemHoverEvent: EventEmitter<any> = new EventEmitter<any>();
+  @Output() itemSelectEvent: EventEmitter<any> = new EventEmitter<any>();
   searchSize = 72;
   history = [];
 
 
   constructor(
-              private router: Router) {
-      this.routeEvent(this.router);
-    }
+    private router: Router) {
+    this.routeEvent(this.router);
+  }
 
   ngOnInit() {
   }
@@ -47,7 +48,7 @@ export class SideNavComponent implements OnInit {
 
   goto(iri: string) {
     if (iri !== this.selectedIri) {
-      this.router.navigate(['ontology'], {queryParams: {id: iri}});
+      this.itemSelectEvent.emit(iri);
     }
   }
 

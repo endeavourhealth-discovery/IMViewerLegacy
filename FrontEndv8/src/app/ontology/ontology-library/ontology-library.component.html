@@ -4,7 +4,7 @@
       <as-split direction="horizontal">
         <!-- LEFT -->
         <as-split-area size="30" style="height: 97%;">
-          <app-side-nav [root]="root" [relationships]="relationships" [concept]="concept" [selectedIri]="selectedIri" (itemHoverEvent)="itemHover($event)"></app-side-nav>
+          <app-side-nav [root]="root" [relationships]="relationships" [concept]="concept" [selectedIri]="selectedIri" (itemHoverEvent)="itemHover($event)" (itemSelectEvent)="goto($event)"></app-side-nav>
         </as-split-area>
 
         <!-- RIGHT -->
