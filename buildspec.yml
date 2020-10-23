@@ -26,7 +26,7 @@ phases:
       - chmod +x aws_scripts/build.sh
       - echo IM API Build started on `date`
       - aws_scripts/build.sh mvn -B package
-      - mvn sonar:sonar
+      # mvn sonar:sonar - no sonar on API
   post_build:
     commands:
       - IP=$(curl http://checkip.amazonaws.com)/32
