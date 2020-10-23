@@ -3,7 +3,7 @@ import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 import {AppMenuService} from './app-menu.service';
 import {RouterModule} from '@angular/router';
 import {HttpClientModule} from '@angular/common/http';
-import {AbstractMenuProvider, LoggerModule, SecurityModule, UserManagerModule} from 'dds-angular8';
+import {AbstractMenuProvider, LoggerModule, SecurityModule} from 'dds-angular8';
 import {DataModelModule} from './data-model/data-model.module';
 import {AppRoot} from './app-root';
 import {MatToolbarModule} from '@angular/material/toolbar';
@@ -18,7 +18,7 @@ import {OntologyModule} from './ontology/ontology.module';
 import {ValueSetModule} from './value-sets/value-set.module';
 import {DataModelOverviewModule} from './data-model-overview/data-model-overview.module';
 import {AbstractSecurityProvider} from './security/abstract-security-provider';
-import {UsermanagerSecurityService} from './security/usermanager-security-service';
+import {MockSecurityService} from './security/mock-security.service';
 
 const keycloakService = new KeycloakService();
 
@@ -28,7 +28,6 @@ const keycloakService = new KeycloakService();
     HttpClientModule,
     SecurityModule,
     LoggerModule,
-    UserManagerModule,
     DataModelModule,
     MainPageModule,
     OntologyModule,
@@ -47,21 +46,12 @@ const keycloakService = new KeycloakService();
   declarations: [
     AppRoot
   ],
-  entryComponents: [AppRoot],
+  bootstrap: [AppRoot],
   providers: [
-    { provide: AbstractSecurityProvider, useClass: UsermanagerSecurityService },
+    { provide: AbstractSecurityProvider, useClass: MockSecurityService },
     { provide: AbstractMenuProvider, useClass : AppMenuService },
     { provide: KeycloakService, useValue: keycloakService }
   ]
 })
-export class AppModule implements DoBootstrap {
-  ngDoBootstrap(appRef: ApplicationRef) {
-    keycloakService
-      .init({config: 'public/wellknown/authconfigraw', initOptions: {onLoad: 'login-required', 'checkLoginIframe': false}})
-      .then((authenticated) => {
-        if (authenticated)
-          appRef.bootstrap(AppRoot);
-      })
-      .catch(error => console.error('[ngDoBootstrap] init Keycloak failed', error));
-  }
+export class AppModule  {
 }

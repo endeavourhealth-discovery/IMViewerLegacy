@@ -36,6 +36,6 @@ artifacts:
   base-directory: $CODEBUILD_SRC_DIR/../../**/*
   files:
     - appspec.yml
-    - aws_scripts/**/*
+    - aws_scripts/cleanup
     - FrontEndv8/dist/FrontEndv8/**/*
     - IMAPI/target/IMAPI-0.0.1-SNAPSHOT/**/*
