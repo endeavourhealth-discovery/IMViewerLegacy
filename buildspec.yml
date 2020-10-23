@@ -35,7 +35,7 @@ phases:
 artifacts:
   base-directory: $CODEBUILD_SRC_DIR/../..
   files:
-    - 00/IMViewer/appspec.yml
-    - 00/IMViewer/aws_scripts/**/*
-    - 00/IMViewer/FrontEndv8/dist/FrontEndv8/**/*
+    - s3/00/IMViewer/appspec.yml
+    - s3/00/IMViewer/aws_scripts/**/*
+    - s3/00/IMViewer/FrontEndv8/dist/FrontEndv8/**/*
     - github.com/endeavourhealth-discovery/IMAPI/target/IMAPI-0.0.1-SNAPSHOT/**/*

@@ -1,9 +1,9 @@
 version: 0.0
 os: linux
 files:
-  - source: /IMViewer/FrontEndv8/dist/FrontEndv8
+  - source: /s3/00/IMViewer/FrontEndv8/dist/FrontEndv8
     destination: //opt/tomcat/webapps/imviewer
-  - source: /IMAPI/target/IMAPI-0.0.1-SNAPSHOT
+  - source: /github.com/endeavourhealth-discovery/IMAPI/target/IMAPI-0.0.1-SNAPSHOT
     destination: //opt/tomcat/webapps/imviewer
 hooks:
   BeforeInstall:
