@@ -41,4 +41,4 @@ artifacts:
     artifact1:
       base-directory: $CODEBUILD_SRC_DIR_API
       files:
-        - target/IMAPI.war
+        - target/IMAPI-0.0.1-SNAPSHOT/**/*
