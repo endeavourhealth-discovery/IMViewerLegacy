@@ -33,12 +33,14 @@ phases:
       - echo $IP of CodeBuild Instance
       - echo Build completed on `date`
 artifacts:
-  files:
-    - appspec.yml
-    - aws_scripts/**/*
-    - FrontEndv8/dist/FrontEndv8/**/*
   secondary-artifacts:
     artifact1:
+      base-directory: $CODEBUILD_SRC_DIR
+      files:
+        - appspec.yml
+        - aws_scripts/**/*
+        - FrontEndv8/dist/FrontEndv8/**/*
+    artifact2:
       base-directory: $CODEBUILD_SRC_DIR_API
       files:
         - target/IMAPI-0.0.1-SNAPSHOT/**/*
