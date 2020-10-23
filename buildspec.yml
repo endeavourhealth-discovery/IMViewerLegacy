@@ -33,9 +33,9 @@ phases:
       - echo $IP of CodeBuild Instance
       - echo Build completed on `date`
 artifacts:
-  base-directory: $CODEBUILD_SRC_DIR/..
+  base-directory: $CODEBUILD_SRC_DIR/../..
   files:
-    - IMViewer/appspec.yml
-    - IMViewer/aws_scripts/**/*
-    - IMViewer/FrontEndv8/dist/FrontEndv8/**/*
-    - IMAPI/target/IMAPI-0.0.1-SNAPSHOT/**/*
+    - 00/IMViewer/appspec.yml
+    - 00/IMViewer/aws_scripts/**/*
+    - 00/IMViewer/FrontEndv8/dist/FrontEndv8/**/*
+    - github.com/endeavourhealth-discovery/IMAPI/target/IMAPI-0.0.1-SNAPSHOT/**/*
