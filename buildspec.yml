@@ -1,6 +1,10 @@
 version: 0.2
+run-as: root
 
 phases:
+  install:
+    runtime-versions:
+      java: openjdk8
   pre_build:
     commands:
       - IP=$(curl http://checkip.amazonaws.com)/32
@@ -12,7 +16,7 @@ phases:
   build:
     commands:
       # Build Front End
-      - $CODEBUILD_SRC_DIR
+      - cd $CODEBUILD_SRC_DIR
       - chmod +x aws_scripts/build.sh
       - echo IM Client Build started on `date`
       - aws_scripts/build.sh mvn -B package
