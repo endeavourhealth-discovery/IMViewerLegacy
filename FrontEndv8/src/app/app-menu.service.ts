@@ -7,6 +7,7 @@ import {DataModelLibraryComponent} from './data-model/data-model-library/data-mo
 import {ValueSetLibraryComponent} from './value-sets/value-set-library/value-set-library.component';
 import {DataModelOverviewLibraryComponent} from './data-model-overview/data-model-overview-library/data-model-overview-library.component';
 import {HttpClient} from '@angular/common/http';
+import {environment} from '../environments/environment';
 
 @Injectable()
 export class AppMenuService implements  AbstractMenuProvider {
@@ -37,7 +38,7 @@ export class AppMenuService implements  AbstractMenuProvider {
   menu: MenuOption[] = [];
 
   getMenuOptions(): MenuOption[] {
-    this.http.get<any>('api/config/appMenu').subscribe(
+    this.http.get<any>(environment.api + 'api/config/appMenu').subscribe(
       (result) => result.applications.forEach(mo => this.menu.push(mo)),
       (error) => console.log(error)
     );

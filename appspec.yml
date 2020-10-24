@@ -3,8 +3,6 @@ os: linux
 files:
   - source: /FrontEndv8/dist/FrontEndv8
     destination: //opt/tomcat/webapps/imviewer
-  - source: /IMAPI/target/IMAPI-0.0.1-SNAPSHOT
-    destination: //opt/tomcat/webapps/imviewer
 hooks:
   BeforeInstall:
     - location: aws_scripts/cleanup

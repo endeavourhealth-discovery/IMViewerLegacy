@@ -11,6 +11,7 @@ import {SchemeCount} from './models/SchemeCount';
 import {SchemeChildren} from './models/SchemeChildren';
 import {ValueSetMember} from './models/ValueSetMember';
 import {DataModelDefinition} from './models/DataModelDefinition';
+import {environment} from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -25,15 +26,15 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
       params = params.append('inherited', 'true');
     }
 
-    return this.http.get<Property[]>('api/concepts/' + iri + '/Properties', {params});
+    return this.http.get<Property[]>(environment.api + 'api/concepts/' + iri + '/Properties', {params});
   }
 
   getTextual(iri: string): Observable<string> {
-    return this.http.get('api/concepts/' + iri + '/Textual', { responseType: 'text'});
+    return this.http.get(environment.api + 'api/concepts/' + iri + '/Textual', { responseType: 'text'});
   }
 
   getDefinition(iri: string): Observable<Related[]> {
-    return this.http.get<Related[]>('api/concepts/' + iri + '/Definition');
+    return this.http.get<Related[]>(environment.api + 'api/concepts/' + iri + '/Definition');
   }
 
   getSources(iri: string, relationships: string[], limit: number = 0, page: number = 1): Observable<PagedResultSet<Related>> {
@@ -44,7 +45,7 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
     params = params.append('limit', limit.toString());
     params = params.append('page', page.toString());
 
-    return this.http.get<PagedResultSet<Related>>('api/concepts/' + iri + '/Sources', {params});
+    return this.http.get<PagedResultSet<Related>>(environment.api + 'api/concepts/' + iri + '/Sources', {params});
   }
 
   getTargets(iri: string, relationships: string[], limit: number = 0, page: number = 1): Observable<PagedResultSet<Related>> {
@@ -55,11 +56,11 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
     params = params.append('limit', limit.toString());
     params = params.append('page', page.toString());
 
-    return this.http.get<PagedResultSet<Related>>('api/concepts/' + iri + '/Targets', {params});
+    return this.http.get<PagedResultSet<Related>>(environment.api + 'api/concepts/' + iri + '/Targets', {params});
   }
 
   getConcept(iri: string): Observable<Concept> {
-    return this.http.get<Concept>('api/concepts/' + iri);
+    return this.http.get<Concept>(environment.api + 'api/concepts/' + iri);
   }
 
   search(searchTerm: string, root: string, relationships: string[]) {
@@ -70,7 +71,7 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
       relationships.forEach(r => params = params.append('relationship', r));
     }
 
-    return this.http.get<any>('api/concepts/Search', {params});
+    return this.http.get<any>(environment.api + 'api/concepts/Search', {params});
   }
 
   loadTree(root: string, iri: string, relationships: string[]) {
@@ -80,15 +81,15 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
       relationships.forEach(r => params = params.append('relationship', r));
     }
 
-    return this.http.get<Related[]>('api/concepts/' + iri + '/Tree', {params});
+    return this.http.get<Related[]>(environment.api + 'api/concepts/' + iri + '/Tree', {params});
   }
 
   getValueSetMembers(iri: string): Observable<ValueSetMember[]> {
-    return this.http.get<ValueSetMember[]>('api/concepts/' + iri + '/members');
+    return this.http.get<ValueSetMember[]>(environment.api + 'api/concepts/' + iri + '/members');
   }
 
   getChildCountByScheme(iri: string): Observable<SchemeCount[]> {
-    return this.http.get<SchemeCount[]>('api/concepts/' + iri + '/childCountByScheme');
+    return this.http.get<SchemeCount[]>(environment.api + 'api/concepts/' + iri + '/childCountByScheme');
   }
 
   getChildrenByScheme(iri: string, scheme: string): Observable<SchemeChildren[]> {
@@ -96,7 +97,7 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
     if (scheme)
       params = params.append('scheme', scheme);
 
-    return this.http.get<SchemeChildren[]>('api/concepts/' + iri + '/children', {params});
+    return this.http.get<SchemeChildren[]>(environment.api + 'api/concepts/' + iri + '/children', {params});
   }
 
   getConceptGroups(iri: string): Observable<ConceptGroup[]> {
@@ -116,14 +117,14 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
 
     return Observable.create((observer) => {
       observer.next(conceptGroups);
-    });  
-  }  
-    
+    });
+  }
+
   // orachstrtes retirevle of all relevent data
   getDataModelDefinition(iri: string): Observable<DataModelDefinition> {
     let dataModelDefintionSubject: Subject<DataModelDefinition> = new Subject<DataModelDefinition>();
     let dataModelDefintion: Observable<DataModelDefinition> = dataModelDefintionSubject.asObservable();
-    
+
     // TODO - get inherited properties
 
     const responses = zip(
@@ -133,11 +134,11 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
       this.getSources(iri, [], 15),
       this.getTargets(iri, [], 15)
     );
-    
+
     responses.subscribe(
       (result) => {
         dataModelDefintionSubject.next(
-          new DataModelDefinition(      
+          new DataModelDefinition(
              result[0],
              result[1],
              result[2],

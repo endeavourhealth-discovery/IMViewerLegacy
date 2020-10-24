@@ -21,21 +21,13 @@ phases:
       - echo IM Client Build started on `date`
       - aws_scripts/build.sh mvn -B package
 #      - mvn sonar:sonar
-      # Build back end
-      - cd $CODEBUILD_SRC_DIR_API
-      - chmod +x aws_scripts/build.sh
-      - echo IM API Build started on `date`
-      - aws_scripts/build.sh mvn -B package
-      # mvn sonar:sonar - no sonar on API
   post_build:
     commands:
       - IP=$(curl http://checkip.amazonaws.com)/32
       - echo $IP of CodeBuild Instance
       - echo Build completed on `date`
 artifacts:
-  base-directory: $CODEBUILD_SRC_DIR/../../**/*
   files:
     - appspec.yml
     - aws_scripts/cleanup
     - FrontEndv8/dist/FrontEndv8/**/*
-    - IMAPI/target/IMAPI-0.0.1-SNAPSHOT/**/*
