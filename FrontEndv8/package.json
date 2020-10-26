@@ -22,7 +22,7 @@
     "@angular/platform-browser": "~8.2.8",
     "@angular/platform-browser-dynamic": "~8.2.8",
     "@angular/router": "~8.2.8",
-    "ang-jsoneditor": "^1.8.4",
+    "ang-jsoneditor": "~1.8.4",
     "angular-split": "^3.0.3",
     "d3": "^5.16.0",
     "dagre": "^0.8.5",
