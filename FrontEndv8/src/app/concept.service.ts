@@ -1,3 +1,4 @@
+import { Axiom } from './models/ontology/Axiom';
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {zip, Subject, Observable} from 'rxjs';
@@ -19,6 +20,10 @@ import {environment} from '../environments/environment';
 export class ConceptService implements ConceptTreeViewService, DataModelNavigatorService {
 
   constructor(private http: HttpClient) { }
+
+  getAxioms(iri: string): Observable<Axiom[]> {
+    return this.http.get<Axiom[]>('api/axioms/' + iri );
+  }
 
   getProperties(iri: string, inherited: boolean = false): Observable<Property[]> {
     let params = new HttpParams();

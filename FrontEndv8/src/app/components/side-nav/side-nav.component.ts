@@ -17,6 +17,7 @@ export class SideNavComponent implements OnInit {
   @Input() selectedIri: string;
   @Output() itemHoverEvent: EventEmitter<any> = new EventEmitter<any>();
   @Output() itemSelectEvent: EventEmitter<any> = new EventEmitter<any>();
+  @Output() openDialogEvent: EventEmitter<any> = new EventEmitter<any>();
   searchSize = 72;
   history = [];
 
@@ -54,6 +55,10 @@ export class SideNavComponent implements OnInit {
 
   hasResults(displayed: boolean) {
     this.searchSize = displayed ? 256 : 72;
+  }
+
+  openDialog() {
+    this.openDialogEvent.emit();
   }
 
 }

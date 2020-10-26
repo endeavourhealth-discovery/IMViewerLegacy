@@ -1,3 +1,4 @@
+import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { NgModule, DoBootstrap, ApplicationRef } from '@angular/core';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 import {AppMenuService} from './app-menu.service';
@@ -42,6 +43,7 @@ const keycloakService = new KeycloakService();
     FlexModule,
     MatButtonModule,
     MatTooltipModule,
+    NgJsonEditorModule
   ],
   declarations: [
     AppRoot

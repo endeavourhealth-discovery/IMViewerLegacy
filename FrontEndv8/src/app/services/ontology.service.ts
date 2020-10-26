@@ -21,8 +21,8 @@ export class OntologyService {
     return this.http.get<OntologicalConceptDetail>('http://localhost:8081/ontology/' + iri);
   }
 
-  getDefinitions(iri: string): Observable<Axiom[]> {
-    return this.http.get<Axiom[]>('http://localhost:8081/ontology/' + iri + '/definition');
+  getAxioms(iri: string): Observable<Axiom[]> {
+    return this.http.get<Axiom[]>('http://localhost:8081/axioms/' + iri );
   }
 
   getChildren(iri: string): Observable<object[]> {

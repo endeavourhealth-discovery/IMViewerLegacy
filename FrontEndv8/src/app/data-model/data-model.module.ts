@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 import {FlexModule} from '@angular/flex-layout';
 import {AngularSplitModule} from 'angular-split';
@@ -28,6 +28,8 @@ import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-co
 import {ConceptService} from '../concept.service';
 import {MatListModule} from '@angular/material/list';
 import {MatSidenavModule} from '@angular/material/sidenav';
+import { DataModelDialogComponent } from './data-model-create/data-model-dialog/data-model-dialog.component';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 @NgModule({
   imports: [
@@ -53,7 +55,9 @@ import {MatSidenavModule} from '@angular/material/sidenav';
     IMControlsModule,
     MatTabsModule,
     MatListModule,
-    MatSidenavModule
+    MatSidenavModule,
+    MatAutocompleteModule,
+    ReactiveFormsModule
   ],
   providers: [
     { provide: ConceptTreeViewService, useClass: ConceptService },
@@ -61,6 +65,10 @@ import {MatSidenavModule} from '@angular/material/sidenav';
   ],
   declarations: [
     DataModelLibraryComponent,
+    DataModelDialogComponent,
+  ],
+  entryComponents: [
+    DataModelDialogComponent
   ]
 })
 export class DataModelModule { }

@@ -1,3 +1,4 @@
+import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { AppModule } from './../app.module';
 import { DefintionTableComponent } from './../components/defintion-table/defintion-table.component';
 import { ValuesetTableComponent } from './../components/valueset-table/valueset-table.component';
@@ -27,6 +28,7 @@ import {OntologyLibraryComponent} from './ontology-library/ontology-library.comp
 import {IMControlsModule} from 'im-common';
 import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
 import {ConceptService} from '../concept.service';
+import {MatGridListModule} from '@angular/material/grid-list';
 
 @NgModule({
     imports: [
@@ -50,7 +52,9 @@ import {ConceptService} from '../concept.service';
         IMControlsModule,
         MatTabsModule,
         MatListModule,
-        MatSidenavModule
+        MatSidenavModule,
+        NgJsonEditorModule,
+        MatGridListModule
     ],
   providers: [
     { provide: ConceptTreeViewService, useClass: ConceptService }

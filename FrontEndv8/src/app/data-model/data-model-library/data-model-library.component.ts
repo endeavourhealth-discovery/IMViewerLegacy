@@ -1,3 +1,5 @@
+import { DataModelDialogComponent } from './../data-model-create/data-model-dialog/data-model-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 import { PagedResultSet } from './../../models/PagedResultSet';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConceptService} from '../../concept.service';
@@ -50,7 +52,8 @@ class DataModelLibraryComponent implements OnInit {
               private router: Router,
               private auth: KeycloakService,
               private route: ActivatedRoute,
-              private log: LoggerService) {
+              private log: LoggerService,
+              public dialog: MatDialog) {
                 this.routeEvent(this.router);
   }
 
@@ -139,6 +142,17 @@ class DataModelLibraryComponent implements OnInit {
 
   logout() {
     this.auth.logout();
+  }
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(DataModelDialogComponent, {
+      width: '50%',
+      data: {parent: this.concept}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
   }
 
 }

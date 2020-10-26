@@ -1,3 +1,5 @@
+import { Axiom } from './../../models/ontology/Axiom';
+import { OntologyService } from './../../services/ontology.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConceptService} from '../../concept.service';
 import {Concept} from '../../models/Concept';
@@ -7,6 +9,7 @@ import {LoggerService} from 'dds-angular8/logger';
 import {Property} from '../../models/Property';
 import {ConceptTreeViewComponent} from 'im-common/im-controls';
 import {KeycloakService} from 'keycloak-angular';
+import { JsonEditorOptions } from 'ang-jsoneditor';
 
 @Component({
   selector: 'app-ontology-library',
@@ -15,7 +18,7 @@ import {KeycloakService} from 'keycloak-angular';
 })
 export class OntologyLibraryComponent implements OnInit {
   concept: Concept;
-  definition: any[];
+  definition: Axiom[];
   property: Property[];
   selectedIri: string;
   searchSize = 72;
@@ -33,6 +36,7 @@ export class OntologyLibraryComponent implements OnInit {
   valuesets = [];
   timer: any;
   sidebar = false;
+  editorOptions = new JsonEditorOptions();
 
 
   @ViewChild(ConceptTreeViewComponent, {static: true}) treeView: ConceptTreeViewComponent;
@@ -43,6 +47,9 @@ export class OntologyLibraryComponent implements OnInit {
               private route: ActivatedRoute,
               private log: LoggerService) {
                 this.routeEvent(this.router);
+                this.editorOptions.modes = ['code', 'text', 'tree', 'view'];
+                this.editorOptions.mainMenuBar = false;
+                this.editorOptions.expandAll = true;
   }
 
   routeEvent(router: Router) {
@@ -64,6 +71,22 @@ export class OntologyLibraryComponent implements OnInit {
       (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
       (error) => this.log.error(error)
     );
+
+    this.definition.forEach(def => {
+      def.definition = JSON.parse(def.definition);
+    });
+  }
+
+  cleanupJson(result) {
+    result.forEach(def => {
+      def.definition = JSON.parse(def.definition);
+    });
+
+    this.definition = result;
+  }
+
+  getData(event) {
+    console.log(event);
   }
 
   displayConcept(iri: string) {
@@ -74,8 +97,8 @@ export class OntologyLibraryComponent implements OnInit {
         (error) => this.log.error(error)
       );
 
-      this.service.getDefinition(iri).subscribe(
-        (result) => this.definition = result,
+      this.service.getAxioms(iri).subscribe(
+        (result) => this.cleanupJson(result),
         (error) => this.log.error(error)
       );
 
@@ -99,7 +122,7 @@ export class OntologyLibraryComponent implements OnInit {
         (error) => this.log.error(error)
       );
 
-      this.service.getDefinition(concept.iri).subscribe(
+      this.service.getAxioms(concept.iri).subscribe(
         (result) => this.definitions = result,
         (error) => this.log.error(error)
       );

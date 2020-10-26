@@ -124,18 +124,126 @@
 
 
                       </ng-template>
-                    </mat-tab>
+                    </mat-tab>Edit Concept
                     <mat-tab label="View 2">
                       <ng-template mat-tab-label>
-                        <mat-icon class="example-tab-icon">view_module</mat-icon>
-                        View 2
+                        <mat-icon class="example-tab-icon">edit</mat-icon>
+                        Edit Concept
                       </ng-template>
-                    </mat-tab>
-                    <mat-tab label="View 3">
-                      <ng-template mat-tab-label>
-                        <mat-icon class="example-tab-icon">view_module</mat-icon>
-                        View 3
+
+                      <ng-template matTabContent>
+
+                        <h4 mat-dialog-title>Concept:</h4>
+
+                        <table width="100%" cellspacing="5">
+                          <tr>
+                            <td>
+                              <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline">
+                                <mat-label>Name:</mat-label>
+                                <input dense matInput [value]="concept.name">
+                              </mat-form-field>
+                            </td>
+                            <td>
+                              <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline">
+                                <mat-label>Iri:</mat-label>
+                                <input dense matInput [value]="concept.iri">
+                              </mat-form-field>
+                            </td>
+                            <td>
+                              <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline">
+                                <mat-label>Namespace:</mat-label>
+                                <select matNativeControl required>
+                                  <option value="owl:">http://www.w3.org/2002/07/owl#</option>
+                                  <option value=":">http://www.DiscoveryDataService.org/InformationModel/Ontology#</option>
+                                  <option value="sn:">http://snomed.info/sct#</option>
+                                  <option value="xsd:">http://www.w3.org/2001/XMLSchema#</option>
+                                  <option value="rdf:">http://www.w3.org/1999/02/22-rdf-syntax-ns#</option>
+                                  <option value="xml:">http://www.w3.org/XML/1998/namespace</option>
+                                  <option value="rdfs:">http://www.w3.org/2000/01/rdf-schema#</option>
+                                </select>
+                              </mat-form-field>
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <td>
+                              <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline">
+                                <mat-label>Code:</mat-label>
+                                <input dense matInput>
+                              </mat-form-field>
+                            </td>
+                            <td>
+                              <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline">
+                                <mat-label>Scheme:</mat-label>
+                                <input dense matInput>
+                              </mat-form-field>
+                            </td>
+                            <td>
+                              <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline">
+                                <mat-label>Status:</mat-label>
+                                <select matNativeControl required>
+                                  <option value="0">Draft</option>
+                                  <option value="1">Active</option>
+                                  <option value="2">Inactive</option>
+                                </select>
+                              </mat-form-field>
+                            </td>
+                          </tr>
+                        </table>
+
+
+                        <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline">
+                          <mat-label>Description:</mat-label>
+                          <textarea matInput [value]="concept.description" ></textarea>
+                        </mat-form-field>
+
+                        <mat-grid-list cols="3">
+                          <mat-grid-tile>
+                            <mat-grid-tile-header>Tree View</mat-grid-tile-header>
+                            <json-editor [options]="editorOptions" [data]="definition[0].definition" (change)="getData($event)" style="position: absolute;top: 62px;width: 100%;height: 100%;"></json-editor>
+                          </mat-grid-tile>
+                          <mat-grid-tile>
+                            <mat-grid-tile-header>Graph View</mat-grid-tile-header>
+                            2
+                          </mat-grid-tile>
+                          <mat-grid-tile>
+                            <mat-grid-tile-header>Element Form</mat-grid-tile-header>
+
+                            <table width="100%" cellspacing="5" style="position: absolute;top: 62px;">
+                              <tr>
+                                <td>
+                                  <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline">
+                                    <mat-label>Relationship:</mat-label>
+                                    <select matNativeControl required>
+                                      <option value="0">Is a</option>
+                                      <option value="1">Sibling of </option>
+                                      <option value="2">subclass of</option>
+                                    </select>
+                                  </mat-form-field>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline">
+                                    <mat-label>Concept:</mat-label>
+                                    <select matNativeControl required>
+                                      <option value="0">Encounter</option>
+                                      <option value="1">Consultation</option>
+                                      <option value="2">Patient</option>
+                                    </select>
+                                  </mat-form-field>
+                                </td>
+                              </tr>
+                            </table>
+                          </mat-grid-tile>
+                        </mat-grid-list>
+
+                        <!-- <h4 mat-dialog-title>Axiom Editor:</h4> -->
+
+                        <!-- <json-editor *ngFor="let def of definition" [options]="editorOptions" [data]="def.definition" (change)="getData($event)"></json-editor> -->
+
                       </ng-template>
+
                     </mat-tab>
                   </mat-tab-group>
                 </mat-drawer-container>
