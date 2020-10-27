@@ -23,7 +23,7 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
   constructor(private http: HttpClient) { }
 
   getAxioms(iri: string): Observable<Axiom[]> {
-    return this.http.get<Axiom[]>('api/axioms/' + iri );
+    return this.http.get<Axiom[]>(environment.api + 'api/axioms/' + iri );
   }
 
   getProperties(iri: string, inherited: boolean = false): Observable<Property[]> {
