@@ -139,6 +139,6 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
   }
 
   getConceptPropertyObjects(iri: string) : Observable<ConceptPropertyObject[]> {
-    return this.http.get<ConceptPropertyObject[]>('api/conceptpropertyobjects/' + iri );
+    return this.http.get<ConceptPropertyObject[]>(environment.api + 'api/conceptpropertyobjects/' + iri );
   }
 }
