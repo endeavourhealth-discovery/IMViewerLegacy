@@ -141,6 +141,11 @@ export class ValueSetLibraryComponent implements OnInit {
     }
   }
 
+  gotoConcept(iri: string) {
+      console.log("gotoConcept > " + iri);
+      this.router.navigate(['ontology'], {queryParams: {id: iri}});
+  }  
+
   hasResults(displayed: boolean) {
     this.searchSize = displayed ? 256 : 72;
   }

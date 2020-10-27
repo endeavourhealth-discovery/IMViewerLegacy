@@ -78,65 +78,20 @@
                         Members
                       </ng-template>
                       <ng-template matTabContent>
-
-                        <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
-                          <mat-form-field appearance="outline" fxFlex="calc(100% - 16px)">
-                            <mat-label id="definition-label">Members</mat-label>
-                            <mat-wrapper>
-
-                              <mat-accordion>
-                                <ng-container *ngFor="let item of members">
-                                <mat-expansion-panel  (opened)="expand(item)">
-                                  <mat-expansion-panel-header>
-                                    <mat-panel-title>{{item.name}}</mat-panel-title>
-                                  </mat-expansion-panel-header>
-                                  <b>Iri: </b>{{item.iri}}
-                                  <b>Code: </b>{{item.code}}
-                                  <br>
-        <!--
-                                  <b>Definition: </b>{{getJson(item.definition)}} (<a [routerLink]="['/ontology']" [queryParams]="{id: item.iri}" style="cursor: pointer; color: blue;">view in ontology</a>)
-        -->
-                                  <hr>
-                                  <table class="mat-table mat-table-compact" style="width: 100%">
-                                    <thead>
-                                      <tr class="mat-header-row">
-                                        <th class="mat-header-cell">Code scheme</th>
-                                        <th class="mat-header-cell">Count</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      <tr *ngFor="let i of item.counts" class="mat-row">
-                                        <td class="mat-cell">{{(i.name) ? i.name : 'No scheme'}}</td>
-                                        <td class="mat-cell">{{i.count}} (<u (click)="viewChildren(item, i.iri)" style="cursor: pointer; color: blue">view</u>)</td>
-                                      </tr>
-                                      <tr class="mat-row">
-                                        <td class="mat-cell"><b>Total</b></td>
-                                        <td class="mat-cell">{{sumCounts(item.counts)}} (<u (click)="viewChildren(item)" style="cursor: pointer; color: blue">view</u>)</td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-
-                                </mat-expansion-panel>
-                                </ng-container>
-                              </mat-accordion>
-
-                            </mat-wrapper>
-                          </mat-form-field>
+                        <h3>has members - </h3>
+                        <div style="display: inline" *ngFor="let item of members">
+                          <i>{{item.operatorName}}</i>  
+                        <a href="#/ontology?id={{item.iri}}"> {{item.name}} </a>
                         </div>
-
-
                       </ng-template>
                     </mat-tab>
                     <mat-tab label="View 2">
                       <ng-template mat-tab-label>
                         <mat-icon class="example-tab-icon">view_module</mat-icon>
-                        View 2
+                        Definition
                       </ng-template>
-                    </mat-tab>
-                    <mat-tab label="View 3">
-                      <ng-template mat-tab-label>
-                        <mat-icon class="example-tab-icon">view_module</mat-icon>
-                        View 3
+                      <ng-template matTabContent>
+                        <h3>TODO</h3>
                       </ng-template>
                     </mat-tab>
                   </mat-tab-group>
