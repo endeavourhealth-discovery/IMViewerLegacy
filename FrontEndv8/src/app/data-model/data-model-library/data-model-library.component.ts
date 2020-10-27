@@ -32,7 +32,13 @@ class DataModelLibraryComponent implements OnInit {
   hoveredConcept: Concept = {
     name: '',
     description: '',
-    iri: ''
+    iri: '',
+    code: '',
+    id: '',
+    namespace: null,
+    scheme: null,
+    status: null,
+    weighting: null
   };
 
   history = [];

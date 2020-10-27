@@ -1,3 +1,4 @@
+import { ConceptPropertyObject } from './models/ConceptPropertyObject';
 import { Axiom } from './models/ontology/Axiom';
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
@@ -65,7 +66,7 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
   }
 
   getConcept(iri: string): Observable<Concept> {
-    return this.http.get<Concept>(environment.api + 'api/concepts/' + iri);
+    return this.http.get<Concept>(environment.api + 'api/concept/' + iri);
   }
 
   search(searchTerm: string, root: string, relationships: string[]) {
@@ -105,26 +106,6 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
     return this.http.get<SchemeChildren[]>(environment.api + 'api/concepts/' + iri + '/children', {params});
   }
 
-  getConceptGroups(iri: string): Observable<ConceptGroup[]> {
-    // temp test data until model and backend are worked out
-    let concepts: Concept[] = [
-      {name: 'Concept 1 name', description: 'Concept 1 desc', iri: ':DM_HealthEvent'},
-      {name: 'Concept 2 name', description: 'Concept 2 desc', iri: ':DM_PatientEvent'},
-      {name: 'Concept 3 name', description: 'Concept 3 desc', iri: ':DM_EncounterEntry'},
-      {name: 'Concept 4 name', description: 'Concept 4 desc', iri: 'Concept iri'}
-    ]
-
-    let conceptGroups: ConceptGroup[] = [
-      {name: 'group 1', description: 'description', concepts: concepts},
-      {name: 'group 2', description: 'description', concepts: concepts},
-      {name: 'group 3', description: 'description', concepts: concepts},
-    ];
-
-    return Observable.create((observer) => {
-      observer.next(conceptGroups);
-    });
-  }
-
   // orachstrtes retirevle of all relevent data
   getDataModelDefinition(iri: string): Observable<DataModelDefinition> {
     let dataModelDefintionSubject: Subject<DataModelDefinition> = new Subject<DataModelDefinition>();
@@ -155,5 +136,9 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
     );
 
     return dataModelDefintion;
+  }
+
+  getConceptPropertyObjects(iri: string) : Observable<ConceptPropertyObject[]> {
+    return this.http.get<ConceptPropertyObject[]>('api/conceptpropertyobjects/' + iri );
   }
 }

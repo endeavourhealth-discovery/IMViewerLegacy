@@ -1,3 +1,4 @@
+import { ConceptPropertyObject } from './../../models/ConceptPropertyObject';
 import { Axiom } from './../../models/ontology/Axiom';
 import { OntologyService } from './../../services/ontology.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
@@ -27,11 +28,18 @@ export class OntologyLibraryComponent implements OnInit {
   hoveredConcept: Concept = {
     name: '',
     description: '',
-    iri: ''
+    iri: '',
+    code: '',
+    id: '',
+    namespace: null,
+    scheme: null,
+    status: null,
+    weighting: null
   };
 
   history = [];
   properties = [];
+  conceptPropertyObjects: ConceptPropertyObject[] = [];
   definitions = [];
   valuesets = [];
   timer: any;
@@ -48,6 +56,7 @@ export class OntologyLibraryComponent implements OnInit {
               private log: LoggerService) {
                 this.routeEvent(this.router);
                 this.editorOptions.modes = ['code', 'text', 'tree', 'view'];
+                this.editorOptions.mode = 'code';
                 this.editorOptions.mainMenuBar = false;
                 this.editorOptions.expandAll = true;
   }
@@ -104,6 +113,11 @@ export class OntologyLibraryComponent implements OnInit {
 
       this.service.getProperties(iri).subscribe(
         (result) => this.property = result,
+        (error) => this.log.error(error)
+      );
+
+      this.service.getConceptPropertyObjects(iri).subscribe(
+        (result) => this.conceptPropertyObjects = result,
         (error) => this.log.error(error)
       );
     }

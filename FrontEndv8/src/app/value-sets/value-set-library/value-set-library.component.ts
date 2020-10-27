@@ -26,7 +26,13 @@ export class ValueSetLibraryComponent implements OnInit {
   hoveredConcept: Concept = {
     name: '',
     description: '',
-    iri: ''
+    iri: '',
+    code: '',
+    id: '',
+    namespace: null,
+    scheme: null,
+    status: null,
+    weighting: null
   };
   history = [];
   properties = [];
@@ -144,7 +150,7 @@ export class ValueSetLibraryComponent implements OnInit {
   gotoConcept(iri: string) {
       console.log("gotoConcept > " + iri);
       this.router.navigate(['ontology'], {queryParams: {id: iri}});
-  }  
+  }
 
   hasResults(displayed: boolean) {
     this.searchSize = displayed ? 256 : 72;

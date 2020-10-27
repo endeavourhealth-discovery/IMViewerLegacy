@@ -79,48 +79,100 @@
                       </ng-template>
                       <ng-template matTabContent>
 
+                        <p></p>
+
+
                         <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
 
-                          <mat-form-field appearance="outline" fxFlex="calc(100% - 16px)">
-                            <mat-label id="definition-label">Definitions</mat-label>
-                            <mat-wrapper>
-                              <table *ngIf="definition && definition.length > 0" class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" aria-describedby="definition-label">
-                                <thead>
-                                  <tr class="mat-header-row">
-                                    <th scope="col" class="mat-header-cell">Definitions</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr *ngFor="let p of definition" class="mat-row">
-                                    <td class="mat-cell">{{json(p)}}</td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </mat-wrapper>
+                          <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline" fxFlex="33">
+                            <mat-label>Name:</mat-label>
+                            <input dense matInput [value]="concept.name" disabled>
                           </mat-form-field>
 
-                         <mat-form-field appearance="outline" fxFlex="100">
-                            <mat-label id="properties-label">Properties</mat-label>
-                            <mat-wrapper>
-                              <table *ngIf="property && property.length > 0" class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" aria-describedby="properties-label">
-                                <thead>
-                                  <tr class="mat-header-row">
-                                    <th scope="col" class="mat-header-cell">Property</th>
-                                    <th scope="col" class="mat-header-cell">Card.</th>
-                                    <th scope="col" class="mat-header-cell">Type</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr *ngFor="let p of property" class="mat-row">
-                                    <td class="mat-cell">{{p.property.name}}</td>
-                                    <td class="mat-cell">{{p.minCardinality}} : {{p.maxCardinality}}</td>
-                                    <td class="mat-cell">{{p.valueType.name}}</td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </mat-wrapper>
+                          <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline" fxFlex="33">
+                            <mat-label>Iri:</mat-label>
+                            <input disabled matInput [value]="concept.iri">
                           </mat-form-field>
+
+                          <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline" fxFlex="33">
+                            <mat-label>Namespace:</mat-label>
+                            <input disabled matInput [value]="concept.namespace.iri">
+                          </mat-form-field>
+
                         </div>
+
+                        <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
+
+                          <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline" fxFlex="33">
+                            <mat-label>Code:</mat-label>
+                            <input disabled matInput [value]="concept.code">
+                          </mat-form-field>
+
+                          <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline" fxFlex="33">
+                            <mat-label>Scheme:</mat-label>
+                            <input disabled matInput [value]="concept.scheme">
+                          </mat-form-field>
+
+                          <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline" fxFlex="33">
+                            <mat-label>Status:</mat-label>
+                            <input disabled matInput [value]="concept.status.name">
+                          </mat-form-field>
+
+                          <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline">
+                            <mat-label>Description:</mat-label>
+                            <textarea disabled matInput [value]="concept.description" ></textarea>
+                          </mat-form-field>
+
+
+                        </div>
+
+
+
+                        <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid">
+
+                        <mat-form-field appearance="outline" fxFlex="100">
+                          <mat-label id="properties-label">Properties</mat-label>
+                          <mat-wrapper>
+                            <table *ngIf="conceptPropertyObjects && conceptPropertyObjects.length > 0" class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" aria-describedby="properties-label">
+                              <thead>
+                                <tr class="mat-header-row">
+                                  <th scope="col" class="mat-header-cell">Relationship</th>
+                                  <th scope="col" class="mat-header-cell">Card.</th>
+                                  <th scope="col" class="mat-header-cell">Concept</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr *ngFor="let conceptPropertyObject of conceptPropertyObjects" class="mat-row">
+                                  <td class="mat-cell">{{conceptPropertyObject.property.name}} ({{conceptPropertyObject.property.iri}})</td>
+                                  <td class="mat-cell">{{conceptPropertyObject.minCardinality}} : {{conceptPropertyObject.maxCardinality}}</td>
+                                  <td class="mat-cell">{{conceptPropertyObject.object.name}} ({{conceptPropertyObject.object.iri}})</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </mat-wrapper>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" fxFlex="calc(100%)">
+                          <mat-label id="definition-label">Axioms</mat-label>
+                          <mat-wrapper>
+                            <table *ngIf="definition && definition.length > 0" class="mat-table mat-table-compact mat-elevation-z8" fxFlex="100" aria-describedby="definition-label">
+                              <thead>
+                                <tr class="mat-header-row">
+                                  <th scope="col" class="mat-header-cell">Definitions</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr *ngFor="let p of definition" class="mat-row">
+                                  <td class="mat-cell">
+                                    <json-editor [options]="editorOptions" [data]="p.definition" (change)="getData($event)"></json-editor>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </mat-wrapper>
+                        </mat-form-field>
+                      </div>
+
 
 
                       </ng-template>
@@ -237,10 +289,6 @@
                             </table>
                           </mat-grid-tile>
                         </mat-grid-list>
-
-                        <!-- <h4 mat-dialog-title>Axiom Editor:</h4> -->
-
-                        <!-- <json-editor *ngFor="let def of definition" [options]="editorOptions" [data]="def.definition" (change)="getData($event)"></json-editor> -->
 
                       </ng-template>
 
