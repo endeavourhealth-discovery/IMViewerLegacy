@@ -2,7 +2,7 @@ import { Concept } from './../../models/Concept';
 import { LoggerService } from 'dds-angular8';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { KeycloakService } from 'keycloak-angular';
-import { ConceptService } from './../../concept.service';
+import { ConceptService } from '../../services/concept.service';
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 
 @Component({

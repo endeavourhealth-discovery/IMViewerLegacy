@@ -27,7 +27,7 @@ import {ComponentsModule} from '../components/components.module';
 import {OntologyLibraryComponent} from './ontology-library/ontology-library.component';
 import {IMControlsModule} from 'im-common';
 import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
-import {ConceptService} from '../concept.service';
+import {ConceptService} from '../services/concept.service';
 import {MatGridListModule} from '@angular/material/grid-list';
 
 @NgModule({

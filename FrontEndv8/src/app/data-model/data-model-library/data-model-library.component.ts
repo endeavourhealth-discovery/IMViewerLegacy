@@ -2,7 +2,7 @@ import { DataModelDialogComponent } from './../data-model-create/data-model-dial
 import { MatDialog } from '@angular/material/dialog';
 import { PagedResultSet } from './../../models/PagedResultSet';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {ConceptService} from '../../concept.service';
+import {ConceptService} from '../../services/concept.service';
 import {Concept} from '../../models/Concept';
 import {Related} from '../../models/Related';
 import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';

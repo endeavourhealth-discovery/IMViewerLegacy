@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {LoggerService} from 'dds-angular8/logger';
-import {ConceptService} from '../../concept.service';
+import {ConceptService} from '../../services/concept.service';
 
 @Component({
   selector: 'app-concept-search',

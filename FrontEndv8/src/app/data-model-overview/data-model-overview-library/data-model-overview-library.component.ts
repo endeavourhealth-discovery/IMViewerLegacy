@@ -3,7 +3,7 @@ import { PagedResultSet } from './../../models/PagedResultSet';
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
 import { LoggerService } from 'dds-angular8/logger';
-import { ConceptService } from '../../concept.service';
+import { ConceptService } from '../../services/concept.service';
 import { ConceptGroup } from '../../models/ConceptGroup';
 
 const debug = (message: string) => { console.log(message); };

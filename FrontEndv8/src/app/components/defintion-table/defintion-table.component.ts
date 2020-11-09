@@ -1,5 +1,5 @@
 import { LoggerService } from 'dds-angular8/logger';
-import { ConceptService } from './../../concept.service';
+import { ConceptService } from '../../services/concept.service';
 import { Component, OnInit, Input, SimpleChanges, SimpleChange, OnChanges } from '@angular/core';
 
 @Component({

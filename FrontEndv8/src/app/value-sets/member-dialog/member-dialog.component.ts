@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {ConceptService} from '../../concept.service';
+import {ConceptService} from '../../services/concept.service';
 import {LoggerService} from 'dds-angular8/logger';
 import {Router} from '@angular/router';
 

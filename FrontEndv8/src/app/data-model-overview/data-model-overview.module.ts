@@ -3,7 +3,7 @@ import {RouterModule} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatListModule} from '@angular/material/list'; 
+import {MatListModule} from '@angular/material/list';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {FormsModule} from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
@@ -21,7 +21,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {ComponentsModule} from '../components/components.module';
 import {IMControlsModule} from 'im-common';
 import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
-import {ConceptService} from '../concept.service';
+import {ConceptService} from '../services/concept.service';
 import { DataModelOverviewLibraryComponent } from './data-model-overview-library/data-model-overview-library.component';
 
 @NgModule({

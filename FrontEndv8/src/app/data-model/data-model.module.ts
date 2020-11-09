@@ -25,7 +25,7 @@ import {ComponentsModule} from '../components/components.module';
 import {DataModelLibraryComponent} from './data-model-library/data-model-library.component';
 import {IMControlsModule} from 'im-common';
 import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
-import {ConceptService} from '../concept.service';
+import {ConceptService} from '../services/concept.service';
 import {MatListModule} from '@angular/material/list';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { DataModelDialogComponent } from './data-model-create/data-model-dialog/data-model-dialog.component';

@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {ConceptService} from '../../concept.service';
+import {ConceptService} from '../../services/concept.service';
 import {Concept} from '../../models/Concept';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';

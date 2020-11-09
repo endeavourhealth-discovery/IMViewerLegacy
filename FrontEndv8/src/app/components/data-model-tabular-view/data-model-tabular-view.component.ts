@@ -1,5 +1,5 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
-import {ConceptService} from '../../concept.service';
+import {ConceptService} from '../../services/concept.service';
 import {DataModelDefinition, FlatProperty} from '../../models/DataModelDefinition';
 import {Router} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
@@ -20,12 +20,12 @@ const debug = (message: string) => { console.log(message); };
       state('expanded', style({height: '*'})),
       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
-  ],  
+  ],
 })
 
 class DataModelTablularViewComponent {
   private static UNDEFINED_CONCEPT: Concept;
-  
+
   private iri: string;
 
   dataModelDefinition: DataModelDefinition;
@@ -41,16 +41,16 @@ class DataModelTablularViewComponent {
       this.refresh();
   }
 
-  @Output() 
+  @Output()
   selection: EventEmitter<string>;
 
   @Output()
   hover = new EventEmitter<Concept>();
 
-  constructor(private service: ConceptService, private log: LoggerService, private router: Router) { 
+  constructor(private service: ConceptService, private log: LoggerService, private router: Router) {
     this.selection = new EventEmitter<string>();
     this.hover = new EventEmitter<Concept>();
-    
+
     this.propertiesTable = new DataTable<FlatProperty>(["name", "type", "cardinality", "description", "declaredOn"]);
 
     this.parentsChipListTemplateContext =  {
@@ -61,17 +61,17 @@ class DataModelTablularViewComponent {
     this.childrenChipListTemplateContext =  {
       title: "Children",
       chips: []
-    }; 
+    };
   }
 
   refresh() {
     let dataModelDefinitionObservable: Observable<DataModelDefinition> = this.service.getDataModelDefinition(this.iri);
-   
+
     this.propertiesTable.clear();
-    
+
     dataModelDefinitionObservable.subscribe(dataModelDefinition => {
       this.dataModelDefinition = dataModelDefinition;
-     
+
       this.parentsChipListTemplateContext.chips = this.dataModelDefinition.getDirectParentConcepts();
       this.childrenChipListTemplateContext.chips = this.dataModelDefinition.getDirectChildConcepts();
 
@@ -119,7 +119,7 @@ class DataTable<D> {
     return (this.hasRows) ? this.rows.data.length : 0;
   }
 
-  getTooltip(concept: Concept): string { 
+  getTooltip(concept: Concept): string {
     return `IRI - ${concept.iri} Description - ${concept.description ? concept.description : 'no data found'}`;
   }
 }

@@ -1,8 +1,6 @@
 import { ConceptPropertyObject } from './../../models/ConceptPropertyObject';
-import { Axiom } from './../../models/ontology/Axiom';
-import { OntologyService } from './../../services/ontology.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {ConceptService} from '../../concept.service';
+import {ConceptService} from '../../services/concept.service';
 import {Concept} from '../../models/Concept';
 import {Related} from '../../models/Related';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
@@ -19,7 +17,7 @@ import { JsonEditorOptions } from 'ang-jsoneditor';
 })
 export class OntologyLibraryComponent implements OnInit {
   concept: Concept;
-  definition: Axiom[];
+  definition: any[];
   property: Property[];
   selectedIri: string;
   searchSize = 72;
