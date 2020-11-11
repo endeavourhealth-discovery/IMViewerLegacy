@@ -1,13 +1,13 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConceptService} from '../../services/concept.service';
-import {Concept} from '../../models/Concept';
+import {Concept} from '../../models/objectmodel/Concept';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import {ConceptTreeViewComponent} from 'im-common/im-controls';
-import {SchemeCount} from '../../models/SchemeCount';
+import {SchemeCount} from '../../models/old/SchemeCount';
 import {MemberDialogComponent} from '../member-dialog/member-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
-import {ValueSetMember} from '../../models/ValueSetMember';
+import {ValueSetMember} from '../../models/old/ValueSetMember';
 import {KeycloakService} from 'keycloak-angular';
 
 @Component({
@@ -23,17 +23,7 @@ export class ValueSetLibraryComponent implements OnInit {
   root = ':VSET_ValueSet';
   relationships = ['sn:116680003'];
   nameCache = {};
-  hoveredConcept: Concept = {
-    name: '',
-    description: '',
-    iri: '',
-    code: '',
-    id: '',
-    namespace: null,
-    scheme: null,
-    status: null,
-    weighting: null
-  };
+  hoveredConcept: Concept = new Concept();
   history = [];
   properties = [];
   definitions = [];

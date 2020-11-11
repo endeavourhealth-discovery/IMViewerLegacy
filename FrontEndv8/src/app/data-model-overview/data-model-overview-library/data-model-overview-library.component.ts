@@ -1,10 +1,10 @@
-import { Related } from './../../models/Related';
-import { PagedResultSet } from './../../models/PagedResultSet';
+import { Related } from './../../models/old/Related';
+import { PagedResultSet } from './../../models/old/PagedResultSet';
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
 import { LoggerService } from 'dds-angular8/logger';
 import { ConceptService } from '../../services/concept.service';
-import { ConceptGroup } from '../../models/ConceptGroup';
+import { ConceptGroup } from '../../models/old/ConceptGroup';
 
 const debug = (message: string) => { console.log(message); };
 

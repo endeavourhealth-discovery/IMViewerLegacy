@@ -1,21 +1,12 @@
 import { IMAnnotated } from './IMAnnotated';
+import { ClassExpression } from './ClassExpression';
 import { Annotation } from './Annotation';
 import { ConceptStatus } from './ConceptStatus';
-import { ConceptReference } from './ConceptReference';
 import { IMEntity } from './IMEntity';
-
-export class Concept implements IMAnnotated {
-  dbid: number;
-  iri: string;
-  name: string;
-  description: string;
-  code: string;
-  scheme: ConceptReference;
+export class ClassAxiom extends ClassExpression implements IMAnnotated {
   status: ConceptStatus;
   version: number;
-  isA: Set<Concept>;
-  annotations: Set<Annotation>;
-  isRef: boolean;
+  annotationList: Set<Annotation>;
 
   getAnnotations(): Set<Annotation> {
     throw new Error('Method not implemented.');

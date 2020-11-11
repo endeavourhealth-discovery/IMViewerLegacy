@@ -1,10 +1,10 @@
 import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {TreeNode} from '../models/TreeNode';
+import {TreeNode} from '../models/old/TreeNode';
 import {TreeSource} from './TreeSource';
 import {LoggerService} from 'dds-angular8/logger';
-import {Concept} from '../models/Concept';
-import {Related} from '../models/Related';
+import {Concept} from '../models/objectmodel/Concept';
+import {Related} from '../models/old/Related';
 import {ConceptTreeViewService} from './concept-tree-view.service';
 
 @Component({

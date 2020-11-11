@@ -1,4 +1,4 @@
-import {Concept} from './Concept';
+import { Concept } from './../objectmodel/Concept';
 
 export class Property {
   property: Concept;

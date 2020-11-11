@@ -1,8 +1,8 @@
 import {Observable} from 'rxjs';
-import {Concept} from '../models/Concept';
-import {Related} from '../models/Related';
-import {Property} from '../models/Property';
-import {PagedResultSet} from '../models/PagedResultSet';
+import {Concept} from '../models/objectmodel/Concept';
+import {Related} from '../models/old/Related';
+import {Property} from '../models/old/Property';
+import {PagedResultSet} from '../models/old/PagedResultSet';
 
 export abstract class DataModelNavigatorService {
     abstract getConcept(iri: string): Observable<Concept>;

@@ -1,17 +1,17 @@
-import { ConceptPropertyObject } from '../models/ConceptPropertyObject';
+import { ConceptPropertyObject } from '../models/old/ConceptPropertyObject';
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {zip, Subject, Observable} from 'rxjs';
-import {Concept} from '../models/Concept';
-import {ConceptGroup} from '../models/ConceptGroup';
-import {Related} from '../models/Related';
-import {Property} from '../models/Property';
-import {PagedResultSet} from '../models/PagedResultSet';
+import {Concept} from '../models/objectModel/Concept';
+import {ConceptGroup} from '../models/old/ConceptGroup';
+import {Related} from '../models/old/Related';
+import {Property} from '../models/old/Property';
+import {PagedResultSet} from '../models/old/PagedResultSet';
 import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
-import {SchemeCount} from '../models/SchemeCount';
-import {SchemeChildren} from '../models/SchemeChildren';
-import {ValueSetMember} from '../models/ValueSetMember';
-import {DataModelDefinition} from '../models/DataModelDefinition';
+import {SchemeCount} from '../models/old/SchemeCount';
+import {SchemeChildren} from '../models/old/SchemeChildren';
+import {ValueSetMember} from '../models/old/ValueSetMember';
+import {DataModelDefinition} from '../models/old/DataModelDefinition';
 import {environment} from '../../environments/environment';
 
 @Injectable({
@@ -65,7 +65,7 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
   }
 
   getConcept(iri: string): Observable<Concept> {
-    return this.http.get<Concept>(environment.api + 'concept/' + iri);
+    return this.http.get<Concept>(environment.api + 'api/concept/' + iri);
   }
 
   search(searchTerm: string, root: string, relationships: string[]) {

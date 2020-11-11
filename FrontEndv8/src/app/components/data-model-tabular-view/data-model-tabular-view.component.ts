@@ -1,12 +1,12 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {ConceptService} from '../../services/concept.service';
-import {DataModelDefinition, FlatProperty} from '../../models/DataModelDefinition';
+import {DataModelDefinition, FlatProperty} from '../../models/old/DataModelDefinition';
 import {Router} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import { MatTableDataSource } from '@angular/material/table';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Observable } from 'rxjs';
-import { Concept } from '../../models/Concept';
+import { Concept } from '../../models/objectmodel/Concept';
 
 const debug = (message: string) => { console.log(message); };
 

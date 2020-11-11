@@ -1,8 +1,8 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {Related} from '../models/Related';
-import {Property} from '../models/Property';
+import {Related} from '../models/old/Related';
+import {Property} from '../models/old/Property';
 import {LoggerService} from 'dds-angular8/logger';
-import {Concept} from '../models/Concept';
+import {Concept} from '../models/objectmodel/Concept';
 import * as d3 from 'd3';
 import * as dagre from 'dagre';
 import svgPanZoom from 'svg-pan-zoom';

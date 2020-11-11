@@ -1,10 +1,10 @@
 import { DataModelDialogComponent } from './../data-model-create/data-model-dialog/data-model-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { PagedResultSet } from './../../models/PagedResultSet';
+import { PagedResultSet } from './../../models/old/PagedResultSet';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConceptService} from '../../services/concept.service';
-import {Concept} from '../../models/Concept';
-import {Related} from '../../models/Related';
+import {Concept} from '../../models/objectmodel/Concept';
+import {Related} from '../../models/old/Related';
 import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
 import {ConceptTreeViewComponent} from 'im-common/im-controls';
@@ -29,17 +29,7 @@ class DataModelLibraryComponent implements OnInit {
   selected = 'dataModel';
   showFiller = true;
 
-  hoveredConcept: Concept = {
-    name: '',
-    description: '',
-    iri: '',
-    code: '',
-    id: '',
-    namespace: null,
-    scheme: null,
-    status: null,
-    weighting: null
-  };
+  hoveredConcept: Concept = new Concept();
 
   history = [];
   properties = [];

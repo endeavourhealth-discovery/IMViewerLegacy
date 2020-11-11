@@ -1,4 +1,4 @@
-import { Concept } from './../../models/Concept';
+import { Concept } from '../../models/objectmodel/Concept';
 import { LoggerService } from 'dds-angular8';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { KeycloakService } from 'keycloak-angular';

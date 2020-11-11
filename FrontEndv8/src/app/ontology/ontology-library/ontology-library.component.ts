@@ -1,11 +1,11 @@
-import { ConceptPropertyObject } from './../../models/ConceptPropertyObject';
+import { ConceptPropertyObject } from './../../models/old/ConceptPropertyObject';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConceptService} from '../../services/concept.service';
-import {Concept} from '../../models/Concept';
-import {Related} from '../../models/Related';
+import {Concept} from '../../models/objectmodel/Concept';
+import {Related} from '../../models/old/Related';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import {LoggerService} from 'dds-angular8/logger';
-import {Property} from '../../models/Property';
+import {Property} from '../../models/old/Property';
 import {ConceptTreeViewComponent} from 'im-common/im-controls';
 import {KeycloakService} from 'keycloak-angular';
 import { JsonEditorOptions } from 'ang-jsoneditor';
@@ -23,17 +23,7 @@ export class OntologyLibraryComponent implements OnInit {
   searchSize = 72;
   root = ':1301000252100';
   relationships = ['sn:116680003'];
-  hoveredConcept: Concept = {
-    name: '',
-    description: '',
-    iri: '',
-    code: '',
-    id: '',
-    namespace: null,
-    scheme: null,
-    status: null,
-    weighting: null
-  };
+  hoveredConcept: Concept = new Concept();
 
   history = [];
   properties = [];

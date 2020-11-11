@@ -1,4 +1,4 @@
-import {TreeNode} from '../models/TreeNode';
+import {TreeNode} from '../models/old/TreeNode';
 import {CollectionViewer, DataSource, SelectionChange} from '@angular/cdk/collections';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {FlatTreeControl} from '@angular/cdk/tree';
