@@ -20,6 +20,8 @@ export class OntologyLibraryComponent implements OnInit {
   root = ':1301000252100';
   relationships = ['sn:116680003'];
   hoveredConcept: Clazz = new Clazz();
+  definition = null;
+  conceptPropertyObjects = [];
 
   history = [];
   timer: any;
