@@ -1,0 +1,25 @@
+#datamodel-overview .mat-card.scrollable-content {
+    // overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 85%;
+    height: 90%!important;
+
+    > .mat-card-title-group {
+      display: block;
+    }
+
+    > .mat-card-content {
+      // overflow-y: hidden;
+      height: 100%!important;
+      padding: 10px;
+    }
+
+    .mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar, .mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar {
+      height: 28px;
+     }
+
+     .mat-card-header .mat-card-title {
+      font-size: 15px;
+      }
+  }

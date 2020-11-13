@@ -1,3 +1,7 @@
+import { ValueSetModule } from './pages/value-sets/value-set.module';
+import { DataModelOverviewModule } from './pages/data-model/data-model-overview/data-model-overview.module';
+import { OntologyModule } from './pages/ontology/ontology.module';
+import { DataModelModule } from './pages/data-model/data-model.module';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { NgModule, DoBootstrap, ApplicationRef } from '@angular/core';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
@@ -5,7 +9,6 @@ import {AppMenuService} from './app-menu.service';
 import {RouterModule} from '@angular/router';
 import {HttpClientModule} from '@angular/common/http';
 import {AbstractMenuProvider, LoggerModule, SecurityModule} from 'dds-angular8';
-import {DataModelModule} from './data-model/data-model.module';
 import {AppRoot} from './app-root';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatMenuModule} from '@angular/material/menu';
@@ -15,11 +18,9 @@ import {FlexModule} from '@angular/flex-layout';
 import {MatButtonModule} from '@angular/material/button';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MainPageModule} from './main-page/main-page.module';
-import {OntologyModule} from './ontology/ontology.module';
-import {ValueSetModule} from './value-sets/value-set.module';
-import {DataModelOverviewModule} from './data-model-overview/data-model-overview.module';
 import {AbstractSecurityProvider} from './security/abstract-security-provider';
 import {MockSecurityService} from './security/mock-security.service';
+import { NgEventBus } from 'ng-event-bus';
 
 const keycloakService = new KeycloakService();
 
@@ -52,7 +53,8 @@ const keycloakService = new KeycloakService();
   providers: [
     { provide: AbstractSecurityProvider, useClass: MockSecurityService },
     { provide: AbstractMenuProvider, useClass : AppMenuService },
-    { provide: KeycloakService, useValue: keycloakService }
+    { provide: KeycloakService, useValue: keycloakService },
+    NgEventBus,
   ]
 })
 export class AppModule  {

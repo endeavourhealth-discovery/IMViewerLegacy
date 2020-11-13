@@ -2,12 +2,13 @@ import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} f
 import {Related} from '../models/old/Related';
 import {Property} from '../models/old/Property';
 import {LoggerService} from 'dds-angular8/logger';
-import {Concept} from '../models/objectmodel/Concept';
+import {Clazz} from '../models/objectmodel/Clazz';
 import * as d3 from 'd3';
 import * as dagre from 'dagre';
 import svgPanZoom from 'svg-pan-zoom';
 import {Subscription, zip} from 'rxjs';
 import {DataModelNavigatorService} from './data-model-navigator.service';
+import { NgEventBus } from 'ng-event-bus';
 
 @Component({
   selector: 'app-data-model-navigator',
@@ -20,22 +21,20 @@ export class DataModelNavigatorComponent implements OnInit {
       this.iri = iri;
       this.refresh();
   }
-  @Output() selection: EventEmitter<string> = new EventEmitter<string>();
-  @Output() hover = new EventEmitter<Concept>();
-
   @ViewChild('svg', {static: true}) targetCanvas: ElementRef;
 
   pad = 16;
 
   iri: string;
-  concept: Concept;
+  concept: Clazz;
   properties: Property[];
   sources: Related[];
   targets: Related[];
   obs: Subscription = null;
 
   constructor(private service: DataModelNavigatorService,
-              private log: LoggerService) {
+              private log: LoggerService,
+              private eventBus: NgEventBus) {
   }
 
   ngOnInit() {
@@ -360,18 +359,14 @@ export class DataModelNavigatorComponent implements OnInit {
   }
 
   nodeClick(iri: string) {
-    this.selection.emit(iri);
+    this.eventBus.cast('app:conceptSelect', iri);
   }
 
-  nodeHover(concept: Concept) {
+  nodeHover(concept: Clazz) {
     if (concept != null || concept !== undefined) {
-      this.hover.emit(concept)
+      this.eventBus.cast('app:conceptHover', concept);
     } else {
-      this.hover.emit({
-        name: '',
-        description: '',
-        iri: ''
-      });
+      this.eventBus.cast('app:conceptHover', new Clazz());
     }
   }
 }

@@ -2,7 +2,7 @@ import { ConceptPropertyObject } from '../models/old/ConceptPropertyObject';
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {zip, Subject, Observable} from 'rxjs';
-import {Concept} from '../models/objectModel/Concept';
+import {Clazz} from '../models/objectmodel/Clazz';
 import {ConceptGroup} from '../models/old/ConceptGroup';
 import {Related} from '../models/old/Related';
 import {Property} from '../models/old/Property';
@@ -64,8 +64,8 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
     return this.http.get<PagedResultSet<Related>>(environment.api + 'api/concepts/' + iri + '/Targets', {params});
   }
 
-  getConcept(iri: string): Observable<Concept> {
-    return this.http.get<Concept>(environment.api + 'api/concept/' + iri);
+  getConcept(iri: string): Observable<Clazz> {
+    return this.http.get<Clazz>(environment.api + 'api/concept/' + iri);
   }
 
   search(searchTerm: string, root: string, relationships: string[]) {

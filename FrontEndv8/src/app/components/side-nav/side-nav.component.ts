@@ -1,4 +1,5 @@
-import { Concept } from '../../models/objectmodel/Concept';
+import { NgEventBus } from 'ng-event-bus';
+import { Clazz } from '../../models/objectmodel/Clazz';
 import { LoggerService } from 'dds-angular8';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { KeycloakService } from 'keycloak-angular';
@@ -11,19 +12,20 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./side-nav.component.scss']
 })
 export class SideNavComponent implements OnInit {
-  @Input() concept: Concept;
+  @Input() concept: Clazz;
   @Input() root: string;
   @Input() relationships: string;
   @Input() selectedIri: string;
-  @Output() itemHoverEvent: EventEmitter<any> = new EventEmitter<any>();
-  @Output() itemSelectEvent: EventEmitter<any> = new EventEmitter<any>();
+
   @Output() openDialogEvent: EventEmitter<any> = new EventEmitter<any>();
+
   searchSize = 72;
   history = [];
 
 
   constructor(
-    private router: Router) {
+    private router: Router,
+    private eventBus: NgEventBus) {
     this.routeEvent(this.router);
   }
 
@@ -43,13 +45,13 @@ export class SideNavComponent implements OnInit {
     });
   }
 
-  itemHover(concept: Concept) {
-    this.itemHoverEvent.emit(concept);
+  itemHover(concept: Clazz) {
+    this.eventBus.cast('app:conceptHover', concept);
   }
 
   goto(iri: string) {
     if (iri !== this.selectedIri) {
-      this.itemSelectEvent.emit(iri);
+      this.eventBus.cast('app:conceptSelect', iri);
     }
   }
 

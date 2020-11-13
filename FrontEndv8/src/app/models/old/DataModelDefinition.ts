@@ -1,17 +1,17 @@
-import { Concept } from './../objectmodel/Concept';
+import { Clazz } from './../objectmodel/Clazz';
 import {Related} from './Related';
 import {Property} from './Property';
 import {zip, Observable, Subject} from 'rxjs';
 
 export class DataModelDefinition {
 
-    public concept: Concept;
+    public concept: Clazz;
     public definition: Related[];
     public properties: Property[];
     public directChildren: Related[];
     public directParents: Related[];
 
-    constructor(concept: Concept,
+    constructor(concept: Clazz,
                 definition: Related[],
                 properties: Property[],
                 directChildren: Related[],
@@ -35,12 +35,12 @@ export class DataModelDefinition {
         return this.properties && this.properties.length > 0;
     }
 
-    getDirectParentConcepts(): Concept[] {
+    getDirectParentConcepts(): Clazz[] {
         // TODO - maybe filter out non-datamodel parents?
         return this.getConcepts(this.directParents);
     }
 
-    getDirectChildConcepts(): Concept[] {
+    getDirectChildConcepts(): Clazz[] {
         return this.getConcepts(this.directChildren);
     }
 
@@ -66,8 +66,8 @@ export class DataModelDefinition {
         return flatProperies;
     }
 
-    private getDeclaredOn(property: Property): Concept {
-        let declaredOn: Concept = this.concept;
+    private getDeclaredOn(property: Property): Clazz {
+        let declaredOn: Clazz = this.concept;
 
         if(property.owner.iri != this.concept.iri) {
             declaredOn = property.owner;
@@ -76,8 +76,8 @@ export class DataModelDefinition {
         return declaredOn;
     }
 
-    private getConcepts(relateds: Related[]): Concept[] {
-        let concepts: Concept[] = [];
+    private getConcepts(relateds: Related[]): Clazz[] {
+        let concepts: Clazz[] = [];
 
         if(relateds && relateds.length > 0) {
             concepts = relateds.map((related: Related) => {
@@ -96,5 +96,5 @@ export interface FlatProperty {
     cardinality: string;
     type: string; // could be an enum
     source: Property; // the original source of the FlatProperty
-    declaredOn?: Concept;
+    declaredOn?: Clazz;
   }

@@ -3,9 +3,10 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNode} from '../models/old/TreeNode';
 import {TreeSource} from './TreeSource';
 import {LoggerService} from 'dds-angular8/logger';
-import {Concept} from '../models/objectmodel/Concept';
+import {Clazz} from '../models/objectmodel/Clazz';
 import {Related} from '../models/old/Related';
 import {ConceptTreeViewService} from './concept-tree-view.service';
+import { NgEventBus } from 'ng-event-bus';
 
 @Component({
   selector: 'app-concept-tree-view',
@@ -18,10 +19,6 @@ export class ConceptTreeViewComponent implements AfterViewInit {
   set conceptIri(iri: string) {
     this.displayNode(iri);
   }
-  @Output() selection: EventEmitter<string> = new EventEmitter<string>();
-  @Output() hover = new EventEmitter<Concept>();
-
-
   selectedIri: string;
   treeControl: FlatTreeControl<TreeNode>;
   dataSource: TreeSource;
@@ -32,7 +29,8 @@ export class ConceptTreeViewComponent implements AfterViewInit {
   hasChild = (_: number, nodeData: TreeNode) => nodeData.expandable;
 
   constructor(private service: ConceptTreeViewService,
-              private log: LoggerService) {
+              private log: LoggerService,
+              private eventBus: NgEventBus) {
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
     this.dataSource = new TreeSource(this.treeControl, service, log, this.relationships);
   }
@@ -70,29 +68,29 @@ export class ConceptTreeViewComponent implements AfterViewInit {
       this.dataSource.toggleNode(node, true);
     } else {
       this.selectedIri = node.id;
-      this.selection.emit(node.id);
+      this.eventBus.cast('app:conceptSelect', node.id);
     }
   }
 
   nodeHover(node: TreeNode) {
     if (node !== null) {
-      const concept: Concept = new Concept();
+      const concept: Clazz = new Clazz();
       concept.name = node.name;
       concept.iri = node.id;
-      this.hover.emit(concept);
+      this.eventBus.cast('app:conceptHover', concept);
     } else {
-      this.hover.emit(null);
+      this.eventBus.cast('app:conceptHover', null);
     }
   }
 
-  loadConceptTree(concept: Concept) {
+  loadConceptTree(concept: Clazz) {
     this.service.loadTree(this.root, concept.iri, this.relationships).subscribe(
       (result) => this.buildTree(concept, result),
       (error) => this.log.error(error)
     );
   }
 
-  buildTree(concept: Concept, related: Related[]) {
+  buildTree(concept: Clazz, related: Related[]) {
 
     related.reverse();
 

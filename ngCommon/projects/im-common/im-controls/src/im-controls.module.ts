@@ -11,6 +11,7 @@ import {MatInputModule} from '@angular/material/input';
 import {FlexModule} from '@angular/flex-layout';
 import { DataModelNavigatorComponent } from './data-model-navigator/data-model-navigator.component';
 import {ConceptTreeViewComponent} from './concept-tree-view/concept-tree-view.component';
+import { NgEventBus } from 'ng-event-bus';
 
 @NgModule({
     imports: [
@@ -33,6 +34,9 @@ import {ConceptTreeViewComponent} from './concept-tree-view/concept-tree-view.co
     declarations: [
         DataModelNavigatorComponent,
         ConceptTreeViewComponent
+    ],
+    providers: [
+        NgEventBus,
     ]
 })
 export class IMControlsModule { }

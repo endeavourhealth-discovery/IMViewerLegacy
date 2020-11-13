@@ -14,8 +14,7 @@ const ro = new ResizeObserver(entries => {
 
 @Directive({ selector: '[resizeObserver]' })
 export class ResizeObserverDirective implements OnDestroy {
-  @Output()
-  resize = new EventEmitter();
+  @Output() resize = new EventEmitter();
 
   constructor(private el: ElementRef) {
     const target = this.el.nativeElement;

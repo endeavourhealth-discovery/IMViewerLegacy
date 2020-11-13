@@ -1,3 +1,4 @@
+import { NgEventBus } from 'ng-event-bus';
 import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {ConceptService} from '../../services/concept.service';
 import {DataModelDefinition, FlatProperty} from '../../models/old/DataModelDefinition';
@@ -6,7 +7,7 @@ import {LoggerService} from 'dds-angular8/logger';
 import { MatTableDataSource } from '@angular/material/table';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Observable } from 'rxjs';
-import { Concept } from '../../models/objectmodel/Concept';
+import { Clazz } from '../../models/objectmodel/Clazz';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -24,7 +25,7 @@ const debug = (message: string) => { console.log(message); };
 })
 
 class DataModelTablularViewComponent {
-  private static UNDEFINED_CONCEPT: Concept;
+  private static UNDEFINED_CONCEPT: Clazz;
 
   private iri: string;
 
@@ -36,21 +37,15 @@ class DataModelTablularViewComponent {
   childrenChipListTemplateContext: ChipListTemplateContext;
 
   @Input()
+  concept: Clazz;
+
+  @Input()
   set conceptIri(iri: string) {
       this.iri = iri;
       this.refresh();
   }
 
-  @Output()
-  selection: EventEmitter<string>;
-
-  @Output()
-  hover = new EventEmitter<Concept>();
-
-  constructor(private service: ConceptService, private log: LoggerService, private router: Router) {
-    this.selection = new EventEmitter<string>();
-    this.hover = new EventEmitter<Concept>();
-
+  constructor(private service: ConceptService, private log: LoggerService, private router: Router, private eventBus: NgEventBus) {
     this.propertiesTable = new DataTable<FlatProperty>(["name", "type", "cardinality", "description", "declaredOn"]);
 
     this.parentsChipListTemplateContext =  {
@@ -79,18 +74,16 @@ class DataModelTablularViewComponent {
     });
   }
 
-  onSelect(concept: Concept) {
-    this.selection.emit(concept.iri);
+  onSelect(concept: Clazz) {
+    this.eventBus.cast('app:conceptSelect', concept.iri);
   }
 
-  onHoverOver(concept: Concept) {
-    console.log(`in onHoverOver ${JSON.stringify(concept)}`);
-    this.hover.emit(concept);
+  onHoverOver(concept: Clazz) {
+    this.eventBus.cast('app:conceptHover', concept);
   }
 
   onHoverOut() {
-    console.log(`in onHoverOut`);
-    this.hover.emit(DataModelTablularViewComponent.UNDEFINED_CONCEPT);
+    this.eventBus.cast('app:conceptHover', DataModelTablularViewComponent.UNDEFINED_CONCEPT);
   }
 }
 
@@ -119,14 +112,14 @@ class DataTable<D> {
     return (this.hasRows) ? this.rows.data.length : 0;
   }
 
-  getTooltip(concept: Concept): string {
+  getTooltip(concept: Clazz): string {
     return `IRI - ${concept.iri} Description - ${concept.description ? concept.description : 'no data found'}`;
   }
 }
 
 interface ChipListTemplateContext {
   title: string,
-  chips: Concept[];
+  chips: Clazz[]
 }
 
 export {

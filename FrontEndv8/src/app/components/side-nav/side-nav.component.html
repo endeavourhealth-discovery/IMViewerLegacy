@@ -1,8 +1,7 @@
   <as-split direction="vertical" unit="pixel">
     <as-split-area [size]="searchSize" minSize="72" style="height: 100%; overflow: hidden">
       <div class="as-split-area-content" style="height: inherit">
-        <app-concept-search [root]="root" [relationships]="relationships" (selection)="goto($event.iri)"
-          (hasResults)="hasResults($event)"></app-concept-search>
+        <app-concept-search [root]="root" [relationships]="relationships" (hasResults)="hasResults($event)"></app-concept-search>
       </div>
     </as-split-area>
 
@@ -18,8 +17,7 @@
               <button mat-icon-button color="primary" style="float:right" (click)="openDialog()">
                 <mat-icon>add</mat-icon>
               </button>
-              <app-concept-tree-view [root]="root" [conceptIri]="selectedIri" (selection)="goto($event)"
-                (hover)="itemHover($event)"></app-concept-tree-view>
+              <app-concept-tree-view [root]="root" [conceptIri]="selectedIri"></app-concept-tree-view>
             </ng-template>
           </mat-tab>
           <mat-tab label="History">
@@ -29,8 +27,7 @@
             </ng-template>
 
             <mat-selection-list dense multiple="false">
-              <mat-list-option *ngFor="let item of history" [value]="item" (click)="goto(item.concept.iri)"
-                (mouseenter)="itemHover(item.concept)" (mouseleave)="itemHover(null)">
+              <mat-list-option *ngFor="let item of history" [value]="item" (click)="goto(item.concept.iri)" (mouseenter)="itemHover(item.concept)" (mouseleave)="itemHover(null)">
                 <mat-icon mat-list-icon>launch</mat-icon>
                 <div mat-line>{{item.concept.name}}</div>
               </mat-list-option>

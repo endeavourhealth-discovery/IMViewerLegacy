@@ -5,9 +5,6 @@ import { IMControlsModule } from 'im-common';
 import { ControlsModule } from 'dds-angular8/controls';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AngularSplitModule } from 'angular-split';
-import { DefintionTableComponent } from './defintion-table/defintion-table.component';
-import { ValuesetTableComponent } from './valueset-table/valueset-table.component';
-import { PropertiesTableComponent } from './properties-table/properties-table.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {MatTreeModule} from '@angular/material/tree';
@@ -68,9 +65,6 @@ import { SideNavComponent } from './side-nav/side-nav.component';
     GraphNavigatorComponent,
     NavigationComponent,
     DataModelTablularViewComponent,
-    PropertiesTableComponent,
-    ValuesetTableComponent,
-    DefintionTableComponent,
     SideNavComponent
   ],
   declarations: [
@@ -79,9 +73,6 @@ import { SideNavComponent } from './side-nav/side-nav.component';
     ResizeObserverDirective,
     NavigationComponent,
     DataModelTablularViewComponent,
-    PropertiesTableComponent,
-    ValuesetTableComponent,
-    DefintionTableComponent,
     SideNavComponent
   ]
 })
