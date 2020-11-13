@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {Router} from '@angular/router';
-import {KeycloakService} from 'keycloak-angular';
+import { Router } from '@angular/router';
+import { KeycloakService } from 'keycloak-angular';
 
 @Component({
   selector: 'app-main-page',
@@ -12,8 +12,7 @@ export class MainPageComponent implements OnInit {
   constructor(
     private auth: KeycloakService,
     private router: Router
-  ) {
-  }
+  ) { }
 
   ngOnInit() {
   }

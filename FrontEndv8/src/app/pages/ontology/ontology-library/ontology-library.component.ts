@@ -1,5 +1,4 @@
 import { ConceptService } from './../../../services/concept.service';
-import { ConceptPropertyObject } from './../../../models/old/ConceptPropertyObject';
 import { Clazz } from './../../../models/objectmodel/Clazz';
 import { NgEventBus } from 'ng-event-bus';
 import { Component, OnInit, ViewChild } from '@angular/core';
@@ -8,7 +7,6 @@ import { LoggerService } from 'dds-angular8/logger';
 import { ConceptTreeViewComponent } from 'im-common/im-controls';
 import { KeycloakService } from 'keycloak-angular';
 import { JsonEditorOptions } from 'ang-jsoneditor';
-import { Property } from 'src/app/models/old/Property';
 
 @Component({
   selector: 'app-ontology-library',
@@ -17,8 +15,6 @@ import { Property } from 'src/app/models/old/Property';
 })
 export class OntologyLibraryComponent implements OnInit {
   concept: Clazz;
-  definition: any[];
-  property: Property[];
   selectedIri: string;
   searchSize = 72;
   root = ':1301000252100';
@@ -26,7 +22,6 @@ export class OntologyLibraryComponent implements OnInit {
   hoveredConcept: Clazz = new Clazz();
 
   history = [];
-  conceptPropertyObjects: ConceptPropertyObject[] = [];
   timer: any;
   sidebar = false;
   editorOptions = new JsonEditorOptions();
@@ -46,13 +41,9 @@ export class OntologyLibraryComponent implements OnInit {
     this.editorOptions.mainMenuBar = false;
     this.editorOptions.expandAll = true;
 
-    eventBus.on('app:conceptHover').subscribe((concept: Clazz) => {
+    this.eventBus.on('app:conceptHover').subscribe((concept: Clazz) => {
       this.itemHover(concept);
 
-    });
-
-    eventBus.on('app:conceptSelect').subscribe((conceptIri: string) => {
-      this.goto(conceptIri);
     });
   }
 
@@ -75,18 +66,6 @@ export class OntologyLibraryComponent implements OnInit {
       (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
       (error) => this.log.error(error)
     );
-
-    this.definition.forEach(def => {
-      def.definition = JSON.parse(def.definition);
-    });
-  }
-
-  cleanupJson(result) {
-    result.forEach(def => {
-      def.definition = JSON.parse(def.definition);
-    });
-
-    this.definition = result;
   }
 
   getData(event) {
@@ -98,21 +77,6 @@ export class OntologyLibraryComponent implements OnInit {
       this.selectedIri = iri;
       this.service.getConcept(iri).subscribe(
         (result) => this.concept = result,
-        (error) => this.log.error(error)
-      );
-
-      this.service.getAxioms(iri).subscribe(
-        (result) => this.cleanupJson(result),
-        (error) => this.log.error(error)
-      );
-
-      this.service.getProperties(iri).subscribe(
-        (result) => this.property = result,
-        (error) => this.log.error(error)
-      );
-
-      this.service.getConceptPropertyObjects(iri).subscribe(
-        (result) => this.conceptPropertyObjects = result,
         (error) => this.log.error(error)
       );
     }

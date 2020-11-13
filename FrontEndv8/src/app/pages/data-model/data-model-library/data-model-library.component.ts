@@ -53,10 +53,6 @@ class DataModelLibraryComponent implements OnInit {
       this.itemHover(concept);
 
     });
-
-    this.eventBus.on('app:conceptSelect').subscribe((conceptIri: string) => {
-      this.goto(conceptIri);
-    });
   }
 
   routeEvent(router: Router) {

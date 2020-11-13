@@ -1,3 +1,4 @@
+import { NgEventBus } from 'ng-event-bus';
 // TODO: AppRoot to be extracted to common by splitting LayoutComponent
 
 import {Component, HostBinding, OnInit} from '@angular/core';
@@ -24,8 +25,13 @@ export class AppRoot implements OnInit {
     private router: Router,
     public securityService: AbstractSecurityProvider,
     public menuService: AbstractMenuProvider,
-    public overlayContainer: OverlayContainer
-  ) { }
+    public overlayContainer: OverlayContainer,
+    private eventBus: NgEventBus
+  ) {
+    this.eventBus.on('app:conceptSelect').subscribe((conceptIri: string) => {
+      this.goto(conceptIri);
+    });
+  }
 
   ngOnInit() {
     this.securityService.secureRoutes();
@@ -60,6 +66,10 @@ export class AppRoot implements OnInit {
       window.open(state, '_blank');
     else
       this.router.navigate([state]);
+  }
+
+  goto(iri: string) {
+    this.router.navigate([this.router.url.split('?')[0]], { queryParams: { id: iri } });
   }
 
   getHelp() {

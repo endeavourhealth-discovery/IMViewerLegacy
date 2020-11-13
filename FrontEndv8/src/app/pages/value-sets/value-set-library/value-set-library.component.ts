@@ -39,13 +39,8 @@ export class ValueSetLibraryComponent implements OnInit {
     private eventBus: NgEventBus) {
     this.routeEvent(this.router);
 
-    eventBus.on('app:conceptHover').subscribe((concept: Clazz) => {
+    this.eventBus.on('app:conceptHover').subscribe((concept: Clazz) => {
       this.itemHover(concept);
-
-    });
-
-    eventBus.on('app:conceptSelect').subscribe((conceptIri: string) => {
-      this.goto(conceptIri);
     });
   }
 
