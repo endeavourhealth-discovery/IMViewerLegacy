@@ -16,6 +16,11 @@ import { NgEventBus } from 'ng-event-bus';
   styleUrls: ['./data-model-navigator.component.scss']
 })
 export class DataModelNavigatorComponent implements OnInit {
+
+  @Input()
+  concept: Clazz;
+
+
   @Input()
   set conceptIri(iri: string) {
       this.iri = iri;
@@ -26,7 +31,6 @@ export class DataModelNavigatorComponent implements OnInit {
   pad = 16;
 
   iri: string;
-  concept: Clazz;
   properties: Property[];
   sources: Related[];
   targets: Related[];
@@ -239,104 +243,107 @@ export class DataModelNavigatorComponent implements OnInit {
 
     let lastOwner = this.concept.iri;
     let i = 0;
-    for (let property of this.properties) {
-    // for (let i = 0; i < this.properties.length; i++) {
-    //  const property = this.properties[i];
-      let l = this.pad;
+    for (let intersection of this.concept.SubClassOf[0].Intersection) {
+      if(intersection.PropertyObject != null) {
+        // for (let i = 0; i < this.properties.length; i++) {
+        //  const property = this.properties[i];
+        let l = this.pad;
 
-      if (property.owner.iri != lastOwner) {
-          lastOwner = property.owner.iri;
-          const o = s.append('text')
-              .text('Inherited from ' + property.owner.name + ':')
-              .attr('font-size', 10)
-              .attr('font-style', 'italic')
-              .attr('font-weight', 'bold')
-              .attr('x', l)
-              .attr('y', 38 + (20 * i))
-              .attr('class', 'clickable')
-              .on('click', () => this.nodeClick(property.owner.iri))
-              .on('mouseenter', () => this.nodeHover(property.owner))
-              .on('mouseleave', () => this.nodeHover(null));
-          o.insert('title')
-              .text(property.owner.name);
+        // if (property.owner.iri != lastOwner) {
+        //     lastOwner = property.owner.iri;
+        //     const o = s.append('text')
+        //         .text('Inherited from ' + property.owner.name + ':')
+        //         .attr('font-size', 10)
+        //         .attr('font-style', 'italic')
+        //         .attr('font-weight', 'bold')
+        //         .attr('x', l)
+        //         .attr('y', 38 + (20 * i))
+        //         .attr('class', 'clickable')
+        //         .on('click', () => this.nodeClick(property.owner.iri))
+        //         .on('mouseenter', () => this.nodeHover(property.owner))
+        //         .on('mouseleave', () => this.nodeHover(null));
+        //     o.insert('title')
+        //         .text(property.owner.name);
 
-          i++;
-      }
+        //     i++;
+        // }
 
-      const p = s.append('text')
-        .text(property.property.name + ': ')
-        .attr('font-size', 12)
-        .attr('x', l)
-        .attr('y', 38 + (20 * i))
-        .attr('class', 'clickable')
-        .on('click', () => this.nodeClick(property.property.iri))
-        .on('mouseenter', () => this.nodeHover(property.property))
-        .on('mouseleave', () => this.nodeHover(null));
-
-      if (property.level >= 0) {
-        p.attr('fill', 'grey');
-      }
-
-      l += p.node().getComputedTextLength() + 4;
-
-      // Type
-      const pt = s.append('text')
-        .text(property.valueType.name + this.cardText(property.minCardinality, property.maxCardinality))
-        .attr('font-size', 12)
-        .attr('x', l)
-        .attr('y', 38 + (20 * i))
-        .attr('class', 'clickable')
-        .on('click', () => this.nodeClick(property.valueType.iri))
-        .on('mouseenter', () => this.nodeHover(property.valueType))
-        .on('mouseleave', () => this.nodeHover(null));
-
-      if (property.level >= 0) {
-        pt.attr('fill', 'grey');
-      }
-
-      l += pt.node().getComputedTextLength() + 4;
-
-/*      if (property.level >= 0) {
-        const o = s.append('text')
-          .text('(inherited from ' + property.owner.name + ')')
-          .attr('font-size', 10)
-          .attr('font-style', 'italic')
+        const p = s.append('text')
+          .text(intersection.PropertyObject.Property.name + ': ')
+          .attr('font-size', 12)
           .attr('x', l)
           .attr('y', 38 + (20 * i))
           .attr('class', 'clickable')
-          .attr('fill', 'grey')
-          .on('click', () => this.nodeClick(property.owner.iri));
-        o.insert('title')
-          .text(property.owner.name);
+          .on('click', () => this.nodeClick(intersection.PropertyObject.Property.iri))
+          .on('mouseenter', () => this.nodeHover(intersection.PropertyObject.Property))
+          .on('mouseleave', () => this.nodeHover(null));
 
-        l += o.node().getComputedTextLength() + 4;
-      }*/
+        // if (property.level >= 0) {
+        //   p.attr('fill', 'grey');
+        // }
 
-      l += this.pad;
+        l += p.node().getComputedTextLength() + 4;
 
-      if (l > w) {
-        w = l;
+        // Type
+        const pt = s.append('text')
+          .text(intersection.PropertyObject.Class.name + this.cardText(intersection.PropertyObject.Min, intersection.PropertyObject.Max))
+          .attr('font-size', 12)
+          .attr('x', l)
+          .attr('y', 38 + (20 * i))
+          .attr('class', 'clickable')
+          .on('click', () => this.nodeClick(intersection.PropertyObject.Class.iri))
+          .on('mouseenter', () => this.nodeHover(intersection.PropertyObject.Class))
+          .on('mouseleave', () => this.nodeHover(null));
+
+        // if (property.level >= 0) {
+        //   pt.attr('fill', 'grey');
+        // }
+
+        l += pt.node().getComputedTextLength() + 4;
+
+  /*      if (property.level >= 0) {
+          const o = s.append('text')
+            .text('(inherited from ' + property.owner.name + ')')
+            .attr('font-size', 10)
+            .attr('font-style', 'italic')
+            .attr('x', l)
+            .attr('y', 38 + (20 * i))
+            .attr('class', 'clickable')
+            .attr('fill', 'grey')
+            .on('click', () => this.nodeClick(property.owner.iri));
+          o.insert('title')
+            .text(property.owner.name);
+
+          l += o.node().getComputedTextLength() + 4;
+        }*/
+
+        l += this.pad;
+
+        if (l > w) {
+          w = l;
+        }
+
+        i++;
       }
 
-      i++;
+      w = Math.round(w);
+
+      if (this.concept.SubClassOf[0].Intersection.length > 0) {
+        s.append('line')
+          .attr('x1', 0)
+          .attr('y1', 22)
+          .attr('x2', w)
+          .attr('y2', 22)
+          .attr('stroke', 'black');
+      }
+
+      r.attr('width', w)
+      .attr('height', 25 + (20 * i))
+
+      graph.setNode(this.concept.iri, {label: this.concept.name, width: w, height: 25 + (20 * i)});
+      map.set(this.concept.iri, s);
+
     }
-
-    w = Math.round(w);
-
-    if (this.properties.length > 0) {
-      s.append('line')
-        .attr('x1', 0)
-        .attr('y1', 22)
-        .attr('x2', w)
-        .attr('y2', 22)
-        .attr('stroke', 'black');
-    }
-
-    r.attr('width', w)
-     .attr('height', 25 + (20 * i))
-
-    graph.setNode(this.concept.iri, {label: this.concept.name, width: w, height: 25 + (20 * i)});
-    map.set(this.concept.iri, s);
   }
 
   cardText(min: number, max: number): string {
