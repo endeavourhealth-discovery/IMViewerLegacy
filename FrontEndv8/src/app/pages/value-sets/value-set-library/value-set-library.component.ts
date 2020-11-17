@@ -1,7 +1,7 @@
 import { SchemeCount } from './../../../models/old/SchemeCount';
 import { ConceptService } from './../../../services/concept.service';
 import { ValueSetMember } from './../../../models/old/ValueSetMember';
-import { Clazz } from './../../../models/objectmodel/Clazz';
+import { Concept } from './../../../models/objectmodel/Concept';
 import { NgEventBus } from 'ng-event-bus';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
@@ -17,14 +17,14 @@ import { KeycloakService } from 'keycloak-angular';
   styleUrls: ['./value-set-library.component.scss']
 })
 export class ValueSetLibraryComponent implements OnInit {
-  concept: Clazz;
+  concept: Concept;
   members: ValueSetMember[];
   selectedIri: string;
   searchSize = 72;
   root = ':VSET_ValueSet';
   relationships = ['sn:116680003'];
   nameCache = {};
-  hoveredConcept: Clazz = new Clazz();
+  hoveredConcept: Concept = new Concept();
   history = [];
   timer: any;
   sidebar = false;
@@ -39,7 +39,7 @@ export class ValueSetLibraryComponent implements OnInit {
     private eventBus: NgEventBus) {
     this.routeEvent(this.router);
 
-    this.eventBus.on('app:conceptHover').subscribe((concept: Clazz) => {
+    this.eventBus.on('app:conceptHover').subscribe((concept: Concept) => {
       this.itemHover(concept);
     });
   }
@@ -86,7 +86,7 @@ export class ValueSetLibraryComponent implements OnInit {
     return JSON.stringify(object);
   }
 
-  itemHover(concept: Clazz) {
+  itemHover(concept: Concept) {
     const root = this;
     if (concept != null) {
       this.timer = setTimeout(() => {

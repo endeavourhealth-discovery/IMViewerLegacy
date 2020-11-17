@@ -2,7 +2,7 @@ import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} f
 import {Related} from '../models/old/Related';
 import {Property} from '../models/old/Property';
 import {LoggerService} from 'dds-angular8/logger';
-import {Clazz} from '../models/objectmodel/Clazz';
+import {Concept} from '../models/objectmodel/Concept';
 import * as d3 from 'd3';
 import * as dagre from 'dagre';
 import svgPanZoom from 'svg-pan-zoom';
@@ -18,7 +18,7 @@ import { NgEventBus } from 'ng-event-bus';
 export class DataModelNavigatorComponent implements OnInit {
 
   @Input()
-  concept: Clazz;
+  concept: Concept;
 
 
   @Input()
@@ -31,7 +31,6 @@ export class DataModelNavigatorComponent implements OnInit {
   pad = 16;
 
   iri: string;
-  properties: Property[];
   sources: Related[];
   targets: Related[];
   obs: Subscription = null;
@@ -49,25 +48,20 @@ export class DataModelNavigatorComponent implements OnInit {
       this.obs.unsubscribe();
       this.obs = null;
     }
-    this.concept = this.properties = this.sources = this.targets = null;
+    this.concept = this.sources = this.targets = null;
     svgPanZoom('#panZoom').reset();
     this.targetCanvas.nativeElement.innerHTML = '<svg id="panZoom" width="100%" height="100%"></svg>';
 
     this.obs = zip(
         this.service.getConcept(this.iri),
-        this.service.getProperties(this.iri, true),
         this.service.getSources(this.iri, [], 15, 1),
         this.service.getTargets(this.iri, [], 15, 1)
     ).subscribe(
       (result) => {
         this.concept = result[0];
-        this.properties = result[1];
-        this.sources = result[2].result;
+        this.sources = result[1].result;
         // Exclude properties from targets list
-        this.targets = result[3].result.filter(
-            (el) => this.properties.findIndex((
-                p) => (p.valueType.iri == el.concept.iri) && (p.property.iri == el.relationship.iri)
-            ) < 0);
+        this.targets = result[2].result;
         this.redraw();
         this.obs = null;
       },
@@ -76,7 +70,7 @@ export class DataModelNavigatorComponent implements OnInit {
   }
 
   redraw() {
-    if (this.concept && this.properties && this.sources && this.targets) {
+    if (this.concept && this.sources && this.targets) {
       this.buildSvg();
     }
   }
@@ -243,7 +237,7 @@ export class DataModelNavigatorComponent implements OnInit {
 
     let lastOwner = this.concept.iri;
     let i = 0;
-    for (let intersection of this.concept.SubClassOf[0].Intersection) {
+    for (let intersection of this.concept.subClassOf[0].Intersection) {
       if(intersection.PropertyObject != null) {
         // for (let i = 0; i < this.properties.length; i++) {
         //  const property = this.properties[i];
@@ -328,7 +322,7 @@ export class DataModelNavigatorComponent implements OnInit {
 
       w = Math.round(w);
 
-      if (this.concept.SubClassOf[0].Intersection.length > 0) {
+      if (this.concept.subClassOf[0].Intersection.length > 0) {
         s.append('line')
           .attr('x1', 0)
           .attr('y1', 22)
@@ -369,11 +363,11 @@ export class DataModelNavigatorComponent implements OnInit {
     this.eventBus.cast('app:conceptSelect', iri);
   }
 
-  nodeHover(concept: Clazz) {
+  nodeHover(concept: Concept) {
     if (concept != null || concept !== undefined) {
       this.eventBus.cast('app:conceptHover', concept);
     } else {
-      this.eventBus.cast('app:conceptHover', new Clazz());
+      this.eventBus.cast('app:conceptHover', new Concept());
     }
   }
 }

@@ -1,5 +1,11 @@
-import { DataTypeRestriction } from './DataTypeRestriction';
 import { Axiom } from './Axiom';
+import { ConceptReference } from './ConceptReference';
 export class DataTypeDefinition extends Axiom {
-  dataTypeRestriction: DataTypeRestriction;
+  dataType: ConceptReference;
+  oneOf: Set<string>;
+  minOperator: string;
+  minValue: string;
+  maxOperator: string;
+  maxValue: string;
+  pattern: string;
 }

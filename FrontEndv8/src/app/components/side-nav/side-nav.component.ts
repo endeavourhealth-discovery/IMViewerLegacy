@@ -1,5 +1,5 @@
 import { NgEventBus } from 'ng-event-bus';
-import { Clazz } from '../../models/objectmodel/Clazz';
+import { Concept} from '../../models/objectmodel/Concept';
 import { LoggerService } from 'dds-angular8';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { KeycloakService } from 'keycloak-angular';
@@ -12,7 +12,7 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./side-nav.component.scss']
 })
 export class SideNavComponent implements OnInit {
-  @Input() concept: Clazz;
+  @Input() concept: Concept;
   @Input() root: string;
   @Input() relationships: string;
   @Input() selectedIri: string;
@@ -45,7 +45,7 @@ export class SideNavComponent implements OnInit {
     });
   }
 
-  itemHover(concept: Clazz) {
+  itemHover(concept: Concept) {
     this.eventBus.cast('app:conceptHover', concept);
   }
 

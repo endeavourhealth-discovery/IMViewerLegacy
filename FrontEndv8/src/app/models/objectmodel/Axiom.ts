@@ -1,8 +1,8 @@
 import { IMAnnotated } from './IMAnnotated';
-import { Annotation } from './Annotation';
 import { ConceptStatus } from './ConceptStatus';
+import { Annotation } from './Annotation';
 import { IMEntity } from './IMEntity';
-export class Axiom implements IMAnnotated{
+export class Axiom implements IMAnnotated {
   dbid: number;
   status: ConceptStatus;
   version: number;
@@ -27,6 +27,12 @@ export class Axiom implements IMAnnotated{
     throw new Error('Method not implemented.');
   }
   setVersion(version: number): IMEntity {
+    throw new Error('Method not implemented.');
+  }
+  setDbid(dbid: number): IMEntity {
+    throw new Error('Method not implemented.');
+  }
+  getDbid(): number {
     throw new Error('Method not implemented.');
   }
 }

@@ -1,17 +1,18 @@
 import { IMEntity } from './IMEntity';
-import { DPECardinalityRestriction } from './DPECardinalityRestriction';
-import { OPECardinalityRestriction } from './OPECardinalityRestriction';
+import { ObjectPropertyValue } from './ObjectPropertyValue';
+import { DataPropertyValue } from './DataPropertyValue';
 import { ConceptReference } from './ConceptReference';
 import { ConceptStatus } from './ConceptStatus';
 export class ClassExpression implements IMEntity {
+  dbid: number;
   inferred: boolean;
-  clazz: ConceptReference;
-  intersection: Set<ClassExpression>;
-  union: Set<ClassExpression>;
+  Concept: ConceptReference;
+  intersection: Array<ClassExpression>;
+  union: Array<ClassExpression>;
   complementOf: ClassExpression;
-  propertyObject: OPECardinalityRestriction;
-  propertyData: DPECardinalityRestriction;
-  objectOneOf: Set<ConceptReference>;
+  objectPropertyValue: ObjectPropertyValue;
+  dataPropertyValue: DataPropertyValue;
+  objectOneOf: Array<ConceptReference>;
 
   getStatus(): ConceptStatus {
     throw new Error('Method not implemented.');
@@ -23,6 +24,12 @@ export class ClassExpression implements IMEntity {
     throw new Error('Method not implemented.');
   }
   setVersion(version: number): IMEntity {
+    throw new Error('Method not implemented.');
+  }
+  setDbid(dbid: number): IMEntity {
+    throw new Error('Method not implemented.');
+  }
+  getDbid(): number {
     throw new Error('Method not implemented.');
   }
 }

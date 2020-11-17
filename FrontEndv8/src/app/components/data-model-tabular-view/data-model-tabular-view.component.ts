@@ -7,7 +7,7 @@ import {LoggerService} from 'dds-angular8/logger';
 import { MatTableDataSource } from '@angular/material/table';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Observable } from 'rxjs';
-import { Clazz } from '../../models/objectmodel/Clazz';
+import { Concept} from '../../models/objectmodel/Concept';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -25,7 +25,7 @@ const debug = (message: string) => { console.log(message); };
 })
 
 class DataModelTablularViewComponent {
-  private static UNDEFINED_CONCEPT: Clazz;
+  private static UNDEFINED_CONCEPT: Concept;
 
   private iri: string;
 
@@ -37,7 +37,7 @@ class DataModelTablularViewComponent {
   childrenChipListTemplateContext: ChipListTemplateContext;
 
   @Input()
-  concept: Clazz;
+  concept: Concept;
 
   @Input()
   set conceptIri(iri: string) {
@@ -74,11 +74,11 @@ class DataModelTablularViewComponent {
     });
   }
 
-  onSelect(concept: Clazz) {
+  onSelect(concept: Concept) {
     this.eventBus.cast('app:conceptSelect', concept.iri);
   }
 
-  onHoverOver(concept: Clazz) {
+  onHoverOver(concept: Concept) {
     this.eventBus.cast('app:conceptHover', concept);
   }
 
@@ -112,14 +112,14 @@ class DataTable<D> {
     return (this.hasRows) ? this.rows.data.length : 0;
   }
 
-  getTooltip(concept: Clazz): string {
+  getTooltip(concept: Concept): string {
     return `IRI - ${concept.iri} Description - ${concept.description ? concept.description : 'no data found'}`;
   }
 }
 
 interface ChipListTemplateContext {
   title: string,
-  chips: Clazz[]
+  chips: Concept[]
 }
 
 export {

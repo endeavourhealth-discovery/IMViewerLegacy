@@ -2,7 +2,7 @@ import { DataModelDialogComponent } from './../data-model-create/data-model-dial
 import { MatDialog } from '@angular/material/dialog';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ConceptService } from '../../../services/concept.service';
-import { Clazz } from '../../../models/objectmodel/Clazz';
+import { Concept } from '../../../models/objectmodel/Concept';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { LoggerService } from 'dds-angular8/logger';
 import { ConceptTreeViewComponent } from 'im-common/im-controls';
@@ -20,7 +20,7 @@ const debug = (message: string) => { console.log(message); };
 class DataModelLibraryComponent implements OnInit {
 
   selectedIri: string;
-  concept: Clazz;
+  concept: Concept;
 
   searchSize = 72;
   root = ':DiscoveryCommonDataModel';
@@ -28,7 +28,7 @@ class DataModelLibraryComponent implements OnInit {
   selected = 'dataModel';
   showFiller = true;
 
-  hoveredConcept: Clazz = new Clazz();
+  hoveredConcept: Concept = new Concept();
 
   history = [];
 
@@ -49,7 +49,7 @@ class DataModelLibraryComponent implements OnInit {
     private eventBus: NgEventBus) {
     this.routeEvent(this.router);
 
-    this.eventBus.on('app:conceptHover').subscribe((concept: Clazz) => {
+    this.eventBus.on('app:conceptHover').subscribe((concept: Concept) => {
       this.itemHover(concept);
 
     });
@@ -87,7 +87,7 @@ class DataModelLibraryComponent implements OnInit {
     }
   }
 
-  itemHover(concept: Clazz) {
+  itemHover(concept: Concept) {
     const root = this;
     if (concept != null) {
       this.timer = setTimeout(() => {

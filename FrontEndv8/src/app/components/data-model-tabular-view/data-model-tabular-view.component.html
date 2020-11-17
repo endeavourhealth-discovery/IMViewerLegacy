@@ -9,7 +9,7 @@
   <div style="display: flex;vertical-align: middle;">
     Info - no data found
   </div>
-  <p *ngFor="let item of concept.SubClassOf[0].Intersection">
+  <p *ngFor="let item of concept.subClassOf[0].Intersection">
     <span *ngIf="item.PropertyObject">{{item.PropertyObject.Property.iri}} - {{item.PropertyObject.Class.iri}}</span>
   </p>
 </ng-template>
@@ -38,8 +38,8 @@
     </mat-panel-title>
   </mat-expansion-panel-header>
 
-  <ng-container *ngIf="concept.SubClassOf; else infoNoDataFoundTemplate" style="width: 100%;">
-    <table mat-table [dataSource]="concept.SubClassOf[0].Intersection" class="" style="width: 100%;">
+  <ng-container *ngIf="concept.subClassOf; else infoNoDataFoundTemplate" style="width: 100%;">
+    <table mat-table [dataSource]="concept.subClassOf[0].Intersection" class="" style="width: 100%;">
       <!--- Note that these columns can be defined in any order.
             The actual rendered columns are set as a property on the row definition" -->
 

@@ -1,10 +1,10 @@
-import { Clazz } from './../objectmodel/Clazz';
+import { Concept } from './../objectmodel/Concept';
 
 export class Property {
-  property: Clazz;
+  property: Concept;
   minCardinality: number;
   maxCardinality: number;
-  valueType: Clazz;
+  valueType: Concept;
   level: number;
-  owner: Clazz;
+  owner: Concept;
 }

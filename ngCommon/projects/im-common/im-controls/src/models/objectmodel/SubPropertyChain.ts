@@ -1,5 +1,5 @@
-import { ConceptReference } from './ConceptReference';
 import { Axiom } from './Axiom';
-export class SubPropertyChain extends Axiom{
+import { ConceptReference } from './ConceptReference';
+export class SubPropertyChain extends Axiom {
   property: Set<ConceptReference>;
 }

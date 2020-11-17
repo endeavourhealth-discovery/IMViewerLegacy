@@ -1,5 +1,5 @@
 import { ConceptService } from './../../../services/concept.service';
-import { Clazz } from './../../../models/objectmodel/Clazz';
+import { Concept } from './../../../models/objectmodel/Concept';
 import { NgEventBus } from 'ng-event-bus';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
@@ -14,12 +14,12 @@ import { JsonEditorOptions } from 'ang-jsoneditor';
   styleUrls: ['./ontology-library.component.scss']
 })
 export class OntologyLibraryComponent implements OnInit {
-  concept: Clazz;
+  concept: Concept;
   selectedIri: string;
   searchSize = 72;
   root = ':1301000252100';
   relationships = ['sn:116680003'];
-  hoveredConcept: Clazz = new Clazz();
+  hoveredConcept: Concept = new Concept();
   definition = null;
   conceptPropertyObjects = [];
 
@@ -43,7 +43,7 @@ export class OntologyLibraryComponent implements OnInit {
     this.editorOptions.mainMenuBar = false;
     this.editorOptions.expandAll = true;
 
-    this.eventBus.on('app:conceptHover').subscribe((concept: Clazz) => {
+    this.eventBus.on('app:conceptHover').subscribe((concept: Concept) => {
       this.itemHover(concept);
 
     });
@@ -84,7 +84,7 @@ export class OntologyLibraryComponent implements OnInit {
     }
   }
 
-  itemHover(concept: Clazz) {
+  itemHover(concept: Concept) {
     const root = this;
     if (concept != null) {
       this.timer = setTimeout(() => {

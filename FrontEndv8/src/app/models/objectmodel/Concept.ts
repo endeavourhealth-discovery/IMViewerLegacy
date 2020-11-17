@@ -1,9 +1,11 @@
 import { IMAnnotated } from './IMAnnotated';
-import { Annotation } from './Annotation';
 import { ConceptStatus } from './ConceptStatus';
+import { Annotation } from './Annotation';
+import { ConceptType } from './ConceptType';
+import { ClassAxiom } from './ClassAxiom';
+import { ClassExpression } from './ClassExpression';
 import { ConceptReference } from './ConceptReference';
 import { IMEntity } from './IMEntity';
-
 export class Concept implements IMAnnotated {
   dbid: number;
   iri: string;
@@ -15,7 +17,11 @@ export class Concept implements IMAnnotated {
   version: number;
   isA: Set<Concept>;
   annotations: Set<Annotation>;
-  isRef: boolean;
+  conceptType: ConceptType;
+  subClassOf: Set<ClassAxiom>;
+  equivalentTo: Set<ClassAxiom>;
+  expression: ClassExpression;
+  DisjointWith: Set<ConceptReference>;
 
   getAnnotations(): Set<Annotation> {
     throw new Error('Method not implemented.');
@@ -36,6 +42,12 @@ export class Concept implements IMAnnotated {
     throw new Error('Method not implemented.');
   }
   setVersion(version: number): IMEntity {
+    throw new Error('Method not implemented.');
+  }
+  setDbid(dbid: number): IMEntity {
+    throw new Error('Method not implemented.');
+  }
+  getDbid(): number {
     throw new Error('Method not implemented.');
   }
 }

@@ -1,10 +1,6 @@
 import { Namespace } from './Namespace';
 import { DocumentInfo } from './DocumentInfo';
-import { Clazz } from './Clazz';
-import { ObjectProperty } from './ObjectProperty';
-import { DataProperty } from './DataProperty';
-import { DataType } from './DataType';
-import { AnnotationProperty } from './AnnotationProperty';
+import { Concept } from './Concept';
 import { Individual } from './Individual';
 export class Ontology {
   iri: string;
@@ -12,10 +8,6 @@ export class Ontology {
   imports: Set<string>;
   namespace: Set<Namespace>;
   documentInfo: DocumentInfo;
-  clazz: Set<Clazz>;
-  objectProperty: Set<ObjectProperty>;
-  dataProperty: Set<DataProperty>;
-  dataType: Set<DataType>;
-  annotationProperty: Set<AnnotationProperty>;
+  concept: Set<Concept>;
   individual: Set<Individual>;
 }

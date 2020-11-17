@@ -1,8 +1,8 @@
-import { Clazz } from './../objectmodel/Clazz';
+import { Concept } from './../objectmodel/Concept';
 
 export class Related {
   minCardinality: number;
   maxCardinality: number;
-  relationship: Clazz;
-  concept: Clazz;
+  relationship: Concept;
+  concept: Concept;
 }

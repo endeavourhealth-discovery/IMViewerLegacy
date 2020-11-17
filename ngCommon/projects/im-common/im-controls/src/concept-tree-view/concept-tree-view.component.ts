@@ -3,7 +3,7 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNode} from '../models/old/TreeNode';
 import {TreeSource} from './TreeSource';
 import {LoggerService} from 'dds-angular8/logger';
-import {Clazz} from '../models/objectmodel/Clazz';
+import {Concept} from '../models/objectmodel/Concept';
 import {Related} from '../models/old/Related';
 import {ConceptTreeViewService} from './concept-tree-view.service';
 import { NgEventBus } from 'ng-event-bus';
@@ -74,7 +74,7 @@ export class ConceptTreeViewComponent implements AfterViewInit {
 
   nodeHover(node: TreeNode) {
     if (node !== null) {
-      const concept: Clazz = new Clazz();
+      const concept: Concept = new Concept();
       concept.name = node.name;
       concept.iri = node.id;
       this.eventBus.cast('app:conceptHover', concept);
@@ -83,14 +83,14 @@ export class ConceptTreeViewComponent implements AfterViewInit {
     }
   }
 
-  loadConceptTree(concept: Clazz) {
+  loadConceptTree(concept: Concept) {
     this.service.loadTree(this.root, concept.iri, this.relationships).subscribe(
       (result) => this.buildTree(concept, result),
       (error) => this.log.error(error)
     );
   }
 
-  buildTree(concept: Clazz, related: Related[]) {
+  buildTree(concept: Concept, related: Related[]) {
 
     related.reverse();
 

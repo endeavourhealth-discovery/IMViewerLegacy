@@ -1,10 +1,10 @@
-import { SubPropertyChain } from './SubPropertyChain';
+import { Concept } from './Concept';
 import { PropertyAxiom } from './PropertyAxiom';
 import { ClassAxiom } from './ClassAxiom';
+import { SubPropertyChain } from './SubPropertyChain';
 import { Axiom } from './Axiom';
-import { Concept } from './Concept';
 export class ObjectProperty extends Concept {
-  subObjectPropertyOf: Set<PropertyAxiom> ;
+  subObjectPropertyOf: Set<PropertyAxiom>;
   inversePropertyOf: PropertyAxiom;
   objectPropertyRange: Set<ClassAxiom>;
   propertyDomain: Set<ClassAxiom>;
