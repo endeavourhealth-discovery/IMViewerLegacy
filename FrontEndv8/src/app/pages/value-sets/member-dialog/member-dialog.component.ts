@@ -31,11 +31,7 @@ export class MemberDialogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.service.getChildrenByScheme(this.iri, this.scheme)
-      .subscribe(
-        (result) => this.children = result,
-        (error) => this.log.error(error)
-      )
+
   }
 
   close() {

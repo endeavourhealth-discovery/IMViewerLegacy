@@ -84,10 +84,10 @@ export class ConceptTreeViewComponent implements AfterViewInit {
   }
 
   loadConceptTree(concept: Concept) {
-    this.service.loadTree(this.root, concept.iri, this.relationships).subscribe(
-      (result) => this.buildTree(concept, result),
-      (error) => this.log.error(error)
-    );
+    // this.service.loadTree(this.root, concept.iri, this.relationships).subscribe(
+    //   (result) => this.buildTree(concept, result),
+    //   (error) => this.log.error(error)
+    // );
   }
 
   buildTree(concept: Concept, related: Related[]) {

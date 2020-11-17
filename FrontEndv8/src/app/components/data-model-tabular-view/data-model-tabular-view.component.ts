@@ -60,18 +60,18 @@ class DataModelTablularViewComponent {
   }
 
   refresh() {
-    let dataModelDefinitionObservable: Observable<DataModelDefinition> = this.service.getDataModelDefinition(this.iri);
+    // let dataModelDefinitionObservable: Observable<DataModelDefinition> = this.service.getDataModelDefinition(this.iri);
 
-    this.propertiesTable.clear();
+    // this.propertiesTable.clear();
 
-    dataModelDefinitionObservable.subscribe(dataModelDefinition => {
-      this.dataModelDefinition = dataModelDefinition;
+    // dataModelDefinitionObservable.subscribe(dataModelDefinition => {
+    //   this.dataModelDefinition = dataModelDefinition;
 
-      this.parentsChipListTemplateContext.chips = this.dataModelDefinition.getDirectParentConcepts();
-      this.childrenChipListTemplateContext.chips = this.dataModelDefinition.getDirectChildConcepts();
+    //   this.parentsChipListTemplateContext.chips = this.dataModelDefinition.getDirectParentConcepts();
+    //   this.childrenChipListTemplateContext.chips = this.dataModelDefinition.getDirectChildConcepts();
 
-      this.propertiesTable.setRows(this.dataModelDefinition.getFlatProperties());
-    });
+    //   this.propertiesTable.setRows(this.dataModelDefinition.getFlatProperties());
+    // });
   }
 
   onSelect(concept: Concept) {

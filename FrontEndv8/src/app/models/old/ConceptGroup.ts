@@ -1,4 +1,4 @@
-import { Concept } from './../objectmodel/Concept';
+import { Concept } from './Concept';
 
 export class ConceptGroup {
     name: string;

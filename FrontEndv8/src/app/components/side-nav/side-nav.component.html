@@ -17,7 +17,10 @@
               <button mat-icon-button color="primary" style="float:right" (click)="openDialog()">
                 <mat-icon>add</mat-icon>
               </button>
-              <app-concept-tree-view [root]="root" [conceptIri]="selectedIri"></app-concept-tree-view>
+              <!-- <app-concept-tree-view [root]="root" [conceptIri]="selectedIri"></app-concept-tree-view> -->
+
+              <app-concept-hierarchy-view [root]="root" [concept]="concept"></app-concept-hierarchy-view>
+
             </ng-template>
           </mat-tab>
           <mat-tab label="History">

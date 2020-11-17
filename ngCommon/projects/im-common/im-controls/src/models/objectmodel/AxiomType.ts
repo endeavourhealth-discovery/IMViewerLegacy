@@ -1,5 +1,5 @@
 export enum AxiomType {
-  'subClassOf',
+  'SubClassOf',
   'EquivalentTo',
   'SubObjectPropertyOf',
   'SubDataPropertyOf',

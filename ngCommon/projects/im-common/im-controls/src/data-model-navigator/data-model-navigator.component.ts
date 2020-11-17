@@ -1,13 +1,13 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {Related} from '../models/old/Related';
-import {Property} from '../models/old/Property';
-import {LoggerService} from 'dds-angular8/logger';
-import {Concept} from '../models/objectmodel/Concept';
+import { ConceptReferenceNode } from './../models/objectmodel/ConceptReferenceNode';
+import { ConceptReference } from './../models/objectmodel/ConceptReference';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { LoggerService } from 'dds-angular8/logger';
+import { Concept } from '../models/objectmodel/Concept';
 import * as d3 from 'd3';
 import * as dagre from 'dagre';
 import svgPanZoom from 'svg-pan-zoom';
-import {Subscription, zip} from 'rxjs';
-import {DataModelNavigatorService} from './data-model-navigator.service';
+import { Subscription, zip } from 'rxjs';
+import { DataModelNavigatorService } from './data-model-navigator.service';
 import { NgEventBus } from 'ng-event-bus';
 
 @Component({
@@ -23,21 +23,21 @@ export class DataModelNavigatorComponent implements OnInit {
 
   @Input()
   set conceptIri(iri: string) {
-      this.iri = iri;
-      this.refresh();
+    this.iri = iri;
+    this.refresh();
   }
-  @ViewChild('svg', {static: true}) targetCanvas: ElementRef;
+  @ViewChild('svg', { static: true }) targetCanvas: ElementRef;
 
   pad = 16;
 
   iri: string;
-  sources: Related[];
-  targets: Related[];
+  parents: Set<ConceptReference>;
+  children: Set<ConceptReferenceNode>;
   obs: Subscription = null;
 
   constructor(private service: DataModelNavigatorService,
-              private log: LoggerService,
-              private eventBus: NgEventBus) {
+    private log: LoggerService,
+    private eventBus: NgEventBus) {
   }
 
   ngOnInit() {
@@ -48,20 +48,20 @@ export class DataModelNavigatorComponent implements OnInit {
       this.obs.unsubscribe();
       this.obs = null;
     }
-    this.concept = this.sources = this.targets = null;
+    this.concept = this.parents = this.children = null;
     svgPanZoom('#panZoom').reset();
     this.targetCanvas.nativeElement.innerHTML = '<svg id="panZoom" width="100%" height="100%"></svg>';
 
     this.obs = zip(
-        this.service.getConcept(this.iri),
-        this.service.getSources(this.iri, [], 15, 1),
-        this.service.getTargets(this.iri, [], 15, 1)
+      this.service.getConcept(this.iri),
+      this.service.getConceptParents(this.iri),
+      this.service.getConceptChildren(this.iri)
     ).subscribe(
       (result) => {
         this.concept = result[0];
-        this.sources = result[1].result;
+        this.parents = result[1];
         // Exclude properties from targets list
-        this.targets = result[2].result;
+        this.children = result[2];
         this.redraw();
         this.obs = null;
       },
@@ -70,7 +70,7 @@ export class DataModelNavigatorComponent implements OnInit {
   }
 
   redraw() {
-    if (this.concept && this.sources && this.targets) {
+    if (this.concept && this.parents && this.children) {
       this.buildSvg();
     }
   }
@@ -107,9 +107,9 @@ export class DataModelNavigatorComponent implements OnInit {
 
     this.buildConcept(svg, graph, map);
 
-    this.buildRelated(svg, graph, map, this.sources, false);
+    this.buildParents(svg, graph, map, this.parents, true);
 
-    this.buildRelated(svg, graph, map, this.targets, true);
+    this.buildChildren(svg, graph, map, this.children, false);
 
     dagre.layout(graph);
 
@@ -117,7 +117,7 @@ export class DataModelNavigatorComponent implements OnInit {
       const g = map.get(v);
       const i = graph.node(v);
       g.attr('x', i.x - (i.width / 2))
-       .attr('y', i.y - (i.height / 2));
+        .attr('y', i.y - (i.height / 2));
     });
 
     const lf = d3.line<any>()
@@ -147,76 +147,142 @@ export class DataModelNavigatorComponent implements OnInit {
     });
   }
 
-  buildRelated(svg, graph, map: Map<string, any>, relList: Related[], reverse: boolean) {
-      for (const rel of relList) {
-          // Dont add node if already exists
-          if (!map.has(rel.concept.iri)) {
-              const g = svg.append('g');
+  buildParents(svg, graph, map: Map<string, any>, relList: Set<ConceptReference>, reverse: boolean) {
+    for (const rel of relList) {
+      // Dont add node if already exists
+      if (!map.has(rel.iri)) {
+        const g = svg.append('g');
 
-              const s = g.append('svg')
-                  .attr('class', 'clickable')
-                  .on('click', () => this.nodeClick(rel.concept.iri))
-                  .on('mouseenter', () => this.nodeHover(rel.concept))
-                  .on('mouseleave', () => this.nodeHover(null));
+        const s = g.append('svg')
+          .attr('class', 'clickable')
+          .on('click', () => this.nodeClick(rel.iri))
+          .on('mouseenter', () => this.nodeHover(rel.iri))
+          .on('mouseleave', () => this.nodeHover(null));
 
-              const r = s.append('rect')
-                  .attr('rx', 6)
-                  .attr('ry', 6)
-                  .attr('height', 25)
-                  .attr('stroke', 'black');
+        const r = s.append('rect')
+          .attr('rx', 6)
+          .attr('ry', 6)
+          .attr('height', 25)
+          .attr('stroke', 'black');
 
-              if (rel.relationship.iri === 'sn:116680003')
-                  r.attr('fill', 'lightgreen')
-              else
-                  r.attr('fill', 'orange')
+        if (rel.iri === 'sn:116680003')
+          r.attr('fill', 'lightgreen')
+        else
+          r.attr('fill', 'orange')
 
 
-              const t = s.append('text')
-                  .text(rel.concept.name)
-                  .attr('font-size', 12)
-                  .attr('x', this.pad)
-                  .attr('y', 18);
+        const t = s.append('text')
+          .text(rel.name)
+          .attr('font-size', 12)
+          .attr('x', this.pad)
+          .attr('y', 18);
 
-              const w = t.node().getComputedTextLength() + (this.pad * 2);
-              r.attr('width', w);
-              graph.setNode(rel.concept.iri, {label: rel.concept.name, width: w, height: 25});
+        const w = t.node().getComputedTextLength() + (this.pad * 2);
+        r.attr('width', w);
+        graph.setNode(rel.iri, { label: rel.name, width: w, height: 25 });
 
-              map.set(rel.concept.iri, s);
-          }
-
-          const relId = (reverse) ? rel.concept.iri + '-' + this.concept.iri : this.concept.iri + '-' + rel.concept.iri;
-
-          // Dont add relationship if already exists
-          if (!map.has(relId)) {
-              const relName = rel.relationship.name + this.cardText(rel.minCardinality, rel.maxCardinality);
-
-              const l = svg.append('text')
-                  .text(relName)
-                  .attr('font-size', 10)
-                  .attr('height', 12)
-                  .attr('class', 'clickable')
-                  .on('click', () => this.nodeClick(rel.relationship.iri))
-                  .on('mouseenter', () => this.nodeHover(rel.relationship))
-                  .on('mouseleave', () => this.nodeHover(null));
-
-              const lw = l.node().getComputedTextLength();
-              l.attr('width', lw);
-
-              if (reverse) {
-                  graph.setEdge(rel.concept.iri, this.concept.iri, {label: relName, width: lw, height: 12});
-                  map.set(relId, l);
-              } else {
-                  graph.setEdge(this.concept.iri, rel.concept.iri, {label: relName, width: lw, height: 12});
-                  map.set(relId, l);
-              }
-          }
+        map.set(rel.iri, s);
       }
+
+      const relId = (reverse) ? rel.iri + '-' + this.concept.iri : this.concept.iri + '-' + rel.iri;
+
+      // Dont add relationship if already exists
+      if (!map.has(relId)) {
+        const relName = rel.name + this.cardText(0, 1);
+
+        const l = svg.append('text')
+          .text(relName)
+          .attr('font-size', 10)
+          .attr('height', 12)
+          .attr('class', 'clickable')
+          .on('click', () => this.nodeClick("isA"))
+          .on('mouseenter', () => this.nodeHover("isA"))
+          .on('mouseleave', () => this.nodeHover(null));
+
+        const lw = l.node().getComputedTextLength();
+        l.attr('width', lw);
+
+        if (reverse) {
+          graph.setEdge(rel.iri, this.concept.iri, { label: relName, width: lw, height: 12 });
+          map.set(relId, l);
+        } else {
+          graph.setEdge(this.concept.iri, rel.iri, { label: relName, width: lw, height: 12 });
+          map.set(relId, l);
+        }
+      }
+    }
+  }
+
+  buildChildren(svg, graph, map: Map<string, any>, relList: Set<ConceptReferenceNode>, reverse: boolean) {
+    for (const rel of relList) {
+      // Dont add node if already exists
+      if (!map.has(rel.iri)) {
+        const g = svg.append('g');
+
+        const s = g.append('svg')
+          .attr('class', 'clickable')
+          .on('click', () => this.nodeClick(rel.iri))
+          .on('mouseenter', () => this.nodeHover(rel.iri))
+          .on('mouseleave', () => this.nodeHover(null));
+
+        const r = s.append('rect')
+          .attr('rx', 6)
+          .attr('ry', 6)
+          .attr('height', 25)
+          .attr('stroke', 'black');
+
+        if (rel.iri === 'sn:116680003')
+          r.attr('fill', 'lightgreen')
+        else
+          r.attr('fill', 'orange')
+
+
+        const t = s.append('text')
+          .text(rel.name)
+          .attr('font-size', 12)
+          .attr('x', this.pad)
+          .attr('y', 18);
+
+        const w = t.node().getComputedTextLength() + (this.pad * 2);
+        r.attr('width', w);
+        graph.setNode(rel.iri, { label: rel.name, width: w, height: 25 });
+
+        map.set(rel.iri, s);
+      }
+
+      const relId = (reverse) ? rel.iri + '-' + this.concept.iri : this.concept.iri + '-' + rel.iri;
+
+      // Dont add relationship if already exists
+      if (!map.has(relId)) {
+        const relName = rel.name + this.cardText(0, 1);
+
+        const l = svg.append('text')
+          .text(relName)
+          .attr('font-size', 10)
+          .attr('height', 12)
+          .attr('class', 'clickable')
+          .on('click', () => this.nodeClick("isA"))
+          .on('mouseenter', () => this.nodeHover("isA"))
+          .on('mouseleave', () => this.nodeHover(null));
+
+        const lw = l.node().getComputedTextLength();
+        l.attr('width', lw);
+
+        if (reverse) {
+          graph.setEdge(rel.iri, this.concept.iri, { label: relName, width: lw, height: 12 });
+          map.set(relId, l);
+        } else {
+          graph.setEdge(this.concept.iri, rel.iri, { label: relName, width: lw, height: 12 });
+          map.set(relId, l);
+        }
+      }
+    }
   }
 
   buildConcept(svg, graph, map: Map<string, any>) {
     const g = svg.append('g');
 
-    const s  = g.append('svg');
+    const s = g.append('svg');
 
     // Block
     const r = s.append('rect')
@@ -225,7 +291,7 @@ export class DataModelNavigatorComponent implements OnInit {
       .attr('fill', 'lightblue')
       .attr('stroke', 'black');
 
-      // Title
+    // Title
     const t = s.append('text')
       .text(this.concept.name)
       .attr('font-weight', 'bold')
@@ -237,8 +303,8 @@ export class DataModelNavigatorComponent implements OnInit {
 
     let lastOwner = this.concept.iri;
     let i = 0;
-    for (let intersection of this.concept.subClassOf[0].Intersection) {
-      if(intersection.PropertyObject != null) {
+    for (let intersection of this.concept.SubClassOf[0].Intersection) {
+      if (intersection.ObjectPropertyValue != null) {
         // for (let i = 0; i < this.properties.length; i++) {
         //  const property = this.properties[i];
         let l = this.pad;
@@ -263,13 +329,13 @@ export class DataModelNavigatorComponent implements OnInit {
         // }
 
         const p = s.append('text')
-          .text(intersection.PropertyObject.Property.name + ': ')
+          .text(intersection.ObjectPropertyValue.Property.name + ': ')
           .attr('font-size', 12)
           .attr('x', l)
           .attr('y', 38 + (20 * i))
           .attr('class', 'clickable')
-          .on('click', () => this.nodeClick(intersection.PropertyObject.Property.iri))
-          .on('mouseenter', () => this.nodeHover(intersection.PropertyObject.Property))
+          .on('click', () => this.nodeClick(intersection.ObjectPropertyValue.Property.iri))
+          .on('mouseenter', () => this.nodeHover(intersection.ObjectPropertyValue.Property))
           .on('mouseleave', () => this.nodeHover(null));
 
         // if (property.level >= 0) {
@@ -280,13 +346,13 @@ export class DataModelNavigatorComponent implements OnInit {
 
         // Type
         const pt = s.append('text')
-          .text(intersection.PropertyObject.Class.name + this.cardText(intersection.PropertyObject.Min, intersection.PropertyObject.Max))
+          .text(intersection.ObjectPropertyValue.ValueType.name + this.cardText(intersection.ObjectPropertyValue.Min, intersection.ObjectPropertyValue.Max))
           .attr('font-size', 12)
           .attr('x', l)
           .attr('y', 38 + (20 * i))
           .attr('class', 'clickable')
-          .on('click', () => this.nodeClick(intersection.PropertyObject.Class.iri))
-          .on('mouseenter', () => this.nodeHover(intersection.PropertyObject.Class))
+          .on('click', () => this.nodeClick(intersection.ObjectPropertyValue.ValueType.iri))
+          .on('mouseenter', () => this.nodeHover(intersection.ObjectPropertyValue.ValueType))
           .on('mouseleave', () => this.nodeHover(null));
 
         // if (property.level >= 0) {
@@ -295,21 +361,21 @@ export class DataModelNavigatorComponent implements OnInit {
 
         l += pt.node().getComputedTextLength() + 4;
 
-  /*      if (property.level >= 0) {
-          const o = s.append('text')
-            .text('(inherited from ' + property.owner.name + ')')
-            .attr('font-size', 10)
-            .attr('font-style', 'italic')
-            .attr('x', l)
-            .attr('y', 38 + (20 * i))
-            .attr('class', 'clickable')
-            .attr('fill', 'grey')
-            .on('click', () => this.nodeClick(property.owner.iri));
-          o.insert('title')
-            .text(property.owner.name);
-
-          l += o.node().getComputedTextLength() + 4;
-        }*/
+        /*      if (property.level >= 0) {
+                const o = s.append('text')
+                  .text('(inherited from ' + property.owner.name + ')')
+                  .attr('font-size', 10)
+                  .attr('font-style', 'italic')
+                  .attr('x', l)
+                  .attr('y', 38 + (20 * i))
+                  .attr('class', 'clickable')
+                  .attr('fill', 'grey')
+                  .on('click', () => this.nodeClick(property.owner.iri));
+                o.insert('title')
+                  .text(property.owner.name);
+      
+                l += o.node().getComputedTextLength() + 4;
+              }*/
 
         l += this.pad;
 
@@ -322,7 +388,7 @@ export class DataModelNavigatorComponent implements OnInit {
 
       w = Math.round(w);
 
-      if (this.concept.subClassOf[0].Intersection.length > 0) {
+      if (this.concept.SubClassOf[0].Intersection.length > 0) {
         s.append('line')
           .attr('x1', 0)
           .attr('y1', 22)
@@ -332,9 +398,9 @@ export class DataModelNavigatorComponent implements OnInit {
       }
 
       r.attr('width', w)
-      .attr('height', 25 + (20 * i))
+        .attr('height', 25 + (20 * i))
 
-      graph.setNode(this.concept.iri, {label: this.concept.name, width: w, height: 25 + (20 * i)});
+      graph.setNode(this.concept.iri, { label: this.concept.name, width: w, height: 25 + (20 * i) });
       map.set(this.concept.iri, s);
 
     }
@@ -363,7 +429,7 @@ export class DataModelNavigatorComponent implements OnInit {
     this.eventBus.cast('app:conceptSelect', iri);
   }
 
-  nodeHover(concept: Concept) {
+  nodeHover(concept: Concept | string) {
     if (concept != null || concept !== undefined) {
       this.eventBus.cast('app:conceptHover', concept);
     } else {

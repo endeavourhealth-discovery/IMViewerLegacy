@@ -1,3 +1,4 @@
+import { ConceptTreeViewComponent } from 'im-common/im-controls';
 import { SchemeCount } from './../../../models/old/SchemeCount';
 import { ConceptService } from './../../../services/concept.service';
 import { ValueSetMember } from './../../../models/old/ValueSetMember';
@@ -6,7 +7,6 @@ import { NgEventBus } from 'ng-event-bus';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { LoggerService } from 'dds-angular8/logger';
-import { ConceptTreeViewComponent } from 'im-common/im-controls';
 import { MemberDialogComponent } from '../member-dialog/member-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { KeycloakService } from 'keycloak-angular';
@@ -74,11 +74,6 @@ export class ValueSetLibraryComponent implements OnInit {
         (result) => this.concept = result,
         (error) => this.log.error(error)
       );
-
-      this.service.getValueSetMembers(iri).subscribe(
-        (result) => this.members = result,
-        (error) => this.log.error(error)
-      );
     }
   }
 
@@ -111,10 +106,6 @@ export class ValueSetLibraryComponent implements OnInit {
 
   expand(item: ValueSetMember) {
     if (item && !item.counts) {
-      this.service.getChildCountByScheme(item.iri).subscribe(
-        (result) => item.counts = result,
-        (error) => this.log.error(error)
-      )
     }
   }
 

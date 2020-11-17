@@ -1,10 +1,10 @@
+import { ConceptTreeViewComponent } from 'im-common/im-controls';
 import { ConceptService } from './../../../services/concept.service';
 import { Concept } from './../../../models/objectmodel/Concept';
 import { NgEventBus } from 'ng-event-bus';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { LoggerService } from 'dds-angular8/logger';
-import { ConceptTreeViewComponent } from 'im-common/im-controls';
 import { KeycloakService } from 'keycloak-angular';
 import { JsonEditorOptions } from 'ang-jsoneditor';
 

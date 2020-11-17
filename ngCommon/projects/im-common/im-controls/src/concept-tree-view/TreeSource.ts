@@ -73,52 +73,52 @@ export class TreeSource implements DataSource<TreeNode> {
 
   private loadMore(node: TreeNode, index: number, count: number) {
 
-    this.database.getSources(node.parentNode.id, this.relationships, 15, node.page).subscribe(
-      (result) => {
-        const nodes = result
-          .result
-          .map(related => new TreeNode(related.concept.iri, related.concept.name, node.level, true, node.parentNode));
+    // this.database.getSources(node.parentNode.id, this.relationships, 15, node.page).subscribe(
+    //   (result) => {
+    //     const nodes = result
+    //       .result
+    //       .map(related => new TreeNode(related.concept.iri, related.concept.name, node.level, true, node.parentNode));
 
-        // Add in paging node if required
-        if (result.page * result.pageSize < result.totalRecords) {
-          nodes.push(new TreeNode('_LOADMORE_', 'Load more...', node.level, false, node.parentNode, false, result.page + 1));
-        }
-        this.data.splice((index - 1), 1, ...nodes);
+    //     // Add in paging node if required
+    //     if (result.page * result.pageSize < result.totalRecords) {
+    //       nodes.push(new TreeNode('_LOADMORE_', 'Load more...', node.level, false, node.parentNode, false, result.page + 1));
+    //     }
+    //     this.data.splice((index - 1), 1, ...nodes);
 
-        // notify the change
-        this.dataChange.next(this.data);
-        node.isLoading = false;
-      },
-      (error) => this.log.error(error)
-    );
+    //     // notify the change
+    //     this.dataChange.next(this.data);
+    //     node.isLoading = false;
+    //   },
+    //   (error) => this.log.error(error)
+    // );
   }
 
   private expandChildren(node: TreeNode, index: number, count: number) {
-    this.database.getSources(node.id, this.relationships, 15, node.page).subscribe(
-      (result) => {
+    // this.database.getSources(node.id, this.relationships, 15, node.page).subscribe(
+    //   (result) => {
 
-        if (node.page === 1 && result.result.length === 0) {
-          node.expandable = false;
-        } else {
-          const existing = this.data.slice(index, index + count);
+    //     if (node.page === 1 && result.result.length === 0) {
+    //       node.expandable = false;
+    //     } else {
+    //       const existing = this.data.slice(index, index + count);
 
-          const nodes = result
-            .result
-            .filter(c => existing.findIndex(v => v.id === c.concept.iri) === -1)
-            .map(related => new TreeNode(related.concept.iri, related.concept.name, node.level + 1, true, node));
+    //       const nodes = result
+    //         .result
+    //         .filter(c => existing.findIndex(v => v.id === c.concept.iri) === -1)
+    //         .map(related => new TreeNode(related.concept.iri, related.concept.name, node.level + 1, true, node));
 
-          // Add in paging node if required
-          if (result.page * result.pageSize < result.totalRecords) {
-            nodes.push(new TreeNode('_LOADMORE_', 'Load more...', node.level + 1, false, node, false, result.page + 1));
-          }
+    //       // Add in paging node if required
+    //       if (result.page * result.pageSize < result.totalRecords) {
+    //         nodes.push(new TreeNode('_LOADMORE_', 'Load more...', node.level + 1, false, node, false, result.page + 1));
+    //       }
 
-          this.data.splice(index, 0, ...nodes);
-        }
-        // notify the change
-        this.dataChange.next(this.data);
-        node.isLoading = false;
-      },
-      (error) => this.log.error(error)
-    );
+    //       this.data.splice(index, 0, ...nodes);
+    //     }
+    //     // notify the change
+    //     this.dataChange.next(this.data);
+    //     node.isLoading = false;
+    //   },
+    //   (error) => this.log.error(error)
+    // );
   }
 }

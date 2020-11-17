@@ -1,5 +1,4 @@
-import { PagedResultSet } from './../../../../models/old/PagedResultSet';
-import { Related } from './../../../../models/old/Related';
+import { ConceptReferenceNode } from './../../../../models/objectmodel/ConceptReferenceNode';
 import { ConceptService } from './../../../../services/concept.service';
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
@@ -19,24 +18,24 @@ export class DataModelOverviewLibraryComponent implements OnInit {
 
   ngOnInit() {
 
-    this.service.getSources(':HealthRecord', null, 20, 1).subscribe(
+    this.service.getConceptChildren(':HealthRecord').subscribe(
       (result) => this.populateConcepts(result),
       (error) => this.log.error(error)
     );
 
   }
 
-  populateConcepts(dataModelConcept: PagedResultSet<Related>) {
-    dataModelConcept.result.forEach(entry => {
+  populateConcepts(dataModelConcept: Set<ConceptReferenceNode>) {
+    dataModelConcept.forEach(entry => {
       const concept = {
-        name: entry.concept.name,
-        description: entry.concept.description,
-        iri: entry.concept.iri,
-        sources: []
+        name: entry.name,
+        description: "",
+        iri: entry.iri,
+        sources: new Set<ConceptReferenceNode>()
       };
 
-      this.service.getSources(entry.concept.iri, null, 20, 1).subscribe(
-        (result) => concept.sources = result.result,
+      this.service.getConceptChildren(entry.iri).subscribe(
+        (result) => concept.sources = result,
         (error) => this.log.error(error)
       );
 

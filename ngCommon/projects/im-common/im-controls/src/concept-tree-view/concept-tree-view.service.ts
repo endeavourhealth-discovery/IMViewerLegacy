@@ -1,10 +1,10 @@
 import {Observable} from 'rxjs';
 import {Concept} from '../models/objectmodel/Concept';
-import {Related} from '../models/old/Related';
-import {PagedResultSet} from '../models/old/PagedResultSet';
+import { ConceptReferenceNode } from '../models/objectmodel/ConceptReferenceNode';
+import { ConceptReference } from '../models/objectmodel/ConceptReference';
 
 export abstract class ConceptTreeViewService {
     abstract getConcept(iri: string): Observable<Concept>;
-    abstract loadTree(root: string, iri: string, relationships: string[]): Observable<Related[]>;
-    abstract getSources(iri: string, relationships: string[], limit: number, page: number): Observable<PagedResultSet<Related>>;
+    abstract getConceptChildren(iri: string): Observable<Set<ConceptReferenceNode>>;
+    abstract getConceptParents(iri: string): Observable<Set<ConceptReference>>;
 }

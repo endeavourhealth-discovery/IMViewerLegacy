@@ -1,4 +1,4 @@
-import { Concept } from './../objectmodel/Concept';
+import { Concept } from './Concept';
 import {Related} from './Related';
 import {Property} from './Property';
 import {zip, Observable, Subject} from 'rxjs';

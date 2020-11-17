@@ -1,3 +1,4 @@
+import { ConceptTreeViewComponent } from 'im-common/im-controls';
 import { DataModelDialogComponent } from './../data-model-create/data-model-dialog/data-model-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Component, OnInit, ViewChild } from '@angular/core';
@@ -5,7 +6,6 @@ import { ConceptService } from '../../../services/concept.service';
 import { Concept } from '../../../models/objectmodel/Concept';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { LoggerService } from 'dds-angular8/logger';
-import { ConceptTreeViewComponent } from 'im-common/im-controls';
 import { KeycloakService } from 'keycloak-angular';
 import { DataModelTablularViewComponent } from '../../../components/data-model-tabular-view/data-model-tabular-view.component';
 import { NgEventBus } from 'ng-event-bus';
@@ -104,18 +104,6 @@ class DataModelLibraryComponent implements OnInit {
       clearTimeout(this.timer);
       this.router.navigate(['dataModel'], { queryParams: { id: iri } });
     }
-  }
-
-  getTextual(): string {
-    if (!this.textual) {
-      this.textual = 'Loading...';
-      this.service.getTextual(this.selectedIri).subscribe(
-        (result) => this.textual = result,
-        (error) => this.log.error(error)
-      );
-    }
-
-    return this.textual;
   }
 
   hasResults(displayed: boolean) {
