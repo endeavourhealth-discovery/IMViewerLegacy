@@ -55,8 +55,9 @@ export class ConceptHierarchyViewComponent implements OnInit {
     this.addConceptToTree(this.parents);
     this.reverseTree(this.parents, 0, []);
 
-    this.dataSource.data = this.tree;
+    this.tree.splice(1);
 
+    this.dataSource.data = this.tree;
     this.treeControl.expandAll();
   }
 
