@@ -52,8 +52,9 @@ export class ConceptHierarchyViewComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.tree = [];
-    this.addConceptandChildrenToTree(this.parents);
+    this.addConceptToTree(this.parents);
     this.reverseTree(this.parents, 0, []);
+
     this.dataSource.data = this.tree;
 
     this.treeControl.expandAll();
@@ -69,6 +70,10 @@ export class ConceptHierarchyViewComponent implements OnInit {
         expandable: true,
         children: previousNodes
       };
+      if (node.iri === this.concept.iri) {
+        node.children = this.addChildrenToTree();
+      }
+
       nodes.push(node);
       if(conceptReference.parents.length === 0) {
         this.tree.push(node);
@@ -78,7 +83,7 @@ export class ConceptHierarchyViewComponent implements OnInit {
     return nodes;
   }
 
-  addConceptandChildrenToTree(conceptReferences: ConceptReferenceNode[]) {
+  addConceptToTree(conceptReferences: ConceptReferenceNode[]) {
     let conceptReferenceNodes : ConceptReferenceNode[] = [];
     let conceptReferenceNode: ConceptReferenceNode = new ConceptReferenceNode();
     conceptReferenceNode.name = this.concept.name;
@@ -86,6 +91,21 @@ export class ConceptHierarchyViewComponent implements OnInit {
     conceptReferenceNode.parents = conceptReferences;
     conceptReferenceNodes.push(conceptReferenceNode);
     this.parents = conceptReferenceNodes;
+  }
+
+  addChildrenToTree(): ConceptNode[] {
+    let childNodes: ConceptNode[] = [];
+    this.children.forEach(child => {
+      childNodes.push({
+          name: child.name,
+          iri: child.iri,
+          level: 0,
+          expandable: true,
+          children: []
+      });
+    });
+
+    return childNodes;
   }
 
   _transformer = (node: ConceptNode, level: number) => {
