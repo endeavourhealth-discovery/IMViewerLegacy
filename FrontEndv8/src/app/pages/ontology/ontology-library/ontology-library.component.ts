@@ -1,3 +1,4 @@
+import { ConceptReferenceNode } from './../../../models/objectmodel/ConceptReferenceNode';
 import { ConceptTreeViewComponent } from 'im-common/im-controls';
 import { ConceptService } from './../../../services/concept.service';
 import { Concept } from './../../../models/objectmodel/Concept';
@@ -15,6 +16,8 @@ import { JsonEditorOptions } from 'ang-jsoneditor';
 })
 export class OntologyLibraryComponent implements OnInit {
   concept: Concept;
+  parents: Array<ConceptReferenceNode>;
+  children: Array<ConceptReferenceNode>;
   selectedIri: string;
   searchSize = 72;
   root = ':1301000252100';
@@ -80,6 +83,15 @@ export class OntologyLibraryComponent implements OnInit {
       this.service.getConcept(iri).subscribe(
         (result) => this.concept = result,
         (error) => this.log.error(error)
+      );
+      this.service.getConceptChildren(iri).subscribe(
+        (result) => this.children = result,
+        (error) => { this.log.error(error); }
+      );
+
+      this.service.getConceptParents(iri).subscribe(
+        (result) => this.parents = result,
+        (error) => { this.log.error(error); }
       );
     }
   }

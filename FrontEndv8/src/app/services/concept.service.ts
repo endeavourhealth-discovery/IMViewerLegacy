@@ -1,4 +1,3 @@
-import { ConceptReference } from './../models/objectmodel/ConceptReference';
 import { ConceptReferenceNode } from './../models/objectmodel/ConceptReferenceNode';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -29,11 +28,11 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
     return this.http.get<Concept>(environment.api + 'api/concept/' + iri);
   }
 
-  getConceptChildren(iri: string): Observable<Set<ConceptReferenceNode>> {
-    return this.http.get<Set<ConceptReferenceNode>>(environment.api + 'api/concept/' + iri + '/children');
+  getConceptChildren(iri: string): Observable<Array<ConceptReferenceNode>> {
+    return this.http.get<Array<ConceptReferenceNode>>(environment.api + 'api/concept/' + iri + '/children');
   }
 
-  getConceptParents(iri: string): Observable<Set<ConceptReference>> {
-    return this.http.get<Set<ConceptReference>>(environment.api + 'api/concept/' + iri + '/parents');
+  getConceptParents(iri: string): Observable<Array<ConceptReferenceNode>> {
+    return this.http.get<Array<ConceptReferenceNode>>(environment.api + 'api/concept/' + iri + '/parents');
   }
 }

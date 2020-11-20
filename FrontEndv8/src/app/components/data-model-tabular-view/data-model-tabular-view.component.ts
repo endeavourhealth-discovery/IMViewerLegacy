@@ -32,6 +32,7 @@ class DataModelTablularViewComponent {
   dataModelDefinition: DataModelDefinition;
 
   propertiesTable: DataTable<FlatProperty>;
+  propertiesTableData: any[] = [];
 
   parentsChipListTemplateContext: ChipListTemplateContext;
   childrenChipListTemplateContext: ChipListTemplateContext;
@@ -60,18 +61,13 @@ class DataModelTablularViewComponent {
   }
 
   refresh() {
-    // let dataModelDefinitionObservable: Observable<DataModelDefinition> = this.service.getDataModelDefinition(this.iri);
-
-    // this.propertiesTable.clear();
-
-    // dataModelDefinitionObservable.subscribe(dataModelDefinition => {
-    //   this.dataModelDefinition = dataModelDefinition;
-
-    //   this.parentsChipListTemplateContext.chips = this.dataModelDefinition.getDirectParentConcepts();
-    //   this.childrenChipListTemplateContext.chips = this.dataModelDefinition.getDirectChildConcepts();
-
-    //   this.propertiesTable.setRows(this.dataModelDefinition.getFlatProperties());
-    // });
+    if(this.concept.SubClassOf[0].Intersection != null) {
+      this.concept.SubClassOf[0].Intersection.forEach(intersection => {
+        if(intersection.ObjectPropertyValue != null) {
+          this.propertiesTableData.push(intersection);
+        }
+      });
+    }
   }
 
   onSelect(concept: Concept) {

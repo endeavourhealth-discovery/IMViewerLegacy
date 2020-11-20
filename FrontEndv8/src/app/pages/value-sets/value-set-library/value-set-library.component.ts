@@ -1,3 +1,4 @@
+import { ConceptReferenceNode } from './../../../models/objectmodel/ConceptReferenceNode';
 import { ConceptTreeViewComponent } from 'im-common/im-controls';
 import { SchemeCount } from './../../../models/old/SchemeCount';
 import { ConceptService } from './../../../services/concept.service';
@@ -18,6 +19,8 @@ import { KeycloakService } from 'keycloak-angular';
 })
 export class ValueSetLibraryComponent implements OnInit {
   concept: Concept;
+  parents: Array<ConceptReferenceNode>;
+  children: Array<ConceptReferenceNode>;
   members: ValueSetMember[];
   selectedIri: string;
   searchSize = 72;
@@ -73,6 +76,15 @@ export class ValueSetLibraryComponent implements OnInit {
       this.service.getConcept(iri).subscribe(
         (result) => this.concept = result,
         (error) => this.log.error(error)
+      );
+      this.service.getConceptChildren(iri).subscribe(
+        (result) => this.children = result,
+        (error) => { this.log.error(error); }
+      );
+
+      this.service.getConceptParents(iri).subscribe(
+        (result) => this.parents = result,
+        (error) => { this.log.error(error); }
       );
     }
   }

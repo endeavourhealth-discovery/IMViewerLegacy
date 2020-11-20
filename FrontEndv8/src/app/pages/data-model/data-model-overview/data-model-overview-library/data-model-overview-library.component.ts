@@ -25,13 +25,13 @@ export class DataModelOverviewLibraryComponent implements OnInit {
 
   }
 
-  populateConcepts(dataModelConcept: Set<ConceptReferenceNode>) {
+  populateConcepts(dataModelConcept: Array<ConceptReferenceNode>) {
     dataModelConcept.forEach(entry => {
       const concept = {
         name: entry.name,
         description: "",
         iri: entry.iri,
-        sources: new Set<ConceptReferenceNode>()
+        sources: new Array<ConceptReferenceNode>()
       };
 
       this.service.getConceptChildren(entry.iri).subscribe(

@@ -1,3 +1,4 @@
+import { ConceptReferenceNode } from './../../models/objectmodel/ConceptReferenceNode';
 import { NgEventBus } from 'ng-event-bus';
 import { Concept} from '../../models/objectmodel/Concept';
 import { LoggerService } from 'dds-angular8';
@@ -5,6 +6,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { KeycloakService } from 'keycloak-angular';
 import { ConceptService } from '../../services/concept.service';
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { json } from 'd3';
 
 @Component({
   selector: 'app-side-nav',
@@ -13,6 +15,8 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class SideNavComponent implements OnInit {
   @Input() concept: Concept;
+  @Input() parents: Array<ConceptReferenceNode>;
+  @Input() children: Array<ConceptReferenceNode>;
   @Input() root: string;
   @Input() relationships: string;
   @Input() selectedIri: string;
@@ -24,7 +28,9 @@ export class SideNavComponent implements OnInit {
 
 
   constructor(
+    private service: ConceptService,
     private router: Router,
+    private log: LoggerService,
     private eventBus: NgEventBus) {
     this.routeEvent(this.router);
   }

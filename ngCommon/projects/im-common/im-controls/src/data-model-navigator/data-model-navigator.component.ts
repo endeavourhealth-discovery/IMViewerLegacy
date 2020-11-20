@@ -31,8 +31,8 @@ export class DataModelNavigatorComponent implements OnInit {
   pad = 16;
 
   iri: string;
-  parents: Set<ConceptReference>;
-  children: Set<ConceptReferenceNode>;
+  parents: Array<ConceptReference>;
+  children: Array<ConceptReferenceNode>;
   obs: Subscription = null;
 
   constructor(private service: DataModelNavigatorService,
@@ -116,8 +116,10 @@ export class DataModelNavigatorComponent implements OnInit {
     graph.nodes().forEach(v => {
       const g = map.get(v);
       const i = graph.node(v);
-      g.attr('x', i.x - (i.width / 2))
-        .attr('y', i.y - (i.height / 2));
+      if (g != undefined) {
+        g.attr('x', i.x - (i.width / 2))
+          .attr('y', i.y - (i.height / 2));
+      }
     });
 
     const lf = d3.line<any>()
@@ -147,7 +149,7 @@ export class DataModelNavigatorComponent implements OnInit {
     });
   }
 
-  buildParents(svg, graph, map: Map<string, any>, relList: Set<ConceptReference>, reverse: boolean) {
+  buildParents(svg, graph, map: Map<string, any>, relList: Array<ConceptReference>, reverse: boolean) {
     for (const rel of relList) {
       // Dont add node if already exists
       if (!map.has(rel.iri)) {
@@ -186,6 +188,7 @@ export class DataModelNavigatorComponent implements OnInit {
 
       const relId = (reverse) ? rel.iri + '-' + this.concept.iri : this.concept.iri + '-' + rel.iri;
 
+
       // Dont add relationship if already exists
       if (!map.has(relId)) {
         const relName = rel.name + this.cardText(0, 1);
@@ -213,7 +216,7 @@ export class DataModelNavigatorComponent implements OnInit {
     }
   }
 
-  buildChildren(svg, graph, map: Map<string, any>, relList: Set<ConceptReferenceNode>, reverse: boolean) {
+  buildChildren(svg, graph, map: Map<string, any>, relList: Array<ConceptReferenceNode>, reverse: boolean) {
     for (const rel of relList) {
       // Dont add node if already exists
       if (!map.has(rel.iri)) {
@@ -303,30 +306,13 @@ export class DataModelNavigatorComponent implements OnInit {
 
     let lastOwner = this.concept.iri;
     let i = 0;
+
+    if (this.concept.SubClassOf[0].Intersection == null) {
+      this.concept.SubClassOf[0].Intersection = [];
+    }
     for (let intersection of this.concept.SubClassOf[0].Intersection) {
       if (intersection.ObjectPropertyValue != null) {
-        // for (let i = 0; i < this.properties.length; i++) {
-        //  const property = this.properties[i];
         let l = this.pad;
-
-        // if (property.owner.iri != lastOwner) {
-        //     lastOwner = property.owner.iri;
-        //     const o = s.append('text')
-        //         .text('Inherited from ' + property.owner.name + ':')
-        //         .attr('font-size', 10)
-        //         .attr('font-style', 'italic')
-        //         .attr('font-weight', 'bold')
-        //         .attr('x', l)
-        //         .attr('y', 38 + (20 * i))
-        //         .attr('class', 'clickable')
-        //         .on('click', () => this.nodeClick(property.owner.iri))
-        //         .on('mouseenter', () => this.nodeHover(property.owner))
-        //         .on('mouseleave', () => this.nodeHover(null));
-        //     o.insert('title')
-        //         .text(property.owner.name);
-
-        //     i++;
-        // }
 
         const p = s.append('text')
           .text(intersection.ObjectPropertyValue.Property.name + ': ')
@@ -361,22 +347,6 @@ export class DataModelNavigatorComponent implements OnInit {
 
         l += pt.node().getComputedTextLength() + 4;
 
-        /*      if (property.level >= 0) {
-                const o = s.append('text')
-                  .text('(inherited from ' + property.owner.name + ')')
-                  .attr('font-size', 10)
-                  .attr('font-style', 'italic')
-                  .attr('x', l)
-                  .attr('y', 38 + (20 * i))
-                  .attr('class', 'clickable')
-                  .attr('fill', 'grey')
-                  .on('click', () => this.nodeClick(property.owner.iri));
-                o.insert('title')
-                  .text(property.owner.name);
-      
-                l += o.node().getComputedTextLength() + 4;
-              }*/
-
         l += this.pad;
 
         if (l > w) {
@@ -385,25 +355,24 @@ export class DataModelNavigatorComponent implements OnInit {
 
         i++;
       }
-
-      w = Math.round(w);
-
-      if (this.concept.SubClassOf[0].Intersection.length > 0) {
-        s.append('line')
-          .attr('x1', 0)
-          .attr('y1', 22)
-          .attr('x2', w)
-          .attr('y2', 22)
-          .attr('stroke', 'black');
-      }
-
-      r.attr('width', w)
-        .attr('height', 25 + (20 * i))
-
-      graph.setNode(this.concept.iri, { label: this.concept.name, width: w, height: 25 + (20 * i) });
-      map.set(this.concept.iri, s);
-
     }
+
+    w = Math.round(w);
+
+    if (this.concept.SubClassOf[0].Intersection.length > 0) {
+      s.append('line')
+        .attr('x1', 0)
+        .attr('y1', 22)
+        .attr('x2', w)
+        .attr('y2', 22)
+        .attr('stroke', 'black');
+    }
+
+    r.attr('width', w)
+      .attr('height', 25 + (20 * i))
+
+    graph.setNode(this.concept.iri, { label: this.concept.name, width: w, height: 25 + (20 * i) });
+    map.set(this.concept.iri, s);
   }
 
   cardText(min: number, max: number): string {

@@ -21,7 +21,7 @@ export class Concept implements IMAnnotated {
   SubClassOf: Set<ClassAxiom>;
   equivalentTo: Set<ClassAxiom>;
   expression: ClassExpression;
-  DisjointWith: Set<ConceptReference>;
+  DisjointWith: Array<ConceptReference>;
 
   getAnnotations(): Set<Annotation> {
     throw new Error('Method not implemented.');

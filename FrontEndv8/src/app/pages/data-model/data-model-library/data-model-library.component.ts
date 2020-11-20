@@ -1,3 +1,4 @@
+import { ConceptReferenceNode } from './../../../models/objectmodel/ConceptReferenceNode';
 import { ConceptTreeViewComponent } from 'im-common/im-controls';
 import { DataModelDialogComponent } from './../data-model-create/data-model-dialog/data-model-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -21,6 +22,8 @@ class DataModelLibraryComponent implements OnInit {
 
   selectedIri: string;
   concept: Concept;
+  parents: Array<ConceptReferenceNode>;
+  children: Array<ConceptReferenceNode>;
 
   searchSize = 72;
   root = ':DiscoveryCommonDataModel';
@@ -74,6 +77,8 @@ class DataModelLibraryComponent implements OnInit {
       (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
       (error) => this.log.error(error)
     );
+
+
   }
 
   displayConcept(iri: string) {
@@ -83,6 +88,15 @@ class DataModelLibraryComponent implements OnInit {
       this.service.getConcept(iri).subscribe(
         (result) => this.concept = result,
         (error) => this.log.error(error)
+      );
+      this.service.getConceptChildren(iri).subscribe(
+        (result) => this.children = result,
+        (error) => { this.log.error(error); }
+      );
+
+      this.service.getConceptParents(iri).subscribe(
+        (result) => this.parents = result,
+        (error) => { this.log.error(error); }
       );
     }
   }
