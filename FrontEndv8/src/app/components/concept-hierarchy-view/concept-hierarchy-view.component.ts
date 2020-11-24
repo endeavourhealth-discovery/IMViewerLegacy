@@ -76,7 +76,9 @@ export class ConceptHierarchyViewComponent implements OnInit {
       }
 
       nodes.push(node);
-      if(conceptReference.parents.length === 0) {
+
+
+      if (conceptReference.parents.length === 0 || conceptReference.iri == this.root) {
         this.tree.push(node);
       }
       this.reverseTree(conceptReference.parents, level, nodes);
@@ -85,7 +87,7 @@ export class ConceptHierarchyViewComponent implements OnInit {
   }
 
   addConceptToTree(conceptReferences: ConceptReferenceNode[]) {
-    let conceptReferenceNodes : ConceptReferenceNode[] = [];
+    let conceptReferenceNodes: ConceptReferenceNode[] = [];
     let conceptReferenceNode: ConceptReferenceNode = new ConceptReferenceNode();
     conceptReferenceNode.name = this.concept.name;
     conceptReferenceNode.iri = this.concept.iri;
@@ -98,11 +100,11 @@ export class ConceptHierarchyViewComponent implements OnInit {
     let childNodes: ConceptNode[] = [];
     this.children.forEach(child => {
       childNodes.push({
-          name: child.name,
-          iri: child.iri,
-          level: 0,
-          expandable: true,
-          children: []
+        name: child.name,
+        iri: child.iri,
+        level: 0,
+        expandable: true,
+        children: []
       });
     });
 
@@ -129,10 +131,7 @@ export class ConceptHierarchyViewComponent implements OnInit {
 
   nodeHover(node: ConceptNode) {
     if (node !== null) {
-      const concept: Concept = new Concept();
-      concept.name = node.name;
-      concept.iri = node.iri;
-      this.eventBus.cast('app:conceptHover', concept);
+      this.eventBus.cast('app:conceptHover', node.iri);
     } else {
       this.eventBus.cast('app:conceptHover', null);
     }

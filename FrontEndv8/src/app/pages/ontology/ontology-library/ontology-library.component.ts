@@ -46,9 +46,8 @@ export class OntologyLibraryComponent implements OnInit {
     this.editorOptions.mainMenuBar = false;
     this.editorOptions.expandAll = true;
 
-    this.eventBus.on('app:conceptHover').subscribe((concept: Concept) => {
-      this.itemHover(concept);
-
+    this.eventBus.on('app:conceptHover').subscribe((iri: string) => {
+      this.itemHover(iri);
     });
   }
 
@@ -96,13 +95,16 @@ export class OntologyLibraryComponent implements OnInit {
     }
   }
 
-  itemHover(concept: Concept) {
+  itemHover(iri: string) {
     const root = this;
-    if (concept != null) {
+    if (iri != null) {
       this.timer = setTimeout(() => {
         root.sidebar = true;
       }, 1000);
-      this.hoveredConcept = concept;
+      this.service.getConcept(iri).subscribe(
+        (result) => this.hoveredConcept = result,
+        (error) => this.log.error(error)
+      );
     } else {
       clearTimeout(this.timer);
     }

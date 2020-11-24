@@ -52,7 +52,7 @@ export class SideNavComponent implements OnInit {
   }
 
   itemHover(concept: Concept) {
-    this.eventBus.cast('app:conceptHover', concept);
+    this.eventBus.cast('app:conceptHover', concept.iri);
   }
 
   goto(iri: string) {

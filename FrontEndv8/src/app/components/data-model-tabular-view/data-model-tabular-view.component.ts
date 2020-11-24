@@ -75,11 +75,11 @@ class DataModelTablularViewComponent {
   }
 
   onHoverOver(concept: Concept) {
-    this.eventBus.cast('app:conceptHover', concept);
+    this.eventBus.cast('app:conceptHover', concept.iri);
   }
 
   onHoverOut() {
-    this.eventBus.cast('app:conceptHover', DataModelTablularViewComponent.UNDEFINED_CONCEPT);
+    this.eventBus.cast('app:conceptHover', null);
   }
 }
 

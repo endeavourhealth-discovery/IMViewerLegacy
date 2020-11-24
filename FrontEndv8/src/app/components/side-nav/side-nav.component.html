@@ -1,49 +1,44 @@
-  <as-split direction="vertical" unit="pixel">
-    <as-split-area [size]="searchSize" minSize="72" style="height: 100%; overflow: hidden">
-      <div class="as-split-area-content" style="height: inherit">
-        <app-concept-search [root]="root" [relationships]="relationships" (hasResults)="hasResults($event)"></app-concept-search>
-      </div>
-    </as-split-area>
+<as-split direction="vertical" unit="pixel">
+  <as-split-area [size]="searchSize" minSize="72" style="height: 100%; overflow: hidden">
+    <div class="as-split-area-content" style="height: inherit">
+      <app-concept-search [root]="root" [relationships]="relationships" (hasResults)="hasResults($event)">
+      </app-concept-search>
+    </div>
+  </as-split-area>
 
-    <as-split-area>
-      <div class="as-split-area-content">
-        <mat-tab-group mat-stretch-tabs class="example-stretched-tabs">
-          <mat-tab label="Browse">
-            <ng-template mat-tab-label>
-              <mat-icon class="example-tab-icon">navigation</mat-icon>
-              Browse
-            </ng-template>
-            <ng-template matTabContent>
-              <button mat-icon-button color="primary" style="float:right" (click)="openDialog()">
-                <mat-icon>add</mat-icon>
-              </button>
-              <!-- <app-concept-tree-view [root]="root" [conceptIri]="selectedIri"></app-concept-tree-view> -->
-              <app-concept-hierarchy-view [root]="root" [concept]="concept" [children]="children" [parents]="parents"></app-concept-hierarchy-view>
+  <as-split-area>
+    <div class="as-split-area-content">
+      <mat-tab-group mat-stretch-tabs class="example-stretched-tabs">
+        <mat-tab label="Browse">
+          <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">navigation</mat-icon>
+            Browse
+          </ng-template>
+          <ng-template matTabContent>
+            <button mat-icon-button color="primary" style="float:right" (click)="openDialog()">
+              <mat-icon>add</mat-icon>
+            </button>
+            <app-concept-hierarchy-view [root]="root" [concept]="concept" [children]="children" [parents]="parents">
+            </app-concept-hierarchy-view>
 
-            </ng-template>
-          </mat-tab>
-          <mat-tab label="History">
-            <ng-template mat-tab-label>
-              <mat-icon class="example-tab-icon">history</mat-icon>
-              History
-            </ng-template>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="History">
+          <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">history</mat-icon>
+            History
+          </ng-template>
 
-            <mat-selection-list dense multiple="false">
-              <mat-list-option *ngFor="let item of history" [value]="item" (click)="goto(item.concept.iri)" (mouseenter)="itemHover(item.concept)" (mouseleave)="itemHover(null)">
-                <mat-icon mat-list-icon>launch</mat-icon>
-                <div mat-line>{{item.concept.name}}</div>
-              </mat-list-option>
-            </mat-selection-list>
+          <mat-selection-list dense multiple="false">
+            <mat-list-option *ngFor="let item of history" [value]="item" (click)="goto(item.concept.iri)"
+              (mouseenter)="itemHover(item.concept)" (mouseleave)="itemHover(null)">
+              <mat-icon mat-list-icon>launch</mat-icon>
+              <div mat-line>{{item.concept.name}}</div>
+            </mat-list-option>
+          </mat-selection-list>
 
-          </mat-tab>
-        </mat-tab-group>
-      </div>
-    </as-split-area>
-
-    <!-- <as-split-area size="250" minSize="250" style="height: 100%; overflow: hidden">
-      <div class="as-split-area-content" style="height: inherit">
-        Filters
-      </div>
-    </as-split-area> -->
-
-  </as-split>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </as-split-area>
+</as-split>

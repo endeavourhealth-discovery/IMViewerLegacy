@@ -9,6 +9,7 @@
     [class.selected]="concept.iri == node.iri"
     (click)="selectNode(node)"
     (mouseenter)="nodeHover(node)" (mouseleave)="nodeHover(null)"
+    style="cursor: pointer">
     >
     <!-- use a disabled button to provide padding for tree leaf -->
     <button mat-icon-button disabled></button>
@@ -21,7 +22,7 @@
     class="hover-highlight"
     [class.selected]="concept.iri == node.iri"
     (click)="selectNode(node)"
-    (mouseenter)="nodeHover(node)" (mouseleave)="nodeHover(null)"
+    (mouseenter)="nodeHover(node)" (mouseleave)="nodeHover(null)" style="cursor: pointer"
     >
     <button mat-icon-button matTreeNodeToggle
             [attr.aria-label]="'Toggle ' + node.name">
