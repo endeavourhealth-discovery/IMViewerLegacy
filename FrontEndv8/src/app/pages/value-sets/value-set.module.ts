@@ -25,6 +25,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import { MemberDialogComponent } from './member-dialog/member-dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {RouterModule} from '@angular/router';
+import {MatGridListModule} from '@angular/material/grid-list';
 
 @NgModule({
     imports: [
@@ -51,7 +52,8 @@ import {RouterModule} from '@angular/router';
         RouterModule,
         MatTabsModule,
         MatListModule,
-        MatSidenavModule
+        MatSidenavModule,
+        MatGridListModule
     ],
   declarations: [
     ValueSetLibraryComponent,

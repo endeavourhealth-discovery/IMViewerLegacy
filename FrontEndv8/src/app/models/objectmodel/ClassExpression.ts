@@ -6,11 +6,11 @@ import { ConceptStatus } from './ConceptStatus';
 export class ClassExpression implements IMEntity {
   dbid: number;
   inferred: boolean;
-  Concept: ConceptReference;
-  intersection: Array<ClassExpression>;
-  union: Array<ClassExpression>;
-  complementOf: ClassExpression;
-  objectPropertyValue: ObjectPropertyValue;
+  Class: ConceptReference;
+  Intersection: Array<ClassExpression>;
+  Union: Array<ClassExpression>;
+  ComplementOf: ClassExpression;
+  ObjectPropertyValue: ObjectPropertyValue;
   dataPropertyValue: DataPropertyValue;
   objectOneOf: Array<ConceptReference>;
 

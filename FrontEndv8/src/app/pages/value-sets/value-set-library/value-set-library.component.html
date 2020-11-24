@@ -6,86 +6,68 @@
         <as-split-area size="30" style="height: 97%;">
           <app-side-nav [root]="root" [relationships]="relationships" [concept]="concept" [children]="children" [parents]="parents" [selectedIri]="selectedIri"></app-side-nav>
         </as-split-area>
-
         <!-- RIGHT -->
         <as-split-area size="70">
           <div class="as-split-area-content">
             <mat-card>
-
               <!-- Header -->
-              <app-navigation [title]="'Value Sets - ' + concept.name" [subtitle]="concept.description" [selectedPage]="'valueSets'" style="height: 64px;"></app-navigation>
+              <app-navigation [title]="'Value Set - ' + concept.name" [subtitle]="concept.description"
+                [selectedPage]="'valueSets'" style="height: 64px;"></app-navigation>
               <!-- Dashboard container-->
               <mat-card-content style="height: calc(100vh - 157px);">
-                <mat-drawer-container class="example-container" hasBackdrop="true"
-                  style="height: calc(100%);overflow:hidden;">
-
-                  <!-- SideBar -->
-                  <mat-drawer #drawer class="example-sidenav" mode="over" position="end" [(opened)]="sidebar"
-                    style="width: 45%;overflow:hidden;">
-                    <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
-
-                      <mat-card fxFlex="100">
-                        <mat-card-header>
-                          <mat-card-title>
-                            <span fxFlex="90">Valueset - Summary</span>
-                            <button mat-icon-button fxFlex="5">
-                              <mat-icon color="primary">open_in_new</mat-icon>
-                            </button>
-                            <button mat-icon-button color="primary" (click)="sidebar=false" fxFlex="5">
-                              <mat-icon color="primary">close</mat-icon>
-                            </button>
-                          </mat-card-title>
-                        </mat-card-header>
-                        <mat-card-content>
-                          <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
-                            <mat-form-field appearance="outline" fxFlex="90" style="padding-left: 16px;">
-                              <mat-label>Name</mat-label>
-                              <input matInput [value]="hoveredConcept.name" placeholder="Concept Name" readonly
-                                id="conceptDescription">
-                            </mat-form-field>
-                            <mat-form-field appearance="outline" fxFlex="90" style="padding: 2px 16px 16px 16px;">
-                              <mat-label>Id</mat-label>
-                              <input matInput [value]="hoveredConcept.iri" placeholder="Concept ID" readonly
-                                id="conceptDescription">
-                            </mat-form-field>
-                            <mat-form-field appearance="outline" fxFlex="90" style="padding: 2px 16px 16px 16px;">
-                              <mat-label>Description</mat-label>
-                              <textarea matInput [value]="hoveredConcept.description" placeholder="Concept description"
-                                readonly id="conceptDescription" style="height: 80px;"></textarea>
-                            </mat-form-field>
-                          </div>
-                        </mat-card-content>
-                      </mat-card>
-
-                    </div>
-                  </mat-drawer>
-
+                <!--<mat-drawer-container class="example-container" hasBackdrop="true"
+                  style="height: calc(100%);overflow:hidden;"> -->
                   <!-- Dashboard content-->
-                  <mat-tab-group style="height: 100%;" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">
-                    <mat-tab label="Definition">
-                      <ng-template mat-tab-label>
-                        <mat-icon class="example-tab-icon">account_tree</mat-icon>
-                        Members
-                      </ng-template>
-                      <ng-template matTabContent>
-                        <h3>has members - </h3>
-                        <div style="display: inline" *ngFor="let item of members">
-                          <i>{{item.operatorName}}</i>
-                        <a href="#/ontology?id={{item.iri}}"> {{item.name}} </a>
+                  <div *ngIf="isValueSetAvailable">
+                    <mat-grid-list cols="2" fxFlex>
+                      <mat-grid-tile>
+                        <div>
+                          <mat-selection-list #members>
+                            <mat-list-option *ngFor="let member of getMembers()" [value]="member"
+                              (click)="onMemberSelected(member)">
+                              <div style="display:flex;align-items:center">
+                                <mat-icon matListIcon>add_circle</mat-icon>
+                                {{member.name}}
+                              </div>
+                            </mat-list-option>
+                          </mat-selection-list>
                         </div>
-                      </ng-template>
-                    </mat-tab>
-                    <mat-tab label="View 2">
-                      <ng-template mat-tab-label>
-                        <mat-icon class="example-tab-icon">view_module</mat-icon>
-                        Definition
-                      </ng-template>
-                      <ng-template matTabContent>
-                        <h3>TODO</h3>
-                      </ng-template>
-                    </mat-tab>
-                  </mat-tab-group>
-                </mat-drawer-container>
+                      </mat-grid-tile>
+                      <mat-grid-tile>
+                        <!--<div *ngIf="isValueSetMemberAvailable">-->
+                         <!-- <ng-template
+	                          [ngTemplateOutlet]="valueSetMemberChildrenTemplate"
+	                          [ngTemplateOutletContext]="{ valueSetMember: valueSetMember }">
+                          </ng-template> -->
+
+                          <mat-tree [dataSource]="conceptTree.dataSource" [treeControl]="conceptTree.control">
+                            <!-- leaf node -->
+                            <mat-tree-node *matTreeNodeDef="let node"
+                             matTreeNodePadding
+                             matTreeNodePaddingIndent="0">
+                              <button mat-icon-button disabled></button>
+                              {{node.name}}
+                            </mat-tree-node>
+
+                            <!-- expandable node -->
+                            <mat-tree-node *matTreeNodeDef="let node; when: conceptTree.isExpandable"
+                             matTreeNodePadding
+                             matTreeNodePaddingIndent="0">
+                              <button mat-icon-button matTreeNodeToggle
+                                      (click)="conceptTree.loadChildren(node)">
+                                <mat-icon class="mat-icon-rtl-mirror">
+                                  {{conceptTree.control.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                                </mat-icon>
+                              </button>
+                              {{node.name}}
+                            </mat-tree-node>
+                          </mat-tree>                          
+
+                        <!--</div>-->
+                      </mat-grid-tile>
+                    </mat-grid-list>
+                  </div>
+                <!--</mat-drawer-container>-->
               </mat-card-content>
             </mat-card>
           </div>
@@ -94,3 +76,26 @@
     </mat-card-content>
   </mat-card>
 </div>
+
+<!-- https://stackblitz.com/angular/volnvkpldqj?file=src%2Fapp%2Ftree-nested-overview-example.html -->
+
+<ng-template #valueSetMemberChildrenTemplate let-valueSetMember="valueSetMember">
+  <ng-container *ngIf="valueSetMember.hasChildren()">
+    <ng-container *ngFor="let child of valueSetMember.getChildren()">
+      <mat-expansion-panel hideToggle>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{child.concept.name}}
+          </mat-panel-title>
+          <mat-panel-description>
+            {{child.concept.description}}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <ng-template
+          [ngTemplateOutlet]="valueSetMemberChildrenTemplate"
+          [ngTemplateOutletContext]="{ valueSetMember: child }">
+        </ng-template>
+      </mat-expansion-panel>      
+    </ng-container>
+  </ng-container> 
+</ng-template>
