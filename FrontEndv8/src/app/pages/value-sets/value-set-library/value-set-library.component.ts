@@ -284,9 +284,8 @@ class ConceptNodeStore {
         let childNodes: ConceptNode[] = [];
 
         children.forEach(child => {  
-          // hacky stuff to get unqiue data
-          let childNode = new ConceptNode(iri + child.iri);
-          childNode.name = child.name + "|" + iri;
+          let childNode = new ConceptNode(child.iri);
+          childNode.name = child.name
           childNodes.push(childNode);
         })
 
