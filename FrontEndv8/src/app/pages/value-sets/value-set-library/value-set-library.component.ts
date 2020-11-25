@@ -29,7 +29,6 @@ export class ValueSetLibraryComponent implements OnInit {
   conceptTree: ConceptTree;
   
   isValueSetAvailable: boolean;
-  isValueSetMemberAvailable: boolean;
 
   concept: Concept;
   parents: Array<ConceptReferenceNode>;
@@ -182,6 +181,14 @@ export class ValueSetLibraryComponent implements OnInit {
   logout() {
     this.auth.logout();
   } 
+
+  get hasMembers(): boolean {
+    return this.valueSetPerspective.containsMembers();
+  }
+
+  get hasChildren(): boolean {
+    return this.valueSetPerspective.containsMembers();
+  }
 }
 
 class ConceptNodeStore {
@@ -207,7 +214,7 @@ class ConceptNodeStore {
     );
   }
 
-  loadChildren(iri: string): void {
+  loadChildren(iri: string): ConceptNode {
     let parent: ConceptNode = this.conceptNodeCache.get(iri);
     if(parent != null) {
       if(parent.childrenLoaded == false) {
@@ -226,6 +233,8 @@ class ConceptNodeStore {
     else {
       console.log("ConceptTree.loadChildren could not find cachec ConceptNode for iri ", iri);
     }
+
+    return parent;
   }
 
   private handleChildren(children: ConceptNode[], parent: ConceptNode): void {
@@ -288,6 +297,7 @@ class ConceptTree {
   dataSource: MatTreeFlatDataSource<ConceptNode, FlatConceptNode>;
   flattener: MatTreeFlattener<ConceptNode, FlatConceptNode>
   nodeCache: Map<string, FlatConceptNode>;
+  selectionHasChildren: Subject<boolean>;
 
   constructor(private conceptService: ConceptService) {
     this.nodeCache = new Map<string, FlatConceptNode>();
@@ -295,6 +305,7 @@ class ConceptTree {
     this.control = new FlatTreeControl<FlatConceptNode>(this.getLevel, this.isExpandable);
     this.flattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren)
     this.dataSource = new MatTreeFlatDataSource(this.control, this.flattener);
+    this.selectionHasChildren = new Subject<boolean>();
 
     this.dataStore.dataObservable.subscribe(
       data => this.dataSource.data = data
@@ -331,8 +342,12 @@ class ConceptTree {
     this.dataStore.store(conceptNode);
   }
 
-  loadChildren(node: FlatConceptNode): void {
-    this.dataStore.loadChildren(node.iri);
+  loadChildren(flatNode: FlatConceptNode): void {
+    this.dataStore.loadChildren(flatNode.iri).childrenObservable.subscribe(
+      children => {
+        this.selectionHasChildren.next(children != null && children.length > 0);
+      }
+    );
   }
 }
 
@@ -373,6 +388,10 @@ class ValueSetPersepctive {
     else {
       console.log("Concept's type is not ", ConceptType.Class.valueOf, concept.conceptType);
     }
+  }
+
+  containsMembers(): boolean {
+    return this.members.length > 0 || this.nonMembers.length > 0;
   }
 
   private processSubClass(concept: Concept): void {
