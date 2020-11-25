@@ -19,8 +19,8 @@
                   style="height: calc(100%);overflow:hidden;"> -->
                   <!-- Dashboard content-->
                   <div *ngIf="isValueSetAvailable">
-                    <mat-grid-list cols="2" fxFlex>
-                      <mat-grid-tile>
+                    <mat-grid-list cols="2">
+                      <mat-grid-tile style="height: calc(50%);">
                         <div>
                           <mat-selection-list #members>
                             <mat-list-option *ngFor="let member of getMembers()" [value]="member"
@@ -33,7 +33,7 @@
                           </mat-selection-list>
                         </div>
                       </mat-grid-tile>
-                      <mat-grid-tile>
+                      <mat-grid-tile style="height: calc(50%);">
                         <!--<div *ngIf="isValueSetMemberAvailable">-->
                          <!-- <ng-template
 	                          [ngTemplateOutlet]="valueSetMemberChildrenTemplate"
@@ -61,7 +61,7 @@
                               </button>
                               {{node.name}}
                             </mat-tree-node>
-                          </mat-tree>                          
+                          </mat-tree>
 
                         <!--</div>-->
                       </mat-grid-tile>
@@ -95,7 +95,7 @@
           [ngTemplateOutlet]="valueSetMemberChildrenTemplate"
           [ngTemplateOutletContext]="{ valueSetMember: child }">
         </ng-template>
-      </mat-expansion-panel>      
+      </mat-expansion-panel>
     </ng-container>
-  </ng-container> 
+  </ng-container>
 </ng-template>
