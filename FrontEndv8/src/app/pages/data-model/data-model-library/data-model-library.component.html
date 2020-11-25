@@ -28,8 +28,13 @@
                       <mat-card fxFlex="100">
                         <mat-card-header>
                           <mat-card-title>
-                            <span fxFlex="90">Data Model - Summary</span>
-                            <button mat-icon-button fxFlex="5">
+                            <ng-container *ngIf="hoveredConcept.iri && hoveredConcept.iri.includes(':VSET'); else elseTemplate">
+                              <span fxFlex="90">ValueSet - Summary</span>
+                            </ng-container>
+                            <ng-template #elseTemplate>
+                              <span fxFlex="90">Data Model - Summary</span>
+                            </ng-template>
+                            <button mat-icon-button fxFlex="5" (click)="gotoConcept()">
                               <mat-icon color="primary">open_in_new</mat-icon>
                             </button>
                             <button mat-icon-button color="primary" (click)="sidebar=false" fxFlex="5">

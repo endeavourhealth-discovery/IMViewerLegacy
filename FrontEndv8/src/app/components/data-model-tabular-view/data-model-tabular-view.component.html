@@ -19,7 +19,7 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
     <mat-chip-list>
-      <mat-chip (click)="onSelect(chip)" (mouseover)="onHoverOver(chip)" (mouseout)="onHoverOut()"
+      <mat-chip (click)="onSelect(chip.iri)" (mouseover)="onHoverOver(chip.iri)" (mouseout)="onHoverOut()"
         *ngFor="let chip of chips">
         {{chip.name}}
       </mat-chip>
@@ -41,24 +41,51 @@
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
         <td mat-cell *matCellDef="let row">
-          <ng-container *ngIf="row.ObjectPropertyValue && row.ObjectPropertyValue.Property.iri; else warnNoDataFoundTemplate">
+          <!-- ValueType -->
+          <ng-container *ngIf="row.ObjectPropertyValue && row.ObjectPropertyValue.Property.iri;">
+            <span (mouseover)="onHoverOver(row.ObjectPropertyValue.Property.iri)" (mouseout)="onHoverOut()">
             {{row.ObjectPropertyValue.Property.name}}
-            <button mat-icon-button (click)="onSelect(row.ObjectPropertyValue.Property.iri)">
+            <!-- <button mat-icon-button>
               <mat-icon>open_in_new</mat-icon>
-            </button>
+            </button> -->
+          </span>
           </ng-container>
+
+          <!-- DataType -->
+          <ng-container *ngIf="row.DataPropertyValue && row.DataPropertyValue.Property.iri;">
+            <span (mouseover)="onHoverOver(row.DataPropertyValue.Property.iri)" (mouseout)="onHoverOut()">{{row.DataPropertyValue.Property.name}}
+            <!-- <button mat-icon-button>
+              <mat-icon>open_in_new</mat-icon>
+            </button> -->
+          </span>
+          </ng-container>
+
         </td>
       </ng-container>
 
       <ng-container matColumnDef="type">
         <th mat-header-cell *matHeaderCellDef>Type</th>
-        <td mat-cell *matCellDef="let row" (mouseover)="onHoverOver(row.ObjectPropertyValue.ValueType.iri)" (mouseout)="onHoverOut()">
-          <ng-container *ngIf="row.ObjectPropertyValue && row.ObjectPropertyValue.ValueType.iri; else warnNoDataFoundTemplate">
+        <td mat-cell *matCellDef="let row">
+          <!-- ValueType -->
+          <ng-container *ngIf="row.ObjectPropertyValue && row.ObjectPropertyValue.ValueType.iri;">
+            <span (mouseover)="onHoverOver(row.ObjectPropertyValue.ValueType.iri)" (mouseout)="onHoverOut()">
             {{row.ObjectPropertyValue.ValueType.name}}
-            <button mat-icon-button (click)="onSelect(row.ObjectPropertyValue.ValueType.iri)">
+            <!-- <button mat-icon-button>
               <mat-icon>open_in_new</mat-icon>
-            </button>
+            </button> -->
+          </span>
           </ng-container>
+
+          <!-- DataType -->
+          <ng-container *ngIf="row.DataPropertyValue && row.DataPropertyValue.DataType.iri;">
+            <span (mouseover)="onHoverOver(row.DataPropertyValue.DataType.iri)" (mouseout)="onHoverOut()">
+            {{row.DataPropertyValue.DataType.iri}}
+            <!-- <button mat-icon-button>
+              <mat-icon>open_in_new</mat-icon>
+            </button> -->
+          </span>
+          </ng-container>
+
         </td>
       </ng-container>
 

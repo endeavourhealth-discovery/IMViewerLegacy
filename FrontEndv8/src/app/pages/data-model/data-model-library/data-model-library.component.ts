@@ -122,6 +122,14 @@ class DataModelLibraryComponent implements OnInit {
     }
   }
 
+  gotoConcept() {
+    if(this.hoveredConcept.iri.includes(':VSET')) {
+      this.router.navigate(['valueSets'], { queryParams: { id: this.hoveredConcept.iri } });
+    } else {
+      this.router.navigate(['dataModel'], { queryParams: { id: this.hoveredConcept.iri } });
+    }
+  }
+
   hasResults(displayed: boolean) {
     this.searchSize = displayed ? 256 : 72;
   }

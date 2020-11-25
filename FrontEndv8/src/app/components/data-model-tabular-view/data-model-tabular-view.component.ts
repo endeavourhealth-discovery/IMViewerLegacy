@@ -1,3 +1,4 @@
+import { Property } from './../../pages/data-model/data-model-create/data-model-dialog/data-model-dialog.component';
 import { ConceptReferenceNode } from './../../models/objectmodel/ConceptReferenceNode';
 import { NgEventBus } from 'ng-event-bus';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
@@ -60,10 +61,16 @@ class DataModelTablularViewComponent {
   }
 
   refresh() {
+    this.propertiesTableData = [];
     if (this.concept.SubClassOf[0].Intersection != null) {
       this.concept.SubClassOf[0].Intersection.forEach(intersection => {
-        if (intersection.ObjectPropertyValue != null) {
+        if (intersection.ObjectPropertyValue != null && intersection.ObjectPropertyValue.Property.iri !== ':hasCoreProperties') {
           this.propertiesTableData.push(intersection);
+        }
+        if (intersection.ObjectPropertyValue != null && intersection.ObjectPropertyValue.Expression != null && intersection.ObjectPropertyValue.Expression.Intersection != null && intersection.ObjectPropertyValue.Property.iri === ':hasCoreProperties') {
+          intersection.ObjectPropertyValue.Expression.Intersection.forEach(subIntersection => {
+            this.propertiesTableData.push(subIntersection);
+          });
         }
       });
     }
@@ -79,12 +86,12 @@ class DataModelTablularViewComponent {
     };
   }
 
-  onSelect(concept: Concept) {
-    this.eventBus.cast('app:conceptSelect', concept.iri);
+  onSelect(iri: string) {
+    this.eventBus.cast('app:conceptSelect', iri);
   }
 
-  onHoverOver(concept: Concept) {
-    this.eventBus.cast('app:conceptHover', concept.iri);
+  onHoverOver(iri: string) {
+    this.eventBus.cast('app:conceptHover', iri);
   }
 
   onHoverOut() {

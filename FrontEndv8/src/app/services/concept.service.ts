@@ -15,13 +15,13 @@ export class ConceptService implements ConceptTreeViewService, DataModelNavigato
 
   search(searchTerm: string, root: string, relationships: string[]) {
     let params = new HttpParams();
-    params = params.append('term', searchTerm);
+    params = params.append('nameTerm', searchTerm);
     params = params.append('root', root);
     if (relationships != null) {
       relationships.forEach(r => params = params.append('relationship', r));
     }
 
-    return this.http.get<any>(environment.api + 'api/concepts/Search', { params });
+    return this.http.get<any>(environment.api + 'api/concept/', { params });
   }
 
   getConcept(iri: string): Observable<Concept> {
