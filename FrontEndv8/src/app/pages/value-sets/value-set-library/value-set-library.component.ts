@@ -97,7 +97,7 @@ export class ValueSetLibraryComponent implements OnInit {
       this.nameCache = {};
       this.selectedIri = iri;
       this.service.getConcept(iri).subscribe(
-        (result) => this.concept = result,
+        (result) => { this.concept = result, this.valueSetPerspective = new ValueSetPersepctive(result); this.isValueSetAvailable = true },
         (error) => this.log.error(error)
       );
       this.service.getConceptChildren(iri).subscribe(
@@ -109,7 +109,6 @@ export class ValueSetLibraryComponent implements OnInit {
         (result) => this.parents = result,
         (error) => { this.log.error(error); }
       );
-      this.initValueSet(iri);
     }
   }
 
@@ -119,14 +118,6 @@ export class ValueSetLibraryComponent implements OnInit {
 
   get nonMembers(): ConceptReference[] {
     return this.valueSetPerspective.nonMembers;
-  }
-
-  private initValueSet(iri: string): void {
-    const getConcept = this.service.getConcept(iri);
-    getConcept.subscribe(
-      (result) =>  { this.concept = result, this.valueSetPerspective = new ValueSetPersepctive(result); this.isValueSetAvailable = true },
-      (error) => this.log.error(error)     
-    );
   }
 
   getJson(object: any) {
