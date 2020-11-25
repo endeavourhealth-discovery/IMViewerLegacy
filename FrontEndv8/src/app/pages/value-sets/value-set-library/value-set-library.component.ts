@@ -96,7 +96,12 @@ export class ValueSetLibraryComponent implements OnInit {
       this.nameCache = {};
       this.selectedIri = iri;
       this.service.getConcept(iri).subscribe(
-        (result) => { this.concept = result, this.valueSetPerspective = new ValueSetPersepctive(result); this.isValueSetAvailable = true },
+        (result) => { 
+          this.concept = result, 
+          this.valueSetPerspective = new ValueSetPersepctive(result); 
+          this.isValueSetAvailable = true 
+          this.conceptTree.clear();
+        },
         (error) => this.log.error(error)
       );
       this.service.getConceptChildren(iri).subscribe(
@@ -201,6 +206,10 @@ class ConceptNodeStore {
   constructor(private conceptService: ConceptService) {
     this.dataObservable = new BehaviorSubject<ConceptNode[]>([]);
     this.conceptNodeCache = new Map<string, ConceptNode>();
+  }
+
+  clear(): void {
+    this.dataObservable.next([]);
   }
 
   store(node: ConceptNode): void {
@@ -333,6 +342,10 @@ class ConceptTree {
     }
     
     return flatNode;
+  }
+
+  clear(): void {
+    this.dataStore.clear();
   }
 
   initialise(conceptReference: ConceptReference): void {
