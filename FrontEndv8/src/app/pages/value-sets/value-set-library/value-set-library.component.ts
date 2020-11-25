@@ -261,7 +261,7 @@ class ConceptNodeStore {
   private getChildrenByIri(iri: string): Observable<ConceptNode[]> {
     let childrenObservable = new Subject<ConceptNode[]>();
     
-    this.getChildrenRequest(":VSET_Covid0").subscribe( // hack as we know this has children
+    this.getChildrenRequest(iri).subscribe( // hack as we know this has children
       children => { 
         let childNodes: ConceptNode[] = [];
 
