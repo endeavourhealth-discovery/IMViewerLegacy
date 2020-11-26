@@ -210,6 +210,11 @@ class ConceptNodeStore {
 
   clear(): void {
     this.dataObservable.next([]);
+    // although this cache might be useful to keep
+    // populated for faster load if user comes back 
+    // to a given member do not want to hold too 
+    // much esp as some members can have many children
+    this.conceptNodeCache.clear();
   }
 
   store(node: ConceptNode): void {
@@ -275,11 +280,10 @@ class ConceptNodeStore {
     return childrenObservable;
   }
 
-  // TODO - this method contains hacks to generate test data
   private getChildrenByIri(iri: string): Observable<ConceptNode[]> {
     let childrenObservable = new Subject<ConceptNode[]>();
     
-    this.getChildrenRequest(iri).subscribe( // hack as we know this has children
+    this.getChildrenRequest(iri).subscribe(
       children => { 
         let childNodes: ConceptNode[] = [];
 
@@ -344,6 +348,7 @@ class ConceptTree {
   }
 
   clear(): void {
+    this.nodeCache.clear();
     this.dataStore.clear();
   }
 
