@@ -111,6 +111,25 @@ export class ConceptHierarchyViewComponent implements OnInit {
     return childNodes;
   }
 
+  addNewChildrenToTree(iri: string): ConceptNode[] {
+    let childNodes: ConceptNode[] = [];
+
+    this.service.getConceptChildren(iri).subscribe(
+      (result) => result.forEach(child => {
+        childNodes.push({
+          name: child.name,
+          iri: child.iri,
+          level: 0,
+          expandable: true,
+          children: []
+        });
+      }),
+      (error) => { this.log.error(error); }
+    );
+
+    return childNodes;
+  }
+
   _transformer = (node: ConceptNode, level: number) => {
     return {
       expandable: !!node.children && node.children.length > 0,
@@ -127,6 +146,10 @@ export class ConceptHierarchyViewComponent implements OnInit {
 
   selectNode(node) {
     this.eventBus.cast('app:conceptSelect', node.iri);
+  }
+
+  expandNode() {
+
   }
 
   nodeHover(node: ConceptNode) {

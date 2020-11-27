@@ -27,7 +27,7 @@ import { CollectionViewer, SelectionChange } from '@angular/cdk/collections';
 export class ValueSetLibraryComponent implements OnInit {
   valueSetPerspective: ValueSetPersepctive;
   conceptTree: ConceptTree;
-  
+
   isValueSetAvailable: boolean;
 
   concept: Concept;
@@ -52,7 +52,7 @@ export class ValueSetLibraryComponent implements OnInit {
               private log: LoggerService,
               private dialog: MatDialog,
               private eventBus: NgEventBus) {
-    
+
     this.routeEvent(this.router);
 
     this.conceptTree = new ConceptTree(service);
@@ -96,10 +96,10 @@ export class ValueSetLibraryComponent implements OnInit {
       this.nameCache = {};
       this.selectedIri = iri;
       this.service.getConcept(iri).subscribe(
-        (result) => { 
-          this.concept = result, 
-          this.valueSetPerspective = new ValueSetPersepctive(result); 
-          this.isValueSetAvailable = true 
+        (result) => {
+          this.concept = result,
+          this.valueSetPerspective = new ValueSetPersepctive(result);
+          this.isValueSetAvailable = true
           this.conceptTree.clear();
         },
         (error) => this.log.error(error)
@@ -185,7 +185,7 @@ export class ValueSetLibraryComponent implements OnInit {
 
   logout() {
     this.auth.logout();
-  } 
+  }
 
   get hasMembers(): boolean {
     return this.valueSetPerspective.containsMembers();
@@ -211,18 +211,18 @@ class ConceptNodeStore {
   clear(): void {
     this.dataObservable.next([]);
     // although this cache might be useful to keep
-    // populated for faster load if user comes back 
-    // to a given member do not want to hold too 
+    // populated for faster load if user comes back
+    // to a given member do not want to hold too
     // much esp as some members can have many children
     this.conceptNodeCache.clear();
   }
 
   store(node: ConceptNode): void {
     this.getChildrenOfConceptNode(node).subscribe(
-      children => { 
+      children => {
         // cache the children
         children.forEach(child => this.conceptNodeCache.set(child.iri, child));
-        
+
         this.dataObservable.next(children);
       }
     );
@@ -240,8 +240,8 @@ class ConceptNodeStore {
       }
       else {
         // todo - do we need to do this?
-        parent.childrenObservable.next(parent.childrenObservable.value);        
-        this.dataObservable.next(this.dataObservable.value);      
+        parent.childrenObservable.next(parent.childrenObservable.value);
+        this.dataObservable.next(this.dataObservable.value);
       }
     }
     else {
@@ -253,10 +253,10 @@ class ConceptNodeStore {
 
   private handleChildren(children: ConceptNode[], parent: ConceptNode): void {
     children.forEach(child => this.conceptNodeCache.set(child.iri, child));
-            
+
     parent.childrenObservable.next(children);
     parent.childrenLoaded = true;
-    
+
     this.dataObservable.next(this.dataObservable.value);
   }
 
@@ -270,24 +270,24 @@ class ConceptNodeStore {
           this.getChildrenByIri(child.iri).subscribe(
             grandChildren => this.handleChildren(grandChildren, child)
           );
-        })  
-        
+        })
+
         // direct children are ready now that grandchildren are done
         childrenObservable.next(children);
       }
     );
-  
+
     return childrenObservable;
   }
 
   private getChildrenByIri(iri: string): Observable<ConceptNode[]> {
     let childrenObservable = new Subject<ConceptNode[]>();
-    
+
     this.getChildrenRequest(iri).subscribe(
-      children => { 
+      children => {
         let childNodes: ConceptNode[] = [];
 
-        children.forEach(child => {  
+        children.forEach(child => {
           let childNode = new ConceptNode(child.iri);
           childNode.name = child.name
           childNodes.push(childNode);
@@ -295,17 +295,17 @@ class ConceptNodeStore {
 
         childrenObservable.next(childNodes);
       }
-    );  
+    );
 
     return childrenObservable;
   }
-  
+
 }
 
 class ConceptTree {
 
   dataStore: ConceptNodeStore;
-  control: FlatTreeControl<FlatConceptNode>; 
+  control: FlatTreeControl<FlatConceptNode>;
   dataSource: MatTreeFlatDataSource<ConceptNode, FlatConceptNode>;
   flattener: MatTreeFlattener<ConceptNode, FlatConceptNode>
   nodeCache: Map<string, FlatConceptNode>;
@@ -332,7 +332,7 @@ class ConceptTree {
 
   transformer = (node: ConceptNode, level: number): FlatConceptNode => {
     let flatNode = this.nodeCache.get(node.iri);
-   
+
     if(flatNode == null) {
       flatNode = {
         expandable: node.expandable,
@@ -343,7 +343,7 @@ class ConceptTree {
 
       this.nodeCache.set(flatNode.iri, flatNode);
     }
-    
+
     return flatNode;
   }
 
@@ -394,12 +394,12 @@ class ValueSetPersepctive {
 
   members: ConceptReference[];
   nonMembers: ConceptReference[];
-  
+
   constructor(private concept: Concept) {
     this.members = [];
     this.nonMembers = [];
-    
-    if(ConceptType.Class === concept.conceptType) {          
+
+    if(ConceptType.Class === concept.conceptType) {
       this.processSubClass(concept);
     }
     else {
@@ -413,11 +413,11 @@ class ValueSetPersepctive {
 
   private processSubClass(concept: Concept): void {
 
-    for (let intersection of concept.SubClassOf[0].Intersection) {    
+    for (let intersection of concept.SubClassOf[0].Intersection) {
       let objectPropertyValue = intersection.ObjectPropertyValue;
 
-      if(objectPropertyValue != null && this.hasMembers(objectPropertyValue.Property)) {        
-        this.processMembersExpression(objectPropertyValue.Expression, true);  
+      if(objectPropertyValue != null && this.hasMembers(objectPropertyValue.Property)) {
+        this.processMembersExpression(objectPropertyValue.Expression, true);
       }
       else {
         console.log("Concept intersection has no members - ", JSON.stringify(intersection));
@@ -428,11 +428,11 @@ class ValueSetPersepctive {
   // TODO - remove hardcoding - can the IRI be config?
   private hasMembers(property: ConceptReference): boolean {
     return ":hasMembers" == property.iri;
-  } 
-  
+  }
+
   private processMembersExpression(membersExpression: ClassExpression, definesMembers: boolean): void {
     console.log("processMembersExpression");
-    
+
     if(membersExpression != null) {
       // check if it's a union, intersection or a complement
       if(membersExpression.Union != null && membersExpression.Union.length > 0) {
@@ -448,20 +448,20 @@ class ValueSetPersepctive {
       else if(membersExpression.ComplementOf != null) {
         // will prob be a Union inside
         // assume everything under here is to be excluded
-        this.processMembersExpression(membersExpression.ComplementOf, !definesMembers) 
+        this.processMembersExpression(membersExpression.ComplementOf, !definesMembers)
       }
       else {
         this.classify(membersExpression.Class, definesMembers);
-      } 
+      }
     }
     else {
       console.log("processMembersExpression - membersExpression param is null");
     }
-  } 
-  
+  }
+
   private classify(conceptReference: ConceptReference, isMember: boolean): void {
     console.log("classify ", JSON.stringify(conceptReference));
-    
+
     if(isMember) {
       this.members.push(conceptReference);
     }

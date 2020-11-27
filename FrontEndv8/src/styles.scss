@@ -142,4 +142,9 @@ th.mat-header-cell {
   border-top: 0em solid transparent;
 }
 
+.mat-grid-tile .mat-figure {
+  justify-content: flex-start!important;
+  align-items: flex-start!important;
+}
+
 @import "~jsoneditor/dist/jsoneditor.min.css";

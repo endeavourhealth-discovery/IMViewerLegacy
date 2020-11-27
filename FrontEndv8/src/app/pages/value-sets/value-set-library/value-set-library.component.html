@@ -19,9 +19,11 @@
                   style="height: calc(100%);overflow:hidden;"> -->
                   <!-- Dashboard content-->
                   <div *ngIf="isValueSetAvailable">
-                    <mat-grid-list cols="2">
-                      <mat-grid-tile style="height: calc(50%);">
-                        <div *ngIf="hasMembers; else noMembers">
+                    <mat-grid-list cols="2" style="clear: both;">
+                      <mat-grid-tile style="height: calc(100%);">
+                        <mat-grid-tile-header><h3>Members</h3></mat-grid-tile-header>
+
+                        <div *ngIf="hasMembers; else noMembers" style="padding-top: 35px;">
                           <mat-selection-list #members>
                             <mat-list-option *ngFor="let member of getMembers()" [value]="member"
                               (click)="onMemberSelected(member)">
@@ -33,13 +35,14 @@
                           </mat-selection-list>
                         </div>
                       </mat-grid-tile>
-                      <mat-grid-tile style="height: calc(50%);">
+                      <mat-grid-tile style="height: calc(100%);">
+                        <mat-grid-tile-header><h3>Children</h3></mat-grid-tile-header>
                         <!--<div *ngIf="isValueSetMemberAvailable">-->
                          <!-- <ng-template
 	                          [ngTemplateOutlet]="valueSetMemberChildrenTemplate"
 	                          [ngTemplateOutletContext]="{ valueSetMember: valueSetMember }">
                           </ng-template> -->
-                          <div *ngIf="conceptTree.selectionHasChildren; else noChildren">
+                          <div *ngIf="conceptTree.dataSource.data.length > 0; else noChildren" style="padding-top: 35px;">
                             <mat-tree [dataSource]="conceptTree.dataSource" [treeControl]="conceptTree.control">
                               <!-- leaf node -->
                               <mat-tree-node *matTreeNodeDef="let node"
@@ -101,13 +104,13 @@
 </ng-template>
 
 <ng-template #noMembers>
-  <p>
+  <p style="padding-top: 35px;">
     ValueSet does not contain any members
   </p>
 </ng-template>
 
 <ng-template #noChildren>
-  <p>
+  <p style="padding-top: 35px;">
     Member does not contain any children
   </p>
 </ng-template>
