@@ -26,6 +26,7 @@ import { MemberDialogComponent } from './member-dialog/member-dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {RouterModule} from '@angular/router';
 import {MatGridListModule} from '@angular/material/grid-list';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 @NgModule({
     imports: [
@@ -53,7 +54,8 @@ import {MatGridListModule} from '@angular/material/grid-list';
         MatTabsModule,
         MatListModule,
         MatSidenavModule,
-        MatGridListModule
+        MatGridListModule,
+        MatPaginatorModule
     ],
   declarations: [
     ValueSetLibraryComponent,

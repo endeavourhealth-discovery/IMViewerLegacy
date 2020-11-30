@@ -15,8 +15,6 @@
                 [selectedPage]="'valueSets'" style="height: 64px;"></app-navigation>
               <!-- Dashboard container-->
               <mat-card-content style="height: calc(100vh - 157px);">
-                <!--<mat-drawer-container class="example-container" hasBackdrop="true"
-                  style="height: calc(100%);overflow:hidden;"> -->
                   <!-- Dashboard content-->
                   <div *ngIf="isValueSetAvailable">
                     <mat-grid-list cols="2" style="clear: both;">
@@ -33,15 +31,12 @@
                               </div>
                             </mat-list-option>
                           </mat-selection-list>
+                          <mat-paginator [length]="getMembers().length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onMemberPageChange($event)" [showFirstLastButtons]=false>
+                          </mat-paginator>                          
                         </div>
                       </mat-grid-tile>
                       <mat-grid-tile style="height: calc(100%);">
                         <mat-grid-tile-header><h3>Children</h3></mat-grid-tile-header>
-                        <!--<div *ngIf="isValueSetMemberAvailable">-->
-                         <!-- <ng-template
-	                          [ngTemplateOutlet]="valueSetMemberChildrenTemplate"
-	                          [ngTemplateOutletContext]="{ valueSetMember: valueSetMember }">
-                          </ng-template> -->
                           <div *ngIf="conceptTree.dataSource.data.length > 0; else noChildren" style="padding-top: 35px;">
                             <mat-tree [dataSource]="conceptTree.dataSource" [treeControl]="conceptTree.control">
                               <!-- leaf node -->

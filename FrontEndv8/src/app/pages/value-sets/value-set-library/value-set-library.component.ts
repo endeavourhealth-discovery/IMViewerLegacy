@@ -7,17 +7,15 @@ import { ConceptType } from './../../../models/objectmodel/ConceptType';
 import { ConceptReference } from './../../../models/objectmodel/ConceptReference';
 import { NgEventBus } from 'ng-event-bus';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router, NavigationEnd, ChildrenOutletContexts } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { LoggerService } from 'dds-angular8/logger';
 import { MatDialog } from '@angular/material/dialog';
 import { KeycloakService } from 'keycloak-angular';
-import { forkJoin, BehaviorSubject, Observable, of as observableOf, merge, Subject, ReplaySubject } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import {  BehaviorSubject, Observable, Subject } from 'rxjs';
 import { ClassExpression } from 'src/app/models/objectmodel/ClassExpression';
-import {FlatTreeControl, NestedTreeControl} from '@angular/cdk/tree';
-import {MatTreeFlatDataSource, MatTreeFlattener, MatTreeNestedDataSource} from '@angular/material/tree';
-import { DataSource } from '@angular/cdk/table';
-import { CollectionViewer, SelectionChange } from '@angular/cdk/collections';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
+import {PageEvent} from '@angular/material/paginator';
 
 @Component({
   selector: 'app-value-set-library',
@@ -34,6 +32,13 @@ export class ValueSetLibraryComponent implements OnInit {
   parents: Array<ConceptReferenceNode>;
   children: Array<ConceptReferenceNode>;
 
+  // pagination 
+  pageSize:number;
+  pageSizeOptions: number[];
+  pageEvent: PageEvent;
+  memberPageStartIndex: number;
+  memberPageEndIndex: number;
+
   selectedIri: string;
   searchSize = 72;
   root = ':VSET_ValueSet';
@@ -44,6 +49,14 @@ export class ValueSetLibraryComponent implements OnInit {
   timer: any;
   sidebar = false;
   @ViewChild(ConceptTreeViewComponent, { static: true }) treeView: ConceptTreeViewComponent;
+
+
+  
+    // setPageSizeOptions(setPageSizeOptionsInput: string) {
+    //   if (setPageSizeOptionsInput) {
+    //     this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
+    //   }
+    // }
 
   constructor(private service: ConceptService,
               private auth: KeycloakService,
@@ -57,15 +70,24 @@ export class ValueSetLibraryComponent implements OnInit {
 
     this.conceptTree = new ConceptTree(service);
 
+    // pagination
+    this.pageSize = 10;
+    this.pageSizeOptions = [5, 10, 25, 100];
+
     this.eventBus.on('app:conceptHover').subscribe((iri: string) => {
       this.itemHover(iri);
     });
   }
 
   onMemberSelected(member: ConceptReference): void {
-    // need to get the children from the valueset
-    console.log('onMemberSelected ->', JSON.stringify(member));
     this.conceptTree.initialise(member);
+  }
+
+  onMemberPageChange(event: PageEvent): PageEvent {
+    this.memberPageStartIndex = event.pageIndex * event.pageSize;
+    this.memberPageEndIndex = this.memberPageStartIndex + event.pageSize
+
+    return event;
   }
 
   routeEvent(router: Router) {
@@ -154,11 +176,6 @@ export class ValueSetLibraryComponent implements OnInit {
     return total;
   }
 
-  // expand(item: ValueSetMember) {
-  //   if (item && !item.counts) {
-  //   }
-  // }
-
   goto(iri: string) {
     if (iri !== this.selectedIri) {
       this.router.navigate(['valueSets'], { queryParams: { id: iri } });
@@ -166,18 +183,12 @@ export class ValueSetLibraryComponent implements OnInit {
   }
 
   gotoConcept(iri: string) {
-    console.log("gotoConcept > " + iri);
     this.router.navigate(['ontology'], { queryParams: { id: iri } });
   }
 
   hasResults(displayed: boolean) {
     this.searchSize = displayed ? 256 : 72;
   }
-
-  // viewChildren(item: ValueSetMember, scheme?: string) {
-  //   console.log('Viewing children of ' + item.iri + ' (scheme ' + scheme + ')');
-  //   MemberDialogComponent.open(this.dialog, item.iri, scheme).subscribe();
-  // }
 
   getCode(iri: string) {
     return iri.substring(iri.indexOf('_') + 1);
@@ -411,17 +422,37 @@ class ValueSetPersepctive {
     return this.members.length > 0 || this.nonMembers.length > 0;
   }
 
-  private processSubClass(concept: Concept): void {
-
-    for (let intersection of concept.SubClassOf[0].Intersection) {
+  private processIntersection(intersection: ClassExpression): void {
+    if(intersection != null) {
       let objectPropertyValue = intersection.ObjectPropertyValue;
 
       if(objectPropertyValue != null && this.hasMembers(objectPropertyValue.Property)) {
-        this.processMembersExpression(objectPropertyValue.Expression, true);
+        let isMember = true;
+        let expression = objectPropertyValue.Expression;
+
+        if(expression != null) {
+          this.processHasMembersExpression(expression, isMember); 
+        }
+        else {
+          this.classifyMember(objectPropertyValue.ValueType, isMember);
+        }
       }
       else {
         console.log("Concept intersection has no members - ", JSON.stringify(intersection));
-      }
+      }    
+    }
+  }
+
+  private processSubClass(concept: Concept): void {
+    if(concept.SubClassOf != null && Array.isArray(concept.SubClassOf)) {
+      concept.SubClassOf.forEach(subClassOf => {
+        subClassOf.Intersection.forEach(intersection => {
+          this.processIntersection(intersection);
+        }); 
+      });
+    }
+    else {
+      console.log("Concept has not SubClassOf ", JSON.stringify(concept));
     }
   }
 
@@ -430,28 +461,26 @@ class ValueSetPersepctive {
     return ":hasMembers" == property.iri;
   }
 
-  private processMembersExpression(membersExpression: ClassExpression, definesMembers: boolean): void {
-    console.log("processMembersExpression");
-
+  private processHasMembersExpression(membersExpression: ClassExpression, definesMembers: boolean): void {
     if(membersExpression != null) {
       // check if it's a union, intersection or a complement
       if(membersExpression.Union != null && membersExpression.Union.length > 0) {
         membersExpression.Union.forEach(classExpression => {
-          this.processMembersExpression(classExpression, definesMembers);
+          this.processHasMembersExpression(classExpression, definesMembers);
         });
       }
       else if(membersExpression.Intersection != null && membersExpression.Intersection.length > 0) {
         membersExpression.Intersection.forEach(classExpression => {
-          this.processMembersExpression(classExpression, definesMembers);
+          this.processHasMembersExpression(classExpression, definesMembers);
         });
       }
       else if(membersExpression.ComplementOf != null) {
         // will prob be a Union inside
         // assume everything under here is to be excluded
-        this.processMembersExpression(membersExpression.ComplementOf, !definesMembers)
+        this.processHasMembersExpression(membersExpression.ComplementOf, !definesMembers)
       }
       else {
-        this.classify(membersExpression.Class, definesMembers);
+        this.classifyMember(membersExpression.Class, definesMembers);
       }
     }
     else {
@@ -459,9 +488,7 @@ class ValueSetPersepctive {
     }
   }
 
-  private classify(conceptReference: ConceptReference, isMember: boolean): void {
-    console.log("classify ", JSON.stringify(conceptReference));
-
+  private classifyMember(conceptReference: ConceptReference, isMember: boolean): void {
     if(isMember) {
       this.members.push(conceptReference);
     }
