@@ -73,6 +73,8 @@ export class ValueSetLibraryComponent implements OnInit {
     // pagination
     this.pageSize = 10;
     this.pageSizeOptions = [5, 10, 25, 100];
+    this.memberPageStartIndex = 0;
+    this.memberPageEndIndex = this.pageSize;
 
     this.eventBus.on('app:conceptHover').subscribe((iri: string) => {
       this.itemHover(iri);

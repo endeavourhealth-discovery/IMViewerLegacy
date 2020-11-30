@@ -23,7 +23,7 @@
 
                         <div *ngIf="hasMembers; else noMembers" style="padding-top: 35px;">
                           <mat-selection-list #members>
-                            <mat-list-option *ngFor="let member of getMembers()" [value]="member"
+                            <mat-list-option *ngFor="let member of getMembers() | slice: memberPageStartIndex : memberPageEndIndex" [value]="member"
                               (click)="onMemberSelected(member)">
                               <div style="display:flex;align-items:center">
                                 <mat-icon matListIcon>add_circle</mat-icon>
