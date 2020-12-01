@@ -90,7 +90,9 @@ mat-accordion .mat-form-field + .mat-form-field {
   }
   mat-grid-tile-header {
     + div {
-      padding-top: 48px;
+      margin-top: 48px;
+      overflow-y: auto;
+      height: calc(100% - 48px);
     }
   }
 }
