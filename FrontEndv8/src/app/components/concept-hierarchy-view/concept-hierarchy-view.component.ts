@@ -7,6 +7,7 @@ import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 import { ConceptReference } from 'src/app/models/objectmodel/ConceptReference';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
+import { stringToKeyValue } from '@angular/flex-layout/extended/typings/style/style-transforms';
 
 interface ConceptNode {
   name: string;
@@ -30,7 +31,8 @@ export class ConceptHierarchyViewComponent implements OnInit {
   @Input() children: Array<ConceptReferenceNode>;
 
   tree: ConceptNode[] = [];
-
+  loadedChildren: string[] = [];
+  
   constructor(private service: ConceptService,
     private log: LoggerService,
     private eventBus: NgEventBus) {
@@ -41,20 +43,20 @@ export class ConceptHierarchyViewComponent implements OnInit {
 
   }
 
-  // TODO If the has not been loaded, generate a new tree
   ngOnChanges(changes: SimpleChanges): void {
-    this.tree = [];
-    if (this.parents) {
+    // only create a new tree if one does not already exist
+    if(this.tree.length == 0) {
+      this.tree = [];
       this.addSelectedConceptToTree(this.parents);
       this.reverseTree(this.parents, 0, []);
+      this.tree.splice(1);
+      this.dataSource.data = this.tree;
+      this.treeControl.expandAll();
     }
-    this.tree.splice(1);
-    this.dataSource.data = this.tree;
-    this.treeControl.expandAll();
   }
 
   // Required Methods
-  _transformer = (node: ConceptNode, level: number) => { return { expandable: !!node.children && node.children.length > 0, name: node.name, iri: node.iri, level: level, };}
+  _transformer = (node: ConceptNode, level: number) => { return { expandable: !!node.children && node.children.length > 0, name: node.name, iri: node.iri, level: level, children: node.children };}
   treeControl = new FlatTreeControl<ConceptNode>(node => node.level, node => node.expandable);
   treeFlattener = new MatTreeFlattener(this._transformer, node => node.level, node => node.expandable, node => node.children);
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
@@ -72,7 +74,9 @@ export class ConceptHierarchyViewComponent implements OnInit {
   }
 
   // Reverse the original parent hierarchy (parent -> child vs child -> parent)
-  reverseTree(conceptReferences: ConceptReferenceNode[], level: number, previousNodes: ConceptNode[]): ConceptNode[] {
+  reverseTree(conceptReferences: ConceptReferenceNode[], level: number, previousNodes: ConceptNode[]): ConceptNode {
+    let rootNode: ConceptNode;
+
     let nodes: ConceptNode[] = [];
     conceptReferences.forEach(conceptReference => {
       let node = {
@@ -80,7 +84,7 @@ export class ConceptHierarchyViewComponent implements OnInit {
         iri: conceptReference.iri,
         level: level,
         expandable: true,
-        children: previousNodes
+        children: previousNodes,
       };
       // if this node is the currently selected concept, add its children
       if (node.iri === this.concept.iri) {
@@ -88,27 +92,31 @@ export class ConceptHierarchyViewComponent implements OnInit {
       }
       nodes.push(node);
       // if this node is the root of the hierarchy, generate the tree
-      if (conceptReference.parents.length === 0 || conceptReference.iri === this.root) {
+      if (conceptReference.parents.length === 0 || conceptReference.iri === this.root) {   
         this.tree.push(node);
+        rootNode = node;
       } else {
         this.reverseTree(conceptReference.parents, level, nodes);
       }
     });
-    return nodes;
+    return rootNode;
   }
 
   // Add Children to the currently selected concept
   addChildrenToTree(): ConceptNode[] {
     let childNodes: ConceptNode[] = [];
-    this.children.forEach(child => {
-      childNodes.push({
-        name: child.name,
-        iri: child.iri,
-        level: 0,
-        expandable: true,
-        children: []
+    
+    if(this.children) {
+      this.children.forEach(child => {
+        childNodes.push({
+          name: child.name,
+          iri: child.iri,
+          level: 0,
+          expandable: true,
+          children: []
+        });
       });
-    });
+    }
     return childNodes;
   }
 
@@ -120,29 +128,63 @@ export class ConceptHierarchyViewComponent implements OnInit {
     this.findAndExpandMatchingNode(node.iri, this.tree);
   }
 
+  getExpansionIcon(node: ConceptNode): string {
+    let expansionIcon: string; 
+
+    if(this.treeControl.isExpanded(node) && node.expandable) {
+      expansionIcon = "expand_more";
+    } 
+    else if(this.treeControl.isExpanded(node) && node.expandable == false) {
+      if(this.loadedChildren.includes(node.iri)) {
+        expansionIcon = "remove";
+      }
+      else {
+        expansionIcon = "chevron_right";
+      }
+    } 
+
+    return expansionIcon;
+  }
+
   findAndExpandMatchingNode(iri: string, nodes: ConceptNode[]) {
     nodes.forEach(node => {
       // expand Node
       if (node.iri === iri) {
         node.children = [];
         this.service.getConceptChildren(node.iri).subscribe(
-          (result) => result.forEach(child => {
-            node.children.push({
-              name: child.name,
-              iri: child.iri,
-              level: node.level + 1,
-              expandable: false,
-              children: []
-            });
-            this.dataSource.data = this.tree;
-            this.treeControl.expandAll();
-          }),
+          (result) => { this.addChildrenToParentNode(node, result); this.loadedChildren.push(node.iri) },
           (error) => { this.log.error(error); }
         );
       } else {
         this.findAndExpandMatchingNode(iri, node.children);
       }
     });
+  }
+
+  private addChildrenToParentNode(parentNode: ConceptNode, conceptChildren: ConceptReference[]) {
+    if(conceptChildren != null && conceptChildren.length > 0) {
+      conceptChildren.forEach(child => {
+        let childNode = {
+          name: child.name,
+          iri: child.iri,
+          level: parentNode.level + 1,
+          expandable: false,
+          children: [],
+          childrenLoaded: false
+        };
+        
+        parentNode.children.push(childNode);
+        parentNode.expandable = true;
+        this.dataSource.data = this.tree;
+        this.treeControl.expandAll();
+      })
+    }
+    else {
+      parentNode.expandable = false;
+      parentNode.children = [];
+      this.dataSource.data = this.tree;
+      this.treeControl.expandAll();
+    }
   }
 
   nodeHover(node: ConceptNode) {
