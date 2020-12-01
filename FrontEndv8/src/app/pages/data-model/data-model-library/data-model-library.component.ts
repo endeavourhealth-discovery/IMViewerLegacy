@@ -7,9 +7,9 @@ import { ConceptService } from '../../../services/concept.service';
 import { Concept } from '../../../models/objectmodel/Concept';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { LoggerService } from 'dds-angular8/logger';
-import { KeycloakService } from 'keycloak-angular';
 import { DataModelTablularViewComponent } from '../../../components/data-model-tabular-view/data-model-tabular-view.component';
 import { NgEventBus } from 'ng-event-bus';
+import {AppConfig} from '../../../app-config.service';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -44,8 +44,8 @@ class DataModelLibraryComponent implements OnInit {
   @ViewChild(DataModelTablularViewComponent, { static: true }) tableView: DataModelTablularViewComponent;
 
   constructor(private service: ConceptService,
+    private appConfig: AppConfig,
     private router: Router,
-    private auth: KeycloakService,
     private route: ActivatedRoute,
     private log: LoggerService,
     public dialog: MatDialog,
@@ -71,6 +71,7 @@ class DataModelLibraryComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.appConfig.subtitle = 'Data Model';
     // Direct URL nav - need to push to tree
     this.route.queryParamMap.subscribe(
       (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
@@ -132,10 +133,6 @@ class DataModelLibraryComponent implements OnInit {
 
   hasResults(displayed: boolean) {
     this.searchSize = displayed ? 256 : 72;
-  }
-
-  logout() {
-    this.auth.logout();
   }
 
   openDialog(): void {

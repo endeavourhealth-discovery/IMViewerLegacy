@@ -1,79 +1,67 @@
-<div id="home-content">
-  <mat-card>
-    <mat-card-content>
-      <as-split direction="horizontal">
-        <!-- LEFT -->
-        <as-split-area size="30" style="height: 97%;">
-          <app-side-nav [root]="root" [relationships]="relationships" [concept]="concept" [children]="children" [parents]="parents" [selectedIri]="selectedIri"></app-side-nav>
-        </as-split-area>
-        <!-- RIGHT -->
-        <as-split-area size="70">
-          <div class="as-split-area-content">
-            <mat-card>
-              <!-- Header -->
-              <app-navigation [title]="'Value Set - ' + concept.name" [subtitle]="concept.description"
-                [selectedPage]="'valueSets'" style="height: 64px;"></app-navigation>
-              <!-- Dashboard container-->
-              <mat-card-content style="height: calc(100vh - 157px);">
-                  <!-- Dashboard content-->
-                  <div *ngIf="isValueSetAvailable">
-                    <mat-grid-list cols="2" style="clear: both;">
-                      <mat-grid-tile style="height: calc(100%);">
-                        <mat-grid-tile-header><h3>Members</h3></mat-grid-tile-header>
+<as-split direction="horizontal">
+  <!-- LEFT -->
+  <as-split-area size="30" style="height: 97%;">
+    <app-side-nav [root]="root" [relationships]="relationships" [concept]="concept" [children]="children" [parents]="parents" [selectedIri]="selectedIri"></app-side-nav>
+  </as-split-area>
+  <!-- RIGHT -->
+  <as-split-area size="70">
+    <div class="as-split-area-content">
+      <mat-card>
+        <!-- Header -->
+        <app-navigation [title]="'Value Set - ' + concept?.name" [subtitle]="concept?.description"
+                        [selectedPage]="'valueSets'" style="height: 64px;"></app-navigation>
+        <!-- Dashboard container-->
+        <mat-card-content class="full-page-card">
+          <!-- Dashboard content-->
+          <div *ngIf="isValueSetAvailable" style="height: 100%">
+            <mat-grid-list cols="2" rowHeight="100%">
+              <mat-grid-tile >
+                <mat-grid-tile-header><h3>Members</h3></mat-grid-tile-header>
 
-                        <div *ngIf="hasMembers; else noMembers" style="padding-top: 35px;">
-                          <mat-selection-list #members>
-                            <mat-list-option *ngFor="let member of getMembers() | slice: memberPageStartIndex : memberPageEndIndex" [value]="member"
-                              (click)="onMemberSelected(member)">
-                              <div style="display:flex;align-items:center">
-                                <mat-icon matListIcon>add_circle</mat-icon>
-                                {{member.name}} ({{member.iri}})
-                              </div>
-                            </mat-list-option>
-                          </mat-selection-list>
-                          <mat-paginator [length]="getMembers().length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onMemberPageChange($event)" [showFirstLastButtons]=false>
-                          </mat-paginator>                          
-                        </div>
-                      </mat-grid-tile>
-                      <mat-grid-tile style="height: calc(100%);">
-                        <mat-grid-tile-header><h3>Children</h3></mat-grid-tile-header>
-                          <div *ngIf="conceptTree.dataSource.data.length > 0; else noChildren" style="padding-top: 35px;">
-                            <mat-tree [dataSource]="conceptTree.dataSource" [treeControl]="conceptTree.control">
-                              <!-- leaf node -->
-                              <mat-tree-node *matTreeNodeDef="let node"
-                              matTreeNodePadding
-                              matTreeNodePaddingIndent="0">
-                                <button mat-icon-button disabled></button>
-                                {{node.name}}
-                              </mat-tree-node>
-
-                              <!-- expandable node -->
-                              <mat-tree-node *matTreeNodeDef="let node; when: conceptTree.isExpandable"
-                              matTreeNodePadding
-                              matTreeNodePaddingIndent="0">
-                                <button mat-icon-button matTreeNodeToggle
-                                        (click)="conceptTree.loadChildren(node)">
-                                  <mat-icon class="mat-icon-rtl-mirror">
-                                    {{conceptTree.control.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-                                  </mat-icon>
-                                </button>
-                                {{node.name}}
-                              </mat-tree-node>
-                            </mat-tree>
-                          </div>
-                        <!--</div>-->
-                      </mat-grid-tile>
-                    </mat-grid-list>
+                <div *ngIf="hasMembers; else noMembers">
+                  <mat-action-list #members>
+                    <mat-list-item *ngFor="let member of getMembers() | slice: memberPageStartIndex : memberPageEndIndex" (click)="onMemberSelected(member)" [matTooltip]="member.name">
+                        <mat-icon mat-list-icon>add_circle</mat-icon>
+                        <span class="no-wrap">{{member.name}} ({{member.iri}})</span>
+                    </mat-list-item>
+                  </mat-action-list>
+                  <div style="bottom: 0; right: 0; position: absolute">
+                    <mat-paginator [length]="getMembers().length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onMemberPageChange($event)" [showFirstLastButtons]=false>
+                    </mat-paginator>
                   </div>
-                <!--</mat-drawer-container>-->
-              </mat-card-content>
-            </mat-card>
+                </div>
+              </mat-grid-tile>
+              <mat-grid-tile>
+                <mat-grid-tile-header><h3>Children</h3></mat-grid-tile-header>
+                <div *ngIf="conceptTree.dataSource.data.length > 0; else noChildren">
+                  <mat-tree [dataSource]="conceptTree.dataSource" [treeControl]="conceptTree.control">
+                    <!-- leaf node -->
+                    <mat-tree-node *matTreeNodeDef="let node"
+                                   matTreeNodePadding matTreeNodePaddingIndent="10">
+                      {{node.name}}
+                    </mat-tree-node>
+
+                    <!-- expandable node -->
+                    <mat-tree-node *matTreeNodeDef="let node; when: conceptTree.isExpandable"
+                                   matTreeNodePadding matTreeNodePaddingIndent="10">
+                        <mat-icon class="mat-icon-rtl-mirror" matTreeNodeToggle
+                                  (click)="conceptTree.loadChildren(node)">
+                          {{conceptTree.control.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                        </mat-icon>
+                      {{node.name}}
+                    </mat-tree-node>
+                  </mat-tree>
+                </div>
+                <!--</div>-->
+              </mat-grid-tile>
+            </mat-grid-list>
           </div>
-        </as-split-area>
-      </as-split>
-    </mat-card-content>
-  </mat-card>
-</div>
+          <!--</mat-drawer-container>-->
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </as-split-area>
+</as-split>
 
 <!-- https://stackblitz.com/angular/volnvkpldqj?file=src%2Fapp%2Ftree-nested-overview-example.html -->
 
@@ -99,13 +87,13 @@
 </ng-template>
 
 <ng-template #noMembers>
-  <p style="padding-top: 35px;">
+  <div>
     ValueSet does not contain any members
-  </p>
+  </div>
 </ng-template>
 
 <ng-template #noChildren>
-  <p style="padding-top: 35px;">
+  <div>
     Member does not contain any children
-  </p>
+  </div>
 </ng-template>

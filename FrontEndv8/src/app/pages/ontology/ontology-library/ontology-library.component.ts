@@ -6,8 +6,8 @@ import { NgEventBus } from 'ng-event-bus';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { LoggerService } from 'dds-angular8/logger';
-import { KeycloakService } from 'keycloak-angular';
 import { JsonEditorOptions } from 'ang-jsoneditor';
+import {AppConfig} from '../../../app-config.service';
 
 @Component({
   selector: 'app-ontology-library',
@@ -20,7 +20,7 @@ export class OntologyLibraryComponent implements OnInit {
   children: Array<ConceptReferenceNode>;
   selectedIri: string;
   searchSize = 72;
-  root = ':1301000252100';
+  root = ':SemanticConcept';
   relationships = ['sn:116680003'];
   hoveredConcept: Concept = new Concept();
   definition = null;
@@ -35,7 +35,7 @@ export class OntologyLibraryComponent implements OnInit {
   @ViewChild(ConceptTreeViewComponent, { static: true }) treeView: ConceptTreeViewComponent;
 
   constructor(private service: ConceptService,
-    private auth: KeycloakService,
+    private appConfig: AppConfig,
     private router: Router,
     private route: ActivatedRoute,
     private log: LoggerService,
@@ -65,6 +65,7 @@ export class OntologyLibraryComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.appConfig.subtitle = 'Semantic Ontology';
     // Direct URL nav - need to push to tree
     this.route.queryParamMap.subscribe(
       (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
@@ -122,9 +123,5 @@ export class OntologyLibraryComponent implements OnInit {
 
   hasResults(displayed: boolean) {
     this.searchSize = displayed ? 256 : 72;
-  }
-
-  logout() {
-    this.auth.logout();
   }
 }

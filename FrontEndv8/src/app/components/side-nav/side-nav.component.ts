@@ -1,12 +1,10 @@
-import { ConceptReferenceNode } from './../../models/objectmodel/ConceptReferenceNode';
+import { ConceptReferenceNode } from '../../models/objectmodel/ConceptReferenceNode';
 import { NgEventBus } from 'ng-event-bus';
 import { Concept} from '../../models/objectmodel/Concept';
 import { LoggerService } from 'dds-angular8';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { KeycloakService } from 'keycloak-angular';
+import { Router, NavigationEnd } from '@angular/router';
 import { ConceptService } from '../../services/concept.service';
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { json } from 'd3';
 
 @Component({
   selector: 'app-side-nav',

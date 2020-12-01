@@ -3,6 +3,7 @@ import { ConceptService } from './../../../../services/concept.service';
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
 import { LoggerService } from 'dds-angular8/logger';
+import {AppConfig} from '../../../../app-config.service';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -14,10 +15,10 @@ const debug = (message: string) => { console.log(message); };
 export class DataModelOverviewLibraryComponent implements OnInit {
   concepts = [];
 
-  constructor(private service: ConceptService, private log: LoggerService, private router: Router) { }
+  constructor(private service: ConceptService, private log: LoggerService, private router: Router, private appConfig:AppConfig) { }
 
   ngOnInit() {
-
+    this.appConfig.subtitle = 'Data Model Overview';
     this.service.getConceptChildren(':HealthRecord').subscribe(
       (result) => this.populateConcepts(result),
       (error) => this.log.error(error)

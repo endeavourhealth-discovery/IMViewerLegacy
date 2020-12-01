@@ -1,60 +1,21 @@
-<div id="home-content">
-  <mat-card class="main-card">
-    <mat-card-header>
-      <div mat-card-avatar>
-        <span class="fad fa-chart-network"></span>
-      </div>
-      <mat-card-title>Information Model Viewer</mat-card-title>
-      <mat-card-subtitle>Discovery information model content viewer & navigator</mat-card-subtitle>
-      <div fxFlex></div>
-    </mat-card-header>
-    <mat-card-content>
-      <p>
-        The Discovery common information model consists of an integrated set of components that support machine processable and human readable information about data in the Discovery Data Service.
-
-        The model has a much broader definition than simply a data model. It involves the modelling of the meaning off data and the way in which data is converted to information.
-
-        More specifically, in this context, the information model is tailored to illustrate arrangements of health and care data as held in health records for the purposes of understanding and query as described by the objectives of the <a
-        href="https://wiki.discoverydataservice.org/index.php?title=Information_model_service" target="_blank">information model</a>.
-      </p>
-
-      <div fxLayout="row wrap" fxLayoutGap="16px" fxLayoutAlign="flex-start">
-        <div class="sub-module">
-          <h2>Ontology Viewer</h2>
-          <p>The semantic ontology is the set of concepts used in all parts of the information model, from clinical concepts through to data structure concepts</p>
-          <button mat-flat-button (click)="navigateTo('ontology')">Explore</button>
+<div class="content" fxLayout="row wrap" fxLayoutGap="16px grid">
+  <div fxFlex="33%" fxFlex.sm="50%" fxFlex.xs="100%"  fxLayoutAlign="stretch" *ngFor="let item of appConfig.perspectives">
+    <mat-card>
+      <mat-card-header [style.color]="item.color">
+        <div mat-card-avatar>
+          <span class="fad fa-fw fa-2x {{item.icon}}"></span>
         </div>
-
-        <div class="sub-module">
-          <h2>Data Model Viewer</h2>
-          <p>The data model is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but he data model, being created for a specific business of healthcare is separate to the ontology.</p>
-            <button mat-flat-button (click)="navigateTo('dataModel')">Explore</button>
-            &nbsp;
-            <button mat-flat-button (click)="navigateTo('dataModelOverview')">Overview</button>
-        </div>
-
-        <div class="sub-module">
-          <h2>Value Set Viewer</h2>
-          <p>Business purpose specific collections of concepts from the ontology used in the data model or in query and contain concepts as defined in the ontology, using the ontology language, including advanced concept classes.</p>
-          <button mat-flat-button (click)="navigateTo('valueSets')">Explore</button>
-        </div>
-
-        <div class="sub-module">
-          <h2>Data Set Definitions</h2>
-          <p>Data set definitions apply rules and filters to a data model in order to specify the nature of the entries and their content required in a purpose specific data set.</p>
-          <button disabled mat-flat-button (click)="navigateTo('dataSets')">Explore</button>
-        </div>
-
-        <div class="sub-module">
-          <h2>Data Model Maps</h2>
-          <p>Data model maps specify how data is transformed from a data model to a particular database.</p>
-          <button disabled mat-flat-button (click)="navigateTo('dataMaps')">Explore</button>
-        </div>
-
-        <div class="sub-module">
-        </div>
-      </div>
-
-    </mat-card-content>
-  </mat-card>
+        <mat-card-title>{{item.caption}}</mat-card-title>
+        <mat-card-subtitle>{{item.subtitle}}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <img src="assets/{{item.image}}" style="max-height: 200px; width: 100%; object-fit: cover">
+        <p>{{item.description}}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="navigateTo(item.primary.state)">{{item.primary.name}}</button>
+        <button *ngFor="let a of item.additionalStates" mat-button (click)="navigateTo(a.state)">{{a.name}}</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
 </div>

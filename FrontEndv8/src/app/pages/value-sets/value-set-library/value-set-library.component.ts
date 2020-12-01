@@ -1,20 +1,20 @@
-import { ConceptReferenceNode } from './../../../models/objectmodel/ConceptReferenceNode';
+import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferenceNode';
 import { ConceptTreeViewComponent } from 'im-common/im-controls';
-import { SchemeCount } from './../../../models/old/SchemeCount';
-import { ConceptService } from './../../../services/concept.service';
-import { Concept } from './../../../models/objectmodel/Concept';
-import { ConceptType } from './../../../models/objectmodel/ConceptType';
-import { ConceptReference } from './../../../models/objectmodel/ConceptReference';
+import { SchemeCount } from '../../../models/old/SchemeCount';
+import { ConceptService } from '../../../services/concept.service';
+import { Concept } from '../../../models/objectmodel/Concept';
+import { ConceptType } from '../../../models/objectmodel/ConceptType';
+import { ConceptReference } from '../../../models/objectmodel/ConceptReference';
 import { NgEventBus } from 'ng-event-bus';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { LoggerService } from 'dds-angular8/logger';
 import { MatDialog } from '@angular/material/dialog';
-import { KeycloakService } from 'keycloak-angular';
 import {  BehaviorSubject, Observable, Subject } from 'rxjs';
 import { ClassExpression } from 'src/app/models/objectmodel/ClassExpression';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
+import {AppConfig} from '../../../app-config.service';
 import {PageEvent} from '@angular/material/paginator';
 
 @Component({
@@ -32,7 +32,7 @@ export class ValueSetLibraryComponent implements OnInit {
   parents: Array<ConceptReferenceNode>;
   children: Array<ConceptReferenceNode>;
 
-  // pagination 
+  // pagination
   pageSize:number;
   pageSizeOptions: number[];
   pageEvent: PageEvent;
@@ -51,7 +51,7 @@ export class ValueSetLibraryComponent implements OnInit {
   @ViewChild(ConceptTreeViewComponent, { static: true }) treeView: ConceptTreeViewComponent;
 
 
-  
+
     // setPageSizeOptions(setPageSizeOptionsInput: string) {
     //   if (setPageSizeOptionsInput) {
     //     this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
@@ -59,7 +59,7 @@ export class ValueSetLibraryComponent implements OnInit {
     // }
 
   constructor(private service: ConceptService,
-              private auth: KeycloakService,
+              private appConfig: AppConfig,
               private router: Router,
               private route: ActivatedRoute,
               private log: LoggerService,
@@ -71,8 +71,8 @@ export class ValueSetLibraryComponent implements OnInit {
     this.conceptTree = new ConceptTree(service);
 
     // pagination
-    this.pageSize = 10;
-    this.pageSizeOptions = [5, 10, 25, 100];
+    this.pageSize = 20;
+    this.pageSizeOptions = [5, 10, 20];
     this.memberPageStartIndex = 0;
     this.memberPageEndIndex = this.pageSize;
 
@@ -106,6 +106,8 @@ export class ValueSetLibraryComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.appConfig.subtitle = 'Value Sets';
+
     // Direct URL nav - need to push to tree
     this.route.queryParamMap.subscribe(
       (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
@@ -194,10 +196,6 @@ export class ValueSetLibraryComponent implements OnInit {
 
   getCode(iri: string) {
     return iri.substring(iri.indexOf('_') + 1);
-  }
-
-  logout() {
-    this.auth.logout();
   }
 
   get hasMembers(): boolean {
@@ -433,7 +431,7 @@ class ValueSetPersepctive {
         let expression = objectPropertyValue.Expression;
 
         if(expression != null) {
-          this.processHasMembersExpression(expression, isMember); 
+          this.processHasMembersExpression(expression, isMember);
         }
         else {
           this.classifyMember(objectPropertyValue.ValueType, isMember);
@@ -441,7 +439,7 @@ class ValueSetPersepctive {
       }
       else {
         console.log("Concept intersection has no members - ", JSON.stringify(intersection));
-      }    
+      }
     }
   }
 
@@ -450,7 +448,7 @@ class ValueSetPersepctive {
       concept.SubClassOf.forEach(subClassOf => {
         subClassOf.Intersection.forEach(intersection => {
           this.processIntersection(intersection);
-        }); 
+        });
       });
     }
     else {
@@ -499,3 +497,4 @@ class ValueSetPersepctive {
     }
   }
 }
+

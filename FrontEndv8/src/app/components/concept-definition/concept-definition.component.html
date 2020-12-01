@@ -1,0 +1,38 @@
+<h4>Definition</h4>
+<ng-container *ngIf="concept.SubClassOf">
+  <div style="padding-left: 8px">
+    <h5>Sub Class Of</h5>
+    <ng-container [ngTemplateOutlet]="classAxiomList" [ngTemplateOutletContext]="{list : concept.SubClassOf}"></ng-container>
+  </div>
+</ng-container>
+
+<ng-template #classAxiomList let-list="list">
+  <ng-container *ngFor="let item of list">
+    <ng-container [ngTemplateOutlet]="classAxiom" [ngTemplateOutletContext]="{item: item}"></ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template #classExpressionList let-list="list">
+  <ng-container *ngFor="let item of list">
+    <ng-container [ngTemplateOutlet]="classExpression" [ngTemplateOutletContext]="{item: item}"></ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template #classAxiom let-item="item">
+  <div *ngIf="item.Intersection" style="padding-left: 8px">
+    <h5>Intersection</h5>
+    <ng-container [ngTemplateOutlet]="classExpressionList" [ngTemplateOutletContext]="{list : item.Intersection}"></ng-container>
+  </div>
+</ng-template>
+
+<ng-template #classExpression let-item="item">
+  <div *ngIf="item.Class" style="padding-left: 8px">
+    <span>(CLS) - {{item.Class.iri}} | {{item.Class.name}}</span>
+  </div>
+  <div *ngIf="item.ObjectPropertyValue" style="padding-left: 8px">
+    <span>(OPV) - {{item.ObjectPropertyValue.Property.iri}} | {{item.ObjectPropertyValue.Property.name}}</span>
+    <span> - {{item.ObjectPropertyValue.Quantification}} ({{item.ObjectPropertyValue.Min}}) - </span>
+    <span>{{item.ObjectPropertyValue.ValueType.iri}} | {{item.ObjectPropertyValue.ValueType.name}}</span>
+  </div>
+
+</ng-template>

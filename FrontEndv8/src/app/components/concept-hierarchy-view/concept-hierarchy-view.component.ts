@@ -44,8 +44,10 @@ export class ConceptHierarchyViewComponent implements OnInit {
   // TODO If the has not been loaded, generate a new tree
   ngOnChanges(changes: SimpleChanges): void {
     this.tree = [];
-    this.addSelectedConceptToTree(this.parents);
-    this.reverseTree(this.parents, 0, []);
+    if (this.parents) {
+      this.addSelectedConceptToTree(this.parents);
+      this.reverseTree(this.parents, 0, []);
+    }
     this.tree.splice(1);
     this.dataSource.data = this.tree;
     this.treeControl.expandAll();

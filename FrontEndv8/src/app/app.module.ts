@@ -4,8 +4,7 @@ import { OntologyModule } from './pages/ontology/ontology.module';
 import { DataModelModule } from './pages/data-model/data-model.module';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { NgModule, DoBootstrap, ApplicationRef } from '@angular/core';
-import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
-import {AppMenuService} from './app-menu.service';
+import {AppConfig} from './app-config.service';
 import {RouterModule} from '@angular/router';
 import {HttpClientModule} from '@angular/common/http';
 import {AbstractMenuProvider, LoggerModule, SecurityModule} from 'dds-angular8';
@@ -21,12 +20,29 @@ import {MainPageModule} from './main-page/main-page.module';
 import {AbstractSecurityProvider} from './security/abstract-security-provider';
 import {MockSecurityService} from './security/mock-security.service';
 import { NgEventBus } from 'ng-event-bus';
+import {MatIconModule} from '@angular/material/icon';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MainPageComponent} from './main-page/main-page.component';
+import {OntologyLibraryComponent} from './pages/ontology/ontology-library/ontology-library.component';
+import {DataModelLibraryComponent} from './pages/data-model/data-model-library/data-model-library.component';
+import {ValueSetLibraryComponent} from './pages/value-sets/value-set-library/value-set-library.component';
+import {DataModelOverviewLibraryComponent} from './pages/data-model/data-model-overview/data-model-overview-library/data-model-overview-library.component';
 
-const keycloakService = new KeycloakService();
+let routes = [
+  {path: '', redirectTo: '/mainPage', pathMatch: 'full'},
+  {path: 'mainPage', component: MainPageComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#mainPage'}},
+  {path: 'ontology', component: OntologyLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#ontology'}},
+  {path: 'dataModel', component: DataModelLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#dataModel'}},
+  {path: 'valueSets', component: ValueSetLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#valueSets'}},
+  {path: 'dataModelOverview', component: DataModelOverviewLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#overview'}},
+];
 
 @NgModule({
   imports: [
-    KeycloakAngularModule,
     HttpClientModule,
     SecurityModule,
     LoggerModule,
@@ -36,7 +52,7 @@ const keycloakService = new KeycloakService();
     DataModelModule,
     DataModelOverviewModule,
     ValueSetModule,
-    RouterModule.forRoot(AppMenuService.getRoutes(), {useHash: true}),
+    RouterModule.forRoot(routes, {useHash: true}),
     MatToolbarModule,
     MatMenuModule,
     CommonModule,
@@ -44,16 +60,21 @@ const keycloakService = new KeycloakService();
     FlexModule,
     MatButtonModule,
     MatTooltipModule,
-    NgJsonEditorModule
+    NgJsonEditorModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSidenavModule,
+    MatDividerModule,
+    MatAutocompleteModule
   ],
   declarations: [
     AppRoot
   ],
   bootstrap: [AppRoot],
   providers: [
+    AppConfig,
     { provide: AbstractSecurityProvider, useClass: MockSecurityService },
-    { provide: AbstractMenuProvider, useClass : AppMenuService },
-    { provide: KeycloakService, useValue: keycloakService },
     NgEventBus,
   ]
 })

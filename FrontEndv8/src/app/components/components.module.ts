@@ -31,6 +31,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTableModule } from '@angular/material/table';
 import { SideNavComponent } from './side-nav/side-nav.component';
 import { ConceptHierarchyViewComponent } from './concept-hierarchy-view/concept-hierarchy-view.component';
+import { FindConceptUsagesDialogComponent } from './find-concept-usages-dialog/find-concept-usages-dialog.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import { ConceptDefinitionComponent } from './concept-definition/concept-definition.component';
 
 @NgModule({
   imports: [
@@ -59,14 +62,16 @@ import { ConceptHierarchyViewComponent } from './concept-hierarchy-view/concept-
     IMControlsModule,
     MatTabsModule,
     MatListModule,
-    MatSidenavModule
+    MatSidenavModule,
+    MatDialogModule
   ],
   exports: [
     ConceptSearchComponent,
     GraphNavigatorComponent,
     NavigationComponent,
     DataModelTablularViewComponent,
-    SideNavComponent
+    SideNavComponent,
+    ConceptDefinitionComponent
   ],
   declarations: [
     ConceptSearchComponent,
@@ -75,7 +80,12 @@ import { ConceptHierarchyViewComponent } from './concept-hierarchy-view/concept-
     NavigationComponent,
     DataModelTablularViewComponent,
     SideNavComponent,
-    ConceptHierarchyViewComponent
+    ConceptHierarchyViewComponent,
+    FindConceptUsagesDialogComponent,
+    ConceptDefinitionComponent
+  ],
+  entryComponents: [
+    FindConceptUsagesDialogComponent
   ]
 })
 export class ComponentsModule { }

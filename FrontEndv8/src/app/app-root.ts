@@ -1,32 +1,46 @@
 import { NgEventBus } from 'ng-event-bus';
 // TODO: AppRoot to be extracted to common by splitting LayoutComponent
 
-import {Component, HostBinding, OnInit} from '@angular/core';
-import {AbstractMenuProvider, LoggerService, MenuOption} from 'dds-angular8';
+import {AfterViewInit, Component, ElementRef, HostBinding, OnInit, ViewChild} from '@angular/core';
+import {LoggerService} from 'dds-angular8';
 import {ActivatedRoute, Router} from '@angular/router';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {AbstractSecurityProvider} from './security/abstract-security-provider';
 import {User} from './security/models/User';
+import {fromEvent, Subscription} from 'rxjs';
+import {debounceTime, distinctUntilChanged, filter, tap} from 'rxjs/operators';
+import {ConceptService} from './services/concept.service';
+import {ConceptReference} from './models/objectmodel/ConceptReference';
+import {FindConceptUsagesDialogComponent} from './components/find-concept-usages-dialog/find-concept-usages-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
+import {AppConfig} from './app-config.service';
+import {SideNavComponent} from './components/side-nav/side-nav.component';
+import {MatSidenav} from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app-root.html',
   styleUrls: ['./app-root.scss']
 })
-export class AppRoot implements OnInit {
+export class AppRoot implements OnInit, AfterViewInit {
   @HostBinding('class') componentCssClass = 'default-theme';
+  @ViewChild('searchInput', {static: true}) input: ElementRef;
+  @ViewChild('sidenav', {static: true}) sideNav: MatSidenav;
 
-  title = '';
   user: User;
-  menuItems: MenuOption[] = [];
+  menuItems: any[] = [];
+  searchCall: Subscription = null;
+  results: ConceptReference[]
 
   constructor(
     private log: LoggerService,
     private router: Router,
     public securityService: AbstractSecurityProvider,
-    public menuService: AbstractMenuProvider,
+    public appConfig: AppConfig,
     public overlayContainer: OverlayContainer,
-    private eventBus: NgEventBus
+    public conceptService: ConceptService,
+    private eventBus: NgEventBus,
+    private dialog: MatDialog
   ) {
     this.eventBus.on('app:conceptSelect').subscribe((conceptIri: string) => {
       this.goto(conceptIri);
@@ -36,13 +50,52 @@ export class AppRoot implements OnInit {
   ngOnInit() {
     this.securityService.secureRoutes();
 
-    this.title = this.menuService.getApplicationTitle();
-    this.menuItems = this.menuService.getMenuOptions();
+    this.menuItems = this.appConfig.perspectives;
 
     this.securityService.secureMenuItems(this.menuItems);
 
     this.securityService.getUser().subscribe(
       (result) => this.user = result,
+      (error) => this.log.error(error)
+    )
+  }
+
+  ngAfterViewInit() {
+    fromEvent(this.input.nativeElement,'keyup')
+      .pipe(
+        filter(Boolean),
+        debounceTime(150),
+        distinctUntilChanged(),
+        tap((text) => {
+          this.autoComplete(this.input.nativeElement.value)
+        })
+      )
+      .subscribe();
+  }
+
+  autoComplete(term) {
+    if (term == null || term == '')
+      return;
+
+    if (this.searchCall) {
+      this.searchCall.unsubscribe();
+      this.searchCall = null;
+      this.results = [];
+    }
+    this.searchCall = this.conceptService.search(term)
+      .subscribe(
+        (result) => {
+          this.results = result
+          this.searchCall.unsubscribe();
+          this.searchCall = null;
+        },
+        (error) => this.log.error(error)
+      );
+  }
+
+  inspectConcept(concept: ConceptReference) {
+    FindConceptUsagesDialogComponent.execute(this.dialog, concept).subscribe(
+      () => {},
       (error) => this.log.error(error)
     )
   }
@@ -62,6 +115,7 @@ export class AppRoot implements OnInit {
   }
 
   navigate(state) {
+    this.sideNav.close();
     if (state.startsWith('http'))
       window.open(state, '_blank');
     else
@@ -70,6 +124,10 @@ export class AppRoot implements OnInit {
 
   goto(iri: string) {
     this.router.navigate([this.router.url.split('?')[0]], { queryParams: { id: iri } });
+  }
+
+  search(evt: any) {
+
   }
 
   getHelp() {
@@ -91,7 +149,7 @@ export class AppRoot implements OnInit {
           for(let param in result) {
             helpContext = helpContext.replace('${' + param + '}', result[param]);
           }
-          window.open('https://wiki.discoverydataservice.org/index.php?title=' + (this.menuService.getApplicationTitle().replace(' ', '_')) + helpContext, 'Help');
+          window.open('https://wiki.discoverydataservice.org/index.php?title=Information_Model' + helpContext, 'Help');
         },
         (error) => this.log.error(error)
       );
