@@ -1,8 +1,8 @@
-import { ConceptService } from './../../../services/concept.service';
+import { ConceptService } from '../../../services/concept.service';
 import { Component, OnInit } from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {LoggerService} from 'dds-angular8/logger';
 import {Router} from '@angular/router';
+import {LoggerService} from '../../../services/logger.service';
 
 @Component({
   selector: 'app-member-dialog',

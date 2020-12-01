@@ -1,7 +1,7 @@
 import { NgEventBus } from 'ng-event-bus';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {LoggerService} from 'dds-angular8/logger';
 import {ConceptService} from '../../services/concept.service';
+import {LoggerService} from '../../services/logger.service';
 
 @Component({
   selector: 'app-concept-search',

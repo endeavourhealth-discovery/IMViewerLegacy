@@ -1,9 +1,9 @@
-import { ConceptReferenceNode } from './../../../../models/objectmodel/ConceptReferenceNode';
-import { ConceptService } from './../../../../services/concept.service';
+import { ConceptReferenceNode } from '../../../../models/objectmodel/ConceptReferenceNode';
+import { ConceptService } from '../../../../services/concept.service';
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
-import { LoggerService } from 'dds-angular8/logger';
 import {AppConfig} from '../../../../app-config.service';
+import {LoggerService} from '../../../../services/logger.service';
 
 const debug = (message: string) => { console.log(message); };
 

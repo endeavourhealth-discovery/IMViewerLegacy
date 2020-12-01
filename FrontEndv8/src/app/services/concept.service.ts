@@ -3,9 +3,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Concept } from '../models/objectmodel/Concept';
-import { ConceptTreeViewService, DataModelNavigatorService } from 'im-common/im-controls';
 import { environment } from '../../environments/environment';
 import {ConceptReference} from '../models/objectmodel/ConceptReference';
+import {ConceptTreeViewService} from '../components/concept-tree-view/concept-tree-view.service';
+import {DataModelNavigatorService} from '../components/data-model-navigator/data-model-navigator.service';
 
 @Injectable({
   providedIn: 'root'

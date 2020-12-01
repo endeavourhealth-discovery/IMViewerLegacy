@@ -16,13 +16,10 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatTableModule} from '@angular/material/table';
-import {ControlsModule} from 'dds-angular8/controls';
-import {LoggerModule} from 'dds-angular8/logger';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {IMControlsModule} from 'im-common';
-import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
 import { DataModelOverviewLibraryComponent } from './data-model-overview-library/data-model-overview-library.component';
+import {ConceptTreeViewService} from '../../../components/concept-tree-view/concept-tree-view.service';
 
 @NgModule({
     imports: [
@@ -42,11 +39,8 @@ import { DataModelOverviewLibraryComponent } from './data-model-overview-library
         MatButtonModule,
         MatTableModule,
         MatSnackBarModule,
-        ControlsModule,
-        LoggerModule,
         MatTooltipModule,
-        ComponentsModule,
-        IMControlsModule
+        ComponentsModule
     ],
   providers: [
     { provide: ConceptTreeViewService, useClass: ConceptService }

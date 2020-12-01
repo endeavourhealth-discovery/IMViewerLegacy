@@ -1,14 +1,14 @@
-import { ConceptReferenceNode } from './../models/objectmodel/ConceptReferenceNode';
-import { ConceptReference } from './../models/objectmodel/ConceptReference';
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { LoggerService } from 'dds-angular8/logger';
-import { Concept } from '../models/objectmodel/Concept';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import * as d3 from 'd3';
 import * as dagre from 'dagre';
-import svgPanZoom from 'svg-pan-zoom';
+import * as svgPanZoom from 'svg-pan-zoom';
 import { Subscription, zip } from 'rxjs';
 import { DataModelNavigatorService } from './data-model-navigator.service';
 import { NgEventBus } from 'ng-event-bus';
+import {Concept} from '../../models/objectmodel/Concept';
+import {ConceptReference} from '../../models/objectmodel/ConceptReference';
+import {ConceptReferenceNode} from '../../models/objectmodel/ConceptReferenceNode';
+import {LoggerService} from '../../services/logger.service';
 
 @Component({
   selector: 'app-data-model-navigator',

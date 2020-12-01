@@ -9,15 +9,13 @@ import {AngularSplitModule} from 'angular-split';
 import {MatTreeModule} from '@angular/material/tree';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatIconModule} from '@angular/material/icon';
-import {ControlsModule} from 'dds-angular8/controls';
-import {ConceptService} from '../../services/concept.service';
+import {ConceptService} from '../../../services/concept.service';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {LoggerModule} from 'dds-angular8/logger';
-import {ComponentsModule} from '../../components/components.module';
-import {IMControlsModule} from 'im-common';
-import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
+import {ComponentsModule} from '../../../components/components.module';
+import {ConceptTreeViewService} from '../../../components/concept-tree-view/concept-tree-view.service';
+import {DataModelNavigatorService} from '../../../components/data-model-navigator/data-model-navigator.service';
 
 describe('DataModelLibraryComponent', () => {
   let component: DataModelLibraryComponent;
@@ -36,13 +34,10 @@ describe('DataModelLibraryComponent', () => {
           MatProgressBarModule,
           MatIconModule,
           MatSnackBarModule,
-          ControlsModule,
-          LoggerModule,
 
           HttpClientTestingModule,
           RouterTestingModule,
           ComponentsModule,
-          IMControlsModule
         ],
         providers: [
           { provide: ConceptTreeViewService, useClass: ConceptService },

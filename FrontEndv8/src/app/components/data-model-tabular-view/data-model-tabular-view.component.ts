@@ -1,14 +1,13 @@
-import { Property } from './../../pages/data-model/data-model-create/data-model-dialog/data-model-dialog.component';
-import { ConceptReferenceNode } from './../../models/objectmodel/ConceptReferenceNode';
+import { ConceptReferenceNode } from '../../models/objectmodel/ConceptReferenceNode';
 import { NgEventBus } from 'ng-event-bus';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ConceptService } from '../../services/concept.service';
 import { DataModelDefinition, FlatProperty } from '../../models/old/DataModelDefinition';
 import { Router } from '@angular/router';
-import { LoggerService } from 'dds-angular8/logger';
 import { MatTableDataSource } from '@angular/material/table';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Concept } from '../../models/objectmodel/Concept';
+import {LoggerService} from '../../services/logger.service';
 
 const debug = (message: string) => { console.log(message); };
 

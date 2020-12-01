@@ -1,5 +1,4 @@
 import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferenceNode';
-import { ConceptTreeViewComponent } from 'im-common/im-controls';
 import { SchemeCount } from '../../../models/old/SchemeCount';
 import { ConceptService } from '../../../services/concept.service';
 import { Concept } from '../../../models/objectmodel/Concept';
@@ -8,7 +7,6 @@ import { ConceptReference } from '../../../models/objectmodel/ConceptReference';
 import { NgEventBus } from 'ng-event-bus';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { LoggerService } from 'dds-angular8/logger';
 import { MatDialog } from '@angular/material/dialog';
 import {  BehaviorSubject, Observable, Subject } from 'rxjs';
 import { ClassExpression } from 'src/app/models/objectmodel/ClassExpression';
@@ -16,6 +14,8 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {AppConfig} from '../../../app-config.service';
 import {PageEvent} from '@angular/material/paginator';
+import {LoggerService} from '../../../services/logger.service';
+import {ConceptTreeViewComponent} from '../../../components/concept-tree-view/concept-tree-view.component';
 
 @Component({
   selector: 'app-value-set-library',

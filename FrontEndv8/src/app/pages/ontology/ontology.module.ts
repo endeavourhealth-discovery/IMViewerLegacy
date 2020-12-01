@@ -1,5 +1,5 @@
-import { ConceptService } from './../../services/concept.service';
-import { ComponentsModule } from './../../components/components.module';
+import { ConceptService } from '../../services/concept.service';
+import { ComponentsModule } from '../../components/components.module';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
@@ -17,14 +17,11 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatTableModule} from '@angular/material/table';
-import {ControlsModule} from 'dds-angular8/controls';
-import {LoggerModule} from 'dds-angular8/logger';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {OntologyLibraryComponent} from './ontology-library/ontology-library.component';
-import {IMControlsModule} from 'im-common';
-import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
 import {MatGridListModule} from '@angular/material/grid-list';
+import {ConceptTreeViewService} from '../../components/concept-tree-view/concept-tree-view.service';
 
 @NgModule({
     imports: [
@@ -41,11 +38,8 @@ import {MatGridListModule} from '@angular/material/grid-list';
         MatButtonModule,
         MatTableModule,
         MatSnackBarModule,
-        ControlsModule,
-        LoggerModule,
         MatTooltipModule,
         ComponentsModule,
-        IMControlsModule,
         MatTabsModule,
         MatListModule,
         MatSidenavModule,

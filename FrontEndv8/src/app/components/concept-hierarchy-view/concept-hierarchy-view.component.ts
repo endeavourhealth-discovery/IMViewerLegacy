@@ -1,13 +1,12 @@
-import { ConceptReferenceNode } from './../../models/objectmodel/ConceptReferenceNode';
-import { LoggerService } from 'dds-angular8';
+import { ConceptReferenceNode } from '../../models/objectmodel/ConceptReferenceNode';
 import { NgEventBus } from 'ng-event-bus';
-import { ConceptService } from './../../services/concept.service';
-import { Concept } from './../../models/objectmodel/Concept';
+import { ConceptService } from '../../services/concept.service';
+import { Concept } from '../../models/objectmodel/Concept';
 import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
-import { ConceptReference } from 'src/app/models/objectmodel/ConceptReference';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { stringToKeyValue } from '@angular/flex-layout/extended/typings/style/style-transforms';
+import {LoggerService} from '../../services/logger.service';
+import {ConceptReference} from '../../models/objectmodel/ConceptReference';
 
 interface ConceptNode {
   name: string;
@@ -32,7 +31,7 @@ export class ConceptHierarchyViewComponent implements OnInit {
 
   tree: ConceptNode[] = [];
   loadedChildren: string[] = [];
-  
+
   constructor(private service: ConceptService,
     private log: LoggerService,
     private eventBus: NgEventBus) {
@@ -92,7 +91,7 @@ export class ConceptHierarchyViewComponent implements OnInit {
       }
       nodes.push(node);
       // if this node is the root of the hierarchy, generate the tree
-      if (conceptReference.parents.length === 0 || conceptReference.iri === this.root) {   
+      if (conceptReference.parents.length === 0 || conceptReference.iri === this.root) {
         this.tree.push(node);
         rootNode = node;
       } else {
@@ -105,7 +104,7 @@ export class ConceptHierarchyViewComponent implements OnInit {
   // Add Children to the currently selected concept
   addChildrenToTree(): ConceptNode[] {
     let childNodes: ConceptNode[] = [];
-    
+
     if(this.children) {
       this.children.forEach(child => {
         childNodes.push({
@@ -129,11 +128,11 @@ export class ConceptHierarchyViewComponent implements OnInit {
   }
 
   getExpansionIcon(node: ConceptNode): string {
-    let expansionIcon: string; 
+    let expansionIcon: string;
 
     if(this.treeControl.isExpanded(node) && node.expandable) {
       expansionIcon = "expand_more";
-    } 
+    }
     else if(this.treeControl.isExpanded(node) && node.expandable == false) {
       if(this.loadedChildren.includes(node.iri)) {
         expansionIcon = "remove";
@@ -141,7 +140,7 @@ export class ConceptHierarchyViewComponent implements OnInit {
       else {
         expansionIcon = "chevron_right";
       }
-    } 
+    }
 
     return expansionIcon;
   }
@@ -172,7 +171,7 @@ export class ConceptHierarchyViewComponent implements OnInit {
           children: [],
           childrenLoaded: false
         };
-        
+
         parentNode.children.push(childNode);
         parentNode.expandable = true;
         this.dataSource.data = this.tree;

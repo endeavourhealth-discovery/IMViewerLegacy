@@ -2,7 +2,6 @@ import { NgEventBus } from 'ng-event-bus';
 // TODO: AppRoot to be extracted to common by splitting LayoutComponent
 
 import {AfterViewInit, Component, ElementRef, HostBinding, OnInit, ViewChild} from '@angular/core';
-import {LoggerService} from 'dds-angular8';
 import {ActivatedRoute, Router} from '@angular/router';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {AbstractSecurityProvider} from './security/abstract-security-provider';
@@ -14,8 +13,8 @@ import {ConceptReference} from './models/objectmodel/ConceptReference';
 import {FindConceptUsagesDialogComponent} from './components/find-concept-usages-dialog/find-concept-usages-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {AppConfig} from './app-config.service';
-import {SideNavComponent} from './components/side-nav/side-nav.component';
 import {MatSidenav} from '@angular/material/sidenav';
+import {LoggerService} from './services/logger.service';
 
 @Component({
   selector: 'app-root',

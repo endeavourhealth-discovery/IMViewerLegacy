@@ -1,15 +1,12 @@
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatTabsModule } from '@angular/material/tabs';
-import { IMControlsModule } from 'im-common';
-import { ControlsModule } from 'dds-angular8/controls';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AngularSplitModule } from 'angular-split';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { LoggerModule } from 'dds-angular8/logger';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ConceptSearchComponent } from './concept-search/concept-search.component';
@@ -34,6 +31,8 @@ import { ConceptHierarchyViewComponent } from './concept-hierarchy-view/concept-
 import { FindConceptUsagesDialogComponent } from './find-concept-usages-dialog/find-concept-usages-dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import { ConceptDefinitionComponent } from './concept-definition/concept-definition.component';
+import {ConceptTreeViewComponent} from './concept-tree-view/concept-tree-view.component';
+import {DataModelNavigatorComponent} from './data-model-navigator/data-model-navigator.component';
 
 @NgModule({
   imports: [
@@ -41,7 +40,6 @@ import { ConceptDefinitionComponent } from './concept-definition/concept-definit
     MatTreeModule,
     MatProgressBarModule,
     MatCardModule,
-    LoggerModule,
     MatButtonModule,
     MatIconModule,
     MatFormFieldModule,
@@ -58,20 +56,10 @@ import { ConceptDefinitionComponent } from './concept-definition/concept-definit
     MatTooltipModule,
     AngularSplitModule,
     MatSnackBarModule,
-    ControlsModule,
-    IMControlsModule,
     MatTabsModule,
     MatListModule,
     MatSidenavModule,
     MatDialogModule
-  ],
-  exports: [
-    ConceptSearchComponent,
-    GraphNavigatorComponent,
-    NavigationComponent,
-    DataModelTablularViewComponent,
-    SideNavComponent,
-    ConceptDefinitionComponent
   ],
   declarations: [
     ConceptSearchComponent,
@@ -82,7 +70,19 @@ import { ConceptDefinitionComponent } from './concept-definition/concept-definit
     SideNavComponent,
     ConceptHierarchyViewComponent,
     FindConceptUsagesDialogComponent,
-    ConceptDefinitionComponent
+    ConceptDefinitionComponent,
+    ConceptTreeViewComponent,
+    DataModelNavigatorComponent,
+  ],
+  exports: [
+    ConceptSearchComponent,
+    GraphNavigatorComponent,
+    NavigationComponent,
+    DataModelTablularViewComponent,
+    SideNavComponent,
+    ConceptDefinitionComponent,
+    ConceptTreeViewComponent,
+    DataModelNavigatorComponent
   ],
   entryComponents: [
     FindConceptUsagesDialogComponent

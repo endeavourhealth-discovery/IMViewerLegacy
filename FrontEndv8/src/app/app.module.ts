@@ -3,11 +3,10 @@ import { DataModelOverviewModule } from './pages/data-model/data-model-overview/
 import { OntologyModule } from './pages/ontology/ontology.module';
 import { DataModelModule } from './pages/data-model/data-model.module';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
-import { NgModule, DoBootstrap, ApplicationRef } from '@angular/core';
+import { NgModule } from '@angular/core';
 import {AppConfig} from './app-config.service';
 import {RouterModule} from '@angular/router';
 import {HttpClientModule} from '@angular/common/http';
-import {AbstractMenuProvider, LoggerModule, SecurityModule} from 'dds-angular8';
 import {AppRoot} from './app-root';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatMenuModule} from '@angular/material/menu';
@@ -31,6 +30,7 @@ import {OntologyLibraryComponent} from './pages/ontology/ontology-library/ontolo
 import {DataModelLibraryComponent} from './pages/data-model/data-model-library/data-model-library.component';
 import {ValueSetLibraryComponent} from './pages/value-sets/value-set-library/value-set-library.component';
 import {DataModelOverviewLibraryComponent} from './pages/data-model/data-model-overview/data-model-overview-library/data-model-overview-library.component';
+import {LoggerService} from './services/logger.service';
 
 let routes = [
   {path: '', redirectTo: '/mainPage', pathMatch: 'full'},
@@ -44,8 +44,6 @@ let routes = [
 @NgModule({
   imports: [
     HttpClientModule,
-    SecurityModule,
-    LoggerModule,
     DataModelModule,
     MainPageModule,
     OntologyModule,
@@ -75,6 +73,7 @@ let routes = [
   providers: [
     AppConfig,
     { provide: AbstractSecurityProvider, useClass: MockSecurityService },
+    LoggerService,
     NgEventBus,
   ]
 })

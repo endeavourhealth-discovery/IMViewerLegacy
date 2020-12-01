@@ -4,7 +4,7 @@ import {User} from './models/User';
 import {Project} from './models/Project';
 import {Router} from '@angular/router';
 import {Injectable} from '@angular/core';
-import {MenuOption} from 'dds-angular8';
+import {MenuOption} from './models/MenuOption';
 
 @Injectable()
 export class MockSecurityService implements AbstractSecurityProvider {

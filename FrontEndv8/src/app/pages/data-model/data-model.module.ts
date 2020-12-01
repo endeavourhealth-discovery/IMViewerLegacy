@@ -15,17 +15,15 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatTableModule} from '@angular/material/table';
-import {ControlsModule} from 'dds-angular8/controls';
-import {LoggerModule} from 'dds-angular8/logger';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {DataModelLibraryComponent} from './data-model-library/data-model-library.component';
-import {IMControlsModule} from 'im-common';
-import {ConceptTreeViewService, DataModelNavigatorService} from 'im-common/im-controls';
 import {MatListModule} from '@angular/material/list';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { DataModelDialogComponent } from './data-model-create/data-model-dialog/data-model-dialog.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {ConceptTreeViewService} from '../../components/concept-tree-view/concept-tree-view.service';
+import {DataModelNavigatorService} from '../../components/data-model-navigator/data-model-navigator.service';
 
 @NgModule({
   imports: [
@@ -44,11 +42,8 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
     MatTableModule,
     MatSnackBarModule,
     MatInputModule,
-    ControlsModule,
-    LoggerModule,
     MatTooltipModule,
     ComponentsModule,
-    IMControlsModule,
     MatTabsModule,
     MatListModule,
     MatSidenavModule,

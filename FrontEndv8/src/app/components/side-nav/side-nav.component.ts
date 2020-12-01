@@ -1,10 +1,10 @@
 import { ConceptReferenceNode } from '../../models/objectmodel/ConceptReferenceNode';
 import { NgEventBus } from 'ng-event-bus';
 import { Concept} from '../../models/objectmodel/Concept';
-import { LoggerService } from 'dds-angular8';
 import { Router, NavigationEnd } from '@angular/router';
 import { ConceptService } from '../../services/concept.service';
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import {LoggerService} from '../../services/logger.service';
 
 @Component({
   selector: 'app-side-nav',

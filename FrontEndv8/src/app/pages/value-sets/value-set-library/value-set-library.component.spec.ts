@@ -9,17 +9,14 @@ import {AngularSplitModule} from 'angular-split';
 import {MatTreeModule} from '@angular/material/tree';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatIconModule} from '@angular/material/icon';
-import {ControlsModule} from 'dds-angular8/controls';
-import {ConceptService} from '../../services/concept.service';
+import {ConceptService} from '../../../services/concept.service';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {LoggerModule} from 'dds-angular8/logger';
-import {IMControlsModule} from 'im-common';
 import {MatExpansionModule} from '@angular/material/expansion';
-import {ComponentsModule} from '../../components/components.module';
+import {ComponentsModule} from '../../../components/components.module';
 import {MatDialogModule} from '@angular/material/dialog';
-import {ConceptTreeViewService} from 'im-common/im-controls';
+import {ConceptTreeViewService} from '../../../components/concept-tree-view/concept-tree-view.service';
 
 describe('ValueSetLibraryComponent', () => {
   let component: ValueSetLibraryComponent;
@@ -38,12 +35,9 @@ describe('ValueSetLibraryComponent', () => {
           MatProgressBarModule,
           MatIconModule,
           MatSnackBarModule,
-          ControlsModule,
-          LoggerModule,
 
           HttpClientTestingModule,
           RouterTestingModule,
-          IMControlsModule,
           ComponentsModule,
           MatExpansionModule,
           MatDialogModule

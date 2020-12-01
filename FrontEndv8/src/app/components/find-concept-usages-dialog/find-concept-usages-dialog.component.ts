@@ -1,10 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ConceptService} from '../../services/concept.service';
-import {LoggerService} from 'dds-angular8';
 import {forkJoin} from 'rxjs';
 import {Router} from '@angular/router';
 import {AppConfig} from '../../app-config.service';
+import {LoggerService} from '../../services/logger.service';
 
 @Component({
   selector: 'app-find-concept-usages-dialog',

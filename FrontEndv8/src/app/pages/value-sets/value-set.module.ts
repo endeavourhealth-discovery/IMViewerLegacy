@@ -15,12 +15,9 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatTableModule} from '@angular/material/table';
-import {ControlsModule} from 'dds-angular8/controls';
-import {LoggerModule} from 'dds-angular8/logger';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {ValueSetLibraryComponent} from './value-set-library/value-set-library.component';
-import {IMControlsModule} from 'im-common';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { MemberDialogComponent } from './member-dialog/member-dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
@@ -43,11 +40,8 @@ import {MatPaginatorModule} from '@angular/material/paginator';
         MatButtonModule,
         MatTableModule,
         MatSnackBarModule,
-        ControlsModule,
-        LoggerModule,
         MatTooltipModule,
         ComponentsModule,
-        IMControlsModule,
         MatExpansionModule,
         MatDialogModule,
         RouterModule,

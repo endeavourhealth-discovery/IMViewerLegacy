@@ -1,13 +1,13 @@
-import { ConceptReferenceNode } from './../../../models/objectmodel/ConceptReferenceNode';
-import { ConceptTreeViewComponent } from 'im-common/im-controls';
-import { ConceptService } from './../../../services/concept.service';
-import { Concept } from './../../../models/objectmodel/Concept';
+import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferenceNode';
+import { ConceptService } from '../../../services/concept.service';
+import { Concept } from '../../../models/objectmodel/Concept';
 import { NgEventBus } from 'ng-event-bus';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { LoggerService } from 'dds-angular8/logger';
 import { JsonEditorOptions } from 'ang-jsoneditor';
 import {AppConfig} from '../../../app-config.service';
+import {LoggerService} from '../../../services/logger.service';
+import {ConceptTreeViewComponent} from '../../../components/concept-tree-view/concept-tree-view.component';
 
 @Component({
   selector: 'app-ontology-library',

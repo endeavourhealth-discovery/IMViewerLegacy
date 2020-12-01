@@ -1,15 +1,15 @@
-import { ConceptReferenceNode } from './../../../models/objectmodel/ConceptReferenceNode';
-import { ConceptTreeViewComponent } from 'im-common/im-controls';
-import { DataModelDialogComponent } from './../data-model-create/data-model-dialog/data-model-dialog.component';
+import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferenceNode';
+import { DataModelDialogComponent } from '../data-model-create/data-model-dialog/data-model-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ConceptService } from '../../../services/concept.service';
 import { Concept } from '../../../models/objectmodel/Concept';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { LoggerService } from 'dds-angular8/logger';
 import { DataModelTablularViewComponent } from '../../../components/data-model-tabular-view/data-model-tabular-view.component';
 import { NgEventBus } from 'ng-event-bus';
 import {AppConfig} from '../../../app-config.service';
+import {LoggerService} from '../../../services/logger.service';
+import {ConceptTreeViewComponent} from '../../../components/concept-tree-view/concept-tree-view.component';
 
 const debug = (message: string) => { console.log(message); };
 
