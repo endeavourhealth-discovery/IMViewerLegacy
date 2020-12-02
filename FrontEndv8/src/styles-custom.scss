@@ -32,6 +32,8 @@ $teal-theme: mat-light-theme($teal-primary, $teal-accent, $teal-warn);
   @include angular-material-theme($teal-theme);
 }
 
+$background: map-get($theme, background);
+
 // **********************************************************************
 // * Material styles
 // **********************************************************************
@@ -107,12 +109,20 @@ mat-accordion .mat-form-field + .mat-form-field {
   }
 }
 
+.mat-tab-body {
+  padding-top: 8px;
+  background-color: mat-color($background, card) !important;
+}
+
+.mat-tab-body-content {
+  overflow-x: hidden !important;
+}
+
 // **********************************************************************
 // * Additional (e.g. 3rd party)
 // **********************************************************************
 @import "~jsoneditor/dist/jsoneditor.min.css";
 
-$background: map-get($theme, background);
 .app-background {
   background-color: mat-color($background, app-bar) !important
 }
