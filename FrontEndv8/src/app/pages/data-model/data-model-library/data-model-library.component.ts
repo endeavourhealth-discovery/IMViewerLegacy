@@ -9,7 +9,6 @@ import { DataModelTablularViewComponent } from '../../../components/data-model-t
 import { NgEventBus } from 'ng-event-bus';
 import {AppConfig} from '../../../app-config.service';
 import {LoggerService} from '../../../services/logger.service';
-import {ConceptTreeViewComponent} from '../../../components/concept-tree-view/concept-tree-view.component';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -40,7 +39,6 @@ class DataModelLibraryComponent implements OnInit {
 
   textual = null;
 
-  @ViewChild(ConceptTreeViewComponent, { static: true }) treeView: ConceptTreeViewComponent;
   @ViewChild(DataModelTablularViewComponent, { static: true }) tableView: DataModelTablularViewComponent;
 
   constructor(private service: ConceptService,

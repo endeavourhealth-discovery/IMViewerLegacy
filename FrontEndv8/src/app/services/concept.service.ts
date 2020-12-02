@@ -5,13 +5,12 @@ import { Observable } from 'rxjs';
 import { Concept } from '../models/objectmodel/Concept';
 import { environment } from '../../environments/environment';
 import {ConceptReference} from '../models/objectmodel/ConceptReference';
-import {ConceptTreeViewService} from '../components/concept-tree-view/concept-tree-view.service';
 import {DataModelNavigatorService} from '../components/data-model-navigator/data-model-navigator.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ConceptService implements ConceptTreeViewService, DataModelNavigatorService {
+export class ConceptService implements DataModelNavigatorService {
 
   constructor(private http: HttpClient) { }
 

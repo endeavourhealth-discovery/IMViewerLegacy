@@ -19,7 +19,6 @@ import {MatTableModule} from '@angular/material/table';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { DataModelOverviewLibraryComponent } from './data-model-overview-library/data-model-overview-library.component';
-import {ConceptTreeViewService} from '../../../components/concept-tree-view/concept-tree-view.service';
 
 @NgModule({
     imports: [
@@ -42,9 +41,7 @@ import {ConceptTreeViewService} from '../../../components/concept-tree-view/conc
         MatTooltipModule,
         ComponentsModule
     ],
-  providers: [
-    { provide: ConceptTreeViewService, useClass: ConceptService }
-  ],
+
   declarations: [
     DataModelOverviewLibraryComponent
   ]

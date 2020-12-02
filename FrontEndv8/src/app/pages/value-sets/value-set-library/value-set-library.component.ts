@@ -15,7 +15,6 @@ import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {AppConfig} from '../../../app-config.service';
 import {PageEvent} from '@angular/material/paginator';
 import {LoggerService} from '../../../services/logger.service';
-import {ConceptTreeViewComponent} from '../../../components/concept-tree-view/concept-tree-view.component';
 
 @Component({
   selector: 'app-value-set-library',
@@ -48,8 +47,6 @@ export class ValueSetLibraryComponent implements OnInit {
   history = [];
   timer: any;
   sidebar = false;
-  @ViewChild(ConceptTreeViewComponent, { static: true }) treeView: ConceptTreeViewComponent;
-
 
 
     // setPageSizeOptions(setPageSizeOptionsInput: string) {

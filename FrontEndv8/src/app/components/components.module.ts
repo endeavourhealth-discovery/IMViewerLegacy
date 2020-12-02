@@ -31,7 +31,6 @@ import { ConceptHierarchyViewComponent } from './concept-hierarchy-view/concept-
 import { FindConceptUsagesDialogComponent } from './find-concept-usages-dialog/find-concept-usages-dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import { ConceptDefinitionComponent } from './concept-definition/concept-definition.component';
-import {ConceptTreeViewComponent} from './concept-tree-view/concept-tree-view.component';
 import {DataModelNavigatorComponent} from './data-model-navigator/data-model-navigator.component';
 
 @NgModule({
@@ -71,7 +70,6 @@ import {DataModelNavigatorComponent} from './data-model-navigator/data-model-nav
     ConceptHierarchyViewComponent,
     FindConceptUsagesDialogComponent,
     ConceptDefinitionComponent,
-    ConceptTreeViewComponent,
     DataModelNavigatorComponent,
   ],
   exports: [
@@ -81,7 +79,6 @@ import {DataModelNavigatorComponent} from './data-model-navigator/data-model-nav
     DataModelTablularViewComponent,
     SideNavComponent,
     ConceptDefinitionComponent,
-    ConceptTreeViewComponent,
     DataModelNavigatorComponent
   ],
   entryComponents: [

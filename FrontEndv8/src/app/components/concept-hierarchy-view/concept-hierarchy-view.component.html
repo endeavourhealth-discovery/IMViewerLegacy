@@ -1,4 +1,4 @@
-<mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree-compact scroll" id="conceptTree">
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree-compact scroll" id="conceptTree" style="height: 100%">
   <!-- This is the tree node template for leaf nodes -->
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding matTreeNodePaddingIndent="10" class="hover-highlight"
     [class.selected]="concept.iri == node.iri" style="cursor: pointer">

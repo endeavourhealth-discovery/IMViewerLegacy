@@ -6,21 +6,22 @@
     </div>
   </as-split-area>
 
-  <as-split-area>
-    <div class="as-split-area-content">
-      <mat-tab-group mat-stretch-tabs class="example-stretched-tabs">
+  <as-split-area style="height: 100%; overflow: hidden">
+    <div class="as-split-area-content" style="height: 100%">
+      <mat-tab-group mat-stretch-tabs class="example-stretched-tabs" style="height: 100%">
         <mat-tab label="Browse">
           <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">navigation</mat-icon>
             Browse
           </ng-template>
-          <ng-template matTabContent>
-            <button mat-icon-button color="primary" style="float:right" (click)="openDialog()">
-              <mat-icon>add</mat-icon>
-            </button>
-            <app-concept-hierarchy-view [root]="root" [concept]="concept" [children]="children" [parents]="parents">
-            </app-concept-hierarchy-view>
-
+          <ng-template matTabContent style="height: 100%">
+            <div style="height: 100%">
+              <button mat-icon-button color="primary" style="float:right" (click)="openDialog()">
+                <mat-icon>add</mat-icon>
+              </button>
+              <app-concept-hierarchy-view [root]="root" [concept]="concept" [children]="children" [parents]="parents">
+              </app-concept-hierarchy-view>
+            </div>
           </ng-template>
         </mat-tab>
         <mat-tab label="History">

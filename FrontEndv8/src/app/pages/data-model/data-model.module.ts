@@ -22,7 +22,6 @@ import {MatListModule} from '@angular/material/list';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { DataModelDialogComponent } from './data-model-create/data-model-dialog/data-model-dialog.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {ConceptTreeViewService} from '../../components/concept-tree-view/concept-tree-view.service';
 import {DataModelNavigatorService} from '../../components/data-model-navigator/data-model-navigator.service';
 
 @NgModule({
@@ -51,7 +50,6 @@ import {DataModelNavigatorService} from '../../components/data-model-navigator/d
     ReactiveFormsModule
   ],
   providers: [
-    { provide: ConceptTreeViewService, useClass: ConceptService },
     { provide: DataModelNavigatorService, useClass: ConceptService }
   ],
   declarations: [

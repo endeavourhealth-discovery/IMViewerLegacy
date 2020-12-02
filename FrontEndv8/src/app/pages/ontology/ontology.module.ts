@@ -21,7 +21,6 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {OntologyLibraryComponent} from './ontology-library/ontology-library.component';
 import {MatGridListModule} from '@angular/material/grid-list';
-import {ConceptTreeViewService} from '../../components/concept-tree-view/concept-tree-view.service';
 
 @NgModule({
     imports: [
@@ -46,9 +45,6 @@ import {ConceptTreeViewService} from '../../components/concept-tree-view/concept
         NgJsonEditorModule,
         MatGridListModule
     ],
-  providers: [
-    { provide: ConceptTreeViewService, useClass: ConceptService }
-  ],
   declarations: [
     OntologyLibraryComponent,
   ]

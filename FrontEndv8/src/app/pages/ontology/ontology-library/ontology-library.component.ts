@@ -2,12 +2,11 @@ import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferen
 import { ConceptService } from '../../../services/concept.service';
 import { Concept } from '../../../models/objectmodel/Concept';
 import { NgEventBus } from 'ng-event-bus';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { JsonEditorOptions } from 'ang-jsoneditor';
 import {AppConfig} from '../../../app-config.service';
 import {LoggerService} from '../../../services/logger.service';
-import {ConceptTreeViewComponent} from '../../../components/concept-tree-view/concept-tree-view.component';
 
 @Component({
   selector: 'app-ontology-library',
@@ -31,8 +30,6 @@ export class OntologyLibraryComponent implements OnInit {
   sidebar = false;
   editorOptions = new JsonEditorOptions();
 
-
-  @ViewChild(ConceptTreeViewComponent, { static: true }) treeView: ConceptTreeViewComponent;
 
   constructor(private service: ConceptService,
     private appConfig: AppConfig,
