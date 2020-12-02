@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Concept } from '../../models/objectmodel/Concept';
+import { ClassExpression } from '../../models/objectmodel/ClassExpression';
 import {LoggerService} from '../../services/logger.service';
 
 const debug = (message: string) => { console.log(message); };
@@ -25,6 +26,9 @@ const debug = (message: string) => { console.log(message); };
 })
 
 class DataModelTablularViewComponent {
+  static DEFAULT_MIN_CARDINALITY: number = 0;
+  static DEFAULT_MAX_CARDINALITY: string = "*";
+
   private iri: string;
 
   dataModelDefinition: DataModelDefinition;
@@ -95,6 +99,22 @@ class DataModelTablularViewComponent {
 
   onHoverOut() {
     this.eventBus.cast('app:conceptHover', null);
+  }
+
+  isObjectProperty(row: ClassExpression): boolean {
+    return row.ObjectPropertyValue && row.ObjectPropertyValue.Property.iri != null;
+  }
+
+  isDataProperty(row: ClassExpression): boolean {
+    return row.DataPropertyValue && row.DataPropertyValue.Property.iri != null;
+  }
+
+  get DEFAULT_MIN_CARDINALITY(): number {
+    return DataModelTablularViewComponent.DEFAULT_MIN_CARDINALITY;
+  }
+
+  get DEFAULT_MAX_CARDINALITY(): string {
+    return DataModelTablularViewComponent.DEFAULT_MAX_CARDINALITY;
   }
 }
 

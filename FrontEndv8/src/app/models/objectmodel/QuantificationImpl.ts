@@ -1,9 +1,9 @@
 import { Quantification } from './Quantification';
 import { QuantificationType } from './QuantificationType';
 export class QuantificationImpl implements Quantification {
-  min: number;
-  max: number;
-  quantificationType: QuantificationType;
+  Min: number;
+  Max: number;
+  QuantificationType: QuantificationType;
 
   getQuantificationType(): QuantificationType {
     throw new Error('Method not implemented.');

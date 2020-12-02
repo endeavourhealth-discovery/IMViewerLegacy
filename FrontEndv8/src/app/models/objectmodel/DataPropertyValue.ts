@@ -1,7 +1,7 @@
 import { QuantificationImpl } from './QuantificationImpl';
 import { ConceptReference } from './ConceptReference';
 export class DataPropertyValue extends QuantificationImpl {
-  property: ConceptReference;
+  Property: ConceptReference;
   dataType: ConceptReference;
   valueData: string;
 }

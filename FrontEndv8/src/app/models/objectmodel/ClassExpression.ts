@@ -11,7 +11,7 @@ export class ClassExpression implements IMEntity {
   Union: Array<ClassExpression>;
   ComplementOf: ClassExpression;
   ObjectPropertyValue: ObjectPropertyValue;
-  dataPropertyValue: DataPropertyValue;
+  DataPropertyValue: DataPropertyValue;
   objectOneOf: Array<ConceptReference>;
 
   getStatus(): ConceptStatus {
