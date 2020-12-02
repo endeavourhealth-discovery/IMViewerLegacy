@@ -46,8 +46,10 @@ export class ConceptHierarchyViewComponent implements OnInit {
     // only create a new tree if one does not already exist
     if(this.tree.length == 0) {
       this.tree = [];
-      this.addSelectedConceptToTree(this.parents);
-      this.reverseTree(this.parents, 0, []);
+      if(this.parents) {
+        this.addSelectedConceptToTree(this.parents);
+        this.reverseTree(this.parents, 0, []);
+      }
       this.tree.splice(1);
       this.dataSource.data = this.tree;
       this.treeControl.expandAll();

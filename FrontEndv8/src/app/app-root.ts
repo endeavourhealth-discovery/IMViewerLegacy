@@ -12,9 +12,9 @@ import {ConceptService} from './services/concept.service';
 import {ConceptReference} from './models/objectmodel/ConceptReference';
 import {FindConceptUsagesDialogComponent} from './components/find-concept-usages-dialog/find-concept-usages-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
-import {AppConfig} from './app-config.service';
 import {MatSidenav} from '@angular/material/sidenav';
 import {LoggerService} from './services/logger.service';
+import {Perspectives} from './services/perspective.service';
 
 @Component({
   selector: 'app-root',
@@ -35,7 +35,7 @@ export class AppRoot implements OnInit, AfterViewInit {
     private log: LoggerService,
     private router: Router,
     public securityService: AbstractSecurityProvider,
-    public appConfig: AppConfig,
+    public perspectives: Perspectives,
     public overlayContainer: OverlayContainer,
     public conceptService: ConceptService,
     private eventBus: NgEventBus,
@@ -49,7 +49,7 @@ export class AppRoot implements OnInit, AfterViewInit {
   ngOnInit() {
     this.securityService.secureRoutes();
 
-    this.menuItems = this.appConfig.perspectives;
+    this.menuItems = this.perspectives.perspectives;
 
     this.securityService.secureMenuItems(this.menuItems);
 

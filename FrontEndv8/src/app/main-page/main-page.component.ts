@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import {AppConfig} from '../app-config.service';
+import {Perspectives} from '../services/perspective.service';
 
 @Component({
   selector: 'app-main-page',
@@ -10,11 +10,11 @@ import {AppConfig} from '../app-config.service';
 export class MainPageComponent implements OnInit {
   constructor(
     private router: Router,
-    public appConfig: AppConfig
+    public perspectives: Perspectives
   ) { }
 
   ngOnInit() {
-    this.appConfig.subtitle = '';
+    this.perspectives.current = null;
   }
 
   logout() {

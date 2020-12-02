@@ -12,9 +12,9 @@ import {  BehaviorSubject, Observable, Subject } from 'rxjs';
 import { ClassExpression } from 'src/app/models/objectmodel/ClassExpression';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
-import {AppConfig} from '../../../app-config.service';
 import {PageEvent} from '@angular/material/paginator';
 import {LoggerService} from '../../../services/logger.service';
+import {Perspectives} from '../../../services/perspective.service';
 
 @Component({
   selector: 'app-value-set-library',
@@ -56,7 +56,7 @@ export class ValueSetLibraryComponent implements OnInit {
     // }
 
   constructor(private service: ConceptService,
-              private appConfig: AppConfig,
+              public perspectives: Perspectives,
               private router: Router,
               private route: ActivatedRoute,
               private log: LoggerService,
@@ -103,7 +103,7 @@ export class ValueSetLibraryComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.appConfig.subtitle = 'Value Sets';
+    this.perspectives.current = this.perspectives.valueSets;
 
     // Direct URL nav - need to push to tree
     this.route.queryParamMap.subscribe(

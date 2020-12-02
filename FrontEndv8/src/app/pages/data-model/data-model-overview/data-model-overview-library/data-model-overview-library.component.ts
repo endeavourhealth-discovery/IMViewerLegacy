@@ -2,8 +2,8 @@ import { ConceptReferenceNode } from '../../../../models/objectmodel/ConceptRefe
 import { ConceptService } from '../../../../services/concept.service';
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
-import {AppConfig} from '../../../../app-config.service';
 import {LoggerService} from '../../../../services/logger.service';
+import {Perspectives} from '../../../../services/perspective.service';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -15,10 +15,10 @@ const debug = (message: string) => { console.log(message); };
 export class DataModelOverviewLibraryComponent implements OnInit {
   concepts = [];
 
-  constructor(private service: ConceptService, private log: LoggerService, private router: Router, private appConfig:AppConfig) { }
+  constructor(private service: ConceptService, private log: LoggerService, private router: Router, private perspectives:Perspectives) { }
 
   ngOnInit() {
-    this.appConfig.subtitle = 'Data Model Overview';
+    this.perspectives.current = this.perspectives.current;
     this.service.getConceptChildren(':HealthRecord').subscribe(
       (result) => this.populateConcepts(result),
       (error) => this.log.error(error)

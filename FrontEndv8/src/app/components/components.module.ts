@@ -17,7 +17,7 @@ import { FlexModule } from '@angular/flex-layout';
 import { GraphNavigatorComponent } from './graph-navigator/graph-navigator.component';
 import { ResizeObserverDirective } from './resize-observer.directive';
 import { MatSelectModule } from '@angular/material/select';
-import { NavigationComponent } from './navigation/navigation.component';
+import { CardHeaderComponent } from './card-header/card-header.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -32,6 +32,7 @@ import { FindConceptUsagesDialogComponent } from './find-concept-usages-dialog/f
 import {MatDialogModule} from '@angular/material/dialog';
 import { ConceptDefinitionComponent } from './concept-definition/concept-definition.component';
 import {DataModelNavigatorComponent} from './data-model-navigator/data-model-navigator.component';
+import { LibraryComponentComponent } from './library-component/library-component.component';
 
 @NgModule({
   imports: [
@@ -64,22 +65,24 @@ import {DataModelNavigatorComponent} from './data-model-navigator/data-model-nav
     ConceptSearchComponent,
     GraphNavigatorComponent,
     ResizeObserverDirective,
-    NavigationComponent,
+    CardHeaderComponent,
     DataModelTablularViewComponent,
     SideNavComponent,
     ConceptHierarchyViewComponent,
     FindConceptUsagesDialogComponent,
     ConceptDefinitionComponent,
     DataModelNavigatorComponent,
+    LibraryComponentComponent,
   ],
   exports: [
     ConceptSearchComponent,
     GraphNavigatorComponent,
-    NavigationComponent,
+    CardHeaderComponent,
     DataModelTablularViewComponent,
     SideNavComponent,
     ConceptDefinitionComponent,
-    DataModelNavigatorComponent
+    DataModelNavigatorComponent,
+    LibraryComponentComponent
   ],
   entryComponents: [
     FindConceptUsagesDialogComponent

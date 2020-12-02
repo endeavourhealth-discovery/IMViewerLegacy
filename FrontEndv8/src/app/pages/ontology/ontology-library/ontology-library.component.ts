@@ -5,8 +5,8 @@ import { NgEventBus } from 'ng-event-bus';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { JsonEditorOptions } from 'ang-jsoneditor';
-import {AppConfig} from '../../../app-config.service';
 import {LoggerService} from '../../../services/logger.service';
+import {Perspectives} from '../../../services/perspective.service';
 
 @Component({
   selector: 'app-ontology-library',
@@ -32,11 +32,11 @@ export class OntologyLibraryComponent implements OnInit {
 
 
   constructor(private service: ConceptService,
-    private appConfig: AppConfig,
-    private router: Router,
-    private route: ActivatedRoute,
-    private log: LoggerService,
-    private eventBus: NgEventBus) {
+              public perspectives: Perspectives,
+              private router: Router,
+              private route: ActivatedRoute,
+              private log: LoggerService,
+              private eventBus: NgEventBus) {
     this.routeEvent(this.router);
     this.editorOptions.modes = ['code', 'text', 'tree', 'view'];
     this.editorOptions.mode = 'code';
@@ -62,7 +62,7 @@ export class OntologyLibraryComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.appConfig.subtitle = 'Semantic Ontology';
+    this.perspectives.current = this.perspectives.ontology;
     // Direct URL nav - need to push to tree
     this.route.queryParamMap.subscribe(
       (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),

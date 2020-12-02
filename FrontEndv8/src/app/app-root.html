@@ -3,7 +3,7 @@
   <button mat-icon-button class="icon" (click)="sidenav.toggle()" aria-label="Example icon-button with menu icon">
     <mat-icon>menu</mat-icon>
   </button>
-  <div (click)="navigate('mainPage')" class="pointer">Information Model <span [hidden]="!appConfig.subtitle"> - {{appConfig.subtitle}}</span></div>
+  <div (click)="navigate('mainPage')" class="pointer">Information Model <span [hidden]="perspectives.current == null"> - {{perspectives.current?.caption}}</span></div>
   <span class="spacer"></span>
 
   <!-- ********** CENTER ********** -->

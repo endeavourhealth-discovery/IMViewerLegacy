@@ -1,17 +1,11 @@
-<as-split direction="horizontal">
-  <!-- LEFT -->
-  <as-split-area size="30" style="height: calc(100vh - 73px);">
-    <app-side-nav [root]="root" [relationships]="relationships" [concept]="concept" [children]="children" [parents]="parents" [selectedIri]="selectedIri" (openDialogEvent)="openDialog()"></app-side-nav>
-  </as-split-area>
-
-  <!-- RIGHT -->
-  <as-split-area size="70">
-    <div class="as-split-area-content">
-      <mat-card>
-
-        <!-- Header -->
-        <app-navigation [title]="concept.name" [subtitle]="concept.description"
-                        [selectedPage]="'dataModel'"></app-navigation>
+<app-library-component
+  [relationships]="relationships"
+  [concept]="concept"
+  [children]="children"
+  [parents]="parents"
+  [selectedIri]="selectedIri"
+  [perspective]="perspectives.dataModel"
+>
         <!-- Dashboard container-->
         <mat-card-content class="full-page-card">
           <mat-drawer-container class="example-container" hasBackdrop="true"
@@ -109,7 +103,4 @@
             </mat-tab-group>
           </mat-drawer-container>
         </mat-card-content>
-      </mat-card>
-    </div>
-  </as-split-area>
-</as-split>
+</app-library-component>

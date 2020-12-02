@@ -66,7 +66,7 @@
         </mat-panel-description>
       </mat-expansion-panel-header>
       <mat-chip-list>
-        <mat-chip (click)="navigate(data.concept.iri)" [style.background-color]="appConfig.ontology.color">Ontology</mat-chip>
+        <mat-chip (click)="navigate(data.concept.iri)" [style.background-color]="perspectives.ontology.color">Ontology</mat-chip>
       </mat-chip-list>
     </mat-expansion-panel>
 
@@ -84,7 +84,7 @@
         </mat-panel-description>
       </mat-expansion-panel-header>
       <mat-chip-list>
-        <mat-chip (click)="navigate(item.iri)" [style.background-color]="appConfig.ontology.color">Ontology</mat-chip>
+        <mat-chip (click)="navigate(item.iri)" [style.background-color]="perspectives.ontology.color">Ontology</mat-chip>
         <mat-chip *ngFor="let type of item.types" (click)="navigate(item.iri, type.iri)" [style.background-color]="getColor(type.iri)">{{type.name}}</mat-chip>
       </mat-chip-list>
     </mat-expansion-panel>

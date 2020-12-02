@@ -3,8 +3,8 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 import {ConceptService} from '../../services/concept.service';
 import {forkJoin} from 'rxjs';
 import {Router} from '@angular/router';
-import {AppConfig} from '../../app-config.service';
 import {LoggerService} from '../../services/logger.service';
+import {Perspectives} from '../../services/perspective.service';
 
 @Component({
   selector: 'app-find-concept-usages-dialog',
@@ -30,7 +30,7 @@ export class FindConceptUsagesDialogComponent implements OnInit {
     private service: ConceptService,
     private log: LoggerService,
     private router: Router,
-    public appConfig: AppConfig
+    public perspectives: Perspectives
   ) { }
 
   ngOnInit() {
@@ -60,14 +60,14 @@ export class FindConceptUsagesDialogComponent implements OnInit {
     this.dialogRef.close();
     switch (type) {
       case ':VSET_ValueSet':
-        this.router.navigate([this.appConfig.valueSets.primary.state], { queryParams: { id: iri } });
+        this.router.navigate([this.perspectives.valueSets.primary.state], { queryParams: { id: iri } });
         break;
       case ':DiscoveryCommonDataModel':
       case ':dataModelObjectProperty':
-        this.router.navigate([this.appConfig.dataModel.primary.state], { queryParams: { id: iri } });
+        this.router.navigate([this.perspectives.dataModel.primary.state], { queryParams: { id: iri } });
         break;
       default:
-        this.router.navigate([this.appConfig.ontology.primary.state], { queryParams: { id: iri } });
+        this.router.navigate([this.perspectives.ontology.primary.state], { queryParams: { id: iri } });
         break;
     }
   }
@@ -75,12 +75,12 @@ export class FindConceptUsagesDialogComponent implements OnInit {
   getColor(type: string) {
     switch (type) {
       case ':VSET_ValueSet':
-        return this.appConfig.valueSets.color;
+        return this.perspectives.valueSets.color;
       case ':DiscoveryCommonDataModel':
       case ':dataModelObjectProperty':
-        return this.appConfig.dataModel.color;
+        return this.perspectives.dataModel.color;
       default:
-        return this.appConfig.ontology.color;
+        return this.perspectives.ontology.color;
     }
   }
 

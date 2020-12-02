@@ -7,8 +7,8 @@ import { Concept } from '../../../models/objectmodel/Concept';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { DataModelTablularViewComponent } from '../../../components/data-model-tabular-view/data-model-tabular-view.component';
 import { NgEventBus } from 'ng-event-bus';
-import {AppConfig} from '../../../app-config.service';
 import {LoggerService} from '../../../services/logger.service';
+import {Perspectives} from '../../../services/perspective.service';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -42,12 +42,12 @@ class DataModelLibraryComponent implements OnInit {
   @ViewChild(DataModelTablularViewComponent, { static: true }) tableView: DataModelTablularViewComponent;
 
   constructor(private service: ConceptService,
-    private appConfig: AppConfig,
-    private router: Router,
-    private route: ActivatedRoute,
-    private log: LoggerService,
-    public dialog: MatDialog,
-    private eventBus: NgEventBus) {
+              public perspectives: Perspectives,
+              private router: Router,
+              private route: ActivatedRoute,
+              private log: LoggerService,
+              public dialog: MatDialog,
+              private eventBus: NgEventBus) {
     this.routeEvent(this.router);
 
     this.eventBus.on('app:conceptHover').subscribe((iri: string) => {
@@ -69,7 +69,7 @@ class DataModelLibraryComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.appConfig.subtitle = 'Data Model';
+    this.perspectives.current = this.perspectives.dataModel;
     // Direct URL nav - need to push to tree
     this.route.queryParamMap.subscribe(
       (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
