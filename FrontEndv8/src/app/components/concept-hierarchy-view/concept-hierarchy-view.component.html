@@ -2,19 +2,17 @@
   <!-- This is the tree node template for leaf nodes -->
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding matTreeNodePaddingIndent="10" class="hover-highlight"
     [class.selected]="concept.iri == node.iri" style="cursor: pointer">
-    <!-- use a disabled button to provide padding for tree leaf -->
       <mat-icon class="mat-icon-rtl-mirror" matTreeNodeToggle (click)="expandNode(node, treeControl.isExpanded(node))">
         {{getExpansionIcon(node)}}
       </mat-icon>
-    <span (click)="selectNode(node)" (mouseenter)="nodeHover(node)" (mouseleave)="nodeHover(null)">{{node.name}}</span>
+    <span (click)="selectNode(node)">{{node.name}}</span>
   </mat-tree-node>
   <!-- This is the tree node template for expandable nodes -->
   <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
-    matTreeNodePaddingIndent="10" class="hover-highlight" [class.selected]="concept.iri == node.iri">
-    <mat-icon class="mat-icon-rtl-mirror" matTreeNodeToggle (click)="expandNode(node, treeControl.isExpanded(node))">
+    matTreeNodePaddingIndent="10" class="hover-highlight" [class.selected]="concept.iri == node.iri" style="cursor: pointer">
+    <mat-icon class="mat-icon-rtl-mirror" matTreeNodeToggle >
       {{getExpansionIcon(node)}}
     </mat-icon>
-    <span (click)="selectNode(node)" (mouseenter)="nodeHover(node)" (mouseleave)="nodeHover(null)"
-      style="cursor: pointer">{{node.name}}</span>
+    <span (click)="selectNode(node)" style="cursor: pointer">{{node.name}}</span>
   </mat-tree-node>
 </mat-tree>

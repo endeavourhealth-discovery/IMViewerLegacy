@@ -132,15 +132,22 @@ export class ConceptHierarchyViewComponent implements OnInit {
   getExpansionIcon(node: ConceptNode): string {
     let expansionIcon: string;
 
-    if(this.treeControl.isExpanded(node) && node.expandable) {
-      expansionIcon = "expand_more";
-    }
-    else if(this.treeControl.isExpanded(node) && node.expandable == false) {
-      if(this.loadedChildren.includes(node.iri)) {
-        expansionIcon = "remove";
+    if(this.treeControl.isExpanded(node)) {
+      if(node.expandable) {
+        expansionIcon = "expand_more";
       }
       else {
-        expansionIcon = "chevron_right";
+        if(this.loadedChildren.includes(node.iri)) {
+          expansionIcon = "remove";
+        }
+        else {
+          expansionIcon = "chevron_right";
+        }
+      }
+    }
+    else {
+      if(node.expandable) {
+        expansionIcon = "expand_more";
       }
     }
 
@@ -188,12 +195,14 @@ export class ConceptHierarchyViewComponent implements OnInit {
     }
   }
 
-  nodeHover(node: ConceptNode) {
-    if (node !== null) {
-      this.eventBus.cast('app:conceptHover', node.iri);
-    } else {
-      this.eventBus.cast('app:conceptHover', null);
-    }
-  }
+  // temp remove to avoid popout being triggered from nav. 
+  //<span (click)="selectNode(node)" (mouseenter)="nodeHover(node)" (mouseleave)="nodeHover(null)">{{node.name}}</span>
+  // nodeHover(node: ConceptNode) {
+  //   if (node !== null) {
+  //     this.eventBus.cast('app:conceptHover', node.iri);
+  //   } else {
+  //     this.eventBus.cast('app:conceptHover', null);
+  //   }
+  // }
 
 }

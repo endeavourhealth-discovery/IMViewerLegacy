@@ -1,103 +1,142 @@
-<app-library-component
-  [relationships]="relationships"
-  [concept]="concept"
-  [children]="children"
-  [parents]="parents"
-  [selectedIri]="selectedIri"
-  [perspective]="perspectives.dataModel"
->
+<app-library-component [relationships]="relationships" [concept]="concept" [children]="children" [parents]="parents"
+  [selectedIri]="selectedIri" [perspective]="perspectives.dataModel">
+
+  <!-- templates -->
+  <ng-template #dataModelSummaryTemplate>
+    <table mat-table [dataSource]="hoveredDataModelTableData" class="" style="width: 100%;">
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let row">
+          <!-- if ValueType -->
+          <ng-container *ngIf="isObjectProperty(row)">
+            <span (mouseover)="onHoverOver(row.ObjectPropertyValue.Property.iri)" (mouseout)="onHoverOut()">
+              {{row.ObjectPropertyValue.Property.name}}
+            </span>
+          </ng-container>
+
+          <!-- if DataType -->
+          <ng-container *ngIf="isDataProperty(row)">
+            <span (mouseover)="onHoverOver(row.DataPropertyValue.Property.iri)" (mouseout)="onHoverOut()">
+              {{row.DataPropertyValue.Property.name}}
+            </span>
+          </ng-container>
+
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let row">
+          <!-- if ValueType -->
+          <ng-container *ngIf="isObjectProperty(row)">
+            <span (mouseover)="onHoverOver(row.ObjectPropertyValue.ValueType.iri)" (mouseout)="onHoverOut()">
+              {{row.ObjectPropertyValue.ValueType.name}}
+            </span>
+          </ng-container>
+
+          <!-- if DataType -->
+          <ng-container *ngIf="isDataProperty(row)">
+            <span (mouseover)="onHoverOver(row.DataPropertyValue.DataType.iri)" (mouseout)="onHoverOut()">
+              {{row.DataPropertyValue.DataType.iri}}
+            </span>
+          </ng-container>
+
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="cardinality">
+        <th mat-header-cell *matHeaderCellDef>Cardinality</th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngIf="isObjectProperty(row)">
+            {{(row.ObjectPropertyValue.Min ? row.ObjectPropertyValue.Min : DEFAULT_MIN_CARDINALITY)}} :
+            {{(row.ObjectPropertyValue.Max ? row.ObjectPropertyValue.Max : DEFAULT_MAX_CARDINALITY)}}
+          </ng-container>
+          <ng-container *ngIf="isDataProperty(row)">
+            {{(row.DataPropertyValue.Min ? row.DataPropertyValue.Min : DEFAULT_MIN_CARDINALITY)}} :
+            {{(row.DataPropertyValue.Max ? row.DataPropertyValue.Max : DEFAULT_MAX_CARDINALITY)}}
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="hoveredDataModelTable.columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: hoveredDataModelTable.columns;"></tr>
+    </table>
+  </ng-template>
+
   <!-- Dashboard container-->
-  <mat-drawer-container class="example-container" hasBackdrop="true"
-                        style="height: calc(100%);overflow:hidden;">
+  <mat-card-content class="full-page-card">
+    <mat-drawer-container class="example-container" hasBackdrop="true" style="height: calc(100%);overflow:hidden;">
 
-    <!-- SideBar -->
-    <mat-drawer #drawer class="example-sidenav" mode="over" position="end" [(opened)]="sidebar" style="width: 40%;overflow:hidden;">
+      <!-- SideBar -->
+      <mat-drawer #drawer class="example-sidenav" mode="over" position="end" [(opened)]="sidebar"
+        style="width: 40%;overflow:hidden;">
 
-      <mat-card fxFlex="100" class="app-background">
-        <mat-card-header>
-          <mat-card-title>
-            <ng-container *ngIf="hoveredConcept.iri && hoveredConcept.iri.includes(':VSET'); else elseTemplate">
-              <span>ValueSet - Summary</span>
-            </ng-container>
-            <ng-template #elseTemplate>
-              <span>Data Model - Summary</span>
-            </ng-template>
-            <div class="spacer"></div>
-            <button mat-icon-button (click)="gotoConcept()" fxFlex="40px">
-              <mat-icon color="primary">open_in_new</mat-icon>
-            </button>
-            <button mat-icon-button color="primary" (click)="sidebar=false" fxFlex="40px">
-              <mat-icon color="primary">close</mat-icon>
-            </button>
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="flex" fxLayout="row wrap" fxLayoutGap="grid" fxLayoutAlign="start">
-            <mat-form-field appearance="outline" fxFlex="100">
-              <mat-label>Name</mat-label>
-              <input matInput [value]="hoveredConcept.name" placeholder="Concept Name" readonly id="conceptDescription">
-            </mat-form-field>
-            <mat-form-field appearance="outline" fxFlex="100">
-              <mat-label>Id</mat-label>
-              <input matInput [value]="hoveredConcept.iri" placeholder="Concept ID" readonly id="conceptDescription">
-            </mat-form-field>
-            <mat-form-field appearance="outline" fxFlex="100">
-              <mat-label>Description</mat-label>
-              <textarea matInput [value]="hoveredConcept.description" placeholder="Concept description" readonly id="conceptDescription" rows="10"></textarea>
-            </mat-form-field>
-          </div>
-        </mat-card-content>
-      </mat-card>
+        <mat-card *ngIf="hoveredConcept != null && hoveredPerspective != null">
 
-    </mat-drawer>
+          <!-- Header -->
+          <app-card-header [title]="hoveredPerspective.caption + ' - ' + hoveredConcept.name" [subtitle]=""
+            [icon]="hoveredPerspective.icon" [color]="hoveredPerspective.color" style="height: 64px;"
+            [showActions]="true">
+          </app-card-header>
 
-    <!-- Dashboard content-->
-    <mat-tab-group style="height: 100%;" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">
-      <mat-tab label="Inheritance" style="height: 100%">
-        <ng-template mat-tab-label>
-          <mat-icon class="example-tab-icon">account_tree</mat-icon>
-          Inheritance
-        </ng-template>
-        <ng-template matTabContent style="height: 100%">
-          <app-data-model-navigator [conceptIri]="selectedIri" [concept]="concept"></app-data-model-navigator>
-        </ng-template>
-      </mat-tab>
-      <mat-tab label="Properties">
-        <ng-template mat-tab-label>
-          <mat-icon class="example-tab-icon">view_module</mat-icon>
-          Properties
-        </ng-template>
-        <ng-template matTabContent>
-          <data-model-tabular-view [conceptIri]="selectedIri" [concept]="concept" [children]="children" [parents]="parents"></data-model-tabular-view>
-        </ng-template>
-      </mat-tab>
-      <mat-tab label="Textual">
-        <ng-template mat-tab-label>
-          <mat-icon class="example-tab-icon">view_module</mat-icon>
-          Textual
-        </ng-template>
-        <ng-template matTabContent>
-          <pre>test</pre>
-        </ng-template>
-      </mat-tab>
-      <mat-tab label="Schema">
-        <ng-template mat-tab-label>
-          <mat-icon class="example-tab-icon">view_module</mat-icon>
-          Schema
-        </ng-template>
-      </mat-tab>
-      <mat-tab label="Schema">
-        <ng-template mat-tab-label>
-          <mat-icon class="example-tab-icon">view_module</mat-icon>
-          API
-        </ng-template>
-      </mat-tab>
-      <mat-tab label="Examples">
-        <ng-template mat-tab-label>
-          <mat-icon class="example-tab-icon">view_module</mat-icon>
-          Examples
-        </ng-template>
-      </mat-tab>
-    </mat-tab-group>
-  </mat-drawer-container>
+          <mat-card-content class="full-page-card">
+            <span *ngIf="hoveredConcept.description != null" [innerHTML]="hoveredConcept.description"></span>
+            <ng-container
+              *ngIf="(hoveredPerspective.root == perspectives.dataModel.root); then dataModelSummaryTemplate"></ng-container>
+          </mat-card-content>
+        </mat-card>
+      </mat-drawer>
+
+      <!-- Dashboard content-->
+      <mat-tab-group style="height: 100%;" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">
+        <mat-tab label="Inheritance" style="height: 100%">
+          <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">account_tree</mat-icon>
+            Inheritance
+          </ng-template>
+          <ng-template matTabContent style="height: 100%">
+            <app-data-model-navigator [conceptIri]="selectedIri" [concept]="concept"></app-data-model-navigator>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Properties">
+          <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">view_module</mat-icon>
+            Properties
+          </ng-template>
+          <ng-template matTabContent>
+            <data-model-tabular-view [conceptIri]="selectedIri" [concept]="concept" [children]="children"
+              [parents]="parents"></data-model-tabular-view>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Textual">
+          <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">view_module</mat-icon>
+            Textual
+          </ng-template>
+          <ng-template matTabContent>
+            <pre>test</pre>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Schema">
+          <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">view_module</mat-icon>
+            Schema
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Schema">
+          <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">view_module</mat-icon>
+            API
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Examples">
+          <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">view_module</mat-icon>
+            Examples
+          </ng-template>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-drawer-container>
+  </mat-card-content>
 </app-library-component>

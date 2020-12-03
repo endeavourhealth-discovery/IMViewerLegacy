@@ -33,6 +33,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 import { ConceptDefinitionComponent } from './concept-definition/concept-definition.component';
 import {DataModelNavigatorComponent} from './data-model-navigator/data-model-navigator.component';
 import { LibraryComponentComponent } from './library-component/library-component.component';
+import {MatMenuModule} from '@angular/material/menu';
 
 @NgModule({
   imports: [
@@ -59,7 +60,8 @@ import { LibraryComponentComponent } from './library-component/library-component
     MatTabsModule,
     MatListModule,
     MatSidenavModule,
-    MatDialogModule
+    MatDialogModule,
+    MatMenuModule
   ],
   declarations: [
     ConceptSearchComponent,

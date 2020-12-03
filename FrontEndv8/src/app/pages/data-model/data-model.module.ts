@@ -23,6 +23,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import { DataModelDialogComponent } from './data-model-create/data-model-dialog/data-model-dialog.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {DataModelNavigatorService} from '../../components/data-model-navigator/data-model-navigator.service';
+import {MatMenuModule} from '@angular/material/menu';
 
 @NgModule({
   imports: [
@@ -47,7 +48,8 @@ import {DataModelNavigatorService} from '../../components/data-model-navigator/d
     MatListModule,
     MatSidenavModule,
     MatAutocompleteModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatMenuModule
   ],
   providers: [
     { provide: DataModelNavigatorService, useClass: ConceptService }

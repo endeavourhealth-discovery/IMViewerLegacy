@@ -9,6 +9,11 @@ import { DataModelTablularViewComponent } from '../../../components/data-model-t
 import { NgEventBus } from 'ng-event-bus';
 import {LoggerService} from '../../../services/logger.service';
 import {Perspectives} from '../../../services/perspective.service';
+import {Observable, Subject} from 'rxjs';
+import { Perspective } from 'src/app/models/Perspective';
+import { FlatProperty } from '../../../models/old/DataModelDefinition';
+import { MatTableDataSource } from '@angular/material/table';
+import { ClassExpression } from '../../../models/objectmodel/ClassExpression';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -31,6 +36,11 @@ class DataModelLibraryComponent implements OnInit {
   showFiller = true;
 
   hoveredConcept: Concept = new Concept();
+  hoveredPerspective: Perspective;
+  hoveredDataModelTableData: any[] = [];
+  hoveredDataModelTable: DataTable<FlatProperty>;
+  static DEFAULT_MIN_CARDINALITY: number = 0;
+  static DEFAULT_MAX_CARDINALITY: string = "*";
 
   history = [];
 
@@ -53,6 +63,8 @@ class DataModelLibraryComponent implements OnInit {
     this.eventBus.on('app:conceptHover').subscribe((iri: string) => {
       this.itemHover(iri);
     });
+
+    this.hoveredDataModelTable = new DataTable<FlatProperty>(['name', 'type', 'cardinality']);
   }
 
   routeEvent(router: Router) {
@@ -106,7 +118,38 @@ class DataModelLibraryComponent implements OnInit {
         root.sidebar = true;
       }, 1000);
       this.service.getConcept(iri).subscribe(
-        (result) => this.hoveredConcept = result,
+        (hoveredConcept) => { 
+          this.hoveredConcept = hoveredConcept,
+          this.getPerspective(hoveredConcept).subscribe(
+            (hoveredPerspective) => { 
+              this.hoveredPerspective = hoveredPerspective;
+              //console.log("trying to get detail for hov pers", hoveredPerspective.caption);
+              //console.log("trying to get detail for hov concept", hoveredConcept.name);
+
+              // TODO - need to then populate the data that backs the popout depending on
+              // the perspective - feels like we should defer to the perspective to do this
+
+              // for now do a rough hack where we only deal with datamodels
+              if(this.hoveredPerspective.root == this.perspectives.dataModel.root) {
+                //console.log("got a datamodel ", JSON.stringify(this.hoveredConcept));
+                if (this.hoveredConcept.SubClassOf[0].Intersection != null) {
+                  this.hoveredConcept.SubClassOf[0].Intersection.forEach(intersection => {
+                    if (intersection.ObjectPropertyValue != null && intersection.ObjectPropertyValue.Property.iri !== ':hasCoreProperties') {
+                      this.hoveredDataModelTableData.push(intersection);
+                    }
+                    if (intersection.ObjectPropertyValue != null && intersection.ObjectPropertyValue.Expression != null && intersection.ObjectPropertyValue.Expression.Intersection != null && intersection.ObjectPropertyValue.Property.iri === ':hasCoreProperties') {
+                      intersection.ObjectPropertyValue.Expression.Intersection.forEach(subIntersection => {
+                        this.hoveredDataModelTableData.push(subIntersection);
+                      });
+                    }
+                  }); 
+                }
+              }
+            },
+
+            (error) => this.log.error(error)
+          )
+        },
         (error) => this.log.error(error)
       );
     } else {
@@ -144,8 +187,84 @@ class DataModelLibraryComponent implements OnInit {
     });
   }
 
+  // popout functions
+
+  getPerspective(concept: Concept): Observable<Perspective> {
+    let perspectiveObservable: Subject<Perspective> = new Subject();
+    
+    // TODO - cache this - init in constructor
+    let perspectivesMap: Map<string, Perspective> = new Map();
+    this.perspectives.perspectives.forEach(perspective => perspectivesMap.set(perspective.root, perspective));
+
+    this.service.isOfType(this.hoveredConcept.iri, Array.from(perspectivesMap.keys())).subscribe(
+      (result) => { 
+        if(result.length == 1) {
+          perspectiveObservable.next(perspectivesMap.get(result[0].iri));
+        }
+        else if(result.length > 1) {
+          perspectiveObservable.error("could not determine perspective as the concept (iri: " + concept.iri + ") has multiple perspectives")
+        }
+        else {
+          perspectiveObservable.error("could not determine perspective as the concept (iri: " + concept.iri + ") is not associated with any perspectives")
+        }
+      }, 
+      (error) => { 
+          this.log.error(error)
+          perspectiveObservable.error("Problem retreiving perspective for concept (iri:" + concept.iri + "). Cause: " + error);
+      }
+    )
+    
+    return perspectiveObservable;
+  }
+
+  isObjectProperty(row: ClassExpression): boolean {
+    return row.ObjectPropertyValue && row.ObjectPropertyValue.Property.iri != null;
+  }
+
+  isDataProperty(row: ClassExpression): boolean {
+    return row.DataPropertyValue && row.DataPropertyValue.Property.iri != null;
+  }
+
+  get DEFAULT_MIN_CARDINALITY(): number {
+    return DataModelTablularViewComponent.DEFAULT_MIN_CARDINALITY;
+  }
+
+  get DEFAULT_MAX_CARDINALITY(): string {
+    return DataModelTablularViewComponent.DEFAULT_MAX_CARDINALITY;
+  }
+}
+
+class DataTable<D> {
+
+  public columns: string[]
+  public rows: MatTableDataSource<D> = new MatTableDataSource<D>();
+
+  constructor(columns: string[]) {
+    this.columns = columns;
+  }
+
+  setRows(rows: D[]) {
+    this.rows.data = rows;
+  }
+
+  clear() {
+    this.rows.data = [];
+  }
+
+  hasRows(): boolean {
+    return this.rows && this.rows.data.length > 0;
+  }
+
+  getRowCount(): number {
+    return (this.hasRows) ? this.rows.data.length : 0;
+  }
+
+  getTooltip(concept: Concept): string {
+    return `IRI - ${concept.iri} Description - ${concept.description ? concept.description : 'no data found'}`;
+  }
 }
 
 export {
-  DataModelLibraryComponent
+  DataModelLibraryComponent,
+  DataTable
 }
