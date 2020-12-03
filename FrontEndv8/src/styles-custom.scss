@@ -90,6 +90,10 @@ mat-tree-node {
   min-height: 1em !important;
 }
 
+.mat-expansion-panel-header {
+  height: 32px * $scale !important;
+}
+
 mat-accordion .mat-expansion-panel-header-title,
 mat-accordion .mat-expansion-panel-header-description {
   flex-basis: 0;
@@ -138,6 +142,19 @@ mat-accordion .mat-form-field + .mat-form-field {
 
 .mat-tab-body-content {
   overflow-x: hidden !important;
+}
+
+tr.mat-row {
+  height: 28px * $scale !important;
+}
+
+tr.mat-header-row {
+  height: 28px * $scale !important;
+}
+
+.mat-small-chip {
+  min-height: 18px * $scale !important;
+  font-size: mat-font-size($custom-typography, caption);
 }
 
 // **********************************************************************

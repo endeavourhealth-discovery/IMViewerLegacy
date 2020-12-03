@@ -76,6 +76,7 @@ class DataModelTablularViewComponent {
           });
         }
       });
+      this.propertiesTableData = this.propertiesTableData.sort((a,b) => this.compare(a,b))
     }
 
     this.parentsChipListTemplateContext = {
@@ -87,6 +88,20 @@ class DataModelTablularViewComponent {
       title: 'Children',
       chips: this.children
     };
+  }
+
+  compare(a: any, b: any) {
+    if (this.isObjectProperty(a)) {
+      if (this.isObjectProperty(b))
+        return a.ObjectPropertyValue.Property.name.localeCompare(b.ObjectPropertyValue.Property.name, undefined, { sensitivity: 'accent' });
+      else
+        return a.ObjectPropertyValue.Property.name.localeCompare(b.DataPropertyValue.Property.name, undefined, { sensitivity: 'accent' });
+    } else {
+      if (this.isObjectProperty(b))
+        return a.DataPropertyValue.Property.name.localeCompare(b.ObjectPropertyValue.Property.name, undefined, { sensitivity: 'accent' });
+      else
+        return a.DataPropertyValue.Property.name.localeCompare(b.DataPropertyValue.Property.name, undefined, { sensitivity: 'accent' });
+    }
   }
 
   onSelect(iri: string) {
