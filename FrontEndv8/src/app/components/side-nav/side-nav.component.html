@@ -1,6 +1,6 @@
 <as-split direction="vertical" unit="pixel">
   <as-split-area [size]="searchSize" minSize="72" style="height: 100%; overflow: hidden">
-    <div class="as-split-area-content" style="height: inherit">
+    <div class="as-split-area-content" #searchComponent>
       <app-concept-search [root]="root" [relationships]="relationships" (hasResults)="hasResults($event)">
       </app-concept-search>
     </div>

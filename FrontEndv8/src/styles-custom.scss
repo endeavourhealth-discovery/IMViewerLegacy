@@ -41,13 +41,16 @@ mat-card {
   width: -webkit-fill-available;
 }
 
+mat-card-header {
+  height: 3.25em !important;
+}
+
 .mat-tab-body-wrapper {
   height: 100%;
 }
 
 mat-toolbar.mat-toolbar mat-form-field.mat-form-field {
-  font-size: 12px;
-  margin-top: 1em;
+  margin-top: 1.25em;
 }
 
 .mat-card-header-text {
@@ -55,18 +58,36 @@ mat-toolbar.mat-toolbar mat-form-field.mat-form-field {
   margin: 0 !important;
 }
 
+.mat-icon {
+  font-size: 24px * $scale !important;
+  height: 24px * $scale !important;
+}
+
+.mat-icon-button {
+  width: 40px * $scale !important;
+  height: 40px * $scale !important;
+  line-height: 40px * $scale !important;
+}
+
+.mat-toolbar-row, .mat-toolbar-single-row {
+  height: 64px * $scale !important;
+}
+
+.mat-menu-item {
+  height: 2em !important;
+  line-height: mat-line-height($custom-typography, input) *2em !important;
+}
+
+.mat-tab-label {
+  height: 3em !important;
+}
+
 .mat-card-avatar {
   margin-right: 8px;
 }
 
-mat-sidenav {
-  button.mat-menu-item {
-    height: 40px;
-  }
-}
-
 mat-tree-node {
-  min-height: 12px !important;
+  min-height: 1em !important;
 }
 
 mat-accordion .mat-expansion-panel-header-title,
@@ -91,10 +112,11 @@ mat-accordion .mat-form-field + .mat-form-field {
     height: 100%;
   }
   mat-grid-tile-header {
+    height: 3em;
     + div {
-      margin-top: 48px;
+      margin-top: 3em;
       overflow-y: auto;
-      height: calc(100% - 48px);
+      height: calc(100% - 3em);
     }
   }
 }
@@ -162,8 +184,8 @@ mat-accordion .mat-form-field + .mat-form-field {
 }
 
 .avatar {
-  width: 32px;
-  height: 32px;
+  width: 32px * $scale;
+  height: 32px * $scale;
   border-radius: 50%;
   margin-bottom: 0;
 

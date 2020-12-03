@@ -3,7 +3,7 @@ import { NgEventBus } from 'ng-event-bus';
 import { Concept} from '../../models/objectmodel/Concept';
 import { Router, NavigationEnd } from '@angular/router';
 import { ConceptService } from '../../services/concept.service';
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import {Component, Input, OnInit, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
 import {LoggerService} from '../../services/logger.service';
 
 @Component({
@@ -11,17 +11,19 @@ import {LoggerService} from '../../services/logger.service';
   templateUrl: './side-nav.component.html',
   styleUrls: ['./side-nav.component.scss']
 })
-export class SideNavComponent implements OnInit {
+export class SideNavComponent implements AfterViewInit {
   @Input() concept: Concept;
   @Input() parents: Array<ConceptReferenceNode>;
   @Input() children: Array<ConceptReferenceNode>;
   @Input() root: string;
   @Input() relationships: string;
   @Input() selectedIri: string;
+  @ViewChild('searchComponent', {static: true}) searchComponent: ElementRef;
 
   @Output() openDialogEvent: EventEmitter<any> = new EventEmitter<any>();
 
-  searchSize = 72;
+  minSize = 72;
+  searchSize = this.minSize;
   history = [];
 
 
@@ -33,7 +35,8 @@ export class SideNavComponent implements OnInit {
     this.routeEvent(this.router);
   }
 
-  ngOnInit() {
+  ngAfterViewInit(): void {
+    this.minSize = this.searchSize = this.searchComponent.nativeElement.clientHeight * 0.8;
   }
 
   routeEvent(router: Router) {
