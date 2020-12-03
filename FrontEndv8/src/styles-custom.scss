@@ -34,6 +34,90 @@ $teal-theme: mat-light-theme($teal-primary, $teal-accent, $teal-warn);
 
 $background: map-get($theme, background);
 
+// XMas theme
+$xmas-primary: mat-palette($mat-green);
+$xmas-accent: mat-palette($mat-red, A200, A100, A400);
+$xmas-warn: mat-palette($mat-purple);
+
+$xmas-theme: mat-light-theme($xmas-primary, $xmas-accent, $xmas-warn);
+
+$xmas-green: #169878;
+$xmas-red: #E1384A;
+
+.xmas-theme {
+  @include angular-material-theme($xmas-theme);
+  .avatar {
+    content: url('assets/xmas/avatar.jfif');
+  }
+
+  .app-background {
+    background-color: $xmas-green !important
+  }
+
+  .mat-toolbar {
+    background-image: url('assets/xmas/lights.gif');
+    background-size: contain;
+    background-position-y: -22px;
+    background-repeat: repeat-x;
+    background-color: lighten($xmas-green, 20);
+  }
+
+  .mat-card {
+    background-color: lighten($xmas-green, 20);
+  }
+
+  .mat-drawer-container {
+    background-color: lighten($xmas-red, 20);
+  }
+
+  .mat-tab-body-content {
+    background-color: lighten($xmas-red, 20);
+  }
+
+  .mat-tab-body.mat-tab-body-active {
+    background-color: lighten($xmas-green, 20) !important;
+  }
+
+  .mat-tree {
+    background-color: lighten($xmas-red, 20);
+  }
+
+  .body-bg {
+    background-color:lighten($xmas-red, 20);
+  }
+
+  .mat-expansion-panel {
+    background-color: lighten($xmas-red, 20);
+  }
+
+  .mat-table {
+    background-color: lighten($xmas-green, 20) !important;
+  }
+
+  .perspective_img_0 {
+    content: url('assets/xmas/banner0.jfif');
+  }
+
+  .perspective_img_1 {
+    content: url('assets/xmas/banner1.jfif');
+  }
+
+  .perspective_img_2 {
+    content: url('assets/xmas/banner2.png');
+  }
+
+  .perspective_img_3 {
+    content: url('assets/xmas/banner3.jfif');
+  }
+
+  .perspective_img_4 {
+    content: url('assets/xmas/banner4.png');
+  }
+
+}
+
+$background: map-get($theme, background);
+
 // **********************************************************************
 // * Material styles
 // **********************************************************************
@@ -50,7 +134,7 @@ mat-card-header {
 }
 
 mat-toolbar.mat-toolbar mat-form-field.mat-form-field {
-  margin-top: 1.25em;
+  margin-top: -0.75em;
 }
 
 .mat-card-header-text {
@@ -155,6 +239,11 @@ tr.mat-header-row {
 .mat-small-chip {
   min-height: 18px * $scale !important;
   font-size: mat-font-size($custom-typography, caption);
+}
+
+.mat-form-field-wrapper {
+  padding-bottom: 0;
+  margin-bottom: -6px !important;
 }
 
 // **********************************************************************

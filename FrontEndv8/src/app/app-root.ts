@@ -1,7 +1,7 @@
 import { NgEventBus } from 'ng-event-bus';
 // TODO: AppRoot to be extracted to common by splitting LayoutComponent
 
-import {AfterViewInit, Component, ElementRef, HostBinding, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostBinding, Inject, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {AbstractSecurityProvider} from './security/abstract-security-provider';
@@ -15,6 +15,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatSidenav} from '@angular/material/sidenav';
 import {LoggerService} from './services/logger.service';
 import {Perspectives} from './services/perspective.service';
+import {DOCUMENT} from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -36,6 +37,7 @@ export class AppRoot implements OnInit, AfterViewInit {
     private router: Router,
     public securityService: AbstractSecurityProvider,
     public perspectives: Perspectives,
+    @Inject(DOCUMENT) private document: Document,
     public overlayContainer: OverlayContainer,
     public conceptService: ConceptService,
     private eventBus: NgEventBus,
@@ -104,8 +106,10 @@ export class AppRoot implements OnInit, AfterViewInit {
   }
 
   onSetTheme(theme) {
-    this.overlayContainer.getContainerElement().classList.remove(this.componentCssClass);
-    this.overlayContainer.getContainerElement().classList.add(theme);
+    this.document.documentElement.classList.remove(this.componentCssClass);
+    this.document.documentElement.classList.add(theme);
+    // this.overlayContainer.getContainerElement().classList.remove(this.componentCssClass);
+    // this.overlayContainer.getContainerElement().classList.add(theme);
     this.componentCssClass = theme;
   }
 

@@ -34,6 +34,7 @@ import { ConceptDefinitionComponent } from './concept-definition/concept-definit
 import {DataModelNavigatorComponent} from './data-model-navigator/data-model-navigator.component';
 import { LibraryComponentComponent } from './library-component/library-component.component';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatWrapperComponent} from './mat-wrapper/mat-wrapper.component';
 
 @NgModule({
   imports: [
@@ -75,6 +76,7 @@ import {MatMenuModule} from '@angular/material/menu';
     ConceptDefinitionComponent,
     DataModelNavigatorComponent,
     LibraryComponentComponent,
+    MatWrapperComponent
   ],
   exports: [
     ConceptSearchComponent,
@@ -84,7 +86,8 @@ import {MatMenuModule} from '@angular/material/menu';
     SideNavComponent,
     ConceptDefinitionComponent,
     DataModelNavigatorComponent,
-    LibraryComponentComponent
+    LibraryComponentComponent,
+    MatWrapperComponent
   ],
   entryComponents: [
     FindConceptUsagesDialogComponent

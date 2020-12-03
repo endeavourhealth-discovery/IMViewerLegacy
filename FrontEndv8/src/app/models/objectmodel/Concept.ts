@@ -19,8 +19,8 @@ export class Concept implements IMAnnotated {
   annotations: Set<Annotation>;
   conceptType: ConceptType;
   SubClassOf: Set<ClassAxiom>;
-  equivalentTo: Set<ClassAxiom>;
-  expression: ClassExpression;
+  EquivalentTo: Set<ClassAxiom>;
+  Expression: ClassExpression;
   DisjointWith: Array<ConceptReference>;
 
   getAnnotations(): Set<Annotation> {

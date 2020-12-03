@@ -1,39 +1,102 @@
-<ng-container *ngIf="concept">
-  <h4>Definition</h4>
-  <ng-container *ngIf="concept.SubClassOf">
-    <div style="padding-left: 8px">
-      <h5>Sub Class Of</h5>
-      <ng-container [ngTemplateOutlet]="classAxiomList" [ngTemplateOutletContext]="{list : concept.SubClassOf}"></ng-container>
-    </div>
-  </ng-container>
+<mat-form-field floatLabel="always" appearance="outline" fxFlex="100" readonly>
+  <mat-label>Definition:</mat-label>
+  <mat-wrapper>
+    <!-- **************************************** Concept properties **************************************** -->
+    <ng-container *ngIf="concept">
+      <ng-container *ngIf="concept.SubClassOf">
+        <div style="padding-left: 8px">
+          <b>Subclass of</b>
+          <ng-container [ngTemplateOutlet]="classAxiomList" [ngTemplateOutletContext]="{list : concept.SubClassOf}"></ng-container>
+        </div>
+      </ng-container>
 
-  <ng-template #classAxiomList let-list="list">
-    <ng-container *ngFor="let item of list">
-      <ng-container [ngTemplateOutlet]="classAxiom" [ngTemplateOutletContext]="{item: item}"></ng-container>
+      <ng-container *ngIf="concept.EquivalentTo">
+        <div style="padding-left: 8px">
+          <b>Equivalent to</b>
+          <ng-container [ngTemplateOutlet]="classAxiomList" [ngTemplateOutletContext]="{list : concept.EquivalentTo}"></ng-container>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="concept.Expression">
+        <div style="padding-left: 8px">
+          <b>Expression</b>
+          <ng-container [ngTemplateOutlet]="classAxiomList" [ngTemplateOutletContext]="{list : concept.EquivalentTo}"></ng-container>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="concept.DisjointWith">
+        <div style="padding-left: 8px">
+          <b>Disjoint with</b>
+          <ng-container [ngTemplateOutlet]="conceptReferenceList" [ngTemplateOutletContext]="{list : concept.DisjointWith}"></ng-container>
+        </div>
+      </ng-container>
+
+      <!-- **************************************** Lists **************************************** -->
+      <ng-template #classAxiomList let-list="list" let-join="join">
+        <span *ngIf="list.length > 1">[</span>
+        <div *ngFor="let item of list; let i = index" style="padding-left: 8px">
+          <b *ngIf="i > 0"> {{join}} </b>
+          <ng-container [ngTemplateOutlet]="classAxiom" [ngTemplateOutletContext]="{item: item}"></ng-container>
+        </div>
+        <span *ngIf="list.length > 1">]</span>
+      </ng-template>
+
+      <ng-template #classExpressionList let-list="list" let-join="join">
+        <span *ngIf="list.length > 1">[</span>
+        <div *ngFor="let item of list; let i = index" style="padding-left: 8px">
+          <b *ngIf="i > 0"> {{join}} </b>
+          <ng-container [ngTemplateOutlet]="classExpression" [ngTemplateOutletContext]="{item: item}"></ng-container>
+        </div>
+        <span *ngIf="list.length > 1">]</span>
+      </ng-template>
+
+      <ng-template #conceptReferenceList let-list="list" let-join="join">
+        <span *ngIf="list.length > 1">[</span>
+        <div *ngFor="let item of list; let i = index" style="padding-left: 8px">
+          <b *ngIf="i > 0"> {{join}} </b>
+          <span><b>{{item.iri}}</b> | {{item.name}}</span>
+        </div>
+        <span *ngIf="list.length > 1">]</span>
+      </ng-template>
+      <!-- **************************************** Types **************************************** -->
+      <ng-template #classAxiom let-item="item">
+        <div *ngIf="item.Intersection">
+          <ng-container [ngTemplateOutlet]="classExpressionList" [ngTemplateOutletContext]="{list : item.Intersection, join: 'and'}"></ng-container>
+        </div>
+        <div *ngIf="item.Union">
+          <ng-container [ngTemplateOutlet]="classExpressionList" [ngTemplateOutletContext]="{list : item.Union, join: 'or'}"></ng-container>
+        </div>
+        <div *ngIf="item.Class">
+          <ng-container [ngTemplateOutlet]="conceptReference" [ngTemplateOutletContext]="{item: item.Class}"></ng-container>
+        </div>
+      </ng-template>
+
+      <ng-template #classExpression let-item="item">
+        <span *ngIf="item.Class">
+          <span>(CLS) - <b>{{item.Class.iri}}</b> | {{item.Class.name}}</span>
+        </span>
+        <span *ngIf="item.ObjectPropertyValue">
+          <span>(OPV) - <b>{{item.ObjectPropertyValue.Property.iri}}</b> | {{item.ObjectPropertyValue.Property.name}}</span>
+          <span> - <b>{{item.ObjectPropertyValue.Quantification}}</b> ({{item.ObjectPropertyValue.Min}}) - </span>
+          <span *ngIf="item.ObjectPropertyValue.ValueType"><b>{{item.ObjectPropertyValue.ValueType.iri}}</b> | {{item.ObjectPropertyValue.ValueType.name}}</span>
+          <ng-container *ngIf="item.ObjectPropertyValue.Expression" [ngTemplateOutlet]="classExpression" [ngTemplateOutletContext]="{item: item.ObjectPropertyValue.Expression}"></ng-container>
+        </span>
+        <span *ngIf="item.DataPropertyValue">
+          <span>(OPV) - <b>{{item.DataPropertyValue.Property.iri}}</b> | {{item.DataPropertyValue.Property.name}}</span>
+          <span> - <b>{{item.DataPropertyValue.Quantification}}</b> ({{item.DataPropertyValue.Min}}) - </span>
+          <span *ngIf="item.DataPropertyValue.DataType"><b>{{item.DataPropertyValue.DataType.iri}}</b> | {{item.DataPropertyValue.DataType.name}}</span>
+        </span>
+        <div *ngIf="item.Intersection">
+          <ng-container [ngTemplateOutlet]="classExpressionList" [ngTemplateOutletContext]="{list : item.Intersection, join: 'and'}"></ng-container>
+        </div>
+        <div *ngIf="item.Union">
+          <ng-container [ngTemplateOutlet]="classExpressionList" [ngTemplateOutletContext]="{list : item.Union, join: 'or'}"></ng-container>
+        </div>
+      </ng-template>
+
+      <ng-template #conceptReference let-item="item">
+        <span><b>{{item.iri}}</b> | {{item.name}}</span>
+      </ng-template>
     </ng-container>
-  </ng-template>
-
-  <ng-template #classExpressionList let-list="list">
-    <ng-container *ngFor="let item of list">
-      <ng-container [ngTemplateOutlet]="classExpression" [ngTemplateOutletContext]="{item: item}"></ng-container>
-    </ng-container>
-  </ng-template>
-
-  <ng-template #classAxiom let-item="item">
-    <div *ngIf="item.Intersection" style="padding-left: 8px">
-      <h5>Intersection</h5>
-      <ng-container [ngTemplateOutlet]="classExpressionList" [ngTemplateOutletContext]="{list : item.Intersection}"></ng-container>
-    </div>
-  </ng-template>
-
-  <ng-template #classExpression let-item="item">
-    <div *ngIf="item.Class" style="padding-left: 8px">
-      <span>(CLS) - {{item.Class.iri}} | {{item.Class.name}}</span>
-    </div>
-    <div *ngIf="item.ObjectPropertyValue" style="padding-left: 8px">
-      <span>(OPV) - {{item.ObjectPropertyValue.Property.iri}} | {{item.ObjectPropertyValue.Property.name}}</span>
-      <span> - {{item.ObjectPropertyValue.Quantification}} ({{item.ObjectPropertyValue.Min}}) - </span>
-      <span>{{item.ObjectPropertyValue.ValueType.iri}} | {{item.ObjectPropertyValue.ValueType.name}}</span>
-    </div>
-  </ng-template>
-</ng-container>
+  </mat-wrapper>
+</mat-form-field>

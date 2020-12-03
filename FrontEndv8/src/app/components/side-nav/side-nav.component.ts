@@ -36,7 +36,7 @@ export class SideNavComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.minSize = this.searchSize = this.searchComponent.nativeElement.clientHeight * 0.8;
+    this.minSize = this.searchSize = this.searchComponent.nativeElement.clientHeight * 1.1;
   }
 
   routeEvent(router: Router) {
@@ -53,7 +53,7 @@ export class SideNavComponent implements AfterViewInit {
   }
 
   itemHover(concept: Concept) {
-    this.eventBus.cast('app:conceptHover', concept.iri);
+    // this.eventBus.cast('app:conceptHover', concept.iri);
   }
 
   goto(iri: string) {

@@ -59,45 +59,45 @@
 
           <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
 
-            <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline" fxFlex="60">
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="60">
               <mat-label>Name:</mat-label>
               <input dense matInput [value]="concept.name" disabled>
             </mat-form-field>
 
-            <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline" fxFlex="20">
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="20">
               <mat-label>Iri:</mat-label>
               <input disabled matInput [value]="concept.iri">
             </mat-form-field>
 
-            <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline" fxFlex="20">
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="20">
               <mat-label>Namespace:</mat-label>
               <input disabled matInput [value]="concept.iri">
             </mat-form-field>
 
-            <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline" fxFlex="60">
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="60">
               <mat-label>Code:</mat-label>
               <input disabled matInput [value]="concept.code">
             </mat-form-field>
 
-            <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline" fxFlex="20">
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="20">
               <mat-label>Scheme:</mat-label>
               <input disabled matInput [value]="concept.scheme?.name">
             </mat-form-field>
 
-            <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline" fxFlex="20">
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="20">
               <mat-label>Status:</mat-label>
               <input disabled matInput [value]="concept.status?.toString()">
             </mat-form-field>
 
-            <mat-form-field dense floatLabel="always" style="width:100%" appearance="outline" fxFlex="100">
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="100">
               <mat-label>Description:</mat-label>
               <textarea disabled matInput [value]="concept.description" rows="10"></textarea>
             </mat-form-field>
 
+            <app-concept-definition [concept]="concept" fxFlex="100"></app-concept-definition>
 
           </div>
 
-          <app-concept-definition [concept]="concept"></app-concept-definition>
 
         </ng-template>
       </mat-tab>
