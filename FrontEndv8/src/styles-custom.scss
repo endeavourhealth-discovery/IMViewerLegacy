@@ -47,7 +47,7 @@ $xmas-red: #E1384A;
 .xmas-theme {
   @include angular-material-theme($xmas-theme);
   .avatar {
-    content: url('assets/xmas/avatar.jfif');
+    content: url('assets/xmas/avatar.jpg');
   }
 
   .app-background {
@@ -95,23 +95,23 @@ $xmas-red: #E1384A;
   }
 
   .perspective_img_0 {
-    content: url('assets/xmas/banner0.jfif');
+    content: url('assets/xmas/banner0.jpg');
   }
 
   .perspective_img_1 {
-    content: url('assets/xmas/banner1.jfif');
+    content: url('assets/xmas/banner1.jpg');
   }
 
   .perspective_img_2 {
-    content: url('assets/xmas/banner2.png');
+    content: url('assets/xmas/banner2.jpg');
   }
 
   .perspective_img_3 {
-    content: url('assets/xmas/banner3.jfif');
+    content: url('assets/xmas/banner3.jpg');
   }
 
   .perspective_img_4 {
-    content: url('assets/xmas/banner4.png');
+    content: url('assets/xmas/banner4.jpg');
   }
 
 }
