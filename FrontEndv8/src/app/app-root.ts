@@ -7,7 +7,7 @@ import {OverlayContainer} from '@angular/cdk/overlay';
 import {AbstractSecurityProvider} from './security/abstract-security-provider';
 import {User} from './security/models/User';
 import {fromEvent, Subscription} from 'rxjs';
-import {debounceTime, distinctUntilChanged, filter, tap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, filter, map, tap} from 'rxjs/operators';
 import {ConceptService} from './services/concept.service';
 import {ConceptReference} from './models/objectmodel/ConceptReference';
 import {FindConceptUsagesDialogComponent} from './components/find-concept-usages-dialog/find-concept-usages-dialog.component';
@@ -64,11 +64,12 @@ export class AppRoot implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     fromEvent(this.input.nativeElement,'keyup')
       .pipe(
-        filter(Boolean),
-        debounceTime(150),
+        map((e:any) => e.target.value),
+        filter(v => v.length > 2),
+        debounceTime(200),
         distinctUntilChanged(),
         tap((text) => {
-          this.autoComplete(this.input.nativeElement.value)
+          this.autoComplete(text)
         })
       )
       .subscribe();
