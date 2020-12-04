@@ -50,6 +50,11 @@ export class FindConceptUsagesDialogComponent implements OnInit {
   }
 
   addTypes(items: any[]) {
+    if (items == null || items.length == 0) {
+      this.usages = items;
+      return;
+    }
+
     let requests = items.map(i => this.service.isOfType(i.iri, this.candidates));
     forkJoin(requests).subscribe(
       (result) => {

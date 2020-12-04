@@ -19,7 +19,7 @@
       </mat-chip-list>
     </mat-expansion-panel>
 
-    <mat-expansion-panel disabled>
+    <mat-expansion-panel disabled *ngIf="usages == null || usages.length > 0">
       <mat-expansion-panel-header>
         <mat-panel-title><h2>Usages</h2></mat-panel-title>
       </mat-expansion-panel-header>
