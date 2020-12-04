@@ -129,6 +129,12 @@ mat-card-header {
   height: 3.25em !important;
 }
 
+.mat-chips-right {
+  .mat-chip-list-wrapper {
+    justify-content: flex-end;
+  }
+}
+
 .mat-tab-body-wrapper {
   height: 100%;
 }

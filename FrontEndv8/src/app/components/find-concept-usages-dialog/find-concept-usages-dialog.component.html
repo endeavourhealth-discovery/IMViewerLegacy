@@ -1,54 +1,34 @@
 <div mat-dialog-content>
-  <mat-accordion>
-    <mat-expansion-panel disabled>
-      <mat-expansion-panel-header>
-        <mat-panel-title><h2>Concept</h2></mat-panel-title>
-      </mat-expansion-panel-header>
-    </mat-expansion-panel>
+  <table class="mat-table" style="width: 100%">
+    <tr class="mat-header-row">
+      <th class="mat-header-cell" colspan="2"><h2>Concept</h2></th>
+    </tr>
+    <tr class="mat-row">
+      <td class="mat-cell">{{data.concept.name}}</td>
+      <td class="mat-cell">
+        <mat-chip-list class="mat-chips-right">
+          <mat-chip class="mat-small-chip" (click)="navigate(data.concept.iri)" [style.background-color]="perspectives.ontology.color">Ontology</mat-chip>
+          <mat-chip class="mat-small-chip" *ngFor="let type of types" (click)="navigate(data.concept.iri, type.iri)" [style.background-color]="getColor(type.iri)">{{type.name}}</mat-chip>
+        </mat-chip-list>
+      </td>
+    </tr>
 
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <mat-panel-title>{{data.concept.iri}}</mat-panel-title>
-        <mat-panel-description>
-          {{data.concept.name}}
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-      <mat-chip-list>
-        <mat-chip (click)="navigate(data.concept.iri)" [style.background-color]="perspectives.ontology.color" class="mat-small-chip">Ontology</mat-chip>
-        <mat-chip *ngFor="let type of types" (click)="navigate(data.concept.iri, type.iri)" [style.background-color]="getColor(type.iri)" class="mat-small-chip">{{type.name}}</mat-chip>
-      </mat-chip-list>
-    </mat-expansion-panel>
+    <ng-container *ngIf="usages!=null && usages.length > 0">
+      <tr class="mat-header-row">
+        <th class="mat-header-cell" colspan="2"><h2>Usages</h2></th>
+      </tr>
+      <tr class="mat-row" *ngFor="let item of usages">
+        <td class="mat-cell">{{item.name}}</td>
+        <td class="mat-cell">
+          <mat-chip-list class="mat-chips-right">
+            <mat-chip class="mat-small-chip" (click)="navigate(item.iri)" [style.background-color]="perspectives.ontology.color">Ontology</mat-chip>
+            <mat-chip class="mat-small-chip" *ngFor="let type of item.types" (click)="navigate(item.iri, type.iri)" [style.background-color]="getColor(type.iri)">{{type.name}}</mat-chip>
+          </mat-chip-list>
+        </td>
+      </tr>
+    </ng-container>
 
-    <mat-expansion-panel disabled *ngIf="usages == null || usages.length > 0">
-      <mat-expansion-panel-header>
-        <mat-panel-title><h2>Usages</h2></mat-panel-title>
-      </mat-expansion-panel-header>
-    </mat-expansion-panel>
-
-    <mat-expansion-panel disabled *ngIf="usages==null">
-      <mat-expansion-panel-header>
-        <mat-panel-title></mat-panel-title>
-        <mat-panel-description>
-          Searching, please wait...
-          <mat-spinner diameter="20"></mat-spinner>
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-    </mat-expansion-panel>
-
-    <mat-expansion-panel *ngFor="let item of usages">
-      <mat-expansion-panel-header>
-        <mat-panel-title>{{item.iri}}</mat-panel-title>
-        <mat-panel-description>
-          {{item.name}}
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-      <mat-chip-list>
-        <mat-chip (click)="navigate(item.iri)" [style.background-color]="perspectives.ontology.color" class="mat-small-chip">Ontology</mat-chip>
-        <mat-chip *ngFor="let type of item.types" (click)="navigate(item.iri, type.iri)" [style.background-color]="getColor(type.iri)" class="mat-small-chip">{{type.name}}</mat-chip>
-      </mat-chip-list>
-    </mat-expansion-panel>
-
-  </mat-accordion>
+  </table>
 </div>
 <div mat-dialog-actions>
   <span class="spacer"></span>

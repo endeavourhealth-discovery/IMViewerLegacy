@@ -53,7 +53,6 @@
       <ng-template #classExpression let-item="item">
         <ng-container *ngIf="item.Class">
           <ng-container [ngTemplateOutlet]="conceptReference" [ngTemplateOutletContext]="{item: item.Class}"></ng-container>
-          (CLASS)
         </ng-container>
 
         <ng-container *ngIf="item.Intersection"[ngTemplateOutlet]="classExpressionList" [ngTemplateOutletContext]="{list : item.Intersection, join: 'and'}"></ng-container>
@@ -62,7 +61,6 @@
 
         <ng-container *ngIf="item.ObjectPropertyValue">
           <ng-container [ngTemplateOutlet]="conceptReference" [ngTemplateOutletContext]="{item: item.ObjectPropertyValue.Property}"></ng-container>
-          (OBJECT PROPERTY VALUE)
           <span> - <b>{{item.ObjectPropertyValue.Quantification}}</b> ({{item.ObjectPropertyValue.Min}}) - </span>
           <ng-container *ngIf="item.ObjectPropertyValue.ValueType" [ngTemplateOutlet]="conceptReference" [ngTemplateOutletContext]="{item: item.ObjectPropertyValue.ValueType}"></ng-container>
           <ng-container *ngIf="item.ObjectPropertyValue.Expression" [ngTemplateOutlet]="classExpression" [ngTemplateOutletContext]="{item: item.ObjectPropertyValue.Expression}"></ng-container>
@@ -70,7 +68,6 @@
 
         <ng-container *ngIf="item.DataPropertyValue">
           <ng-container [ngTemplateOutlet]="conceptReference" [ngTemplateOutletContext]="{item: item.DataPropertyValue.Property}"></ng-container>
-          (DATA PROPERTY VALUE)
           <span> - <b>{{item.DataPropertyValue.Quantification}}</b> ({{item.DataPropertyValue.Min}}) - </span>
           <ng-container *ngIf="item.DataPropertyValue.DataType" [ngTemplateOutlet]="conceptReference" [ngTemplateOutletContext]="{item: item.DataPropertyValue.DataType}"></ng-container>
         </ng-container>
@@ -84,7 +81,6 @@
       </ng-template>
 
       <ng-template #conceptReference let-item="item">
-<!--        {{item.iri}} | <b>{{item.name}}</b>-->
         <b>{{item.name}}</b>
       </ng-template>
 
