@@ -109,8 +109,6 @@ export class AppRoot implements OnInit, AfterViewInit {
   onSetTheme(theme) {
     this.document.documentElement.classList.remove(this.componentCssClass);
     this.document.documentElement.classList.add(theme);
-    // this.overlayContainer.getContainerElement().classList.remove(this.componentCssClass);
-    // this.overlayContainer.getContainerElement().classList.add(theme);
     this.componentCssClass = theme;
   }
 
@@ -153,7 +151,7 @@ export class AppRoot implements OnInit, AfterViewInit {
           for(let param in result) {
             helpContext = helpContext.replace('${' + param + '}', result[param]);
           }
-          window.open('https://wiki.discoverydataservice.org/index.php?title=Information_Model' + helpContext, 'Help');
+          window.open('https://wiki.discoverydataservice.org/index.php?title=Information_modelling_in_Discovery' + helpContext, 'Help');
         },
         (error) => this.log.error(error)
       );

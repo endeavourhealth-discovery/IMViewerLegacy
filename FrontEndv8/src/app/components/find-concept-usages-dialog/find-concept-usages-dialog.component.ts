@@ -5,6 +5,7 @@ import {forkJoin} from 'rxjs';
 import {Router} from '@angular/router';
 import {LoggerService} from '../../services/logger.service';
 import {Perspectives} from '../../services/perspective.service';
+import {ConceptReference} from '../../models/objectmodel/ConceptReference';
 
 @Component({
   selector: 'app-find-concept-usages-dialog',
@@ -13,7 +14,7 @@ import {Perspectives} from '../../services/perspective.service';
 })
 export class FindConceptUsagesDialogComponent implements OnInit {
 
-  static execute(dialog: MatDialog, concept) {
+  static execute(dialog: MatDialog, concept: ConceptReference) {
       const dialogRef = dialog.open(FindConceptUsagesDialogComponent, {
         width: '50%',
         data: { concept: concept }
@@ -22,6 +23,8 @@ export class FindConceptUsagesDialogComponent implements OnInit {
       return dialogRef.afterClosed();
   }
 
+  candidates = [':VSET_ValueSet', ':DiscoveryCommonDataModel', ':dataModelObjectProperty'];
+  types: ConceptReference[]
   usages: any[];
 
   constructor(
@@ -34,6 +37,11 @@ export class FindConceptUsagesDialogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.service.isOfType(this.data.concept.iri, this.candidates)
+      .subscribe(
+        (result) => this.types = result,
+        (error) => this.log.error(error)
+      );
     this.service.findUsages(this.data.concept.iri)
       .subscribe(
         (result) => this.addTypes(result),
@@ -42,7 +50,7 @@ export class FindConceptUsagesDialogComponent implements OnInit {
   }
 
   addTypes(items: any[]) {
-    let requests = items.map(i => this.service.isOfType(i.iri, [':VSET_ValueSet', ':DiscoveryCommonDataModel', ':dataModelObjectProperty']));
+    let requests = items.map(i => this.service.isOfType(i.iri, this.candidates));
     forkJoin(requests).subscribe(
       (result) => {
         for(let i = 0; i < result.length; i++) {

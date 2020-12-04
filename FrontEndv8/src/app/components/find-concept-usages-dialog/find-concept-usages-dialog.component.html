@@ -67,12 +67,23 @@
       </mat-expansion-panel-header>
       <mat-chip-list>
         <mat-chip (click)="navigate(data.concept.iri)" [style.background-color]="perspectives.ontology.color" class="mat-small-chip">Ontology</mat-chip>
+        <mat-chip *ngFor="let type of types" (click)="navigate(data.concept.iri, type.iri)" [style.background-color]="getColor(type.iri)" class="mat-small-chip">{{type.name}}</mat-chip>
       </mat-chip-list>
     </mat-expansion-panel>
 
-    <mat-expansion-panel disabled *ngIf="usages!=null && usages.length > 0">
+    <mat-expansion-panel disabled>
       <mat-expansion-panel-header>
         <mat-panel-title><h2>Usages</h2></mat-panel-title>
+      </mat-expansion-panel-header>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel disabled *ngIf="usages==null">
+      <mat-expansion-panel-header>
+        <mat-panel-title></mat-panel-title>
+        <mat-panel-description>
+          Searching, please wait...
+          <mat-spinner diameter="20"></mat-spinner>
+        </mat-panel-description>
       </mat-expansion-panel-header>
     </mat-expansion-panel>
 

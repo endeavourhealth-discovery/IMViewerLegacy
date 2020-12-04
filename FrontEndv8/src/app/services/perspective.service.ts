@@ -61,7 +61,7 @@ export class Perspectives  {
     "description": "Data model maps specify how data is transformed from a data model to a particular database.",
     "primary": {state: "dataMaps", name: "Explore"},
     "image": "maps.jpg",
-    "icon": "fa-tasks",
+    "icon": "fa-map-signs",
     "color": "blue",
     "root": "MAP_Map"
   };
