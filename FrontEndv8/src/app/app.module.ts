@@ -33,6 +33,8 @@ import {LoggerService} from './services/logger.service';
 import {Perspectives} from './services/perspective.service';
 import {MonacoEditorModule} from 'ngx-monaco-editor';
 import {monacoConfig} from './monaco';
+import {SecurityModule} from './security/security.module';
+import {CookieService} from 'ngx-cookie-service';
 
 let routes = [
   {path: '', redirectTo: '/mainPage', pathMatch: 'full'},
@@ -67,13 +69,15 @@ let routes = [
     MatSidenavModule,
     MatDividerModule,
     MatAutocompleteModule,
-    MonacoEditorModule.forRoot(monacoConfig)
+    MonacoEditorModule.forRoot(monacoConfig),
+    SecurityModule
   ],
   declarations: [
     AppRoot
   ],
   bootstrap: [AppRoot],
   providers: [
+    CookieService,
     Perspectives,
     { provide: AbstractSecurityProvider, useClass: MockSecurityService },
     LoggerService,

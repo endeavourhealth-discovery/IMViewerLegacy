@@ -2,9 +2,10 @@ import {AbstractSecurityProvider} from './abstract-security-provider';
 import {Observable} from 'rxjs';
 import {User} from './models/User';
 import {Project} from './models/Project';
-import {Router} from '@angular/router';
+import {Router, Routes} from '@angular/router';
 import {Injectable} from '@angular/core';
 import {MenuOption} from './models/MenuOption';
+import {RouteGuard} from './route-guard';
 
 @Injectable()
 export class MockSecurityService implements AbstractSecurityProvider {
@@ -29,6 +30,9 @@ export class MockSecurityService implements AbstractSecurityProvider {
   }
 
   secureRoutes() {
+      let routes : Routes = this.router.config;
+      routes = routes.map(r => { r.canActivate = [RouteGuard]; return r;});
+      this.router.resetConfig(routes);
   }
 
   secureMenuItems(menuItems: MenuOption[]) {

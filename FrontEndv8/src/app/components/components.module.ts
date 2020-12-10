@@ -36,6 +36,7 @@ import { LibraryComponentComponent } from './library-component/library-component
 import {MatMenuModule} from '@angular/material/menu';
 import {MatWrapperComponent} from './mat-wrapper/mat-wrapper.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {SnomedLicenseDialog} from './snomed-license-dialog/snomed-license-dialog.component';
 
 @NgModule({
     imports: [
@@ -78,7 +79,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     ConceptDefinitionComponent,
     DataModelNavigatorComponent,
     LibraryComponentComponent,
-    MatWrapperComponent
+    MatWrapperComponent,
+    SnomedLicenseDialog
   ],
   exports: [
     ConceptSearchComponent,
@@ -89,10 +91,12 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     ConceptDefinitionComponent,
     DataModelNavigatorComponent,
     LibraryComponentComponent,
-    MatWrapperComponent
+    MatWrapperComponent,
+    SnomedLicenseDialog
   ],
   entryComponents: [
-    FindConceptUsagesDialogComponent
+    FindConceptUsagesDialogComponent,
+    SnomedLicenseDialog
   ]
 })
 export class ComponentsModule { }
