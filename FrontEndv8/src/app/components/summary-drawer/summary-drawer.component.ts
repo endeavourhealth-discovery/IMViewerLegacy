@@ -7,6 +7,8 @@ import { Perspective } from '../../models/Perspective';
 import { LoggerService} from '../../services/logger.service';
 import { valueSetServiceProvider } from '../../services/valueset.service.provider';
 import { ValueSetService, ValueSet } from '../../services/valueset.service';
+import { dataModelServiceProvider } from '../../services/datamodel.service.provider';
+import { DataModelProperty, DataModelService } from '../../services/datamodel.service';
 import { PageEvent } from '@angular/material/paginator';
 
 interface ConceptSummaryProvider {
@@ -74,7 +76,6 @@ class ValueSetSummaryProvider implements ConceptSummaryProvider {
     set concept(concept: Concept) {
         this._concept = concept;
         this.valueSet = this.valueSetService.toValueSet(concept);
-
     }
 
     onPageChange(event: PageEvent): PageEvent {
@@ -85,11 +86,42 @@ class ValueSetSummaryProvider implements ConceptSummaryProvider {
     }
 }
 
+class DataModelSummaryProvider implements ConceptSummaryProvider {
+
+    dataModelProperties: DataModelProperty[];  
+    columns: string[];
+    
+    private _concept: Concept;
+    
+    static TEMPLATE_NAME:string = "dataModelSummaryTemplate";
+
+    constructor(private dataModelService: DataModelService) {
+        this.columns = ['name', 'type', 'cardinality'];
+    }
+    
+    canSummarise(concept: Concept): Observable<boolean> {
+        return this.dataModelService.isDataModel(concept);
+    }
+
+    get rootType(): string {
+        return this.dataModelService.dataModelIri;
+    }
+
+    get templateName(): string {
+        return DataModelSummaryProvider.TEMPLATE_NAME;
+    }
+
+    set concept(concept: Concept) {
+        this._concept = concept;
+        this.dataModelProperties = this.dataModelService.getDataModelProperties(concept);
+    }    
+}
+
 @Component({
     selector: 'summary-drawer',
     templateUrl: './summary-drawer.component.html',
     styleUrls: ['./summary-drawer.component.scss'],
-    providers: [ valueSetServiceProvider ]
+    providers: [ valueSetServiceProvider, dataModelServiceProvider ]
 })
 class SummaryDrawerComponent {
 
@@ -103,13 +135,17 @@ class SummaryDrawerComponent {
     constructor(private service: ConceptService, 
                 private perspectives: Perspectives, 
                 private log: LoggerService, 
-                private valueSetService: ValueSetService) {
+                private valueSetService: ValueSetService,
+                private dataModelService: DataModelService) {
         this.perspectivesMap = new Map();
 
-        const valueSetSummaryProvider: ValueSetSummaryProvider = new ValueSetSummaryProvider(this.valueSetService);
-        
         this.summaryProviders = new Map();
+        
+        const valueSetSummaryProvider: ValueSetSummaryProvider = new ValueSetSummaryProvider(this.valueSetService);
         this.summaryProviders.set(valueSetSummaryProvider.rootType, valueSetSummaryProvider);
+        
+        const dataModelSummaryProvider: DataModelSummaryProvider = new DataModelSummaryProvider(this.dataModelService);
+        this.summaryProviders.set(dataModelSummaryProvider.rootType, dataModelSummaryProvider);
         
         this.defaultSummaryProvider = new BasicSummaryProvider(perspectives.ontology.root); // TODO - is this the right IRI to use for concept?
 
@@ -120,7 +156,10 @@ class SummaryDrawerComponent {
     defaultSummaryTemplate:TemplateRef<any>;
     
     @ViewChild(ValueSetSummaryProvider.TEMPLATE_NAME, { static: true }) 
-    valueSetTemplate:TemplateRef<any>;
+    valueSetSummaryTemplate:TemplateRef<any>;
+
+    @ViewChild(DataModelSummaryProvider.TEMPLATE_NAME, { static: true }) 
+    dataModelSummaryTemplate:TemplateRef<any>;
 
     @Input()
     sidebar: boolean;
@@ -131,11 +170,11 @@ class SummaryDrawerComponent {
 
         this.getPerspective(this.concept).subscribe(
             perspective => { 
-                console.log("got perspective");
+
                 this.perspective = perspective;
 
                 this.getSummaryProvider(this.perspective.root).subscribe(
-                    summaryProvider => {console.log("got it ", summaryProvider.templateName); this.summaryProvider = summaryProvider }
+                    summaryProvider => this.summaryProvider = summaryProvider 
                 );
             }
         ); 
@@ -145,17 +184,8 @@ class SummaryDrawerComponent {
         return this._concept;
     }
 
-    // getSummaryTemplate(): Observable<string> {
-    //     let summaryTemplateObservable: Subject<string> = new Subject();
-    //     this.summaryProvider.subscribe(
-    //         summaryProvider => { console.log("got it ", summaryProvider.templateName); summaryTemplateObservable.next(summaryProvider.templateName) }
-    //     )
-        
-    //     return summaryTemplateObservable;
-    // }
-
     getSummaryProvider(perspectiveRootIri: string): Observable<ConceptSummaryProvider> {
-        console.log("getting summary provider");
+
         
         let summaryProviderObservable: ReplaySubject<ConceptSummaryProvider> = new ReplaySubject();
         let summaryProvider: ConceptSummaryProvider = this.defaultSummaryProvider;
@@ -167,6 +197,9 @@ class SummaryDrawerComponent {
                     if(canSummarise) {
                         summaryProvider = potentialSummaryProvider;    
                     }
+                    else {
+                        this.log.debug(`warning - concept summary provider for sub types of ${perspectiveRootIri} cannot summarise the concept ${this.concept.iri}.`);
+                    }
                     summaryProvider.concept = this.concept;
                     summaryProviderObservable.next(summaryProvider);
                 }
@@ -174,7 +207,6 @@ class SummaryDrawerComponent {
         }
         else {
             this.log.debug("warning - no concept summary provider registered against IRI " + perspectiveRootIri + ". Returning default provider.");
-            console.log("no match for ", this.perspective.root);
 
             summaryProvider.concept = this.concept;
             summaryProviderObservable.next(summaryProvider);     

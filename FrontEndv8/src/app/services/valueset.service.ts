@@ -33,9 +33,10 @@ export class ValueSetService {
     public isValueSet(concept: Concept): Observable<boolean> {
       let isValueSetObservable: Subject<boolean> = new Subject();
       
-      
-      this.conceptService.isOfType(concept.iri, [this.valueSetIri]).subscribe(
-        response => isValueSetObservable.next(response.includes(this.valueSetConceptReference))
+      this.conceptService.isA(concept.iri, this.valueSetIri).subscribe(
+        isValueSet => {
+            isValueSetObservable.next(isValueSet);
+        }
       );
 
       return isValueSetObservable;
