@@ -12,7 +12,7 @@
     <mat-icon matPrefix style="cursor: pointer">search</mat-icon>
     <input matInput placeholder="Search" id="searchInput" #searchInput [matAutocomplete]="auto" (focus)="searchInput.select()">
     <mat-spinner *ngIf="searchCall" matSuffix diameter="20"></mat-spinner>
-    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" panelWidth="auto">
       <mat-option *ngFor="let option of results" [value]="option.name" (onSelectionChange)="inspectConcept(option)">
         {{option.name}}
       </mat-option>
