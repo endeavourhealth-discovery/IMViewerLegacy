@@ -137,16 +137,10 @@ export class OntologyLibraryComponent implements OnInit {
   }
 
   validate(evnt) {
-    console.log('validate');
-    console.log(evnt);
-
     let ret = this.parse(evnt);
 
     const model = monaco.editor.getModels()[0];
     monaco.editor.setModelMarkers(model, DiscoveryLanguageId, ret.errors.map(e => this.toDiagnostics(e)))
-
-    console.log(ret.ast);
-    console.log(ret.errors);
   }
 
   parse(code: string): {ast:TodoExpressionsContext, errors: ITodoLangError[]} {
