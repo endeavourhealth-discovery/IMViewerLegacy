@@ -287,6 +287,21 @@ tr.mat-header-row {
 // **********************************************************************
 // * App specific styles
 // **********************************************************************
+.logger-info {
+  color: white !important;
+  background-color: #1976d2 !important;
+}
+
+.logger-success {
+  color: white !important;
+  background-color: #388e3c !important;
+}
+
+.logger-error {
+  color: white !important;
+  background-color: #d32f2f !important;
+}
+
 .spacer {
   flex: 1 1 auto;
 }

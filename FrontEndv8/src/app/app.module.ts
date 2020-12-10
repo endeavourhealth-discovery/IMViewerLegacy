@@ -31,6 +31,8 @@ import {ValueSetLibraryComponent} from './pages/value-sets/value-set-library/val
 import {DataModelOverviewLibraryComponent} from './pages/data-model/data-model-overview/data-model-overview-library/data-model-overview-library.component';
 import {LoggerService} from './services/logger.service';
 import {Perspectives} from './services/perspective.service';
+import {MonacoEditorModule} from 'ngx-monaco-editor';
+import {monacoConfig} from './monaco';
 
 let routes = [
   {path: '', redirectTo: '/mainPage', pathMatch: 'full'},
@@ -64,7 +66,8 @@ let routes = [
     MatInputModule,
     MatSidenavModule,
     MatDividerModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MonacoEditorModule.forRoot(monacoConfig)
   ],
   declarations: [
     AppRoot

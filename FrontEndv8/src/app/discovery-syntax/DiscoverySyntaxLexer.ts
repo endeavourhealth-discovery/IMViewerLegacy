@@ -1,0 +1,113 @@
+// Generated from ./src/app/discovery-syntax/DiscoverySyntax.g4 by ANTLR 4.6-SNAPSHOT
+
+
+import { ATN } from 'antlr4ts/atn/ATN';
+import { ATNDeserializer } from 'antlr4ts/atn/ATNDeserializer';
+import { CharStream } from 'antlr4ts/CharStream';
+import { Lexer } from 'antlr4ts/Lexer';
+import { LexerATNSimulator } from 'antlr4ts/atn/LexerATNSimulator';
+import { NotNull } from 'antlr4ts/Decorators';
+import { Override } from 'antlr4ts/Decorators';
+import { RuleContext } from 'antlr4ts/RuleContext';
+import { Vocabulary } from 'antlr4ts/Vocabulary';
+import { VocabularyImpl } from 'antlr4ts/VocabularyImpl';
+
+import * as Utils from 'antlr4ts/misc/Utils';
+
+
+export class DiscoverySyntaxLexer extends Lexer {
+	public static readonly SUBCLASSOF=1;
+	public static readonly IRI=2;
+	public static readonly ADD=3;
+	public static readonly TODO=4;
+	public static readonly COMPLETE=5;
+	public static readonly STRING=6;
+	public static readonly EOL=7;
+	public static readonly WS=8;
+	public static readonly modeNames: string[] = [
+		"DEFAULT_MODE"
+	];
+
+	public static readonly ruleNames: string[] = [
+		"SUBCLASSOF", "IRI", "ADD", "TODO", "COMPLETE", "STRING", "EOL", "WS"
+	];
+
+	private static readonly _LITERAL_NAMES: (string | undefined)[] = [
+		undefined, "'SubClassOf'", undefined, "'ADD'", "'TODO'", "'COMPLETE'"
+	];
+	private static readonly _SYMBOLIC_NAMES: (string | undefined)[] = [
+		undefined, "SUBCLASSOF", "IRI", "ADD", "TODO", "COMPLETE", "STRING", "EOL", 
+		"WS"
+	];
+	public static readonly VOCABULARY: Vocabulary = new VocabularyImpl(DiscoverySyntaxLexer._LITERAL_NAMES, DiscoverySyntaxLexer._SYMBOLIC_NAMES, []);
+
+	@Override
+	@NotNull
+	public get vocabulary(): Vocabulary {
+		return DiscoverySyntaxLexer.VOCABULARY;
+	}
+
+
+	constructor(input: CharStream) {
+		super(input);
+		this._interp = new LexerATNSimulator(DiscoverySyntaxLexer._ATN, this);
+	}
+
+	@Override
+	public get grammarFileName(): string { return "DiscoverySyntax.g4"; }
+
+	@Override
+	public get ruleNames(): string[] { return DiscoverySyntaxLexer.ruleNames; }
+
+	@Override
+	public get serializedATN(): string { return DiscoverySyntaxLexer._serializedATN; }
+
+	@Override
+	public get modeNames(): string[] { return DiscoverySyntaxLexer.modeNames; }
+
+	public static readonly _serializedATN: string =
+		"\x03\uAF6F\u8320\u479D\uB75C\u4880\u1605\u191C\uAB37\x02\nR\b\x01\x04"+
+		"\x02\t\x02\x04\x03\t\x03\x04\x04\t\x04\x04\x05\t\x05\x04\x06\t\x06\x04"+
+		"\x07\t\x07\x04\b\t\b\x04\t\t\t\x03\x02\x03\x02\x03\x02\x03\x02\x03\x02"+
+		"\x03\x02\x03\x02\x03\x02\x03\x02\x03\x02\x03\x02\x03\x03\x03\x03\x07\x03"+
+		"!\n\x03\f\x03\x0E\x03$\v\x03\x03\x03\x03\x03\x07\x03(\n\x03\f\x03\x0E"+
+		"\x03+\v\x03\x03\x03\x03\x03\x03\x04\x03\x04\x03\x04\x03\x04\x03\x05\x03"+
+		"\x05\x03\x05\x03\x05\x03\x05\x03\x06\x03\x06\x03\x06\x03\x06\x03\x06\x03"+
+		"\x06\x03\x06\x03\x06\x03\x06\x03\x07\x03\x07\x07\x07C\n\x07\f\x07\x0E"+
+		"\x07F\v\x07\x03\x07\x03\x07\x03\b\x06\bK\n\b\r\b\x0E\bL\x03\t\x03\t\x03"+
+		"\t\x03\t\x04\")\x02\x02\n\x03\x02\x03\x05\x02\x04\x07\x02\x05\t\x02\x06"+
+		"\v\x02\x07\r\x02\b\x0F\x02\t\x11\x02\n\x03\x02\x06\x03\x02<<\x03\x02$"+
+		"$\x04\x02\f\f\x0F\x0F\x04\x02\v\v\"\"U\x02\x03\x03\x02\x02\x02\x02\x05"+
+		"\x03\x02\x02\x02\x02\x07\x03\x02\x02\x02\x02\t\x03\x02\x02\x02\x02\v\x03"+
+		"\x02\x02\x02\x02\r\x03\x02\x02\x02\x02\x0F\x03\x02\x02\x02\x02\x11\x03"+
+		"\x02\x02\x02\x03\x13\x03\x02\x02\x02\x05\x1E\x03\x02\x02\x02\x07.\x03"+
+		"\x02\x02\x02\t2\x03\x02\x02\x02\v7\x03\x02\x02\x02\r@\x03\x02\x02\x02"+
+		"\x0FJ\x03\x02\x02\x02\x11N\x03\x02\x02\x02\x13\x14\x07U\x02\x02\x14\x15"+
+		"\x07w\x02\x02\x15\x16\x07d\x02\x02\x16\x17\x07E\x02\x02\x17\x18\x07n\x02"+
+		"\x02\x18\x19\x07c\x02\x02\x19\x1A\x07u\x02\x02\x1A\x1B\x07u\x02\x02\x1B"+
+		"\x1C\x07Q\x02\x02\x1C\x1D\x07h\x02\x02\x1D\x04\x03\x02\x02\x02\x1E\"\x07"+
+		"$\x02\x02\x1F!\n\x02\x02\x02 \x1F\x03\x02\x02\x02!$\x03\x02\x02\x02\""+
+		"#\x03\x02\x02\x02\" \x03\x02\x02\x02#%\x03\x02\x02\x02$\"\x03\x02\x02"+
+		"\x02%)\x07<\x02\x02&(\n\x02\x02\x02\'&\x03\x02\x02\x02(+\x03\x02\x02\x02"+
+		")*\x03\x02\x02\x02)\'\x03\x02\x02\x02*,\x03\x02\x02\x02+)\x03\x02\x02"+
+		"\x02,-\x07$\x02\x02-\x06\x03\x02\x02\x02./\x07C\x02\x02/0\x07F\x02\x02"+
+		"01\x07F\x02\x021\b\x03\x02\x02\x0223\x07V\x02\x0234\x07Q\x02\x0245\x07"+
+		"F\x02\x0256\x07Q\x02\x026\n\x03\x02\x02\x0278\x07E\x02\x0289\x07Q\x02"+
+		"\x029:\x07O\x02\x02:;\x07R\x02\x02;<\x07N\x02\x02<=\x07G\x02\x02=>\x07"+
+		"V\x02\x02>?\x07G\x02\x02?\f\x03\x02\x02\x02@D\x07$\x02\x02AC\n\x03\x02"+
+		"\x02BA\x03\x02\x02\x02CF\x03\x02\x02\x02DB\x03\x02\x02\x02DE\x03\x02\x02"+
+		"\x02EG\x03\x02\x02\x02FD\x03\x02\x02\x02GH\x07$\x02\x02H\x0E\x03\x02\x02"+
+		"\x02IK\t\x04\x02\x02JI\x03\x02\x02\x02KL\x03\x02\x02\x02LJ\x03\x02\x02"+
+		"\x02LM\x03\x02\x02\x02M\x10\x03\x02\x02\x02NO\t\x05\x02\x02OP\x03\x02"+
+		"\x02\x02PQ\b\t\x02\x02Q\x12\x03\x02\x02\x02\x07\x02\")DL\x03\b\x02\x02";
+	public static __ATN: ATN;
+	public static get _ATN(): ATN {
+		if (!DiscoverySyntaxLexer.__ATN) {
+			DiscoverySyntaxLexer.__ATN = new ATNDeserializer().deserialize(Utils.toCharArray(DiscoverySyntaxLexer._serializedATN));
+		}
+
+		return DiscoverySyntaxLexer.__ATN;
+	}
+
+}
+

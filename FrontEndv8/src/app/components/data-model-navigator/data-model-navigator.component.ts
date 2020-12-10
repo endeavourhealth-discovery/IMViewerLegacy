@@ -1,10 +1,10 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
 import * as dagre from 'dagre';
 import * as svgPanZoom from 'svg-pan-zoom';
-import { Subscription, zip } from 'rxjs';
-import { DataModelNavigatorService } from './data-model-navigator.service';
-import { NgEventBus } from 'ng-event-bus';
+import {Subscription, zip} from 'rxjs';
+import {DataModelNavigatorService} from './data-model-navigator.service';
+import {NgEventBus} from 'ng-event-bus';
 import {Concept} from '../../models/objectmodel/Concept';
 import {ConceptReference} from '../../models/objectmodel/ConceptReference';
 import {ConceptReferenceNode} from '../../models/objectmodel/ConceptReferenceNode';
@@ -24,7 +24,8 @@ export class DataModelNavigatorComponent implements OnInit {
     this.iri = iri;
     this.refresh();
   }
-  @ViewChild('svg', { static: true }) targetCanvas: ElementRef;
+
+  @ViewChild('svg', {static: true}) targetCanvas: ElementRef;
 
   pad = 16;
 
@@ -33,9 +34,11 @@ export class DataModelNavigatorComponent implements OnInit {
   children: Array<ConceptReferenceNode>;
   obs: Subscription = null;
 
-  constructor(private service: DataModelNavigatorService, private log: LoggerService, private eventBus: NgEventBus) {}
+  constructor(private service: DataModelNavigatorService, private log: LoggerService, private eventBus: NgEventBus) {
+  }
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
 
   refresh() {
     if (this.obs) {
@@ -43,7 +46,6 @@ export class DataModelNavigatorComponent implements OnInit {
       this.obs = null;
     }
     this.concept = this.parents = this.children = null;
-    svgPanZoom('#panZoom').reset();
     this.targetCanvas.nativeElement.innerHTML = '<svg id="panZoom" width="100%" height="100%"></svg>';
 
     this.obs = zip(this.service.getConcept(this.iri), this.service.getConceptParents(this.iri), this.service.getConceptChildren(this.iri)).subscribe(
@@ -163,7 +165,7 @@ export class DataModelNavigatorComponent implements OnInit {
 
         const w = t.node().getComputedTextLength() + this.pad * 2;
         r.attr('width', w);
-        graph.setNode(rel.iri, { label: rel.name, width: w, height: 25 });
+        graph.setNode(rel.iri, {label: rel.name, width: w, height: 25});
 
         map.set(rel.iri, s);
       }
@@ -180,10 +182,10 @@ export class DataModelNavigatorComponent implements OnInit {
         l.attr('width', lw);
 
         if (reverse) {
-          graph.setEdge(rel.iri, this.concept.iri, { label: relName, width: lw, height: 12 });
+          graph.setEdge(rel.iri, this.concept.iri, {label: relName, width: lw, height: 12});
           map.set(relId, l);
         } else {
-          graph.setEdge(this.concept.iri, rel.iri, { label: relName, width: lw, height: 12 });
+          graph.setEdge(this.concept.iri, rel.iri, {label: relName, width: lw, height: 12});
           map.set(relId, l);
         }
       }
@@ -212,7 +214,7 @@ export class DataModelNavigatorComponent implements OnInit {
 
         const w = t.node().getComputedTextLength() + this.pad * 2;
         r.attr('width', w);
-        graph.setNode(rel.iri, { label: rel.name, width: w, height: 25 });
+        graph.setNode(rel.iri, {label: rel.name, width: w, height: 25});
 
         map.set(rel.iri, s);
       }
@@ -229,10 +231,10 @@ export class DataModelNavigatorComponent implements OnInit {
         l.attr('width', lw);
 
         if (reverse) {
-          graph.setEdge(rel.iri, this.concept.iri, { label: relName, width: lw, height: 12 });
+          graph.setEdge(rel.iri, this.concept.iri, {label: relName, width: lw, height: 12});
           map.set(relId, l);
         } else {
-          graph.setEdge(this.concept.iri, rel.iri, { label: relName, width: lw, height: 12 });
+          graph.setEdge(this.concept.iri, rel.iri, {label: relName, width: lw, height: 12});
           map.set(relId, l);
         }
       }
@@ -260,50 +262,9 @@ export class DataModelNavigatorComponent implements OnInit {
     }
     for (let intersection of this.concept.SubClassOf[0].Intersection) {
       if (intersection.ObjectPropertyValue != null) {
-        let l = this.pad;
-
-        const p = s
-          .append('text')
-          .text(intersection.ObjectPropertyValue.Property.name + ': ')
-          .attr('font-size', 12)
-          .attr('x', l)
-          .attr('y', 38 + 20 * i)
-          .attr('class', 'clickable')
-          .on('click', () => this.nodeClick(intersection.ObjectPropertyValue.Property.iri))
-          .on('mouseenter', () => this.nodeHover(intersection.ObjectPropertyValue.Property.iri))
-          .on('mouseleave', () => this.nodeHover(null));
-
-        // if (property.level >= 0) {
-        //   p.attr('fill', 'grey');
-        // }
-
-        l += p.node().getComputedTextLength() + 4;
-
-        // Type
-        const pt = s
-          .append('text')
-          .text(intersection.ObjectPropertyValue.ValueType.name + this.cardText(intersection.ObjectPropertyValue.Min, intersection.ObjectPropertyValue.Max))
-          .attr('font-size', 12)
-          .attr('x', l)
-          .attr('y', 38 + 20 * i)
-          .attr('class', 'clickable')
-          .on('click', () => this.nodeClick(intersection.ObjectPropertyValue.ValueType.iri))
-          .on('mouseenter', () => this.nodeHover(intersection.ObjectPropertyValue.ValueType.iri))
-          .on('mouseleave', () => this.nodeHover(null));
-
-        // if (property.level >= 0) {
-        //   pt.attr('fill', 'grey');
-        // }
-
-        l += pt.node().getComputedTextLength() + 4;
-
-        l += this.pad;
-
-        if (l > w) {
-          w = l;
-        }
-
-        i++;
+        const result = this.addExpression(intersection, s, i, w);
+        i = result.i;
+        w = result.w;
       }
     }
 
@@ -315,8 +276,64 @@ export class DataModelNavigatorComponent implements OnInit {
 
     r.attr('width', w).attr('height', 25 + 20 * i);
 
-    graph.setNode(this.concept.iri, { label: this.concept.name, width: w, height: 25 + 20 * i });
+    graph.setNode(this.concept.iri, {label: this.concept.name, width: w, height: 25 + 20 * i});
     map.set(this.concept.iri, s);
+  }
+
+  private addExpression(expression, s, i: number, w: number) {
+    if (expression.ObjectPropertyValue.Property.iri === ':hasCoreProperties') {
+      for (let intersection of expression.ObjectPropertyValue.Expression.Intersection) {
+        if (intersection.ObjectPropertyValue != null) {
+          const result = this.addExpression(intersection, s, i, w);
+          i = result.i;
+          w = result.w;
+        }
+      }
+    } else {
+
+      let l = this.pad;
+
+      const p = s
+        .append('text')
+        .text(expression.ObjectPropertyValue.Property.name + ': ')
+        .attr('font-size', 12)
+        .attr('x', l)
+        .attr('y', 38 + 20 * i)
+        .attr('class', 'clickable')
+        .on('click', () => this.nodeClick(expression.ObjectPropertyValue.Property.iri))
+        .on('mouseenter', () => this.nodeHover(expression.ObjectPropertyValue.Property.iri))
+        .on('mouseleave', () => this.nodeHover(null));
+
+      // if (property.level >= 0) {
+      //   p.attr('fill', 'grey');
+      // }
+
+      l += p.node().getComputedTextLength() + 4;
+
+      // Type
+      if (expression.ObjectPropertyValue.Property.iri !== ':hasCoreProperties') {
+        const pt = s
+          .append('text')
+          .text(expression.ObjectPropertyValue.ValueType.name + this.cardText(expression.ObjectPropertyValue.Min, expression.ObjectPropertyValue.Max))
+          .attr('font-size', 12)
+          .attr('x', l)
+          .attr('y', 38 + 20 * i)
+          .attr('class', 'clickable')
+          .on('click', () => this.nodeClick(expression.ObjectPropertyValue.ValueType.iri))
+          .on('mouseenter', () => this.nodeHover(expression.ObjectPropertyValue.ValueType.iri))
+          .on('mouseleave', () => this.nodeHover(null));
+
+        l += pt.node().getComputedTextLength() + 4;
+      }
+
+      l += this.pad;
+
+      if (l > w) {
+        w = l;
+      }
+      i++;
+    }
+    return {i, w};
   }
 
   cardText(min: number, max: number): string {

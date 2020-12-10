@@ -21,6 +21,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {OntologyLibraryComponent} from './ontology-library/ontology-library.component';
 import {MatGridListModule} from '@angular/material/grid-list';
+import {MonacoEditorModule} from 'ngx-monaco-editor';
 
 @NgModule({
     imports: [
@@ -43,7 +44,8 @@ import {MatGridListModule} from '@angular/material/grid-list';
         MatListModule,
         MatSidenavModule,
         NgJsonEditorModule,
-        MatGridListModule
+        MatGridListModule,
+        MonacoEditorModule
     ],
   declarations: [
     OntologyLibraryComponent,

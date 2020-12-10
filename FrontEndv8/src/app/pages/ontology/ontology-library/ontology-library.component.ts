@@ -2,11 +2,17 @@ import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferen
 import { ConceptService } from '../../../services/concept.service';
 import { Concept } from '../../../models/objectmodel/Concept';
 import { NgEventBus } from 'ng-event-bus';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { JsonEditorOptions } from 'ang-jsoneditor';
 import {LoggerService} from '../../../services/logger.service';
 import {Perspectives} from '../../../services/perspective.service';
+import {Subject} from 'rxjs';
+import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import {ANTLRInputStream, CommonTokenStream} from 'antlr4ts';
+import {DiscoverySyntaxLexer} from '../../../discovery-syntax/DiscoverySyntaxLexer';
+import {DiscoverySyntaxParser, TodoExpressionsContext} from '../../../discovery-syntax/DiscoverySyntaxParser';
+import TodoLangErrorListener, {ITodoLangError} from '../../../discovery-syntax/DiscoveryErrorListener';
+import {DiscoveryLanguageId} from '../../../discovery-syntax/DiscoveryLanguage';
 
 @Component({
   selector: 'app-ontology-library',
@@ -23,13 +29,15 @@ export class OntologyLibraryComponent implements OnInit {
   relationships = ['sn:116680003'];
   hoveredConcept: Concept = new Concept();
   definition = null;
+  definitionText = '';
+  definitionChanged: Subject<string> = new Subject<string>();
   conceptPropertyObjects = [];
 
   history = [];
   timer: any;
   sidebar = false;
-  editorOptions = new JsonEditorOptions();
-
+  editorOptions = {theme: 'vs-dark', language: 'DiscoverySyntax'};
+  parseError = null;
 
   constructor(private service: ConceptService,
               public perspectives: Perspectives,
@@ -38,14 +46,20 @@ export class OntologyLibraryComponent implements OnInit {
               private log: LoggerService,
               private eventBus: NgEventBus) {
     this.routeEvent(this.router);
-    this.editorOptions.modes = ['code', 'text', 'tree', 'view'];
-    this.editorOptions.mode = 'code';
-    this.editorOptions.mainMenuBar = false;
-    this.editorOptions.expandAll = true;
 
     this.eventBus.on('app:conceptHover').subscribe((iri: string) => {
       this.itemHover(iri);
     });
+
+    this.definitionChanged
+      .pipe(
+        debounceTime(300), // wait 300ms after the last event before emitting last event
+        distinctUntilChanged() // only emit if value is different from previous value
+      )
+      .subscribe(
+        (evnt) => this.validate(evnt),
+        error => (error) => this.log.error(error)
+        );
   }
 
   routeEvent(router: Router) {
@@ -120,5 +134,40 @@ export class OntologyLibraryComponent implements OnInit {
 
   hasResults(displayed: boolean) {
     this.searchSize = displayed ? 256 : 72;
+  }
+
+  validate(evnt) {
+    console.log('validate');
+    console.log(evnt);
+
+    let ret = this.parse(evnt);
+
+    const model = monaco.editor.getModels()[0];
+    monaco.editor.setModelMarkers(model, DiscoveryLanguageId, ret.errors.map(e => this.toDiagnostics(e)))
+
+    console.log(ret.ast);
+    console.log(ret.errors);
+  }
+
+  parse(code: string): {ast:TodoExpressionsContext, errors: ITodoLangError[]} {
+    const inputStream = new ANTLRInputStream(code);
+    const lexer = new DiscoverySyntaxLexer(inputStream);
+    lexer.removeErrorListeners()
+    const todoLangErrorsListner = new TodoLangErrorListener();
+    lexer.addErrorListener(todoLangErrorsListner);
+    const tokenStream = new CommonTokenStream(lexer);
+    const parser = new DiscoverySyntaxParser(tokenStream);
+    parser.removeErrorListeners();
+    parser.addErrorListener(todoLangErrorsListner);
+    const ast =  parser.todoExpressions();
+    const errors: ITodoLangError[]  = todoLangErrorsListner.getErrors();
+    return {ast, errors};
+  }
+
+  toDiagnostics(error: ITodoLangError): monaco.editor.IMarkerData {
+    return {
+      ...error,
+      severity: monaco.MarkerSeverity.Error,
+    };
   }
 }
