@@ -178,7 +178,7 @@ export class ConceptHierarchyViewComponent implements OnInit {
 
   private addChildrenToParentNode(parentNode: ConceptNode, conceptChildren: ConceptReference[]) {
     if (conceptChildren != null && conceptChildren.length > 0) {
-      parentNode.children.concat(conceptChildren.map<ConceptNode>(child => {
+      parentNode.children = (conceptChildren.map<ConceptNode>(child => {
           return {
             name: child.name,
             iri: child.iri,
