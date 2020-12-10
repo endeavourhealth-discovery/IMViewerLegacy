@@ -31,6 +31,7 @@ import {ValueSetLibraryComponent} from './pages/value-sets/value-set-library/val
 import {DataModelOverviewLibraryComponent} from './pages/data-model/data-model-overview/data-model-overview-library/data-model-overview-library.component';
 import {LoggerService} from './services/logger.service';
 import {Perspectives} from './services/perspective.service';
+import {ValueSetService} from './services/valueset.service';
 
 let routes = [
   {path: '', redirectTo: '/mainPage', pathMatch: 'full'},
@@ -75,6 +76,7 @@ let routes = [
     { provide: AbstractSecurityProvider, useClass: MockSecurityService },
     LoggerService,
     NgEventBus,
+    ValueSetService,
   ]
 })
 export class AppModule  {

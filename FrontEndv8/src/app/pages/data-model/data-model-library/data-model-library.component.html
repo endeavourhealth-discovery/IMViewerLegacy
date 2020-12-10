@@ -69,12 +69,13 @@
     <mat-drawer-container class="example-container" hasBackdrop="true" style="height: calc(100%);overflow:hidden;">
 
       <!-- SideBar -->
+      <summary-drawer [concept]="hoveredConcept" [sidebar]="sidebar"></summary-drawer>
+      <!--
       <mat-drawer #drawer class="example-sidenav" mode="over" position="end" [(opened)]="sidebar"
         style="width: 40%;overflow:hidden;">
 
         <mat-card *ngIf="hoveredConcept != null && hoveredPerspective != null">
 
-          <!-- Header -->
           <app-card-header [title]="hoveredPerspective.caption + ' - ' + hoveredConcept.name" [subtitle]=""
             [icon]="hoveredPerspective.icon" [color]="hoveredPerspective.color" style="height: 64px;"
             [showActions]="true">
@@ -87,6 +88,7 @@
           </mat-card-content>
         </mat-card>
       </mat-drawer>
+      -->
 
       <!-- Dashboard content-->
       <mat-tab-group style="height: 100%;" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">

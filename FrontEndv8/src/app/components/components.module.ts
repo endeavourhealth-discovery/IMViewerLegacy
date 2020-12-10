@@ -36,6 +36,8 @@ import { LibraryComponentComponent } from './library-component/library-component
 import {MatMenuModule} from '@angular/material/menu';
 import {MatWrapperComponent} from './mat-wrapper/mat-wrapper.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { SummaryDrawerComponent } from './summary-drawer/summary-drawer.component';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 @NgModule({
     imports: [
@@ -64,7 +66,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
         MatSidenavModule,
         MatDialogModule,
         MatMenuModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatPaginatorModule
     ],
   declarations: [
     ConceptSearchComponent,
@@ -78,7 +81,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     ConceptDefinitionComponent,
     DataModelNavigatorComponent,
     LibraryComponentComponent,
-    MatWrapperComponent
+    MatWrapperComponent,
+    SummaryDrawerComponent
   ],
   exports: [
     ConceptSearchComponent,
@@ -89,7 +93,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     ConceptDefinitionComponent,
     DataModelNavigatorComponent,
     LibraryComponentComponent,
-    MatWrapperComponent
+    MatWrapperComponent,
+    SummaryDrawerComponent
   ],
   entryComponents: [
     FindConceptUsagesDialogComponent

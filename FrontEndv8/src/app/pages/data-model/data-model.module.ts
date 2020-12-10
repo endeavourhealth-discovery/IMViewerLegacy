@@ -56,7 +56,7 @@ import {MatMenuModule} from '@angular/material/menu';
   ],
   declarations: [
     DataModelLibraryComponent,
-    DataModelDialogComponent,
+    DataModelDialogComponent
   ],
   entryComponents: [
     DataModelDialogComponent
