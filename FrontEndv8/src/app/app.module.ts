@@ -35,6 +35,13 @@ import {MonacoEditorModule} from 'ngx-monaco-editor';
 import {monacoConfig} from './monaco';
 import {SecurityModule} from './security/security.module';
 import {CookieService} from 'ngx-cookie-service';
+import { SearchComponent } from './pages/search/search/search.component';
+import {MatCardModule} from '@angular/material/card';
+import {ComponentsModule} from './components/components.module';
+import {FormsModule} from '@angular/forms';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatListModule} from '@angular/material/list';
+import {MatSelectModule} from '@angular/material/select';
 
 let routes = [
   {path: '', redirectTo: '/mainPage', pathMatch: 'full'},
@@ -43,6 +50,7 @@ let routes = [
   {path: 'dataModel', component: DataModelLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#Data_models'}},
   {path: 'valueSets', component: ValueSetLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#Value_sets_or_concept_sets_or_reference_sets'}},
   {path: 'dataModelOverview', component: DataModelOverviewLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#Data_models'}},
+  {path: 'search', component: SearchComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#Search'}},
 ];
 
 @NgModule({
@@ -70,10 +78,17 @@ let routes = [
     MatDividerModule,
     MatAutocompleteModule,
     MonacoEditorModule.forRoot(monacoConfig),
-    SecurityModule
+    SecurityModule,
+    MatCardModule,
+    ComponentsModule,
+    FormsModule,
+    MatSlideToggleModule,
+    MatListModule,
+    MatSelectModule
   ],
   declarations: [
-    AppRoot
+    AppRoot,
+    SearchComponent
   ],
   bootstrap: [AppRoot],
   providers: [

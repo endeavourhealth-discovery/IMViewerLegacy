@@ -7,17 +7,18 @@
   <span class="spacer"></span>
 
   <!-- ********** CENTER ********** -->
-  <mat-form-field appearance="outline" style="width: 30%">
-    <mat-label>Search Information Model</mat-label>
-    <mat-icon matPrefix style="cursor: pointer">search</mat-icon>
-    <input matInput placeholder="Search" id="searchInput" #searchInput [matAutocomplete]="auto" (focus)="searchInput.select()">
+  <mat-form-field appearance="outline" class="global-search">
+    <mat-label>Search</mat-label>
+    <mat-icon matPrefix style="cursor: pointer" (click)="advancedSearch(searchInput.value)">search</mat-icon>
+    <input matInput placeholder="Search" id="searchInput" #searchInput [matAutocomplete]="auto" (focus)="searchInput.select()" (keyup.enter)="advancedSearch($event.target.value)">
     <mat-spinner *ngIf="searchCall" matSuffix diameter="20"></mat-spinner>
-    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" panelWidth="auto">
-      <mat-option *ngFor="let option of results" [value]="option.name" (onSelectionChange)="inspectConcept(option)">
+    <mat-autocomplete #auto="matAutocomplete" panelWidth="auto" [displayWith]="displayFn" (optionSelected)="inspectConcept($event.option.value)">
+      <mat-option *ngFor="let option of results" [value]="option">
         {{option.name}}
       </mat-option>
     </mat-autocomplete>
   </mat-form-field>
+
   <span class="spacer"></span>
 
   <!-- ********** RIGHT ********** -->
@@ -44,13 +45,12 @@
   <mat-menu #themeMenu="matMenu">
     <button mat-menu-item (click)="onSetTheme('default-theme')">Default</button>
     <button mat-menu-item (click)="onSetTheme('dark-theme')">Dark</button>
-    <button mat-menu-item (click)="onSetTheme('teal-theme')">Teal</button>
+    <button mat-menu-item (click)="onSetTheme('teal-theme')">Colourful</button>
     <button mat-menu-item (click)="onSetTheme('xmas-theme')">XMas</button>
   </mat-menu>
   <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="User menu">
     <img class="avatar" [src]="(user?.avatar == null) ? 'assets/avatar.png' : user?.avatar">
   </button>
-
 </mat-toolbar>
 
 <mat-sidenav-container>

@@ -13,9 +13,12 @@
       </td>
     </tr>
 
-    <ng-container *ngIf="usages!=null && usages.length > 0">
+    <ng-container *ngIf="usages==null || usages.length > 0">
       <tr class="mat-header-row">
         <th class="mat-header-cell" colspan="2"><h2>Usages</h2></th>
+      </tr>
+      <tr class="mat-header-row" *ngIf="usages==null">
+        <th class="mat-header-cell" colspan="2" style="overflow-y: hidden"><mat-spinner style="margin: 0 auto" >Test</mat-spinner></th>
       </tr>
       <tr class="mat-row" *ngFor="let item of usages">
         <td class="mat-cell">{{item.name}}</td>

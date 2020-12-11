@@ -13,7 +13,7 @@ export class Perspectives  {
     "subtitle": "Complete conceptual definitions",
     "description": "The semantic ontology is the set of concepts used in all parts of the information model, from clinical concepts through to data structure concepts",
     "primary": {state: "ontology", name: "Explore"},
-    "image": "concepts.jpg",
+    "image": "ontology.jpg",
     "icon": "fa-lightbulb",
     "color": "orange",
     "root": ":SemanticConcept"
@@ -27,9 +27,9 @@ export class Perspectives  {
     "additionalStates": [
       {state: "dataModelOverview", name: "Overview"}
     ],
-    "image": "hexes.jpg",
+    "image": "datamodels.jpg",
     "icon": "fa-sitemap",
-    "color": "green",
+    "color": "limegreen",
     "root": ":DiscoveryCommonDataModel"
   };
 
@@ -38,7 +38,7 @@ export class Perspectives  {
     "subtitle": "Value set and member explorer",
     "description": "Business purpose specific collections of concepts from the ontology used in the data model or in query and contain concepts as defined in the ontology, using the ontology language, including advanced concept classes",
     "primary": {state: "valueSets", name: "Explore"},
-    "image": "circles.jpg",
+    "image": "valuesets.jpg",
     "icon": "fa-tasks",
     "color": "brown",
     "root": ":VSET_ValueSet"
@@ -49,7 +49,7 @@ export class Perspectives  {
     "subtitle": "Data set definition explorer",
     "description": "Data set definitions apply rules and filters to a data model in order to specify the nature of the entries and their content required in a purpose specific data set.",
     "primary": {state: "dataSets", name: "Explore"},
-    "image": "nodes.jpg",
+    "image": "datasets.jpg",
     "icon": "fa-chart-network",
     "color": "purple",
     "root": ":DSET_DataSet"
@@ -62,8 +62,19 @@ export class Perspectives  {
     "primary": {state: "dataMaps", name: "Explore"},
     "image": "maps.jpg",
     "icon": "fa-map-signs",
-    "color": "blue",
-    "root": "MAP_Map"
+    "color": "DarkTurquoise",
+    "root": ":MAP_Map"
+  };
+
+  search: Perspective = {
+    "caption": "Advanced Search",
+    "subtitle": "Advanced search of all concepts",
+    "description": "Allows advanced searching of all concepts, with additional filters such as legacy and code scheme",
+    "primary": {state: "search", name: "Search"},
+    "image": "search.jpg",
+    "icon": "fa-search",
+    "color": "darkorchid",
+    "root": null
   };
 
   perspectives: Perspective[] = [
@@ -72,5 +83,6 @@ export class Perspectives  {
     this.valueSets,
     this.dataSets,
     this.maps,
+    this.search,
   ];
 }

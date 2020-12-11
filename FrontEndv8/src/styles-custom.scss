@@ -3,13 +3,38 @@
 // **********************************************************************
 body {
   margin: 0;
-  overflow-x: hidden;
+  overflow: hidden;
   height: 100%
 }
 
 // **********************************************************************
 // * Themes
 // **********************************************************************
+
+.perspective_img_0 {
+  content: url('assets/gry-ontology.jpg');
+}
+
+.perspective_img_1 {
+  content: url('assets/gry-datamodels.jpg');
+}
+
+.perspective_img_2 {
+  content: url('assets/gry-valuesets.jpg');
+}
+
+.perspective_img_3 {
+  content: url('assets/gry-datasets.jpg');
+}
+
+.perspective_img_4 {
+  content: url('assets/gry-maps.jpg');
+}
+
+.perspective_img_5 {
+  content: url('assets/gry-search.jpg');
+}
+
 // Dark theme
 $dark-primary: mat-palette($mat-blue-grey);
 $dark-accent:  mat-palette($mat-amber, A200, A100, A400);
@@ -30,6 +55,30 @@ $teal-theme: mat-light-theme($teal-primary, $teal-accent, $teal-warn);
 
 .teal-theme {
   @include angular-material-theme($teal-theme);
+
+  .perspective_img_0 {
+    content: url('assets/clr-ontology.jpg');
+  }
+
+  .perspective_img_1 {
+    content: url('assets/clr-datamodels.jpg');
+  }
+
+  .perspective_img_2 {
+    content: url('assets/clr-valuesets.jpg');
+  }
+
+  .perspective_img_3 {
+    content: url('assets/clr-datasets.jpg');
+  }
+
+  .perspective_img_4 {
+    content: url('assets/clr-maps.jpg');
+  }
+
+  .perspective_img_5 {
+    content: url('assets/clr-search.jpg');
+  }
 }
 
 $background: map-get($theme, background);
@@ -95,25 +144,28 @@ $xmas-red: #E1384A;
   }
 
   .perspective_img_0 {
-    content: url('assets/xmas/banner0.jpg');
+    content: url('assets/xms-ontology.jpg');
   }
 
   .perspective_img_1 {
-    content: url('assets/xmas/banner1.jpg');
+    content: url('assets/xms-datamodels.jpg');
   }
 
   .perspective_img_2 {
-    content: url('assets/xmas/banner2.jpg');
+    content: url('assets/xms-valuesets.jpg');
   }
 
   .perspective_img_3 {
-    content: url('assets/xmas/banner3.jpg');
+    content: url('assets/xms-datasets.jpg');
   }
 
   .perspective_img_4 {
-    content: url('assets/xmas/banner4.jpg');
+    content: url('assets/xms-maps.jpg');
   }
 
+  .perspective_img_5 {
+    content: url('assets/xms-search.jpg');
+  }
 }
 
 $background: map-get($theme, background);
@@ -133,6 +185,12 @@ mat-card-header {
   .mat-chip-list-wrapper {
     justify-content: flex-end;
   }
+}
+
+.mat-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .mat-tab-body-wrapper {
@@ -242,6 +300,12 @@ tr.mat-header-row {
   height: 28px * $scale !important;
 }
 
+.mat-option {
+  font-size: mat-font-size($custom-typography, body-1);
+  height: 28px * $scale !important;
+  line-height: 28px * $scale !important;
+}
+
 .mat-small-chip {
   min-height: 18px * $scale !important;
   font-size: mat-font-size($custom-typography, caption);
@@ -250,6 +314,26 @@ tr.mat-header-row {
 .mat-form-field-wrapper {
   padding-bottom: 0;
   margin-bottom: -6px !important;
+}
+
+.mat-text-primary {
+  color: mat-color($primary, text);
+}
+
+.mat-text-accent {
+  color: mat-color($accent, text);
+}
+
+.mat-text-warn {
+  color: mat-color($warn, text);
+}
+
+mat-sidenav-container {
+  height: calc(100vh - 64px);
+}
+
+.mat-slide-align-input {
+  margin-top: 22px;
 }
 
 // **********************************************************************
@@ -326,6 +410,7 @@ tr.mat-header-row {
 
 .content {
   padding: 16px;
+  overflow: hidden;
 }
 
 .pointer {
@@ -337,12 +422,31 @@ app-concept-search {
   font-size: mat-font-size($custom-typography, body-1);
 }
 
-.full-page-card {
-  height: calc(100vh - 173px);
+.as-split-area-content > .mat-card > .full-page-card {
+  height: calc(100vh - 164px);
+}
+
+.content > .mat-card > .full-page-card {
+  height: calc(100vh - 180px);
 }
 
 .no-wrap {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.invisible{
+  display: block !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+
+.global-search {
+  width: 30%;
+  position: absolute !important;
+  top: 14px;
+  left: calc(100% / 2);
+  transform: translateX(-50%);
 }

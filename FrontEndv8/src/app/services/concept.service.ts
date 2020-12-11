@@ -6,6 +6,8 @@ import { Concept } from '../models/objectmodel/Concept';
 import { environment } from '../../environments/environment';
 import {ConceptReference} from '../models/objectmodel/ConceptReference';
 import {DataModelNavigatorService} from '../components/data-model-navigator/data-model-navigator.service';
+import {SearchRequest} from '../models/search/SearchRequest';
+import {SearchResponse} from '../models/search/SearchResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -14,16 +16,21 @@ export class ConceptService implements DataModelNavigatorService {
 
   constructor(private http: HttpClient) { }
 
-  search(searchTerm: string, root: string = null, relationships: string[] = null) {
+  search(searchTerm: string, root: string = null, relationships: string[] = null, limit: number = 20) {
     let params = new HttpParams();
     params = params.append('nameTerm', searchTerm);
+    params = params.append('limit', limit.toString());
     if (root)
       params = params.append('root', root);
     if (relationships != null) {
       relationships.forEach(r => params = params.append('relationship', r));
     }
 
-    return this.http.get<any>(environment.api + 'api/concept/', { params });
+    return this.http.get<ConceptReference[]>(environment.api + 'api/concept/', { params });
+  }
+
+  advancedSearch(request: SearchRequest) {
+    return this.http.post<SearchResponse>(environment.api + 'api/concept/search', request);
   }
 
   getConcept(iri: string): Observable<Concept> {

@@ -75,6 +75,10 @@ export class AppRoot implements OnInit, AfterViewInit {
       .subscribe();
   }
 
+  displayFn(concept: ConceptReference): string {
+    return concept && concept.name ? concept.name : '';
+  }
+
   autoComplete(term) {
     if (term == null || term == '')
       return;
@@ -87,7 +91,7 @@ export class AppRoot implements OnInit, AfterViewInit {
     this.searchCall = this.conceptService.search(term)
       .subscribe(
         (result) => {
-          this.results = result
+          this.results = result;
           this.searchCall.unsubscribe();
           this.searchCall = null;
         },
@@ -97,9 +101,16 @@ export class AppRoot implements OnInit, AfterViewInit {
 
   inspectConcept(concept: ConceptReference) {
     FindConceptUsagesDialogComponent.execute(this.dialog, concept).subscribe(
-      () => {},
+      () => {
+      },
       (error) => this.log.error(error)
     )
+  }
+
+  advancedSearch(terms) {
+    console.log('Advanced search!!');
+    console.log(terms);
+    this.router.navigate(['search'], {queryParams :{terms: terms}});
   }
 
   logout() {
@@ -151,7 +162,7 @@ export class AppRoot implements OnInit, AfterViewInit {
           for(let param in result) {
             helpContext = helpContext.replace('${' + param + '}', result[param]);
           }
-          window.open('https://wiki.discoverydataservice.org/index.php?title=Information_modelling_in_Discovery' + helpContext, 'Help');
+          window.open('https://wiki.discoverydataservice.org/index.php?title=Information_Model' + helpContext, 'Help');
         },
         (error) => this.log.error(error)
       );
