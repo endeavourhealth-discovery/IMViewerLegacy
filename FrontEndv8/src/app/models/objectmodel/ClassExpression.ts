@@ -3,6 +3,7 @@ import { ObjectPropertyValue } from './ObjectPropertyValue';
 import { DataPropertyValue } from './DataPropertyValue';
 import { ConceptReference } from './ConceptReference';
 import { ConceptStatus } from './ConceptStatus';
+import {Annotation} from './Annotation';
 export class ClassExpression implements IMEntity {
   dbid: number;
   inferred: boolean;
@@ -13,6 +14,8 @@ export class ClassExpression implements IMEntity {
   ObjectPropertyValue: ObjectPropertyValue;
   DataPropertyValue: DataPropertyValue;
   objectOneOf: Array<ConceptReference>;
+  annotations: Set<Annotation>;
+  module: ConceptReference;
 
   getStatus(): ConceptStatus {
     throw new Error('Method not implemented.');

@@ -2,7 +2,6 @@ import { IMAnnotated } from './IMAnnotated';
 import { ConceptStatus } from './ConceptStatus';
 import { Annotation } from './Annotation';
 import { ConceptType } from './ConceptType';
-import { ClassAxiom } from './ClassAxiom';
 import { ClassExpression } from './ClassExpression';
 import { ConceptReference } from './ConceptReference';
 import { IMEntity } from './IMEntity';
@@ -18,8 +17,8 @@ export class Concept implements IMAnnotated {
   isA: Set<Concept>;
   annotations: Set<Annotation>;
   conceptType: ConceptType;
-  SubClassOf: Set<ClassAxiom>;
-  EquivalentTo: Set<ClassAxiom>;
+  SubClassOf: Set<ClassExpression>;
+  EquivalentTo: Set<ClassExpression>;
   Expression: ClassExpression;
   DisjointWith: Array<ConceptReference>;
 
