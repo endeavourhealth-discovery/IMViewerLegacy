@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, TemplateRef } from '@angular/core';
+import { Component, Input, ViewChild, TemplateRef, ElementRef } from '@angular/core';
 import { Concept } from '../../models/objectmodel/Concept';
 import { Perspectives } from '../../services/perspective.service';
 import { ConceptService } from '../../services/concept.service';
@@ -162,7 +162,10 @@ class DataModelSummaryProvider implements ConceptSummaryProvider {
     selector: 'summary-drawer',
     templateUrl: './summary-drawer.component.html',
     styleUrls: ['./summary-drawer.component.scss'],
-    providers: [ valueSetServiceProvider, dataModelServiceProvider ]
+    providers: [ valueSetServiceProvider, dataModelServiceProvider ],
+    host: {
+        '(document:click)': 'onClick($event)',
+      },
 })
 class SummaryDrawerComponent {
 
@@ -191,7 +194,8 @@ class SummaryDrawerComponent {
                 private valueSetService: ValueSetService,
                 private dataModelService: DataModelService,
                 private router: Router,
-                private snackBar: MatSnackBar) {
+                private snackBar: MatSnackBar, 
+                private _eref: ElementRef) {
        
         // faster lookup of perspectives
         this.perspectivesMap = new Map();
@@ -249,6 +253,12 @@ class SummaryDrawerComponent {
 
     get concept() {
         return this._concept;
+    }
+
+    onClick(event) {
+        if(this.clickedOutside(event.target)) {
+            this.close();
+        }    
     }
 
     getSummaryProvider(perspectiveRootIri: string): Observable<ConceptSummaryProvider> {    
@@ -311,6 +321,10 @@ class SummaryDrawerComponent {
         }
 
         return hasRoute;
+    }
+
+    private clickedOutside(target: any) {
+        return this._eref.nativeElement.contains(target) == false; 
     }
 
     private getPerspective(concept: Concept): Observable<Perspective> {
