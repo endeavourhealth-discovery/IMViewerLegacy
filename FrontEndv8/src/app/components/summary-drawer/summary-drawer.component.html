@@ -1,8 +1,24 @@
 <!-- default summary template -->
 <ng-template #defaultSummaryTemplate let-summaryProvider="summaryProvider">
 
-  <div><b>{{summaryProvider.concept.name}}</b></div>
+  <ng-container *ngIf="summaryProvider!= null && summaryProvider.concept != null">
+    <br>
+    <br>
+    <div class="icon-container">
+      <span>{{summaryProvider.concept.iri}}</span>
+      <a color="primary" mat-button (click)="summaryProvider.copyIri()" aria-label="Copy IRI">
+        <mat-icon>content_copy</mat-icon>
+      </a>
+    </div>
+    <br>
+    <div><i>{{summaryProvider.concept.status}}</i> status and of type <i>{{summaryProvider.concept.conceptType}}</i></div>
+  </ng-container>
 
+</ng-template>
+
+<!-- semantic ontology template -->
+<ng-template #semanticOntologySummaryTemplate>
+  <div><b>semantic ontology definition will go here</b></div>
 </ng-template>
 
 <!-- valueset summary templates -->

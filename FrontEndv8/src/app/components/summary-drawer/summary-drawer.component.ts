@@ -11,6 +11,7 @@ import { dataModelServiceProvider } from '../../services/datamodel.service.provi
 import { DataModelProperty, DataModelService } from '../../services/datamodel.service';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 interface ConceptSummaryProvider {
     concept: Concept
@@ -18,7 +19,6 @@ interface ConceptSummaryProvider {
     rootType: string
     
     canSummarise(concept: Concept): Observable<boolean>
-
 }
 
 class BasicSummaryProvider implements ConceptSummaryProvider {
@@ -27,7 +27,7 @@ class BasicSummaryProvider implements ConceptSummaryProvider {
     
     static TEMPLATE_NAME:string = "defaultSummaryTemplate";
 
-    constructor(public rootType: string) {}
+    constructor(public rootType: string, private snackBar: MatSnackBar) {}
     
     canSummarise(concept: Concept): Observable<boolean> {
         let canSummarise = new ReplaySubject<boolean>();
@@ -38,6 +38,46 @@ class BasicSummaryProvider implements ConceptSummaryProvider {
 
     get templateName(): string {
         return BasicSummaryProvider.TEMPLATE_NAME;
+    }  
+    
+    copyIri() {
+        this.copyToClipboard(this.concept.iri);
+
+        const twoSeconds: number = 2000;
+        this.snackBar.open(`IRI - ${this.concept.iri}`, "Copied", {
+            duration: twoSeconds,
+        });
+    }
+
+    copyToClipboard(targetText: string) {
+        // pre-Angular 10 (Clipboard module) way of copying to clipboard
+        let selBox = document.createElement('textarea');
+        selBox.style.position = 'fixed';
+        selBox.style.left = '0';
+        selBox.style.top = '0';
+        selBox.style.opacity = '0';
+        selBox.value = targetText;
+        document.body.appendChild(selBox);
+        selBox.focus();
+        selBox.select();
+        document.execCommand('copy');
+        document.body.removeChild(selBox);
+      }  
+}
+
+class SemanticOntologySummaryProvider implements ConceptSummaryProvider {
+    concept: Concept;
+
+    static TEMPLATE_NAME:string = "semanticOntologySummaryTemplate";
+
+    constructor(public rootType: string, private conceptService: ConceptService) {}
+
+    canSummarise(concept: Concept): Observable<boolean> {
+        return this.conceptService.isA(concept.iri, this.rootType);
+    }
+
+    get templateName(): string {
+        return SemanticOntologySummaryProvider.TEMPLATE_NAME;
     }
     
 }
@@ -126,6 +166,17 @@ class DataModelSummaryProvider implements ConceptSummaryProvider {
 })
 class SummaryDrawerComponent {
 
+    static DEFAULT_PERSPECTIVE: Perspective = {
+        "caption": "Concept",
+        "subtitle": null,
+        "description": "Top level information concept for classes",
+        "primary": null,
+        "image": null,
+        "icon": "fa-layer-group",
+        "color": "light-blue",
+        "root": ":894281000252100", // itself
+    }
+
     private _concept: Concept;
     private perspective: Perspective;
     private perspectivesMap: Map<string, Perspective>;
@@ -139,9 +190,14 @@ class SummaryDrawerComponent {
                 private log: LoggerService, 
                 private valueSetService: ValueSetService,
                 private dataModelService: DataModelService,
-                private router: Router) {
+                private router: Router,
+                private snackBar: MatSnackBar) {
+       
+        // faster lookup of perspectives
         this.perspectivesMap = new Map();
+        this.perspectives.perspectives.forEach(perspective => this.perspectivesMap.set(perspective.root, perspective));
 
+        // summary provider initialisation
         this.summaryProviders = new Map();
         
         const valueSetSummaryProvider: ValueSetSummaryProvider = new ValueSetSummaryProvider(this.valueSetService);
@@ -150,8 +206,16 @@ class SummaryDrawerComponent {
         const dataModelSummaryProvider: DataModelSummaryProvider = new DataModelSummaryProvider(this.dataModelService);
         this.summaryProviders.set(dataModelSummaryProvider.rootType, dataModelSummaryProvider);
         
-        this.defaultSummaryProvider = new BasicSummaryProvider(perspectives.ontology.root); // TODO - is this the right IRI to use for concept?
+        const semanticOntologySummaryProvider: SemanticOntologySummaryProvider = new SemanticOntologySummaryProvider(this.perspectives.ontology.root, this.service);
+        this.summaryProviders.set(semanticOntologySummaryProvider.rootType, semanticOntologySummaryProvider);
 
+        const basicSummaryProvider: BasicSummaryProvider = new BasicSummaryProvider(SummaryDrawerComponent.DEFAULT_PERSPECTIVE.root, snackBar); // TODO - is this the right IRI to use for concept?
+        this.summaryProviders.set(basicSummaryProvider.rootType, basicSummaryProvider);
+
+        this.summaryProvider = basicSummaryProvider;
+        this.defaultSummaryProvider = basicSummaryProvider;
+
+        // drawer visibility/state
         this._isDrawerOpen = false;
     }
 
@@ -163,6 +227,9 @@ class SummaryDrawerComponent {
 
     @ViewChild(DataModelSummaryProvider.TEMPLATE_NAME, { static: true }) 
     dataModelSummaryTemplate:TemplateRef<any>;
+
+    @ViewChild(SemanticOntologySummaryProvider.TEMPLATE_NAME, { static: true }) 
+    semanticOntologySummaryTemplate:TemplateRef<any>;
 
     @Input()
     set concept(concept: Concept) {
@@ -184,9 +251,7 @@ class SummaryDrawerComponent {
         return this._concept;
     }
 
-    getSummaryProvider(perspectiveRootIri: string): Observable<ConceptSummaryProvider> {
-
-        
+    getSummaryProvider(perspectiveRootIri: string): Observable<ConceptSummaryProvider> {    
         let summaryProviderObservable: ReplaySubject<ConceptSummaryProvider> = new ReplaySubject();
         let summaryProvider: ConceptSummaryProvider = this.defaultSummaryProvider;
         
@@ -209,14 +274,14 @@ class SummaryDrawerComponent {
             this.log.debug("warning - no concept summary provider registered against IRI " + perspectiveRootIri + ". Returning default provider.");
 
             summaryProvider.concept = this.concept;
-            summaryProviderObservable.next(summaryProvider);     
+            summaryProviderObservable.error(summaryProvider);     
         }
 
         return summaryProviderObservable;
     }
 
     gotoConcept(): void {
-        let conceptPath: string = this.perspective.path
+        let conceptPath: string = this.perspective.primary.state;
         if(conceptPath != null) {
             this.router.navigate([conceptPath], { queryParams: { id: this.concept.iri } });
             this.close();
@@ -238,35 +303,43 @@ class SummaryDrawerComponent {
         return this._isDrawerOpen;
     }
 
-    get hasRoute() {
-        return this.perspective.path != null;
+    get hasRoute(): boolean {
+        let hasRoute: boolean = false;
+        
+        if(this.perspective != null && this.perspective.primary != null) {
+            hasRoute = this.perspective.primary.state != null;
+        }
+
+        return hasRoute;
     }
 
     private getPerspective(concept: Concept): Observable<Perspective> {
         let perspectiveObservable: Subject<Perspective> = new Subject();
-        
-        this.perspectives.perspectives.forEach(perspective => this.perspectivesMap.set(perspective.root, perspective));
-    
+
         this.service.isOfType(concept.iri, Array.from(this.perspectivesMap.keys())).subscribe(
-          (result) => { 
-            if(result.length == 1) {
-              perspectiveObservable.next(this.perspectivesMap.get(result[0].iri));
+            (result) => {
+                if (result.length == 1) {
+                    console.log(`Got perspecive ${result[0].iri} for ${concept.iri}`);
+                    perspectiveObservable.next(this.perspectivesMap.get(result[0].iri));
+                }
+                else if (result.length > 1) {
+                    this.log.debug(`warn - found multiple perspectives for concept ${concept.iri}. Falling back on default`);
+                    perspectiveObservable.next(SummaryDrawerComponent.DEFAULT_PERSPECTIVE);
+                }
+                else {
+                    console.log(`failed to get perspective for ${concept.iri}`);
+                    this.log.debug(`warn - could not find perspective for concept ${concept.iri}. Falling back on default`);
+                    perspectiveObservable.next(SummaryDrawerComponent.DEFAULT_PERSPECTIVE);                     
+                }
+            },
+            (error) => {
+                this.log.error(error)
+                perspectiveObservable.error("Problem retreiving perspective for concept (iri:" + concept.iri + "). Cause: " + error);
             }
-            else if(result.length > 1) {
-              perspectiveObservable.error("could not determine perspective as the concept (iri: " + concept.iri + ") has multiple perspectives")
-            }
-            else {
-              perspectiveObservable.error("could not determine perspective as the concept (iri: " + concept.iri + ") is not associated with any perspectives")
-            }
-          }, 
-          (error) => { 
-              this.log.error(error)
-              perspectiveObservable.error("Problem retreiving perspective for concept (iri:" + concept.iri + "). Cause: " + error);
-          }
         )
-        
+
         return perspectiveObservable;
-      }    
+    }    
 }
 
 export {

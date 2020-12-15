@@ -39,6 +39,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { SummaryDrawerComponent } from './summary-drawer/summary-drawer.component';
 import {MatPaginatorModule} from '@angular/material/paginator';
 
+
 @NgModule({
     imports: [
         CommonModule,
@@ -67,7 +68,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
         MatDialogModule,
         MatMenuModule,
         MatProgressSpinnerModule,
-        MatPaginatorModule
+        MatPaginatorModule,
     ],
   declarations: [
     ConceptSearchComponent,
