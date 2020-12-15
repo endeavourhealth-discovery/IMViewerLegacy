@@ -7,14 +7,14 @@
 
 <!-- valueset summary templates -->
 <ng-template #emptyValueSetTemplate>
-  <div>Value Set has no members</div>
+  <div><b>Value Set has no members</b></div>
 </ng-template>
 
 <ng-template #valueSetSummaryTemplate let-summaryProvider="summaryProvider">
     <div *ngIf="summaryProvider.valueSet.isEmpty(); else emptyValueSetTemplate">
         <mat-action-list #members> 
           <mat-list-item *ngFor="let member of summaryProvider.valueSet.members | slice: summaryProvider.pageStartIndex : summaryProvider.pageEndIndex" [matTooltip]="member.name">
-            <mat-icon mat-list-icon>add_circle</mat-icon> // only show circle on non members
+            <mat-icon mat-list-icon>add_circle</mat-icon> <!-- TODO - only show circle on non members --> 
             <span class="no-wrap">{{member.name}} ({{member.iri}})</span>
           </mat-list-item>
         </mat-action-list>
@@ -25,9 +25,13 @@
       </div>
 </ng-template>
 
-<!--datamodel summary template -->
+<!--datamodel summary templates -->
+<ng-template #emptyDataModelTemplate>
+  <div><b>Data model has no properties</b></div>
+</ng-template>
+
 <ng-template #dataModelSummaryTemplate let-summaryProvider="summaryProvider">
-  <table mat-table [dataSource]="summaryProvider.dataModelProperties" class="" style="width: 100%;">
+  <table *ngIf="summaryProvider.dataModelProperties.length > 0; else emptyDataModelTemplate" mat-table [dataSource]="summaryProvider.dataModelProperties" class="" style="width: 100%;">
 
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -56,19 +60,36 @@
 </ng-template>
 
 <!-- SideBar -->
-<mat-drawer #drawer class="example-sidenav" mode="over" position="end" [(opened)]="sidebar"
+<mat-drawer #drawer class="example-sidenav" mode="over" position="end" [opened]="isDrawerOpen"
 style="width: 40%;overflow:hidden;">
 
 <mat-card *ngIf="concept != null && perspective != null && summaryProvider != null">
 
-    <!-- Header -->
-    <app-card-header [title]="perspective.caption + ' - ' + concept.name" 
-                     [subtitle]=""
-                     [icon]="perspective.icon" 
-                     [color]="perspective.color" 
-                     style="height: 64px;"
-                     [showActions]="true">
-    </app-card-header>
+    <mat-card-header>
+
+      <div mat-card-avatar>
+        <span class="fad fa-fw fa-2x {{perspective.icon}}" [style.color]="perspective.color"></span>
+      </div>
+    
+      <mat-card-title [style.color]="perspective.color">{{perspective.caption + ' - ' + concept.name}}</mat-card-title>
+     
+      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <ng-container *ngIf="hasRoute">
+          <button mat-menu-item  (click)="gotoConcept()">
+            <mat-icon>open_in_new</mat-icon>
+            <span>Open</span>
+          </button>
+        </ng-container>
+        <button mat-menu-item  (click)="close()">
+          <mat-icon>close</mat-icon>
+          <span>Close</span>
+        </button>
+      </mat-menu>
+
+    </mat-card-header>    
 
     <mat-card-content class="full-page-card">
       

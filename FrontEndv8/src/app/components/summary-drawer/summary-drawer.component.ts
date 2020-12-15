@@ -10,6 +10,7 @@ import { ValueSetService, ValueSet } from '../../services/valueset.service';
 import { dataModelServiceProvider } from '../../services/datamodel.service.provider';
 import { DataModelProperty, DataModelService } from '../../services/datamodel.service';
 import { PageEvent } from '@angular/material/paginator';
+import { Router } from '@angular/router';
 
 interface ConceptSummaryProvider {
     concept: Concept
@@ -131,12 +132,14 @@ class SummaryDrawerComponent {
     private summaryProviders: Map<string, ConceptSummaryProvider>;
     private defaultSummaryProvider: ConceptSummaryProvider;
     private summaryProvider: ConceptSummaryProvider;
+    private _isDrawerOpen: boolean;
 
     constructor(private service: ConceptService, 
                 private perspectives: Perspectives, 
                 private log: LoggerService, 
                 private valueSetService: ValueSetService,
-                private dataModelService: DataModelService) {
+                private dataModelService: DataModelService,
+                private router: Router) {
         this.perspectivesMap = new Map();
 
         this.summaryProviders = new Map();
@@ -149,7 +152,7 @@ class SummaryDrawerComponent {
         
         this.defaultSummaryProvider = new BasicSummaryProvider(perspectives.ontology.root); // TODO - is this the right IRI to use for concept?
 
-        this.sidebar = false;
+        this._isDrawerOpen = false;
     }
 
     @ViewChild(BasicSummaryProvider.TEMPLATE_NAME, { static: true }) 
@@ -160,9 +163,6 @@ class SummaryDrawerComponent {
 
     @ViewChild(DataModelSummaryProvider.TEMPLATE_NAME, { static: true }) 
     dataModelSummaryTemplate:TemplateRef<any>;
-
-    @Input()
-    sidebar: boolean;
 
     @Input()
     set concept(concept: Concept) {
@@ -213,6 +213,33 @@ class SummaryDrawerComponent {
         }
 
         return summaryProviderObservable;
+    }
+
+    gotoConcept(): void {
+        let conceptPath: string = this.perspective.path
+        if(conceptPath != null) {
+            this.router.navigate([conceptPath], { queryParams: { id: this.concept.iri } });
+            this.close();
+        }
+        else {
+            this.log.error(`Unable to navigate to concept ${this.concept.iri} as there is no perspective associated with it`);
+        }
+    }
+
+    close(): void {
+        this._isDrawerOpen = false;
+    }
+
+    open(): void {
+        this._isDrawerOpen = true;;
+    }
+
+    get isDrawerOpen(): boolean {
+        return this._isDrawerOpen;
+    }
+
+    get hasRoute() {
+        return this.perspective.path != null;
     }
 
     private getPerspective(concept: Concept): Observable<Perspective> {

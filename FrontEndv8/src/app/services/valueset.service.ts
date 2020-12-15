@@ -3,7 +3,8 @@ import { ConceptReference } from '../models/objectmodel/ConceptReference';
 import { ConceptType } from '../models/objectmodel/ConceptType';
 import { ClassExpression } from '../models/objectmodel/ClassExpression';
 import { ConceptService } from './concept.service';
-import {Injectable} from '@angular/core';
+import { LoggerService } from './logger.service';
+import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 
 export class ValueSet {
@@ -25,7 +26,7 @@ export class ValueSetService {
 
     private valueSetConceptReference: ConceptReference;
 
-    constructor(private conceptService: ConceptService, public readonly valueSetIri: string) {
+    constructor(private conceptService: ConceptService, public readonly valueSetIri: string,  private log: LoggerService) {
       this.valueSetConceptReference = new ConceptReference();
       this.valueSetConceptReference.iri = this.valueSetIri;
     }
@@ -49,7 +50,7 @@ export class ValueSetService {
             valueSet = this.processSubClass(concept);
         }
         else {
-            console.log("Concept's type is not ", ConceptType.Class.valueOf, concept.conceptType);
+            this.log.error(`Concept's (iri: ${concept.iri}) type invalid. Expecting ${ConceptType.Class.valueOf}. Actual ${concept.conceptType}`);
         }
 
         return valueSet;
@@ -66,7 +67,7 @@ export class ValueSetService {
           });
         }
         else {
-          console.log("Concept has not SubClassOf ", JSON.stringify(concept));
+          this.log.debug(`warn - unable to process concept (iri: ${concept.iri}) as it has not SubClassOf data.`)
         }
 
         return valueSet;
@@ -88,7 +89,7 @@ export class ValueSetService {
           }
         }
         else {
-          console.log("Concept intersection has no members - ", JSON.stringify(intersection));
+          this.log.info(`info - intersection (iri: ${intersection.Class.iri}) has no members.`);
         }
       }
     }
@@ -119,9 +120,6 @@ export class ValueSetService {
         else {
           this.classifyMember(membersExpression.Class, definesMembers, valueSet);
         }
-      }
-      else {
-        console.log("processMembersExpression - membersExpression param is null");
       }
     }
   

@@ -13,4 +13,5 @@ export class Perspective {
   icon: string;
   color: string;
   root: string;
+  path?: string; // Angular route (must match registered route name in app.module.ts)
 }

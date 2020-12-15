@@ -1,11 +1,11 @@
 import { Concept } from '../models/objectmodel/Concept';
 import { ConceptReference } from '../models/objectmodel/ConceptReference';
-import { ConceptType } from '../models/objectmodel/ConceptType';
 import { ClassExpression } from '../models/objectmodel/ClassExpression';
 import { ObjectPropertyValue } from '../models/objectmodel/ObjectPropertyValue';
 import { DataPropertyValue } from '../models/objectmodel/DataPropertyValue';
 import { ConceptService } from './concept.service';
-import {Injectable} from '@angular/core';
+import { LoggerService } from './logger.service';
+import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 
 export class DataModelProperty {
@@ -29,7 +29,7 @@ export class DataModelService {
 
     private dataModelConceptReference: ConceptReference;
 
-    constructor(private conceptService: ConceptService, public readonly dataModelIri: string) {
+    constructor(private conceptService: ConceptService, public readonly dataModelIri: string, private log: LoggerService) {
       this.dataModelConceptReference = new ConceptReference();
       this.dataModelConceptReference.iri = this.dataModelIri;
     }
@@ -46,29 +46,13 @@ export class DataModelService {
       return isDataModelObservable;
     }
 
-    public getDataModelProperties(concept: Concept): DataModelProperty[] {
+    public getDataModelProperties(concept: Concept): DataModelProperty[] {        
         let dataModelProperties: DataModelProperty[] = [];
 
         this.getIntersections(concept).forEach(intersection => {
             dataModelProperties = dataModelProperties.concat(this.toDataModelProperties(intersection));
         });
-
-        console.log(`data model service - data model properties ${JSON.stringify(dataModelProperties)}`);
-
-
-        // if (concept.SubClassOf[0].Intersection != null) {
-        //     concept.SubClassOf[0].Intersection.forEach(intersection => {
-        //       if (intersection.ObjectPropertyValue != null && intersection.ObjectPropertyValue.Property.iri !== ':hasCoreProperties') {
-        //         this.hoveredDataModelTableData.push(intersection);
-        //       }
-        //       if (intersection.ObjectPropertyValue != null && intersection.ObjectPropertyValue.Expression != null && intersection.ObjectPropertyValue.Expression.Intersection != null && intersection.ObjectPropertyValue.Property.iri === ':hasCoreProperties') {
-        //         intersection.ObjectPropertyValue.Expression.Intersection.forEach(subIntersection => {
-        //           this.hoveredDataModelTableData.push(subIntersection);
-        //         });
-        //       }
-        //     }); 
-        //   }        
-
+      
         return dataModelProperties;
     }
 
@@ -105,7 +89,6 @@ export class DataModelService {
             dataModelProperties.concat(this.handleNestedProperties(intersection));
         }
 
-        console.log(JSON.stringify(dataModelProperties));
         return dataModelProperties;
     }
 
@@ -122,12 +105,6 @@ export class DataModelService {
         }
 
         return dataModelProperties;
-        
-        // if (intersection.ObjectPropertyValue != null && intersection.ObjectPropertyValue.Expression != null && intersection.ObjectPropertyValue.Expression.Intersection != null && intersection.ObjectPropertyValue.Property.iri === ':hasCoreProperties') {
-        //     intersection.ObjectPropertyValue.Expression.Intersection.forEach(subIntersection => {
-        //       this.hoveredDataModelTableData.push(subIntersection);
-        //     });
-        //   }
     }
 
     private addDataModelProperty(dataModelProperty: DataModelProperty, dataModelProperties: DataModelProperty[]): void {
@@ -135,21 +112,23 @@ export class DataModelService {
             dataModelProperties.push(dataModelProperty)
         }
         else {
-           console.log("warn - attempting to add null DataModelProperty to to DataModelProperty list");
+           this.log.debug("warn - attempting to add null DataModelProperty to to DataModelProperty list");
         }
     }
 
     private toDataModelProperty(classExpression: ClassExpression): DataModelProperty {
         let dataModelProperty: DataModelProperty;
-        
-        if(this.isDataProperty(classExpression)) {
-            dataModelProperty = this.toDataModelPropertyFromDataPropertyValue(classExpression.DataPropertyValue);
-        }
-        else if(this.isObjectProperty(classExpression)) {
-            dataModelProperty= this.toDataModelPropertyFromObjectPropertyValue(classExpression.ObjectPropertyValue);
+
+        if(classExpression != null) {
+            if(this.isDataProperty(classExpression)) {
+                dataModelProperty = this.toDataModelPropertyFromDataPropertyValue(classExpression.DataPropertyValue);
+            }
+            else if(this.isObjectProperty(classExpression)) {
+                dataModelProperty= this.toDataModelPropertyFromObjectPropertyValue(classExpression.ObjectPropertyValue);
+            }
         }
         else {
-            console.log(`warn - uanble to convert ClassExpression (${JSON.stringify(classExpression)}) to a DataModelProperty instance.`);
+            dataModelProperty = null;
         }
 
         return dataModelProperty;
