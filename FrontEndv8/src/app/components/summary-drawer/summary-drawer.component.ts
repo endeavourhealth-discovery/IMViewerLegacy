@@ -173,7 +173,7 @@ class SummaryDrawerComponent {
         "primary": null,
         "image": null,
         "icon": "fa-layer-group",
-        "color": "light-blue",
+        "color": "blue",
         "root": ":894281000252100", // itself
     }
 
