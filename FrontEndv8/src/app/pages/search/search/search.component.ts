@@ -17,7 +17,6 @@ export class SearchComponent implements OnInit {
   request : SearchRequest = new SearchRequest();
   response : SearchResponse = new SearchResponse();
   schemes: ConceptReference[] = [];
-  schemeSelection: ConceptReference[];
   searchSub: Subscription = null;
 
   constructor(public perspectives: Perspectives,
@@ -36,7 +35,7 @@ export class SearchComponent implements OnInit {
     );
 
     this.service.getConceptChildren(':551000252107').subscribe(
-      (results) => this.schemes = this.schemeSelection = results,
+      (results) => this.schemes = results,
       (error) => this.log.error(error)
     );
   }

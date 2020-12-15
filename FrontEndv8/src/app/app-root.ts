@@ -16,6 +16,7 @@ import {MatSidenav} from '@angular/material/sidenav';
 import {LoggerService} from './services/logger.service';
 import {Perspectives} from './services/perspective.service';
 import {DOCUMENT} from '@angular/common';
+import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +27,7 @@ export class AppRoot implements OnInit, AfterViewInit {
   @HostBinding('class') componentCssClass = 'default-theme';
   @ViewChild('searchInput', {static: true}) input: ElementRef;
   @ViewChild('sidenav', {static: true}) sideNav: MatSidenav;
+  @ViewChild('searchInput', { read: MatAutocompleteTrigger, static: true}) test: MatAutocompleteTrigger;
 
   user: User;
   menuItems: any[] = [];
@@ -108,8 +110,7 @@ export class AppRoot implements OnInit, AfterViewInit {
   }
 
   advancedSearch(terms) {
-    console.log('Advanced search!!');
-    console.log(terms);
+    this.test.closePanel();
     this.router.navigate(['search'], {queryParams :{terms: terms}});
   }
 

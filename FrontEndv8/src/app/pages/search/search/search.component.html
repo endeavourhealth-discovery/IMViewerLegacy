@@ -17,7 +17,7 @@
 
           <mat-form-field appearance="outline">
             <mat-label>Code schemes</mat-label>
-            <mat-select multiple [(ngModel)]="schemeSelection" [disabled]="!request.includeLegacy" (selectionChange)="search()">
+            <mat-select multiple [(ngModel)]="request.schemes" [disabled]="!request.includeLegacy" (selectionChange)="search()">
               <mat-option *ngFor="let scheme of schemes" [value]="scheme">{{scheme.name}}</mat-option>
             </mat-select>
           </mat-form-field>
