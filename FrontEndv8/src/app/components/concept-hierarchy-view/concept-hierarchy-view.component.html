@@ -5,7 +5,7 @@
       <mat-icon class="mat-icon-rtl-mirror" matTreeNodeToggle (click)="expandNode(node, treeControl.isExpanded(node))">
         {{getExpansionIcon(node)}}
       </mat-icon>
-    <span (click)="selectNode(node)">{{node.name}}</span>
+    <span (click)="selectNode(node)" (dblclick)="expandNode(node, treeControl.isExpanded(node))">{{node.name}}</span>
   </mat-tree-node>
   <!-- This is the tree node template for expandable nodes -->
   <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
@@ -13,6 +13,6 @@
     <mat-icon class="mat-icon-rtl-mirror" matTreeNodeToggle >
       {{getExpansionIcon(node)}}
     </mat-icon>
-    <span (click)="selectNode(node)" style="cursor: pointer">{{node.name}}</span>
+    <span (click)="selectNode(node)" (dblclick)="expandNode(node, treeControl.isExpanded(node))" style="cursor: pointer">{{node.name}}</span>
   </mat-tree-node>
 </mat-tree>

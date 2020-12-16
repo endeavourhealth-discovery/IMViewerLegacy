@@ -106,12 +106,10 @@ export class ValueSetLibraryComponent implements OnInit {
     this.perspectives.current = this.perspectives.valueSets;
 
     // Direct URL nav - need to push to tree
-    this.route.queryParamMap.subscribe(
+    this.route.paramMap.subscribe(
       (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
       (error) => this.log.error(error)
     );
-
-
   }
 
   displayConcept(iri: string) {
@@ -179,12 +177,12 @@ export class ValueSetLibraryComponent implements OnInit {
 
   goto(iri: string) {
     if (iri !== this.selectedIri) {
-      this.router.navigate(['valueSets'], { queryParams: { id: iri } });
+      this.router.navigate(['valueSets', iri]);
     }
   }
 
   gotoConcept(iri: string) {
-    this.router.navigate(['ontology'], { queryParams: { id: iri } });
+    this.router.navigate(['ontology', iri]);
   }
 
   hasResults(displayed: boolean) {

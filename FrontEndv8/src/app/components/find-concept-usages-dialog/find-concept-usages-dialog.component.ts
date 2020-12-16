@@ -73,14 +73,14 @@ export class FindConceptUsagesDialogComponent implements OnInit {
     this.dialogRef.close();
     switch (type) {
       case ':VSET_ValueSet':
-        this.router.navigate([this.perspectives.valueSets.primary.state], { queryParams: { id: iri } });
+        this.router.navigate([this.perspectives.valueSets.primary.state, iri]);
         break;
       case ':DiscoveryCommonDataModel':
       case ':dataModelObjectProperty':
-        this.router.navigate([this.perspectives.dataModel.primary.state], { queryParams: { id: iri } });
+        this.router.navigate([this.perspectives.dataModel.primary.state, iri]);
         break;
       default:
-        this.router.navigate([this.perspectives.ontology.primary.state], { queryParams: { id: iri } });
+        this.router.navigate([this.perspectives.ontology.primary.state, iri]);
         break;
     }
   }

@@ -45,7 +45,7 @@ export class DataModelOverviewLibraryComponent implements OnInit {
   }
 
   goto(iri: string) {
-    this.router.navigate(['dataModel'], {queryParams: {id: iri}});
+    this.router.navigate(['dataModel', iri]);
   }
 
   getDataModelViewUrl(dataModelIri: string): string {

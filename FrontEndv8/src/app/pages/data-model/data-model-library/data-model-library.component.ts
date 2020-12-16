@@ -99,13 +99,13 @@ class DataModelLibraryComponent implements OnInit {
     const root = this;
     if (iri != null) {
       this.service.getConcept(iri).subscribe(
-        (hoveredConcept) => { 
+        (hoveredConcept) => {
           this.hoveredConcept = hoveredConcept,
           this.summaryDrawer.open();
         },
         (error) => this.log.error(error)
       );
-    } 
+    }
   }
 }
 export {

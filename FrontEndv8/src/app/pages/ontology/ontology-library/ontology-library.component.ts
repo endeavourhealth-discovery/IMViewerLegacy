@@ -107,13 +107,13 @@ export class OntologyLibraryComponent implements OnInit {
   itemHover(iri: string) {
     if (iri != null) {
       this.service.getConcept(iri).subscribe(
-        (hoveredConcept) => { 
+        (hoveredConcept) => {
           this.hoveredConcept = hoveredConcept,
           this.summaryDrawer.open();
         },
         (error) => this.log.error(error)
       );
-    } 
+    }
   }
 
   validate(evnt) {

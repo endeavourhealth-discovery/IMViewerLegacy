@@ -14,7 +14,6 @@ import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {ComponentsModule} from '../../../components/components.module';
-import {ConceptTreeViewService} from '../../../components/concept-tree-view/concept-tree-view.service';
 import {DataModelNavigatorService} from '../../../components/data-model-navigator/data-model-navigator.service';
 
 describe('DataModelLibraryComponent', () => {
@@ -40,7 +39,6 @@ describe('DataModelLibraryComponent', () => {
           ComponentsModule,
         ],
         providers: [
-          { provide: ConceptTreeViewService, useClass: ConceptService },
           { provide: DataModelNavigatorService, useClass: ConceptService }
         ]
     })

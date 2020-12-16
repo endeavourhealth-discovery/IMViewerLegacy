@@ -137,7 +137,7 @@ export class AppRoot implements OnInit, AfterViewInit {
   }
 
   goto(iri: string) {
-    this.router.navigate([this.router.url.split('?')[0]], { queryParams: { id: iri } });
+    this.router.navigate([this.perspectives.current.primary.state, iri]);
   }
 
   search(evt: any) {

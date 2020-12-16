@@ -47,8 +47,11 @@ let routes = [
   {path: '', redirectTo: '/mainPage', pathMatch: 'full'},
   {path: 'mainPage', component: MainPageComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#'}},
   {path: 'ontology', component: OntologyLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#Semantic_ontology'}},
+  {path: 'ontology/:id', component: OntologyLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#Semantic_ontology'}},
   {path: 'dataModel', component: DataModelLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#Data_models'}},
+  {path: 'dataModel/:id', component: DataModelLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#Data_models'}},
   {path: 'valueSets', component: ValueSetLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#Value_sets_or_concept_sets_or_reference_sets'}},
+  {path: 'valueSets/:id', component: ValueSetLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#Value_sets_or_concept_sets_or_reference_sets'}},
   {path: 'dataModelOverview', component: DataModelOverviewLibraryComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#Data_models'}},
   {path: 'search', component: SearchComponent, data: {role: 'information-manager:conceptLibrary', helpContext: '#Search'}},
 ];
