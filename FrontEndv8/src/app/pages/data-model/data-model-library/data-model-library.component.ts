@@ -67,7 +67,7 @@ class DataModelLibraryComponent implements OnInit {
   ngOnInit() {
     this.perspectives.current = this.perspectives.dataModel;
     // Direct URL nav - need to push to tree
-    this.route.queryParamMap.subscribe(
+    this.route.paramMap.subscribe(
       (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
       (error) => this.log.error(error)
     );

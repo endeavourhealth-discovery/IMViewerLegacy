@@ -79,7 +79,7 @@ export class OntologyLibraryComponent implements OnInit {
   ngOnInit() {
     this.perspectives.current = this.perspectives.ontology;
     // Direct URL nav - need to push to tree
-    this.route.queryParamMap.subscribe(
+    this.route.paramMap.subscribe(
       (params) => this.displayConcept(params.get('id') ? params.get('id') : this.perspectives.ontology.root),
       (error) => this.log.error(error)
     );
