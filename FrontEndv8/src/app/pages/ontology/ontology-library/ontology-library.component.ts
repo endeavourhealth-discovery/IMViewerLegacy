@@ -2,11 +2,12 @@ import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferen
 import { ConceptService } from '../../../services/concept.service';
 import { Concept } from '../../../models/objectmodel/Concept';
 import { NgEventBus } from 'ng-event-bus';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { JsonEditorOptions } from 'ang-jsoneditor';
-import {LoggerService} from '../../../services/logger.service';
-import {Perspectives} from '../../../services/perspective.service';
+import { LoggerService } from '../../../services/logger.service';
+import { Perspectives } from '../../../services/perspective.service';
+import { SummaryDrawerComponent } from '../../../components/summary-drawer/summary-drawer.component';
 
 @Component({
   selector: 'app-ontology-library',
@@ -18,18 +19,11 @@ export class OntologyLibraryComponent implements OnInit {
   parents: Array<ConceptReferenceNode>;
   children: Array<ConceptReferenceNode>;
   selectedIri: string;
-  searchSize = 72;
-  root = ':SemanticConcept';
-  relationships = ['sn:116680003'];
   hoveredConcept: Concept = new Concept();
-  definition = null;
-  conceptPropertyObjects = [];
-
   history = [];
-  timer: any;
-  sidebar = false;
   editorOptions = new JsonEditorOptions();
 
+  @ViewChild(SummaryDrawerComponent, { static: true }) summaryDrawer: SummaryDrawerComponent;
 
   constructor(private service: ConceptService,
               public perspectives: Perspectives,
@@ -65,13 +59,9 @@ export class OntologyLibraryComponent implements OnInit {
     this.perspectives.current = this.perspectives.ontology;
     // Direct URL nav - need to push to tree
     this.route.queryParamMap.subscribe(
-      (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
+      (params) => this.displayConcept(params.get('id') ? params.get('id') : this.perspectives.ontology.root),
       (error) => this.log.error(error)
     );
-  }
-
-  getData(event) {
-    console.log(event);
   }
 
   displayConcept(iri: string) {
@@ -94,31 +84,14 @@ export class OntologyLibraryComponent implements OnInit {
   }
 
   itemHover(iri: string) {
-    const root = this;
     if (iri != null) {
-      this.timer = setTimeout(() => {
-        root.sidebar = true;
-      }, 1000);
       this.service.getConcept(iri).subscribe(
-        (result) => this.hoveredConcept = result,
+        (hoveredConcept) => { 
+          this.hoveredConcept = hoveredConcept,
+          this.summaryDrawer.open();
+        },
         (error) => this.log.error(error)
       );
-    } else {
-      clearTimeout(this.timer);
-    }
-  }
-
-  json(object: any): string {
-    return JSON.stringify(object);
-  }
-
-  goto(iri: string) {
-    if (iri !== this.selectedIri) {
-      this.router.navigate(['ontology'], { queryParams: { id: iri } });
-    }
-  }
-
-  hasResults(displayed: boolean) {
-    this.searchSize = displayed ? 256 : 72;
+    } 
   }
 }
