@@ -21,7 +21,6 @@ export class DataModelProperty {
     }
 }
 
-@Injectable()
 export class DataModelService {
 
     private static DEFAULT_MIN_CARDINALITY: number = 0;

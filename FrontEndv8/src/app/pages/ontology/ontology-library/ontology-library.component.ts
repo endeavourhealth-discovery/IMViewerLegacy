@@ -30,6 +30,7 @@ export class OntologyLibraryComponent implements OnInit {
   definitionText = '';
   definitionChanged: Subject<string> = new Subject<string>();
   conceptPropertyObjects = [];
+  relationships = ['sn:116680003'];
 
   history = [];
   timer: any;

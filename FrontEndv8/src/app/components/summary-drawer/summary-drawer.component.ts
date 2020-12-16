@@ -21,7 +21,7 @@ interface ConceptSummaryProvider {
     canSummarise(concept: Concept): Observable<boolean>
 }
 
-class BasicSummaryProvider implements ConceptSummaryProvider {
+export class BasicSummaryProvider implements ConceptSummaryProvider {
     
     concept: Concept;
     
@@ -65,7 +65,7 @@ class BasicSummaryProvider implements ConceptSummaryProvider {
       }  
 }
 
-class SemanticOntologySummaryProvider implements ConceptSummaryProvider {
+export class SemanticOntologySummaryProvider implements ConceptSummaryProvider {
     concept: Concept;
 
     static TEMPLATE_NAME:string = "semanticOntologySummaryTemplate";
@@ -82,7 +82,7 @@ class SemanticOntologySummaryProvider implements ConceptSummaryProvider {
     
 }
 
-class ValueSetSummaryProvider implements ConceptSummaryProvider {
+export class ValueSetSummaryProvider implements ConceptSummaryProvider {
 
     valueSet: ValueSet;
     pageStartIndex: number;
@@ -127,7 +127,7 @@ class ValueSetSummaryProvider implements ConceptSummaryProvider {
     }
 }
 
-class DataModelSummaryProvider implements ConceptSummaryProvider {
+export class DataModelSummaryProvider implements ConceptSummaryProvider {
 
     dataModelProperties: DataModelProperty[];  
     columns: string[];
@@ -167,7 +167,7 @@ class DataModelSummaryProvider implements ConceptSummaryProvider {
         '(document:click)': 'onClick($event)',
       },
 })
-class SummaryDrawerComponent {
+export class SummaryDrawerComponent {
 
     static DEFAULT_PERSPECTIVE: Perspective = {
         "caption": "Concept",
@@ -180,12 +180,13 @@ class SummaryDrawerComponent {
         "root": ":894281000252100", // itself
     }
 
+    summaryProvider: ConceptSummaryProvider;
+    perspective: Perspective;
+    
     private _concept: Concept;
-    private perspective: Perspective;
     private perspectivesMap: Map<string, Perspective>;
     private summaryProviders: Map<string, ConceptSummaryProvider>;
     private defaultSummaryProvider: ConceptSummaryProvider;
-    private summaryProvider: ConceptSummaryProvider;
     private _isDrawerOpen: boolean;
 
     constructor(private service: ConceptService, 
@@ -355,7 +356,3 @@ class SummaryDrawerComponent {
         return perspectiveObservable;
     }    
 }
-
-export {
-    SummaryDrawerComponent
-};

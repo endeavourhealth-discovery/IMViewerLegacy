@@ -21,7 +21,6 @@ export class ValueSet {
     }
 }
 
-@Injectable()
 export class ValueSetService {
 
     private valueSetConceptReference: ConceptReference;
