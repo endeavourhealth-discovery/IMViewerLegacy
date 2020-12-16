@@ -1,7 +1,7 @@
 import { ConceptReferenceNode } from '../models/objectmodel/ConceptReferenceNode';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Concept } from '../models/objectmodel/Concept';
 import { environment } from '../../environments/environment';
 import {ConceptReference} from '../models/objectmodel/ConceptReference';
@@ -52,4 +52,22 @@ export class ConceptService implements DataModelNavigatorService {
   isOfType(iri: string, candidates: string[]): Observable<Array<ConceptReference>> {
     return this.http.post<Array<ConceptReference>>(environment.api + 'api/concept/' + iri + '/isWhichType', candidates);
   }
+
+  isA(iri: string, parentIri: string): Observable<boolean> {
+    let isAObservable: Subject<boolean> = new Subject();
+    
+    this.isOfType(iri, [parentIri]).subscribe(
+      response => { 
+        let match = false;
+        response.forEach(parent => {
+          if(parent.iri == parentIri) {
+            match = true;
+          }
+        })
+        isAObservable.next(match);
+      }
+    )
+
+    return isAObservable;
+  } 
 }

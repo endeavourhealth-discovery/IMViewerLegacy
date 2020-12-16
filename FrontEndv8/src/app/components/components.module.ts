@@ -37,6 +37,9 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatWrapperComponent} from './mat-wrapper/mat-wrapper.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {SnomedLicenseDialog} from './snomed-license-dialog/snomed-license-dialog.component';
+import { SummaryDrawerComponent } from './summary-drawer/summary-drawer.component';
+import {MatPaginatorModule} from '@angular/material/paginator';
+
 
 @NgModule({
     imports: [
@@ -65,7 +68,8 @@ import {SnomedLicenseDialog} from './snomed-license-dialog/snomed-license-dialog
         MatSidenavModule,
         MatDialogModule,
         MatMenuModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatPaginatorModule,
     ],
   declarations: [
     ConceptSearchComponent,
@@ -80,7 +84,8 @@ import {SnomedLicenseDialog} from './snomed-license-dialog/snomed-license-dialog
     DataModelNavigatorComponent,
     LibraryComponentComponent,
     MatWrapperComponent,
-    SnomedLicenseDialog
+    SnomedLicenseDialog,
+    SummaryDrawerComponent
   ],
   exports: [
     ConceptSearchComponent,
@@ -92,7 +97,8 @@ import {SnomedLicenseDialog} from './snomed-license-dialog/snomed-license-dialog
     DataModelNavigatorComponent,
     LibraryComponentComponent,
     MatWrapperComponent,
-    SnomedLicenseDialog
+    SnomedLicenseDialog,
+    SummaryDrawerComponent
   ],
   entryComponents: [
     FindConceptUsagesDialogComponent,

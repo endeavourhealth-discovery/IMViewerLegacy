@@ -1,92 +1,12 @@
 <app-library-component [relationships]="relationships" [concept]="concept" [children]="children" [parents]="parents"
   [selectedIri]="selectedIri" [perspective]="perspectives.dataModel">
 
-  <!-- templates -->
-  <ng-template #dataModelSummaryTemplate>
-    <table mat-table [dataSource]="hoveredDataModelTableData" class="" style="width: 100%;">
-
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let row">
-          <!-- if ValueType -->
-          <ng-container *ngIf="isObjectProperty(row)">
-            <span>
-              {{row.ObjectPropertyValue.Property.name}}
-            </span>
-          </ng-container>
-
-          <!-- if DataType -->
-          <ng-container *ngIf="isDataProperty(row)">
-            <span>
-              {{row.DataPropertyValue.Property.name}}
-            </span>
-          </ng-container>
-
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="type">
-        <th mat-header-cell *matHeaderCellDef>Type</th>
-        <td mat-cell *matCellDef="let row">
-          <!-- if ValueType -->
-          <ng-container *ngIf="isObjectProperty(row)">
-            <span>
-              {{row.ObjectPropertyValue.ValueType.name}}
-            </span>
-          </ng-container>
-
-          <!-- if DataType -->
-          <ng-container *ngIf="isDataProperty(row)">
-            <span>
-              {{row.DataPropertyValue.DataType.iri}}
-            </span>
-          </ng-container>
-
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="cardinality">
-        <th mat-header-cell *matHeaderCellDef>Cardinality</th>
-        <td mat-cell *matCellDef="let row">
-          <ng-container *ngIf="isObjectProperty(row)">
-            {{(row.ObjectPropertyValue.Min ? row.ObjectPropertyValue.Min : DEFAULT_MIN_CARDINALITY)}} :
-            {{(row.ObjectPropertyValue.Max ? row.ObjectPropertyValue.Max : DEFAULT_MAX_CARDINALITY)}}
-          </ng-container>
-          <ng-container *ngIf="isDataProperty(row)">
-            {{(row.DataPropertyValue.Min ? row.DataPropertyValue.Min : DEFAULT_MIN_CARDINALITY)}} :
-            {{(row.DataPropertyValue.Max ? row.DataPropertyValue.Max : DEFAULT_MAX_CARDINALITY)}}
-          </ng-container>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="hoveredDataModelTable.columns"></tr>
-      <tr mat-row *matRowDef="let row; columns: hoveredDataModelTable.columns;"></tr>
-    </table>
-  </ng-template>
-
   <!-- Dashboard container-->
   <mat-card-content class="full-page-card">
     <mat-drawer-container class="example-container" hasBackdrop="true" style="height: calc(100%);overflow:hidden;">
 
       <!-- SideBar -->
-      <mat-drawer #drawer class="example-sidenav" mode="over" position="end" [(opened)]="sidebar"
-        style="width: 40%;overflow:hidden;">
-
-        <mat-card *ngIf="hoveredConcept != null && hoveredPerspective != null">
-
-          <!-- Header -->
-          <app-card-header [title]="hoveredPerspective.caption + ' - ' + hoveredConcept.name" [subtitle]=""
-            [icon]="hoveredPerspective.icon" [color]="hoveredPerspective.color" style="height: 64px;"
-            [showActions]="true">
-          </app-card-header>
-
-          <mat-card-content class="full-page-card">
-            <span *ngIf="hoveredConcept.description != null" [innerHTML]="hoveredConcept.description"></span>
-            <ng-container
-              *ngIf="(hoveredPerspective.root == perspectives.dataModel.root); then dataModelSummaryTemplate"></ng-container>
-          </mat-card-content>
-        </mat-card>
-      </mat-drawer>
+      <summary-drawer [concept]="hoveredConcept"></summary-drawer>
 
       <!-- Dashboard content-->
       <mat-tab-group style="height: 100%;" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">

@@ -96,7 +96,7 @@ let routes = [
     Perspectives,
     { provide: AbstractSecurityProvider, useClass: MockSecurityService },
     LoggerService,
-    NgEventBus,
+    NgEventBus
   ]
 })
 export class AppModule  {

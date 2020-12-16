@@ -16,7 +16,7 @@ export class Perspectives  {
     "image": "ontology.jpg",
     "icon": "fa-lightbulb",
     "color": "orange",
-    "root": ":SemanticConcept"
+    "root": ":SemanticConcept",
   };
 
   dataModel: Perspective = {
@@ -41,7 +41,7 @@ export class Perspectives  {
     "image": "valuesets.jpg",
     "icon": "fa-tasks",
     "color": "brown",
-    "root": ":VSET_ValueSet"
+    "root": ":VSET_ValueSet",
   };
 
   dataSets: Perspective = {
