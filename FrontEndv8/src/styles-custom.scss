@@ -10,7 +10,7 @@ body {
 // **********************************************************************
 // * Themes
 // **********************************************************************
-
+// Default theme
 .perspective_img_0 {
   content: url('assets/gry-ontology.jpg');
 }
@@ -35,6 +35,10 @@ body {
   content: url('assets/gry-search.jpg');
 }
 
+.hover-highlight:hover {
+  background-color: mat-color($accent, 200);
+}
+
 // Dark theme
 $dark-primary: mat-palette($mat-blue-grey);
 $dark-accent:  mat-palette($mat-amber, A200, A100, A400);
@@ -44,6 +48,10 @@ $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 
 .dark-theme {
   @include angular-material-theme($dark-theme);
+
+  .hover-highlight:hover {
+    background-color: mat-color($dark-accent, 600);
+  }
 }
 
 // Teal theme
@@ -78,6 +86,10 @@ $teal-theme: mat-light-theme($teal-primary, $teal-accent, $teal-warn);
 
   .perspective_img_5 {
     content: url('assets/clr-search.jpg');
+  }
+
+  .hover-highlight:hover {
+    background-color: mat-color($teal-accent, 600);
   }
 }
 
@@ -165,6 +177,10 @@ $xmas-red: #E1384A;
 
   .perspective_img_5 {
     content: url('assets/xms-search.jpg');
+  }
+
+  .hover-highlight:hover {
+    background-color: mat-color($xmas-accent, 600);
   }
 }
 
