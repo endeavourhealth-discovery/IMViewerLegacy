@@ -89,7 +89,7 @@ $teal-theme: mat-light-theme($teal-primary, $teal-accent, $teal-warn);
   }
 
   .hover-highlight:hover {
-    background-color: mat-color($teal-accent, 600);
+    background-color: mat-color($teal-accent, 200);
   }
 }
 
@@ -180,7 +180,7 @@ $xmas-red: #E1384A;
   }
 
   .hover-highlight:hover {
-    background-color: mat-color($xmas-accent, 600);
+    background-color: mat-color($xmas-accent, 200);
   }
 }
 
