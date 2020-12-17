@@ -7,6 +7,7 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {LoggerService} from '../../services/logger.service';
 import {ConceptReference} from '../../models/objectmodel/ConceptReference';
+import { ActivatedRoute } from '@angular/router';
 
 interface ConceptNode {
   name: string;
@@ -31,15 +32,20 @@ export class ConceptHierarchyViewComponent implements OnInit {
 
   tree: ConceptNode[] = [];
   loadedChildren: string[] = [];
+  selectedIri: string;
 
   constructor(private service: ConceptService,
               private log: LoggerService,
-              private eventBus: NgEventBus) {
+              private eventBus: NgEventBus,
+              private route: ActivatedRoute,) {
     this.dataSource.data = this.tree;
   }
 
   ngOnInit() {
-
+    this.route.paramMap.subscribe(
+      (params) => this.selectedIri = (params.get('id') ? params.get('id') : this.root),
+      (error) => this.log.error(error)
+    );
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -132,6 +138,12 @@ export class ConceptHierarchyViewComponent implements OnInit {
 
   expandNode(node, isExpanded) {
     this.findAndExpandMatchingNode(node.iri, this.tree);
+  }
+
+  highlightNode(node): boolean {
+    let highlight: boolean = this.selectedIri == node.iri;
+
+    return highlight;
   }
 
   getExpansionIcon(node: ConceptNode): string {

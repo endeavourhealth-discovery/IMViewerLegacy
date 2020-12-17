@@ -1,18 +1,24 @@
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree-compact scroll" id="conceptTree" style="min-height: 100%">
   <!-- This is the tree node template for leaf nodes -->
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding matTreeNodePaddingIndent="10" class="hover-highlight"
-    [class.selected]="concept.iri == node.iri" style="cursor: pointer">
+    [class.selected]="highlightNode(node)" style="cursor: pointer">
       <mat-icon class="mat-icon-rtl-mirror" matTreeNodeToggle (click)="expandNode(node, treeControl.isExpanded(node))">
         {{getExpansionIcon(node)}}
       </mat-icon>
-    <span (click)="selectNode(node)" (dblclick)="expandNode(node, treeControl.isExpanded(node))">{{node.name}}</span>
+    <span (click)="selectNode(node)" 
+          (dblclick)="expandNode(node, treeControl.isExpanded(node))">
+          {{node.name}}
+    </span>
   </mat-tree-node>
   <!-- This is the tree node template for expandable nodes -->
   <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
-    matTreeNodePaddingIndent="10" class="hover-highlight" [class.selected]="concept.iri == node.iri" style="cursor: pointer">
+    matTreeNodePaddingIndent="10" class="hover-highlight" [class.selected]="highlightNode(node)" style="cursor: pointer">
     <mat-icon class="mat-icon-rtl-mirror" matTreeNodeToggle >
       {{getExpansionIcon(node)}}
     </mat-icon>
-    <span (click)="selectNode(node)" (dblclick)="expandNode(node, treeControl.isExpanded(node))" style="cursor: pointer">{{node.name}}</span>
+    <span (click)="selectNode(node)" 
+          (dblclick)="expandNode(node, treeControl.isExpanded(node))">
+          {{node.name}}
+    </span>
   </mat-tree-node>
 </mat-tree>

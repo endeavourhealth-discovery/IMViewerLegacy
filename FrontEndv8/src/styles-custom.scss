@@ -39,6 +39,14 @@ body {
   background-color: mat-color($accent, 200);
 }
 
+.hover-highlight:hover {
+  background-color: mat-color($accent, 200);
+}
+
+mat-tree-node.selected {
+  background-color: mat-color($accent, 200);
+}
+
 // Dark theme
 $dark-primary: mat-palette($mat-blue-grey);
 $dark-accent:  mat-palette($mat-amber, A200, A100, A400);
@@ -50,6 +58,10 @@ $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
   @include angular-material-theme($dark-theme);
 
   .hover-highlight:hover {
+    background-color: mat-color($dark-accent, 600);
+  }
+
+  mat-tree-node.selected {
     background-color: mat-color($dark-accent, 600);
   }
 }
@@ -89,6 +101,10 @@ $teal-theme: mat-light-theme($teal-primary, $teal-accent, $teal-warn);
   }
 
   .hover-highlight:hover {
+    background-color: mat-color($teal-accent, 200);
+  }
+
+  mat-tree-node.selected {
     background-color: mat-color($teal-accent, 200);
   }
 }
@@ -182,6 +198,10 @@ $xmas-red: #E1384A;
   .hover-highlight:hover {
     background-color: mat-color($xmas-accent, 200);
   }
+
+  mat-tree-node.selected {
+    background-color: mat-color($xmas-accent, 200);
+  }  
 }
 
 $background: map-get($theme, background);
