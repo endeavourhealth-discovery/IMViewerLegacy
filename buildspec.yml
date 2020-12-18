@@ -18,6 +18,8 @@ phases:
       # Build Front End
       - cd $CODEBUILD_SRC_DIR
       - chmod +x aws_scripts/build.sh
+      - sed -i -e "s|DEPLOY_DESTINATION|$DESTINATION|g" appspec.yml
+      - sed -i -e "s|DEPLOY_DESTINATION|$DESTINATION|g" aws_scripts/cleanup
       - echo IM Client Build started on `date`
       - aws_scripts/build.sh mvn -B package
 #      - mvn sonar:sonar
