@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs';
 import {User} from './models/User';
 import {Project} from './models/Project';
-import {MenuOption} from 'dds-angular8';
+import {MenuOption} from './models/MenuOption';
 
 export abstract class AbstractSecurityProvider {
   abstract getUser(): Observable<User>;

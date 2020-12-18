@@ -1,0 +1,126 @@
+<h3 mat-dialog-title>Create new concept under {{data.parent.name}} - {{data.parent.iri}}</h3>
+<div mat-dialog-content>
+
+
+  <table width="100%" cellspacing="5">
+  <tr>
+    <td>
+      <mat-form-field dense floatLabel="always" style="width:100%">
+        <mat-label>Name:</mat-label>
+        <input dense matInput>
+      </mat-form-field>
+    </td>
+    <td>
+      <mat-form-field dense floatLabel="always" style="width:100%">
+        <mat-label>Iri:</mat-label>
+        <input dense matInput>
+      </mat-form-field>
+    </td>
+    <td>
+      <mat-form-field dense floatLabel="always" style="width:100%">
+        <mat-label>Namespace:</mat-label>
+        <select matNativeControl required>
+          <option value="owl:">http://www.w3.org/2002/07/owl#</option>
+          <option value=":">http://www.DiscoveryDataService.org/InformationModel/Ontology#</option>
+          <option value="sn:">http://snomed.info/sct#</option>
+          <option value="xsd:">http://www.w3.org/2001/XMLSchema#</option>
+          <option value="rdf:">http://www.w3.org/1999/02/22-rdf-syntax-ns#</option>
+          <option value="xml:">http://www.w3.org/XML/1998/namespace</option>
+          <option value="rdfs:">http://www.w3.org/2000/01/rdf-schema#</option>
+        </select>
+      </mat-form-field>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <mat-form-field dense floatLabel="always" style="width:100%">
+        <mat-label>Code:</mat-label>
+        <input dense matInput>
+      </mat-form-field>
+    </td>
+    <td>
+      <mat-form-field dense floatLabel="always" style="width:100%">
+        <mat-label>Scheme:</mat-label>
+        <input dense matInput>
+      </mat-form-field>
+    </td>
+    <td>
+      <mat-form-field dense floatLabel="always" style="width:100%">
+        <mat-label>Status:</mat-label>
+        <select matNativeControl required>
+          <option value="0">Draft</option>
+          <option value="1">Active</option>
+          <option value="2">Inactive</option>
+        </select>
+      </mat-form-field>
+    </td>
+  </tr>
+</table>
+
+  <mat-form-field dense floatLabel="always" style="width:100%">
+    <mat-label>Description:</mat-label>
+    <textarea matInput></textarea>
+  </mat-form-field>
+
+  <h4 mat-dialog-title>Properties:</h4>
+
+  <mat-table [dataSource]="dataSource" class="mat-elevation-z0">
+    <!-- Position Column -->
+    <ng-container matColumnDef="position">
+      <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.position}} </mat-cell>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="relationship">
+      <mat-header-cell *matHeaderCellDef> Relationship </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <mat-form-field style="width:90%">
+          <input matInput [matAutocomplete]="auto" [formControl]="relationshipControl">
+          <mat-autocomplete #auto="matAutocomplete">
+            <mat-option *ngFor="let option of filteredRelationshipOptions | async" [value]="option.name" (onSelectionChange)="selectedRelationship(option, element.position)">
+              {{option.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Concept Column -->
+    <ng-container matColumnDef="concept">
+      <mat-header-cell *matHeaderCellDef> Concept </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <mat-form-field style="width:90%">
+          <input matInput [matAutocomplete]="auto" [formControl]="conceptControl">
+          <mat-autocomplete #auto="matAutocomplete">
+            <mat-option *ngFor="let option of filteredConceptOptions | async" [value]="option.name" (onSelectionChange)="selectedConcept(option, element.position)">
+              {{option.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Action Column -->
+    <ng-container matColumnDef="remove">
+      <mat-header-cell *matHeaderCellDef> Remove </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <button mat-icon-button (click)="removeProperty(element.position)">
+          <mat-icon>delete_forever</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+  <button mat-icon-button (click)="addProperty()" style="float: right;">
+    <mat-icon>add</mat-icon>
+  </button>
+
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button (click)="onNoClick()" cdkFocusInitial>Submit New Concept</button>
+</div>

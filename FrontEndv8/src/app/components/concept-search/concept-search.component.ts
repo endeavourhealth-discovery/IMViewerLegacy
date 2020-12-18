@@ -1,6 +1,7 @@
+import { NgEventBus } from 'ng-event-bus';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {LoggerService} from 'dds-angular8/logger';
-import {ConceptService} from '../../concept.service';
+import {ConceptService} from '../../services/concept.service';
+import {LoggerService} from '../../services/logger.service';
 
 @Component({
   selector: 'app-concept-search',
@@ -11,13 +12,12 @@ export class ConceptSearchComponent implements OnInit {
   @Input()  root: string;
   @Input() relationships: string[];
   @Output() hasResults: EventEmitter<any> = new EventEmitter<any>();
-  @Output() selection: EventEmitter<any> = new EventEmitter<any>();
 
   searchTerm: string;
   searching: boolean;
   searchResults: any[];
 
-  constructor(private service: ConceptService, private log: LoggerService) { }
+  constructor(private service: ConceptService, private log: LoggerService, private eventBus: NgEventBus) { }
 
   ngOnInit() {
   }
@@ -47,6 +47,6 @@ export class ConceptSearchComponent implements OnInit {
   }
 
   selectResult(item: any) {
-    this.selection.emit(item);
+    this.eventBus.cast('app:conceptSelect', item.iri);
   }
 }

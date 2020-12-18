@@ -1,0 +1,45 @@
+<as-split direction="vertical" unit="pixel">
+  <as-split-area [size]="searchSize" [minSize]="minSize" style="height: 100%; overflow: hidden">
+    <div class="as-split-area-content" #searchComponent>
+      <app-concept-search [root]="root" [relationships]="relationships" (hasResults)="hasResults($event)">
+      </app-concept-search>
+    </div>
+  </as-split-area>
+
+  <as-split-area style="height: 100%; overflow: hidden">
+    <div class="as-split-area-content" style="height: 100%">
+      <mat-tab-group mat-stretch-tabs class="example-stretched-tabs" style="height: 100%">
+        <mat-tab label="Browse">
+          <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">navigation</mat-icon>
+            Browse
+          </ng-template>
+          <ng-template matTabContent style="height: 100%">
+            <div style="height: 100%">
+              <button mat-icon-button color="primary" style="float:right" (click)="openDialog()">
+                <mat-icon>add</mat-icon>
+              </button>
+              <app-concept-hierarchy-view [root]="root" [concept]="concept" [children]="children" [parents]="parents">
+              </app-concept-hierarchy-view>
+            </div>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="History">
+          <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">history</mat-icon>
+            History
+          </ng-template>
+
+          <mat-selection-list dense multiple="false">
+            <mat-list-option *ngFor="let item of history" [value]="item" (click)="goto(item.concept.iri)"
+              (mouseenter)="itemHover(item.concept)" (mouseleave)="itemHover(null)">
+              <mat-icon mat-list-icon>launch</mat-icon>
+              <div mat-line>{{item.concept.name}}</div>
+            </mat-list-option>
+          </mat-selection-list>
+
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </as-split-area>
+</as-split>

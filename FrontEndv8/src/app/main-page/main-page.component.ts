@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {Router} from '@angular/router';
-import {KeycloakService} from 'keycloak-angular';
+import { Router } from '@angular/router';
+import {Perspectives} from '../services/perspective.service';
 
 @Component({
   selector: 'app-main-page',
@@ -8,18 +8,16 @@ import {KeycloakService} from 'keycloak-angular';
   styleUrls: ['./main-page.component.scss']
 })
 export class MainPageComponent implements OnInit {
-
   constructor(
-    private auth: KeycloakService,
-    private router: Router
-  ) {
-  }
+    private router: Router,
+    public perspectives: Perspectives
+  ) { }
 
   ngOnInit() {
+    this.perspectives.current = null;
   }
 
   logout() {
-    this.auth.logout();
   }
 
   navigateTo(route: string) {

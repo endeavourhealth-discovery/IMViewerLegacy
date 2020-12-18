@@ -1,0 +1,29 @@
+<as-split direction="horizontal">
+  <!-- LEFT -->
+  <as-split-area size="30" style="height: calc(100vh - 73px);">
+    <app-side-nav [root]="perspective.root" [relationships]="relationships" [concept]="concept" [children]="children" [parents]="parents" [selectedIri]="selectedIri"></app-side-nav>
+  </as-split-area>
+
+  <!-- RIGHT -->
+  <as-split-area size="70">
+    <div class="as-split-area-content">
+
+      <mat-card *ngIf="concept != null">
+
+        <!-- Header -->
+        <app-card-header [title]="perspective.caption + ' - ' + concept.name"
+                         [subtitle]="concept.description"
+                         [icon]="perspective.icon"
+                         [color]="perspective.color"
+                         style="height: 64px;"></app-card-header>
+        <!-- Dashboard container-->
+        <mat-card-content class="full-page-card">
+
+          <ng-content></ng-content>
+
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+  </as-split-area>
+</as-split>

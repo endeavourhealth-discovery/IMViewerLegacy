@@ -1,0 +1,21 @@
+export enum AxiomType {
+  'SubClassOf',
+  'EquivalentTo',
+  'SubObjectPropertyOf',
+  'SubDataPropertyOf',
+  'SubAnnotationPropertyOf',
+  'ObjectPropertyRange',
+  'DataPropertyRange',
+  'PropertyDomain',
+  'DisjointWith',
+  'SubPropertyChain',
+  'InverseOf',
+  'IsFunctional',
+  'IsTransitive',
+  'IsSymmetrical',
+  'IsReflexive',
+  'ObjectPropertyAssertion',
+  'DataPropertyAssertion',
+  'IsType',
+  'AnnotationAssertion'
+}

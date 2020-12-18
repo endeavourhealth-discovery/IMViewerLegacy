@@ -1,0 +1,89 @@
+<app-library-component
+  [relationships]="relationships"
+  [concept]="concept"
+  [children]="children"
+  [parents]="parents"
+  [selectedIri]="selectedIri"
+  [perspective]="perspectives.valueSets"
+>
+  <!-- Dashboard content-->
+  <div *ngIf="isValueSetAvailable" style="height: 100%">
+    <mat-grid-list cols="2" rowHeight="100%">
+      <mat-grid-tile>
+        <mat-grid-tile-header><h3>Members</h3></mat-grid-tile-header>
+
+        <div *ngIf="hasMembers; else noMembers">
+          <mat-action-list #members>
+            <mat-list-item *ngFor="let member of getMembers() | slice: memberPageStartIndex : memberPageEndIndex" (click)="onMemberSelected(member)" [matTooltip]="member.name">
+              <mat-icon mat-list-icon>add_circle</mat-icon>
+              <span class="no-wrap">{{member.name}} ({{member.iri}})</span>
+            </mat-list-item>
+          </mat-action-list>
+          <div style="bottom: 0; right: 0; position: absolute">
+            <mat-paginator [length]="getMembers().length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onMemberPageChange($event)" [showFirstLastButtons]=false>
+            </mat-paginator>
+          </div>
+        </div>
+      </mat-grid-tile>
+      <mat-grid-tile>
+        <mat-grid-tile-header><h3>Children</h3></mat-grid-tile-header>
+        <div *ngIf="conceptTree.dataSource.data.length > 0; else noChildren">
+          <mat-tree [dataSource]="conceptTree.dataSource" [treeControl]="conceptTree.control">
+            <!-- leaf node -->
+            <mat-tree-node *matTreeNodeDef="let node"
+                           matTreeNodePadding matTreeNodePaddingIndent="10">
+              {{node.name}}
+            </mat-tree-node>
+
+            <!-- expandable node -->
+            <mat-tree-node *matTreeNodeDef="let node; when: conceptTree.isExpandable"
+                           matTreeNodePadding matTreeNodePaddingIndent="10">
+              <mat-icon class="mat-icon-rtl-mirror" matTreeNodeToggle
+                        (click)="conceptTree.loadChildren(node)">
+                {{conceptTree.control.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+              </mat-icon>
+              {{node.name}}
+            </mat-tree-node>
+          </mat-tree>
+        </div>
+        <!--</div>-->
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
+  <!--</mat-drawer-container>-->
+</app-library-component>
+
+<!-- https://stackblitz.com/angular/volnvkpldqj?file=src%2Fapp%2Ftree-nested-overview-example.html -->
+
+<ng-template #valueSetMemberChildrenTemplate let-valueSetMember="valueSetMember">
+  <ng-container *ngIf="valueSetMember.hasChildren()">
+    <ng-container *ngFor="let child of valueSetMember.getChildren()">
+      <mat-expansion-panel hideToggle>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{child.concept.name}}
+          </mat-panel-title>
+          <mat-panel-description>
+            {{child.concept.description}}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <ng-template
+          [ngTemplateOutlet]="valueSetMemberChildrenTemplate"
+          [ngTemplateOutletContext]="{ valueSetMember: child }">
+        </ng-template>
+      </mat-expansion-panel>
+    </ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template #noMembers>
+  <div>
+    ValueSet does not contain any members
+  </div>
+</ng-template>
+
+<ng-template #noChildren>
+  <div>
+    Member does not contain any children
+  </div>
+</ng-template>

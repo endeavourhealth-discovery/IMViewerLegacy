@@ -1,0 +1,55 @@
+<div class="content">
+  <mat-card>
+
+    <!-- Header -->
+    <app-card-header [title]="perspectives.search.caption"
+                     [subtitle]="perspectives.search.description"
+                     [icon]="perspectives.search.icon"
+                     [color]="perspectives.search.color"
+                     style="height: 64px;"></app-card-header>
+    <!-- Dashboard container-->
+    <mat-card-content class="full-page-card">
+
+      <div>
+        <mat-divider></mat-divider>
+        <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start" style="padding-bottom: 16px; padding-top: 8px">
+          <mat-slide-toggle class="mat-slide-align-input" (change)="search()" [(ngModel)]="request.includeLegacy">Include legacy</mat-slide-toggle>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Code schemes</mat-label>
+            <mat-select multiple [(ngModel)]="request.schemes" [disabled]="!request.includeLegacy" (selectionChange)="search()">
+              <mat-option *ngFor="let scheme of schemes" [value]="scheme">{{scheme.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <mat-divider></mat-divider>
+      </div>
+
+      <mat-spinner *ngIf="response == null" style="margin: 0 auto"></mat-spinner>
+
+      <div style="overflow-y: auto; height: calc(100% - 66px)">
+        <table *ngIf="response != null" class="mat-table" style="width: 100%">
+          <thead>
+            <tr class="mat-row">
+              <th class="mat-header-cell">Name</th>
+              <th class="mat-header-cell">Iri</th>
+              <th class="mat-header-cell">Code</th>
+              <th class="mat-header-cell">Scheme</th>
+              <th class="mat-header-cell">Modules</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="mat-row" *ngFor="let item of response.concepts">
+              <td class="mat-cell">{{item.name}}</td>
+              <td class="mat-cell">{{item.iri}}</td>
+              <td class="mat-cell">{{item.code}}</td>
+              <td class="mat-cell">{{item.scheme.name}}</td>
+              <td class="mat-cell">(Modules)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,4 +1,8 @@
 out
 .idea
+.metadata
 target
 *.iml
+*.settings
+*.project
+*.classpath

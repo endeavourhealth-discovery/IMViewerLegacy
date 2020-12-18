@@ -1,0 +1,125 @@
+<!-- templates -->
+<ng-template #warnNoDataFoundTemplate>
+  <div style="display: flex;vertical-align: middle;">
+    -
+  </div>
+</ng-template>
+
+<ng-template #infoNoDataFoundTemplate>
+  <div style="display: flex;vertical-align: middle;">
+    -
+  </div>
+</ng-template>
+
+<ng-template #chipListTemplate let-chips="chips" , let-title="title">
+  <mat-expansion-panel expanded="false" togglePosition="before" displayMode="flat">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <b>{{title}} ({{chips.length}})</b>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-chip-list>
+      <mat-chip (click)="onSelect(chip.iri)" (mouseover)="onHoverOver(chip.iri)" (mouseout)="onHoverOut()" class="mat-small-chip"
+        *ngFor="let chip of chips">
+        {{chip.name}}
+      </mat-chip>
+    </mat-chip-list>
+  </mat-expansion-panel>
+</ng-template>
+
+<!-- main page -->
+<mat-expansion-panel expanded="true" togglePosition="before" displayMode="flat">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <b>Properties ({{propertiesTableData.length}})</b>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <ng-container *ngIf="concept.SubClassOf; else infoNoDataFoundTemplate" style="width: 100%;">
+    <table mat-table [dataSource]="propertiesTableData" style="width: 100%;">
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef style="width: 30%;">Name</th>
+        <td mat-cell *matCellDef="let row">
+          <!-- if ValueType -->
+          <ng-container *ngIf="isObjectProperty(row)">
+            <span (mouseover)="onHoverOver(row.ObjectPropertyValue.Property.iri)" (mouseout)="onHoverOut()">
+              {{row.ObjectPropertyValue.Property.name}}
+            </span>
+          </ng-container>
+
+          <!-- if DataType -->
+          <ng-container *ngIf="isDataProperty(row)">
+            <span (mouseover)="onHoverOver(row.DataPropertyValue.Property.iri)" (mouseout)="onHoverOut()">
+              {{row.DataPropertyValue.Property.name}}
+            </span>
+          </ng-container>
+
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef style="width: 20%;">Type</th>
+        <td mat-cell *matCellDef="let row">
+          <!-- if ValueType -->
+          <ng-container *ngIf="isObjectProperty(row)">
+            <span (mouseover)="onHoverOver(row.ObjectPropertyValue.ValueType.iri)" (mouseout)="onHoverOut()">
+              {{row.ObjectPropertyValue.ValueType.name}}
+            </span>
+          </ng-container>
+
+          <!-- if DataType -->
+          <ng-container *ngIf="isDataProperty(row)">
+            <span (mouseover)="onHoverOver(row.DataPropertyValue.DataType.iri)" (mouseout)="onHoverOut()">
+             {{row.DataPropertyValue.DataType.iri}}
+            </span>
+          </ng-container>
+
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="cardinality">
+        <th mat-header-cell *matHeaderCellDef style="width: 10%;">Cardinality</th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngIf="isObjectProperty(row)">
+            {{(row.ObjectPropertyValue.Min ? row.ObjectPropertyValue.Min : DEFAULT_MIN_CARDINALITY)}} : {{(row.ObjectPropertyValue.Max ? row.ObjectPropertyValue.Max : DEFAULT_MAX_CARDINALITY)}}
+          </ng-container>
+          <ng-container *ngIf="isDataProperty(row)">
+            {{(row.DataPropertyValue.Min ? row.DataPropertyValue.Min : DEFAULT_MIN_CARDINALITY)}} : {{(row.DataPropertyValue.Max ? row.DataPropertyValue.Max : DEFAULT_MAX_CARDINALITY)}}
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef style="width: 20%;">Description</th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngIf="row.description; else warnNoDataFoundTemplate">
+            [innerHTML]="row.description"
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="declaredOn">
+        <th mat-header-cell *matHeaderCellDef style="width: 20%;">Declared On</th>
+        <td mat-cell *matCellDef="let row" (mouseover)="onHoverOver(row.declaredOn)" (mouseout)="onHoverOut()">
+          <ng-container *ngIf="row.declaredOn; else warnNoDataFoundTemplate">
+            {{row.declaredOn.name}}
+            <button mat-icon-button (click)="onSelect(row.declaredOn)">
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+          </ng-container>
+        </td>
+      </ng-container>
+
+
+      <tr mat-header-row *matHeaderRowDef="propertiesTable.columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: propertiesTable.columns;"></tr>
+    </table>
+  </ng-container>
+</mat-expansion-panel>
+
+<ng-container *ngTemplateOutlet="chipListTemplate;context:parentsChipListTemplateContext">
+</ng-container>
+
+<ng-container *ngTemplateOutlet="chipListTemplate;context:childrenChipListTemplateContext">
+</ng-container>

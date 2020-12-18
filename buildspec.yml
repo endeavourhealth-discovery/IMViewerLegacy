@@ -1,20 +1,28 @@
 version: 0.2
+run-as: root
 
 phases:
+  install:
+    runtime-versions:
+      java: openjdk8
   pre_build:
     commands:
       - IP=$(curl http://checkip.amazonaws.com)/32
       - echo $IP of CodeBuild Instance
-      - curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-      - echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
-      - apt-get -y update
-      - apt-get -y install google-chrome-stable
+#      - curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+#      - echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
+#      - apt-get -y update
+#      - apt-get -y install google-chrome-stable
   build:
     commands:
+      # Build Front End
+      - cd $CODEBUILD_SRC_DIR
       - chmod +x aws_scripts/build.sh
-      - echo IM Build started on `date`
-      - aws_scripts/build.sh mvn -B deploy
-      - mvn sonar:sonar
+      - sed -i -e "s|DEPLOY_DESTINATION|$DESTINATION|g" appspec.yml
+      - sed -i -e "s|DEPLOY_DESTINATION|$DESTINATION|g" aws_scripts/cleanup
+      - echo IM Client Build started on `date`
+      - aws_scripts/build.sh mvn -B package
+#      - mvn sonar:sonar
   post_build:
     commands:
       - IP=$(curl http://checkip.amazonaws.com)/32
@@ -23,6 +31,5 @@ phases:
 artifacts:
   files:
     - appspec.yml
-    - aws_scripts/**/*
-    - API/target/api/**/*
+    - aws_scripts/cleanup
     - FrontEndv8/dist/FrontEndv8/**/*

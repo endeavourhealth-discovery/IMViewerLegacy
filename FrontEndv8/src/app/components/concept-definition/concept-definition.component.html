@@ -1,0 +1,89 @@
+<mat-form-field floatLabel="always" appearance="outline" fxFlex="100" readonly>
+  <mat-label>Definition:</mat-label>
+  <mat-wrapper>
+    <!-- **************************************** Concept properties **************************************** -->
+    <ng-container *ngIf="concept">
+      <ng-container *ngIf="concept.SubClassOf">
+        <div style="padding-left: 8px">
+          <b>Subclass of</b>
+          <ng-container [ngTemplateOutlet]="classExpressionList" [ngTemplateOutletContext]="{list : concept.SubClassOf}"></ng-container>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="concept.EquivalentTo">
+        <div style="padding-left: 8px">
+          <b>Equivalent to</b>
+          <ng-container [ngTemplateOutlet]="classExpressionList" [ngTemplateOutletContext]="{list : concept.EquivalentTo}"></ng-container>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="concept.Expression">
+        <div style="padding-left: 8px">
+          <b>Expression</b>
+          <ng-container [ngTemplateOutlet]="classExpressionList" [ngTemplateOutletContext]="{list : concept.EquivalentTo}"></ng-container>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="concept.DisjointWith">
+        <div style="padding-left: 8px">
+          <b>Disjoint with</b>
+          <ng-container [ngTemplateOutlet]="conceptReferenceList" [ngTemplateOutletContext]="{list : concept.DisjointWith}"></ng-container>
+        </div>
+      </ng-container>
+
+      <!-- **************************************** Lists **************************************** -->
+      <ng-template #classExpressionList let-list="list" let-join="join">
+        <span *ngIf="list.length > 1">[</span>
+        <div *ngFor="let item of list; let i = index" style="padding-left: 8px">
+          <b *ngIf="i > 0"> {{join}} </b>
+          <ng-container [ngTemplateOutlet]="classExpression" [ngTemplateOutletContext]="{item: item}"></ng-container>
+        </div>
+        <span *ngIf="list.length > 1">]</span>
+      </ng-template>
+
+      <ng-template #conceptReferenceList let-list="list" let-join="join">
+        <span *ngIf="list.length > 1">[</span>
+        <div *ngFor="let item of list; let i = index" style="padding-left: 8px">
+          <b *ngIf="i > 0"> {{join}} </b>
+          <ng-container [ngTemplateOutlet]="conceptReference" [ngTemplateOutletContext]="{item: item}"></ng-container>
+        </div>
+        <span *ngIf="list.length > 1">]</span>
+      </ng-template>
+      <!-- **************************************** Types **************************************** -->
+      <ng-template #classExpression let-item="item">
+        <ng-container *ngIf="item.Class">
+          <ng-container [ngTemplateOutlet]="conceptReference" [ngTemplateOutletContext]="{item: item.Class}"></ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="item.Intersection"[ngTemplateOutlet]="classExpressionList" [ngTemplateOutletContext]="{list : item.Intersection, join: 'and'}"></ng-container>
+
+        <ng-container *ngIf="item.Union" [ngTemplateOutlet]="classExpressionList" [ngTemplateOutletContext]="{list : item.Union, join: 'or'}"></ng-container>
+
+        <ng-container *ngIf="item.ObjectPropertyValue">
+          <ng-container [ngTemplateOutlet]="conceptReference" [ngTemplateOutletContext]="{item: item.ObjectPropertyValue.Property}"></ng-container>
+          <span> - <b>{{item.ObjectPropertyValue.Quantification}}</b> ({{item.ObjectPropertyValue.Min}}) - </span>
+          <ng-container *ngIf="item.ObjectPropertyValue.ValueType" [ngTemplateOutlet]="conceptReference" [ngTemplateOutletContext]="{item: item.ObjectPropertyValue.ValueType}"></ng-container>
+          <ng-container *ngIf="item.ObjectPropertyValue.Expression" [ngTemplateOutlet]="classExpression" [ngTemplateOutletContext]="{item: item.ObjectPropertyValue.Expression}"></ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="item.DataPropertyValue">
+          <ng-container [ngTemplateOutlet]="conceptReference" [ngTemplateOutletContext]="{item: item.DataPropertyValue.Property}"></ng-container>
+          <span> - <b>{{item.DataPropertyValue.Quantification}}</b> ({{item.DataPropertyValue.Min}}) - </span>
+          <ng-container *ngIf="item.DataPropertyValue.DataType" [ngTemplateOutlet]="conceptReference" [ngTemplateOutletContext]="{item: item.DataPropertyValue.DataType}"></ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="item.ObjectOneOf">
+          <div style="padding-left: 8px">
+            <b>Disjoint with</b>
+            <ng-container [ngTemplateOutlet]="conceptReferenceList" [ngTemplateOutletContext]="{list : item.ObjectOneOf}"></ng-container>
+          </div>
+        </ng-container>
+      </ng-template>
+
+      <ng-template #conceptReference let-item="item">
+        <b>{{item.name}}</b>
+      </ng-template>
+
+    </ng-container>
+  </mat-wrapper>
+</mat-form-field>

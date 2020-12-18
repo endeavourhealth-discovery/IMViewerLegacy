@@ -1,15 +1,40 @@
 /* You can add global styles to this file, and also import other style files */
+$base-font-size: 16;
+$scale: $base-font-size / 16;
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html {
+  font-size: 16px * $scale;
+}
+
+
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @import '~@angular/material/theming';
 
+// Define a custom typography config that overrides the font-family as well as the
+// `headlines` and `body-1` levels.
+$custom-typography: mat-typography-config(
+  $font-family:   'Roboto, "Helvetica Neue", sans-serif',
+  $display-4:     mat-typography-level(112px * $scale, 112px * $scale, 300, $letter-spacing: -0.05em),
+  $display-3:     mat-typography-level(56px * $scale, 56px * $scale, 400, $letter-spacing: -0.02em),
+  $display-2:     mat-typography-level(45px * $scale, 48px * $scale, 400, $letter-spacing: -0.005em),
+  $display-1:     mat-typography-level(34px * $scale, 40px * $scale, 400),
+  $headline:      mat-typography-level(24px * $scale, 32px * $scale, 400),
+  $title:         mat-typography-level(20px * $scale, 32px * $scale, 500),
+  $subheading-2:  mat-typography-level(16px * $scale, 28px * $scale, 400),
+  $subheading-1:  mat-typography-level(15px * $scale, 24px * $scale, 400),
+  $body-2:        mat-typography-level(14px * $scale, 24px * $scale, 500),
+  $body-1:        mat-typography-level(14px * $scale, 20px * $scale, 400),
+  $caption:       mat-typography-level(12px * $scale, 20px * $scale, 400),
+  $button:        mat-typography-level(14px * $scale, 14px * $scale, 500),
+    // Line-height must be unit-less fraction of the font-size.
+  $input:         mat-typography-level(14px * $scale, 1.125, 400)
+);
+
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-@include mat-core();
+@include mat-core($custom-typography);
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
@@ -28,69 +53,5 @@ $theme: mat-light-theme($primary, $accent, $warn);
 // that you are using.
 @include angular-material-theme($theme);
 
-// Discovery style overrides
-@import "~dds-angular8/assets/scss/styles";
-
-@include theme-layout($theme);
-
-// Dark theme
-$dark-primary: mat-palette($mat-blue-grey);
-$dark-accent:  mat-palette($mat-amber, A200, A100, A400);
-$dark-warn:    mat-palette($mat-deep-orange);
-
-$dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
-
-.dark-theme {
-  @include angular-material-theme($dark-theme);
-  @include theme-layout-dark($dark-theme);
-}
-
-// Teal theme
-$teal-primary: mat-palette($mat-teal);
-$teal-accent: mat-palette($mat-pink, A200, A100, A400);
-$teal-warn: mat-palette($mat-red);
-
-$teal-theme: mat-light-theme($teal-primary, $teal-accent, $teal-warn);
-
-.teal-theme {
-  @include angular-material-theme($teal-theme);
-  @include theme-layout($teal-theme);
-}
-
-// ******************** COMPONENT STYLES ********************
-
-@import "~im-common/assets/scss/styles";
-
-// ******************** TODO: Move to common/ng8 ********************
-div#home-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-sizing: border-box;               /*  added, to avoid scroll and make border size be included in set height  */
-
-  .mat-card-content {
-    height: calc(100vh - 173px);
-    padding: 0;
-  }
-}
-
-.mat-form-field-flex {
-  min-height: 54px;
-}
-
-td.mat-cell {
-  padding: 0 8px;
-}
-
-th.mat-header-cell {
-  padding: 0 8px;
-}
-
-.mat-form-field-wrapper {
-  padding-bottom: 0 !important;
-}
-
-.mat-tab-body-wrapper {
-  height: inherit!important;
-}
-
+// Base theme customisation in seperate file
+@import 'styles-custom.scss';
