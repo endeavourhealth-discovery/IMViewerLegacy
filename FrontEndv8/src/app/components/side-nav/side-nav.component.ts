@@ -22,7 +22,7 @@ export class SideNavComponent implements AfterViewInit {
 
   @Output() openDialogEvent: EventEmitter<any> = new EventEmitter<any>();
 
-  minSize = 72;
+  minSize = 71.5;
   searchSize = this.minSize;
   history = [];
 
