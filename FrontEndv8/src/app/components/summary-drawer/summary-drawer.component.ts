@@ -17,18 +17,18 @@ interface ConceptSummaryProvider {
     concept: Concept
     templateName: string
     rootType: string
-    
+
     canSummarise(concept: Concept): Observable<boolean>
 }
 
 export class BasicSummaryProvider implements ConceptSummaryProvider {
-    
+
     concept: Concept;
-    
+
     static TEMPLATE_NAME:string = "defaultSummaryTemplate";
 
     constructor(public rootType: string, private snackBar: MatSnackBar) {}
-    
+
     canSummarise(concept: Concept): Observable<boolean> {
         let canSummarise = new ReplaySubject<boolean>();
         canSummarise.next(true);
@@ -38,8 +38,8 @@ export class BasicSummaryProvider implements ConceptSummaryProvider {
 
     get templateName(): string {
         return BasicSummaryProvider.TEMPLATE_NAME;
-    }  
-    
+    }
+
     copyIri() {
         this.copyToClipboard(this.concept.iri);
 
@@ -62,7 +62,7 @@ export class BasicSummaryProvider implements ConceptSummaryProvider {
         selBox.select();
         document.execCommand('copy');
         document.body.removeChild(selBox);
-      }  
+      }
 }
 
 export class SemanticOntologySummaryProvider implements ConceptSummaryProvider {
@@ -79,7 +79,7 @@ export class SemanticOntologySummaryProvider implements ConceptSummaryProvider {
     get templateName(): string {
         return SemanticOntologySummaryProvider.TEMPLATE_NAME;
     }
-    
+
 }
 
 export class ValueSetSummaryProvider implements ConceptSummaryProvider {
@@ -122,24 +122,24 @@ export class ValueSetSummaryProvider implements ConceptSummaryProvider {
     onPageChange(event: PageEvent): PageEvent {
         this.pageStartIndex = event.pageIndex * event.pageSize;
         this.pageEndIndex = this.pageStartIndex + event.pageSize
-    
+
         return event;
     }
 }
 
 export class DataModelSummaryProvider implements ConceptSummaryProvider {
 
-    dataModelProperties: DataModelProperty[];  
+    dataModelProperties: DataModelProperty[];
     columns: string[];
-    
+
     private _concept: Concept;
-    
+
     static TEMPLATE_NAME:string = "dataModelSummaryTemplate";
 
     constructor(private dataModelService: DataModelService) {
         this.columns = ['name', 'type', 'cardinality'];
     }
-    
+
     canSummarise(concept: Concept): Observable<boolean> {
         return this.dataModelService.isDataModel(concept);
     }
@@ -155,7 +155,7 @@ export class DataModelSummaryProvider implements ConceptSummaryProvider {
     set concept(concept: Concept) {
         this._concept = concept;
         this.dataModelProperties = this.dataModelService.getDataModelProperties(concept);
-    }    
+    }
 }
 
 @Component({
@@ -182,35 +182,35 @@ export class SummaryDrawerComponent {
 
     summaryProvider: ConceptSummaryProvider;
     perspective: Perspective;
-    
+
     private _concept: Concept;
     private perspectivesMap: Map<string, Perspective>;
     private summaryProviders: Map<string, ConceptSummaryProvider>;
     private defaultSummaryProvider: ConceptSummaryProvider;
     private _isDrawerOpen: boolean;
 
-    constructor(private service: ConceptService, 
-                private perspectives: Perspectives, 
-                private log: LoggerService, 
+    constructor(private service: ConceptService,
+                private perspectives: Perspectives,
+                private log: LoggerService,
                 private valueSetService: ValueSetService,
                 private dataModelService: DataModelService,
                 private router: Router,
-                private snackBar: MatSnackBar, 
+                private snackBar: MatSnackBar,
                 private _eref: ElementRef) {
-       
+
         // faster lookup of perspectives
         this.perspectivesMap = new Map();
         this.perspectives.perspectives.forEach(perspective => this.perspectivesMap.set(perspective.root, perspective));
 
         // summary provider initialisation
         this.summaryProviders = new Map();
-        
+
         const valueSetSummaryProvider: ValueSetSummaryProvider = new ValueSetSummaryProvider(this.valueSetService);
         this.summaryProviders.set(valueSetSummaryProvider.rootType, valueSetSummaryProvider);
-        
+
         const dataModelSummaryProvider: DataModelSummaryProvider = new DataModelSummaryProvider(this.dataModelService);
         this.summaryProviders.set(dataModelSummaryProvider.rootType, dataModelSummaryProvider);
-        
+
         const semanticOntologySummaryProvider: SemanticOntologySummaryProvider = new SemanticOntologySummaryProvider(this.perspectives.ontology.root, this.service);
         this.summaryProviders.set(semanticOntologySummaryProvider.rootType, semanticOntologySummaryProvider);
 
@@ -224,16 +224,16 @@ export class SummaryDrawerComponent {
         this._isDrawerOpen = false;
     }
 
-    @ViewChild(BasicSummaryProvider.TEMPLATE_NAME, { static: true }) 
+    @ViewChild(BasicSummaryProvider.TEMPLATE_NAME, { static: true })
     defaultSummaryTemplate:TemplateRef<any>;
-    
-    @ViewChild(ValueSetSummaryProvider.TEMPLATE_NAME, { static: true }) 
+
+    @ViewChild(ValueSetSummaryProvider.TEMPLATE_NAME, { static: true })
     valueSetSummaryTemplate:TemplateRef<any>;
 
-    @ViewChild(DataModelSummaryProvider.TEMPLATE_NAME, { static: true }) 
+    @ViewChild(DataModelSummaryProvider.TEMPLATE_NAME, { static: true })
     dataModelSummaryTemplate:TemplateRef<any>;
 
-    @ViewChild(SemanticOntologySummaryProvider.TEMPLATE_NAME, { static: true }) 
+    @ViewChild(SemanticOntologySummaryProvider.TEMPLATE_NAME, { static: true })
     semanticOntologySummaryTemplate:TemplateRef<any>;
 
     @Input()
@@ -241,15 +241,15 @@ export class SummaryDrawerComponent {
         this._concept = concept;
 
         this.getPerspective(this.concept).subscribe(
-            perspective => { 
+            perspective => {
 
                 this.perspective = perspective;
 
                 this.getSummaryProvider(this.perspective.root).subscribe(
-                    summaryProvider => this.summaryProvider = summaryProvider 
+                    summaryProvider => this.summaryProvider = summaryProvider
                 );
             }
-        ); 
+        );
     }
 
     get concept() {
@@ -259,19 +259,19 @@ export class SummaryDrawerComponent {
     onClick(event) {
         if(this.clickedOutside(event.target)) {
             this.close();
-        }    
+        }
     }
 
-    getSummaryProvider(perspectiveRootIri: string): Observable<ConceptSummaryProvider> {    
+    getSummaryProvider(perspectiveRootIri: string): Observable<ConceptSummaryProvider> {
         let summaryProviderObservable: ReplaySubject<ConceptSummaryProvider> = new ReplaySubject();
         let summaryProvider: ConceptSummaryProvider = this.defaultSummaryProvider;
-        
+
         const potentialSummaryProvider = this.summaryProviders.get(perspectiveRootIri);
         if(potentialSummaryProvider != null) {
             potentialSummaryProvider.canSummarise(this.concept).subscribe(
-                canSummarise => { 
+                canSummarise => {
                     if(canSummarise) {
-                        summaryProvider = potentialSummaryProvider;    
+                        summaryProvider = potentialSummaryProvider;
                     }
                     else {
                         this.log.debug(`warning - concept summary provider for sub types of ${perspectiveRootIri} cannot summarise the concept ${this.concept.iri}.`);
@@ -285,7 +285,7 @@ export class SummaryDrawerComponent {
             this.log.debug("warning - no concept summary provider registered against IRI " + perspectiveRootIri + ". Returning default provider.");
 
             summaryProvider.concept = this.concept;
-            summaryProviderObservable.error(summaryProvider);     
+            summaryProviderObservable.error(summaryProvider);
         }
 
         return summaryProviderObservable;
@@ -294,7 +294,7 @@ export class SummaryDrawerComponent {
     gotoConcept(): void {
         let conceptPath: string = this.perspective.primary.state;
         if(conceptPath != null) {
-            this.router.navigate([conceptPath], { queryParams: { id: this.concept.iri } });
+            this.router.navigate([conceptPath, this.concept.iri]);
             this.close();
         }
         else {
@@ -316,7 +316,7 @@ export class SummaryDrawerComponent {
 
     get hasRoute(): boolean {
         let hasRoute: boolean = false;
-        
+
         if(this.perspective != null && this.perspective.primary != null) {
             hasRoute = this.perspective.primary.state != null;
         }
@@ -325,7 +325,7 @@ export class SummaryDrawerComponent {
     }
 
     private clickedOutside(target: any) {
-        return this._eref.nativeElement.contains(target) == false; 
+        return this._eref.nativeElement.contains(target) == false;
     }
 
     private getPerspective(concept: Concept): Observable<Perspective> {
@@ -344,7 +344,7 @@ export class SummaryDrawerComponent {
                 else {
                     console.log(`failed to get perspective for ${concept.iri}`);
                     this.log.debug(`warn - could not find perspective for concept ${concept.iri}. Falling back on default`);
-                    perspectiveObservable.next(SummaryDrawerComponent.DEFAULT_PERSPECTIVE);                     
+                    perspectiveObservable.next(SummaryDrawerComponent.DEFAULT_PERSPECTIVE);
                 }
             },
             (error) => {
@@ -354,5 +354,5 @@ export class SummaryDrawerComponent {
         )
 
         return perspectiveObservable;
-    }    
+    }
 }
