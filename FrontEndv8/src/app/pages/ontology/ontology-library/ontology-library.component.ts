@@ -48,8 +48,8 @@ export class OntologyLibraryComponent implements OnInit {
               private eventBus: NgEventBus) {
     this.routeEvent(this.router);
 
-    this.eventBus.on('app:conceptHover').subscribe((iri: string) => {
-      this.itemHover(iri);
+    this.eventBus.on('app:conceptSummary').subscribe((iri: string) => {
+      this.activateSummary(iri);
     });
 
     this.definitionChanged
@@ -104,7 +104,7 @@ export class OntologyLibraryComponent implements OnInit {
     }
   }
 
-  itemHover(iri: string) {
+  activateSummary(iri: string) {
     if (iri != null) {
       this.service.getConcept(iri).subscribe(
         (hoveredConcept) => {

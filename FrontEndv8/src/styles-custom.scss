@@ -39,12 +39,8 @@ body {
   background-color: mat-color($accent, 200);
 }
 
-.hover-highlight:hover {
-  background-color: mat-color($accent, 200);
-}
-
 mat-tree-node.selected {
-  background-color: mat-color($accent, 200);
+  background-color: mat-color($accent);
 }
 
 // Dark theme
@@ -62,7 +58,7 @@ $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
   }
 
   mat-tree-node.selected {
-    background-color: mat-color($dark-accent, 600);
+    background-color: mat-color($dark-accent, 800);
   }
 }
 
@@ -105,7 +101,7 @@ $teal-theme: mat-light-theme($teal-primary, $teal-accent, $teal-warn);
   }
 
   mat-tree-node.selected {
-    background-color: mat-color($teal-accent, 200);
+    background-color: mat-color($teal-accent);
   }
 }
 
@@ -200,7 +196,7 @@ $xmas-red: #E1384A;
   }
 
   mat-tree-node.selected {
-    background-color: mat-color($xmas-accent, 200);
+    background-color: mat-color($xmas-accent);
   }
 }
 

@@ -212,15 +212,4 @@ export class ConceptHierarchyViewComponent implements OnInit {
       this.treeControl.expandAll();
     }
   }
-
-  // temp remove to avoid popout being triggered from nav.
-  //<span (click)="selectNode(node)" (mouseenter)="nodeHover(node)" (mouseleave)="nodeHover(null)">{{node.name}}</span>
-  // nodeHover(node: ConceptNode) {
-  //   if (node !== null) {
-  //     this.eventBus.cast('app:conceptHover', node.iri);
-  //   } else {
-  //     this.eventBus.cast('app:conceptHover', null);
-  //   }
-  // }
-
 }

@@ -155,8 +155,7 @@ export class DataModelNavigatorComponent implements OnInit {
           .append('svg')
           .attr('class', 'clickable')
           .on('click', () => this.nodeClick(rel.iri))
-          .on('mouseenter', () => this.nodeHover(rel.iri))
-          .on('mouseleave', () => this.nodeHover(null));
+          .on('dblclick', () => this.nodeDblClick(rel.iri));
 
         const r = s.append('rect').attr('rx', 6).attr('ry', 6).attr('height', 25).attr('stroke', 'black');
 
@@ -204,8 +203,7 @@ export class DataModelNavigatorComponent implements OnInit {
           .append('svg')
           .attr('class', 'clickable')
           .on('click', () => this.nodeClick(rel.iri))
-          .on('mouseenter', () => this.nodeHover(rel.iri))
-          .on('mouseleave', () => this.nodeHover(null));
+          .on('dblclick', () => this.nodeDblClick(rel.iri));
 
         const r = s.append('rect').attr('rx', 6).attr('ry', 6).attr('height', 25).attr('stroke', 'black');
 
@@ -318,8 +316,7 @@ export class DataModelNavigatorComponent implements OnInit {
       .attr('y', 38 + 20 * i)
       .attr('class', 'clickable')
       .on('click', () => this.nodeClick(opv.Property.iri))
-      .on('mouseenter', () => this.nodeHover(opv.Property.iri))
-      .on('mouseleave', () => this.nodeHover(null));
+      .on('dblclick', () => this.nodeDblClick(opv.Property.iri));
 
     l += p.node().getComputedTextLength() + 4;
 
@@ -333,8 +330,7 @@ export class DataModelNavigatorComponent implements OnInit {
         .attr('y', 38 + 20 * i)
         .attr('class', 'clickable')
         .on('click', () => this.nodeClick(opv.ValueType.iri))
-        .on('mouseenter', () => this.nodeHover(opv.ValueType.iri))
-        .on('mouseleave', () => this.nodeHover(null));
+        .on('dblclick', () => this.nodeDblClick(opv.ValueType.iri));
 
       l += pt.node().getComputedTextLength() + 4;
     }
@@ -359,8 +355,7 @@ export class DataModelNavigatorComponent implements OnInit {
       .attr('y', 38 + 20 * i)
       .attr('class', 'clickable')
       .on('click', () => this.nodeClick(dpv.Property.iri))
-      .on('mouseenter', () => this.nodeHover(dpv.Property.iri))
-      .on('mouseleave', () => this.nodeHover(null));
+      .on('dblclick', () => this.nodeDblClick(dpv.Property.iri));
 
     l += p.node().getComputedTextLength() + 4;
 
@@ -374,8 +369,8 @@ export class DataModelNavigatorComponent implements OnInit {
         .attr('y', 38 + 20 * i)
         .attr('class', 'clickable')
         .on('click', () => this.nodeClick(dpv.DataType.iri))
-        .on('mouseenter', () => this.nodeHover(dpv.DataType.iri))
-        .on('mouseleave', () => this.nodeHover(null));
+        .on('dblclick', () => this.nodeDblClick(dpv.DataType.iri))
+      ;
 
       l += pt.node().getComputedTextLength() + 4;
     }
@@ -404,14 +399,14 @@ export class DataModelNavigatorComponent implements OnInit {
   }
 
   nodeClick(iri: string) {
-    this.eventBus.cast('app:conceptSelect', iri);
+    this.eventBus.cast('app:conceptSummary', iri);
   }
 
-  nodeHover(iri: string) {
+  nodeDblClick(iri: string) {
     if (iri != null || iri !== undefined) {
-      this.eventBus.cast('app:conceptHover', iri);
+      this.eventBus.cast('app:conceptSelect', iri);
     } else {
-      this.eventBus.cast('app:conceptHover', null);
+      this.eventBus.cast('app:conceptSelect', null);
     }
   }
 }
