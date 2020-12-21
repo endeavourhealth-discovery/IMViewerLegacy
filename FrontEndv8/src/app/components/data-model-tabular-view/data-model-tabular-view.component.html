@@ -28,15 +28,16 @@
 </ng-template>
 
 <!-- main page -->
-<mat-expansion-panel expanded="true" togglePosition="before" displayMode="flat">
+<ng-template #propertiesTableTemplate let-tableData="tableData" let-title="title">
+<mat-expansion-panel expanded="true" togglePosition="before" displayMode="flat" *ngIf="tableData.length > 0" >
   <mat-expansion-panel-header>
     <mat-panel-title>
-      <b>Properties ({{propertiesTableData.length}})</b>
+      <b>Properties ({{tableData.length}}) </b> <span *ngIf="title">&nbsp;- Inherited from <b>{{title}}</b></span>
     </mat-panel-title>
   </mat-expansion-panel-header>
 
-  <ng-container *ngIf="propertiesTableData.length > 0; else infoNoDataFoundTemplate" style="width: 100%;">
-    <table mat-table [dataSource]="propertiesTableData" style="width: 100%;">
+  <ng-container style="width: 100%;">
+    <table mat-table [dataSource]="tableData" style="width: 100%;">
 
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef style="width: 30%;">Name</th>
@@ -95,6 +96,15 @@
     </table>
   </ng-container>
 </mat-expansion-panel>
+</ng-template>
+
+<ng-container *ngTemplateOutlet="propertiesTableTemplate;context:{tableData : propertiesTableData}">
+</ng-container>
+
+<div *ngFor="let a of ancestors; let i = index">
+  <ng-container *ngTemplateOutlet="propertiesTableTemplate;context:{tableData : ancestorsTableDataList[i], title: ancestors[i].name}">
+  </ng-container>
+</div>
 
 <ng-container *ngTemplateOutlet="chipListTemplate;context:parentsChipListTemplateContext">
 </ng-container>

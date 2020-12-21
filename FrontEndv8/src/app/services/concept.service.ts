@@ -45,6 +45,10 @@ export class ConceptService implements DataModelNavigatorService {
     return this.http.get<Array<ConceptReferenceNode>>(environment.api + 'api/concept/' + iri + '/parents');
   }
 
+  getAncestorDefinitions(iri: string): Observable<Array<Concept>> {
+    return this.http.get<Array<Concept>>(environment.api + 'api/concept/' + iri + '/parents/definitions');
+  }
+
   findUsages(iri: string): Observable<Array<ConceptReference>> {
     return this.http.get<Array<ConceptReference>>(environment.api + 'api/concept/' + iri + '/usages');
   }
@@ -55,9 +59,9 @@ export class ConceptService implements DataModelNavigatorService {
 
   isA(iri: string, parentIri: string): Observable<boolean> {
     let isAObservable: Subject<boolean> = new Subject();
-    
+
     this.isOfType(iri, [parentIri]).subscribe(
-      response => { 
+      response => {
         let match = false;
         response.forEach(parent => {
           if(parent.iri == parentIri) {
@@ -69,5 +73,5 @@ export class ConceptService implements DataModelNavigatorService {
     )
 
     return isAObservable;
-  } 
+  }
 }

@@ -34,6 +34,9 @@ class DataModelTablularViewComponent {
   propertiesTable: DataTable<FlatProperty>;
   propertiesTableData: any[] = [];
 
+  ancestors: Concept[] = [];
+  ancestorsTableDataList: any[][] = [];
+
   parentsChipListTemplateContext: ChipListTemplateContext;
   childrenChipListTemplateContext: ChipListTemplateContext;
 
@@ -71,8 +74,12 @@ class DataModelTablularViewComponent {
     if (!concept)
       return;
 
-    if (concept.SubClassOf != null)
-      concept.SubClassOf.forEach(exp => this.addExpressionToPropertiesTableData(exp));
+    this.propertiesTableData = this.buildPropertiesTableData(concept);
+
+    this.service.getAncestorDefinitions(concept.iri).subscribe(
+      (result) => this.addInheritedProperties(result),
+      (error) => this.log.error(error)
+    );
   }
 
   refreshParents(parents) {
@@ -89,11 +96,29 @@ class DataModelTablularViewComponent {
     };
   }
 
-  addExpressionToPropertiesTableData(expression: ClassExpression) {
+  addInheritedProperties(ancestors: Concept[]) {
+    this.ancestors = ancestors;
+    const l = ancestors.length;
+    this.ancestorsTableDataList = new Array(l);
+    for(let i = 0; i < l; i++) {
+      this.ancestorsTableDataList[i] = this.buildPropertiesTableData(ancestors[i]);
+    }
+  }
+
+  buildPropertiesTableData(concept: Concept) {
+    let tableData: any[] = [];
+
+    if (concept.SubClassOf != null)
+      concept.SubClassOf.forEach(exp => this.addExpressionToPropertiesTableData(exp, tableData));
+
+    return tableData;
+  }
+
+  addExpressionToPropertiesTableData(expression: ClassExpression, tableData: any[]) {
     if (expression.ObjectPropertyValue || expression.DataPropertyValue)
-      this.propertiesTableData.push(expression);
+      tableData.push(expression);
     if (expression.Intersection)
-      expression.Intersection.forEach(exp => this.addExpressionToPropertiesTableData(exp));
+      expression.Intersection.forEach(exp => this.addExpressionToPropertiesTableData(exp, tableData));
   }
 
   compare(a: any, b: any) {
