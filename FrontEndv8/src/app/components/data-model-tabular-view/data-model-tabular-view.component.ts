@@ -29,28 +29,34 @@ class DataModelTablularViewComponent {
   static DEFAULT_MIN_CARDINALITY: number = 0;
   static DEFAULT_MAX_CARDINALITY: string = "*";
 
-  private iri: string;
-
   dataModelDefinition: DataModelDefinition;
 
   propertiesTable: DataTable<FlatProperty>;
   propertiesTableData: any[] = [];
 
+  ancestors: Concept[] = [];
+  ancestorsTableDataList: any[][] = [];
+
   parentsChipListTemplateContext: ChipListTemplateContext;
   childrenChipListTemplateContext: ChipListTemplateContext;
 
-  @Input() concept: Concept;
-  @Input() parents: Array<ConceptReferenceNode>;
-  @Input() children: Array<ConceptReferenceNode>;
+  @Input()
+  set parents(parents: Array<ConceptReferenceNode>) {
+    this.refreshParents(parents);
+  }
 
   @Input()
-  set conceptIri(iri: string) {
-    this.iri = iri;
-    this.refresh();
+  set children(children: Array<ConceptReferenceNode>) {
+    this.refreshChildren(children);
+  }
+
+  @Input()
+  set concept(concept: Concept) {
+    this.refreshDefinition(concept);
   }
 
   constructor(private service: ConceptService, private log: LoggerService, private router: Router, private eventBus: NgEventBus) {
-    this.propertiesTable = new DataTable<FlatProperty>(['name', 'type', 'cardinality', 'description', 'declaredOn']);
+    this.propertiesTable = new DataTable<FlatProperty>(['name', 'type', 'cardinality']);
 
     this.parentsChipListTemplateContext = {
       title: 'Parents',
@@ -63,31 +69,56 @@ class DataModelTablularViewComponent {
     };
   }
 
-  refresh() {
+  refreshDefinition(concept: Concept) {
     this.propertiesTableData = [];
-    if (this.concept.SubClassOf[0].Intersection != null) {
-      this.concept.SubClassOf[0].Intersection.forEach(intersection => {
-        if (intersection.ObjectPropertyValue != null && intersection.ObjectPropertyValue.Property.iri !== ':hasCoreProperties') {
-          this.propertiesTableData.push(intersection);
-        }
-        if (intersection.ObjectPropertyValue != null && intersection.ObjectPropertyValue.Expression != null && intersection.ObjectPropertyValue.Expression.Intersection != null && intersection.ObjectPropertyValue.Property.iri === ':hasCoreProperties') {
-          intersection.ObjectPropertyValue.Expression.Intersection.forEach(subIntersection => {
-            this.propertiesTableData.push(subIntersection);
-          });
-        }
-      });
-      this.propertiesTableData = this.propertiesTableData.sort((a,b) => this.compare(a,b))
-    }
+    if (!concept)
+      return;
 
+    this.propertiesTableData = this.buildPropertiesTableData(concept);
+
+    this.service.getAncestorDefinitions(concept.iri).subscribe(
+      (result) => this.addInheritedProperties(result),
+      (error) => this.log.error(error)
+    );
+  }
+
+  refreshParents(parents) {
     this.parentsChipListTemplateContext = {
       title: 'Parents',
-      chips: this.parents
+      chips: parents
     };
+  }
 
+  refreshChildren(children) {
     this.childrenChipListTemplateContext = {
       title: 'Children',
-      chips: this.children
+      chips: children
     };
+  }
+
+  addInheritedProperties(ancestors: Concept[]) {
+    this.ancestors = ancestors;
+    const l = ancestors.length;
+    this.ancestorsTableDataList = new Array(l);
+    for(let i = 0; i < l; i++) {
+      this.ancestorsTableDataList[i] = this.buildPropertiesTableData(ancestors[i]);
+    }
+  }
+
+  buildPropertiesTableData(concept: Concept) {
+    let tableData: any[] = [];
+
+    if (concept.SubClassOf != null)
+      concept.SubClassOf.forEach(exp => this.addExpressionToPropertiesTableData(exp, tableData));
+
+    return tableData;
+  }
+
+  addExpressionToPropertiesTableData(expression: ClassExpression, tableData: any[]) {
+    if (expression.ObjectPropertyValue || expression.DataPropertyValue)
+      tableData.push(expression);
+    if (expression.Intersection)
+      expression.Intersection.forEach(exp => this.addExpressionToPropertiesTableData(exp, tableData));
   }
 
   compare(a: any, b: any) {
@@ -104,16 +135,12 @@ class DataModelTablularViewComponent {
     }
   }
 
-  onSelect(iri: string) {
+  onClick(iri: string) {
+    this.eventBus.cast('app:conceptSummary', iri);
+  }
+
+  onDblClick(iri: string) {
     this.eventBus.cast('app:conceptSelect', iri);
-  }
-
-  onHoverOver(iri: string) {
-    this.eventBus.cast('app:conceptHover', iri);
-  }
-
-  onHoverOut() {
-    this.eventBus.cast('app:conceptHover', null);
   }
 
   isObjectProperty(row: ClassExpression): boolean {

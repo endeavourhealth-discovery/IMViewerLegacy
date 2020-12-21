@@ -9,6 +9,8 @@ import {Concept} from '../../models/objectmodel/Concept';
 import {ConceptReference} from '../../models/objectmodel/ConceptReference';
 import {ConceptReferenceNode} from '../../models/objectmodel/ConceptReferenceNode';
 import {LoggerService} from '../../services/logger.service';
+import {ObjectPropertyValue} from '../../models/objectmodel/ObjectPropertyValue';
+import {DataPropertyValue} from '../../models/objectmodel/DataPropertyValue';
 
 @Component({
   selector: 'app-data-model-navigator',
@@ -153,8 +155,7 @@ export class DataModelNavigatorComponent implements OnInit {
           .append('svg')
           .attr('class', 'clickable')
           .on('click', () => this.nodeClick(rel.iri))
-          .on('mouseenter', () => this.nodeHover(rel.iri))
-          .on('mouseleave', () => this.nodeHover(null));
+          .on('dblclick', () => this.nodeDblClick(rel.iri));
 
         const r = s.append('rect').attr('rx', 6).attr('ry', 6).attr('height', 25).attr('stroke', 'black');
 
@@ -202,8 +203,7 @@ export class DataModelNavigatorComponent implements OnInit {
           .append('svg')
           .attr('class', 'clickable')
           .on('click', () => this.nodeClick(rel.iri))
-          .on('mouseenter', () => this.nodeHover(rel.iri))
-          .on('mouseleave', () => this.nodeHover(null));
+          .on('dblclick', () => this.nodeDblClick(rel.iri));
 
         const r = s.append('rect').attr('rx', 6).attr('ry', 6).attr('height', 25).attr('stroke', 'black');
 
@@ -261,11 +261,9 @@ export class DataModelNavigatorComponent implements OnInit {
       this.concept.SubClassOf[0].Intersection = [];
     }
     for (let intersection of this.concept.SubClassOf[0].Intersection) {
-      if (intersection.ObjectPropertyValue != null) {
-        const result = this.addExpression(intersection, s, i, w);
-        i = result.i;
-        w = result.w;
-      }
+      const result = this.addExpression(intersection, s, i, w);
+      i = result.i;
+      w = result.w;
     }
 
     w = Math.round(w);
@@ -281,58 +279,108 @@ export class DataModelNavigatorComponent implements OnInit {
   }
 
   private addExpression(expression, s, i: number, w: number) {
-    if (expression.ObjectPropertyValue.Property.iri === ':hasCoreProperties') {
-      for (let intersection of expression.ObjectPropertyValue.Expression.Intersection) {
-        if (intersection.ObjectPropertyValue != null) {
+    if (expression.Intersection != null) {
+      for (let intersection of expression.Intersection) {
+        const result = this.addExpression(intersection, s, i, w);
+        i = result.i;
+        w = result.w;
+      }
+    } else if (expression.ObjectPropertyValue != null) {
+      if (expression.ObjectPropertyValue.Property.iri === ':hasCoreProperties') {
+        for (let intersection of expression.ObjectPropertyValue.Expression.Intersection) {
           const result = this.addExpression(intersection, s, i, w);
           i = result.i;
           w = result.w;
         }
+      } else {
+        const result = this.addObjectPropertyValue(s, expression.ObjectPropertyValue, i, w);
+        i = result.i;
+        w = result.w;
       }
-    } else {
+    } else if (expression.DataPropertyValue != null) {
+      const result = this.addDataPropertyValue(s, expression.DataPropertyValue, i, w);
+      i = result.i;
+      w = result.w;
+    }
+    return {i, w};
+  }
 
-      let l = this.pad;
+  private addObjectPropertyValue(s, opv: ObjectPropertyValue, i: number, w: number) {
+    let l = this.pad;
 
-      const p = s
+    const p = s
+      .append('text')
+      .text(opv.Property.name + ': ')
+      .attr('font-size', 12)
+      .attr('x', l)
+      .attr('y', 38 + 20 * i)
+      .attr('class', 'clickable')
+      .on('click', () => this.nodeClick(opv.Property.iri))
+      .on('dblclick', () => this.nodeDblClick(opv.Property.iri));
+
+    l += p.node().getComputedTextLength() + 4;
+
+    // Type
+    if (opv.Property.iri !== ':hasCoreProperties') {
+      const pt = s
         .append('text')
-        .text(expression.ObjectPropertyValue.Property.name + ': ')
+        .text(opv.ValueType.name + this.cardText(opv.Min, opv.Max))
         .attr('font-size', 12)
         .attr('x', l)
         .attr('y', 38 + 20 * i)
         .attr('class', 'clickable')
-        .on('click', () => this.nodeClick(expression.ObjectPropertyValue.Property.iri))
-        .on('mouseenter', () => this.nodeHover(expression.ObjectPropertyValue.Property.iri))
-        .on('mouseleave', () => this.nodeHover(null));
+        .on('click', () => this.nodeClick(opv.ValueType.iri))
+        .on('dblclick', () => this.nodeDblClick(opv.ValueType.iri));
 
-      // if (property.level >= 0) {
-      //   p.attr('fill', 'grey');
-      // }
-
-      l += p.node().getComputedTextLength() + 4;
-
-      // Type
-      if (expression.ObjectPropertyValue.Property.iri !== ':hasCoreProperties') {
-        const pt = s
-          .append('text')
-          .text(expression.ObjectPropertyValue.ValueType.name + this.cardText(expression.ObjectPropertyValue.Min, expression.ObjectPropertyValue.Max))
-          .attr('font-size', 12)
-          .attr('x', l)
-          .attr('y', 38 + 20 * i)
-          .attr('class', 'clickable')
-          .on('click', () => this.nodeClick(expression.ObjectPropertyValue.ValueType.iri))
-          .on('mouseenter', () => this.nodeHover(expression.ObjectPropertyValue.ValueType.iri))
-          .on('mouseleave', () => this.nodeHover(null));
-
-        l += pt.node().getComputedTextLength() + 4;
-      }
-
-      l += this.pad;
-
-      if (l > w) {
-        w = l;
-      }
-      i++;
+      l += pt.node().getComputedTextLength() + 4;
     }
+
+    l += this.pad;
+
+    if (l > w) {
+      w = l;
+    }
+    i++;
+    return {i, w};
+  }
+
+  private addDataPropertyValue(s, dpv: DataPropertyValue, i: number, w: number) {
+    let l = this.pad;
+
+    const p = s
+      .append('text')
+      .text(dpv.Property.name + ': ')
+      .attr('font-size', 12)
+      .attr('x', l)
+      .attr('y', 38 + 20 * i)
+      .attr('class', 'clickable')
+      .on('click', () => this.nodeClick(dpv.Property.iri))
+      .on('dblclick', () => this.nodeDblClick(dpv.Property.iri));
+
+    l += p.node().getComputedTextLength() + 4;
+
+    // Type
+    if (dpv.Property.iri !== ':hasCoreProperties') {
+      const pt = s
+        .append('text')
+        .text((dpv.DataType.name == null || dpv.DataType.name == '' ? dpv.DataType.iri : dpv.DataType.name) + this.cardText(dpv.Min, dpv.Max))
+        .attr('font-size', 12)
+        .attr('x', l)
+        .attr('y', 38 + 20 * i)
+        .attr('class', 'clickable')
+        .on('click', () => this.nodeClick(dpv.DataType.iri))
+        .on('dblclick', () => this.nodeDblClick(dpv.DataType.iri))
+      ;
+
+      l += pt.node().getComputedTextLength() + 4;
+    }
+
+    l += this.pad;
+
+    if (l > w) {
+      w = l;
+    }
+    i++;
     return {i, w};
   }
 
@@ -341,7 +389,7 @@ export class DataModelNavigatorComponent implements OnInit {
     if (min === max && min != null) return '[' + min + ']';
 
     // Create in 'm..n' format
-    let card = (min === null ? '0' : min) + '..' + (max === null ? '*' : max);
+    let card = (min ? min : 0) + '..' + (max ? max : '*');
 
     // Replace shorthands
     if (card === '0..0') card = '0';
@@ -351,14 +399,14 @@ export class DataModelNavigatorComponent implements OnInit {
   }
 
   nodeClick(iri: string) {
-    this.eventBus.cast('app:conceptSelect', iri);
+    this.eventBus.cast('app:conceptSummary', iri);
   }
 
-  nodeHover(iri: string) {
+  nodeDblClick(iri: string) {
     if (iri != null || iri !== undefined) {
-      this.eventBus.cast('app:conceptHover', iri);
+      this.eventBus.cast('app:conceptSelect', iri);
     } else {
-      this.eventBus.cast('app:conceptHover', null);
+      this.eventBus.cast('app:conceptSelect', null);
     }
   }
 }

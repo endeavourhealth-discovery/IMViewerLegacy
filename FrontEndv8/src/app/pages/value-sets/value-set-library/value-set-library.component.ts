@@ -73,8 +73,8 @@ export class ValueSetLibraryComponent implements OnInit {
     this.memberPageStartIndex = 0;
     this.memberPageEndIndex = this.pageSize;
 
-    this.eventBus.on('app:conceptHover').subscribe((iri: string) => {
-      this.itemHover(iri);
+    this.eventBus.on('app:conceptSummary').subscribe((iri: string) => {
+      this.activateSummary(iri);
     });
   }
 
@@ -149,7 +149,7 @@ export class ValueSetLibraryComponent implements OnInit {
     return JSON.stringify(object);
   }
 
-  itemHover(iri: string) {
+  activateSummary(iri: string) {
     const root = this;
     if (iri != null) {
       this.timer = setTimeout(() => {
@@ -417,9 +417,9 @@ class ValueSetPersepctive {
     return this.members.length > 0 || this.nonMembers.length > 0;
   }
 
-  private processIntersection(intersection: ClassExpression): void {
-    if(intersection != null) {
-      let objectPropertyValue = intersection.ObjectPropertyValue;
+  private processExpression(expression: ClassExpression): void {
+    if(expression != null) {
+      let objectPropertyValue = expression.ObjectPropertyValue;
 
       if(objectPropertyValue != null && this.hasMembers(objectPropertyValue.Property)) {
         let isMember = true;
@@ -431,20 +431,18 @@ class ValueSetPersepctive {
         else {
           this.classifyMember(objectPropertyValue.ValueType, isMember);
         }
+      } else if (expression.Intersection) {
+        expression.Intersection.forEach(exp => this.processExpression(exp));
       }
       else {
-        console.log("Concept intersection has no members - ", JSON.stringify(intersection));
+        console.log("Concept intersection has no members - ", JSON.stringify(expression));
       }
     }
   }
 
   private processSubClass(concept: Concept): void {
     if(concept.SubClassOf != null && Array.isArray(concept.SubClassOf)) {
-      concept.SubClassOf.forEach(subClassOf => {
-        subClassOf.Intersection.forEach(intersection => {
-          this.processIntersection(intersection);
-        });
-      });
+      concept.SubClassOf.forEach(exp => this.processExpression(exp));
     }
     else {
       console.log("Concept has not SubClassOf ", JSON.stringify(concept));

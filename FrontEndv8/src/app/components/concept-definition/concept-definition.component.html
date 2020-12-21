@@ -81,7 +81,7 @@
       </ng-template>
 
       <ng-template #conceptReference let-item="item">
-        <b>{{item.name}}</b>
+        <b>{{item.name == null || item.name == ''  ? item.iri : item.name}}</b>
       </ng-template>
 
     </ng-container>

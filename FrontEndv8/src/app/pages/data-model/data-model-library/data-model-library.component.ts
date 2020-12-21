@@ -46,8 +46,8 @@ class DataModelLibraryComponent implements OnInit {
               private eventBus: NgEventBus) {
     this.routeEvent(this.router);
 
-    this.eventBus.on('app:conceptHover').subscribe((iri: string) => {
-      this.itemHover(iri);
+    this.eventBus.on('app:conceptSummary').subscribe((iri: string) => {
+      this.showSummaryDrawer(iri);
     });
   }
 
@@ -95,7 +95,7 @@ class DataModelLibraryComponent implements OnInit {
     }
   }
 
-  itemHover(iri: string) {
+  showSummaryDrawer(iri: string) {
     const root = this;
     if (iri != null) {
       this.service.getConcept(iri).subscribe(

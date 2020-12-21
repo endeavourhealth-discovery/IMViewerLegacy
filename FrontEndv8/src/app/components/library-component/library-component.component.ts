@@ -27,15 +27,15 @@ export class LibraryComponentComponent implements OnInit {
     private log: LoggerService,
     private eventBus: NgEventBus
   ) {
-    this.eventBus.on('app:conceptHover').subscribe((iri: string) => {
-      this.itemHover(iri);
+    this.eventBus.on('app:conceptSummary').subscribe((iri: string) => {
+      this.activateSummary(iri);
     });
   }
 
   ngOnInit() {
   }
 
-  itemHover(iri: string) {
+  activateSummary(iri: string) {
     const root = this;
     if (iri != null) {
       this.timer = setTimeout(() => {
