@@ -3,12 +3,14 @@ import { NgEventBus } from 'ng-event-bus';
 import { Component, Input } from '@angular/core';
 import { ConceptService } from '../../services/concept.service';
 import { DataModelDefinition, FlatProperty } from '../../models/old/DataModelDefinition';
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Concept } from '../../models/objectmodel/Concept';
-import { ClassExpression } from '../../models/objectmodel/ClassExpression';
 import {LoggerService} from '../../services/logger.service';
+import {ObjectModelVisitor} from '../../models/ObjectModelVisitor';
+import {ObjectPropertyValue} from '../../models/objectmodel/ObjectPropertyValue';
+import {DataPropertyValue} from '../../models/objectmodel/DataPropertyValue';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -25,7 +27,7 @@ const debug = (message: string) => { console.log(message); };
   ],
 })
 
-class DataModelTablularViewComponent {
+class DataModelTabularViewComponent {
   static DEFAULT_MIN_CARDINALITY: number = 0;
   static DEFAULT_MAX_CARDINALITY: string = "*";
 
@@ -107,32 +109,11 @@ class DataModelTablularViewComponent {
 
   buildPropertiesTableData(concept: Concept) {
     let tableData: any[] = [];
-
-    if (concept.SubClassOf != null)
-      concept.SubClassOf.forEach(exp => this.addExpressionToPropertiesTableData(exp, tableData));
-
+    let omv = new ObjectModelVisitor();
+    omv.ObjectPropertyValueVisitor = (opv:ObjectPropertyValue) => {tableData.push(opv)};
+    omv.DataPropertyValueVisitor = (dpv:DataPropertyValue) => {tableData.push(dpv)};
+    omv.visit(concept);
     return tableData;
-  }
-
-  addExpressionToPropertiesTableData(expression: ClassExpression, tableData: any[]) {
-    if (expression.ObjectPropertyValue || expression.DataPropertyValue)
-      tableData.push(expression);
-    if (expression.Intersection)
-      expression.Intersection.forEach(exp => this.addExpressionToPropertiesTableData(exp, tableData));
-  }
-
-  compare(a: any, b: any) {
-    if (this.isObjectProperty(a)) {
-      if (this.isObjectProperty(b))
-        return a.ObjectPropertyValue.Property.name.localeCompare(b.ObjectPropertyValue.Property.name, undefined, { sensitivity: 'accent' });
-      else
-        return a.ObjectPropertyValue.Property.name.localeCompare(b.DataPropertyValue.Property.name, undefined, { sensitivity: 'accent' });
-    } else {
-      if (this.isObjectProperty(b))
-        return a.DataPropertyValue.Property.name.localeCompare(b.ObjectPropertyValue.Property.name, undefined, { sensitivity: 'accent' });
-      else
-        return a.DataPropertyValue.Property.name.localeCompare(b.DataPropertyValue.Property.name, undefined, { sensitivity: 'accent' });
-    }
   }
 
   onClick(iri: string) {
@@ -143,20 +124,20 @@ class DataModelTablularViewComponent {
     this.eventBus.cast('app:conceptSelect', iri);
   }
 
-  isObjectProperty(row: ClassExpression): boolean {
-    return row.ObjectPropertyValue && row.ObjectPropertyValue.Property.iri != null;
+  isObjectProperty(row): boolean {
+    return (row instanceof ObjectPropertyValue);
   }
 
-  isDataProperty(row: ClassExpression): boolean {
-    return row.DataPropertyValue && row.DataPropertyValue.Property.iri != null;
+  isDataProperty(row): boolean {
+    return (row instanceof DataPropertyValue);
   }
 
   get DEFAULT_MIN_CARDINALITY(): number {
-    return DataModelTablularViewComponent.DEFAULT_MIN_CARDINALITY;
+    return DataModelTabularViewComponent.DEFAULT_MIN_CARDINALITY;
   }
 
   get DEFAULT_MAX_CARDINALITY(): string {
-    return DataModelTablularViewComponent.DEFAULT_MAX_CARDINALITY;
+    return DataModelTabularViewComponent.DEFAULT_MAX_CARDINALITY;
   }
 }
 
@@ -196,7 +177,7 @@ interface ChipListTemplateContext {
 }
 
 export {
-  DataModelTablularViewComponent,
+  DataModelTabularViewComponent,
   DataTable,
   ChipListTemplateContext
 };

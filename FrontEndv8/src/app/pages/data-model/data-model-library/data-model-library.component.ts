@@ -4,7 +4,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ConceptService } from '../../../services/concept.service';
 import { Concept } from '../../../models/objectmodel/Concept';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { DataModelTablularViewComponent } from '../../../components/data-model-tabular-view/data-model-tabular-view.component';
+import { DataModelTabularViewComponent } from '../../../components/data-model-tabular-view/data-model-tabular-view.component';
 import { NgEventBus } from 'ng-event-bus';
 import { LoggerService } from '../../../services/logger.service';
 import { Perspectives } from '../../../services/perspective.service';
@@ -34,7 +34,7 @@ class DataModelLibraryComponent implements OnInit {
 
   textual = null;
 
-  @ViewChild(DataModelTablularViewComponent, { static: true }) tableView: DataModelTablularViewComponent;
+  @ViewChild(DataModelTabularViewComponent, { static: true }) tableView: DataModelTabularViewComponent;
   @ViewChild(SummaryDrawerComponent, { static: true }) summaryDrawer: SummaryDrawerComponent;
 
   constructor(private service: ConceptService,

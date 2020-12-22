@@ -11,6 +11,7 @@ import {ConceptReferenceNode} from '../../models/objectmodel/ConceptReferenceNod
 import {LoggerService} from '../../services/logger.service';
 import {ObjectPropertyValue} from '../../models/objectmodel/ObjectPropertyValue';
 import {DataPropertyValue} from '../../models/objectmodel/DataPropertyValue';
+import {ObjectModelVisitor} from '../../models/ObjectModelVisitor';
 
 @Component({
   selector: 'app-data-model-navigator',
@@ -254,55 +255,32 @@ export class DataModelNavigatorComponent implements OnInit {
 
     let w = t.node().getComputedTextLength() + this.pad * 2;
 
-    let lastOwner = this.concept.iri;
     let i = 0;
 
-    if (this.concept.SubClassOf[0].Intersection == null) {
-      this.concept.SubClassOf[0].Intersection = [];
+    let omv = new ObjectModelVisitor();
+    omv.ObjectPropertyValueVisitor = (opv:ObjectPropertyValue) => {
+      let res = this.addObjectPropertyValue(s, opv, i, w);
+      i = res.i;
+      w = res.w;
     }
-    for (let intersection of this.concept.SubClassOf[0].Intersection) {
-      const result = this.addExpression(intersection, s, i, w);
-      i = result.i;
-      w = result.w;
+
+    omv.DataPropertyValueVisitor = (dpv:DataPropertyValue) => {
+      let res = this.addDataPropertyValue(s, dpv, i, w);
+      i = res.i;
+      w = res.w;
     }
+
+    omv.visit(this.concept);
 
     w = Math.round(w);
 
-    if (this.concept.SubClassOf[0].Intersection.length > 0) {
+    if (i > 0)
       s.append('line').attr('x1', 0).attr('y1', 22).attr('x2', w).attr('y2', 22).attr('stroke', 'black');
-    }
 
     r.attr('width', w).attr('height', 25 + 20 * i);
 
     graph.setNode(this.concept.iri, {label: this.concept.name, width: w, height: 25 + 20 * i});
     map.set(this.concept.iri, s);
-  }
-
-  private addExpression(expression, s, i: number, w: number) {
-    if (expression.Intersection != null) {
-      for (let intersection of expression.Intersection) {
-        const result = this.addExpression(intersection, s, i, w);
-        i = result.i;
-        w = result.w;
-      }
-    } else if (expression.ObjectPropertyValue != null) {
-      if (expression.ObjectPropertyValue.Property.iri === ':hasCoreProperties') {
-        for (let intersection of expression.ObjectPropertyValue.Expression.Intersection) {
-          const result = this.addExpression(intersection, s, i, w);
-          i = result.i;
-          w = result.w;
-        }
-      } else {
-        const result = this.addObjectPropertyValue(s, expression.ObjectPropertyValue, i, w);
-        i = result.i;
-        w = result.w;
-      }
-    } else if (expression.DataPropertyValue != null) {
-      const result = this.addDataPropertyValue(s, expression.DataPropertyValue, i, w);
-      i = result.i;
-      w = result.w;
-    }
-    return {i, w};
   }
 
   private addObjectPropertyValue(s, opv: ObjectPropertyValue, i: number, w: number) {

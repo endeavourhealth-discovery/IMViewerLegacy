@@ -15,8 +15,8 @@
         <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start" style="padding-bottom: 16px; padding-top: 8px">
           <mat-slide-toggle class="mat-slide-align-input" (change)="search()" [(ngModel)]="request.includeLegacy">Include legacy</mat-slide-toggle>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Code schemes</mat-label>
+          <mat-form-field appearance="outline" fxFlex="20%">
+            <mat-label>Restrict code schemes</mat-label>
             <mat-select multiple [(ngModel)]="request.schemes" [disabled]="!request.includeLegacy" (selectionChange)="search()">
               <mat-option *ngFor="let scheme of schemes" [value]="scheme">{{scheme.name}}</mat-option>
             </mat-select>

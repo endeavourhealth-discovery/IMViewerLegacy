@@ -42,20 +42,9 @@
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef style="width: 30%;">Name</th>
         <td mat-cell *matCellDef="let row">
-          <!-- if ValueType -->
-          <ng-container *ngIf="isObjectProperty(row)">
-            <span (click)="onClick(row.ObjectPropertyValue.Property.iri)" (dblclick)="onDblClick(row.ObjectPropertyValue.Property.iri)">
-              {{row.ObjectPropertyValue.Property.name}}
-            </span>
-          </ng-container>
-
-          <!-- if DataType -->
-          <ng-container *ngIf="isDataProperty(row)">
-            <span (click)="onClick(row.DataPropertyValue.Property.iri)" (dblclick)="onDblClick(row.DataPropertyValue.Property.iri)">
-              {{row.DataPropertyValue.Property.name}}
-            </span>
-          </ng-container>
-
+          <span (click)="onClick(row.Property.iri)" (dblclick)="onDblClick(row.Property.iri)">
+            {{row.Property.name}}
+          </span>
         </td>
       </ng-container>
 
@@ -63,16 +52,16 @@
         <th mat-header-cell *matHeaderCellDef style="width: 20%;">Type</th>
         <td mat-cell *matCellDef="let row">
           <!-- if ValueType -->
-          <ng-container *ngIf="isObjectProperty(row)">
-            <span (click)="onClick(row.ObjectPropertyValue.ValueType.iri)" (dblclick)="onDblClick(row.ObjectPropertyValue.ValueType.iri)">
-              {{row.ObjectPropertyValue.ValueType.name}}
+          <ng-container *ngIf="row.ValueType">
+            <span (click)="onClick(row.ValueType.iri)" (dblclick)="onDblClick(row.ValueType.iri)">
+              {{row.ValueType.name}}
             </span>
           </ng-container>
 
           <!-- if DataType -->
-          <ng-container *ngIf="isDataProperty(row)">
-            <span (click)="onClick(row.DataPropertyValue.DataType.iri)" (dblclick)="onDblClick(row.DataPropertyValue.DataType.iri)">
-             {{row.DataPropertyValue.DataType.iri}}
+          <ng-container *ngIf="row.DataType">
+            <span (click)="onClick(row.DataType.iri)" (dblclick)="onDblClick(row.DataType.iri)">
+             {{row.DataType.iri}}
             </span>
           </ng-container>
 
@@ -82,12 +71,7 @@
       <ng-container matColumnDef="cardinality">
         <th mat-header-cell *matHeaderCellDef style="width: 10%;">Cardinality</th>
         <td mat-cell *matCellDef="let row">
-          <ng-container *ngIf="isObjectProperty(row)">
-            {{(row.ObjectPropertyValue.Min ? row.ObjectPropertyValue.Min : DEFAULT_MIN_CARDINALITY)}} : {{(row.ObjectPropertyValue.Max ? row.ObjectPropertyValue.Max : DEFAULT_MAX_CARDINALITY)}}
-          </ng-container>
-          <ng-container *ngIf="isDataProperty(row)">
-            {{(row.DataPropertyValue.Min ? row.DataPropertyValue.Min : DEFAULT_MIN_CARDINALITY)}} : {{(row.DataPropertyValue.Max ? row.DataPropertyValue.Max : DEFAULT_MAX_CARDINALITY)}}
-          </ng-container>
+          {{(row.Min ? row.Min : DEFAULT_MIN_CARDINALITY)}} : {{(row.Max ? row.Max : DEFAULT_MAX_CARDINALITY)}}
         </td>
       </ng-container>
 

@@ -21,7 +21,7 @@ import { CardHeaderComponent } from './card-header/card-header.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DataModelTablularViewComponent } from './data-model-tabular-view/data-model-tabular-view.component';
+import { DataModelTabularViewComponent } from './data-model-tabular-view/data-model-tabular-view.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -76,7 +76,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     GraphNavigatorComponent,
     ResizeObserverDirective,
     CardHeaderComponent,
-    DataModelTablularViewComponent,
+    DataModelTabularViewComponent,
     SideNavComponent,
     ConceptHierarchyViewComponent,
     FindConceptUsagesDialogComponent,
@@ -91,7 +91,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     ConceptSearchComponent,
     GraphNavigatorComponent,
     CardHeaderComponent,
-    DataModelTablularViewComponent,
+    DataModelTabularViewComponent,
     SideNavComponent,
     ConceptDefinitionComponent,
     DataModelNavigatorComponent,
