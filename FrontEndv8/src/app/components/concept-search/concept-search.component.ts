@@ -1,49 +1,70 @@
 import { NgEventBus } from 'ng-event-bus';
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {ConceptService} from '../../services/concept.service';
 import {LoggerService} from '../../services/logger.service';
+import {fromEvent, Subscription} from 'rxjs';
+import {ConceptReference} from '../../models/objectmodel/ConceptReference';
+import {debounceTime, distinctUntilChanged, filter, map, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-concept-search',
   templateUrl: './concept-search.component.html',
   styleUrls: ['./concept-search.component.scss']
 })
-export class ConceptSearchComponent implements OnInit {
+export class ConceptSearchComponent implements AfterViewInit {
+  @ViewChild('searchInput', {static: true}) input: ElementRef;
   @Input()  root: string;
   @Input() relationships: string[];
-  @Output() hasResults: EventEmitter<any> = new EventEmitter<any>();
 
   searchTerm: string;
   searching: boolean;
-  searchResults: any[];
+  searchCall: Subscription = null;
+  results: ConceptReference[]
+
 
   constructor(private service: ConceptService, private log: LoggerService, private eventBus: NgEventBus) { }
 
-  ngOnInit() {
+  ngAfterViewInit() {
+    fromEvent(this.input.nativeElement,'keyup')
+      .pipe(
+        map((e:any) => e.target.value),
+        filter(v => v.length > 2),
+        debounceTime(200),
+        distinctUntilChanged(),
+        tap((text) => {
+          this.autoComplete(text)
+        })
+      )
+      .subscribe();
+  }
+
+  displayFn(concept: ConceptReference): string {
+    return concept && concept.name ? concept.name : '';
+  }
+
+  autoComplete(term) {
+    if (term == null || term == '')
+      return;
+
+    if (this.searchCall) {
+      this.searchCall.unsubscribe();
+      this.searchCall = null;
+      this.results = [];
+    }
+    this.searchCall = this.service.search(term, this.root, this.relationships)
+      .subscribe(
+        (result) => {
+          this.results = result;
+          this.searchCall.unsubscribe();
+          this.searchCall = null;
+        },
+        (error) => this.log.error(error)
+      );
   }
 
   clear() {
     this.searchTerm = '';
     this.searching = false;
-    this.hasResults.emit(false);
-  }
-
-  search() {
-    this.searchResults = null;
-    this.searching = true;
-    this.service.search(this.searchTerm, this.root, this.relationships).subscribe(
-      (result) => this.showResults(result),
-      (error) => {
-        this.log.error(error);
-        this.searching = false;
-      }
-    );
-  }
-
-  showResults(searchResults: any[]) {
-    this.searchResults = searchResults;
-    this.searching = false;
-    this.hasResults.emit(true);
   }
 
   selectResult(item: any) {

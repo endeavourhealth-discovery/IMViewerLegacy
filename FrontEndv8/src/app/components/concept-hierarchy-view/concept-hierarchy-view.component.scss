@@ -1,7 +1,7 @@
 .concept-tree-invisible {
     display: none;
 }
-  
+
 .concept-tree ul,
 .concept-tree li {
     margin-top: 0;
@@ -9,7 +9,11 @@
     list-style-type: none;
 }
 
+.concept-tree ul {
+  padding-inline-start: 10px;
+}
+
 .mat-tree-node {
-    min-height: 2.0em !important;
-    height: 2.0em;
+    min-height: 1.4em !important;
+    height: 1.4em;
 }
