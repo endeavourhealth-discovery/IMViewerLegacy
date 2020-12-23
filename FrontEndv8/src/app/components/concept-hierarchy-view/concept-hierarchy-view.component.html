@@ -1,11 +1,11 @@
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="concept-tree">
   <!-- This is the tree node template for leaf nodes -->
   <mat-tree-node *matTreeNodeDef="let node" style="cursor: pointer">
-    <li class="mat-tree-node">
+    <li class="mat-tree-node select-highlight hover-highlight"
+        [class.selected]="highlightNode(node)"
+        (click)="selectNode(node)">
       <button mat-icon-button disabled></button>
-      <span class="select-highlight hover-highlight"
-            [class.selected]="highlightNode(node)"
-            (click)="selectNode(node)">
+      <span>
         {{node.name}}
       </span>
     </li>
@@ -13,16 +13,16 @@
   <!-- This is the tree node template for expandable nodes -->
   <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild" style="cursor: pointer">
     <li>
-      <div class="mat-tree-node">
+      <div class="mat-tree-node select-highlight hover-highlight"
+           [class.selected]="highlightNode(node)"
+           (click)="selectNode(node)"
+           (dblclick)="expandNode(node)">
         <button mat-icon-button matTreeNodeToggle>
           <mat-icon class="mat-icon-rtl-mirror">
             {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
           </mat-icon>
         </button>
-        <span class="select-highlight hover-highlight"
-              [class.selected]="highlightNode(node)"
-              (click)="selectNode(node)" 
-              (dblclick)="expandNode(node)">
+        <span>
           {{node.name}}
         </span>
       </div>
