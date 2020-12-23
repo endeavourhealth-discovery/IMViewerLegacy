@@ -10,7 +10,7 @@ import {Subject} from 'rxjs';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {ANTLRInputStream, CommonTokenStream} from 'antlr4ts';
 import {DiscoverySyntaxLexer} from '../../../discovery-syntax/DiscoverySyntaxLexer';
-import {DiscoverySyntaxParser, TodoExpressionsContext} from '../../../discovery-syntax/DiscoverySyntaxParser';
+import {DefinitionContext, DiscoverySyntaxParser} from '../../../discovery-syntax/DiscoverySyntaxParser';
 import TodoLangErrorListener, {ITodoLangError} from '../../../discovery-syntax/DiscoveryErrorListener';
 import {DiscoveryLanguageId} from '../../../discovery-syntax/DiscoveryLanguage';
 import { SummaryDrawerComponent } from '../../../components/summary-drawer/summary-drawer.component';
@@ -28,7 +28,7 @@ export class OntologyLibraryComponent implements OnInit {
   //selectedIri: string;
   hoveredConcept: Concept = new Concept();
   definition = null;
-  definitionText = '';
+  definitionText = 'SubClassOf (":VSET_Covid0" AND PROPERTY(":hasMembers" = some ("sn:1240521000000100" AND "sn:1240531000000103")))';
   definitionChanged: Subject<string> = new Subject<string>();
   conceptPropertyObjects = [];
   relationships = ['sn:116680003'];
@@ -52,7 +52,7 @@ export class OntologyLibraryComponent implements OnInit {
     //this.routeEvent(this.router);
     this.conceptView = new ConceptView(service, perspectives, log, router, route, perspectives.ontology);
     this.conceptView.onNavigationStart(this.onConceptAggregateChange.bind(this), this.onError.bind(this) )
-    this.conceptView.onNavigationEnd(this.onHistoryChange.bind(this), this.onError.bind(this) )    
+    this.conceptView.onNavigationEnd(this.onHistoryChange.bind(this), this.onError.bind(this) )
 
     this.eventBus.on('app:conceptSummary').subscribe((iri: string) => {
       this.activateSummary(iri);
@@ -117,7 +117,7 @@ export class OntologyLibraryComponent implements OnInit {
     monaco.editor.setModelMarkers(model, DiscoveryLanguageId, ret.errors.map(e => this.toDiagnostics(e)))
   }
 
-  parse(code: string): {ast:TodoExpressionsContext, errors: ITodoLangError[]} {
+  parse(code: string): {ast:DefinitionContext, errors: ITodoLangError[]} {
     const inputStream = new ANTLRInputStream(code);
     const lexer = new DiscoverySyntaxLexer(inputStream);
     lexer.removeErrorListeners()
@@ -127,7 +127,7 @@ export class OntologyLibraryComponent implements OnInit {
     const parser = new DiscoverySyntaxParser(tokenStream);
     parser.removeErrorListeners();
     parser.addErrorListener(todoLangErrorsListner);
-    const ast =  parser.todoExpressions();
+    const ast =  parser.definition();
     const errors: ITodoLangError[]  = todoLangErrorsListner.getErrors();
     return {ast, errors};
   }

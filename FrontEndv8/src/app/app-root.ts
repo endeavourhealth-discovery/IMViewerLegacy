@@ -40,7 +40,6 @@ export class AppRoot implements OnInit, AfterViewInit {
     public securityService: AbstractSecurityProvider,
     public perspectives: Perspectives,
     @Inject(DOCUMENT) private document: Document,
-    public overlayContainer: OverlayContainer,
     public conceptService: ConceptService,
     private eventBus: NgEventBus,
     private dialog: MatDialog
