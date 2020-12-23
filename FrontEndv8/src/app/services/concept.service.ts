@@ -1,13 +1,19 @@
 import { ConceptReferenceNode } from '../models/objectmodel/ConceptReferenceNode';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, zip } from 'rxjs';
 import { Concept } from '../models/objectmodel/Concept';
 import { environment } from '../../environments/environment';
 import {ConceptReference} from '../models/objectmodel/ConceptReference';
 import {DataModelNavigatorService} from '../components/data-model-navigator/data-model-navigator.service';
 import {SearchRequest} from '../models/search/SearchRequest';
 import {SearchResponse} from '../models/search/SearchResponse';
+
+export interface ConceptAggregate {
+  concept: Concept;
+  parents: Array<ConceptReferenceNode>;
+  children: Array<ConceptReferenceNode>;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -73,5 +79,22 @@ export class ConceptService implements DataModelNavigatorService {
     )
 
     return isAObservable;
+  } 
+
+  getConceptAggregate(iri: string): Observable<ConceptAggregate> {
+    let conceptAggregate: Subject<ConceptAggregate> = new Subject();
+    
+    zip(this.getConcept(iri), 
+        this.getConceptChildren(iri), 
+        this.getConceptParents(iri)).subscribe(([concept, children, parents]) => {
+          conceptAggregate.next({
+            concept: concept,
+            children: children,
+            parents: parents
+          });
+        }
+    )
+
+    return conceptAggregate;
   }
 }
