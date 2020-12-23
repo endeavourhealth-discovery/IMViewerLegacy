@@ -1,5 +1,5 @@
 import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferenceNode';
-import { ConceptService } from '../../../services/concept.service';
+import { ConceptService, ConceptAggregate } from '../../../services/concept.service';
 import { Concept } from '../../../models/objectmodel/Concept';
 import { NgEventBus } from 'ng-event-bus';
 import { Component, OnInit, ViewChild } from '@angular/core';
@@ -14,6 +14,7 @@ import {DiscoverySyntaxParser, TodoExpressionsContext} from '../../../discovery-
 import TodoLangErrorListener, {ITodoLangError} from '../../../discovery-syntax/DiscoveryErrorListener';
 import {DiscoveryLanguageId} from '../../../discovery-syntax/DiscoveryLanguage';
 import { SummaryDrawerComponent } from '../../../components/summary-drawer/summary-drawer.component';
+import { ConceptView, HistoryItem } from '../../../common/ConceptView';
 
 @Component({
   selector: 'app-ontology-library',
@@ -24,7 +25,7 @@ export class OntologyLibraryComponent implements OnInit {
   concept: Concept;
   parents: Array<ConceptReferenceNode>;
   children: Array<ConceptReferenceNode>;
-  selectedIri: string;
+  //selectedIri: string;
   hoveredConcept: Concept = new Concept();
   definition = null;
   definitionText = '';
@@ -38,6 +39,8 @@ export class OntologyLibraryComponent implements OnInit {
   editorOptions = {theme: 'vs-dark', language: 'DiscoverySyntax'};
   parseError = null;
 
+  conceptView: ConceptView;
+
   @ViewChild(SummaryDrawerComponent, { static: true }) summaryDrawer: SummaryDrawerComponent;
 
   constructor(private service: ConceptService,
@@ -46,7 +49,10 @@ export class OntologyLibraryComponent implements OnInit {
               private route: ActivatedRoute,
               private log: LoggerService,
               private eventBus: NgEventBus) {
-    this.routeEvent(this.router);
+    //this.routeEvent(this.router);
+    this.conceptView = new ConceptView(service, perspectives, log, router, route, perspectives.ontology);
+    this.conceptView.onNavigationStart(this.onConceptAggregateChange.bind(this), this.onError.bind(this) )
+    this.conceptView.onNavigationEnd(this.onHistoryChange.bind(this), this.onError.bind(this) )    
 
     this.eventBus.on('app:conceptSummary').subscribe((iri: string) => {
       this.activateSummary(iri);
@@ -63,45 +69,33 @@ export class OntologyLibraryComponent implements OnInit {
         );
   }
 
-  routeEvent(router: Router) {
-    router.events.subscribe(e => {
-      if (e instanceof NavigationEnd && this.concept !== undefined) {
-        this.history.unshift(
-          {
-            url: e.url,
-            concept: this.concept
-          }
-        );
-      }
-    });
-  }
-
   ngOnInit() {
-    this.perspectives.current = this.perspectives.ontology;
-    // Direct URL nav - need to push to tree
-    this.route.paramMap.subscribe(
-      (params) => this.displayConcept(params.get('id') ? params.get('id') : this.perspectives.ontology.root),
-      (error) => this.log.error(error)
-    );
+    this.conceptView.init();
   }
 
-  displayConcept(iri: string) {
-    if (this.selectedIri !== iri) {
-      this.selectedIri = iri;
-      this.service.getConcept(iri).subscribe(
-        (result) => this.concept = result,
-        (error) => this.log.error(error)
-      );
-      this.service.getConceptChildren(iri).subscribe(
-        (result) => this.children = result,
-        (error) => { this.log.error(error); }
-      );
+  get selectedIri() {
+    return this.concept.iri;
+  }
 
-      this.service.getConceptParents(iri).subscribe(
-        (result) => this.parents = result,
-        (error) => { this.log.error(error); }
-      );
+  private onConceptAggregateChange(conceptAggregate: ConceptAggregate): void {
+    if(conceptAggregate != null) {
+      console.log("SemanticOntologyView.onConceptAggregateChange  conceptAggregate", JSON.stringify(conceptAggregate));
+
+      this.concept = conceptAggregate.concept;
+      this.children = conceptAggregate.children;
+      this.parents = conceptAggregate.parents;
     }
+    else {
+      this.log.debug("onConceptAggregateChange - ConceptAggregate is null");
+    }
+  }
+
+  private onHistoryChange(history: Array<HistoryItem>): void {
+    this.history = history;
+  }
+
+  private onError(error: any): void {
+    this.log.error(error);
   }
 
   activateSummary(iri: string) {

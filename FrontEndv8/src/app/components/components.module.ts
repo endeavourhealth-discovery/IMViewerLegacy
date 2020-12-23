@@ -21,7 +21,7 @@ import { CardHeaderComponent } from './card-header/card-header.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DataModelTablularViewComponent } from './data-model-tabular-view/data-model-tabular-view.component';
+import { DataModelTabularViewComponent } from './data-model-tabular-view/data-model-tabular-view.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -39,44 +39,46 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {SnomedLicenseDialog} from './snomed-license-dialog/snomed-license-dialog.component';
 import { SummaryDrawerComponent } from './summary-drawer/summary-drawer.component';
 import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 
 @NgModule({
-    imports: [
-        CommonModule,
-        MatTreeModule,
-        MatProgressBarModule,
-        MatCardModule,
-        MatButtonModule,
-        MatIconModule,
-        MatFormFieldModule,
-        FormsModule,
-        MatInputModule,
-        FlexModule,
-        ReactiveFormsModule,
-        MatSelectModule,
-        MatSlideToggleModule,
-        BrowserAnimationsModule,
-        MatExpansionModule,
-        MatChipsModule,
-        MatTableModule,
-        MatTooltipModule,
-        AngularSplitModule,
-        MatSnackBarModule,
-        MatTabsModule,
-        MatListModule,
-        MatSidenavModule,
-        MatDialogModule,
-        MatMenuModule,
-        MatProgressSpinnerModule,
-        MatPaginatorModule,
-    ],
+  imports: [
+    CommonModule,
+    MatTreeModule,
+    MatProgressBarModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    FormsModule,
+    MatInputModule,
+    FlexModule,
+    ReactiveFormsModule,
+    MatSelectModule,
+    MatSlideToggleModule,
+    BrowserAnimationsModule,
+    MatExpansionModule,
+    MatChipsModule,
+    MatTableModule,
+    MatTooltipModule,
+    AngularSplitModule,
+    MatSnackBarModule,
+    MatTabsModule,
+    MatListModule,
+    MatSidenavModule,
+    MatDialogModule,
+    MatMenuModule,
+    MatProgressSpinnerModule,
+    MatPaginatorModule,
+    MatAutocompleteModule,
+  ],
   declarations: [
     ConceptSearchComponent,
     GraphNavigatorComponent,
     ResizeObserverDirective,
     CardHeaderComponent,
-    DataModelTablularViewComponent,
+    DataModelTabularViewComponent,
     SideNavComponent,
     ConceptHierarchyViewComponent,
     FindConceptUsagesDialogComponent,
@@ -91,7 +93,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     ConceptSearchComponent,
     GraphNavigatorComponent,
     CardHeaderComponent,
-    DataModelTablularViewComponent,
+    DataModelTabularViewComponent,
     SideNavComponent,
     ConceptDefinitionComponent,
     DataModelNavigatorComponent,

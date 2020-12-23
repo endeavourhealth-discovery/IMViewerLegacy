@@ -39,7 +39,7 @@ body {
   background-color: mat-color($accent, 200);
 }
 
-mat-tree-node.selected {
+.select-highlight.selected {
   background-color: mat-color($accent);
 }
 
@@ -57,8 +57,8 @@ $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
     background-color: mat-color($dark-accent, 600);
   }
 
-  mat-tree-node.selected {
-    background-color: mat-color($dark-accent, 800);
+  .select-highlight.selected {
+    background-color: mat-color($dark-accent);
   }
 }
 
@@ -100,7 +100,7 @@ $teal-theme: mat-light-theme($teal-primary, $teal-accent, $teal-warn);
     background-color: mat-color($teal-accent, 200);
   }
 
-  mat-tree-node.selected {
+  .select-highlight.selected {
     background-color: mat-color($teal-accent);
   }
 }
@@ -195,9 +195,9 @@ $xmas-red: #E1384A;
     background-color: mat-color($xmas-accent, 200);
   }
 
-  mat-tree-node.selected {
+  .select-highlight.selected {
     background-color: mat-color($xmas-accent);
-  }
+  }  
 }
 
 $background: map-get($theme, background);

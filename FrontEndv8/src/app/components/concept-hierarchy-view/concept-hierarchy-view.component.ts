@@ -3,19 +3,12 @@ import {NgEventBus} from 'ng-event-bus';
 import {ConceptService} from '../../services/concept.service';
 import {Concept} from '../../models/objectmodel/Concept';
 import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
-import {FlatTreeControl} from '@angular/cdk/tree';
-import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {LoggerService} from '../../services/logger.service';
-import {ConceptReference} from '../../models/objectmodel/ConceptReference';
 import { ActivatedRoute } from '@angular/router';
-
-interface ConceptNode {
-  name: string;
-  iri: string;
-  level: number;
-  expandable: boolean;
-  children?: ConceptNode[];
-}
+import {NestedTreeControl} from '@angular/cdk/tree';
+import {MatTreeNestedDataSource} from '@angular/material/tree';
+import {BehaviorSubject, Observable, of as observableOf, Subject, ReplaySubject, zip} from 'rxjs';
+import {SelectionChange} from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-concept-hierarchy-view',
@@ -24,192 +17,246 @@ interface ConceptNode {
 })
 
 export class ConceptHierarchyViewComponent implements OnInit {
-
   @Input() root: string;
   @Input() concept: Concept;
   @Input() parents: Array<ConceptReferenceNode>;
   @Input() children: Array<ConceptReferenceNode>;
+  
+  treeControl: NestedTreeControl<ConceptReferenceNode>;
+  dataSource: MatTreeNestedDataSource<ConceptReferenceNode>;
 
-  tree: ConceptNode[] = [];
-  loadedChildren: string[] = [];
+  // it is very important that every node in the tree is registered in this map
+  // and that when that node's children are changed that the associated Subject
+  // is updated. This is the basis for the tree control being kept in sync with
+  // the data
+  childrenSubjects: Map<string, Subject<ConceptReferenceNode[]>> = new Map();
+  dataChange: BehaviorSubject<ConceptReferenceNode[]> = new BehaviorSubject([]);
+
   selectedIri: string;
 
   constructor(private service: ConceptService,
               private log: LoggerService,
               private eventBus: NgEventBus,
-              private route: ActivatedRoute,) {
-    this.dataSource.data = this.tree;
+              private route: ActivatedRoute,) {    
+    this.treeControl = new NestedTreeControl<ConceptReferenceNode>(node => this.getChildrenObservable(node));
+    this.dataSource = new MatTreeNestedDataSource<ConceptReferenceNode>();
+    
+    // when the tree has been changed (eg by fetching new children) this
+    // data change is the way we tell the tree to re-draw
+    this.dataChange.subscribe(data => this.dataSource.data = data);
+
+    // handle expansion - may result in fetching children from the API
+    // and incorporating them into the tree
+    this.treeControl.expansionModel.changed.subscribe(change => {
+      if ((change as SelectionChange<ConceptReferenceNode>).added)  {
+        this.onExpand(change.added);
+      }
+    });    
   }
+
+  /************************  
+   * Ng lifecycle methods *
+   ************************/ 
 
   ngOnInit() {
     this.route.paramMap.subscribe(
       (params) => this.selectedIri = (params.get('id') ? params.get('id') : this.root),
       (error) => this.log.error(error)
     );
+
+    // init the tree's data
+    let selectedNode: ConceptReferenceNode = new ConceptReferenceNode();
+
+    selectedNode.iri = this.concept.iri;
+    selectedNode.name = this.concept.name;
+    selectedNode.hasChildren = (this.children != null && this.children.length > 0);
+
+    this.initTree(selectedNode, this.parents, this.children);
+
+    let rootNode = this.getRootNode(selectedNode, this.root);
+    
+    // this populates the tree
+    this.dataChange.next([rootNode]);
+
+    // now we need to expand the selected node (and its parents)
+    this.expand(selectedNode);
+  }  
+
+  /******************************************************************  
+   * Mat Tree call back methods (see constructor and HTML template) *
+   ******************************************************************/ 
+
+  hasChild(_: number, node: ConceptReferenceNode): boolean {
+    return node.hasChildren;
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    // only create a new tree if one does not already exist
-    if (this.tree.length == 0) {
-      this.tree = [];
-      if (this.parents) {
-        this.addSelectedConceptToTree(this.parents);
-        this.reverseTree(this.parents, 0, []);
-      }
-      this.tree.splice(1);
-      this.dataSource.data = this.tree;
-      this.treeControl.expandAll();
-    }
+  private getChildrenObservable(node: ConceptReferenceNode): Observable<ConceptReferenceNode[]> {
+    let childrenSubject: Subject<ConceptReferenceNode[]> = this.childrenSubjects.get(node.iri);
+
+    return childrenSubject;
   }
 
-  // Required Methods
-  _transformer = (node: ConceptNode, level: number) => {
-    return {expandable: !!node.children && node.children.length > 0, name: node.name, iri: node.iri, level: level, children: node.children};
-  }
-  treeControl = new FlatTreeControl<ConceptNode>(node => node.level, node => node.expandable);
-  treeFlattener = new MatTreeFlattener(this._transformer, node => node.level, node => node.expandable, node => node.children);
-  dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
-  hasChild = (_: number, node: ConceptNode) => node.expandable;
+  /******************************************************  
+   * Tree manipulation methods (select and expand node) *
+   ******************************************************/  
 
-  // Add the currently selected Concept to the bottom of the tree
-  addSelectedConceptToTree(conceptReferences: ConceptReferenceNode[]) {
-    if (this.concept == null)
-      return;
-
-    let conceptReferenceNodes: ConceptReferenceNode[] = [];
-    let conceptReferenceNode: ConceptReferenceNode = new ConceptReferenceNode();
-    conceptReferenceNode.name = this.concept.name;
-    conceptReferenceNode.iri = this.concept.iri;
-    conceptReferenceNode.parents = conceptReferences;
-    conceptReferenceNodes.push(conceptReferenceNode);
-    this.parents = conceptReferenceNodes;
-  }
-
-  // Reverse the original parent hierarchy (parent -> child vs child -> parent)
-  reverseTree(conceptReferences: ConceptReferenceNode[], level: number, previousNodes: ConceptNode[]): ConceptNode {
-    let rootNode: ConceptNode;
-
-    let nodes: ConceptNode[] = [];
-    conceptReferences.forEach(conceptReference => {
-      let node = {
-        name: conceptReference.name,
-        iri: conceptReference.iri,
-        level: level,
-        expandable: true,
-        children: previousNodes,
-      };
-      // if this node is the currently selected concept, add its children
-      if (node.iri === this.concept.iri) {
-        node.children = this.addChildrenToTree();
-      }
-      nodes.push(node);
-      // if this node is the root of the hierarchy, generate the tree
-      if (conceptReference.parents.length === 0 || conceptReference.iri === this.root) {
-        this.tree.push(node);
-        rootNode = node;
-      } else {
-        this.reverseTree(conceptReference.parents, level, nodes);
-      }
-    });
-    return rootNode;
-  }
-
-  // Add Children to the currently selected concept
-  addChildrenToTree(): ConceptNode[] {
-    let childNodes: ConceptNode[] = [];
-
-    if (this.children) {
-      this.children.forEach(child => {
-        childNodes.push({
-          name: child.name,
-          iri: child.iri,
-          level: 0,
-          expandable: true,
-          children: []
-        });
-      });
-    }
-    return childNodes;
-  }
-
-  selectNode(node) {
+  // attached to single click event (see HTML template)
+  selectNode(node: ConceptReferenceNode):void {
     this.eventBus.cast('app:conceptSelect', node.iri);
   }
 
-  expandNode(node, isExpanded) {
-    this.findAndExpandMatchingNode(node.iri, this.tree);
+  // attached to double click event (see HTML template)
+  expandNode(node: ConceptReferenceNode): void {
+    this.initChildNodes(node);
   }
 
-  highlightNode(node): boolean {
-    let highlight: boolean = this.selectedIri == node.iri;
-
-    return highlight;
+  highlightNode(node: ConceptReferenceNode): boolean {
+    return this.selectedIri == node.iri;
   }
 
-  getExpansionIcon(node: ConceptNode): string {
-    let expansionIcon: string;
-
-    if (this.treeControl.isExpanded(node)) {
-      if (node.expandable) {
-        expansionIcon = 'expand_more';
-      } else {
-        if (this.loadedChildren.includes(node.iri)) {
-          expansionIcon = 'remove';
-        } else {
-          expansionIcon = 'chevron_right';
-        }
-      }
-    } else {
-      if (node.expandable) {
-        expansionIcon = 'expand_more';
-      }
-    }
-
-    return expansionIcon;
+  isVisible(node: ConceptReferenceNode): boolean {
+    return this.treeControl.isExpanded(node);
   }
 
-  findAndExpandMatchingNode(iri: string, nodes: ConceptNode[]) {
-    nodes.forEach(node => {
-      // expand Node
-      if (node.iri === iri) {
-        node.children = [];
-        this.service.getConceptChildren(node.iri).subscribe(
-          (result) => {
-            this.addChildrenToParentNode(node, result);
-            this.loadedChildren.push(node.iri)
+  // used for manual-expansion of selected node (by user clicking expand icon: ">")
+  private onExpand(nodesToExpand: ConceptReferenceNode[]) {
+    nodesToExpand.forEach(nodeToExpand => this.initChildNodes(nodeToExpand));
+
+    // TODO - put in loading logic progress bar
+  }
+
+  // fetch child nodes if necessary
+  private initChildNodes(node: ConceptReferenceNode): void {
+    if(node.hasChildren) {
+      if(node.children == null || node.children.length == 0) {
+        this.fetchChildren(node.iri).subscribe(
+          result =>  { 
+            this.initDecendants(node, result);
+            this.dataChange.next(this.dataChange.value);
           },
-          (error) => {
+          error => {
             this.log.error(error);
           }
         );
-      } else {
-        this.findAndExpandMatchingNode(iri, node.children);
       }
-    });
+    }
+  }  
+
+  // used for auto-expansion of selected node 
+  // in this instance we have children locally
+  private expand(node: ConceptReferenceNode): void {
+    node.parents.forEach(parent => this.expand(parent))
+    this.treeControl.expand(node);
   }
 
-  private addChildrenToParentNode(parentNode: ConceptNode, conceptChildren: ConceptReference[]) {
-    if (conceptChildren != null && conceptChildren.length > 0) {
-      parentNode.children = (conceptChildren.map<ConceptNode>(child => {
-          return {
-            name: child.name,
-            iri: child.iri,
-            level: parentNode.level + 1,
-            expandable: false,
-            children: [],
-            childrenLoaded: false
-          } as ConceptNode;
-        })
-      );
+  private fetchChildren(iri: string): Observable<ConceptReferenceNode[]> {
+    let children: Subject<ConceptReferenceNode[]> = new Subject();
+    
+    this.service.getConceptChildren(iri).subscribe(
+      (result) => children.next(result),
+      (error) => this.log.error(error)
+    );    
 
-      parentNode.expandable = true;
-      this.dataSource.data = this.tree;
-      this.treeControl.expandAll();
-    } else {
-      parentNode.expandable = false;
-      parentNode.children = [];
-      this.dataSource.data = this.tree;
-      this.treeControl.expandAll();
+    return children;
+  }  
+  
+
+  /***************************************************************** 
+   * Tree initialisation methods                                   *
+   *                                                               *
+   * These methods act to build and maintain the tree. They allow  *
+   * new branches to be added to an existing tree (initDecendants) *
+   * and well as creating a tree from scratch (initTree)           *
+   *****************************************************************/
+
+  private initTree(selectedNode: ConceptReferenceNode, parents: ConceptReferenceNode[], children: ConceptReferenceNode[]): void {
+    // attach parents
+    selectedNode.parents = parents;
+    this.initAncestors(selectedNode, new Map());
+
+    // attach children
+    this.initDecendants(selectedNode, children);
+  }
+
+  private initAncestors(child: ConceptReferenceNode, allNodes: Map<string, ConceptReferenceNode>): void {
+    
+    if(child.parents != null) {
+      child.parents.forEach(parent => {
+        // we want the exact same node by Object reference, NOT by value equality
+        if(allNodes.has(parent.iri) == false) {
+          allNodes.set(parent.iri, parent);
+          
+          // we will need an initialised children array later on
+          if(parent.children == null) {
+            parent.children = [];
+            this.registerChildrenObservable(parent);
+          }
+          
+          // for debugging to help check we have unique nodes
+          //parent.name = `(${Math.random()}) ${parent.name}`;
+        }
+        else {
+          // this parent has been processed before we need to change the child's 
+          // parent to point to this instance thus replacing the other instance  
+          // that is equal by value but NOT by reference
+           let parentIndex: number = child.parents.indexOf(parent);
+           parent = allNodes.get(parent.iri);
+           child.parents[parentIndex] = parent;
+         }
+
+        // only update the parent if it does not already contain the child
+        if(parent.children.includes(child) == false) {
+          parent.children.push(child);
+          this.childrenSubjects.get(parent.iri).next(parent.children);
+
+          // unwind up the hierarchy
+          this.initAncestors(parent, allNodes);
+        }
+      })
     }
   }
+
+  private initDecendants(node: ConceptReferenceNode, children: ConceptReferenceNode[]): void {
+    // attach children
+    this.registerChildrenObservable(node);
+    node.children = children;
+    
+    if(node.children != null) {
+      node.children.forEach(child => {
+        child.parents = [node];
+        this.registerChildrenObservable(child);
+      });
+    }
+    
+    // this must be done AFTER te child nodes have been registered
+    this.childrenSubjects.get(node.iri).next(node.children);
+  }
+
+  private getRootNode(decendantNode: ConceptReferenceNode, rootIri: string): ConceptReferenceNode {
+    let rootNode: ConceptReferenceNode = null;
+
+    if(rootIri == decendantNode.iri) {
+      rootNode = decendantNode;
+    }
+
+    while(rootNode == null && (decendantNode.parents != null && decendantNode.parents.length > 0)) {
+      rootNode = decendantNode.parents.find(parent => rootIri == parent.iri)
+        
+      // just traversing one branch of inheritance should take us up to a 
+      // common root ancestor
+      decendantNode = decendantNode.parents[0];
+    }
+
+    if(rootNode == null) {
+      this.log.error(`Unable to find root node with iri ${rootIri}`);
+    }
+
+    return rootNode;
+  } 
+  
+  private registerChildrenObservable(node: ConceptReferenceNode) {
+    if(this.childrenSubjects.has(node.iri) == false) {
+      this.childrenSubjects.set(node.iri, new ReplaySubject());
+    }
+  }  
 }

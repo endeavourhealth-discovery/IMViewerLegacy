@@ -1,6 +1,6 @@
 import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferenceNode';
 import { SchemeCount } from '../../../models/old/SchemeCount';
-import { ConceptService } from '../../../services/concept.service';
+import { ConceptService, ConceptAggregate } from '../../../services/concept.service';
 import { Concept } from '../../../models/objectmodel/Concept';
 import { ConceptType } from '../../../models/objectmodel/ConceptType';
 import { ConceptReference } from '../../../models/objectmodel/ConceptReference';
@@ -15,6 +15,7 @@ import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {PageEvent} from '@angular/material/paginator';
 import {LoggerService} from '../../../services/logger.service';
 import {Perspectives} from '../../../services/perspective.service';
+import { ConceptView, HistoryItem } from '../../../common/ConceptView';
 
 @Component({
   selector: 'app-value-set-library',
@@ -31,6 +32,8 @@ export class ValueSetLibraryComponent implements OnInit {
   parents: Array<ConceptReferenceNode>;
   children: Array<ConceptReferenceNode>;
 
+  conceptView: ConceptView;
+
   // pagination
   pageSize:number;
   pageSizeOptions: number[];
@@ -38,9 +41,9 @@ export class ValueSetLibraryComponent implements OnInit {
   memberPageStartIndex: number;
   memberPageEndIndex: number;
 
-  selectedIri: string;
+  //selectedIri: string;
   searchSize = 72;
-  root = ':VSET_ValueSet';
+  //root = ':VSET_ValueSet';
   relationships = ['sn:116680003'];
   nameCache = {};
   hoveredConcept: Concept = new Concept();
@@ -63,7 +66,11 @@ export class ValueSetLibraryComponent implements OnInit {
               private dialog: MatDialog,
               private eventBus: NgEventBus) {
 
-    this.routeEvent(this.router);
+    //this.routeEvent(this.router);
+
+    this.conceptView = new ConceptView(service, perspectives, log, router, route, perspectives.valueSets);
+    this.conceptView.onNavigationStart(this.onConceptAggregateChange.bind(this), this.onError.bind(this) )
+    this.conceptView.onNavigationEnd(this.onHistoryChange.bind(this), this.onError.bind(this) )   
 
     this.conceptTree = new ConceptTree(service);
 
@@ -89,53 +96,38 @@ export class ValueSetLibraryComponent implements OnInit {
     return event;
   }
 
-  routeEvent(router: Router) {
-    router.events.subscribe(e => {
-      if (e instanceof NavigationEnd && this.concept !== undefined) {
-        this.history.unshift(
-          {
-            url: e.url,
-            concept: this.concept
-          }
-        );
-      }
-    });
-  }
-
   ngOnInit() {
-    this.perspectives.current = this.perspectives.valueSets;
-
-    // Direct URL nav - need to push to tree
-    this.route.paramMap.subscribe(
-      (params) => this.displayConcept(params.get('id') ? params.get('id') : this.root),
-      (error) => this.log.error(error)
-    );
+    this.conceptView.init();
   }
 
-  displayConcept(iri: string) {
-    if (this.selectedIri !== iri) {
-      this.nameCache = {};
-      this.selectedIri = iri;
-      this.service.getConcept(iri).subscribe(
-        (result) => {
-          this.concept = result,
-          this.valueSetPerspective = new ValueSetPersepctive(result);
-          this.isValueSetAvailable = true
-          this.conceptTree.clear();
-        },
-        (error) => this.log.error(error)
-      );
-      this.service.getConceptChildren(iri).subscribe(
-        (result) => this.children = result,
-        (error) => { this.log.error(error); }
-      );
+  get selectedIri() {
+    return this.concept.iri;
+  }
 
-      this.service.getConceptParents(iri).subscribe(
-        (result) => this.parents = result,
-        (error) => { this.log.error(error); }
-      );
+  private onConceptAggregateChange(conceptAggregate: ConceptAggregate): void {
+    if(conceptAggregate != null) {
+      console.log("ValueSetView.onConceptAggregateChange  conceptAggregate", JSON.stringify(conceptAggregate));
+
+      this.concept = conceptAggregate.concept;
+      this.children = conceptAggregate.children;
+      this.parents = conceptAggregate.parents;
+
+      this.valueSetPerspective = new ValueSetPersepctive(this.concept);
+      this.isValueSetAvailable = true
+      this.conceptTree.clear();
+    }
+    else {
+      this.log.debug("onConceptAggregateChange - ConceptAggregate is null");
     }
   }
+
+  private onHistoryChange(history: Array<HistoryItem>): void {
+    this.history = history;
+  }
+
+  private onError(error: any): void {
+    this.log.error(error);
+  }  
 
   getMembers(): ConceptReference[] {
     return this.valueSetPerspective.members;
