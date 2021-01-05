@@ -70,7 +70,7 @@ export class ValueSetLibraryComponent implements OnInit {
 
     this.conceptView = new ConceptView(service, perspectives, log, router, route, perspectives.valueSets);
     this.conceptView.onNavigationStart(this.onConceptAggregateChange.bind(this), this.onError.bind(this) )
-    this.conceptView.onNavigationEnd(this.onHistoryChange.bind(this), this.onError.bind(this) )   
+    this.conceptView.onNavigationEnd(this.onHistoryChange.bind(this), this.onError.bind(this) )
 
     this.conceptTree = new ConceptTree(service);
 
@@ -127,7 +127,7 @@ export class ValueSetLibraryComponent implements OnInit {
 
   private onError(error: any): void {
     this.log.error(error);
-  }  
+  }
 
   getMembers(): ConceptReference[] {
     return this.valueSetPerspective.members;
@@ -169,12 +169,12 @@ export class ValueSetLibraryComponent implements OnInit {
 
   goto(iri: string) {
     if (iri !== this.selectedIri) {
-      this.router.navigate(['valueSets', iri]);
+      this.router.navigate([this.perspectives.valueSets.primary.state, iri]);
     }
   }
 
   gotoConcept(iri: string) {
-    this.router.navigate(['ontology', iri]);
+    this.router.navigate([this.perspectives.ontology.primary.state, iri]);
   }
 
   hasResults(displayed: boolean) {

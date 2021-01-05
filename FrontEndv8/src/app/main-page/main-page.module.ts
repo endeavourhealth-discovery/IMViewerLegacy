@@ -12,11 +12,9 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
+import {MainPageRoutingModule} from './main-page-routing.module';
 
 @NgModule({
-  declarations: [
-    MainPageComponent
-  ],
   imports: [
     CommonModule,
     MatCardModule,
@@ -29,7 +27,11 @@ import {MatInputModule} from '@angular/material/input';
     MatToolbarModule,
     MatIconModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MainPageRoutingModule
+  ],
+  declarations: [
+    MainPageComponent
   ]
 })
 export class MainPageModule { }

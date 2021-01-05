@@ -20,7 +20,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { CardHeaderComponent } from './card-header/card-header.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataModelTabularViewComponent } from './data-model-tabular-view/data-model-tabular-view.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatChipsModule } from '@angular/material/chips';
@@ -40,6 +39,7 @@ import {SnomedLicenseDialog} from './snomed-license-dialog/snomed-license-dialog
 import { SummaryDrawerComponent } from './summary-drawer/summary-drawer.component';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {UserProfileDialog} from './user-profile-dialog/user-profile-dialog.component';
 
 
 @NgModule({
@@ -57,7 +57,6 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
     ReactiveFormsModule,
     MatSelectModule,
     MatSlideToggleModule,
-    BrowserAnimationsModule,
     MatExpansionModule,
     MatChipsModule,
     MatTableModule,
@@ -87,7 +86,8 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
     LibraryComponentComponent,
     MatWrapperComponent,
     SnomedLicenseDialog,
-    SummaryDrawerComponent
+    SummaryDrawerComponent,
+    UserProfileDialog,
   ],
   exports: [
     ConceptSearchComponent,
@@ -100,11 +100,13 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
     LibraryComponentComponent,
     MatWrapperComponent,
     SnomedLicenseDialog,
-    SummaryDrawerComponent
+    SummaryDrawerComponent,
+    UserProfileDialog
   ],
   entryComponents: [
     FindConceptUsagesDialogComponent,
-    SnomedLicenseDialog
+    SnomedLicenseDialog,
+    UserProfileDialog
   ]
 })
 export class ComponentsModule { }

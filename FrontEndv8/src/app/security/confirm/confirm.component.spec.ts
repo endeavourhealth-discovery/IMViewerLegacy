@@ -1,26 +1,26 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ConceptSearchComponent } from './concept-search.component';
-import {MatIconModule} from '@angular/material/icon';
+import { ConfirmComponent } from './confirm.component';
+import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormsModule} from '@angular/forms';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {RouterTestingModule} from '@angular/router/testing';
 import {MatInputModule} from '@angular/material/input';
 
-describe('ConceptSearchComponent', () => {
-  let component: ConceptSearchComponent;
-  let fixture: ComponentFixture<ConceptSearchComponent>;
+describe('ConfirmComponent', () => {
+  let component: ConfirmComponent;
+  let fixture: ComponentFixture<ConfirmComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConceptSearchComponent ],
+      declarations: [ ConfirmComponent ],
       imports: [
-        MatIconModule,
+        MatCardModule,
         MatFormFieldModule,
         FormsModule,
         HttpClientTestingModule,
-        MatSnackBarModule,
+        RouterTestingModule,
         MatInputModule
       ]
     })
@@ -28,7 +28,7 @@ describe('ConceptSearchComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ConceptSearchComponent);
+    fixture = TestBed.createComponent(ConfirmComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,6 +1,5 @@
-import { ConceptService } from './../../services/concept.service';
-import { ComponentsModule } from './../../components/components.module';
-import { BrowserModule } from '@angular/platform-browser';
+import { ConceptService } from '../../services/concept.service';
+import { ComponentsModule } from '../../components/components.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
@@ -24,11 +23,11 @@ import { DataModelDialogComponent } from './data-model-create/data-model-dialog/
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {DataModelNavigatorService} from '../../components/data-model-navigator/data-model-navigator.service';
 import {MatMenuModule} from '@angular/material/menu';
+import {DataModelRoutingModule} from './data-model-routing.module';
 
 @NgModule({
   imports: [
     CommonModule,
-    BrowserModule,
     MatCardModule,
     MatFormFieldModule,
     FormsModule,
@@ -49,7 +48,8 @@ import {MatMenuModule} from '@angular/material/menu';
     MatSidenavModule,
     MatAutocompleteModule,
     ReactiveFormsModule,
-    MatMenuModule
+    MatMenuModule,
+    DataModelRoutingModule
   ],
   providers: [
     { provide: DataModelNavigatorService, useClass: ConceptService }

@@ -1,0 +1,29 @@
+<div style="height: 100%; display: flex; align-items: center; justify-content: center;">
+  <mat-card fxFlex="25%">
+    <mat-card-header>
+      <div mat-card-avatar>
+        <span class="fad fa-2x fa-user"></span>
+      </div>
+      <mat-card-title>Confirm account</mat-card-title>
+      <mat-card-subtitle>Enter the code sent via E-Mail</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
+        <mat-form-field appearance="outline" fxFlex="100" mat-readonly>
+          <mat-label>Username</mat-label>
+          <input matInput [value]="username" placeholder="Username" id="username" readonly>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" fxFlex="100">
+          <mat-label>Code</mat-label>
+          <input matInput type="password" [(ngModel)]="code" placeholder="Code" id="Code">
+        </mat-form-field>
+
+        <mat-error *ngIf="error">{{error}}</mat-error>
+      </div>
+    </mat-card-content>
+    <mat-card-footer style="margin: 0px" align="end">
+      <button mat-flat-button color="primary" (click)="onSubmit()">Confirm</button>
+    </mat-card-footer>
+  </mat-card>
+</div>

@@ -143,6 +143,7 @@ export class DataModelNavigatorComponent implements OnInit {
       controlIconsEnabled: true,
       fit: false,
       center: true,
+      dblClickZoomEnabled: false
     });
   }
 

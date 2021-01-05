@@ -24,6 +24,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {RouterModule} from '@angular/router';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatPaginatorModule} from '@angular/material/paginator';
+import {ValueSetRoutingModule} from './value-set-routing.module';
 
 @NgModule({
     imports: [
@@ -49,7 +50,8 @@ import {MatPaginatorModule} from '@angular/material/paginator';
         MatListModule,
         MatSidenavModule,
         MatGridListModule,
-        MatPaginatorModule
+        MatPaginatorModule,
+      ValueSetRoutingModule
     ],
   declarations: [
     ValueSetLibraryComponent,
