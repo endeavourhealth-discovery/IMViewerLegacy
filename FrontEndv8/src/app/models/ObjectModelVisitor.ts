@@ -5,20 +5,44 @@ import {ObjectPropertyValue} from './objectmodel/ObjectPropertyValue';
 import {DataPropertyValue} from './objectmodel/DataPropertyValue';
 import {Annotation} from './objectmodel/Annotation';
 
+// need notion of enter and exit visitor
 export class ObjectModelVisitor {
   public SubClassVisitor: (expressions: Set<ClassExpression>) => void = () => {};
+  //public SubClassExitVisitor: (expressions: Set<ClassExpression>) => void = () => {};
+
   public EquivalentToVisitor: (expressions: Set<ClassExpression>) => void = () => {};
+  //public EquivalentToExitVisitor: (expressions: Set<ClassExpression>) => void = () => {};
+
   public DisjointWithVisitor: (conceptReferences: ConceptReference[]) => void = () => {};
+  //public DisjointWithExitVisitor: (conceptReferences: ConceptReference[]) => void = () => {};
 
   public ExpressionVisitor: (expression: ClassExpression) => void = () => {};
+  public ExpressionExitVisitor: (expression: ClassExpression) => void = () => {};
+
   public ClassVisitor: (conceptReference: ConceptReference) => void = () => {};
+  //public ClassExitVisitor: (conceptReference: ConceptReference) => void = () => {};
+
   public IntersectionVisitor: (expressions: ClassExpression[]) => void = () => {};
+  //public IntersectionExitVisitor: (expressions: ClassExpression[]) => void = () => {};
+
   public UnionVisitor: (expressions: ClassExpression[]) => void = () => {};
+  //public UnionExitVisitor: (expressions: ClassExpression[]) => void = () => {};
+
   public ComplementOfVisitor: (expression: ClassExpression) => void = () => {};
+  //public ComplementOfExitVisitor: (expression: ClassExpression) => void = () => {};
+
   public ObjectPropertyValueVisitor: (objectPropertyValue: ObjectPropertyValue) => void = () => {};
+  public ObjectPropertyValueExitVisitor: (objectPropertyValue: ObjectPropertyValue) => void = () => {};
+
   public DataPropertyValueVisitor: (dataPropertyValue: DataPropertyValue) => void = () => {};
+  //public DataPropertyValueExitVisitor: (dataPropertyValue: DataPropertyValue) => void = () => {};
+
   public ObjectOneOfVisitor: (conceptReferences: ConceptReference[]) => void = () => {};
+  //public ObjectOneOfExitVisitor: (conceptReferences: ConceptReference[]) => void = () => {};
+
   public AnnotationsVisitor: (annotations: Set<Annotation>) => void = () => {};
+  //public AnnotationsExitVisitor: (annotations: Set<Annotation>) => void = () => {};
+
 
   public visit(concept: Concept) {
     if (concept.annotations)
@@ -73,6 +97,8 @@ export class ObjectModelVisitor {
 
     if (expression.annotations)
       this.visitAnnotations(expression.annotations);
+
+    this.ExpressionExitVisitor(expression);
   }
 
   private visitObjectPropertyValue(objectPropertyValue: ObjectPropertyValue) {
@@ -80,6 +106,8 @@ export class ObjectModelVisitor {
 
     if (objectPropertyValue.Expression)
       this.visitExpression(objectPropertyValue.Expression);
+
+    this.ObjectPropertyValueExitVisitor(objectPropertyValue);
   }
 
   private visitDataPropertyValue(dataPropertyValue: DataPropertyValue) {
