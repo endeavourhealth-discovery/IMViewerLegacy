@@ -1,6 +1,9 @@
 out
 .idea
 .metadata
+.gradle
+.vscode
+gradle
 target
 *.iml
 *.settings

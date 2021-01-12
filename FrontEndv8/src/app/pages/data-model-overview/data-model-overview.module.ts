@@ -1,5 +1,5 @@
-import { ConceptService } from './../../../services/concept.service';
-import { ComponentsModule } from './../../../components/components.module';
+import { ConceptService } from '../../services/concept.service';
+import { ComponentsModule } from '../../components/components.module';
 import { NgModule } from '@angular/core';
 import {RouterModule} from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -19,6 +19,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { DataModelOverviewLibraryComponent } from './data-model-overview-library/data-model-overview-library.component';
+import {DataModelOverviewRoutingModule} from './data-model-overview-routing.module';
 
 @NgModule({
     imports: [
@@ -39,7 +40,8 @@ import { DataModelOverviewLibraryComponent } from './data-model-overview-library
         MatTableModule,
         MatSnackBarModule,
         MatTooltipModule,
-        ComponentsModule
+        ComponentsModule,
+      DataModelOverviewRoutingModule
     ],
 
   declarations: [

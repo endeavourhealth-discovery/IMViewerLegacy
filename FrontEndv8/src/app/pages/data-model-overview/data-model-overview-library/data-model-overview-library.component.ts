@@ -1,9 +1,9 @@
-import { ConceptReferenceNode } from '../../../../models/objectmodel/ConceptReferenceNode';
-import { ConceptService } from '../../../../services/concept.service';
+import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferenceNode';
+import { ConceptService } from '../../../services/concept.service';
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
-import {LoggerService} from '../../../../services/logger.service';
-import {Perspectives} from '../../../../services/perspective.service';
+import {LoggerService} from '../../../services/logger.service';
+import {Perspectives} from '../../../services/perspective.service';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -45,7 +45,7 @@ export class DataModelOverviewLibraryComponent implements OnInit {
   }
 
   goto(iri: string) {
-    this.router.navigate(['dataModel', iri]);
+    this.router.navigate([this.perspectives.dataModel.primary.state, iri]);
   }
 
   getDataModelViewUrl(dataModelIri: string): string {

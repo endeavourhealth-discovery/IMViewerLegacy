@@ -7,7 +7,6 @@ import {FormsModule} from '@angular/forms';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatInputModule} from '@angular/material/input';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('ConceptSearchComponent', () => {
   let component: ConceptSearchComponent;
@@ -22,8 +21,7 @@ describe('ConceptSearchComponent', () => {
         FormsModule,
         HttpClientTestingModule,
         MatSnackBarModule,
-        MatInputModule,
-        BrowserAnimationsModule
+        MatInputModule
       ]
     })
     .compileComponents();

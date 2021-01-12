@@ -6,84 +6,50 @@
   [selectedIri]="selectedIri"
   [perspective]="perspectives.valueSets"
 >
-  <!-- Dashboard content-->
-  <div *ngIf="isValueSetAvailable" style="height: 100%">
-    <mat-grid-list cols="2" rowHeight="100%">
-      <mat-grid-tile>
-        <mat-grid-tile-header><h3>Members</h3></mat-grid-tile-header>
+  <!-- Dashboard container-->
+  <mat-card-content class="full-page-card">
+    <mat-drawer-container class="example-container" hasBackdrop="true" style="height: calc(100%);overflow:hidden;">
 
-        <div *ngIf="hasMembers; else noMembers">
-          <mat-action-list #members>
-            <mat-list-item *ngFor="let member of getMembers() | slice: memberPageStartIndex : memberPageEndIndex" (click)="onMemberSelected(member)" [matTooltip]="member.name">
-              <mat-icon mat-list-icon>add_circle</mat-icon>
-              <span class="no-wrap">{{member.name}} ({{member.iri}})</span>
-            </mat-list-item>
-          </mat-action-list>
-          <div style="bottom: 0; right: 0; position: absolute">
-            <mat-paginator [length]="getMembers().length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onMemberPageChange($event)" [showFirstLastButtons]=false>
-            </mat-paginator>
-          </div>
-        </div>
-      </mat-grid-tile>
-      <mat-grid-tile>
-        <mat-grid-tile-header><h3>Children</h3></mat-grid-tile-header>
-        <div *ngIf="conceptTree.dataSource.data.length > 0; else noChildren">
-          <mat-tree [dataSource]="conceptTree.dataSource" [treeControl]="conceptTree.control">
-            <!-- leaf node -->
-            <mat-tree-node *matTreeNodeDef="let node"
-                           matTreeNodePadding matTreeNodePaddingIndent="10">
-              {{node.name}}
-            </mat-tree-node>
+      <!-- SideBar -->
+      <summary-drawer [concept]="selectedConcept"></summary-drawer>
 
-            <!-- expandable node -->
-            <mat-tree-node *matTreeNodeDef="let node; when: conceptTree.isExpandable"
-                           matTreeNodePadding matTreeNodePaddingIndent="10">
-              <mat-icon class="mat-icon-rtl-mirror" matTreeNodeToggle
-                        (click)="conceptTree.loadChildren(node)">
-                {{conceptTree.control.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-              </mat-icon>
-              {{node.name}}
-            </mat-tree-node>
-          </mat-tree>
-        </div>
-        <!--</div>-->
-      </mat-grid-tile>
-    </mat-grid-list>
-  </div>
-  <!--</mat-drawer-container>-->
+      <!-- ValueSet Tree -->
+      <div style="width: 100%; height: calc(100vh - 150px);" *ngIf="showTree">
+        <mat-tree [dataSource]="treeController.dataSource" [treeControl]="treeController.treeControl" class="concept-tree">
+          <!-- This is the tree node template for leaf nodes -->
+          <mat-tree-node *matTreeNodeDef="let node" style="cursor: pointer">
+            <li class="mat-tree-node">
+              <button mat-icon-button disabled></button>
+              <span class="select-highlight hover-highlight"
+                    [class.selected]="treeController.highlightNode(node)"
+                    (click)="treeController.selectNode(node)">
+                {{node.name}}
+              </span>
+            </li>
+          </mat-tree-node>
+          <!-- This is the tree node template for expandable nodes -->
+          <mat-nested-tree-node *matTreeNodeDef="let node; when: treeController.hasChild" style="cursor: pointer">
+            <li>
+              <div class="mat-tree-node">
+                <button mat-icon-button matTreeNodeToggle>
+                  <mat-icon class="mat-icon-rtl-mirror">
+                    {{treeController.treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                  </mat-icon>
+                </button>
+                <span class="select-highlight hover-highlight"
+                      [class.selected]="treeController.highlightNode(node)"
+                      (click)="treeController.selectNode(node)" 
+                      (dblclick)="treeController.expandNode(node)">
+                  {{node.name}}
+                </span>
+              </div>
+              <ul [class.concept-tree-invisible]="!treeController.isVisible(node)">
+                <ng-container matTreeNodeOutlet></ng-container>
+              </ul>
+            </li>
+          </mat-nested-tree-node>
+        </mat-tree>
+      </div>
+    </mat-drawer-container>
+  </mat-card-content>
 </app-library-component>
-
-<!-- https://stackblitz.com/angular/volnvkpldqj?file=src%2Fapp%2Ftree-nested-overview-example.html -->
-
-<ng-template #valueSetMemberChildrenTemplate let-valueSetMember="valueSetMember">
-  <ng-container *ngIf="valueSetMember.hasChildren()">
-    <ng-container *ngFor="let child of valueSetMember.getChildren()">
-      <mat-expansion-panel hideToggle>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            {{child.concept.name}}
-          </mat-panel-title>
-          <mat-panel-description>
-            {{child.concept.description}}
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-        <ng-template
-          [ngTemplateOutlet]="valueSetMemberChildrenTemplate"
-          [ngTemplateOutletContext]="{ valueSetMember: child }">
-        </ng-template>
-      </mat-expansion-panel>
-    </ng-container>
-  </ng-container>
-</ng-template>
-
-<ng-template #noMembers>
-  <div>
-    ValueSet does not contain any members
-  </div>
-</ng-template>
-
-<ng-template #noChildren>
-  <div>
-    Member does not contain any children
-  </div>
-</ng-template>

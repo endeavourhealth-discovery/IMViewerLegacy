@@ -1,11 +1,11 @@
-import { ConceptService } from '../../services/concept.service';
-import { ComponentsModule } from '../../components/components.module';
-import { NgJsonEditorModule } from 'ang-jsoneditor';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
-import { MatTabsModule } from '@angular/material/tabs';
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {ConceptService} from '../../services/concept.service';
+import {ComponentsModule} from '../../components/components.module';
+import {NgJsonEditorModule} from 'ang-jsoneditor';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatListModule} from '@angular/material/list';
+import {MatTabsModule} from '@angular/material/tabs';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormsModule} from '@angular/forms';
@@ -22,33 +22,36 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {OntologyLibraryComponent} from './ontology-library/ontology-library.component';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MonacoEditorModule} from 'ngx-monaco-editor';
+import {OntologyRoutingModule} from './ontology-routing.module';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        MatCardModule,
-        MatFormFieldModule,
-        FormsModule,
-        MatInputModule,
-        FlexModule,
-        AngularSplitModule,
-        MatTreeModule,
-        MatProgressBarModule,
-        MatIconModule,
-        MatButtonModule,
-        MatTableModule,
-        MatSnackBarModule,
-        MatTooltipModule,
-        ComponentsModule,
-        MatTabsModule,
-        MatListModule,
-        MatSidenavModule,
-        NgJsonEditorModule,
-        MatGridListModule,
-        MonacoEditorModule
-    ],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    FormsModule,
+    MatInputModule,
+    FlexModule,
+    AngularSplitModule,
+    MatTreeModule,
+    MatProgressBarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTableModule,
+    MatSnackBarModule,
+    MatTooltipModule,
+    ComponentsModule,
+    MatTabsModule,
+    MatListModule,
+    MatSidenavModule,
+    NgJsonEditorModule,
+    MatGridListModule,
+    MonacoEditorModule,
+    OntologyRoutingModule
+  ],
   declarations: [
     OntologyLibraryComponent,
   ]
 })
-export class OntologyModule { }
+export class OntologyModule {
+}
