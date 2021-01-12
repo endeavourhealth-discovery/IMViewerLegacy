@@ -5,6 +5,7 @@ import {LoggerService} from '../../services/logger.service';
 import {fromEvent, Subscription} from 'rxjs';
 import {ConceptReference} from '../../models/objectmodel/ConceptReference';
 import {debounceTime, distinctUntilChanged, filter, map, tap} from 'rxjs/operators';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-concept-search',
@@ -12,7 +13,11 @@ import {debounceTime, distinctUntilChanged, filter, map, tap} from 'rxjs/operato
   styleUrls: ['./concept-search.component.scss']
 })
 export class ConceptSearchComponent implements AfterViewInit {
+  static MULTIPLE_CONCEPTS_SELECTED_EVENT: string = "app:ConceptSearchComponent-multipleConcepts-selected";
+  
   @ViewChild('searchInput', {static: true}) input: ElementRef;
+  @ViewChild(MatAutocompleteTrigger, {static: true}) autocomplete: MatAutocompleteTrigger;
+
   @Input()  root: string;
   @Input() relationships: string[];
 
@@ -70,4 +75,9 @@ export class ConceptSearchComponent implements AfterViewInit {
   selectResult(item: any) {
     this.eventBus.cast('app:conceptSelect', item.iri);
   }
+
+  onMultipleConcepts(searchTerm: string) {
+    this.autocomplete.closePanel(); 
+    this.eventBus.cast(ConceptSearchComponent.MULTIPLE_CONCEPTS_SELECTED_EVENT, this.results);
+  }  
 }

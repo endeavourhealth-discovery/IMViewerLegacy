@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
+import { Observable, Subject } from 'rxjs';
+import { SummaryDrawerComponent } from '../components/summary-drawer/summary-drawer.component';
+import { Concept } from '../models/objectmodel/Concept';
 import {Perspective} from '../models/Perspective';
+import { ConceptService } from './concept.service';
+import { LoggerService } from './logger.service';
 
 @Injectable()
 export class Perspectives  {
-  constructor() {
-  }
-
-  current: Perspective;
 
   ontology: Perspective = {
     "caption": "Semantic Ontology",
@@ -77,12 +78,51 @@ export class Perspectives  {
     "root": null
   };
 
-  perspectives: Perspective[] = [
-    this.ontology,
-    this.dataModel,
-    this.valueSets,
-    this.dataSets,
-    this.maps,
-    this.search,
-  ];
+  perspectives: Perspective[];
+  perspectivesMap: Map<string, Perspective>;
+
+  current: Perspective;
+
+  constructor(private conceptService: ConceptService, private log: LoggerService) {
+    this.perspectives = [
+      this.ontology,
+      this.dataModel,
+      this.valueSets,
+      this.dataSets,
+      this.maps,
+      this.search,
+    ];
+
+    this.perspectivesMap = new Map();
+    this.perspectives.forEach(perspective => this.perspectivesMap.set(perspective.root, perspective));
+  }
+  
+  getPerspective(iri: string): Observable<Perspective> {
+    let perspectiveObservable: Subject<Perspective> = new Subject();
+
+    this.conceptService.isOfType(iri, Array.from(this.perspectivesMap.keys())).subscribe(
+        (result) => {
+            if (result.length == 1) {
+                console.log(`Got perspecive ${result[0].iri} for ${iri}`);
+                perspectiveObservable.next(this.perspectivesMap.get(result[0].iri));
+            }
+            else if (result.length > 1) {
+                const errorMessage = `warn - found multiple perspectives for concept ${iri}. Falling back on default`;
+                this.log.debug(errorMessage);
+                perspectiveObservable.error(errorMessage);
+            }
+            else {
+                const errorMessage = `warn - could not find perspective for concept ${iri}. Falling back on default`;
+                this.log.debug(errorMessage);
+                perspectiveObservable.error(errorMessage);
+            }
+        },
+        (error) => {
+            this.log.error(error)
+            perspectiveObservable.error("Problem retreiving perspective for concept (iri:" + iri + "). Cause: " + error);
+        }
+    )
+
+    return perspectiveObservable;
+}
 }

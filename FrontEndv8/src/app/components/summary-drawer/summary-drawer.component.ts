@@ -198,10 +198,6 @@ export class SummaryDrawerComponent {
                 private snackBar: MatSnackBar,
                 private _eref: ElementRef) {
 
-        // faster lookup of perspectives
-        this.perspectivesMap = new Map();
-        this.perspectives.perspectives.forEach(perspective => this.perspectivesMap.set(perspective.root, perspective));
-
         // summary provider initialisation
         this.summaryProviders = new Map();
 
@@ -240,14 +236,13 @@ export class SummaryDrawerComponent {
     set concept(concept: Concept) {
         this._concept = concept;
 
-        this.getPerspective(this.concept).subscribe(
+        this.perspectives.getPerspective(this.concept.iri).subscribe(
             perspective => {
-
-                this.perspective = perspective;
-
-                this.getSummaryProvider(this.perspective.root).subscribe(
-                    summaryProvider => this.summaryProvider = summaryProvider
-                );
+                this.onPerspective(perspective);
+            },
+            error => {
+                this.log.debug(`Warning - unable to get perspective for concept ${this.concept.iri}. Falling back on default perspective`);
+                this.onPerspective(SummaryDrawerComponent.DEFAULT_PERSPECTIVE);
             }
         );
     }
@@ -328,31 +323,11 @@ export class SummaryDrawerComponent {
         return this._eref.nativeElement.contains(target) == false;
     }
 
-    private getPerspective(concept: Concept): Observable<Perspective> {
-        let perspectiveObservable: Subject<Perspective> = new Subject();
+    private onPerspective(perspective: Perspective): void {
+        this.perspective = perspective;
 
-        this.service.isOfType(concept.iri, Array.from(this.perspectivesMap.keys())).subscribe(
-            (result) => {
-                if (result.length == 1) {
-                    console.log(`Got perspecive ${result[0].iri} for ${concept.iri}`);
-                    perspectiveObservable.next(this.perspectivesMap.get(result[0].iri));
-                }
-                else if (result.length > 1) {
-                    this.log.debug(`warn - found multiple perspectives for concept ${concept.iri}. Falling back on default`);
-                    perspectiveObservable.next(SummaryDrawerComponent.DEFAULT_PERSPECTIVE);
-                }
-                else {
-                    console.log(`failed to get perspective for ${concept.iri}`);
-                    this.log.debug(`warn - could not find perspective for concept ${concept.iri}. Falling back on default`);
-                    perspectiveObservable.next(SummaryDrawerComponent.DEFAULT_PERSPECTIVE);
-                }
-            },
-            (error) => {
-                this.log.error(error)
-                perspectiveObservable.error("Problem retreiving perspective for concept (iri:" + concept.iri + "). Cause: " + error);
-            }
-        )
-
-        return perspectiveObservable;
-    }
+        this.getSummaryProvider(this.perspective.root).subscribe(
+            summaryProvider => this.summaryProvider = summaryProvider
+        );       
+    }    
 }

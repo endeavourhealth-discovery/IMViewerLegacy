@@ -2,7 +2,7 @@
   <app-concept-search [root]="root" [relationships]="relationships">
   </app-concept-search>
   <div class="as-split-area-content" style="height: 100%">
-    <mat-tab-group mat-stretch-tabs class="example-stretched-tabs" style="height: 100%">
+    <mat-tab-group mat-stretch-tabs class="example-stretched-tabs" style="height: 100%" #tabs>
       <mat-tab label="Browse">
         <ng-template mat-tab-label>
           <mat-icon class="example-tab-icon">navigation</mat-icon>
@@ -23,15 +23,41 @@
           <mat-icon class="example-tab-icon">history</mat-icon>
           History
         </ng-template>
-
         <mat-selection-list dense multiple="false">
           <mat-list-option *ngFor="let item of history" [value]="item" (click)="goto(item.concept.iri)">
             <mat-icon mat-list-icon>launch</mat-icon>
             <div mat-line>{{item.concept.name}}</div>
           </mat-list-option>
         </mat-selection-list>
-
       </mat-tab>
+      <mat-tab label="Search Results">
+        <ng-template mat-tab-label>
+          <mat-icon class="example-tab-icon">search</mat-icon>
+          Search Results
+        </ng-template>
+        <table class="mat-table" style="width: 100%">
+          <tr class="mat-row" *ngFor="let searchResult of searchResults">
+            <td class="mat-cell" (click)="onSelectSearchResult(searchResult.concept.iri)">
+              <span class="select-highlight hover-highlight" 
+                    [class.selected]="highlightSearchResult(searchResult.concept.iri)" 
+                    style="cursor: pointer">
+                    {{searchResult.concept.name}}
+              </span>
+            </td>
+            <td class="mat-cell">
+              <ng-container *ngIf="searchResult.typeColor != null && searchResult.typeName != null">
+                <mat-chip-list class="mat-chips-right">
+                  <mat-chip class="mat-small-chip" 
+                            (click)="onSelectSearchResult(searchResult.concept.iri)" 
+                            [style.background-color]="searchResult.typeColor">
+                            {{searchResult.typeName}}
+                  </mat-chip>
+                </mat-chip-list>
+              </ng-container>
+            </td>
+          </tr>
+        </table>
+      </mat-tab>      
     </mat-tab-group>
   </div>
 </div>
