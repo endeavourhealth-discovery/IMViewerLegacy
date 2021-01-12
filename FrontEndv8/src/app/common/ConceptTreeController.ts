@@ -8,6 +8,11 @@ import { LoggerService } from "src/app/services/logger.service";
 import { ConceptTreeModel } from "./ConceptTreeModel";
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 
+export interface ConceptTreeSelection {
+    iri: string;
+    origin: ConceptTreeController
+}
+
 export class ConceptTreeController {
 
     static NODE_SELECTED_EVENT: string = "app:ConceptTree-node-selected";
@@ -60,7 +65,8 @@ export class ConceptTreeController {
     // attached to single click event (see HTML template)
     selectNode(node: ConceptReferenceNode): void {
         this.selectedIri = node.iri;
-        this.eventBus.cast(ConceptTreeController.NODE_SELECTED_EVENT, { selectedIri: node.iri, origin: this });
+        const selection: ConceptTreeSelection = { iri: node.iri, origin: this }
+        this.eventBus.cast(ConceptTreeController.NODE_SELECTED_EVENT, selection);
     }
 
     highlightNode(node: ConceptReferenceNode): boolean {

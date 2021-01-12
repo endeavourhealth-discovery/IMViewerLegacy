@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgEventBus } from 'ng-event-bus';
 import { forkJoin, Observable, ReplaySubject, Subject } from 'rxjs';
-import { ConceptTreeController } from '../../../common/ConceptTreeController';
+import { ConceptTreeController, ConceptTreeSelection } from '../../../common/ConceptTreeController';
 import { ConceptView, HistoryItem } from '../../../common/ConceptView';
 import { SummaryDrawerComponent } from '../../../components/summary-drawer/summary-drawer.component';
 import { Concept } from '../../../models/objectmodel/Concept';
@@ -51,8 +51,8 @@ export class ValueSetLibraryComponent implements OnInit {
     this.conceptView.onNavigationEnd(this.onHistoryChange.bind(this), this.onError.bind(this) )
 
     this.treeController = new ConceptTreeController(service, log, eventBus);
-    eventBus.on(ConceptTreeController.NODE_SELECTED_EVENT).subscribe((iri: string) => {
-      this.showSummaryDrawer(iri);
+    eventBus.on(ConceptTreeController.NODE_SELECTED_EVENT).subscribe((selectionEvent: ConceptTreeSelection) => {
+      this.showSummaryDrawer(selectionEvent.iri);
     });    
   }
 
