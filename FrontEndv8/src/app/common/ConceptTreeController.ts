@@ -25,14 +25,12 @@ export class ConceptTreeController {
                 private log: LoggerService,
                 private eventBus: NgEventBus) {
 
-        this.model = new ConceptTreeModel();
+        this.model = new ConceptTreeModel(log);
         
         this.dataSource = new MatTreeNestedDataSource<ConceptReferenceNode>();
         this.treeControl = new NestedTreeControl<ConceptReferenceNode>(node => this.model.getChildrenObservable(node))
         
         this.isViewable = false;  
-
-        //this.view = new ConceptTreeView(log, new NestedTreeControl<ConceptReferenceNode>(node => this.model.getChildrenObservable(node)));
 
         // handle expansion - may result in fetching children from the API
         // and incorporating them into the tree

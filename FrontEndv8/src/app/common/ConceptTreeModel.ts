@@ -1,5 +1,6 @@
 import { Subject, BehaviorSubject, ReplaySubject, Observable } from "rxjs";
 import { ConceptReferenceNode } from "src/app/models/objectmodel/ConceptReferenceNode";
+import { LoggerService } from "src/app/services/logger.service";
 
 export class ConceptTreeModel {
     dataChange: BehaviorSubject<ConceptReferenceNode[]> = new BehaviorSubject([]);
@@ -14,9 +15,11 @@ export class ConceptTreeModel {
     private nodes: Map<string, ConceptReferenceNode> = new Map();
     private roots: ConceptReferenceNode[] = [];
 
-    addNode(node: ConceptReferenceNode): void {
+    private log: LoggerService;
 
-        //this.addNode(node);
+    constructor(log: LoggerService) {}
+
+    addNode(node: ConceptReferenceNode): void {
 
         // attach parents
         this.initAncestors(node);
@@ -31,21 +34,18 @@ export class ConceptTreeModel {
     }
 
     addChildren(parent: ConceptReferenceNode, children: ConceptReferenceNode[]) {
-        let registeredParent = this.getNode(parent.iri);
+        const registered: boolean = this.registerNode(parent);
+        if(registered == false) {
+            this.log.debug(`Warning - attempt to re-register the concept ${parent.iri}. Using the registered instance and ignoring the duplicate`)
+            parent = this.getNode(parent.iri);
+        }
         
-        if(registeredParent == null) {
-            // error
-        }
-        else if(registeredParent.children != null && registeredParent.children.length > 0) {
-            // error
-        }
-        else {
-            registeredParent.children = children;
-    
-            this.initDecendants(registeredParent);
+        parent.children = children;
 
-            this.dataChange.next(this.getRoots());
-        }
+        this.initDecendants(parent);
+
+        this.dataChange.next(this.getRoots());
+        
     }
 
     getNode(iri: string): ConceptReferenceNode {

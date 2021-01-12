@@ -1,29 +1,19 @@
-import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferenceNode';
-import { SchemeCount } from '../../../models/old/SchemeCount';
-import { ConceptService, ConceptAggregate } from '../../../services/concept.service';
-import { Concept } from '../../../models/objectmodel/Concept';
-import { ConceptType } from '../../../models/objectmodel/ConceptType';
-import { ConceptReference } from '../../../models/objectmodel/ConceptReference';
-import { NgEventBus } from 'ng-event-bus';
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import {  BehaviorSubject, Observable, Subject, forkJoin, ReplaySubject } from 'rxjs';
-import { ClassExpression } from 'src/app/models/objectmodel/ClassExpression';
-import {FlatTreeControl} from '@angular/cdk/tree';
-import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
-import {PageEvent} from '@angular/material/paginator';
-import {LoggerService} from '../../../services/logger.service';
-import {Perspectives} from '../../../services/perspective.service';
-import { ConceptView, HistoryItem } from '../../../common/ConceptView';
-import { valueSetServiceProvider } from '../../../services/valueset.service.provider';
-import { ValueSetService, ValueSet } from '../../../services/valueset.service';
-import { ConceptHierarchyViewComponent } from 'src/app/components/concept-hierarchy-view/concept-hierarchy-view.component';
-import { ValueSetTree } from './ValueSetTree';
-import {NestedTreeControl} from '@angular/cdk/tree';
-import {MatTreeNestedDataSource} from '@angular/material/tree';
-import { SummaryDrawerComponent } from '../../../components/summary-drawer/summary-drawer.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgEventBus } from 'ng-event-bus';
+import { forkJoin, Observable, ReplaySubject, Subject } from 'rxjs';
 import { ConceptTreeController } from '../../../common/ConceptTreeController';
+import { ConceptView, HistoryItem } from '../../../common/ConceptView';
+import { SummaryDrawerComponent } from '../../../components/summary-drawer/summary-drawer.component';
+import { Concept } from '../../../models/objectmodel/Concept';
+import { ConceptReference } from '../../../models/objectmodel/ConceptReference';
+import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferenceNode';
+import { ConceptAggregate, ConceptService } from '../../../services/concept.service';
+import { LoggerService } from '../../../services/logger.service';
+import { Perspectives } from '../../../services/perspective.service';
+import { ValueSet, ValueSetService } from '../../../services/valueset.service';
+import { valueSetServiceProvider } from '../../../services/valueset.service.provider';
 
 @Component({
   selector: 'app-value-set-library',
@@ -37,22 +27,13 @@ export class ValueSetLibraryComponent implements OnInit {
   children: Array<ConceptReferenceNode>;
 
   selectedConcept: Concept;
-
-  //valueSetTree: ValueSetTree;
-
   treeController: ConceptTreeController;
-
-
   conceptView: ConceptView;
 
-  searchSize = 72;
-
   relationships = ['sn:116680003'];
-  nameCache = {};
-  hoveredConcept: Concept = new Concept();
+
   history = [];
-  timer: any;
-  sidebar = false;
+
 
   @ViewChild(SummaryDrawerComponent, { static: true }) summaryDrawer: SummaryDrawerComponent;
 
@@ -69,28 +50,12 @@ export class ValueSetLibraryComponent implements OnInit {
     this.conceptView.onNavigationStart(this.onConceptAggregateChange.bind(this), this.onError.bind(this) )
     this.conceptView.onNavigationEnd(this.onHistoryChange.bind(this), this.onError.bind(this) )
 
-    // this.valueSetTree = new ValueSetTree(service, log, eventBus);
-    // eventBus.on(ValueSetTree.NODE_SELECTED_EVENT).subscribe((iri: string) => {
-    //   this.showSummaryDrawer(iri);
-    // });
-
     this.treeController = new ConceptTreeController(service, log, eventBus);
     eventBus.on(ConceptTreeController.NODE_SELECTED_EVENT).subscribe((iri: string) => {
       this.showSummaryDrawer(iri);
     });    
   }
 
-  // goto(iri: string) {
-  //   if (iri !== this.selectedIri) {	    if (iri !== this.selectedIri) {
-  //     this.router.navigate(['valueSets', iri]);	      this.router.navigate([this.perspectives.valueSets.primary.state, iri]);
-  //   }	    
-  // }	  
-
-
-  //  gotoConcept(iri: string) {
-  //   this.router.navigate(['ontology', iri]);	    this.router.navigate([this.perspectives.ontology.primary.state, iri]);
-  // }	  
-  
   ngOnInit() {
     this.conceptView.init();
   }
@@ -99,19 +64,8 @@ export class ValueSetLibraryComponent implements OnInit {
     return this.concept.iri;
   }  
 
-  // get treeControl(): NestedTreeControl<ConceptReferenceNode> {
-  //   return this.treeController.treeControl;
-  //   //return this.valueSetTree.treeControl;
-  // }
-
-  // get treeDataSource(): MatTreeNestedDataSource<ConceptReferenceNode> {
-  //   return this.treeController.dataSource;
-  //   //return this.valueSetTree.dataSource;
-  // }
-
   get showTree() {
     return this.treeController.isViewable;
-    //return this.valueSetTree.isViewable;
   }
 
   private onConceptAggregateChange(conceptAggregate: ConceptAggregate): void {
@@ -160,16 +114,8 @@ export class ValueSetLibraryComponent implements OnInit {
       forkJoin([this.initNode("included", valueSet.included), this.initNode("excluded", valueSet.excluded)]).subscribe(
         ([included, excluded]) => {
 
-          // add some dummy children to excluded
-          // excluded.children.push(this.toConceptReferenceNode("test1", "test1"));
-          // excluded.children.push(this.toConceptReferenceNode("test2", "test2"));
-          // excluded.hasChildren = true;
-
           let tree: ConceptReferenceNode = this.toConceptReferenceNode(this.concept.iri, this.concept.name, [included, excluded]);
-          this.treeController.setDataAndSelectedNode(tree, included);
-
-          //this.valueSetTree.init(tree, included.iri);
-          
+          this.treeController.setDataAndSelectedNode(tree, included);       
         },
       (error) => { 
         this.log.error(error); 
