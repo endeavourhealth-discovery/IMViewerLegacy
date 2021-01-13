@@ -79,7 +79,8 @@ export class SideNavComponent {
   }
 
   showSearchResultsTab(searchResults: ConceptReference[]) {
-    this.searchResults = [];    
+    this.searchResults = [];  
+    this.selectedSearchResult = null;  
 
     // now find out what kind of perspective each result belongs to
     searchResults.forEach(searchResult => {
@@ -94,12 +95,12 @@ export class SideNavComponent {
       )
     });
 
-    const searchResultTab: MatTab = this.tabGroup._tabs.find(tab => "Search Results" == tab.textLabel);
-    if(searchResultTab != null) {
-      this.tabGroup.selectedIndex = searchResultTab.position;
+    const searchResultsTabIndex: number = this.tabGroup._tabs.toArray().findIndex(tab => "Search Results" == tab.textLabel)
+    if(searchResultsTabIndex > -1) {
+      this.tabGroup.selectedIndex = searchResultsTabIndex;
     }
     else {
-      // log error
+      this.log.debug("Warning - unable to automatically move to search results tab");
     }
   }
 }
