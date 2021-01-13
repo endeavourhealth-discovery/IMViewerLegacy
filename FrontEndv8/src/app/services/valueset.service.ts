@@ -23,7 +23,7 @@ export class ValueSetService {
 
     public isValueSet(concept: Concept): Observable<boolean> {
       let isValueSetObservable: Subject<boolean> = new Subject();
-      
+
       this.conceptService.isA(concept.iri, this.valueSetIri).subscribe(
         isValueSet => {
             isValueSetObservable.next(isValueSet);
@@ -39,8 +39,8 @@ export class ValueSetService {
 
       objectModelVistor.ExpressionVisitor = (expression: ClassExpression) => { hasMemberParser.onEnterExpression(expression); }
       objectModelVistor.ExpressionExitVisitor = (expression: ClassExpression) => { hasMemberParser.onExitExpression(expression); }
-      objectModelVistor.ObjectPropertyValueVisitor = (objectPropertyValue: ObjectPropertyValue)  => { hasMemberParser.onEnterObjectPropertyValue(objectPropertyValue); }         
-      objectModelVistor.ObjectPropertyValueExitVisitor = (objectPropertyValue: ObjectPropertyValue)  => { hasMemberParser.onExitObjectPropertyValue(objectPropertyValue); }               
+      objectModelVistor.ObjectPropertyValueVisitor = (objectPropertyValue: ObjectPropertyValue)  => { hasMemberParser.onEnterObjectPropertyValue(objectPropertyValue); }
+      objectModelVistor.ObjectPropertyValueExitVisitor = (objectPropertyValue: ObjectPropertyValue)  => { hasMemberParser.onExitObjectPropertyValue(objectPropertyValue); }
       objectModelVistor.ClassVisitor = (conceptReference: ConceptReference) => { hasMemberParser.onClass(conceptReference); }
 
       objectModelVistor.visit(concept);
@@ -50,7 +50,7 @@ export class ValueSetService {
         concept: {iri: concept.iri, name: concept.name},
         included: hasMemberParser.included,
         excluded: hasMemberParser.excluded
-      } 
+      }
     }
 }
 
@@ -60,8 +60,8 @@ class HasMembersParser {
   public excluded: ConceptReference[] = [];
 
   private hasMembersProperty: ObjectPropertyValue;
-  private complementOfHistory: boolean[];
-  private completementOf: boolean = false; 
+  private complementOfHistory: boolean[] = [];
+  private completementOf: boolean = false;
 
   public onEnterObjectPropertyValue(property: ObjectPropertyValue): void {
     if(":hasMembers" == property.Property.iri) {
@@ -72,13 +72,13 @@ class HasMembersParser {
         // TODO error time - nested hasMember within outer hasMember - illegal syntax
       }
     }
-  }  
+  }
 
   public onExitObjectPropertyValue(property: ObjectPropertyValue): void {
     if(this.hasMembersProperty && this.hasMembersProperty == property) {
       this.hasMembersProperty = null;
     }
-  }    
+  }
 
   public onEnterExpression(expression: ClassExpression): void {
     if (this.hasMembersProperty && expression.ComplementOf) {
@@ -88,15 +88,15 @@ class HasMembersParser {
 
   public onExitExpression(expression: ClassExpression): void {
     if (this.hasMembersProperty && expression.ComplementOf) {
-      this.onExitComplementOf(expression.ComplementOf) 
-    }   
-  }  
+      this.onExitComplementOf(expression.ComplementOf)
+    }
+  }
 
   public onClass(conceptReference: ConceptReference): void {
     if(this.hasMembersProperty) {
       (this.completementOf) ? (this.excluded.push(conceptReference)) : (this.included.push(conceptReference));
     }
-  }  
+  }
 
   private onEnterComplementOf(expression: ClassExpression): void {
     // add the current complementOf state to the history incase

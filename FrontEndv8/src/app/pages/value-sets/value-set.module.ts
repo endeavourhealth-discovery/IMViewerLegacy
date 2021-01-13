@@ -25,6 +25,8 @@ import {RouterModule} from '@angular/router';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {ValueSetRoutingModule} from './value-set-routing.module';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @NgModule({
     imports: [
@@ -51,7 +53,9 @@ import {ValueSetRoutingModule} from './value-set-routing.module';
         MatSidenavModule,
         MatGridListModule,
         MatPaginatorModule,
-      ValueSetRoutingModule
+        ValueSetRoutingModule,
+        MatMenuModule,
+        MatProgressSpinnerModule
     ],
   declarations: [
     ValueSetLibraryComponent,

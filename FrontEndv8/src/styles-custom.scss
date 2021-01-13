@@ -279,6 +279,11 @@ mat-tree-node {
   min-height: 1em !important;
 }
 
+.mat-tree-node {
+  min-height: 1.4em !important;
+  height: 1.4em;
+}
+
 .mat-expansion-panel-header {
   height: 32px * $scale !important;
 }
@@ -491,3 +496,19 @@ app-concept-search {
   left: calc(100% / 2);
   transform: translateX(-50%);
 }
+
+.concept-tree-invisible {
+  display: none;
+}
+
+.concept-tree ul,
+.concept-tree li {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none;
+}
+
+.concept-tree ul {
+  padding-inline-start: 10px;
+}
+

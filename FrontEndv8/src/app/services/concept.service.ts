@@ -1,6 +1,6 @@
 import { ConceptReferenceNode } from '../models/objectmodel/ConceptReferenceNode';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import { Observable, Subject, zip } from 'rxjs';
 import { Concept } from '../models/objectmodel/Concept';
 import { environment } from '../../environments/environment';
@@ -8,6 +8,7 @@ import {ConceptReference} from '../models/objectmodel/ConceptReference';
 import {DataModelNavigatorService} from '../components/data-model-navigator/data-model-navigator.service';
 import {SearchRequest} from '../models/search/SearchRequest';
 import {SearchResponse} from '../models/search/SearchResponse';
+import {Option} from '@angular/cli/models/interface';
 
 export interface ConceptAggregate {
   concept: Concept;
@@ -79,13 +80,13 @@ export class ConceptService implements DataModelNavigatorService {
     )
 
     return isAObservable;
-  } 
+  }
 
   getConceptAggregate(iri: string): Observable<ConceptAggregate> {
     let conceptAggregate: Subject<ConceptAggregate> = new Subject();
-    
-    zip(this.getConcept(iri), 
-        this.getConceptChildren(iri), 
+
+    zip(this.getConcept(iri),
+        this.getConceptChildren(iri),
         this.getConceptParents(iri)).subscribe(([concept, children, parents]) => {
           conceptAggregate.next({
             concept: concept,
@@ -96,5 +97,14 @@ export class ConceptService implements DataModelNavigatorService {
     )
 
     return conceptAggregate;
+  }
+
+  downloadValuesetMembers(iri: string, expand: boolean = false, type: string = '*/*'): Observable<any> {
+    let headers: HttpHeaders = new HttpHeaders();
+    headers = headers.append('Accept', type);
+
+    let params: HttpParams = new HttpParams();
+    params = params.append('expanded', expand ? 'true' : 'false');
+    return this.http.get(environment.api + 'api/concept/' + iri + '/members', {headers, params, responseType: 'text'});
   }
 }
