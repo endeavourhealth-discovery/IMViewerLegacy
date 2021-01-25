@@ -51,7 +51,7 @@ export class DataModelNavigatorComponent implements OnInit {
     this.concept = this.parents = this.children = null;
     this.targetCanvas.nativeElement.innerHTML = '<svg id="panZoom" width="100%" height="100%"></svg>';
 
-    this.obs = zip(this.service.getConcept(this.iri), this.service.getConceptParents(this.iri), this.service.getConceptChildren(this.iri)).subscribe(
+    this.obs = zip(this.service.getConcept(this.iri), this.service.getConceptParentHierarchy(this.iri), this.service.getConceptChildren(this.iri)).subscribe(
       (result) => {
         this.concept = result[0];
         this.parents = result[1];

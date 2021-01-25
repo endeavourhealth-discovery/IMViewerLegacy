@@ -5,5 +5,5 @@ import {ConceptReferenceNode} from '../../models/objectmodel/ConceptReferenceNod
 export abstract class DataModelNavigatorService {
     abstract getConcept(iri: string): Observable<Concept>;
     abstract getConceptChildren(iri: string): Observable<Array<ConceptReferenceNode>>;
-    abstract getConceptParents(iri: string): Observable<Array<ConceptReferenceNode>>;
+    abstract getConceptParentHierarchy(iri: string): Observable<Array<ConceptReferenceNode>>;
 }

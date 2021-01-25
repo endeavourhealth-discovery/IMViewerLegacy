@@ -53,6 +53,7 @@ let routes = [
       {path: 'ontology/:id', loadChildren: () => import('./pages/ontology/ontology.module').then(m => m.OntologyModule), data: {role: 'information-manager:conceptLibrary', helpContext: '#Semantic_ontology'}},
       {path: 'dataModel/:id', loadChildren: () => import('./pages/data-model/data-model.module').then(m => m.DataModelModule), data: {role: 'information-manager:conceptLibrary', helpContext: '#Data_models'}},
       {path: 'valueSets/:id', loadChildren: () => import('./pages/value-sets/value-set.module').then(m => m.ValueSetModule), data: {role: 'information-manager:conceptLibrary', helpContext: '#Value_sets'}},
+      {path: 'dataMaps', loadChildren: () => import('./pages/maps/maps.module').then(m => m.MapsModule), data: {role: 'information-manager:conceptLibrary', helpContext: '#Maps'}},
     ]
   }
 ];

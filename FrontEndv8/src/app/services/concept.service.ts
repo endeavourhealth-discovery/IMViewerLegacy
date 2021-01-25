@@ -48,6 +48,10 @@ export class ConceptService implements DataModelNavigatorService {
     return this.http.get<Array<ConceptReferenceNode>>(environment.api + 'api/concept/' + iri + '/children');
   }
 
+  getConceptParentHierarchy(iri: string): Observable<Array<ConceptReferenceNode>> {
+    return this.http.get<Array<ConceptReferenceNode>>(environment.api + 'api/concept/' + iri + '/parentHierarchy');
+  }
+
   getConceptParents(iri: string): Observable<Array<ConceptReferenceNode>> {
     return this.http.get<Array<ConceptReferenceNode>>(environment.api + 'api/concept/' + iri + '/parents');
   }
@@ -87,7 +91,7 @@ export class ConceptService implements DataModelNavigatorService {
 
     zip(this.getConcept(iri),
         this.getConceptChildren(iri),
-        this.getConceptParents(iri)).subscribe(([concept, children, parents]) => {
+        this.getConceptParentHierarchy(iri)).subscribe(([concept, children, parents]) => {
           conceptAggregate.next({
             concept: concept,
             children: children,

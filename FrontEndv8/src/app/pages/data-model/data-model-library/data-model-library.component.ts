@@ -15,7 +15,7 @@ import { ConceptView, HistoryItem } from '../../../common/ConceptView';
   templateUrl: './data-model-library.component.html',
   styleUrls: ['./data-model-library.component.scss'],
 })
-class DataModelLibraryComponent implements OnInit {
+export class DataModelLibraryComponent implements OnInit {
 
   concept: Concept;
   parents: Array<ConceptReferenceNode>;
@@ -84,8 +84,4 @@ class DataModelLibraryComponent implements OnInit {
       );
     }
   }
-}
-
-export {
-  DataModelLibraryComponent
 }

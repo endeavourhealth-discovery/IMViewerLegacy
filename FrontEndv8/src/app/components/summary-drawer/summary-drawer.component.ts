@@ -236,15 +236,18 @@ export class SummaryDrawerComponent {
     set concept(concept: Concept) {
         this._concept = concept;
 
-        this.perspectives.getPerspective(this.concept.iri).subscribe(
+        if (concept && concept.iri) {
+
+          this.perspectives.getPerspective(this.concept.iri).subscribe(
             perspective => {
-                this.onPerspective(perspective);
+              this.onPerspective(perspective);
             },
             error => {
-                this.log.debug(`Warning - unable to get perspective for concept ${this.concept.iri}. Falling back on default perspective`);
-                this.onPerspective(SummaryDrawerComponent.DEFAULT_PERSPECTIVE);
+              this.log.debug(`Warning - unable to get perspective for concept ${this.concept.iri}. Falling back on default perspective`);
+              this.onPerspective(SummaryDrawerComponent.DEFAULT_PERSPECTIVE);
             }
-        );
+          );
+        }
     }
 
     get concept() {
@@ -328,6 +331,6 @@ export class SummaryDrawerComponent {
 
         this.getSummaryProvider(this.perspective.root).subscribe(
             summaryProvider => this.summaryProvider = summaryProvider
-        );       
-    }    
+        );
+    }
 }
