@@ -23,6 +23,7 @@ import { ConceptView, HistoryItem } from '../../../common/ConceptView';
 })
 export class OntologyLibraryComponent implements OnInit {
   concept: Concept;
+  conceptText: string;
   parents: Array<ConceptReferenceNode>;
   children: Array<ConceptReferenceNode>;
   //selectedIri: string;
@@ -36,7 +37,10 @@ export class OntologyLibraryComponent implements OnInit {
   history = [];
   timer: any;
   sidebar = false;
-  editorOptions = {theme: 'vs-dark', language: 'DiscoverySyntax'};
+  editorOptions = {theme: 'vs-dark', language: 'DiscoverySyntax',
+  wordWrap: 'wordWrapColumn',	wordWrapColumn: 80};
+  editorOptions2 = {theme: 'vs-dark', language: 'json',
+  wordWrap: 'wordWrapColumn',	wordWrapColumn: 80};
   parseError = null;
 
   conceptView: ConceptView;
@@ -67,6 +71,8 @@ export class OntologyLibraryComponent implements OnInit {
         (evnt) => this.validate(evnt),
         error => (error) => this.log.error(error)
         );
+
+        console.log('test');
   }
 
   ngOnInit() {
@@ -84,6 +90,12 @@ export class OntologyLibraryComponent implements OnInit {
       this.concept = conceptAggregate.concept;
       this.children = conceptAggregate.children;
       this.parents = conceptAggregate.parents;
+
+      this.conceptText = JSON.stringify(this.concept, null, '\t');
+      this.service.getConceptImLang(this.concept.iri).subscribe(
+        (result) => this.definitionText = result,
+        (error) => this.log.error(error)
+      );
     }
     else {
       this.log.debug("onConceptAggregateChange - ConceptAggregate is null");

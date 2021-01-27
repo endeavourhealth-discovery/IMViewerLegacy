@@ -11,7 +11,7 @@
                         style="height: calc(100%);overflow:hidden;">
 
     <!-- SideBar -->
-    <summary-drawer [concept]="hoveredConcept"></summary-drawer>    
+    <summary-drawer [concept]="hoveredConcept"></summary-drawer>
 
     <!-- Dashboard content-->
     <mat-tab-group style="height: 100%;" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">
@@ -123,8 +123,12 @@
               <textarea matInput [value]="concept.description"></textarea>
             </mat-form-field>
 
-            <mat-wrapper fxFlex="100">
-              <ngx-monaco-editor [options]="editorOptions" [(ngModel)]="definitionText" (ngModelChange)="definitionChanged.next($event)"></ngx-monaco-editor>
+            <mat-wrapper fxFlex="50" style="height: 700px;">
+              <ngx-monaco-editor [options]="editorOptions" [(ngModel)]="definitionText" (ngModelChange)="definitionChanged.next($event)" style="height: 700px;"></ngx-monaco-editor>
+            </mat-wrapper>
+
+            <mat-wrapper fxFlex="50" style="height: 700px;">
+              <ngx-monaco-editor [options]="editorOptions2" [(ngModel)]="conceptText" (ngModelChange)="definitionChanged.next($event)" style="height: 700px;"></ngx-monaco-editor>
             </mat-wrapper>
 
           </div>

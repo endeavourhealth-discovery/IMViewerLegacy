@@ -1,12 +1,12 @@
 <div class="content" fxLayout="row wrap" fxLayoutGap="16px grid">
-  <div fxFlex="16.6%" fxFlex.md="25%" fxFlex.sm="50%" fxFlex.xs="100%"  fxLayoutAlign="stretch" *ngFor="let dataModelConcept of concepts">
+  <div fxFlex="16.6%" fxFlex.md="25%" fxFlex.sm="50%" fxFlex.xs="100%"  fxLayoutAlign="stretch" *ngFor="let healthRecordConcept of concepts">
     <mat-card>
-      <mat-card-header (click)="goto(dataModelConcept.iri)">
-        <mat-card-title>{{dataModelConcept.name}}</mat-card-title>
+      <mat-card-header (click)="goto(healthRecordConcept.iri)">
+        <mat-card-title>{{healthRecordConcept.name}}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-selection-list dense>
-          <mat-list-option *ngFor="let source of dataModelConcept.sources"
+          <mat-list-option *ngFor="let source of healthRecordConcept.sources"
                            (click)="goto(source.iri)" [matTooltip]="source.name"
                            matTooltipShowDelay="500" matTooltipHideDelay="0">
             <mat-icon mat-list-icon>launch</mat-icon>

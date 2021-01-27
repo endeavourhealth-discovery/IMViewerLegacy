@@ -20,18 +20,18 @@ export class Perspectives  {
     "root": ":SemanticConcept",
   };
 
-  dataModel: Perspective = {
-    "caption": "Data Models",
-    "subtitle": "Data model definition explorer",
-    "description": "The data model is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but he data model, being created for a specific business of healthcare is separate to the ontology",
-    "primary": {state: "perspective/dataModel", name: "Explore"},
+  healthRecord: Perspective = {
+    "caption": "Health Records",
+    "subtitle": "Health Record definition explorer",
+    "description": "The health record is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but the health record, being created for a specific business of healthcare is separate to the ontology",
+    "primary": {state: "perspective/healthRecord", name: "Explore"},
     "additionalStates": [
-      {state: "perspective/dataModelOverview", name: "Overview"}
+      {state: "perspective/healthRecordOverview", name: "Overview"}
     ],
-    "image": "datamodels.jpg",
+    "image": "healthrecords.jpg",
     "icon": "fa-sitemap",
     "color": "limegreen",
-    "root": ":DiscoveryCommonDataModel"
+    "root": ":HealthRecord"
   };
 
   valueSets: Perspective = {
@@ -86,7 +86,7 @@ export class Perspectives  {
   constructor(private conceptService: ConceptService, private log: LoggerService) {
     this.perspectives = [
       this.ontology,
-      this.dataModel,
+      this.healthRecord,
       this.valueSets,
       this.dataSets,
       this.maps,
@@ -96,7 +96,7 @@ export class Perspectives  {
     this.perspectivesMap = new Map();
     this.perspectives.forEach(perspective => this.perspectivesMap.set(perspective.root, perspective));
   }
-  
+
   getPerspective(iri: string): Observable<Perspective> {
     let perspectiveObservable: Subject<Perspective> = new Subject();
 

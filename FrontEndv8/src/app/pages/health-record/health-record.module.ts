@@ -16,14 +16,14 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatTableModule} from '@angular/material/table';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {DataModelLibraryComponent} from './data-model-library/data-model-library.component';
+import {HealthRecordLibraryComponent} from './health-record-library/health-record-library.component';
 import {MatListModule} from '@angular/material/list';
 import {MatSidenavModule} from '@angular/material/sidenav';
-import { DataModelDialogComponent } from './data-model-create/data-model-dialog/data-model-dialog.component';
+import { HealthRecordDialogComponent } from './health-record-create/health-record-dialog/health-record-dialog.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {DataModelNavigatorService} from '../../components/data-model-navigator/data-model-navigator.service';
+import {HealthRecordNavigatorService} from '../../components/health-record-navigator/health-record-navigator.service';
 import {MatMenuModule} from '@angular/material/menu';
-import {DataModelRoutingModule} from './data-model-routing.module';
+import {HealthRecordRoutingModule} from './health-record-routing.module';
 
 @NgModule({
   imports: [
@@ -49,17 +49,17 @@ import {DataModelRoutingModule} from './data-model-routing.module';
     MatAutocompleteModule,
     ReactiveFormsModule,
     MatMenuModule,
-    DataModelRoutingModule
+    HealthRecordRoutingModule
   ],
   providers: [
-    { provide: DataModelNavigatorService, useClass: ConceptService }
+    { provide: HealthRecordNavigatorService, useClass: ConceptService }
   ],
   declarations: [
-    DataModelLibraryComponent,
-    DataModelDialogComponent
+    HealthRecordLibraryComponent,
+    HealthRecordDialogComponent
   ],
   entryComponents: [
-    DataModelDialogComponent
+    HealthRecordDialogComponent
   ]
 })
-export class DataModelModule { }
+export class HealthRecordModule { }

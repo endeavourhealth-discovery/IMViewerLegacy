@@ -30,9 +30,9 @@
 
 <ng-template #valueSetSummaryTemplate let-summaryProvider="summaryProvider">
     <div *ngIf="summaryProvider.valueSet.isEmpty(); else emptyValueSetTemplate">
-        <mat-action-list #members> 
+        <mat-action-list #members>
           <mat-list-item *ngFor="let member of summaryProvider.valueSet.members | slice: summaryProvider.pageStartIndex : summaryProvider.pageEndIndex" [matTooltip]="member.name">
-            <mat-icon mat-list-icon>add_circle</mat-icon> <!-- TODO - only show circle on non members --> 
+            <mat-icon mat-list-icon>add_circle</mat-icon> <!-- TODO - only show circle on non members -->
             <span class="no-wrap">{{member.name}} ({{member.iri}})</span>
           </mat-list-item>
         </mat-action-list>
@@ -43,34 +43,34 @@
       </div>
 </ng-template>
 
-<!--datamodel summary templates -->
-<ng-template #emptyDataModelTemplate>
+<!--healthrecord summary templates -->
+<ng-template #emptyHealthRecordTemplate>
   <div><b>Data model has no properties</b></div>
 </ng-template>
 
-<ng-template #dataModelSummaryTemplate let-summaryProvider="summaryProvider">
-  <table *ngIf="summaryProvider.dataModelProperties.length > 0; else emptyDataModelTemplate" mat-table [dataSource]="summaryProvider.dataModelProperties" class="" style="width: 100%;">
+<ng-template #healthRecordSummaryTemplate let-summaryProvider="summaryProvider">
+  <table *ngIf="summaryProvider.healthRecordProperties.length > 0; else emptyHealthRecordTemplate" mat-table [dataSource]="summaryProvider.healthRecordProperties" class="" style="width: 100%;">
 
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let dataModelProperty">
-        {{dataModelProperty.name}}
+      <td mat-cell *matCellDef="let healthRecordProperty">
+        {{healthRecordProperty.name}}
       </td>
     </ng-container>
 
     <ng-container matColumnDef="type">
       <th mat-header-cell *matHeaderCellDef>Type</th>
-      <td mat-cell *matCellDef="let dataModelProperty">
-        {{dataModelProperty.type}}
+      <td mat-cell *matCellDef="let healthRecordProperty">
+        {{healthRecordProperty.type}}
       </td>
-    </ng-container> 
-    
+    </ng-container>
+
     <ng-container matColumnDef="cardinality">
       <th mat-header-cell *matHeaderCellDef>Cardinality</th>
-      <td mat-cell *matCellDef="let dataModelProperty">
-        {{dataModelProperty.cardinality}}
+      <td mat-cell *matCellDef="let healthRecordProperty">
+        {{healthRecordProperty.cardinality}}
       </td>
-    </ng-container>      
+    </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="summaryProvider.columns"></tr>
     <tr mat-row *matRowDef="let row; columns: summaryProvider.columns;"></tr>
@@ -88,9 +88,9 @@ style="width: 40%;overflow:hidden;">
       <div mat-card-avatar>
         <span class="fad fa-fw fa-2x {{perspective.icon}}" [style.color]="perspective.color"></span>
       </div>
-    
+
       <mat-card-title [style.color]="perspective.color">{{perspective.caption + ' - ' + concept.name}}</mat-card-title>
-     
+
       <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
         <mat-icon>more_vert</mat-icon>
       </button>
@@ -107,16 +107,16 @@ style="width: 40%;overflow:hidden;">
         </button>
       </mat-menu>
 
-    </mat-card-header>    
+    </mat-card-header>
 
     <mat-card-content class="full-page-card">
-      
+
       <ng-container *ngIf="concept.description != null">
         <span [innerHTML]="concept.description"></span>
       </ng-container>
 
       <ng-container *ngTemplateOutlet="this[summaryProvider.templateName]; context: { summaryProvider: summaryProvider }"></ng-container>
 
-    </mat-card-content> 
+    </mat-card-content>
 </mat-card>
 </mat-drawer>

@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DataModelLibraryComponent } from './data-model-library.component';
+import { HealthRecordLibraryComponent } from './health-record-library.component';
 import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormsModule} from '@angular/forms';
@@ -14,15 +14,15 @@ import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {ComponentsModule} from '../../../components/components.module';
-import {DataModelNavigatorService} from '../../../components/data-model-navigator/data-model-navigator.service';
+import {HealthRecordNavigatorService} from '../../../components/health-record-navigator/health-record-navigator.service';
 
-describe('DataModelLibraryComponent', () => {
-  let component: DataModelLibraryComponent;
-  let fixture: ComponentFixture<DataModelLibraryComponent>;
+describe('HealthRecordLibraryComponent', () => {
+  let component: HealthRecordLibraryComponent;
+  let fixture: ComponentFixture<HealthRecordLibraryComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DataModelLibraryComponent ],
+      declarations: [ HealthRecordLibraryComponent ],
         imports: [
           MatCardModule,
           MatFormFieldModule,
@@ -39,14 +39,14 @@ describe('DataModelLibraryComponent', () => {
           ComponentsModule,
         ],
         providers: [
-          { provide: DataModelNavigatorService, useClass: ConceptService }
+          { provide: HealthRecordNavigatorService, useClass: ConceptService }
         ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DataModelLibraryComponent);
+    fixture = TestBed.createComponent(HealthRecordLibraryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

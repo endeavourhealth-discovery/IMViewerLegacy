@@ -20,7 +20,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { CardHeaderComponent } from './card-header/card-header.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { DataModelTabularViewComponent } from './data-model-tabular-view/data-model-tabular-view.component';
+import { HealthRecordTabularViewComponent } from './health-record-tabular-view/health-record-tabular-view.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -30,7 +30,7 @@ import { ConceptHierarchyViewComponent } from './concept-hierarchy-view/concept-
 import { FindConceptUsagesDialogComponent } from './find-concept-usages-dialog/find-concept-usages-dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import { ConceptDefinitionComponent } from './concept-definition/concept-definition.component';
-import {DataModelNavigatorComponent} from './data-model-navigator/data-model-navigator.component';
+import {HealthRecordNavigatorComponent} from './health-record-navigator/health-record-navigator.component';
 import { LibraryComponentComponent } from './library-component/library-component.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatWrapperComponent} from './mat-wrapper/mat-wrapper.component';
@@ -77,12 +77,12 @@ import {UserProfileDialog} from './user-profile-dialog/user-profile-dialog.compo
     GraphNavigatorComponent,
     ResizeObserverDirective,
     CardHeaderComponent,
-    DataModelTabularViewComponent,
+    HealthRecordTabularViewComponent,
     SideNavComponent,
     ConceptHierarchyViewComponent,
     FindConceptUsagesDialogComponent,
     ConceptDefinitionComponent,
-    DataModelNavigatorComponent,
+    HealthRecordNavigatorComponent,
     LibraryComponentComponent,
     MatWrapperComponent,
     SnomedLicenseDialog,
@@ -93,10 +93,10 @@ import {UserProfileDialog} from './user-profile-dialog/user-profile-dialog.compo
     ConceptSearchComponent,
     GraphNavigatorComponent,
     CardHeaderComponent,
-    DataModelTabularViewComponent,
+    HealthRecordTabularViewComponent,
     SideNavComponent,
     ConceptDefinitionComponent,
-    DataModelNavigatorComponent,
+    HealthRecordNavigatorComponent,
     LibraryComponentComponent,
     MatWrapperComponent,
     SnomedLicenseDialog,

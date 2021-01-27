@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {DataModelOverviewLibraryComponent} from './data-model-overview-library/data-model-overview-library.component';
+import {HealthRecordLibraryComponent} from './health-record-library/health-record-library.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: DataModelOverviewLibraryComponent
+    component: HealthRecordLibraryComponent
   }
 ];
 
@@ -13,4 +13,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class DataModelOverviewRoutingModule { }
+export class HealthRecordRoutingModule { }

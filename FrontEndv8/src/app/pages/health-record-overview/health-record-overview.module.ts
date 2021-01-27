@@ -18,8 +18,8 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatTableModule} from '@angular/material/table';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import { DataModelOverviewLibraryComponent } from './data-model-overview-library/data-model-overview-library.component';
-import {DataModelOverviewRoutingModule} from './data-model-overview-routing.module';
+import { HealthRecordOverviewLibraryComponent } from './health-record-overview-library/health-record-overview-library.component';
+import {HealthRecordOverviewRoutingModule} from './health-record-overview-routing.module';
 
 @NgModule({
     imports: [
@@ -41,11 +41,11 @@ import {DataModelOverviewRoutingModule} from './data-model-overview-routing.modu
         MatSnackBarModule,
         MatTooltipModule,
         ComponentsModule,
-      DataModelOverviewRoutingModule
+      HealthRecordOverviewRoutingModule
     ],
 
   declarations: [
-    DataModelOverviewLibraryComponent
+    HealthRecordOverviewLibraryComponent
   ]
 })
-export class DataModelOverviewModule { }
+export class HealthRecordOverviewModule { }

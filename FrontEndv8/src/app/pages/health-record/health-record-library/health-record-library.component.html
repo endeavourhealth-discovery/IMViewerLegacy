@@ -1,10 +1,10 @@
-<app-library-component 
-  [relationships]="relationships" 
-  [concept]="concept" 
-  [children]="children" 
+<app-library-component
+  [relationships]="relationships"
+  [concept]="concept"
+  [children]="children"
   [parents]="parents"
-  [selectedIri]="selectedIri" 
-  [perspective]="perspectives.dataModel">
+  [selectedIri]="selectedIri"
+  [perspective]="perspectives.healthRecord">
 
   <!-- Dashboard container-->
   <mat-card-content class="full-page-card">
@@ -21,7 +21,7 @@
             Inheritance
           </ng-template>
           <ng-template matTabContent>
-            <app-data-model-navigator [conceptIri]="selectedIri" [concept]="concept"></app-data-model-navigator>
+            <app-health-record-navigator [conceptIri]="selectedIri" [concept]="concept"></app-health-record-navigator>
           </ng-template>
         </mat-tab>
         <mat-tab label="Properties">
@@ -30,7 +30,7 @@
             Properties
           </ng-template>
           <ng-template matTabContent>
-            <data-model-tabular-view [concept]="concept" [children]="children" [parents]="parents"></data-model-tabular-view>
+            <health-record-tabular-view [concept]="concept" [children]="children" [parents]="parents"></health-record-tabular-view>
           </ng-template>
         </mat-tab>
         <mat-tab label="Textual">

@@ -13,15 +13,15 @@ export interface Property {
 }
 
 @Component({
-  selector: 'app-data-model-dialog',
-  templateUrl: './data-model-dialog.component.html',
-  styleUrls: ['./data-model-dialog.component.scss']
+  selector: 'app-health-record-dialog',
+  templateUrl: './health-record-dialog.component.html',
+  styleUrls: ['./health-record-dialog.component.scss']
 })
 
-export class DataModelDialogComponent implements OnInit {
+export class HealthRecordDialogComponent implements OnInit {
 
   constructor(
-    public dialogRef: MatDialogRef<DataModelDialogComponent>,
+    public dialogRef: MatDialogRef<HealthRecordDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private service: ConceptService) { }
 
@@ -53,7 +53,7 @@ export class DataModelDialogComponent implements OnInit {
   private _filter(value: string) {
     const filterValue = value.toLowerCase();
     if (value.length > 5) {
-      return this.service.search(value, ':DiscoveryCommonDataModel', []).pipe(
+      return this.service.search(value, ':HealthRecord', []).pipe(
         filter(data => !!data),
         map((data) => {
           return data.filter(option => option.name.toLowerCase().includes(filterValue))

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DataModelDialogComponent } from './data-model-dialog.component';
+import { HealthRecordDialogComponent } from './health-record-dialog.component';
 
-describe('DataModelDialogComponent', () => {
-  let component: DataModelDialogComponent;
-  let fixture: ComponentFixture<DataModelDialogComponent>;
+describe('HealthRecordDialogComponent', () => {
+  let component: HealthRecordDialogComponent;
+  let fixture: ComponentFixture<HealthRecordDialogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DataModelDialogComponent ]
+      declarations: [ HealthRecordDialogComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DataModelDialogComponent);
+    fixture = TestBed.createComponent(HealthRecordDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

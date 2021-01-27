@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import * as dagre from 'dagre';
 import * as svgPanZoom from 'svg-pan-zoom';
 import {Subscription, zip} from 'rxjs';
-import {DataModelNavigatorService} from './data-model-navigator.service';
+import {HealthRecordNavigatorService} from './health-record-navigator.service';
 import {NgEventBus} from 'ng-event-bus';
 import {Concept} from '../../models/objectmodel/Concept';
 import {ConceptReference} from '../../models/objectmodel/ConceptReference';
@@ -14,11 +14,11 @@ import {DataPropertyValue} from '../../models/objectmodel/DataPropertyValue';
 import {ObjectModelVisitor} from '../../models/ObjectModelVisitor';
 
 @Component({
-  selector: 'app-data-model-navigator',
-  templateUrl: './data-model-navigator.component.html',
-  styleUrls: ['./data-model-navigator.component.scss'],
+  selector: 'app-health-record-navigator',
+  templateUrl: './health-record-navigator.component.html',
+  styleUrls: ['./health-record-navigator.component.scss'],
 })
-export class DataModelNavigatorComponent implements OnInit {
+export class HealthRecordNavigatorComponent implements OnInit {
   @Input()
   concept: Concept;
 
@@ -37,7 +37,7 @@ export class DataModelNavigatorComponent implements OnInit {
   children: Array<ConceptReferenceNode>;
   obs: Subscription = null;
 
-  constructor(private service: DataModelNavigatorService, private log: LoggerService, private eventBus: NgEventBus) {
+  constructor(private service: HealthRecordNavigatorService, private log: LoggerService, private eventBus: NgEventBus) {
   }
 
   ngOnInit() {

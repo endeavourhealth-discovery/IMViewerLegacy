@@ -7,8 +7,8 @@ import { Perspective } from '../../models/Perspective';
 import { LoggerService} from '../../services/logger.service';
 import { valueSetServiceProvider } from '../../services/valueset.service.provider';
 import { ValueSetService, ValueSet } from '../../services/valueset.service';
-import { dataModelServiceProvider } from '../../services/datamodel.service.provider';
-import { DataModelProperty, DataModelService } from '../../services/datamodel.service';
+import { healthRecordServiceProvider } from '../../services/healthrecord.service.provider';
+import { HealthRecordProperty, HealthRecordService } from '../../services/healthrecord.service';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -127,34 +127,34 @@ export class ValueSetSummaryProvider implements ConceptSummaryProvider {
     }
 }
 
-export class DataModelSummaryProvider implements ConceptSummaryProvider {
+export class HealthRecordSummaryProvider implements ConceptSummaryProvider {
 
-    dataModelProperties: DataModelProperty[];
+    healthRecordProperties: HealthRecordProperty[];
     columns: string[];
 
     private _concept: Concept;
 
-    static TEMPLATE_NAME:string = "dataModelSummaryTemplate";
+    static TEMPLATE_NAME:string = "healthRecordSummaryTemplate";
 
-    constructor(private dataModelService: DataModelService) {
+    constructor(private healthRecordService: HealthRecordService) {
         this.columns = ['name', 'type', 'cardinality'];
     }
 
     canSummarise(concept: Concept): Observable<boolean> {
-        return this.dataModelService.isDataModel(concept);
+        return this.healthRecordService.isHealthRecord(concept);
     }
 
     get rootType(): string {
-        return this.dataModelService.dataModelIri;
+        return this.healthRecordService.healthRecordIri;
     }
 
     get templateName(): string {
-        return DataModelSummaryProvider.TEMPLATE_NAME;
+        return HealthRecordSummaryProvider.TEMPLATE_NAME;
     }
 
     set concept(concept: Concept) {
         this._concept = concept;
-        this.dataModelProperties = this.dataModelService.getDataModelProperties(concept);
+        this.healthRecordProperties = this.healthRecordService.getHealthRecordProperties(concept);
     }
 }
 
@@ -162,7 +162,7 @@ export class DataModelSummaryProvider implements ConceptSummaryProvider {
     selector: 'summary-drawer',
     templateUrl: './summary-drawer.component.html',
     styleUrls: ['./summary-drawer.component.scss'],
-    providers: [ valueSetServiceProvider, dataModelServiceProvider ],
+    providers: [ valueSetServiceProvider, healthRecordServiceProvider ],
     host: {
         '(document:click)': 'onClick($event)',
       },
@@ -193,7 +193,7 @@ export class SummaryDrawerComponent {
                 private perspectives: Perspectives,
                 private log: LoggerService,
                 private valueSetService: ValueSetService,
-                private dataModelService: DataModelService,
+                private healthRecordService: HealthRecordService,
                 private router: Router,
                 private snackBar: MatSnackBar,
                 private _eref: ElementRef) {
@@ -204,8 +204,8 @@ export class SummaryDrawerComponent {
         const valueSetSummaryProvider: ValueSetSummaryProvider = new ValueSetSummaryProvider(this.valueSetService);
         this.summaryProviders.set(valueSetSummaryProvider.rootType, valueSetSummaryProvider);
 
-        const dataModelSummaryProvider: DataModelSummaryProvider = new DataModelSummaryProvider(this.dataModelService);
-        this.summaryProviders.set(dataModelSummaryProvider.rootType, dataModelSummaryProvider);
+        const healthRecordSummaryProvider: HealthRecordSummaryProvider = new HealthRecordSummaryProvider(this.healthRecordService);
+        this.summaryProviders.set(healthRecordSummaryProvider.rootType, healthRecordSummaryProvider);
 
         const semanticOntologySummaryProvider: SemanticOntologySummaryProvider = new SemanticOntologySummaryProvider(this.perspectives.ontology.root, this.service);
         this.summaryProviders.set(semanticOntologySummaryProvider.rootType, semanticOntologySummaryProvider);
@@ -226,8 +226,8 @@ export class SummaryDrawerComponent {
     @ViewChild(ValueSetSummaryProvider.TEMPLATE_NAME, { static: true })
     valueSetSummaryTemplate:TemplateRef<any>;
 
-    @ViewChild(DataModelSummaryProvider.TEMPLATE_NAME, { static: true })
-    dataModelSummaryTemplate:TemplateRef<any>;
+    @ViewChild(HealthRecordSummaryProvider.TEMPLATE_NAME, { static: true })
+    healthRecordSummaryTemplate:TemplateRef<any>;
 
     @ViewChild(SemanticOntologySummaryProvider.TEMPLATE_NAME, { static: true })
     semanticOntologySummaryTemplate:TemplateRef<any>;

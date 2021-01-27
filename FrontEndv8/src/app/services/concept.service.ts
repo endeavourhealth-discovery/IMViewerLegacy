@@ -5,7 +5,7 @@ import { Observable, Subject, zip } from 'rxjs';
 import { Concept } from '../models/objectmodel/Concept';
 import { environment } from '../../environments/environment';
 import {ConceptReference} from '../models/objectmodel/ConceptReference';
-import {DataModelNavigatorService} from '../components/data-model-navigator/data-model-navigator.service';
+import {HealthRecordNavigatorService} from '../components/health-record-navigator/health-record-navigator.service';
 import {SearchRequest} from '../models/search/SearchRequest';
 import {SearchResponse} from '../models/search/SearchResponse';
 import {Option} from '@angular/cli/models/interface';
@@ -19,7 +19,7 @@ export interface ConceptAggregate {
 @Injectable({
   providedIn: 'root'
 })
-export class ConceptService implements DataModelNavigatorService {
+export class ConceptService implements HealthRecordNavigatorService {
 
   constructor(private http: HttpClient) { }
 
@@ -42,6 +42,16 @@ export class ConceptService implements DataModelNavigatorService {
 
   getConcept(iri: string): Observable<Concept> {
     return this.http.get<Concept>(environment.api + 'api/concept/' + iri);
+  }
+
+  getConceptImLang(iri: string): Observable<any> {
+    const requestOptions: Object = {
+      headers: {
+        accept: 'application/imlang'
+      },
+      responseType: 'text'
+    }
+    return this.http.get<any>(environment.api + 'api/concept/' + iri, requestOptions);
   }
 
   getConceptChildren(iri: string): Observable<Array<ConceptReferenceNode>> {

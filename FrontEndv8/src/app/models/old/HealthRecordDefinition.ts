@@ -3,7 +3,7 @@ import {Related} from './Related';
 import {Property} from './Property';
 import {zip, Observable, Subject} from 'rxjs';
 
-export class DataModelDefinition {
+export class HealthRecordDefinition {
 
     public concept: Concept;
     public definition: Related[];
@@ -36,7 +36,7 @@ export class DataModelDefinition {
     }
 
     getDirectParentConcepts(): Concept[] {
-        // TODO - maybe filter out non-datamodel parents?
+        // TODO - maybe filter out non-healthrecord parents?
         return this.getConcepts(this.directParents);
     }
 
@@ -49,7 +49,7 @@ export class DataModelDefinition {
 
         if(this.hasProperties()) {
             flatProperies = this.properties.map((property: Property) => {
-                const dataModelProperty: FlatProperty =  {
+                const healthRecordProperty: FlatProperty =  {
                   name: property.property.name,
                   description: property.property.description,
                   iri: property.property.iri,
@@ -59,7 +59,7 @@ export class DataModelDefinition {
                   source: property
                 };
 
-                return dataModelProperty;
+                return healthRecordProperty;
               })
         }
 

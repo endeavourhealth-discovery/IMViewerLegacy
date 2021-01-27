@@ -3,7 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ConceptService, ConceptAggregate } from '../../../services/concept.service';
 import { Concept } from '../../../models/objectmodel/Concept';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { DataModelTabularViewComponent } from '../../../components/data-model-tabular-view/data-model-tabular-view.component';
+import { HealthRecordTabularViewComponent } from '../../../components/health-record-tabular-view/health-record-tabular-view.component';
 import { NgEventBus } from 'ng-event-bus';
 import { LoggerService } from '../../../services/logger.service';
 import { Perspectives } from '../../../services/perspective.service';
@@ -11,11 +11,11 @@ import { SummaryDrawerComponent } from '../../../components/summary-drawer/summa
 import { ConceptView, HistoryItem } from '../../../common/ConceptView';
 
 @Component({
-  selector: 'app-data-model-library',
-  templateUrl: './data-model-library.component.html',
-  styleUrls: ['./data-model-library.component.scss'],
+  selector: 'app-health-record-library',
+  templateUrl: './health-record-library.component.html',
+  styleUrls: ['./health-record-library.component.scss'],
 })
-export class DataModelLibraryComponent implements OnInit {
+export class HealthRecordLibraryComponent implements OnInit {
 
   concept: Concept;
   parents: Array<ConceptReferenceNode>;
@@ -25,7 +25,7 @@ export class DataModelLibraryComponent implements OnInit {
   conceptView: ConceptView;
   history = [];
 
-  @ViewChild(DataModelTabularViewComponent, { static: true }) tableView: DataModelTabularViewComponent;
+  @ViewChild(HealthRecordTabularViewComponent, { static: true }) tableView: HealthRecordTabularViewComponent;
   @ViewChild(SummaryDrawerComponent, { static: true }) summaryDrawer: SummaryDrawerComponent;
 
   constructor(private service: ConceptService,
@@ -34,7 +34,7 @@ export class DataModelLibraryComponent implements OnInit {
               private route: ActivatedRoute,
               private log: LoggerService,
               private eventBus: NgEventBus) {
-    this.conceptView = new ConceptView(service, perspectives, log, router, route, perspectives.dataModel);
+    this.conceptView = new ConceptView(service, perspectives, log, router, route, perspectives.healthRecord);
     this.conceptView.onNavigationStart(this.onConceptAggregateChange.bind(this), this.onError.bind(this) )
     this.conceptView.onNavigationEnd(this.onHistoryChange.bind(this), this.onError.bind(this) )
 
@@ -53,7 +53,7 @@ export class DataModelLibraryComponent implements OnInit {
 
   private onConceptAggregateChange(conceptAggregate: ConceptAggregate): void {
     if(conceptAggregate != null) {
-      console.log("DataModelView.onConceptAggregateChange  conceptAggregate", JSON.stringify(conceptAggregate));
+      console.log("HealthRecordView.onConceptAggregateChange  conceptAggregate", JSON.stringify(conceptAggregate));
 
       this.concept = conceptAggregate.concept;
       this.children = conceptAggregate.children;

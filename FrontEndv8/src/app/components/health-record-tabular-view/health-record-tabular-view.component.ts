@@ -2,7 +2,7 @@ import { ConceptReferenceNode } from '../../models/objectmodel/ConceptReferenceN
 import { NgEventBus } from 'ng-event-bus';
 import { Component, Input } from '@angular/core';
 import { ConceptService } from '../../services/concept.service';
-import { DataModelDefinition, FlatProperty } from '../../models/old/DataModelDefinition';
+import { HealthRecordDefinition, FlatProperty } from '../../models/old/HealthRecordDefinition';
 import {Router} from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { animate, state, style, transition, trigger } from '@angular/animations';
@@ -15,9 +15,9 @@ import {DataPropertyValue} from '../../models/objectmodel/DataPropertyValue';
 const debug = (message: string) => { console.log(message); };
 
 @Component({
-  selector: 'data-model-tabular-view',
-  templateUrl: './data-model-tabular-view.component.html',
-  styleUrls: ['./data-model-tabular-view.component.scss'],
+  selector: 'health-record-tabular-view',
+  templateUrl: './health-record-tabular-view.component.html',
+  styleUrls: ['./health-record-tabular-view.component.scss'],
   animations: [
     trigger('detailExpand', [
       state('collapsed', style({ height: '0px', minHeight: '0' })),
@@ -27,11 +27,11 @@ const debug = (message: string) => { console.log(message); };
   ],
 })
 
-class DataModelTabularViewComponent {
+class HealthRecordTabularViewComponent {
   static DEFAULT_MIN_CARDINALITY: number = 0;
   static DEFAULT_MAX_CARDINALITY: string = "*";
 
-  dataModelDefinition: DataModelDefinition;
+  healthRecordDefinition: HealthRecordDefinition;
 
   propertiesTable: DataTable<FlatProperty>;
   propertiesTableData: any[] = [];
@@ -133,11 +133,11 @@ class DataModelTabularViewComponent {
   }
 
   get DEFAULT_MIN_CARDINALITY(): number {
-    return DataModelTabularViewComponent.DEFAULT_MIN_CARDINALITY;
+    return HealthRecordTabularViewComponent.DEFAULT_MIN_CARDINALITY;
   }
 
   get DEFAULT_MAX_CARDINALITY(): string {
-    return DataModelTabularViewComponent.DEFAULT_MAX_CARDINALITY;
+    return HealthRecordTabularViewComponent.DEFAULT_MAX_CARDINALITY;
   }
 }
 
@@ -177,7 +177,7 @@ interface ChipListTemplateContext {
 }
 
 export {
-  DataModelTabularViewComponent,
+  HealthRecordTabularViewComponent,
   DataTable,
   ChipListTemplateContext
 };

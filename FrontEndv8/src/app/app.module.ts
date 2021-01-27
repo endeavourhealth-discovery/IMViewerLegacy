@@ -43,15 +43,15 @@ let routes = [
     path: 'perspective', component: LayoutComponent, canActivate: [AuthGuard, RouteGuard], children: [
       // Redirects to null ID's to prevent page refresh on navigate
       {path: 'ontology', redirectTo: '/perspective/ontology/', pathMatch: 'full'},
-      {path: 'dataModel', redirectTo: '/perspective/dataModel/', pathMatch: 'full'},
+      {path: 'healthRecord', redirectTo: '/perspective/healthRecord/', pathMatch: 'full'},
       {path: 'valueSets', redirectTo: '/perspective/valueSets/', pathMatch: 'full'},
 
       // Main paths/pages
       {path: 'mainPage', loadChildren: () => import('./main-page/main-page.module').then(m => m.MainPageModule), data: {role: 'information-manager:conceptLibrary', helpContext: '#'}},
-      {path: 'dataModelOverview', loadChildren: () => import('./pages/data-model-overview/data-model-overview.module').then(m => m.DataModelOverviewModule), data: {role: 'information-manager:conceptLibrary', helpContext: '#Data_models'}},
+      {path: 'healthRecordOverview', loadChildren: () => import('./pages/health-record-overview/health-record-overview.module').then(m => m.HealthRecordOverviewModule), data: {role: 'information-manager:conceptLibrary', helpContext: '#Data_models'}},
       {path: 'search', loadChildren: () => import('./pages/search/search.module').then(m => m.SearchModule), data: {role: 'information-manager:conceptLibrary', helpContext: '#Search'}},
       {path: 'ontology/:id', loadChildren: () => import('./pages/ontology/ontology.module').then(m => m.OntologyModule), data: {role: 'information-manager:conceptLibrary', helpContext: '#Semantic_ontology'}},
-      {path: 'dataModel/:id', loadChildren: () => import('./pages/data-model/data-model.module').then(m => m.DataModelModule), data: {role: 'information-manager:conceptLibrary', helpContext: '#Data_models'}},
+      {path: 'healthRecord/:id', loadChildren: () => import('./pages/health-record/health-record.module').then(m => m.HealthRecordModule), data: {role: 'information-manager:conceptLibrary', helpContext: '#Data_models'}},
       {path: 'valueSets/:id', loadChildren: () => import('./pages/value-sets/value-set.module').then(m => m.ValueSetModule), data: {role: 'information-manager:conceptLibrary', helpContext: '#Value_sets'}},
       {path: 'dataMaps', loadChildren: () => import('./pages/maps/maps.module').then(m => m.MapsModule), data: {role: 'information-manager:conceptLibrary', helpContext: '#Maps'}},
     ]
