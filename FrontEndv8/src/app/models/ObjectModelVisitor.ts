@@ -4,14 +4,15 @@ import {ConceptReference} from './objectmodel/ConceptReference';
 import {ObjectPropertyValue} from './objectmodel/ObjectPropertyValue';
 import {DataPropertyValue} from './objectmodel/DataPropertyValue';
 import {Annotation} from './objectmodel/Annotation';
+import {ValueSetConcept} from './objectmodel/ValueSetConcept';
 
 // need notion of enter and exit visitor
 export class ObjectModelVisitor {
   public SubClassVisitor: (expressions: Set<ClassExpression>) => void = () => {};
-  //public SubClassExitVisitor: (expressions: Set<ClassExpression>) => void = () => {};
+  public SubClassExitVisitor: (expressions: Set<ClassExpression>) => void = () => {};
 
   public EquivalentToVisitor: (expressions: Set<ClassExpression>) => void = () => {};
-  //public EquivalentToExitVisitor: (expressions: Set<ClassExpression>) => void = () => {};
+  public EquivalentToExitVisitor: (expressions: Set<ClassExpression>) => void = () => {};
 
   public DisjointWithVisitor: (conceptReferences: ConceptReference[]) => void = () => {};
   //public DisjointWithExitVisitor: (conceptReferences: ConceptReference[]) => void = () => {};
@@ -29,7 +30,7 @@ export class ObjectModelVisitor {
   //public UnionExitVisitor: (expressions: ClassExpression[]) => void = () => {};
 
   public ComplementOfVisitor: (expression: ClassExpression) => void = () => {};
-  //public ComplementOfExitVisitor: (expression: ClassExpression) => void = () => {};
+  public ComplementOfExitVisitor: (expression: ClassExpression) => void = () => {};
 
   public ObjectPropertyValueVisitor: (objectPropertyValue: ObjectPropertyValue) => void = () => {};
   public ObjectPropertyValueExitVisitor: (objectPropertyValue: ObjectPropertyValue) => void = () => {};
@@ -43,6 +44,8 @@ export class ObjectModelVisitor {
   public AnnotationsVisitor: (annotations: Set<Annotation>) => void = () => {};
   //public AnnotationsExitVisitor: (annotations: Set<Annotation>) => void = () => {};
 
+  public MembersVisitor: (members: Set<ClassExpression>) => void = () => {};
+  public MembersExitVisitor: (members: Set<ClassExpression>) => void = () => {};
 
   public visit(concept: Concept) {
     if (concept.annotations)
@@ -50,12 +53,14 @@ export class ObjectModelVisitor {
 
     if (concept.SubClassOf) {
       this.SubClassVisitor(concept.SubClassOf);
-      concept.SubClassOf.forEach(e => this.visitExpression(e));
+      this.visitExpressions(concept.SubClassOf);
+      this.SubClassExitVisitor(concept.SubClassOf);
     }
 
     if (concept.EquivalentTo) {
       this.EquivalentToVisitor(concept.EquivalentTo);
-      concept.EquivalentTo.forEach(e => this.visitExpression(e));
+      this.visitExpressions(concept.EquivalentTo);
+      this.EquivalentToExitVisitor(concept.EquivalentTo);
     }
 
     if (concept.Expression)
@@ -63,6 +68,17 @@ export class ObjectModelVisitor {
 
     if (concept.DisjointWith)
       this.DisjointWithVisitor(concept.DisjointWith);
+
+    let members: Set<ClassExpression> = (concept as ValueSetConcept).Member;
+    if (members != null) {
+      this.MembersVisitor(members);
+      this.visitExpressions(members)
+      this.MembersExitVisitor(members);
+    }
+  }
+
+  private visitExpressions(expressions: Set<ClassExpression>) {
+    expressions.forEach(e => this.visitExpression(e));
   }
 
   private visitExpression(expression: ClassExpression) {
@@ -84,6 +100,7 @@ export class ObjectModelVisitor {
     if (expression.ComplementOf) {
       this.ComplementOfVisitor(expression.ComplementOf);
       this.visitExpression(expression.ComplementOf);
+      this.ComplementOfExitVisitor(expression.ComplementOf);
     }
 
     if (expression.ObjectPropertyValue)

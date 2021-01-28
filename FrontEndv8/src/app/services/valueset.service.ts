@@ -35,83 +35,68 @@ export class ValueSetService {
 
     public toValueSet(concept: Concept): ValueSet {
       let objectModelVistor: ObjectModelVisitor = new ObjectModelVisitor();
-      let hasMemberParser: HasMembersParser = new HasMembersParser();
+      let valueSetMemberParser: ValueSetMemberParser = new ValueSetMemberParser();
 
-      objectModelVistor.ExpressionVisitor = (expression: ClassExpression) => { hasMemberParser.onEnterExpression(expression); }
-      objectModelVistor.ExpressionExitVisitor = (expression: ClassExpression) => { hasMemberParser.onExitExpression(expression); }
-      objectModelVistor.ObjectPropertyValueVisitor = (objectPropertyValue: ObjectPropertyValue)  => { hasMemberParser.onEnterObjectPropertyValue(objectPropertyValue); }
-      objectModelVistor.ObjectPropertyValueExitVisitor = (objectPropertyValue: ObjectPropertyValue)  => { hasMemberParser.onExitObjectPropertyValue(objectPropertyValue); }
-      objectModelVistor.ClassVisitor = (conceptReference: ConceptReference) => { hasMemberParser.onClass(conceptReference); }
+      objectModelVistor.MembersVisitor = ()  => { valueSetMemberParser.onEnterMembers(); }
+      objectModelVistor.MembersExitVisitor = ()  => { valueSetMemberParser.onExitMembers(); }
+
+      objectModelVistor.ComplementOfVisitor = () => { valueSetMemberParser.onEnterComplementOf(); }
+      objectModelVistor.ComplementOfExitVisitor = () => { valueSetMemberParser.onExitComplementOf(); }
+
+      objectModelVistor.ClassVisitor = (conceptReference: ConceptReference) => { valueSetMemberParser.onClass(conceptReference); }
 
       objectModelVistor.visit(concept);
 
       return {
         iri: concept.iri,
         concept: {iri: concept.iri, name: concept.name},
-        included: hasMemberParser.included,
-        excluded: hasMemberParser.excluded
+        included: valueSetMemberParser.included.sort((a, b) => a.name.localeCompare(b.name)),
+        excluded: valueSetMemberParser.excluded.sort((a, b) => a.name.localeCompare(b.name))
       }
     }
 }
 
-class HasMembersParser {
+class ValueSetMemberParser {
 
   public included: ConceptReference[] = [];
   public excluded: ConceptReference[] = [];
 
-  private hasMembersProperty: ObjectPropertyValue;
+  private members: boolean = false;
   private complementOfHistory: boolean[] = [];
-  private completementOf: boolean = false;
+  private complementOf: boolean = false;
 
-  public onEnterObjectPropertyValue(property: ObjectPropertyValue): void {
-    if(":hasMembers" == property.Property.iri) {
-      if(this.hasMembersProperty == null) {
-        this.hasMembersProperty = property;
-      }
-      else {
-        // TODO error time - nested hasMember within outer hasMember - illegal syntax
-      }
+  public onEnterMembers(): void {
+    this.members = true;
+  }
+
+  public onExitMembers(): void {
+    this.members = false;
+  }
+
+  public onEnterComplementOf(): void {
+    if (this.members) {
+      // add the current complementOf state to the history incase
+      // we need to process further Class definitions at that level
+      this.complementOfHistory.push(this.complementOf);
+
+      // we have now entered a new level with it's own complementOf
+      // which is set to the opposite of the previous level
+      this.complementOf = !this.complementOf
     }
   }
 
-  public onExitObjectPropertyValue(property: ObjectPropertyValue): void {
-    if(this.hasMembersProperty && this.hasMembersProperty == property) {
-      this.hasMembersProperty = null;
-    }
-  }
-
-  public onEnterExpression(expression: ClassExpression): void {
-    if (this.hasMembersProperty && expression.ComplementOf) {
-      this.onEnterComplementOf(expression.ComplementOf);
-    }
-  }
-
-  public onExitExpression(expression: ClassExpression): void {
-    if (this.hasMembersProperty && expression.ComplementOf) {
-      this.onExitComplementOf(expression.ComplementOf)
+  public onExitComplementOf(): void {
+    if (this.members) {
+      // we've now moved back up a level in the hasMembers defintion
+      // therefore the previous complementOf setting applies
+      this.complementOf = this.complementOfHistory.pop();
     }
   }
 
   public onClass(conceptReference: ConceptReference): void {
-    if(this.hasMembersProperty) {
-      (this.completementOf) ? (this.excluded.push(conceptReference)) : (this.included.push(conceptReference));
+    if(this.members) {
+      (this.complementOf) ? (this.excluded.push(conceptReference)) : (this.included.push(conceptReference));
     }
   }
 
-  private onEnterComplementOf(expression: ClassExpression): void {
-    // add the current complementOf state to the history incase
-    // we need to process further Class definitions at that level
-    this.complementOfHistory.push(this.completementOf);
-
-    // we have now entered a new level with it's own complementOf
-    // which is set to the opposite of the previous level
-    this.completementOf = !this.completementOf
-
-  }
-
-  private onExitComplementOf(expression: ClassExpression): void {
-    // we've now moved back up a level in the hasMembers defintion
-    // therefore the previous complementOf setting applies
-    this.completementOf = this.complementOfHistory.pop();
-  }
 }
