@@ -50,8 +50,8 @@ export class ValueSetService {
       return {
         iri: concept.iri,
         concept: {iri: concept.iri, name: concept.name},
-        included: valueSetMemberParser.included.sort((a, b) => a.name.localeCompare(b.name)),
-        excluded: valueSetMemberParser.excluded.sort((a, b) => a.name.localeCompare(b.name))
+        included: valueSetMemberParser.included.sort((a, b) => a.name == null ? 1 : a.name.localeCompare(b.name)),
+        excluded: valueSetMemberParser.excluded.sort((a, b) => a.name == null ? 1 : a.name.localeCompare(b.name))
       }
     }
 }

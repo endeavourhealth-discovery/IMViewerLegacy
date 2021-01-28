@@ -127,9 +127,9 @@ export class ValueSetLibraryComponent implements OnInit {
     );
   }
 
-  private getChildren(parents: ConceptReferenceNode[]): Observable<ConceptReferenceNode[][]> {
-    const getGrandChildrenRequests: Observable<ConceptReferenceNode[]>[] = parents.map(parent => {
-      return this.service.getConceptChildren(parent.iri)
+  private getChildren(parents: ConceptReferenceNode[]): Observable<Boolean[]> {
+    const getGrandChildrenRequests: Observable<Boolean>[] = parents.map(parent => {
+      return this.service.getConceptHasChildren(parent.iri)
     });
 
     return forkJoin(getGrandChildrenRequests);
@@ -150,7 +150,7 @@ export class ValueSetLibraryComponent implements OnInit {
           let index: number = 0;
 
           success.forEach(response => {
-            childNodes[index++].hasChildren = response.length > 0;
+            childNodes[index++].hasChildren = response.valueOf();
           })
 
           nodeObservable.next(node);
