@@ -269,10 +269,12 @@ export class HealthRecordNavigatorComponent implements OnInit {
 
     let i = 0;
 
-    for (let property of this.concept.Property) {
-      let res = this.addPropertyValue(s, property, i, w);
-      i = res.i;
-      w = res.w;
+    if (this.concept.Property != null || this.concept.Property != undefined) {
+      for (let property of this.concept.Property) {
+        let res = this.addPropertyValue(s, property, i, w);
+        i = res.i;
+        w = res.w;
+      }
     }
 
     w = Math.round(w);

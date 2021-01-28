@@ -76,7 +76,9 @@ class HealthRecordTabularViewComponent {
     if (!concept)
       return;
 
-    concept.Property.forEach(c => this.propertiesTableData.push(c));
+      if (concept.Property != null || concept.Property != undefined) {
+        concept.Property.forEach(c => this.propertiesTableData.push(c));
+      }
 
     this.service.getAncestorDefinitions(concept.iri).subscribe(
       (result) => this.addInheritedProperties(result),
