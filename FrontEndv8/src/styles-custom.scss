@@ -512,3 +512,11 @@ app-concept-search {
   padding-inline-start: 10px;
 }
 
+.clickable {
+  cursor: pointer;
+  :hover {
+    text-decoration: underline !important;
+    fill: mat-color($primary, text);
+    color: mat-color($accent, text) !important;
+  }
+}

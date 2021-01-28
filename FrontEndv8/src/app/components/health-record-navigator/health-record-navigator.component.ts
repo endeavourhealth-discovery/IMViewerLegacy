@@ -12,6 +12,7 @@ import {LoggerService} from '../../services/logger.service';
 import {ObjectPropertyValue} from '../../models/objectmodel/ObjectPropertyValue';
 import {DataPropertyValue} from '../../models/objectmodel/DataPropertyValue';
 import {ObjectModelVisitor} from '../../models/ObjectModelVisitor';
+import {PropertyConstraint} from '../../models/objectmodel/PropertyConstraint';
 
 @Component({
   selector: 'app-health-record-navigator',
@@ -153,18 +154,19 @@ export class HealthRecordNavigatorComponent implements OnInit {
       if (!map.has(rel.iri)) {
         const g = svg.append('g');
 
-        const s = g
-          .append('svg')
-          .attr('class', 'clickable')
-          .on('click', () => this.nodeClick(rel.iri))
-          .on('dblclick', () => this.nodeDblClick(rel.iri));
+        const s = g.append('svg');
 
         const r = s.append('rect').attr('rx', 6).attr('ry', 6).attr('height', 25).attr('stroke', 'black');
 
         if (rel.iri === 'sn:116680003') r.attr('fill', 'lightgreen');
         else r.attr('fill', 'orange');
 
-        const t = s.append('text').text(rel.name).attr('font-size', 12).attr('x', this.pad).attr('y', 18);
+        const wrapper = s.append('g')
+          .attr('class', 'clickable')
+          .on('click', () => this.nodeClick(rel.iri))
+          .on('dblclick', () => this.nodeDblClick(rel.iri));
+
+        const t = wrapper.append('text').text(rel.name).attr('font-size', 12).attr('x', this.pad).attr('y', 18);
 
         const w = t.node().getComputedTextLength() + this.pad * 2;
         r.attr('width', w);
@@ -201,18 +203,19 @@ export class HealthRecordNavigatorComponent implements OnInit {
       if (!map.has(rel.iri)) {
         const g = svg.append('g');
 
-        const s = g
-          .append('svg')
-          .attr('class', 'clickable')
-          .on('click', () => this.nodeClick(rel.iri))
-          .on('dblclick', () => this.nodeDblClick(rel.iri));
+        const s = g.append('svg');
 
         const r = s.append('rect').attr('rx', 6).attr('ry', 6).attr('height', 25).attr('stroke', 'black');
 
         if (rel.iri === 'sn:116680003') r.attr('fill', 'lightgreen');
         else r.attr('fill', 'orange');
 
-        const t = s.append('text').text(rel.name).attr('font-size', 12).attr('x', this.pad).attr('y', 18);
+        const wrapper = s.append('g')
+          .attr('class', 'clickable')
+          .on('click', () => this.nodeClick(rel.iri))
+          .on('dblclick', () => this.nodeDblClick(rel.iri));
+
+        const t = wrapper.append('text').text(rel.name).attr('font-size', 12).attr('x', this.pad).attr('y', 18);
 
         const w = t.node().getComputedTextLength() + this.pad * 2;
         r.attr('width', w);
@@ -252,26 +255,25 @@ export class HealthRecordNavigatorComponent implements OnInit {
     const r = s.append('rect').attr('rx', 6).attr('ry', 6).attr('fill', 'lightblue').attr('stroke', 'black');
 
     // Title
-    const t = s.append('text').text(this.concept.name).attr('font-weight', 'bold').attr('font-size', 12).attr('x', this.pad).attr('y', 16);
+    const wrapper = s.append('g').attr('class', 'clickable');
+    const t = wrapper.append('text')
+      .text(this.concept.name)
+      .attr('font-weight', 'bold')
+      .attr('font-size', 12)
+      .attr('x', this.pad)
+      .attr('y', 16)
+      .on('click', () => this.nodeClick(this.concept.iri))
+
 
     let w = t.node().getComputedTextLength() + this.pad * 2;
 
     let i = 0;
 
-    let omv = new ObjectModelVisitor();
-    omv.ObjectPropertyValueVisitor = (opv:ObjectPropertyValue) => {
-      let res = this.addObjectPropertyValue(s, opv, i, w);
+    for (let property of this.concept.Property) {
+      let res = this.addPropertyValue(s, property, i, w);
       i = res.i;
       w = res.w;
     }
-
-    omv.DataPropertyValueVisitor = (dpv:DataPropertyValue) => {
-      let res = this.addDataPropertyValue(s, dpv, i, w);
-      i = res.i;
-      w = res.w;
-    }
-
-    omv.visit(this.concept);
 
     w = Math.round(w);
 
@@ -284,75 +286,39 @@ export class HealthRecordNavigatorComponent implements OnInit {
     map.set(this.concept.iri, s);
   }
 
-  private addObjectPropertyValue(s, opv: ObjectPropertyValue, i: number, w: number) {
+  private addPropertyValue(s, pc: PropertyConstraint, i: number, w: number) {
     let l = this.pad;
 
-    const p = s
+    let g = s.append('g')
+      .attr('class', 'clickable');
+
+    const p = g
       .append('text')
-      .text(opv.Property.name + ': ')
+      .text(pc.Property.name + ': ')
       .attr('font-size', 12)
       .attr('x', l)
       .attr('y', 38 + 20 * i)
-      .attr('class', 'clickable')
-      .on('click', () => this.nodeClick(opv.Property.iri))
-      .on('dblclick', () => this.nodeDblClick(opv.Property.iri));
+      .on('click', () => this.nodeClick(pc.Property.iri))
+      .on('dblclick', () => this.nodeDblClick(pc.Property.iri));
 
     l += p.node().getComputedTextLength() + 4;
 
     // Type
-    if (opv.Property.iri !== ':hasCoreProperties') {
-      const pt = s
-        .append('text')
-        .text(opv.ValueType.name + this.cardText(opv.Min, opv.Max))
-        .attr('font-size', 12)
-        .attr('x', l)
-        .attr('y', 38 + 20 * i)
-        .attr('class', 'clickable')
-        .on('click', () => this.nodeClick(opv.ValueType.iri))
-        .on('dblclick', () => this.nodeDblClick(opv.ValueType.iri));
+    let valueType = (pc.ValueClass != null) ? pc.ValueClass : pc.DataType;
 
-      l += pt.node().getComputedTextLength() + 4;
-    }
+    g = s.append('g')
+      .attr('class', 'clickable');
 
-    l += this.pad;
-
-    if (l > w) {
-      w = l;
-    }
-    i++;
-    return {i, w};
-  }
-
-  private addDataPropertyValue(s, dpv: DataPropertyValue, i: number, w: number) {
-    let l = this.pad;
-
-    const p = s
+    const pt = g
       .append('text')
-      .text(dpv.Property.name + ': ')
+      .text((valueType.name ? valueType.name : valueType.iri)  + this.cardText(pc.min, pc.max))
       .attr('font-size', 12)
       .attr('x', l)
       .attr('y', 38 + 20 * i)
-      .attr('class', 'clickable')
-      .on('click', () => this.nodeClick(dpv.Property.iri))
-      .on('dblclick', () => this.nodeDblClick(dpv.Property.iri));
+      .on('click', () => this.nodeClick(valueType.iri))
+      .on('dblclick', () => this.nodeDblClick(valueType.iri));
 
-    l += p.node().getComputedTextLength() + 4;
-
-    // Type
-    if (dpv.Property.iri !== ':hasCoreProperties') {
-      const pt = s
-        .append('text')
-        .text((dpv.DataType.name == null || dpv.DataType.name == '' ? dpv.DataType.iri : dpv.DataType.name) + this.cardText(dpv.Min, dpv.Max))
-        .attr('font-size', 12)
-        .attr('x', l)
-        .attr('y', 38 + 20 * i)
-        .attr('class', 'clickable')
-        .on('click', () => this.nodeClick(dpv.DataType.iri))
-        .on('dblclick', () => this.nodeDblClick(dpv.DataType.iri))
-      ;
-
-      l += pt.node().getComputedTextLength() + 4;
-    }
+    l += pt.node().getComputedTextLength() + 4;
 
     l += this.pad;
 

@@ -76,7 +76,7 @@ class HealthRecordTabularViewComponent {
     if (!concept)
       return;
 
-    this.propertiesTableData = this.buildPropertiesTableData(concept);
+    concept.Property.forEach(c => this.propertiesTableData.push(c));
 
     this.service.getAncestorDefinitions(concept.iri).subscribe(
       (result) => this.addInheritedProperties(result),
@@ -99,21 +99,15 @@ class HealthRecordTabularViewComponent {
   }
 
   addInheritedProperties(ancestors: Concept[]) {
-    this.ancestors = ancestors;
     const l = ancestors.length;
     this.ancestorsTableDataList = new Array(l);
     for(let i = 0; i < l; i++) {
-      this.ancestorsTableDataList[i] = this.buildPropertiesTableData(ancestors[i]);
+      this.ancestorsTableDataList[i] = []
+      if (ancestors[i].Property != null) {
+        ancestors[i].Property.forEach(c => this.ancestorsTableDataList[i].push(c));
+      }
     }
-  }
-
-  buildPropertiesTableData(concept: Concept) {
-    let tableData: any[] = [];
-    let omv = new ObjectModelVisitor();
-    omv.ObjectPropertyValueVisitor = (opv:ObjectPropertyValue) => {tableData.push(opv)};
-    omv.DataPropertyValueVisitor = (dpv:DataPropertyValue) => {tableData.push(dpv)};
-    omv.visit(concept);
-    return tableData;
+    this.ancestors = ancestors;
   }
 
   onClick(iri: string) {
@@ -122,14 +116,6 @@ class HealthRecordTabularViewComponent {
 
   onDblClick(iri: string) {
     this.eventBus.cast('app:conceptSelect', iri);
-  }
-
-  isObjectProperty(row): boolean {
-    return (row instanceof ObjectPropertyValue);
-  }
-
-  isDataProperty(row): boolean {
-    return (row instanceof DataPropertyValue);
   }
 
   get DEFAULT_MIN_CARDINALITY(): number {
