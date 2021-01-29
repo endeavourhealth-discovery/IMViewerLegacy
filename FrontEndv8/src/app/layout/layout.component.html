@@ -6,21 +6,6 @@
   <div (click)="navigate('perspective/mainPage')" class="pointer">Information Model <span [hidden]="perspectives.current == null"> - {{perspectives.current?.caption}}</span></div>
   <span class="spacer"></span>
 
-  <!-- ********** CENTER ********** -->
-  <mat-form-field appearance="outline" class="global-search">
-    <mat-label>Search</mat-label>
-    <mat-icon matPrefix style="cursor: pointer" (click)="advancedSearch(searchInput.value)">search</mat-icon>
-    <input matInput placeholder="Search" id="searchInput" #searchInput [matAutocomplete]="auto" (focus)="searchInput.select()" (keyup.enter)="advancedSearch($event.target.value)">
-    <mat-spinner *ngIf="searchCall" matSuffix diameter="20"></mat-spinner>
-    <mat-autocomplete #auto="matAutocomplete" panelWidth="auto" [displayWith]="displayFn" (optionSelected)="inspectConcept($event.option.value)">
-      <mat-option *ngFor="let option of results" [value]="option">
-        {{option.name}}
-      </mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
-
-  <span class="spacer"></span>
-
   <!-- ********** RIGHT ********** -->
   <button mat-icon-button class="icon" aria-label="Example icon-button with share icon" (click)="getHelp()">
     <mat-icon>help_outline</mat-icon>
