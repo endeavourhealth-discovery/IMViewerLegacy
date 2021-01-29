@@ -1,7 +1,6 @@
 <div class="as-split-area-content">
-  <app-concept-search [root]="root" [relationships]="relationships">
-  </app-concept-search>
-  <div class="as-split-area-content" style="height: 100%">
+  <app-concept-search></app-concept-search>
+  <div class="as-split-area-content" style="height: 100%"> 
     <mat-tab-group mat-stretch-tabs class="example-stretched-tabs" style="height: 100%" #tabs>
       <mat-tab label="Browse">
         <ng-template mat-tab-label>
@@ -35,28 +34,7 @@
           <mat-icon class="example-tab-icon">search</mat-icon>
           Search Results
         </ng-template>
-        <table class="mat-table" style="width: 100%">
-          <tr class="mat-row" *ngFor="let searchResult of searchResults">
-            <td class="mat-cell" (click)="onSelectSearchResult(searchResult.concept.iri)">
-              <span class="select-highlight hover-highlight" 
-                    [class.selected]="highlightSearchResult(searchResult.concept.iri)" 
-                    style="cursor: pointer">
-                    {{searchResult.concept.name}}
-              </span>
-            </td>
-            <td class="mat-cell">
-              <ng-container *ngIf="searchResult.typeColor != null && searchResult.typeName != null">
-                <mat-chip-list class="mat-chips-right">
-                  <mat-chip class="mat-small-chip" 
-                            (click)="onSelectSearchResult(searchResult.concept.iri)" 
-                            [style.background-color]="searchResult.typeColor">
-                            {{searchResult.typeName}}
-                  </mat-chip>
-                </mat-chip-list>
-              </ng-container>
-            </td>
-          </tr>
-        </table>
+        <app-concept-search-result></app-concept-search-result>
       </mat-tab>      
     </mat-tab-group>
   </div>

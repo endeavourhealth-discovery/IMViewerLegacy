@@ -1,83 +1,104 @@
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { NgEventBus } from 'ng-event-bus';
-import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {ConceptService} from '../../services/concept.service';
-import {LoggerService} from '../../services/logger.service';
-import {fromEvent, Subscription} from 'rxjs';
-import {ConceptReference} from '../../models/objectmodel/ConceptReference';
-import {debounceTime, distinctUntilChanged, filter, map, tap} from 'rxjs/operators';
-import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { fromEvent, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs/operators';
+import { ConceptStatus } from 'src/app/models/objectmodel/ConceptStatus';
+import { CodeSchemes, codeSchemesProvider } from 'src/app/models/search/CodeScheme';
+import * as searchEvents from 'src/app/models/search/SearchEvents';
+import { SearchRequest } from 'src/app/models/search/SearchRequest';
+import { SearchResponse } from 'src/app/models/search/SearchResponse';
+import { SortBy } from 'src/app/models/search/SortBy';
+import { Perspectives } from 'src/app/services/perspective.service';
+import { ConceptService } from '../../services/concept.service';
+import { LoggerService } from '../../services/logger.service';
 
 @Component({
   selector: 'app-concept-search',
   templateUrl: './concept-search.component.html',
-  styleUrls: ['./concept-search.component.scss']
+  styleUrls: ['./concept-search.component.scss'],
+  providers: [ codeSchemesProvider ]
 })
 export class ConceptSearchComponent implements AfterViewInit {
-  static MULTIPLE_CONCEPTS_SELECTED_EVENT: string = "app:ConceptSearchComponent-multipleConcepts-selected";
+  @ViewChild('conceptSearchInput', {static: true}) conceptSearchInput: ElementRef;
   
-  @ViewChild('searchInput', {static: true}) input: ElementRef;
-  @ViewChild(MatAutocompleteTrigger, {static: true}) autocomplete: MatAutocompleteTrigger;
+  private searchRequest: Subscription;
+  private searchQuery: SearchRequest;
 
-  @Input()  root: string;
-  @Input() relationships: string[];
-
-  searchTerm: string;
-  searching: boolean;
-  searchCall: Subscription = null;
-  results: ConceptReference[]
-
-
-  constructor(private service: ConceptService, private log: LoggerService, private eventBus: NgEventBus) { }
+  constructor(private service: ConceptService, private log: LoggerService, private perspectiveService: Perspectives, private codeSchemes: CodeSchemes, private eventBus: NgEventBus) { 
+    this.searchRequest = null;
+    this.searchQuery = this.initSearchQuery();
+    
+    this.eventBus.on(searchEvents.CONCEPT_SEARCH_FILTER_CHANGE_EVENT).subscribe((searchQuery: SearchRequest) => {
+      this.searchQuery = searchQuery;
+      this.search();
+    }); 
+  }
 
   ngAfterViewInit() {
-    fromEvent(this.input.nativeElement,'keyup')
+    fromEvent(this.conceptSearchInput.nativeElement,'keyup')
       .pipe(
         map((e:any) => e.target.value),
         filter(v => v.length > 2),
         debounceTime(200),
         distinctUntilChanged(),
         tap((text) => {
-          this.autoComplete(text)
+          this.searchQuery.terms = text;
+          this.search();
         })
       )
       .subscribe();
   }
-
-  displayFn(concept: ConceptReference): string {
-    return concept && concept.name ? concept.name : '';
+  private search() {
+    this.cancelExistingSearch();
+    this.doSearch();
   }
 
-  autoComplete(term) {
-    if (term == null || term == '')
-      return;
+  private cancelExistingSearch(): void {
+    this.destroySearchRequest(this.searchRequest);
+  }
 
-    if (this.searchCall) {
-      this.searchCall.unsubscribe();
-      this.searchCall = null;
-      this.results = [];
-    }
-    this.searchCall = this.service.search(term, this.root, this.relationships)
+  private destroySearchRequest(searchRequest: Subscription) {
+    if (searchRequest) {
+      searchRequest.unsubscribe();
+      searchRequest = null;
+    }     
+  }
+
+  private doSearch() {
+    this.searchRequest = this.service.advancedSearch(this.searchQuery)
       .subscribe(
-        (result) => {
-          this.results = result;
-          this.searchCall.unsubscribe();
-          this.searchCall = null;
+        (searchResponse: SearchResponse) => {
+          this.destroySearchRequest(this.searchRequest);
+          searchResponse.request = this.searchQuery;
+          this.broadcastSearchResults(searchResponse);
         },
-        (error) => this.log.error(error)
+        (error) => { 
+          this.log.error(error) 
+        }
       );
   }
 
-  clear() {
-    this.searchTerm = '';
-    this.searching = false;
+  private broadcastSearchResults(searchResponse: SearchResponse) {
+    this.eventBus.cast(searchEvents.SEARCH_RESULT_EVENT, searchResponse);
   }
 
-  selectResult(item: any) {
-    this.eventBus.cast('app:conceptSelect', item.iri);
-  }
+  private initSearchQuery(): SearchRequest {
+    let searchRequest: SearchRequest = new SearchRequest();
 
-  onMultipleConcepts(searchTerm: string) {
-    this.autocomplete.closePanel(); 
-    this.eventBus.cast(ConceptSearchComponent.MULTIPLE_CONCEPTS_SELECTED_EVENT, this.results);
-  }  
+    this.codeSchemes.defaultCodeSchemes.subscribe(defaultCodeSchemes => {
+      searchRequest.codeSchemes = defaultCodeSchemes;
+    });
+
+    // we want know which (if any) of these types our search results inherit from
+    searchRequest.types = this.perspectiveService.getAllRootIris();
+
+    searchRequest.statuses = [ConceptStatus.Active];
+
+    searchRequest.sortBy = SortBy.Usage;
+
+    searchRequest.page = 1;
+    searchRequest.size = 20;
+
+    return searchRequest;
+  }
 }

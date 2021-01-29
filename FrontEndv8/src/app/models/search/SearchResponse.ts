@@ -1,7 +1,11 @@
-import {SearchResponseConcept} from './SearchResponseConcept';
+import { SearchRequest } from './SearchRequest';
+import { SearchResponseConcept } from './SearchResponseConcept';
 
 export class SearchResponse {
-  page: number;
-  count: number;
+  pageStart: number;
+  pageEnd: number;
+  pageSize: number;
+  totalSize: number;
   concepts: SearchResponseConcept[];
+  request?: SearchRequest;
 }

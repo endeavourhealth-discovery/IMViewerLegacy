@@ -1,8 +1,6 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { SummaryDrawerComponent } from '../components/summary-drawer/summary-drawer.component';
-import { Concept } from '../models/objectmodel/Concept';
-import {Perspective} from '../models/Perspective';
+import { Perspective } from '../models/Perspective';
 import { ConceptService } from './concept.service';
 import { LoggerService } from './logger.service';
 
@@ -124,5 +122,15 @@ export class Perspectives  {
     )
 
     return perspectiveObservable;
-}
+  }
+
+  getAllRootIris(): string[] {
+    return this.perspectives.map(perspective => {return perspective.root} );
+  }
+
+  getPerspectiveByRoot(rootIri: string): Perspective {
+    const perspective: Perspective = this.perspectivesMap.get(rootIri);
+
+    return perspective;
+  }
 }

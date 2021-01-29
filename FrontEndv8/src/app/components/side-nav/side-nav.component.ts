@@ -1,16 +1,11 @@
-import { ConceptReferenceNode } from '../../models/objectmodel/ConceptReferenceNode';
-import { NgEventBus } from 'ng-event-bus';
-import { Concept} from '../../models/objectmodel/Concept';
-import { Router, NavigationEnd } from '@angular/router';
-import { ConceptService } from '../../services/concept.service';
-import {Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
-import {LoggerService} from '../../services/logger.service';
-import { ConceptSearchComponent } from '../concept-search/concept-search.component';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { MatTabGroup } from '@angular/material/tabs';
-import { ConceptReference } from 'src/app/models/objectmodel/ConceptReference';
-import { MatTab } from '@angular/material/tabs';
-import { Perspective } from 'src/app/models/Perspective';
-import { Perspectives } from 'src/app/services/perspective.service';
+import { NavigationEnd, Router } from '@angular/router';
+import { NgEventBus } from 'ng-event-bus';
+import * as searchEvents from 'src/app/models/search/SearchEvents';
+import { Concept } from '../../models/objectmodel/Concept';
+import { ConceptReferenceNode } from '../../models/objectmodel/ConceptReferenceNode';
+import { LoggerService } from '../../services/logger.service';
 
 @Component({
   selector: 'app-side-nav',
@@ -24,25 +19,20 @@ export class SideNavComponent {
   @Input() root: string;
   @Input() relationships: string;
   @Input() selectedIri: string;
-  @ViewChild('searchComponent', {static: true}) searchComponent: ElementRef;
   @ViewChild('tabs', {static: true}) tabGroup: MatTabGroup;
 
   @Output() openDialogEvent: EventEmitter<any> = new EventEmitter<any>();
 
   history = [];
   searchResults: any[] = [];
-  
-  private selectedSearchResult: string;
-
+ 
   constructor(
-    private service: ConceptService,
-    private perpsectiveService: Perspectives,
     private router: Router,
     private log: LoggerService,
     private eventBus: NgEventBus) {
       this.routeEvent(this.router);
-      this.eventBus.on(ConceptSearchComponent.MULTIPLE_CONCEPTS_SELECTED_EVENT).subscribe((selectionEvent: ConceptReference[]) => {
-        this.showSearchResultsTab(selectionEvent);
+      this.eventBus.on(searchEvents.SEARCH_RESULT_EVENT).subscribe(searchResponseEvent => {
+        this.showSearchResultsTab();
       });    
   }
 
@@ -69,32 +59,8 @@ export class SideNavComponent {
     this.openDialogEvent.emit();
   }
 
-  onSelectSearchResult(iri: string) {
-    this.selectedSearchResult = iri;
-    this.goto(iri);
-  }
 
-  highlightSearchResult(iri: string): boolean {
-    return this.selectedSearchResult == iri;
-  }
-
-  showSearchResultsTab(searchResults: ConceptReference[]) {
-    this.searchResults = [];  
-    this.selectedSearchResult = null;  
-
-    // now find out what kind of perspective each result belongs to
-    searchResults.forEach(searchResult => {
-      this.perpsectiveService.getPerspective(searchResult.iri).subscribe(
-        (perspective: Perspective) => { 
-          this.searchResults.push({concept: searchResult, typeName: perspective.caption, typeColor: perspective.color})
-        },
-        (error) => {
-          this.log.debug(`Warning - unable to find perspective for the concept ${searchResult.iri}`);
-          this.searchResults.push({concept: searchResult});
-        }
-      )
-    });
-
+  private showSearchResultsTab() {
     const searchResultsTabIndex: number = this.tabGroup._tabs.toArray().findIndex(tab => "Search Results" == tab.textLabel)
     if(searchResultsTabIndex > -1) {
       this.tabGroup.selectedIndex = searchResultsTabIndex;
