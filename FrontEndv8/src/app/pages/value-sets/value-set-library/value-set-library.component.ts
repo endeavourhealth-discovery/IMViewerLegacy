@@ -127,39 +127,26 @@ export class ValueSetLibraryComponent implements OnInit {
     );
   }
 
-  private getChildren(parents: ConceptReferenceNode[]): Observable<Boolean[]> {
-    const getGrandChildrenRequests: Observable<Boolean>[] = parents.map(parent => {
-      return this.service.getConceptHasChildren(parent.iri)
-    });
-
-    return forkJoin(getGrandChildrenRequests);
-  }
-
-  private initNode(name: string, childRefs: ConceptReference[] = []): Observable<ConceptReferenceNode> {
+  private initNode(name: string, members: ConceptReference[] = []): Observable<ConceptReferenceNode> {
     let nodeObservable: Subject<ConceptReferenceNode> = new ReplaySubject();
 
     let node: ConceptReferenceNode = this.toConceptReferenceNode("app-value-set-library-" + name, name);
 
-    if(childRefs != null && childRefs.length > 0) {
-      let childNodes: ConceptReferenceNode[] = childRefs.map(child => this.toConceptReferenceNode(child.iri, child.name));
-      node.children = childNodes;
+    if(members != null && members.length > 0) {
+      let memberNodes: ConceptReferenceNode[] = members.map(child => this.toConceptReferenceNode(child.iri, child.name));
+      node.children = memberNodes;
       node.hasChildren = true;
-
-      this.getChildren(childNodes).subscribe(
-        success => {
-          let index: number = 0;
-
-          success.forEach(response => {
-            childNodes[index++].hasChildren = response.valueOf();
-          })
-
-          nodeObservable.next(node);
-          nodeObservable.complete();
-        },
-        error => {
-          this.log.error(error);
-        }
-      );
+      this.service.getConceptsHaveChildren(memberNodes.map(m => m.iri), false)
+        .subscribe(
+          (result) => {
+            memberNodes
+              .filter(m => result.includes(m.iri))
+              .forEach(m => m.hasChildren = true);
+            nodeObservable.next(node);
+            nodeObservable.complete();
+          },
+          (error) => this.log.error(error)
+        );
     }
     else {
       nodeObservable.next(node);

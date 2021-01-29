@@ -55,7 +55,15 @@ export class ConceptService implements HealthRecordNavigatorService {
   }
 
   getConceptHasChildren(iri: string, includeLegacy: boolean = false): Observable<Boolean> {
-    return this.http.get<Boolean>(environment.api + 'api/concept/' + iri + '/hasChildren');
+    let params = new HttpParams();
+    params = params.append('includeLegacy', includeLegacy.toString());
+    return this.http.get<Boolean>(environment.api + 'api/concept/' + iri + '/hasChildren', {params});
+  }
+
+  getConceptsHaveChildren(iris: string[], includeLegacy: boolean = false): Observable<string[]> {
+    let params = new HttpParams();
+    params = params.append('includeLegacy', includeLegacy.toString());
+    return this.http.post<string[]>(environment.api + 'api/concept/haveChildren', iris, {params});
   }
 
   getConceptChildren(iri: string): Observable<Array<ConceptReferenceNode>> {
