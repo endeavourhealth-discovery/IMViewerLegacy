@@ -26,6 +26,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 import { AngularSplitModule } from 'angular-split';
+import { CookieService } from 'ngx-cookie-service';
 import { CardHeaderComponent } from './card-header/card-header.component';
 import { ConceptDefinitionComponent } from './concept-definition/concept-definition.component';
 import { ConceptHierarchyViewComponent } from './concept-hierarchy-view/concept-hierarchy-view.component';
@@ -37,6 +38,7 @@ import { HealthRecordNavigatorComponent } from './health-record-navigator/health
 import { HealthRecordTabularViewComponent } from './health-record-tabular-view/health-record-tabular-view.component';
 import { LibraryComponentComponent } from './library-component/library-component.component';
 import { MatWrapperComponent } from './mat-wrapper/mat-wrapper.component';
+import { QuickAccessComponent } from './quick-launch/quick-access.component';
 import { ResizeObserverDirective } from './resize-observer.directive';
 import { SideNavComponent } from './side-nav/side-nav.component';
 import { SnomedLicenseDialog } from './snomed-license-dialog/snomed-license-dialog.component';
@@ -92,6 +94,7 @@ import { UserProfileDialog } from './user-profile-dialog/user-profile-dialog.com
     SnomedLicenseDialog,
     SummaryDrawerComponent,
     UserProfileDialog,
+    QuickAccessComponent,
   ],
   exports: [
     ConceptSearchComponent,
@@ -106,12 +109,16 @@ import { UserProfileDialog } from './user-profile-dialog/user-profile-dialog.com
     MatWrapperComponent,
     SnomedLicenseDialog,
     SummaryDrawerComponent,
-    UserProfileDialog
+    UserProfileDialog,
+    QuickAccessComponent,
   ],
   entryComponents: [
     FindConceptUsagesDialogComponent,
     SnomedLicenseDialog,
     UserProfileDialog
+  ],
+  providers: [
+    CookieService
   ]
 })
 export class ComponentsModule { }

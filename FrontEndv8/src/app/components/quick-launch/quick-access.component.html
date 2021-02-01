@@ -1,0 +1,39 @@
+<!-- categories list -->
+<h2 class="mat-title">Categories</h2>
+<mat-list dense>
+  <mat-list-item *ngFor="let category of categories">
+    <mat-icon matListIcon fontSet="fa" fontIcon={{category.icon}} inline=true></mat-icon>
+    <p matLine class="mat-subheading-1">
+      <span
+         class="select-highlight hover-highlight" 
+         [class.selected]="highlightCategory(category)" 
+         style="cursor: pointer"
+         (click)="onSelectCategory(category)">
+        {{category.caption}}
+      </span>
+    </p>
+    <p matLine class="mat-caption"> {{category.subtitle}} </p>
+  </mat-list-item>
+</mat-list>
+
+<mat-divider></mat-divider>
+
+<!-- last visited list -->
+<h2 class="mat-title">Recently visited</h2>
+<ng-container *ngIf="hasRecentlyVisited; else noRecentlyVisited">
+  <mat-list dense>
+    <mat-list-item *ngFor="let recentConcept of recentConcepts">
+      <span class="select-highlight hover-highlight" 
+            [class.selected]="highlightRecentConcept(recentConcept)" 
+            style="cursor: pointer"
+            (click)="onSelectRecentConcept(recentConcept)">
+        {{recentConcept.name}}
+      </span>
+    </mat-list-item>
+  </mat-list>
+</ng-container>
+
+<ng-template #noRecentlyVisited>
+  <h2 class="mat-subheading-1">No recently visited concepts to display</h2>
+  <p class="mat-caption">Select one or more concepts to populate this list</p>
+</ng-template>
