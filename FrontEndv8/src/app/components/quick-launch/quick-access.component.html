@@ -1,20 +1,24 @@
 <!-- categories list -->
 <h2 class="mat-title">Categories</h2>
-<mat-list dense>
-  <mat-list-item *ngFor="let category of categories">
-    <mat-icon matListIcon fontSet="fa" fontIcon={{category.icon}} inline=true></mat-icon>
-    <p matLine class="mat-subheading-1">
-      <span
-         class="select-highlight hover-highlight" 
-         [class.selected]="highlightCategory(category)" 
-         style="cursor: pointer"
-         (click)="onSelectCategory(category)">
-        {{category.caption}}
-      </span>
-    </p>
-    <p matLine class="mat-caption"> {{category.subtitle}} </p>
-  </mat-list-item>
-</mat-list>
+<ng-container *ngIf="hasCategories; else noCategories">
+  <mat-list *ngFor="let category of categories">
+    <mat-list-item>
+      <mat-icon matListIcon fontSet="fa" fontIcon={{category.icon}} inline=true></mat-icon>
+      <p matLine class="mat-subheading-1">{{category.name}}</p>    
+    </mat-list-item>
+    <mat-list dense style="margin-left:90px;" *ngFor="let member of category.members">
+      <p matLine class="mat-subheading-1">
+        <span
+          class="select-highlight hover-highlight" 
+          [class.selected]="highlightCategoryMember(member)" 
+          style="cursor: pointer"
+          (click)="onSelectCategoryMember(member)">
+          {{member.name}}
+        </span>
+      </p>
+    </mat-list>
+  </mat-list>
+</ng-container>
 
 <mat-divider></mat-divider>
 
@@ -37,3 +41,9 @@
   <h2 class="mat-subheading-1">No recently visited concepts to display</h2>
   <p class="mat-caption">Select one or more concepts to populate this list</p>
 </ng-template>
+
+<ng-template #noCategories>
+  <h2 class="mat-subheading-1">No categories to display</h2>
+  <p class="mat-caption">TODO - advice to user</p>
+</ng-template>
+

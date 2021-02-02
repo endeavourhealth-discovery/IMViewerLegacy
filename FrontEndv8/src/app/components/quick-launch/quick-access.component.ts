@@ -1,12 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { NgEventBus } from 'ng-event-bus';
 import { CookieService } from 'ngx-cookie-service';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { ConceptReference } from 'src/app/models/objectmodel/ConceptReference';
 import { Perspective } from 'src/app/models/Perspective';
 import { codeSchemesProvider } from 'src/app/models/search/CodeScheme';
 import { ConceptService } from 'src/app/services/concept.service';
+import { ConfigService } from 'src/app/services/config.service';
 import { LoggerService } from 'src/app/services/logger.service';
 import { Perspectives } from 'src/app/services/perspective.service';
+
+interface Category {
+  name: string,
+  icon: string,
+  color: string,
+  members: ConceptReference[]
+}
 
 class RecentConcepts {
 
@@ -76,9 +85,9 @@ class RecentConcepts {
 })
 export class QuickAccessComponent implements OnInit  {
 
-  public categories: Perspective[];
+  public categories: Category[];
 
-  private selectedCategory: string; 
+  private selectedCategoryMember: string; 
   private selectedRecentConcept: string;  
 
   private _recentConcepts: RecentConcepts;
@@ -87,9 +96,17 @@ export class QuickAccessComponent implements OnInit  {
               private cookieService: CookieService,
               private perpsectiveService: Perspectives,
               private conceptService: ConceptService, 
+              private configService: ConfigService,
               private log: LoggerService) {
 
-    this.categories = this.initCategories();
+    this.initCategories().subscribe(
+      categories => { 
+        this.categories = categories 
+      },
+      error => { 
+        this.log.debug(`Warning - unable to get categories. Cause - ${error}. Action - no categories will be displayed.`) 
+      }
+    );
     this._recentConcepts = new RecentConcepts(cookieService, log);  
   }
 
@@ -117,19 +134,23 @@ export class QuickAccessComponent implements OnInit  {
     return this.recentConcepts.length > 0;
   }
 
-  onSelectCategory(category: Perspective) {
-    this.selectedCategory = category.root;
-    this.selectedRecentConcept = null;
-    this.eventBus.cast('app:conceptSelect', category.root);
+  get hasCategories() {
+    return this.categories != null && this.categories.length > 0;
   }
 
-  highlightCategory(category: Perspective): boolean {
-    return this.selectedCategory && this.selectedCategory == category.root;
+  onSelectCategoryMember(member: ConceptReference) {
+    this.selectedCategoryMember = member.iri;
+    this.selectedRecentConcept = null;
+    this.eventBus.cast('app:conceptSelect', member.iri);
+  }
+
+  highlightCategoryMember(member: ConceptReference): boolean {
+    return this.selectedCategoryMember && this.selectedCategoryMember == member.iri;
   } 
 
   onSelectRecentConcept(concept: ConceptReference) {
     this.selectedRecentConcept = concept.iri;
-    this.selectedCategory = null;
+    this.selectedCategoryMember = null;
     this.eventBus.cast('app:conceptSelect', concept.iri);
   }
 
@@ -137,9 +158,71 @@ export class QuickAccessComponent implements OnInit  {
     return this.selectedRecentConcept && this.selectedRecentConcept == concept.iri;
   } 
 
-  private initCategories(): Perspective[] {
-      const categories = this.perpsectiveService.perspectives.filter(perspective => { return perspective.root != null });
+  private initCategories(): Observable<Category[]> {
+    let categoriesObservable: Subject<Category[]> = new ReplaySubject();
 
-      return categories;
+    this.configService.getQuickAccess().subscribe(
+      quickAccessList => { 
+        let categories: Map<string, Category> = new Map();
+        quickAccessList.forEach(quickAccess => {
+          const perspective: Perspective = this.getPerspective(quickAccess.types);
+          
+          if(perspective != null) {
+            this.addCategoryMember(categories, perspective, quickAccess);
+          }
+          else {
+            this.log.debug(`Warning - no perspective associated with the quick access concept ${quickAccess.iri}. It will not be displayed.`) 
+          }
+        });
+
+        categoriesObservable.next(Array.from(categories.values()));
+      },
+      error => { 
+        this.log.debug(`Warning - unable to retrieve quick access config. Cause - ${error}`) 
+      }
+    );
+ 
+    return categoriesObservable;
+  }
+
+  private getPerspective(types: ConceptReference[]) {
+    // default value
+    let rootIri: string = this.perpsectiveService.ontology.root;
+              
+    if(types.length > 0) {
+      if(types.length > 1) {
+        this.log.debug(`Warning - multiple types found. Using the first type to resolve perspective. Ignoring others.`) 
+      }
+      rootIri = types[0].iri;
+    }
+
+    const perspective: Perspective = this.perpsectiveService.getPerspectiveByRoot(rootIri);
+
+    return perspective;
+  }
+
+  private addCategoryMember(categories: Map<string, Category>, perspective: Perspective, member: ConceptReference): void {
+    let category: Category = categories.get(perspective.root);
+            
+    category = this.createOrUpdateCategory(category, perspective, member);
+    
+    if(categories.has(perspective.root) == false) {
+      categories.set(perspective.root, category);
+    }   
+  }
+
+  private createOrUpdateCategory(category: Category, perspective: Perspective, member: ConceptReference): Category {
+    if(category == null) {
+      category = {
+        name: perspective.caption,
+        icon: perspective.icon,
+        color: perspective.color,
+        members: []
+      }   
+    }
+
+    category.members.push(member);
+
+    return category;
   }
 }
