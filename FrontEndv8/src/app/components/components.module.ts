@@ -1,3 +1,5 @@
+import { NgJsonEditorModule } from 'ang-jsoneditor';
+import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FlexModule } from '@angular/flex-layout';
@@ -42,8 +44,9 @@ import { QuickAccessComponent } from './quick-launch/quick-access.component';
 import { ResizeObserverDirective } from './resize-observer.directive';
 import { SideNavComponent } from './side-nav/side-nav.component';
 import { SnomedLicenseDialog } from './snomed-license-dialog/snomed-license-dialog.component';
-import { SummaryDrawerComponent } from './summary-drawer/summary-drawer.component';
 import { UserProfileDialog } from './user-profile-dialog/user-profile-dialog.component';
+import { EditConceptComponent } from './edit-concept/edit-concept.component';
+import { ViewMembersComponent } from './view-members/view-members.component';
 
 
 @NgModule({
@@ -76,6 +79,8 @@ import { UserProfileDialog } from './user-profile-dialog/user-profile-dialog.com
     MatPaginatorModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MonacoEditorModule,
+    NgJsonEditorModule
   ],
   declarations: [
     ConceptSearchComponent,
@@ -92,9 +97,10 @@ import { UserProfileDialog } from './user-profile-dialog/user-profile-dialog.com
     LibraryComponentComponent,
     MatWrapperComponent,
     SnomedLicenseDialog,
-    SummaryDrawerComponent,
     UserProfileDialog,
     QuickAccessComponent,
+    EditConceptComponent,
+    ViewMembersComponent,
   ],
   exports: [
     ConceptSearchComponent,
@@ -108,9 +114,10 @@ import { UserProfileDialog } from './user-profile-dialog/user-profile-dialog.com
     LibraryComponentComponent,
     MatWrapperComponent,
     SnomedLicenseDialog,
-    SummaryDrawerComponent,
     UserProfileDialog,
     QuickAccessComponent,
+    EditConceptComponent,
+    ViewMembersComponent,
   ],
   entryComponents: [
     FindConceptUsagesDialogComponent,

@@ -19,32 +19,46 @@ export class Perspectives  {
   };
 
   healthRecord: Perspective = {
-    "caption": "Health Records",
-    "subtitle": "Health Record definition explorer",
-    "description": "The health record is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but the health record, being created for a specific business of healthcare is separate to the ontology",
+    "caption": "Data Models",
+    "subtitle": "Data model definition",
+    "description": "The data model is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but the data model, being created for a specific business of healthcare is separate to the ontology",
     "primary": {state: "perspective/healthRecord", name: "Explore"},
     "additionalStates": [
       {state: "perspective/healthRecordOverview", name: "Overview"}
     ],
-    "image": "healthrecords.jpg",
-    "icon": "book",
-    "color": "limegreen",
-    "root": ":HealthRecord"
-  };
-
-  dataModel: Perspective = {
-    "caption": "Data Models",
-    "subtitle": "Data model definition",
-    "description": "The data model is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but the data model, being created for a specific business of healthcare is separate to the ontology",
-    "primary": {state: "perspective/dataModel", name: "Explore"},
-    "additionalStates": [
-      {state: "perspective/dataModelOverview", name: "Overview"}
-    ],
     "image": "datamodels.jpg",
     "icon": "fa-sitemap",
-    "color": "LightSkyBlue",
+    "color": "limegreen",
     "root": ":DiscoveryCommonDataModel"
-  };  
+  };
+
+  // healthRecord: Perspective = {
+  //   "caption": "Health Records",
+  //   "subtitle": "Health Record definition explorer",
+  //   "description": "The health record is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but the health record, being created for a specific business of healthcare is separate to the ontology",
+  //   "primary": {state: "perspective/healthRecord", name: "Explore"},
+  //   "additionalStates": [
+  //     {state: "perspective/healthRecordOverview", name: "Overview"}
+  //   ],
+  //   "image": "healthrecords.jpg",
+  //   "icon": "book",
+  //   "color": "limegreen",
+  //   "root": ":HealthRecord"
+  // };
+
+  // dataModel: Perspective = {
+  //   "caption": "Data Models",
+  //   "subtitle": "Data model definition",
+  //   "description": "The data model is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but the data model, being created for a specific business of healthcare is separate to the ontology",
+  //   "primary": {state: "perspective/dataModel", name: "Explore"},
+  //   "additionalStates": [
+  //     {state: "perspective/dataModelOverview", name: "Overview"}
+  //   ],
+  //   "image": "datamodels.jpg",
+  //   "icon": "fa-sitemap",
+  //   "color": "LightSkyBlue",
+  //   "root": ":DiscoveryCommonDataModel"
+  // };
 
   valueSets: Perspective = {
     "caption": "Value Sets",
@@ -103,7 +117,6 @@ export class Perspectives  {
       this.dataSets,
       this.maps,
       this.search,
-      this.dataModel,
     ];
 
     this.perspectivesMap = new Map();

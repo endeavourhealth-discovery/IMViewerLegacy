@@ -1,11 +1,11 @@
 <as-split direction="horizontal">
   <!-- LEFT -->
-  <as-split-area size="30" style="height: calc(100vh - 73px);">
+  <as-split-area size="25" style="height: calc(100vh - 73px);">
     <app-side-nav [root]="perspective.root" [relationships]="relationships" [concept]="concept" [children]="children" [parents]="parents" [selectedIri]="selectedIri"></app-side-nav>
   </as-split-area>
 
-  <!-- RIGHT -->
-  <as-split-area size="70">
+  <!-- Middle -->
+  <as-split-area size="50">
     <div class="as-split-area-content">
 
       <mat-card *ngIf="concept != null">
@@ -26,4 +26,99 @@
 
     </div>
   </as-split-area>
+
+  <as-split-area size="25">
+    <div class="as-split-area-content">
+      <mat-card *ngIf="concept != null && perspective != null">
+        <mat-card-header>
+          <div mat-card-avatar>
+            <span class="fad fa-fw fa-2x {{summaryPerspective.icon}}" [style.color]="summaryPerspective.color"></span>
+          </div>
+          <mat-card-title [style.color]="summaryPerspective.color">{{summaryConcept.name + ' - Summary'}}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="full-page-card" style="height: 100%; min-height: calc(100vh - 164px);">
+
+          <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
+
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="40">
+              <mat-label>Name:</mat-label>
+              <input dense matInput [value]="summaryConcept.name" disabled>
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+              <mat-label>Iri:</mat-label>
+              <input disabled matInput [value]="summaryConcept.iri">
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+              <mat-label>Namespace:</mat-label>
+              <input disabled matInput [value]="summaryConcept.iri">
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="40">
+              <mat-label>Code:</mat-label>
+              <input disabled matInput [value]="summaryConcept.code">
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+              <mat-label>Scheme:</mat-label>
+              <input disabled matInput [value]="summaryConcept.scheme?.name">
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+              <mat-label>Status:</mat-label>
+              <input disabled matInput [value]="summaryConcept.status?.toString()">
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="100">
+              <mat-label>Description:</mat-label>
+              <textarea disabled matInput [value]="summaryConcept.description" rows="10"></textarea>
+            </mat-form-field>
+
+            <app-concept-definition [concept]="summaryConcept" fxFlex="100"></app-concept-definition>
+
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="100">
+              <mat-label>Parents:</mat-label>
+              <mat-wrapper>
+                <mat-nav-list dense>
+                  <a mat-list-item (click)="selectNode(parent.iri)" *ngFor="let parent of parents" style="height:15px;"> - {{ parent.name }} </a>
+               </mat-nav-list>
+              </mat-wrapper>
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="100">
+              <mat-label>Children:</mat-label>
+              <mat-wrapper>
+                <mat-nav-list dense>
+                  <a mat-list-item (click)="selectNode(child.iri)" *ngFor="let child of children" style="height:15px;"> - {{ child.name }} </a>
+               </mat-nav-list>
+              </mat-wrapper>
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="100">
+              <mat-label>Used in:</mat-label>
+              <mat-wrapper>
+                <mat-nav-list dense>
+                  <a mat-list-item (click)="selectNode(usage.iri)" *ngFor="let usage of usages" style="height:15px;"> - {{ usage.name }} </a>
+               </mat-nav-list>
+              </mat-wrapper>
+            </mat-form-field>
+
+            <!-- <mat-form-field floatLabel="always" appearance="outline" fxFlex="100">
+              <mat-label>Mapped from/to:</mat-label>
+              <mat-wrapper>
+                <mat-nav-list dense>
+                  <a mat-list-item (click)="selectNode(mapped.iri)" *ngFor="let mapped of mappedFrom" style="height:15px;"> - {{ mapped.name }} </a>
+                  <a mat-list-item (click)="selectNode(mapped.iri)" *ngFor="let mapped of mappedTo" style="height:15px;"> - {{ mapped.name }} </a>
+               </mat-nav-list>
+              </mat-wrapper>
+            </mat-form-field> -->
+
+          </div>
+
+        </mat-card-content>
+    </mat-card>
+    </div>
+  </as-split-area>
+
 </as-split>

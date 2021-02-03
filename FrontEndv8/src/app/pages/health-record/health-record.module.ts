@@ -1,3 +1,4 @@
+import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { ConceptService } from '../../services/concept.service';
 import { ComponentsModule } from '../../components/components.module';
 import { NgModule } from '@angular/core';
@@ -24,6 +25,7 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {HealthRecordNavigatorService} from '../../components/health-record-navigator/health-record-navigator.service';
 import {MatMenuModule} from '@angular/material/menu';
 import {HealthRecordRoutingModule} from './health-record-routing.module';
+import {MonacoEditorModule} from 'ngx-monaco-editor';
 
 @NgModule({
   imports: [
@@ -49,7 +51,9 @@ import {HealthRecordRoutingModule} from './health-record-routing.module';
     MatAutocompleteModule,
     ReactiveFormsModule,
     MatMenuModule,
-    HealthRecordRoutingModule
+    HealthRecordRoutingModule,
+    MonacoEditorModule,
+    NgJsonEditorModule
   ],
   providers: [
     { provide: HealthRecordNavigatorService, useClass: ConceptService }

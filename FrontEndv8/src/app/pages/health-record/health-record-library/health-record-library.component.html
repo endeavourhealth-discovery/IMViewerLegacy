@@ -4,18 +4,15 @@
   [children]="children"
   [parents]="parents"
   [selectedIri]="selectedIri"
-  [perspective]="perspectives.healthRecord">
+  [perspective]="perspective">
 
   <!-- Dashboard container-->
   <mat-card-content class="full-page-card">
-    <mat-drawer-container class="example-container" hasBackdrop="true" style="height: calc(100%);overflow:hidden;">
-
-      <!-- SideBar -->
-      <summary-drawer [concept]="hoveredConcept"></summary-drawer>
+    <div class="example-container" hasBackdrop="true" style="height: calc(100%);overflow:hidden;">
 
       <!-- Dashboard content-->
       <mat-tab-group style="width: 100%; height: calc(100vh - 150px);" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">
-        <mat-tab label="Inheritance">
+        <mat-tab label="Inheritance" *ngIf="perspective.root == ':DiscoveryCommonDataModel'">
           <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">account_tree</mat-icon>
             Inheritance
@@ -24,7 +21,7 @@
             <app-health-record-navigator [conceptIri]="selectedIri" [concept]="concept"></app-health-record-navigator>
           </ng-template>
         </mat-tab>
-        <mat-tab label="Properties">
+        <mat-tab label="Properties" *ngIf="perspective.root == ':DiscoveryCommonDataModel'">
           <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">view_module</mat-icon>
             Properties
@@ -33,34 +30,49 @@
             <health-record-tabular-view [concept]="concept" [children]="children" [parents]="parents"></health-record-tabular-view>
           </ng-template>
         </mat-tab>
-        <mat-tab label="Textual">
+
+        <mat-tab label="Members" *ngIf="perspective.root == ':VSET_ValueSet'">
           <ng-template mat-tab-label>
-            <mat-icon class="example-tab-icon">view_module</mat-icon>
-            Textual
+            <mat-icon class="example-tab-icon">edit</mat-icon>
+            Members
           </ng-template>
           <ng-template matTabContent>
-            <pre>test</pre>
+            <app-view-members [concept]="concept" [children]="children" [parents]="parents"></app-view-members>
           </ng-template>
         </mat-tab>
-        <mat-tab label="Schema">
+
+        <mat-tab label="Mapped From/To" *ngIf="perspective.root == ':SemanticConcept'">
           <ng-template mat-tab-label>
-            <mat-icon class="example-tab-icon">view_module</mat-icon>
-            Schema
+            <mat-icon class="example-tab-icon">edit</mat-icon>
+            Members
+          </ng-template>
+          <ng-template matTabContent>
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="100">
+              <mat-label>Mapped from/to:</mat-label>
+              <mat-wrapper>
+                <mat-nav-list dense>
+                  <a mat-list-item style="height:15px;"> - test </a>
+                  <!-- <a mat-list-item (click)="selectNode(mapped.iri)" *ngFor="let mapped of mappedFrom" style="height:15px;"> - {{ mapped.name }} </a>
+                  <a mat-list-item (click)="selectNode(mapped.iri)" *ngFor="let mapped of mappedTo" style="height:15px;"> - {{ mapped.name }} </a> -->
+               </mat-nav-list>
+              </mat-wrapper>
+            </mat-form-field>
           </ng-template>
         </mat-tab>
-        <mat-tab label="Schema">
+
+
+
+        <mat-tab label="Edit Concept">
           <ng-template mat-tab-label>
-            <mat-icon class="example-tab-icon">view_module</mat-icon>
-            API
+            <mat-icon class="example-tab-icon">edit</mat-icon>
+            Edit Concept
+          </ng-template>
+          <ng-template matTabContent>
+            <app-edit-concept [concept]="concept"></app-edit-concept>
           </ng-template>
         </mat-tab>
-        <mat-tab label="Examples">
-          <ng-template mat-tab-label>
-            <mat-icon class="example-tab-icon">view_module</mat-icon>
-            Examples
-          </ng-template>
-        </mat-tab>
+
       </mat-tab-group>
-    </mat-drawer-container>
+    </div>
   </mat-card-content>
 </app-library-component>

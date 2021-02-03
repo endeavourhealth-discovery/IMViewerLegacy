@@ -86,6 +86,14 @@ export class ConceptService implements HealthRecordNavigatorService {
     return this.http.get<Array<ConceptReference>>(environment.api + 'api/concept/' + iri + '/usages');
   }
 
+  findMappedFrom(iri: string): Observable<Array<ConceptReference>> {
+    return this.http.get<Array<ConceptReference>>(environment.api + 'api/concept/' + iri + '/mappedFrom');
+  }
+
+  findMappedTo(iri: string): Observable<Array<ConceptReference>> {
+    return this.http.get<Array<ConceptReference>>(environment.api + 'api/concept/' + iri + '/mappedTo');
+  }
+
   isOfType(iri: string, candidates: string[]): Observable<Array<ConceptReference>> {
     return this.http.post<Array<ConceptReference>>(environment.api + 'api/concept/' + iri + '/isWhichType', candidates);
   }
