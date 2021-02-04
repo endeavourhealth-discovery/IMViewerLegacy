@@ -1,16 +1,16 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { NgEventBus } from 'ng-event-bus';
-import { fromEvent, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs/operators';
-import { ConceptStatus } from 'src/app/models/objectmodel/ConceptStatus';
-import { CodeSchemes, codeSchemesProvider } from 'src/app/models/search/CodeScheme';
+import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
+import {NgEventBus} from 'ng-event-bus';
+import {fromEvent, Subscription} from 'rxjs';
+import {debounceTime, distinctUntilChanged, filter, map, tap} from 'rxjs/operators';
+import {ConceptStatus} from 'src/app/models/objectmodel/ConceptStatus';
+import {CodeSchemes, codeSchemesProvider} from 'src/app/models/search/CodeScheme';
 import * as searchEvents from 'src/app/models/search/SearchEvents';
-import { SearchRequest } from 'src/app/models/search/SearchRequest';
-import { SearchResponse } from 'src/app/models/search/SearchResponse';
-import { SortBy } from 'src/app/models/search/SortBy';
-import { Perspectives } from 'src/app/services/perspective.service';
-import { ConceptService } from '../../services/concept.service';
-import { LoggerService } from '../../services/logger.service';
+import {SearchRequest} from 'src/app/models/search/SearchRequest';
+import {SearchResponse} from 'src/app/models/search/SearchResponse';
+import {SortBy} from 'src/app/models/search/SortBy';
+import {Perspectives} from 'src/app/services/perspective.service';
+import {ConceptService} from '../../services/concept.service';
+import {LoggerService} from '../../services/logger.service';
 
 @Component({
   selector: 'app-concept-search',
@@ -20,18 +20,18 @@ import { LoggerService } from '../../services/logger.service';
 })
 export class ConceptSearchComponent implements AfterViewInit {
   @ViewChild('conceptSearchInput', {static: true}) conceptSearchInput: ElementRef;
-  
+
   private searchRequest: Subscription;
   private searchQuery: SearchRequest;
 
-  constructor(private service: ConceptService, private log: LoggerService, private perspectiveService: Perspectives, private codeSchemes: CodeSchemes, private eventBus: NgEventBus) { 
+  constructor(private service: ConceptService, private log: LoggerService, private perspectiveService: Perspectives, private codeSchemes: CodeSchemes, private eventBus: NgEventBus) {
     this.searchRequest = null;
     this.searchQuery = this.initSearchQuery();
-    
+
     this.eventBus.on(searchEvents.CONCEPT_SEARCH_FILTER_CHANGE_EVENT).subscribe((searchQuery: SearchRequest) => {
       this.searchQuery = searchQuery;
       this.search();
-    }); 
+    });
   }
 
   ngAfterViewInit() {
@@ -61,7 +61,7 @@ export class ConceptSearchComponent implements AfterViewInit {
     if (searchRequest) {
       searchRequest.unsubscribe();
       searchRequest = null;
-    }     
+    }
   }
 
   private doSearch() {
@@ -72,8 +72,8 @@ export class ConceptSearchComponent implements AfterViewInit {
           searchResponse.request = this.searchQuery;
           this.broadcastSearchResults(searchResponse);
         },
-        (error) => { 
-          this.log.error(error) 
+        (error) => {
+          this.log.error(error)
         }
       );
   }
@@ -92,7 +92,7 @@ export class ConceptSearchComponent implements AfterViewInit {
     // we want know which (if any) of these types our search results inherit from
     searchRequest.types = this.perspectiveService.getAllRootIris();
 
-    searchRequest.statuses = [ConceptStatus.Active];
+    searchRequest.statuses = [ConceptStatus.Active, ConceptStatus.Draft];
 
     searchRequest.sortBy = SortBy.Usage;
 
