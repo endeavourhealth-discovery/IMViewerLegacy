@@ -282,6 +282,7 @@ mat-tree-node {
 .mat-tree-node {
   min-height: 1.4em !important;
   height: 1.4em;
+  white-space: nowrap;
 }
 
 .mat-expansion-panel-header {
