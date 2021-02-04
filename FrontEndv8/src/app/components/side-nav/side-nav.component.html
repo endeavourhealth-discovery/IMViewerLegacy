@@ -1,36 +1,43 @@
 <div class="as-split-area-content">
-  <app-concept-search [root]="root" [relationships]="relationships">
-  </app-concept-search>
+  <app-concept-search></app-concept-search>
   <div class="as-split-area-content" style="height: 100%">
-    <mat-tab-group mat-stretch-tabs class="example-stretched-tabs" style="height: 100%">
-      <mat-tab label="Browse">
+    <mat-tab-group mat-stretch-tabs class="example-stretched-tabs" style="height: 100%" #tabs>
+
+
+      <mat-tab label="Tree">
+        <ng-template mat-tab-label>
+          <mat-icon class="example-tab-icon">account_tree</mat-icon>
+          Tree
+        </ng-template>
+        <app-concept-hierarchy-view [root]="root" [concept]="concept" [children]="children" [parents]="parents"></app-concept-hierarchy-view>
+      </mat-tab>
+
+      <!-- <mat-tab label="Quick Access">
         <ng-template mat-tab-label>
           <mat-icon class="example-tab-icon">navigation</mat-icon>
-          Browse
+          Quick Access
         </ng-template>
-        <ng-template matTabContent style="height: 100%">
-          <div style="height: 100%">
-            <button mat-icon-button color="primary" style="float:right" (click)="openDialog()">
-              <mat-icon>add</mat-icon>
-            </button>
-            <app-concept-hierarchy-view [root]="root" [concept]="concept" [children]="children" [parents]="parents">
-            </app-concept-hierarchy-view>
-          </div>
-        </ng-template>
-      </mat-tab>
+        <app-quick-access></app-quick-access>
+      </mat-tab> -->
+
       <mat-tab label="History">
         <ng-template mat-tab-label>
           <mat-icon class="example-tab-icon">history</mat-icon>
           History
         </ng-template>
-
         <mat-selection-list dense multiple="false">
           <mat-list-option *ngFor="let item of history" [value]="item" (click)="goto(item.concept.iri)">
             <mat-icon mat-list-icon>launch</mat-icon>
             <div mat-line>{{item.concept.name}}</div>
           </mat-list-option>
         </mat-selection-list>
-
+      </mat-tab>
+      <mat-tab label="Search Results">
+        <ng-template mat-tab-label>
+          <mat-icon class="example-tab-icon">search</mat-icon>
+          Search Results
+        </ng-template>
+        <app-concept-search-result></app-concept-search-result>
       </mat-tab>
     </mat-tab-group>
   </div>

@@ -1,11 +1,8 @@
 <mat-form-field appearance="outline" style="width: 100%">
   <mat-label>Search</mat-label>
   <mat-icon matPrefix style="cursor: pointer">search</mat-icon>
-  <input matInput placeholder="Search" id="searchInput" #searchInput [matAutocomplete]="auto" (focus)="searchInput.select()">
-  <mat-spinner *ngIf="searchCall" matSuffix diameter="20"></mat-spinner>
-  <mat-autocomplete #auto="matAutocomplete" panelWidth="auto" [displayWith]="displayFn" (optionSelected)="selectResult($event.option.value)">
-    <mat-option *ngFor="let option of results" [value]="option">
-      {{option.name}}
-    </mat-option>
-  </mat-autocomplete>
+  <input matInput 
+         placeholder="Search" 
+         id="conceptSearchInput"
+         #conceptSearchInput>
 </mat-form-field>

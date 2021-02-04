@@ -20,7 +20,7 @@ body {
 }
 
 .perspective_img_1 {
-  content: url('assets/gry-datamodels.jpg');
+  content: url('assets/gry-healthrecords.jpg');
 }
 
 .perspective_img_2 {
@@ -81,7 +81,7 @@ $teal-theme: mat-light-theme($teal-primary, $teal-accent, $teal-warn);
   }
 
   .perspective_img_1 {
-    content: url('assets/clr-datamodels.jpg');
+    content: url('assets/clr-healthrecords.jpg');
   }
 
   .perspective_img_2 {
@@ -143,7 +143,7 @@ $xmas-red: #E1384A;
     background-color: lighten($xmas-green, 20);
   }
 
-  .mat-drawer-container {
+  .example-container {
     background-color: lighten($xmas-red, 20);
   }
 
@@ -176,7 +176,7 @@ $xmas-red: #E1384A;
   }
 
   .perspective_img_1 {
-    content: url('assets/xms-datamodels.jpg');
+    content: url('assets/xms-healthrecords.jpg');
   }
 
   .perspective_img_2 {
@@ -277,6 +277,11 @@ mat-toolbar.mat-toolbar mat-form-field.mat-form-field {
 
 mat-tree-node {
   min-height: 1em !important;
+}
+
+.mat-tree-node {
+  min-height: 1.4em !important;
+  height: 1.4em;
 }
 
 .mat-expansion-panel-header {
@@ -490,4 +495,28 @@ app-concept-search {
   top: 14px;
   left: calc(100% / 2);
   transform: translateX(-50%);
+}
+
+.concept-tree-invisible {
+  display: none;
+}
+
+.concept-tree ul,
+.concept-tree li {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none;
+}
+
+.concept-tree ul {
+  padding-inline-start: 10px;
+}
+
+.clickable {
+  cursor: pointer;
+  :hover {
+    text-decoration: underline !important;
+    fill: mat-color($primary, text);
+    color: mat-color($accent, text) !important;
+  }
 }

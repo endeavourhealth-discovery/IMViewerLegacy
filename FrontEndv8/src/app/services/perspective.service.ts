@@ -1,12 +1,11 @@
-import {Injectable} from '@angular/core';
-import {Perspective} from '../models/Perspective';
+import { Injectable } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
+import { Perspective } from '../models/Perspective';
+import { ConceptService } from './concept.service';
+import { LoggerService } from './logger.service';
 
 @Injectable()
 export class Perspectives  {
-  constructor() {
-  }
-
-  current: Perspective;
 
   ontology: Perspective = {
     "caption": "Semantic Ontology",
@@ -19,19 +18,47 @@ export class Perspectives  {
     "root": ":SemanticConcept",
   };
 
-  dataModel: Perspective = {
+  healthRecord: Perspective = {
     "caption": "Data Models",
-    "subtitle": "Data model definition explorer",
-    "description": "The data model is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but he data model, being created for a specific business of healthcare is separate to the ontology",
-    "primary": {state: "perspective/dataModel", name: "Explore"},
+    "subtitle": "Data model definition",
+    "description": "The data model is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but the data model, being created for a specific business of healthcare is separate to the ontology",
+    "primary": {state: "perspective/healthRecord", name: "Explore"},
     "additionalStates": [
-      {state: "perspective/dataModelOverview", name: "Overview"}
+      {state: "perspective/healthRecordOverview", name: "Overview"}
     ],
     "image": "datamodels.jpg",
     "icon": "fa-sitemap",
     "color": "limegreen",
     "root": ":DiscoveryCommonDataModel"
   };
+
+  // healthRecord: Perspective = {
+  //   "caption": "Health Records",
+  //   "subtitle": "Health Record definition explorer",
+  //   "description": "The health record is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but the health record, being created for a specific business of healthcare is separate to the ontology",
+  //   "primary": {state: "perspective/healthRecord", name: "Explore"},
+  //   "additionalStates": [
+  //     {state: "perspective/healthRecordOverview", name: "Overview"}
+  //   ],
+  //   "image": "healthrecords.jpg",
+  //   "icon": "book",
+  //   "color": "limegreen",
+  //   "root": ":HealthRecord"
+  // };
+
+  // dataModel: Perspective = {
+  //   "caption": "Data Models",
+  //   "subtitle": "Data model definition",
+  //   "description": "The data model is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but the data model, being created for a specific business of healthcare is separate to the ontology",
+  //   "primary": {state: "perspective/dataModel", name: "Explore"},
+  //   "additionalStates": [
+  //     {state: "perspective/dataModelOverview", name: "Overview"}
+  //   ],
+  //   "image": "datamodels.jpg",
+  //   "icon": "fa-sitemap",
+  //   "color": "LightSkyBlue",
+  //   "root": ":DiscoveryCommonDataModel"
+  // };
 
   valueSets: Perspective = {
     "caption": "Value Sets",
@@ -77,12 +104,61 @@ export class Perspectives  {
     "root": null
   };
 
-  perspectives: Perspective[] = [
-    this.ontology,
-    this.dataModel,
-    this.valueSets,
-    this.dataSets,
-    this.maps,
-    this.search,
-  ];
+  perspectives: Perspective[];
+  perspectivesMap: Map<string, Perspective>;
+
+  current: Perspective;
+
+  constructor(private conceptService: ConceptService, private log: LoggerService) {
+    this.perspectives = [
+      this.ontology,
+      this.healthRecord,
+      this.valueSets,
+      this.dataSets,
+      this.maps,
+      this.search,
+    ];
+
+    this.perspectivesMap = new Map();
+    this.perspectives.forEach(perspective => this.perspectivesMap.set(perspective.root, perspective));
+  }
+
+  getPerspective(iri: string): Observable<Perspective> {
+    let perspectiveObservable: Subject<Perspective> = new Subject();
+
+    this.conceptService.isOfType(iri, Array.from(this.perspectivesMap.keys())).subscribe(
+        (result) => {
+            if (result.length == 1) {
+                console.log(`Got perspecive ${result[0].iri} for ${iri}`);
+                perspectiveObservable.next(this.perspectivesMap.get(result[0].iri));
+            }
+            else if (result.length > 1) {
+                const errorMessage = `warn - found multiple perspectives for concept ${iri}. Falling back on default`;
+                this.log.debug(errorMessage);
+                perspectiveObservable.error(errorMessage);
+            }
+            else {
+                const errorMessage = `warn - could not find perspective for concept ${iri}. Falling back on default`;
+                this.log.debug(errorMessage);
+                perspectiveObservable.error(errorMessage);
+            }
+        },
+        (error) => {
+            this.log.error(error)
+            perspectiveObservable.error("Problem retreiving perspective for concept (iri:" + iri + "). Cause: " + error);
+        }
+    )
+
+    return perspectiveObservable;
+  }
+
+  getAllRootIris(): string[] {
+    return this.perspectives.map(perspective => {return perspective.root} );
+  }
+
+  getPerspectiveByRoot(rootIri: string): Perspective {
+    const perspective: Perspective = this.perspectivesMap.get(rootIri);
+
+    return perspective;
+  }
 }

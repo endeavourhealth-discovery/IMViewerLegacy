@@ -1,3 +1,4 @@
+import { Perspective } from 'src/app/models/Perspective';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -5,7 +6,6 @@ import { NgEventBus } from 'ng-event-bus';
 import { forkJoin, Observable, ReplaySubject, Subject } from 'rxjs';
 import { ConceptTreeController, ConceptTreeSelection } from '../../../common/ConceptTreeController';
 import { ConceptView, HistoryItem } from '../../../common/ConceptView';
-import { SummaryDrawerComponent } from '../../../components/summary-drawer/summary-drawer.component';
 import { Concept } from '../../../models/objectmodel/Concept';
 import { ConceptReference } from '../../../models/objectmodel/ConceptReference';
 import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferenceNode';
@@ -25,21 +25,20 @@ export class ValueSetLibraryComponent implements OnInit {
   concept: Concept;
   parents: Array<ConceptReferenceNode>;
   children: Array<ConceptReferenceNode>;
-
+  mappedFrom: Array<ConceptReference>;
+  mappedTo: Array<ConceptReference>;
+  perspective: Perspective;
   selectedConcept: Concept;
   treeController: ConceptTreeController;
   conceptView: ConceptView;
-
   relationships = ['sn:116680003'];
-
   history = [];
-
-
-  @ViewChild(SummaryDrawerComponent, { static: true }) summaryDrawer: SummaryDrawerComponent;
+  busy = false;
 
   constructor(private service: ConceptService,
               private valueSetService: ValueSetService,
               public perspectives: Perspectives,
+              private perspectiveService: Perspectives,
               private router: Router,
               private route: ActivatedRoute,
               private log: LoggerService,
@@ -53,7 +52,7 @@ export class ValueSetLibraryComponent implements OnInit {
     this.treeController = new ConceptTreeController(service, log, eventBus);
     eventBus.on(ConceptTreeController.NODE_SELECTED_EVENT).subscribe((selectionEvent: ConceptTreeSelection) => {
       this.showSummaryDrawer(selectionEvent.iri);
-    });    
+    });
   }
 
   ngOnInit() {
@@ -62,7 +61,7 @@ export class ValueSetLibraryComponent implements OnInit {
 
   get selectedIri() {
     return this.concept.iri;
-  }  
+  }
 
   get showTree() {
     return this.treeController.isViewable;
@@ -75,7 +74,21 @@ export class ValueSetLibraryComponent implements OnInit {
         this.concept = conceptAggregate.concept;
         this.children = conceptAggregate.children;
         this.parents = conceptAggregate.parents;
-        
+        this.perspectiveService.getPerspective(this.selectedIri).subscribe(
+          (result) => this.perspective = result,
+          (error) => this.log.error(error)
+        );
+
+        this.service.findMappedFrom(this.selectedIri).subscribe(
+          (result) => this.mappedFrom = result,
+          (error) => this.log.error(error)
+        );
+
+        this.service.findMappedTo(this.selectedIri).subscribe(
+          (result) => this.mappedTo = result,
+          (error) => this.log.error(error)
+        );
+
         let valueSet: ValueSet = this.valueSetService.toValueSet(this.concept);
         this.initTree(valueSet);
       }
@@ -94,74 +107,66 @@ export class ValueSetLibraryComponent implements OnInit {
 
   private onError(error: any): void {
     this.log.error(error);
-  } 
+  }
+
+  selectNode(iri: string):void {
+    this.eventBus.cast('app:conceptSelect', iri);
+  }
 
   private showSummaryDrawer(iri: string) {
     const root = this;
     if (iri != null) {
       this.service.getConcept(iri).subscribe(
         (concept) => {
-          this.selectedConcept = concept,
-          this.summaryDrawer.open();
+          this.selectedConcept = concept
         },
         (error) => this.onError(error)
       );
     }
   }
-  
-  private initTree(valueSet: ValueSet) {
-      // need to build up the children
-      forkJoin([this.initNode("included", valueSet.included), this.initNode("excluded", valueSet.excluded)]).subscribe(
-        ([included, excluded]) => {
 
+  private initTree(valueSet: ValueSet) {
+    this.busy = true;
+      // need to build up the children
+      forkJoin([this.initNode("Included", valueSet.included), this.initNode("Excluded", valueSet.excluded)]).subscribe(
+        ([included, excluded]) => {
+          this.busy = false;
           let tree: ConceptReferenceNode = this.toConceptReferenceNode(this.concept.iri, this.concept.name, [included, excluded]);
-          this.treeController.setDataAndSelectedNode(tree, included);       
+          this.treeController.setDataAndSelectedNode(tree, included);
         },
-      (error) => { 
-        this.log.error(error); 
+      (error) => {
+        this.busy = false;
+        this.log.error(error);
       }
     );
   }
 
-  private getChildren(parents: ConceptReferenceNode[]): Observable<ConceptReferenceNode[][]> {
-    const getGrandChildrenRequests: Observable<ConceptReferenceNode[]>[] = parents.map(parent => { 
-      return this.service.getConceptChildren(parent.iri) 
-    });
-
-    return forkJoin(getGrandChildrenRequests);
-  }
-
-  private initNode(name: string, childRefs: ConceptReference[] = []): Observable<ConceptReferenceNode> {
+  private initNode(name: string, members: ConceptReference[] = []): Observable<ConceptReferenceNode> {
     let nodeObservable: Subject<ConceptReferenceNode> = new ReplaySubject();
-    
+
     let node: ConceptReferenceNode = this.toConceptReferenceNode("app-value-set-library-" + name, name);
-    
-    if(childRefs != null && childRefs.length > 0) {    
-      let childNodes: ConceptReferenceNode[] = childRefs.map(child => this.toConceptReferenceNode(child.iri, child.name));
-      node.children = childNodes;
+
+    if(members != null && members.length > 0) {
+      let memberNodes: ConceptReferenceNode[] = members.map(child => this.toConceptReferenceNode(child.iri, child.name));
+      node.children = memberNodes;
       node.hasChildren = true;
-
-      this.getChildren(childNodes).subscribe(
-        success => {
-          let index: number = 0;
-
-          success.forEach(response => {
-            childNodes[index++].hasChildren = response.length > 0;
-          })
-
-          nodeObservable.next(node);
-          nodeObservable.complete();
-        },
-        error => { 
-          this.log.error(error); 
-        }
-      );
+      this.service.getConceptsHaveChildren(memberNodes.map(m => m.iri), false)
+        .subscribe(
+          (result) => {
+            memberNodes
+              .filter(m => result.includes(m.iri))
+              .forEach(m => m.hasChildren = true);
+            nodeObservable.next(node);
+            nodeObservable.complete();
+          },
+          (error) => this.log.error(error)
+        );
     }
     else {
       nodeObservable.next(node);
       nodeObservable.complete();
     }
-  
+
     return nodeObservable;
   }
 
@@ -173,6 +178,33 @@ export class ValueSetLibraryComponent implements OnInit {
     node.children = children;
 
     return node;
+  }
+
+  download(type: string, expanded: boolean) {
+    this.busy = true;
+    const filename = this.concept.name + (expanded ? '_expanded' : '') + ('text/csv' === type ? '.csv' : '.json');
+
+    this.service.downloadValuesetMembers(this.concept.iri, expanded, type)
+      .subscribe(
+        (response) => this.downloadFile(response, filename, type),
+        (error) => {
+          this.busy = false;
+          this.log.error(error);
+        }
+      );
+  }
+
+  downloadFile(data: any, filename: string, type: string) {
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.style.display = 'none';
+    const blob = new Blob([data], {type: type});
+    const url = window.URL.createObjectURL(blob);
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    this.busy = false;
   }
 }
 

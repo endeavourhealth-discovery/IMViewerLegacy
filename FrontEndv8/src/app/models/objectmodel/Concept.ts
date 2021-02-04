@@ -5,6 +5,7 @@ import { ConceptType } from './ConceptType';
 import { ClassExpression } from './ClassExpression';
 import { ConceptReference } from './ConceptReference';
 import { IMEntity } from './IMEntity';
+import {PropertyConstraint} from './PropertyConstraint';
 export class Concept implements IMAnnotated {
   dbid: number;
   iri: string;
@@ -21,6 +22,7 @@ export class Concept implements IMAnnotated {
   EquivalentTo: Set<ClassExpression>;
   Expression: ClassExpression;
   DisjointWith: Array<ConceptReference>;
+  Property: Set<PropertyConstraint>;
 
   getAnnotations(): Set<Annotation> {
     throw new Error('Method not implemented.');

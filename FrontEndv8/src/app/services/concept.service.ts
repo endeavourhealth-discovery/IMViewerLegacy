@@ -1,13 +1,14 @@
 import { ConceptReferenceNode } from '../models/objectmodel/ConceptReferenceNode';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import { Observable, Subject, zip } from 'rxjs';
 import { Concept } from '../models/objectmodel/Concept';
 import { environment } from '../../environments/environment';
 import {ConceptReference} from '../models/objectmodel/ConceptReference';
-import {DataModelNavigatorService} from '../components/data-model-navigator/data-model-navigator.service';
+import {HealthRecordNavigatorService} from '../components/health-record-navigator/health-record-navigator.service';
 import {SearchRequest} from '../models/search/SearchRequest';
 import {SearchResponse} from '../models/search/SearchResponse';
+import {Option} from '@angular/cli/models/interface';
 
 export interface ConceptAggregate {
   concept: Concept;
@@ -18,7 +19,7 @@ export interface ConceptAggregate {
 @Injectable({
   providedIn: 'root'
 })
-export class ConceptService implements DataModelNavigatorService {
+export class ConceptService implements HealthRecordNavigatorService {
 
   constructor(private http: HttpClient) { }
 
@@ -43,8 +44,34 @@ export class ConceptService implements DataModelNavigatorService {
     return this.http.get<Concept>(environment.api + 'api/concept/' + iri);
   }
 
+  getConceptImLang(iri: string): Observable<any> {
+    const requestOptions: Object = {
+      headers: {
+        accept: 'application/imlang'
+      },
+      responseType: 'text'
+    }
+    return this.http.get<any>(environment.api + 'api/concept/' + iri, requestOptions);
+  }
+
+  getConceptHasChildren(iri: string, includeLegacy: boolean = false): Observable<Boolean> {
+    let params = new HttpParams();
+    params = params.append('includeLegacy', includeLegacy.toString());
+    return this.http.get<Boolean>(environment.api + 'api/concept/' + iri + '/hasChildren', {params});
+  }
+
+  getConceptsHaveChildren(iris: string[], includeLegacy: boolean = false): Observable<string[]> {
+    let params = new HttpParams();
+    params = params.append('includeLegacy', includeLegacy.toString());
+    return this.http.post<string[]>(environment.api + 'api/concept/haveChildren', iris, {params});
+  }
+
   getConceptChildren(iri: string): Observable<Array<ConceptReferenceNode>> {
     return this.http.get<Array<ConceptReferenceNode>>(environment.api + 'api/concept/' + iri + '/children');
+  }
+
+  getConceptParentHierarchy(iri: string): Observable<Array<ConceptReferenceNode>> {
+    return this.http.get<Array<ConceptReferenceNode>>(environment.api + 'api/concept/' + iri + '/parentHierarchy');
   }
 
   getConceptParents(iri: string): Observable<Array<ConceptReferenceNode>> {
@@ -57,6 +84,14 @@ export class ConceptService implements DataModelNavigatorService {
 
   findUsages(iri: string): Observable<Array<ConceptReference>> {
     return this.http.get<Array<ConceptReference>>(environment.api + 'api/concept/' + iri + '/usages');
+  }
+
+  findMappedFrom(iri: string): Observable<Array<ConceptReference>> {
+    return this.http.get<Array<ConceptReference>>(environment.api + 'api/concept/' + iri + '/mappedFrom');
+  }
+
+  findMappedTo(iri: string): Observable<Array<ConceptReference>> {
+    return this.http.get<Array<ConceptReference>>(environment.api + 'api/concept/' + iri + '/mappedTo');
   }
 
   isOfType(iri: string, candidates: string[]): Observable<Array<ConceptReference>> {
@@ -79,14 +114,14 @@ export class ConceptService implements DataModelNavigatorService {
     )
 
     return isAObservable;
-  } 
+  }
 
   getConceptAggregate(iri: string): Observable<ConceptAggregate> {
     let conceptAggregate: Subject<ConceptAggregate> = new Subject();
-    
-    zip(this.getConcept(iri), 
-        this.getConceptChildren(iri), 
-        this.getConceptParents(iri)).subscribe(([concept, children, parents]) => {
+
+    zip(this.getConcept(iri),
+        this.getConceptChildren(iri),
+        this.getConceptParentHierarchy(iri)).subscribe(([concept, children, parents]) => {
           conceptAggregate.next({
             concept: concept,
             children: children,
@@ -97,4 +132,14 @@ export class ConceptService implements DataModelNavigatorService {
 
     return conceptAggregate;
   }
+
+  downloadValuesetMembers(iri: string, expand: boolean = false, type: string = '*/*'): Observable<any> {
+    let headers: HttpHeaders = new HttpHeaders();
+    headers = headers.append('Accept', type);
+
+    let params: HttpParams = new HttpParams();
+    params = params.append('expanded', expand ? 'true' : 'false');
+    return this.http.get(environment.api + 'api/concept/' + iri + '/members', {headers, params, responseType: 'text'});
+  }
+
 }

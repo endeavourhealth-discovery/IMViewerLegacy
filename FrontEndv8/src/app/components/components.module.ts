@@ -1,45 +1,52 @@
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { AngularSplitModule } from 'angular-split';
-import { NgModule } from '@angular/core';
+import { NgJsonEditorModule } from 'ang-jsoneditor';
+import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { CommonModule } from '@angular/common';
-import { MatTreeModule } from '@angular/material/tree';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { ConceptSearchComponent } from './concept-search/concept-search.component';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
+import { NgModule } from '@angular/core';
 import { FlexModule } from '@angular/flex-layout';
-import { GraphNavigatorComponent } from './graph-navigator/graph-navigator.component';
-import { ResizeObserverDirective } from './resize-observer.directive';
-import { MatSelectModule } from '@angular/material/select';
-import { CardHeaderComponent } from './card-header/card-header.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { DataModelTabularViewComponent } from './data-model-tabular-view/data-model-tabular-view.component';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
-import { SideNavComponent } from './side-nav/side-nav.component';
-import { ConceptHierarchyViewComponent } from './concept-hierarchy-view/concept-hierarchy-view.component';
-import { FindConceptUsagesDialogComponent } from './find-concept-usages-dialog/find-concept-usages-dialog.component';
-import {MatDialogModule} from '@angular/material/dialog';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTreeModule } from '@angular/material/tree';
+import { AngularSplitModule } from 'angular-split';
+import { CookieService } from 'ngx-cookie-service';
+import { CardHeaderComponent } from './card-header/card-header.component';
 import { ConceptDefinitionComponent } from './concept-definition/concept-definition.component';
-import {DataModelNavigatorComponent} from './data-model-navigator/data-model-navigator.component';
+import { ConceptHierarchyViewComponent } from './concept-hierarchy-view/concept-hierarchy-view.component';
+import { ConceptSearchResultComponent } from './concept-search-result/concept-search-result.component';
+import { ConceptSearchComponent } from './concept-search/concept-search.component';
+import { FindConceptUsagesDialogComponent } from './find-concept-usages-dialog/find-concept-usages-dialog.component';
+import { GraphNavigatorComponent } from './graph-navigator/graph-navigator.component';
+import { HealthRecordNavigatorComponent } from './health-record-navigator/health-record-navigator.component';
+import { HealthRecordTabularViewComponent } from './health-record-tabular-view/health-record-tabular-view.component';
 import { LibraryComponentComponent } from './library-component/library-component.component';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatWrapperComponent} from './mat-wrapper/mat-wrapper.component';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {SnomedLicenseDialog} from './snomed-license-dialog/snomed-license-dialog.component';
-import { SummaryDrawerComponent } from './summary-drawer/summary-drawer.component';
-import {MatPaginatorModule} from '@angular/material/paginator';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {UserProfileDialog} from './user-profile-dialog/user-profile-dialog.component';
+import { MatWrapperComponent } from './mat-wrapper/mat-wrapper.component';
+import { QuickAccessComponent } from './quick-launch/quick-access.component';
+import { ResizeObserverDirective } from './resize-observer.directive';
+import { SideNavComponent } from './side-nav/side-nav.component';
+import { SnomedLicenseDialog } from './snomed-license-dialog/snomed-license-dialog.component';
+import { UserProfileDialog } from './user-profile-dialog/user-profile-dialog.component';
+import { EditConceptComponent } from './edit-concept/edit-concept.component';
+import { ViewMembersComponent } from './view-members/view-members.component';
 
 
 @NgModule({
@@ -71,42 +78,54 @@ import {UserProfileDialog} from './user-profile-dialog/user-profile-dialog.compo
     MatProgressSpinnerModule,
     MatPaginatorModule,
     MatAutocompleteModule,
+    MatDividerModule,
+    MonacoEditorModule,
+    NgJsonEditorModule
   ],
   declarations: [
     ConceptSearchComponent,
+    ConceptSearchResultComponent,
     GraphNavigatorComponent,
     ResizeObserverDirective,
     CardHeaderComponent,
-    DataModelTabularViewComponent,
+    HealthRecordTabularViewComponent,
     SideNavComponent,
     ConceptHierarchyViewComponent,
     FindConceptUsagesDialogComponent,
     ConceptDefinitionComponent,
-    DataModelNavigatorComponent,
+    HealthRecordNavigatorComponent,
     LibraryComponentComponent,
     MatWrapperComponent,
     SnomedLicenseDialog,
-    SummaryDrawerComponent,
     UserProfileDialog,
+    QuickAccessComponent,
+    EditConceptComponent,
+    ViewMembersComponent,
   ],
   exports: [
     ConceptSearchComponent,
+    ConceptSearchResultComponent,
     GraphNavigatorComponent,
     CardHeaderComponent,
-    DataModelTabularViewComponent,
+    HealthRecordTabularViewComponent,
     SideNavComponent,
     ConceptDefinitionComponent,
-    DataModelNavigatorComponent,
+    HealthRecordNavigatorComponent,
     LibraryComponentComponent,
     MatWrapperComponent,
     SnomedLicenseDialog,
-    SummaryDrawerComponent,
-    UserProfileDialog
+    UserProfileDialog,
+    QuickAccessComponent,
+    EditConceptComponent,
+    ViewMembersComponent,
   ],
   entryComponents: [
     FindConceptUsagesDialogComponent,
     SnomedLicenseDialog,
     UserProfileDialog
+  ],
+  providers: [
+    CookieService
   ]
 })
 export class ComponentsModule { }

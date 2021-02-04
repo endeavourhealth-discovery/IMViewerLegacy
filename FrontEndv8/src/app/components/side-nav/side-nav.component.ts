@@ -1,10 +1,11 @@
-import { ConceptReferenceNode } from '../../models/objectmodel/ConceptReferenceNode';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { MatTabGroup } from '@angular/material/tabs';
+import { NavigationEnd, Router } from '@angular/router';
 import { NgEventBus } from 'ng-event-bus';
-import { Concept} from '../../models/objectmodel/Concept';
-import { Router, NavigationEnd } from '@angular/router';
-import { ConceptService } from '../../services/concept.service';
-import {Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
-import {LoggerService} from '../../services/logger.service';
+import * as searchEvents from 'src/app/models/search/SearchEvents';
+import { Concept } from '../../models/objectmodel/Concept';
+import { ConceptReferenceNode } from '../../models/objectmodel/ConceptReferenceNode';
+import { LoggerService } from '../../services/logger.service';
 
 @Component({
   selector: 'app-side-nav',
@@ -18,18 +19,21 @@ export class SideNavComponent {
   @Input() root: string;
   @Input() relationships: string;
   @Input() selectedIri: string;
-  @ViewChild('searchComponent', {static: true}) searchComponent: ElementRef;
+  @ViewChild('tabs', {static: true}) tabGroup: MatTabGroup;
 
   @Output() openDialogEvent: EventEmitter<any> = new EventEmitter<any>();
 
   history = [];
-
+  searchResults: any[] = [];
+ 
   constructor(
-    private service: ConceptService,
     private router: Router,
     private log: LoggerService,
     private eventBus: NgEventBus) {
-    this.routeEvent(this.router);
+      this.routeEvent(this.router);
+      this.eventBus.on(searchEvents.SEARCH_RESULT_EVENT).subscribe(searchResponseEvent => {
+        this.showSearchResultsTab();
+      });    
   }
 
   routeEvent(router: Router) {
@@ -51,9 +55,18 @@ export class SideNavComponent {
     }
   }
 
-
   openDialog() {
     this.openDialogEvent.emit();
   }
 
+
+  private showSearchResultsTab() {
+    const searchResultsTabIndex: number = this.tabGroup._tabs.toArray().findIndex(tab => "Search Results" == tab.textLabel)
+    if(searchResultsTabIndex > -1) {
+      this.tabGroup.selectedIndex = searchResultsTabIndex;
+    }
+    else {
+      this.log.debug("Warning - unable to automatically move to search results tab");
+    }
+  }
 }

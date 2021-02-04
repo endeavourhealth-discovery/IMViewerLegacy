@@ -23,7 +23,7 @@ export class FindConceptUsagesDialogComponent implements OnInit {
       return dialogRef.afterClosed();
   }
 
-  candidates = [':VSET_ValueSet', ':DiscoveryCommonDataModel', ':dataModelObjectProperty'];
+  candidates = [':VSET_ValueSet', ':HealthRecord', ':healthRecordObjectProperty'];
   types: ConceptReference[]
   usages: any[];
 
@@ -75,9 +75,9 @@ export class FindConceptUsagesDialogComponent implements OnInit {
       case ':VSET_ValueSet':
         this.router.navigate([this.perspectives.valueSets.primary.state, iri]);
         break;
-      case ':DiscoveryCommonDataModel':
-      case ':dataModelObjectProperty':
-        this.router.navigate([this.perspectives.dataModel.primary.state, iri]);
+      case ':HealthRecord':
+      case ':healthRecordObjectProperty':
+        this.router.navigate([this.perspectives.healthRecord.primary.state, iri]);
         break;
       default:
         this.router.navigate([this.perspectives.ontology.primary.state, iri]);
@@ -89,9 +89,9 @@ export class FindConceptUsagesDialogComponent implements OnInit {
     switch (type) {
       case ':VSET_ValueSet':
         return this.perspectives.valueSets.color;
-      case ':DiscoveryCommonDataModel':
-      case ':dataModelObjectProperty':
-        return this.perspectives.dataModel.color;
+      case ':HealthRecord':
+      case ':healthRecordObjectProperty':
+        return this.perspectives.healthRecord.color;
       default:
         return this.perspectives.ontology.color;
     }

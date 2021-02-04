@@ -16,17 +16,17 @@ export class ConceptViewState {
 
     history: Subject<Array<HistoryItem>>;
     conceptAggregate: Subject<ConceptAggregate>;
-    
+
     private _history: Array<HistoryItem>;
     private _conceptAggregate: ConceptAggregate;
-    
+
     constructor() {
         this.history = new Subject();
         this.conceptAggregate = new Subject();
     }
 
     public addHistoryItem(url: string) {
-        if(this._conceptAggregate.concept != null) {
+        if(this._conceptAggregate != undefined || this._conceptAggregate.concept != null) {
             this._history.unshift({url: url, concept: this._conceptAggregate.concept});
             this.history.next(this._history);
         }
@@ -34,7 +34,7 @@ export class ConceptViewState {
 
     public setConceptAggregate(conceptAggregate: ConceptAggregate) {
         this.conceptAggregate.next(conceptAggregate);
-    } 
+    }
 
     public contains(iri: string): boolean {
         let contains: boolean = false;
@@ -50,14 +50,14 @@ export class ConceptView {
 
     state: ConceptViewState;
 
-    constructor(private conceptService: ConceptService, 
-                private perspectiveService: Perspectives, 
+    constructor(private conceptService: ConceptService,
+                private perspectiveService: Perspectives,
                 private log: LoggerService,
-                private router: Router, 
-                private route: ActivatedRoute, 
+                private router: Router,
+                private route: ActivatedRoute,
                 private perspective: Perspective) {
         this.state = new ConceptViewState();
-        
+
         this.perspectiveService.current = this.perspective;
     }
 
@@ -79,7 +79,7 @@ export class ConceptView {
             (history: Array<HistoryItem>) => successHandler(history),
             error => errorHandler(error)
         )
-    }    
+    }
 
     private trackNavigationStart() {
         this.route.paramMap.subscribe(
@@ -94,7 +94,7 @@ export class ConceptView {
                 this.state.addHistoryItem(e.url);
             }
         });
-    }    
+    }
 
     private updateConceptAggregate(iri: string) {
         // no need to do anything unless this is a new IRI

@@ -1,0 +1,57 @@
+<div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
+  <mat-form-field dense floatLabel="always" appearance="outline" fxFlex="60">
+    <mat-label>Name:</mat-label>
+    <input dense matInput [value]="concept.name">
+  </mat-form-field>
+
+  <mat-form-field dense floatLabel="always" appearance="outline" fxFlex="20">
+    <mat-label>Iri:</mat-label>
+    <input dense matInput [value]="concept.iri">
+  </mat-form-field>
+
+  <mat-form-field dense floatLabel="always" appearance="outline" fxFlex="20">
+    <mat-label>Namespace:</mat-label>
+    <select matNativeControl required>
+      <option value="owl:">http://www.w3.org/2002/07/owl#</option>
+      <option value=":">http://www.DiscoveryDataService.org/InformationModel/Ontology#</option>
+      <option value="sn:">http://snomed.info/sct#</option>
+      <option value="xsd:">http://www.w3.org/2001/XMLSchema#</option>
+      <option value="rdf:">http://www.w3.org/1999/02/22-rdf-syntax-ns#</option>
+      <option value="xml:">http://www.w3.org/XML/1998/namespace</option>
+      <option value="rdfs:">http://www.w3.org/2000/01/rdf-schema#</option>
+    </select>
+  </mat-form-field>
+
+  <mat-form-field dense floatLabel="always" appearance="outline" fxFlex="60">
+    <mat-label>Code:</mat-label>
+    <input dense matInput>
+  </mat-form-field>
+
+  <mat-form-field dense floatLabel="always" appearance="outline" fxFlex="20">
+    <mat-label>Scheme:</mat-label>
+    <input dense matInput>
+  </mat-form-field>
+
+  <mat-form-field dense floatLabel="always" appearance="outline" fxFlex="20">
+    <mat-label>Status:</mat-label>
+    <select matNativeControl required>
+      <option value="0">Draft</option>
+      <option value="1">Active</option>
+      <option value="2">Inactive</option>
+    </select>
+  </mat-form-field>
+
+  <mat-form-field dense floatLabel="always" appearance="outline" fxFlex="100">
+    <mat-label>Description:</mat-label>
+    <textarea matInput [value]="concept.description"></textarea>
+  </mat-form-field>
+
+  <mat-wrapper fxFlex="50" style="height: 700px;">
+    <ngx-monaco-editor [options]="editorOptions" [(ngModel)]="definitionText" (ngModelChange)="definitionChanged.next($event)" style="height: 700px;"></ngx-monaco-editor>
+  </mat-wrapper>
+
+  <mat-wrapper fxFlex="50" style="height: 700px;">
+    <ngx-monaco-editor [options]="editorOptions2" [(ngModel)]="conceptText" (ngModelChange)="definitionChanged.next($event)" style="height: 700px;"></ngx-monaco-editor>
+  </mat-wrapper>
+
+</div>

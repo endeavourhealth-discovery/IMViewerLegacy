@@ -16,6 +16,7 @@ export class ClassExpression implements IMEntity {
   objectOneOf: Array<ConceptReference>;
   annotations: Set<Annotation>;
   module: ConceptReference;
+  Exclude: boolean;
 
   getStatus(): ConceptStatus {
     throw new Error('Method not implemented.');

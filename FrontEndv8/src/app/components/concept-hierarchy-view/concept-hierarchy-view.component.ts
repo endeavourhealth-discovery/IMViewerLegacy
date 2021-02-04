@@ -21,7 +21,7 @@ export class ConceptHierarchyViewComponent implements OnInit {
   @Input() concept: Concept;
   @Input() parents: Array<ConceptReferenceNode>;
   @Input() children: Array<ConceptReferenceNode>;
-  
+
   treeControl: NestedTreeControl<ConceptReferenceNode>;
   dataSource: MatTreeNestedDataSource<ConceptReferenceNode>;
 
@@ -37,10 +37,10 @@ export class ConceptHierarchyViewComponent implements OnInit {
   constructor(private service: ConceptService,
               private log: LoggerService,
               private eventBus: NgEventBus,
-              private route: ActivatedRoute,) {    
+              private route: ActivatedRoute,) {
     this.treeControl = new NestedTreeControl<ConceptReferenceNode>(node => this.getChildrenObservable(node));
     this.dataSource = new MatTreeNestedDataSource<ConceptReferenceNode>();
-    
+
     // when the tree has been changed (eg by fetching new children) this
     // data change is the way we tell the tree to re-draw
     this.dataChange.subscribe(data => this.dataSource.data = data);
@@ -51,12 +51,12 @@ export class ConceptHierarchyViewComponent implements OnInit {
       if ((change as SelectionChange<ConceptReferenceNode>).added)  {
         this.onExpand(change.added);
       }
-    });    
+    });
   }
 
-  /************************  
+  /************************
    * Ng lifecycle methods *
-   ************************/ 
+   ************************/
 
   ngOnInit() {
     this.route.paramMap.subscribe(
@@ -74,17 +74,17 @@ export class ConceptHierarchyViewComponent implements OnInit {
     this.initTree(selectedNode, this.parents, this.children);
 
     let rootNode = this.getRootNode(selectedNode, this.root);
-    
+
     // this populates the tree
     this.dataChange.next([rootNode]);
 
     // now we need to expand the selected node (and its parents)
     this.expand(selectedNode);
-  }  
+  }
 
-  /******************************************************************  
+  /******************************************************************
    * Mat Tree call back methods (see constructor and HTML template) *
-   ******************************************************************/ 
+   ******************************************************************/
 
   hasChild(_: number, node: ConceptReferenceNode): boolean {
     return node.hasChildren;
@@ -96,9 +96,9 @@ export class ConceptHierarchyViewComponent implements OnInit {
     return childrenSubject;
   }
 
-  /******************************************************  
+  /******************************************************
    * Tree manipulation methods (select and expand node) *
-   ******************************************************/  
+   ******************************************************/
 
   // attached to single click event (see HTML template)
   selectNode(node: ConceptReferenceNode):void {
@@ -128,9 +128,9 @@ export class ConceptHierarchyViewComponent implements OnInit {
   // fetch child nodes if necessary
   private initChildNodes(node: ConceptReferenceNode): void {
     if(node.hasChildren) {
-      if(node.children == null || node.children.length == 0) {
+      // if(node.children == null || node.children.length == 0) {
         this.fetchChildren(node.iri).subscribe(
-          result =>  { 
+          result =>  {
             this.initDecendants(node, result);
             this.dataChange.next(this.dataChange.value);
           },
@@ -138,11 +138,11 @@ export class ConceptHierarchyViewComponent implements OnInit {
             this.log.error(error);
           }
         );
-      }
+      // }
     }
-  }  
+  }
 
-  // used for auto-expansion of selected node 
+  // used for auto-expansion of selected node
   // in this instance we have children locally
   private expand(node: ConceptReferenceNode): void {
     node.parents.forEach(parent => this.expand(parent))
@@ -151,17 +151,17 @@ export class ConceptHierarchyViewComponent implements OnInit {
 
   private fetchChildren(iri: string): Observable<ConceptReferenceNode[]> {
     let children: Subject<ConceptReferenceNode[]> = new Subject();
-    
+
     this.service.getConceptChildren(iri).subscribe(
       (result) => children.next(result),
       (error) => this.log.error(error)
-    );    
+    );
 
     return children;
-  }  
-  
+  }
 
-  /***************************************************************** 
+
+  /*****************************************************************
    * Tree initialisation methods                                   *
    *                                                               *
    * These methods act to build and maintain the tree. They allow  *
@@ -179,25 +179,25 @@ export class ConceptHierarchyViewComponent implements OnInit {
   }
 
   private initAncestors(child: ConceptReferenceNode, allNodes: Map<string, ConceptReferenceNode>): void {
-    
+
     if(child.parents != null) {
       child.parents.forEach(parent => {
         // we want the exact same node by Object reference, NOT by value equality
         if(allNodes.has(parent.iri) == false) {
           allNodes.set(parent.iri, parent);
-          
+
           // we will need an initialised children array later on
           if(parent.children == null) {
             parent.children = [];
             this.registerChildrenObservable(parent);
           }
-          
+
           // for debugging to help check we have unique nodes
           //parent.name = `(${Math.random()}) ${parent.name}`;
         }
         else {
-          // this parent has been processed before we need to change the child's 
-          // parent to point to this instance thus replacing the other instance  
+          // this parent has been processed before we need to change the child's
+          // parent to point to this instance thus replacing the other instance
           // that is equal by value but NOT by reference
            let parentIndex: number = child.parents.indexOf(parent);
            parent = allNodes.get(parent.iri);
@@ -219,15 +219,29 @@ export class ConceptHierarchyViewComponent implements OnInit {
   private initDecendants(node: ConceptReferenceNode, children: ConceptReferenceNode[]): void {
     // attach children
     this.registerChildrenObservable(node);
-    node.children = children;
-    
+
+    console.log(node.children);
+    // node.children = children;
+
+    if (node.children != null) {
+      children.forEach(child => {
+        if (node.children.some(e => e.iri === child.iri)) {
+          console.log(child.iri);
+        } else {
+          node.children.push(child);
+        }
+      });
+    } else {
+      node.children = children;
+    }
+
     if(node.children != null) {
       node.children.forEach(child => {
         child.parents = [node];
         this.registerChildrenObservable(child);
       });
     }
-    
+
     // this must be done AFTER te child nodes have been registered
     this.childrenSubjects.get(node.iri).next(node.children);
   }
@@ -241,8 +255,8 @@ export class ConceptHierarchyViewComponent implements OnInit {
 
     while(rootNode == null && (decendantNode.parents != null && decendantNode.parents.length > 0)) {
       rootNode = decendantNode.parents.find(parent => rootIri == parent.iri)
-        
-      // just traversing one branch of inheritance should take us up to a 
+
+      // just traversing one branch of inheritance should take us up to a
       // common root ancestor
       decendantNode = decendantNode.parents[0];
     }
@@ -252,11 +266,11 @@ export class ConceptHierarchyViewComponent implements OnInit {
     }
 
     return rootNode;
-  } 
-  
+  }
+
   private registerChildrenObservable(node: ConceptReferenceNode) {
     if(this.childrenSubjects.has(node.iri) == false) {
       this.childrenSubjects.set(node.iri, new ReplaySubject());
     }
-  }  
+  }
 }

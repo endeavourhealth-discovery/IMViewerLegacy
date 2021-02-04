@@ -1,20 +1,20 @@
-import {AfterViewInit, Component, ElementRef, HostBinding, Inject, OnInit, ViewChild} from '@angular/core';
-import {MatSidenav} from '@angular/material/sidenav';
-import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
-import {User} from '../security/models/User';
-import {fromEvent, Subscription} from 'rxjs';
-import {ConceptReference} from '../models/objectmodel/ConceptReference';
-import {LoggerService} from '../services/logger.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Perspectives} from '../services/perspective.service';
-import {DOCUMENT} from '@angular/common';
-import {ConceptService} from '../services/concept.service';
-import {NgEventBus} from 'ng-event-bus';
-import {MatDialog} from '@angular/material/dialog';
-import {debounceTime, distinctUntilChanged, filter, map, tap} from 'rxjs/operators';
-import {FindConceptUsagesDialogComponent} from '../components/find-concept-usages-dialog/find-concept-usages-dialog.component';
-import {SecurityService} from '../security/security.service';
-import {UserProfileDialog} from '../components/user-profile-dialog/user-profile-dialog.component';
+import { DOCUMENT } from '@angular/common';
+import { AfterViewInit, Component, ElementRef, HostBinding, Inject, OnInit, ViewChild } from '@angular/core';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSidenav } from '@angular/material/sidenav';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgEventBus } from 'ng-event-bus';
+import { fromEvent, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs/operators';
+import { FindConceptUsagesDialogComponent } from '../components/find-concept-usages-dialog/find-concept-usages-dialog.component';
+import { UserProfileDialog } from '../components/user-profile-dialog/user-profile-dialog.component';
+import { ConceptReference } from '../models/objectmodel/ConceptReference';
+import { User } from '../security/models/User';
+import { SecurityService } from '../security/security.service';
+import { ConceptService } from '../services/concept.service';
+import { LoggerService } from '../services/logger.service';
+import { Perspectives } from '../services/perspective.service';
 
 @Component({
   selector: 'app-layout',
@@ -100,11 +100,6 @@ export class LayoutComponent implements OnInit, AfterViewInit {
       },
       (error) => this.log.error(error)
     )
-  }
-
-  advancedSearch(terms) {
-    this.test.closePanel();
-    this.router.navigate([this.perspectives.search.primary.state], {queryParams :{terms: terms}});
   }
 
   logout() {
