@@ -27,6 +27,7 @@ export class LibraryComponentComponent implements OnInit {
   summaryConcept: Concept = new Concept();
   summaryPerspective: Perspective;
   timer: any;
+  enabled = true;
 
   constructor(
     private service: ConceptService,
@@ -91,9 +92,19 @@ export class LibraryComponentComponent implements OnInit {
         (error) => this.log.error(error)
       );
 
+      this.reloadTree();
+
     } else {
       clearTimeout(this.timer);
     }
+  }
+
+  reloadTree(){
+    this.enabled = false;
+    const self = this;
+    setTimeout(function(){
+      self.enabled = true;
+    }, 1);
   }
 
   selectNode(iri: string):void {
