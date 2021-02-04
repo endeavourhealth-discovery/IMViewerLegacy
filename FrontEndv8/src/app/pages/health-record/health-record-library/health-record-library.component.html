@@ -44,16 +44,15 @@
         <mat-tab label="Mapped From/To" *ngIf="perspective.root == ':SemanticConcept'">
           <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">edit</mat-icon>
-            Members
+            Mapped from/to
           </ng-template>
           <ng-template matTabContent>
             <mat-form-field floatLabel="always" appearance="outline" fxFlex="100">
               <mat-label>Mapped from/to:</mat-label>
               <mat-wrapper>
                 <mat-nav-list dense>
-                  <a mat-list-item style="height:15px;"> - test </a>
-                  <!-- <a mat-list-item (click)="selectNode(mapped.iri)" *ngFor="let mapped of mappedFrom" style="height:15px;"> - {{ mapped.name }} </a>
-                  <a mat-list-item (click)="selectNode(mapped.iri)" *ngFor="let mapped of mappedTo" style="height:15px;"> - {{ mapped.name }} </a> -->
+                  <a mat-list-item (click)="selectNode(mapped.iri)" *ngFor="let mapped of mappedFrom" style="height:15px;"> - {{ mapped.name }} </a>
+                  <a mat-list-item (click)="selectNode(mapped.iri)" *ngFor="let mapped of mappedTo" style="height:15px;"> - {{ mapped.name }} </a>
                </mat-nav-list>
               </mat-wrapper>
             </mat-form-field>

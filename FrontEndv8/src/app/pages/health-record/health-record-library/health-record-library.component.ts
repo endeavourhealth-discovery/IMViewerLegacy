@@ -28,6 +28,8 @@ export class HealthRecordLibraryComponent implements OnInit {
   concept: Concept;
   parents: Array<ConceptReferenceNode>;
   children: Array<ConceptReferenceNode>;
+  mappedFrom: Array<ConceptReference>;
+  mappedTo: Array<ConceptReference>;
   perspective: Perspective;
   relationships = ['sn:116680003']; // this can move to the perspective
   hoveredConcept: Concept = new Concept(); // can this be moved into concept view to make it side-bar aware?
@@ -70,6 +72,16 @@ export class HealthRecordLibraryComponent implements OnInit {
         (result) => this.perspective = result,
         (error) => this.log.error(error)
       );
+
+      this.service.findMappedFrom(this.selectedIri).subscribe(
+        (result) => this.mappedFrom = result,
+        (error) => this.log.error(error)
+      );
+
+      this.service.findMappedTo(this.selectedIri).subscribe(
+        (result) => this.mappedTo = result,
+        (error) => this.log.error(error)
+      );
     }
     else {
       this.log.debug("onConceptAggregateChange - ConceptAggregate is null");
@@ -82,6 +94,10 @@ export class HealthRecordLibraryComponent implements OnInit {
 
   private onError(error: any): void {
     this.log.error(error);
+  }
+
+  selectNode(iri: string):void {
+    this.eventBus.cast('app:conceptSelect', iri);
   }
 
   showSummaryDrawer(iri: string) {

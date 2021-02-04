@@ -1,3 +1,4 @@
+import { ConceptReference } from 'src/app/models/objectmodel/ConceptReference';
 import { Perspective } from 'src/app/models/Perspective';
 import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferenceNode';
 import { ConceptService, ConceptAggregate } from '../../../services/concept.service';
@@ -26,6 +27,8 @@ export class OntologyLibraryComponent implements OnInit {
   conceptText: string;
   parents: Array<ConceptReferenceNode>;
   children: Array<ConceptReferenceNode>;
+  mappedFrom: Array<ConceptReference>;
+  mappedTo: Array<ConceptReference>;
   perspective: Perspective;
   //selectedIri: string;
   hoveredConcept: Concept = new Concept();
@@ -104,6 +107,16 @@ export class OntologyLibraryComponent implements OnInit {
         (result) => this.perspective = result,
         (error) => this.log.error(error)
       );
+
+      this.service.findMappedFrom(this.selectedIri).subscribe(
+        (result) => this.mappedFrom = result,
+        (error) => this.log.error(error)
+      );
+
+      this.service.findMappedTo(this.selectedIri).subscribe(
+        (result) => this.mappedTo = result,
+        (error) => this.log.error(error)
+      );
     }
     else {
       this.log.debug("onConceptAggregateChange - ConceptAggregate is null");
@@ -116,6 +129,10 @@ export class OntologyLibraryComponent implements OnInit {
 
   private onError(error: any): void {
     this.log.error(error);
+  }
+
+  selectNode(iri: string):void {
+    this.eventBus.cast('app:conceptSelect', iri);
   }
 
   activateSummary(iri: string) {

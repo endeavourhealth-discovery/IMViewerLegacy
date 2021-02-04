@@ -25,6 +25,8 @@ export class ValueSetLibraryComponent implements OnInit {
   concept: Concept;
   parents: Array<ConceptReferenceNode>;
   children: Array<ConceptReferenceNode>;
+  mappedFrom: Array<ConceptReference>;
+  mappedTo: Array<ConceptReference>;
   perspective: Perspective;
   selectedConcept: Concept;
   treeController: ConceptTreeController;
@@ -77,6 +79,16 @@ export class ValueSetLibraryComponent implements OnInit {
           (error) => this.log.error(error)
         );
 
+        this.service.findMappedFrom(this.selectedIri).subscribe(
+          (result) => this.mappedFrom = result,
+          (error) => this.log.error(error)
+        );
+
+        this.service.findMappedTo(this.selectedIri).subscribe(
+          (result) => this.mappedTo = result,
+          (error) => this.log.error(error)
+        );
+
         let valueSet: ValueSet = this.valueSetService.toValueSet(this.concept);
         this.initTree(valueSet);
       }
@@ -95,6 +107,10 @@ export class ValueSetLibraryComponent implements OnInit {
 
   private onError(error: any): void {
     this.log.error(error);
+  }
+
+  selectNode(iri: string):void {
+    this.eventBus.cast('app:conceptSelect', iri);
   }
 
   private showSummaryDrawer(iri: string) {
