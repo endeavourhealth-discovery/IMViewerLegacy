@@ -68,15 +68,19 @@ export class ViewMembersComponent implements OnInit {
   }
 
   private showSummaryDrawer(iri: string) {
-    const root = this;
-    if (iri != null) {
-      this.service.getConcept(iri).subscribe(
-        (concept) => {
-          this.selectedConcept = concept
-        },
-        (error) => this.onError(error)
-      );
-    }
+
+    this.eventBus.cast('app:conceptSummary', iri);
+
+
+    // const root = this;
+    // if (iri != null) {
+    //   this.service.getConcept(iri).subscribe(
+    //     (concept) => {
+    //       this.selectedConcept = concept
+    //     },
+    //     (error) => this.onError(error)
+    //   );
+    // }
   }
 
   private initTree(valueSet: ValueSet) {
