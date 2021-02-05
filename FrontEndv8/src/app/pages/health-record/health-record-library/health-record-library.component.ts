@@ -48,10 +48,6 @@ export class HealthRecordLibraryComponent implements OnInit {
     this.conceptView = new ConceptView(service, perspectives, log, router, route, perspectives.healthRecord);
     this.conceptView.onNavigationStart(this.onConceptAggregateChange.bind(this), this.onError.bind(this) )
     this.conceptView.onNavigationEnd(this.onHistoryChange.bind(this), this.onError.bind(this) )
-
-    this.eventBus.on('app:conceptSummary').subscribe((iri: string) => {
-      this.showSummaryDrawer(iri);
-    });
   }
 
   ngOnInit() {
@@ -96,19 +92,15 @@ export class HealthRecordLibraryComponent implements OnInit {
     this.log.error(error);
   }
 
-  selectNode(iri: string):void {
-    this.eventBus.cast('app:conceptSelect', iri);
+  nodeClick(iri: string) {
+    this.eventBus.cast('app:conceptSummary', iri);
   }
 
-  showSummaryDrawer(iri: string) {
-    const root = this;
-    if (iri != null) {
-      this.service.getConcept(iri).subscribe(
-        (hoveredConcept) => {
-          this.hoveredConcept = hoveredConcept
-        },
-        (error) => this.onError(error)
-      );
+  nodeDblClick(iri: string) {
+    if (iri != null || iri !== undefined) {
+      this.eventBus.cast('app:conceptSelect', iri);
+    } else {
+      this.eventBus.cast('app:conceptSelect', null);
     }
   }
 }

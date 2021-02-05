@@ -65,10 +65,6 @@ export class OntologyLibraryComponent implements OnInit {
     this.conceptView.onNavigationStart(this.onConceptAggregateChange.bind(this), this.onError.bind(this))
     this.conceptView.onNavigationEnd(this.onHistoryChange.bind(this), this.onError.bind(this))
 
-    this.eventBus.on('app:conceptSummary').subscribe((iri: string) => {
-      this.activateSummary(iri);
-    });
-
     this.definitionChanged
       .pipe(
         debounceTime(300), // wait 300ms after the last event before emitting last event
@@ -131,18 +127,15 @@ export class OntologyLibraryComponent implements OnInit {
     this.log.error(error);
   }
 
-  selectNode(iri: string):void {
-    this.eventBus.cast('app:conceptSelect', iri);
+  nodeClick(iri: string) {
+    this.eventBus.cast('app:conceptSummary', iri);
   }
 
-  activateSummary(iri: string) {
-    if (iri != null) {
-      this.service.getConcept(iri).subscribe(
-        (hoveredConcept) => {
-          this.hoveredConcept = hoveredConcept
-        },
-        (error) => this.log.error(error)
-      );
+  nodeDblClick(iri: string) {
+    if (iri != null || iri !== undefined) {
+      this.eventBus.cast('app:conceptSelect', iri);
+    } else {
+      this.eventBus.cast('app:conceptSelect', null);
     }
   }
 

@@ -109,8 +109,16 @@ export class ValueSetLibraryComponent implements OnInit {
     this.log.error(error);
   }
 
-  selectNode(iri: string):void {
-    this.eventBus.cast('app:conceptSelect', iri);
+  nodeClick(iri: string) {
+    this.eventBus.cast('app:conceptSummary', iri);
+  }
+
+  nodeDblClick(iri: string) {
+    if (iri != null || iri !== undefined) {
+      this.eventBus.cast('app:conceptSelect', iri);
+    } else {
+      this.eventBus.cast('app:conceptSelect', null);
+    }
   }
 
   private showSummaryDrawer(iri: string) {
