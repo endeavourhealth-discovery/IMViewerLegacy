@@ -19,7 +19,12 @@
         <!-- Dashboard container-->
         <mat-card-content class="full-page-card">
 
-          <ng-content></ng-content>
+          <app-concept-library
+            [relationships]="relationships"
+            [concept]="concept"
+            [children]="children"
+            [parents]="parents"
+            [perspective]="perspective"> </app-concept-library>
 
         </mat-card-content>
       </mat-card>

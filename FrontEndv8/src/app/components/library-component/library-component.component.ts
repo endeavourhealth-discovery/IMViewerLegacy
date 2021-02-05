@@ -22,8 +22,6 @@ export class LibraryComponentComponent implements OnInit {
   @Input() perspective: Perspective;
   sidebar = false;
   usages: Array<ConceptReference>;
-  mappedFrom: Array<ConceptReference>;
-  mappedTo: Array<ConceptReference>;
   summaryConcept: Concept = new Concept();
   summaryPerspective: Perspective;
   timer: any;
@@ -79,16 +77,6 @@ export class LibraryComponentComponent implements OnInit {
 
       this.service.findUsages(iri).subscribe(
         (result) => this.usages = result,
-        (error) => this.log.error(error)
-      );
-
-      this.service.findMappedFrom(iri).subscribe(
-        (result) => this.mappedFrom = result,
-        (error) => this.log.error(error)
-      );
-
-      this.service.findMappedTo(iri).subscribe(
-        (result) => this.mappedTo = result,
         (error) => this.log.error(error)
       );
 

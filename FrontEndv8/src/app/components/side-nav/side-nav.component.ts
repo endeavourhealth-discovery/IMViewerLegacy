@@ -20,12 +20,9 @@ export class SideNavComponent {
   @Input() relationships: string;
   @Input() selectedIri: string;
   @ViewChild('tabs', {static: true}) tabGroup: MatTabGroup;
-
-  @Output() openDialogEvent: EventEmitter<any> = new EventEmitter<any>();
-
   history = [];
   searchResults: any[] = [];
- 
+
   constructor(
     private router: Router,
     private log: LoggerService,
@@ -33,7 +30,7 @@ export class SideNavComponent {
       this.routeEvent(this.router);
       this.eventBus.on(searchEvents.SEARCH_RESULT_EVENT).subscribe(searchResponseEvent => {
         this.showSearchResultsTab();
-      });    
+      });
   }
 
   routeEvent(router: Router) {
@@ -54,11 +51,6 @@ export class SideNavComponent {
       this.eventBus.cast('app:conceptSelect', iri);
     }
   }
-
-  openDialog() {
-    this.openDialogEvent.emit();
-  }
-
 
   private showSearchResultsTab() {
     const searchResultsTabIndex: number = this.tabGroup._tabs.toArray().findIndex(tab => "Search Results" == tab.textLabel)
