@@ -91,16 +91,4 @@ export class HealthRecordLibraryComponent implements OnInit {
   private onError(error: any): void {
     this.log.error(error);
   }
-
-  nodeClick(iri: string) {
-    this.eventBus.cast('app:conceptSummary', iri);
-  }
-
-  nodeDblClick(iri: string) {
-    if (iri != null || iri !== undefined) {
-      this.eventBus.cast('app:conceptSelect', iri);
-    } else {
-      this.eventBus.cast('app:conceptSelect', null);
-    }
-  }
 }

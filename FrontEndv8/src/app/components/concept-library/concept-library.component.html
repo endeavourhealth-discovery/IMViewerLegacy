@@ -1,0 +1,67 @@
+<mat-card-content class="full-page-card">
+  <div class="example-container" hasBackdrop="true" style="height: calc(100%);">
+
+    <!-- Dashboard content-->
+    <mat-tab-group style="width: 100%; height: calc(100vh - 150px);" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">
+      <mat-tab label="Inheritance" *ngIf="perspective.root == ':DiscoveryCommonDataModel'">
+        <ng-template mat-tab-label>
+          <mat-icon class="example-tab-icon">account_tree</mat-icon>
+          Inheritance
+        </ng-template>
+        <ng-template matTabContent>
+          <app-health-record-navigator [conceptIri]="concept.iri" [concept]="concept"></app-health-record-navigator>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="Properties" *ngIf="perspective.root == ':DiscoveryCommonDataModel'">
+        <ng-template mat-tab-label>
+          <mat-icon class="example-tab-icon">view_module</mat-icon>
+          Properties
+        </ng-template>
+        <ng-template matTabContent>
+          <health-record-tabular-view [concept]="concept" [children]="children" [parents]="parents"></health-record-tabular-view>
+        </ng-template>
+      </mat-tab>
+
+      <mat-tab label="Members" *ngIf="perspective.root == ':VSET_ValueSet'">
+        <ng-template mat-tab-label>
+          <mat-icon class="example-tab-icon">account_tree</mat-icon>
+          Members
+        </ng-template>
+        <ng-template matTabContent>
+          <app-view-members [concept]="concept" [children]="children" [parents]="parents"></app-view-members>
+        </ng-template>
+      </mat-tab>
+
+      <mat-tab label="Mapped From/To" *ngIf="perspective.root == ':SemanticConcept'">
+        <ng-template mat-tab-label>
+          <mat-icon class="example-tab-icon">compare_arrows</mat-icon>
+          Mapped from/to
+        </ng-template>
+        <ng-template matTabContent>
+          <mat-form-field floatLabel="always" appearance="outline" fxFlex="100">
+            <mat-label>Mapped from/to:</mat-label>
+            <mat-wrapper>
+              <mat-nav-list dense>
+                <a mat-list-item (click)="nodeClick(mapped.iri)" (dblclick)="nodeDblClick(mapped.iri)" *ngFor="let mapped of mappedFrom" style="height:15px;"> - {{ mapped.name }} </a>
+                <a mat-list-item (click)="nodeClick(mapped.iri)" (dblclick)="nodeDblClick(mapped.iri)" *ngFor="let mapped of mappedTo" style="height:15px;"> - {{ mapped.name }} </a>
+             </mat-nav-list>
+            </mat-wrapper>
+          </mat-form-field>
+        </ng-template>
+      </mat-tab>
+
+
+
+      <mat-tab label="Edit Concept">
+        <ng-template mat-tab-label>
+          <mat-icon class="example-tab-icon">edit</mat-icon>
+          Edit Concept
+        </ng-template>
+        <ng-template matTabContent>
+          <app-edit-concept [concept]="concept"></app-edit-concept>
+        </ng-template>
+      </mat-tab>
+
+    </mat-tab-group>
+  </div>
+</mat-card-content>
