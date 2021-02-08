@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { NgEventBus } from 'ng-event-bus';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
-import { ConceptReference } from 'src/app/models/objectmodel/ConceptReference';
-import { ConceptStatus } from 'src/app/models/objectmodel/ConceptStatus';
-import { CodeSchemes, codeSchemesProvider } from 'src/app/models/search/CodeScheme';
+import {Component, OnInit} from '@angular/core';
+import {NgEventBus} from 'ng-event-bus';
+import {Observable, ReplaySubject, Subject} from 'rxjs';
+import {ConceptReference} from 'src/app/models/objectmodel/ConceptReference';
+import {ConceptStatus} from 'src/app/models/objectmodel/ConceptStatus';
+import {CodeSchemes, codeSchemesProvider} from 'src/app/models/search/CodeScheme';
 import * as searchEvents from 'src/app/models/search/SearchEvents';
-import { SearchRequest } from 'src/app/models/search/SearchRequest';
-import { SearchResponse } from 'src/app/models/search/SearchResponse';
-import { SortBy } from 'src/app/models/search/SortBy';
-import { LoggerService } from 'src/app/services/logger.service';
-import { Perspectives } from 'src/app/services/perspective.service';
+import {SearchRequest} from 'src/app/models/search/SearchRequest';
+import {SearchResponse} from 'src/app/models/search/SearchResponse';
+import {SortBy} from 'src/app/models/search/SortBy';
+import {LoggerService} from 'src/app/services/logger.service';
+import {Perspectives} from 'src/app/services/perspective.service';
+import {ConceptType} from '../../models/objectmodel/ConceptType';
 
 class ConceptSearchOptions {
 
@@ -18,8 +19,8 @@ class ConceptSearchOptions {
   sortBySelection: string;
 
   searchRequest: Observable<SearchRequest>
-  
-  constructor(private _searchRequest: SearchRequest, 
+
+  constructor(private _searchRequest: SearchRequest,
               public conceptStatusOptions: string[],
               public codeSchemeOptions: ConceptReference[],
               public sortByOptions: string[]) {
@@ -66,7 +67,7 @@ class ConceptSearchOptions {
   // filter change
   private onChangeSearchRequest() {
     const searchRequestSubject = this.searchRequest as Subject<SearchRequest>;
-    searchRequestSubject.next(this._searchRequest); 
+    searchRequestSubject.next(this._searchRequest);
   }
 }
 
@@ -82,15 +83,15 @@ export class ConceptSearchResultComponent implements OnInit  {
   public searchOptions: ConceptSearchOptions;
   public hasResponse: boolean;
 
-  private selectedSearchResult: string;  
+  private selectedSearchResult: string;
 
-  constructor(private eventBus: NgEventBus, 
+  constructor(private eventBus: NgEventBus,
               private codeSchemes: CodeSchemes,
-              private perpsectiveService: Perspectives, 
+              private perspectiveService: Perspectives,
               private log: LoggerService) {
     this.eventBus.on(searchEvents.SEARCH_RESULT_EVENT).subscribe((searchResponse: SearchResponse) => {
       this.searchResults = searchResponse.concepts;
-      
+
       this.initSearchOptions(searchResponse.request).subscribe(
         (searchOptions: ConceptSearchOptions) => {
           this.searchOptions = searchOptions;
@@ -105,8 +106,8 @@ export class ConceptSearchResultComponent implements OnInit  {
           this.log.error(`Error - unable to create search options. Search may not function as user expects. Cause - ${error}.`);
         }
       );
-    }); 
-    
+    });
+
     this.hasResponse = false;
   }
 
@@ -117,7 +118,7 @@ export class ConceptSearchResultComponent implements OnInit  {
     //         value => this.setEmailMessage(emailControl)
     // );
   }
- 
+
   get hasResults() {
     return this.hasResponse && this.searchResults.length > 0;
   }
@@ -129,11 +130,11 @@ export class ConceptSearchResultComponent implements OnInit  {
 
   highlightSearchResult(conceptReference: ConceptReference): boolean {
     return this.selectedSearchResult == conceptReference.iri;
-  } 
+  }
 
   private initSearchOptions(searchRequest: SearchRequest): Observable<ConceptSearchOptions> {
     const searchOptionsObservable: Subject<ConceptSearchOptions> = new ReplaySubject();
-    
+
     this.codeSchemes.codeSchemes.subscribe(
       (result) => {
         const conceptStatusOptions: string[] = Object.keys(ConceptStatus).filter(f => isNaN(Number(f)));
@@ -143,8 +144,16 @@ export class ConceptSearchResultComponent implements OnInit  {
       (error) => {
         this.log.error(`Error - unable to get a list of code schemes. Cause ${error}`);
       }
-    ); 
-    
+    );
+
     return searchOptionsObservable;
-  }  
+  }
+
+  getIcon(conceptType: ConceptType) {
+    switch (conceptType) {
+      case ConceptType.Record: return this.perspectiveService.healthRecord.icon;
+      case ConceptType.ValueSet: return this.perspectiveService.valueSets.icon;
+      default: return this.perspectiveService.ontology.icon;
+    }
+  }
 }
