@@ -23,6 +23,7 @@
       <!-- results list -->
       <mat-list *ngFor="let searchResult of searchResults">
         <mat-list-item>
+          <span><i [class]="'fas fa-fw ' + getIcon(searchResult.conceptType)"></i></span>
           <span class="select-highlight hover-highlight no-wrap"
                 [class.selected]="highlightSearchResult(searchResult)"
                 style="cursor: pointer"
@@ -32,7 +33,6 @@
         </mat-list-item>
       </mat-list>
     </div>
-
     <mat-divider></mat-divider>
 
     <!-- filters area -->
