@@ -60,7 +60,7 @@ export class AuthenticationService {
   async updateUser(id: string, email: string, forename: string, surname: string, avatar: string) : Promise<string> {
     const user = await Auth.currentAuthenticatedUser();
 
-    if (user.id === id) {
+    if (user.attributes.sub === id) {
 
       const atts: object = {
         email,
