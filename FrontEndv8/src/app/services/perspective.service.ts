@@ -92,7 +92,7 @@ export class Perspectives  {
     "color": "DarkTurquoise",
     "root": ":MAP_Map"
   };
-
+/*
   search: Perspective = {
     "caption": "Advanced Search",
     "subtitle": "Advanced search of all concepts",
@@ -102,7 +102,7 @@ export class Perspectives  {
     "icon": "fa-search",
     "color": "darkorchid",
     "root": null
-  };
+  };*/
 
   perspectives: Perspective[];
   perspectivesMap: Map<string, Perspective>;
@@ -116,7 +116,7 @@ export class Perspectives  {
       this.valueSets,
       this.dataSets,
       this.maps,
-      this.search,
+      // this.search,
     ];
 
     this.perspectivesMap = new Map();

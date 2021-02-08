@@ -237,6 +237,10 @@ mat-card-header {
   height: 100%;
 }
 
+.mat-form-field-appearance-outline .mat-form-field-infix {
+  padding: 0.5em 0;
+}
+
 mat-toolbar.mat-toolbar mat-form-field.mat-form-field {
   margin-top: -0.75em;
 }
@@ -255,6 +259,9 @@ mat-toolbar.mat-toolbar mat-form-field.mat-form-field {
   width: 40px * $scale !important;
   height: 40px * $scale !important;
   line-height: 40px * $scale !important;
+  .mat-icon {
+    line-height: 20px * $scale !important;
+  }
 }
 
 .mat-toolbar-row, .mat-toolbar-single-row {
@@ -284,7 +291,6 @@ mat-tree-node {
 .mat-tree-node {
   min-height: 1.4em !important;
   height: 1.4em;
-  white-space: nowrap;
 }
 
 .mat-expansion-panel-header {
@@ -327,6 +333,7 @@ mat-accordion .mat-form-field + .mat-form-field {
 }
 
 .mat-list-base  {
+  padding-top: unset !important;
   .mat-list-item.mat-list-item-with-avatar, .mat-list-option.mat-list-item-with-avatar {
     height: auto !important;
   }

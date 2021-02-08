@@ -1,14 +1,14 @@
 <ng-container *ngIf="hasResponse; else noResponse">
-  <div fxLayout="column" fxLayoutAlign="center stretch" style="overflow: hidden;">
-    
+  <div fxLayout="column" fxLayoutAlign="center stretch">
+
     <!-- results area -->
-    <div fxFlex="60" *ngIf="hasResults; else noResults"> 
+    <div fxFlex="60" *ngIf="hasResults; else noResults">
       <h2 class="mat-title">Search results for <i>"{{searchOptions.searchTerms}}"</i></h2>
       <div fxLayout="row" fxLayoutAlign="space-between start" >
         <p class="mat-caption">{{searchResults.length}} results</p>
-        
+
         <!-- sort order control -->
-        <mat-form-field>
+        <mat-form-field appearance="outline">
           <mat-label>Sort by</mat-label>
           <mat-select [(ngModel)]="searchOptions.sortBySelection"
             (selectionChange)="searchOptions.onSortByChange()">
@@ -17,14 +17,14 @@
               {{sortByOption}}
             </mat-option>
           </mat-select>
-        </mat-form-field>          
+        </mat-form-field>
       </div>
 
       <!-- results list -->
       <mat-list *ngFor="let searchResult of searchResults">
         <mat-list-item>
-          <span class="select-highlight hover-highlight" 
-                [class.selected]="highlightSearchResult(searchResult)" 
+          <span class="select-highlight hover-highlight no-wrap"
+                [class.selected]="highlightSearchResult(searchResult)"
                 style="cursor: pointer"
                 (click)="onSelectSearchResult(searchResult)">
             {{searchResult.name}}
@@ -38,30 +38,31 @@
     <!-- filters area -->
     <div fxFlex="40">
       <div fxLayout="column" fxLayoutAlign="space-around stretch">
-        <h2 class="mat-title">Refine</h2>
-        <p class="mat-caption">{{searchOptions.appliedFilterCount}} filters applied</p>
-        
-        <!-- code scheme filter control -->
-        <mat-form-field>
-          <mat-label>Code scheme</mat-label>
-          <mat-select multiple [(ngModel)]="searchOptions.codeSchemeSelections"
-            (selectionChange)="searchOptions.onCodeSchemesChange()" [compareWith]="searchOptions.compareCodeSchemes">
-            <mat-option *ngFor="let codeSchemeOption of searchOptions.codeSchemeOptions" [value]="codeSchemeOption">
-              {{codeSchemeOption.name}}</mat-option>
-          </mat-select>
-        </mat-form-field>
+        <h2 class="mat-title">Refine <small>({{searchOptions.appliedFilterCount}} filters applied)</small></h2>
 
-        <!-- concept status filter control -->
-        <mat-form-field>
-          <mat-label>Status</mat-label>
-          <mat-select multiple [(ngModel)]="searchOptions.conceptStatusSelections"
-            (selectionChange)="searchOptions.onConceptStatusChange()">
-            <mat-option *ngFor="let conceptStatusOption of searchOptions.conceptStatusOptions"
-              [value]="conceptStatusOption">
-              {{conceptStatusOption}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+        <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
+          <!-- code scheme filter control -->
+          <mat-form-field appearance="outline" fxFlex="100">
+            <mat-label>Code scheme</mat-label>
+            <mat-select multiple [(ngModel)]="searchOptions.codeSchemeSelections"
+              (selectionChange)="searchOptions.onCodeSchemesChange()" [compareWith]="searchOptions.compareCodeSchemes">
+              <mat-option *ngFor="let codeSchemeOption of searchOptions.codeSchemeOptions" [value]="codeSchemeOption">
+                {{codeSchemeOption.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- concept status filter control -->
+          <mat-form-field appearance="outline" fxFlex="100">
+            <mat-label>Status</mat-label>
+            <mat-select multiple [(ngModel)]="searchOptions.conceptStatusSelections"
+              (selectionChange)="searchOptions.onConceptStatusChange()">
+              <mat-option *ngFor="let conceptStatusOption of searchOptions.conceptStatusOptions"
+                [value]="conceptStatusOption">
+                {{conceptStatusOption}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
       </div>
     </div>
   </div>
