@@ -22,7 +22,7 @@
               [class.selected]="treeController.highlightNode(node)"
               (click)="treeController.selectNode(node)">
             <button mat-icon-button disabled></button>
-            <span>
+            <span class="no-wrap" matTooltip="{{node.iri}} | {{node.name}}">
               {{node.name}}
             </span>
           </li>
@@ -39,7 +39,7 @@
                   {{treeController.treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
                 </mat-icon>
               </button>
-              <span>
+              <span class="no-wrap" matTooltip="{{node.iri}} | {{node.name}}">
                 {{node.name}}
               </span>
             </div>
