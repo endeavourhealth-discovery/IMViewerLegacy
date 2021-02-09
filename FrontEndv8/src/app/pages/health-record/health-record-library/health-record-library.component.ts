@@ -34,7 +34,7 @@ export class HealthRecordLibraryComponent implements OnInit {
   conceptView: ConceptView;
   history = [];
 
-  @ViewChild(HealthRecordTabularViewComponent, { static: true }) tableView: HealthRecordTabularViewComponent;
+  // @ViewChild(HealthRecordTabularViewComponent, { static: true }) tableView: HealthRecordTabularViewComponent;
 
   constructor(private service: ConceptService,
               private perspectiveService: Perspectives,

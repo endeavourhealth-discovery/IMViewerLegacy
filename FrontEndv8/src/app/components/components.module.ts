@@ -48,6 +48,8 @@ import { UserProfileDialog } from './user-profile-dialog/user-profile-dialog.com
 import { EditConceptComponent } from './edit-concept/edit-concept.component';
 import { ViewMembersComponent } from './view-members/view-members.component';
 import { ConceptLibraryComponent } from './concept-library/concept-library.component';
+import { ConceptSummaryComponent } from './concept-summary/concept-summary.component';
+import { ConceptSidebarSummaryComponent } from './concept-sidebar-summary/concept-sidebar-summary.component';
 
 
 @NgModule({
@@ -103,6 +105,8 @@ import { ConceptLibraryComponent } from './concept-library/concept-library.compo
     EditConceptComponent,
     ViewMembersComponent,
     ConceptLibraryComponent,
+    ConceptSummaryComponent,
+    ConceptSidebarSummaryComponent,
   ],
   exports: [
     ConceptSearchComponent,

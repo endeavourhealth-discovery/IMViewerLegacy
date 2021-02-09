@@ -119,6 +119,7 @@ export class ConceptService implements HealthRecordNavigatorService {
   getConceptAggregate(iri: string): Observable<ConceptAggregate> {
     let conceptAggregate: Subject<ConceptAggregate> = new Subject();
 
+
     zip(this.getConcept(iri),
         this.getConceptChildren(iri),
         this.getConceptParentHierarchy(iri)).subscribe(([concept, children, parents]) => {
