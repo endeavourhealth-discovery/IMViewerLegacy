@@ -8,4 +8,5 @@ export class SearchResponseConcept {
   code: string;
   conceptType: ConceptType;
   types: ConceptReference[];
+  weighting: number;
 }

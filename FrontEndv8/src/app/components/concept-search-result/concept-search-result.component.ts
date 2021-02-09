@@ -11,6 +11,7 @@ import {SortBy} from 'src/app/models/search/SortBy';
 import {LoggerService} from 'src/app/services/logger.service';
 import {Perspectives} from 'src/app/services/perspective.service';
 import {ConceptType} from '../../models/objectmodel/ConceptType';
+import {SearchResponseConcept} from '../../models/search/SearchResponseConcept';
 
 class ConceptSearchOptions {
 
@@ -79,7 +80,7 @@ class ConceptSearchOptions {
 })
 export class ConceptSearchResultComponent implements OnInit  {
 
-  public searchResults: ConceptReference[];
+  public searchResults: SearchResponseConcept[];
   public searchOptions: ConceptSearchOptions;
   public hasResponse: boolean;
 

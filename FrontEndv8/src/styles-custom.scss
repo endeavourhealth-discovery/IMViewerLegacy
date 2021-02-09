@@ -47,6 +47,9 @@ body {
   background-color: mat-color($accent);
 }
 
+.subdued {
+  color: $dark-disabled-text;
+}
 // Dark theme
 $dark-primary: mat-palette($mat-blue-grey);
 $dark-accent:  mat-palette($mat-amber, A200, A100, A400);
@@ -63,6 +66,14 @@ $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 
   .select-highlight.selected {
     background-color: mat-color($dark-accent);
+  }
+
+  .subdued {
+    color: $light-disabled-text;
+  }
+
+  .mat-tab-body {
+    background-color: unset !important;
   }
 }
 
@@ -106,6 +117,10 @@ $teal-theme: mat-light-theme($teal-primary, $teal-accent, $teal-warn);
 
   .select-highlight.selected {
     background-color: mat-color($teal-accent);
+  }
+
+  .subdued {
+    color: $dark-disabled-text;
   }
 }
 
@@ -201,6 +216,10 @@ $xmas-red: #E1384A;
 
   .select-highlight.selected {
     background-color: mat-color($xmas-accent);
+  }
+
+  .subdued {
+    color: $dark-disabled-text;
   }
 }
 
