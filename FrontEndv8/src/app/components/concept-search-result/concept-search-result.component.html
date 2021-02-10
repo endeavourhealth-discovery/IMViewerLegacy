@@ -5,11 +5,11 @@
     <div fxFlex="100" *ngIf="hasResults; else noResults">
       <h2 class="mat-title">Search results for <i>"{{searchOptions.searchTerms}}"</i></h2>
       <div fxLayout="row wrap" fxLayoutAlign="center stretch" >
-        
+
         <!-- sort order control -->
         <div fxFlex="100" style="padding-bottom: 10px;">
           <p class="mat-caption">{{searchResultsTable.rowCount}} results</p>
-          
+
           <mat-form-field appearance="outline">
             <mat-label>Sort by</mat-label>
             <mat-select [(ngModel)]="searchOptions.sortBySelection"
@@ -29,7 +29,7 @@
                 {{column}}
               </mat-option>
             </mat-select>
-          </mat-form-field>   
+          </mat-form-field>
         </div>
 
         <div fxFlex="100" style="padding-bottom: 10px;">
@@ -37,41 +37,41 @@
             <ng-container matColumnDef="name">
               <mat-header-cell *matHeaderCellDef style="width: 50%;">Name</mat-header-cell>
               <mat-cell *matCellDef="let searchResult;">
-                <span class="select-highlight hover-highlight" 
+                <span class="select-highlight hover-highlight"
                       [class.subdued]="searchResult.subdued"
-                      [class.selected]="searchResult.highlighted" 
+                      [class.selected]="searchResult.highlighted"
                       style="cursor: pointer"
                       (click)="searchResultsTable.onSelectSearchResultRow(searchResult)">
                   {{searchResult.name}}
                 </span>
               </mat-cell>
             </ng-container>
-    
+
             <ng-container matColumnDef="type">
               <mat-header-cell *matHeaderCellDef style="width: 20%;">Type</mat-header-cell>
-              <mat-cell *matCellDef="let searchResult;">    
-                  <mat-icon [ngStyle]="{'color': searchResult.conceptTypeColor}" 
-                            fontSet="fa" 
-                            fontIcon={{searchResult.conceptTypeIcon}} 
+              <mat-cell *matCellDef="let searchResult;">
+                  <mat-icon [ngStyle]="{'color': searchResult.conceptTypeColor}"
+                            fontSet="fa"
+                            fontIcon={{searchResult.conceptTypeIcon}}
                             [matTooltip]="searchResult.conceptTypeName"
-                            [matTooltipPosition]="after"></mat-icon>
+                            matTooltipPosition="after"></mat-icon>
               </mat-cell>
-            </ng-container> 
-    
+            </ng-container>
+
             <ng-container matColumnDef="codeScheme">
               <mat-header-cell *matHeaderCellDef style="width: 30%;">Code Scheme</mat-header-cell>
               <mat-cell *matCellDef="let searchResult;" [class.subdued]="searchResult.subdued">
                 {{searchResult.scheme.name}}
               </mat-cell>
-            </ng-container>   
-    
+            </ng-container>
+
             <mat-header-row *matHeaderRowDef="searchResultsTable.selectedColumns; sticky: true"></mat-header-row>
             <mat-row *matRowDef="let row; columns: searchResultsTable.selectedColumns" ></mat-row>
-          </mat-table> 
-        </div> 
-        
+          </mat-table>
+        </div>
+
         <mat-divider fxFlex="100"></mat-divider>
-        
+
       </div>
     </div>
 

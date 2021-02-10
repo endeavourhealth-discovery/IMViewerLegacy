@@ -1,7 +1,7 @@
 import {ConceptReference} from '../objectmodel/ConceptReference';
 import {ConceptType} from '../objectmodel/ConceptType';
 
-export class SearchResponseConcept {
+export class ConceptSummary {
   name: string;
   iri: string;
   scheme: ConceptReference;

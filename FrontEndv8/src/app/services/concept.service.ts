@@ -9,6 +9,7 @@ import {HealthRecordNavigatorService} from '../components/health-record-navigato
 import {SearchRequest} from '../models/search/SearchRequest';
 import {SearchResponse} from '../models/search/SearchResponse';
 import {Option} from '@angular/cli/models/interface';
+import {ConceptSummary} from '../models/search/ConceptSummary';
 
 export interface ConceptAggregate {
   concept: Concept;
@@ -82,8 +83,8 @@ export class ConceptService implements HealthRecordNavigatorService {
     return this.http.get<Array<Concept>>(environment.api + 'api/concept/' + iri + '/parents/definitions');
   }
 
-  findUsages(iri: string): Observable<Array<ConceptReference>> {
-    return this.http.get<Array<ConceptReference>>(environment.api + 'api/concept/' + iri + '/usages');
+  findUsages(iri: string): Observable<Array<ConceptSummary>> {
+    return this.http.get<Array<ConceptSummary>>(environment.api + 'api/concept/' + iri + '/usages');
   }
 
   findMappedFrom(iri: string): Observable<Array<ConceptReference>> {

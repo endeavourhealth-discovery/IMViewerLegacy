@@ -91,7 +91,7 @@ class ConceptSearchResultTable {
   public allColumns: string[];
   public selectedRow: Observable<ConceptSearchResultRow>;
 
-  constructor(public rows: ConceptSearchResultRow[], private perspectiveService: Perspectives) { 
+  constructor(public rows: ConceptSearchResultRow[], private perspectiveService: Perspectives) {
     this.allColumns = ["name", "type", "codeScheme"];
     this.selectedColumns = ["name", "type", "codeScheme"];
     this.selectedRow = new Subject();
@@ -103,10 +103,10 @@ class ConceptSearchResultTable {
       let conceptTypeName: string = perspective.caption;
 
       if(row.types != null && row.types.length > 0) {
-      
+
         perspective = this.perspectiveService.getPerspectiveByRoot(row.types[0].iri);
         conceptTypeName = row.types[0].name;
-      
+
         // default perspective
         if(perspective == null) {
           perspective = this.perspectiveService.ontology;
@@ -139,7 +139,7 @@ class ConceptSearchResultTable {
   onSelectSearchResultRow(row: ConceptSearchResultRow) {
     row.highlighted = !row.highlighted;
     (this.selectedRow as Subject<ConceptSearchResultRow>).next(row);
-  } 
+  }
 }
 
 @Component({
