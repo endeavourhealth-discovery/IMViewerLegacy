@@ -17,6 +17,7 @@ class ConceptSearchOptions {
   codeSchemeSelections: ConceptReference[];
   conceptStatusSelections: string[];
   sortBySelection: string;
+  resultCount: number;
 
   searchRequest: Observable<SearchRequest>
 
@@ -29,6 +30,7 @@ class ConceptSearchOptions {
     this.conceptStatusSelections = _searchRequest.statuses.map(status => { return ConceptStatus[status] } );
     this.codeSchemeSelections = _searchRequest.codeSchemes;
     this.sortBySelection = SortBy[_searchRequest.sortBy]
+    this.resultCount = _searchRequest.size;
   }
 
   // sync string selection in UI to model
@@ -50,6 +52,13 @@ class ConceptSearchOptions {
     this._searchRequest.sortBy = selected;
 
     this.onChangeSearchRequest()
+  }
+
+  // TODO - temp method until pagination support is put in the backend
+  onResultCountChange() {
+    this._searchRequest.size = this.resultCount;
+
+    this.onChangeSearchRequest()   
   }
 
   compareCodeSchemes(source: ConceptReference, target: ConceptReference): boolean {
@@ -91,6 +100,8 @@ class ConceptSearchResultTable {
   public allColumns: string[];
   public selectedRow: Observable<ConceptSearchResultRow>;
 
+  private _selectedRow: ConceptSearchResultRow;
+
   constructor(public rows: ConceptSearchResultRow[], private perspectiveService: Perspectives) {
     this.allColumns = ["name", "type", "codeScheme"];
     this.selectedColumns = ["name", "type", "codeScheme"];
@@ -124,7 +135,7 @@ class ConceptSearchResultTable {
         }
       }
 
-      row.subdued = row.weighting > 0;
+      row.subdued = row.weighting <= 0;
     });
   }
 
@@ -137,8 +148,16 @@ class ConceptSearchResultTable {
   }
 
   onSelectSearchResultRow(row: ConceptSearchResultRow) {
-    row.highlighted = !row.highlighted;
-    (this.selectedRow as Subject<ConceptSearchResultRow>).next(row);
+    // remove old selection
+    if(this._selectedRow != null) {
+      this._selectedRow.highlighted = !this._selectedRow.highlighted
+    }
+
+    // set new selection
+    this._selectedRow = row;
+    this._selectedRow.highlighted = !this._selectedRow.highlighted;
+
+    (this.selectedRow as Subject<ConceptSearchResultRow>).next(this._selectedRow);
   }
 }
 
@@ -150,19 +169,15 @@ class ConceptSearchResultTable {
 })
 export class ConceptSearchResultComponent implements OnInit  {
 
-  //public searchResults: SearchResponseConcept[];
   public searchResultsTable: ConceptSearchResultTable;
   public searchOptions: ConceptSearchOptions;
   public hasResponse: boolean;
-
-  //private selectedSearchResult: string;
 
   constructor(private eventBus: NgEventBus,
               private codeSchemes: CodeSchemes,
               private perspectiveService: Perspectives,
               private log: LoggerService) {
     this.eventBus.on(searchEvents.SEARCH_RESULT_EVENT).subscribe((searchResponse: SearchResponse) => {
-      //this.searchResults = searchResponse.concepts;
       this.searchResultsTable = new ConceptSearchResultTable(searchResponse.concepts, perspectiveService);
       this.searchResultsTable.selectedRow.subscribe(
         selected => {

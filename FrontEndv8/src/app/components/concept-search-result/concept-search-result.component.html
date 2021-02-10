@@ -6,32 +6,43 @@
       <h2 class="mat-title">Search results for <i>"{{searchOptions.searchTerms}}"</i></h2>
       <div fxLayout="row wrap" fxLayoutAlign="center stretch" >
 
+        <p class="mat-caption" fxFlex="20">{{searchResultsTable.rowCount}} results</p>
+        
         <!-- sort order control -->
-        <div fxFlex="100" style="padding-bottom: 10px;">
-          <p class="mat-caption">{{searchResultsTable.rowCount}} results</p>
-
+        <!-- TODO - reinstate when sort implemented on backend 
           <mat-form-field appearance="outline">
-            <mat-label>Sort by</mat-label>
-            <mat-select [(ngModel)]="searchOptions.sortBySelection"
-              (selectionChange)="searchOptions.onSortByChange()">
-              <mat-option *ngFor="let sortByOption of searchOptions.sortByOptions"
-                [value]="sortByOption">
-                {{sortByOption}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+          <mat-label>Sort by</mat-label>
+          <mat-select [(ngModel)]="searchOptions.sortBySelection"
+            (selectionChange)="searchOptions.onSortByChange()">
+            <mat-option *ngFor="let sortByOption of searchOptions.sortByOptions"
+              [value]="sortByOption">
+              {{sortByOption}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field> -->
 
-          <!-- result column selection control -->
-          <mat-form-field appearance="outline">
-            <mat-label>Show result</mat-label>
-            <mat-select [(value)]="searchResultsTable.selectedColumns" multiple>
-              <mat-option *ngFor="let column of searchResultsTable.allColumns" [value]="column">
-                {{column}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
+        <!-- result set size control -->
+        <!-- TODO - remove and replace with paginator once paging implemented on backend -->
+        <mat-form-field appearance="outline" fxFlex="40">
+          <mat-label>Result count</mat-label>
+          <mat-select [(ngModel)]="searchOptions.resultCount" (selectionChange)="searchOptions.onResultCountChange()">
+            <mat-option [value]="25">25</mat-option>
+            <mat-option [value]="50">50</mat-option>
+            <mat-option [value]="100">100</mat-option>
+            <mat-option [value]="500">500</mat-option>
+          </mat-select>          
+        </mat-form-field>
 
+        <!-- result column selection control -->
+        <mat-form-field appearance="outline" fxFlex="40">
+          <mat-label>Show result</mat-label>
+          <mat-select [(value)]="searchResultsTable.selectedColumns" multiple>
+            <mat-option *ngFor="let column of searchResultsTable.allColumns" [value]="column">
+              {{column}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+       
         <div fxFlex="100" style="padding-bottom: 10px;">
           <mat-table [dataSource]="searchResultsTable.rows" style="width: 100%;">
             <ng-container matColumnDef="name">
