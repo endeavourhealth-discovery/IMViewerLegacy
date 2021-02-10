@@ -30,11 +30,11 @@
       <input disabled matInput [value]="concept.status?.toString()">
     </mat-form-field>
 
-    <mat-form-field floatLabel="always" appearance="outline" fxFlex="100">
+    <mat-form-field floatLabel="always" appearance="outline" fxFlex="50">
       <mat-label>Description:</mat-label>
       <textarea disabled matInput [value]="concept.description" rows="10"></textarea>
     </mat-form-field>
 
-    <app-concept-definition [concept]="concept" fxFlex="100"></app-concept-definition>
+    <app-concept-definition [concept]="concept" fxFlex="50"></app-concept-definition>
 
   </div>
