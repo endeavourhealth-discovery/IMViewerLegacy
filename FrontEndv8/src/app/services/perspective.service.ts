@@ -129,7 +129,7 @@ export class Perspectives  {
     this.conceptService.isOfType(iri, Array.from(this.perspectivesMap.keys())).subscribe(
         (result) => {
             if (result.length == 1) {
-                console.log(`Got perspecive ${result[0].iri} for ${iri}`);
+                this.log.debug(`Got perspecive ${result[0].iri} for ${iri}`);
                 perspectiveObservable.next(this.perspectivesMap.get(result[0].iri));
             }
             else if (result.length > 1) {

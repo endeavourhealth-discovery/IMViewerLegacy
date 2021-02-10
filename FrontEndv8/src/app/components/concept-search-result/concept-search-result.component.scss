@@ -3,3 +3,22 @@
     min-height: 1.4em !important;
     height: 1.4em;
   }
+
+  .mat-title {
+    margin: 0px 0px 0px 0px;
+  }
+
+  .mat-row {
+    min-height: 1.4em;
+    border: none;
+  }
+
+  .mat-cell {
+    padding: 4px 4px 4px 0;
+    min-height: 1.4em;
+  }
+
+  .mat-table {
+    overflow: auto;
+    max-height: calc(100vh - 425px);
+  }

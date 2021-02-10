@@ -1,46 +1,86 @@
 <ng-container *ngIf="hasResponse; else noResponse">
-  <div fxLayout="column" fxLayoutAlign="center stretch">
+  <div fxLayout="row wrap" fxLayoutAlign="center stretch" style="min-height:calc(100vh - 300px);">
 
     <!-- results area -->
-    <div fxFlex="60" *ngIf="hasResults; else noResults">
+    <div fxFlex="100" *ngIf="hasResults; else noResults">
       <h2 class="mat-title">Search results for <i>"{{searchOptions.searchTerms}}"</i></h2>
-      <div fxLayout="row" fxLayoutAlign="space-between start" >
-        <p class="mat-caption">{{searchResults.length}} results</p>
-
+      <div fxLayout="row wrap" fxLayoutAlign="center stretch" >
+        
         <!-- sort order control -->
-        <mat-form-field appearance="outline">
-          <mat-label>Sort by</mat-label>
-          <mat-select [(ngModel)]="searchOptions.sortBySelection"
-            (selectionChange)="searchOptions.onSortByChange()">
-            <mat-option *ngFor="let sortByOption of searchOptions.sortByOptions"
-              [value]="sortByOption">
-              {{sortByOption}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
+        <div fxFlex="100" style="padding-bottom: 10px;">
+          <p class="mat-caption">{{searchResultsTable.rowCount}} results</p>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>Sort by</mat-label>
+            <mat-select [(ngModel)]="searchOptions.sortBySelection"
+              (selectionChange)="searchOptions.onSortByChange()">
+              <mat-option *ngFor="let sortByOption of searchOptions.sortByOptions"
+                [value]="sortByOption">
+                {{sortByOption}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
 
-      <!-- results list -->
-      <mat-list *ngFor="let searchResult of searchResults">
-        <mat-list-item>
-          <span><i [class]="'fas fa-fw ' + getIcon(searchResult.conceptType)"></i></span>
-          <span class="select-highlight hover-highlight no-wrap"
-                [class.selected]="highlightSearchResult(searchResult)"
-                style="cursor: pointer"
-                (click)="onSelectSearchResult(searchResult)">
-            {{searchResult.name}}
-          </span>
-        </mat-list-item>
-      </mat-list>
+          <!-- result column selection control -->
+          <mat-form-field appearance="outline">
+            <mat-label>Show result</mat-label>
+            <mat-select [(value)]="searchResultsTable.selectedColumns" multiple>
+              <mat-option *ngFor="let column of searchResultsTable.allColumns" [value]="column">
+                {{column}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>   
+        </div>
+
+        <div fxFlex="100" style="padding-bottom: 10px;">
+          <mat-table [dataSource]="searchResultsTable.rows" style="width: 100%;">
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef style="width: 50%;">Name</mat-header-cell>
+              <mat-cell *matCellDef="let searchResult;">
+                <span class="select-highlight hover-highlight" 
+                      [class.subdued]="searchResult.subdued"
+                      [class.selected]="searchResult.highlighted" 
+                      style="cursor: pointer"
+                      (click)="searchResultsTable.onSelectSearchResultRow(searchResult)">
+                  {{searchResult.name}}
+                </span>
+              </mat-cell>
+            </ng-container>
+    
+            <ng-container matColumnDef="type">
+              <mat-header-cell *matHeaderCellDef style="width: 20%;">Type</mat-header-cell>
+              <mat-cell *matCellDef="let searchResult;">    
+                  <mat-icon [ngStyle]="{'color': searchResult.conceptTypeColor}" 
+                            fontSet="fa" 
+                            fontIcon={{searchResult.conceptTypeIcon}} 
+                            [matTooltip]="searchResult.conceptTypeName"
+                            [matTooltipPosition]="after"></mat-icon>
+              </mat-cell>
+            </ng-container> 
+    
+            <ng-container matColumnDef="codeScheme">
+              <mat-header-cell *matHeaderCellDef style="width: 30%;">Code Scheme</mat-header-cell>
+              <mat-cell *matCellDef="let searchResult;" [class.subdued]="searchResult.subdued">
+                {{searchResult.scheme.name}}
+              </mat-cell>
+            </ng-container>   
+    
+            <mat-header-row *matHeaderRowDef="searchResultsTable.selectedColumns; sticky: true"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: searchResultsTable.selectedColumns" ></mat-row>
+          </mat-table> 
+        </div> 
+        
+        <mat-divider fxFlex="100"></mat-divider>
+        
+      </div>
     </div>
-    <mat-divider></mat-divider>
 
     <!-- filters area -->
-    <div fxFlex="40">
+    <div fxFlex="100" style="height: 100%; min-height: 100%;">
       <div fxLayout="column" fxLayoutAlign="space-around stretch">
         <h2 class="mat-title">Refine <small>({{searchOptions.appliedFilterCount}} filters applied)</small></h2>
 
-        <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
+        <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start"  style="height: 100%; min-height: 100%;">
           <!-- code scheme filter control -->
           <mat-form-field appearance="outline" fxFlex="100">
             <mat-label>Code scheme</mat-label>

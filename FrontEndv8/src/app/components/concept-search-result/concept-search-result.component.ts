@@ -1,17 +1,16 @@
-import {Component, OnInit} from '@angular/core';
-import {NgEventBus} from 'ng-event-bus';
-import {Observable, ReplaySubject, Subject} from 'rxjs';
-import {ConceptReference} from 'src/app/models/objectmodel/ConceptReference';
-import {ConceptStatus} from 'src/app/models/objectmodel/ConceptStatus';
-import {CodeSchemes, codeSchemesProvider} from 'src/app/models/search/CodeScheme';
+import { Component, OnInit } from '@angular/core';
+import { NgEventBus } from 'ng-event-bus';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { ConceptReference } from 'src/app/models/objectmodel/ConceptReference';
+import { ConceptStatus } from 'src/app/models/objectmodel/ConceptStatus';
+import { Perspective } from 'src/app/models/Perspective';
+import { CodeSchemes, codeSchemesProvider } from 'src/app/models/search/CodeScheme';
 import * as searchEvents from 'src/app/models/search/SearchEvents';
-import {SearchRequest} from 'src/app/models/search/SearchRequest';
-import {SearchResponse} from 'src/app/models/search/SearchResponse';
-import {SortBy} from 'src/app/models/search/SortBy';
-import {LoggerService} from 'src/app/services/logger.service';
-import {Perspectives} from 'src/app/services/perspective.service';
-import {ConceptType} from '../../models/objectmodel/ConceptType';
-import {SearchResponseConcept} from '../../models/search/SearchResponseConcept';
+import { SearchRequest } from 'src/app/models/search/SearchRequest';
+import { SearchResponse } from 'src/app/models/search/SearchResponse';
+import { SortBy } from 'src/app/models/search/SortBy';
+import { LoggerService } from 'src/app/services/logger.service';
+import { Perspectives } from 'src/app/services/perspective.service';
 
 class ConceptSearchOptions {
 
@@ -72,6 +71,77 @@ class ConceptSearchOptions {
   }
 }
 
+interface ConceptSearchResultRow {
+  iri: string;
+  name: string;
+  types: ConceptReference[];
+  scheme: ConceptReference;
+  weighting: number;
+  highlighted?: boolean;
+  selected?: boolean;
+  subdued?: boolean;
+  conceptTypeColor?: string;
+  conceptTypeIcon?: string;
+  conceptTypeName?: string;
+}
+
+class ConceptSearchResultTable {
+
+  public selectedColumns: string[];
+  public allColumns: string[];
+  public selectedRow: Observable<ConceptSearchResultRow>;
+
+  constructor(public rows: ConceptSearchResultRow[], private perspectiveService: Perspectives) { 
+    this.allColumns = ["name", "type", "codeScheme"];
+    this.selectedColumns = ["name", "type", "codeScheme"];
+    this.selectedRow = new Subject();
+
+    // setup concept icon and color
+    this.rows.forEach(row => {
+      // default perspective
+      let perspective: Perspective = this.perspectiveService.ontology;
+      let conceptTypeName: string = perspective.caption;
+
+      if(row.types != null && row.types.length > 0) {
+      
+        perspective = this.perspectiveService.getPerspectiveByRoot(row.types[0].iri);
+        conceptTypeName = row.types[0].name;
+      
+        // default perspective
+        if(perspective == null) {
+          perspective = this.perspectiveService.ontology;
+        }
+      }
+
+      row.conceptTypeName = conceptTypeName;
+      row.conceptTypeColor = perspective.color;
+      row.conceptTypeIcon = perspective.icon;
+
+      if(row.scheme == null) {
+        row.scheme = {
+          iri: "",
+          name: "Default code"
+        }
+      }
+
+      row.subdued = row.weighting > 0;
+    });
+  }
+
+  get hasRows(): boolean {
+    return this.rowCount > 0;
+  }
+
+  get rowCount(): number {
+    return (this.rows != null) ? (this.rows.length) : (0);
+  }
+
+  onSelectSearchResultRow(row: ConceptSearchResultRow) {
+    row.highlighted = !row.highlighted;
+    (this.selectedRow as Subject<ConceptSearchResultRow>).next(row);
+  } 
+}
+
 @Component({
   selector: 'app-concept-search-result',
   templateUrl: './concept-search-result.component.html',
@@ -80,18 +150,28 @@ class ConceptSearchOptions {
 })
 export class ConceptSearchResultComponent implements OnInit  {
 
-  public searchResults: SearchResponseConcept[];
+  //public searchResults: SearchResponseConcept[];
+  public searchResultsTable: ConceptSearchResultTable;
   public searchOptions: ConceptSearchOptions;
   public hasResponse: boolean;
 
-  private selectedSearchResult: string;
+  //private selectedSearchResult: string;
 
   constructor(private eventBus: NgEventBus,
               private codeSchemes: CodeSchemes,
               private perspectiveService: Perspectives,
               private log: LoggerService) {
     this.eventBus.on(searchEvents.SEARCH_RESULT_EVENT).subscribe((searchResponse: SearchResponse) => {
-      this.searchResults = searchResponse.concepts;
+      //this.searchResults = searchResponse.concepts;
+      this.searchResultsTable = new ConceptSearchResultTable(searchResponse.concepts, perspectiveService);
+      this.searchResultsTable.selectedRow.subscribe(
+        selected => {
+          this.eventBus.cast("app:conceptSelect", selected.iri);
+        },
+        error => {
+          this.log.error(`Warning - unable to read selected search result. Action - No selection event will be triggered. Cause - ${error}`);
+        }
+      )
 
       this.initSearchOptions(searchResponse.request).subscribe(
         (searchOptions: ConceptSearchOptions) => {
@@ -121,16 +201,7 @@ export class ConceptSearchResultComponent implements OnInit  {
   }
 
   get hasResults() {
-    return this.hasResponse && this.searchResults.length > 0;
-  }
-
-  onSelectSearchResult(conceptReference: ConceptReference) {
-    this.selectedSearchResult = conceptReference.iri;
-    this.eventBus.cast('app:conceptSelect', conceptReference.iri);
-  }
-
-  highlightSearchResult(conceptReference: ConceptReference): boolean {
-    return this.selectedSearchResult == conceptReference.iri;
+    return this.hasResponse && this.searchResultsTable.hasRows
   }
 
   private initSearchOptions(searchRequest: SearchRequest): Observable<ConceptSearchOptions> {
@@ -150,11 +221,4 @@ export class ConceptSearchResultComponent implements OnInit  {
     return searchOptionsObservable;
   }
 
-  getIcon(conceptType: ConceptType) {
-    switch (conceptType) {
-      case ConceptType.Record: return this.perspectiveService.healthRecord.icon;
-      case ConceptType.ValueSet: return this.perspectiveService.valueSets.icon;
-      default: return this.perspectiveService.ontology.icon;
-    }
-  }
 }
