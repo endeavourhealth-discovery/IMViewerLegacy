@@ -27,7 +27,7 @@
       <mat-tab label="Members" *ngIf="perspective.root == ':VSET_ValueSet'">
         <ng-template mat-tab-label>
           <mat-icon class="example-tab-icon">account_tree</mat-icon>
-          Members
+          Member definition
         </ng-template>
         <ng-template matTabContent>
           <app-view-members [concept]="concept" [children]="children" [parents]="parents"></app-view-members>
@@ -37,7 +37,7 @@
       <mat-tab label="Members" *ngIf="perspective.root == ':VSET_ValueSet'">
         <ng-template mat-tab-label>
           <mat-icon class="example-tab-icon">account_tree</mat-icon>
-          Expanded Members
+          Evaluated Members
         </ng-template>
         <ng-template matTabContent>
 
