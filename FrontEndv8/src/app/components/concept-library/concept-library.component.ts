@@ -64,4 +64,18 @@ export class ConceptLibraryComponent implements OnInit {
     }
   }
 
+  isMemberOf(conceptIri: string) {
+    this.service.isValuesetMember(conceptIri, this.concept.iri).subscribe(
+      (result) => {
+        if (!result.includedBy)
+          alert('Not included in this value set');
+        else if (!result.excludedBy)
+          alert('Included as descendant of [' + result.includedBy.name + ']');
+        else
+          alert('Included as descendant of [' + result.includedBy.name + ']\nbut further excluded as descendant of [' + result.excludedBy.name + ']');
+      },
+      (error) => this.log.error(error)
+    );
+  }
+
 }

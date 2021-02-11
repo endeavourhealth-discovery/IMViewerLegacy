@@ -65,7 +65,7 @@
               <input matInput
                      placeholder="Search"
                      id="conceptSearchInput"
-                     #conceptSearchInput>
+                     #conceptSearchInput (keyup.enter)="isMemberOf($event.target.value)">
             </mat-form-field>
 
             <mat-form-field floatLabel="always" appearance="outline" fxFlex="100" readonly>
