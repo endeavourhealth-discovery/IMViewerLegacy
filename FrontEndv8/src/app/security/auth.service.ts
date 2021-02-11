@@ -66,11 +66,8 @@ export class AuthenticationService {
         email,
         'custom:forename': forename,
         'custom:surname': surname,
+        'custom:avatar': avatar,
       };
-
-      if (avatar)
-        atts['custom:avatar'] = avatar;
-
 
       Auth.updateUserAttributes(user, atts);
     } else
