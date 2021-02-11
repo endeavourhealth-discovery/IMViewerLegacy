@@ -10,6 +10,7 @@ import {SearchRequest} from '../models/search/SearchRequest';
 import {SearchResponse} from '../models/search/SearchResponse';
 import {Option} from '@angular/cli/models/interface';
 import {ConceptSummary} from '../models/search/ConceptSummary';
+import {ValueSetMembership} from '../models/valueset/ValueSetMembership';
 
 export interface ConceptAggregate {
   concept: Concept;
@@ -142,6 +143,10 @@ export class ConceptService implements HealthRecordNavigatorService {
     let params: HttpParams = new HttpParams();
     params = params.append('expanded', expand ? 'true' : 'false');
     return this.http.get(environment.api + 'api/concept/' + iri + '/members', {headers, params, responseType: 'text'});
+  }
+
+  isValuesetMember(conceptIri: string, valuesetIri: string): Observable<ValueSetMembership> {
+    return this.http.get<ValueSetMembership>(environment.api + 'api/concept/' + conceptIri + '/isMemberOf/' + valuesetIri);
   }
 
 }
