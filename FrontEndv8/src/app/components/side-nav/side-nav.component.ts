@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { MatTabGroup } from '@angular/material/tabs';
 import { NavigationEnd, Router } from '@angular/router';
 import { NgEventBus } from 'ng-event-bus';
@@ -28,7 +28,7 @@ export class SideNavComponent {
     private log: LoggerService,
     private eventBus: NgEventBus) {
       this.routeEvent(this.router);
-      this.eventBus.on(searchEvents.SEARCH_RESULT_EVENT).subscribe(searchResponseEvent => {
+      this.eventBus.on(searchEvents.SEARCH_RESULT_PENDING_EVENT).subscribe(searchResultPendingEvent => {
         this.showSearchResultsTab();
       });
   }

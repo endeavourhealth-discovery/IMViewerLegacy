@@ -172,12 +172,21 @@ export class ConceptSearchResultComponent implements OnInit  {
   public searchResultsTable: ConceptSearchResultTable;
   public searchOptions: ConceptSearchOptions;
   public hasResponse: boolean;
+  public searchResultPending: boolean;
 
   constructor(private eventBus: NgEventBus,
               private codeSchemes: CodeSchemes,
               private perspectiveService: Perspectives,
               private log: LoggerService) {
+    this.searchResultPending = false;  
+    
+    this.eventBus.on(searchEvents.SEARCH_RESULT_PENDING_EVENT).subscribe((searchRequest: SearchRequest) => {
+      this.searchResultPending = true;  
+    });
+
     this.eventBus.on(searchEvents.SEARCH_RESULT_EVENT).subscribe((searchResponse: SearchResponse) => {
+      this.searchResultPending = false;
+      
       this.searchResultsTable = new ConceptSearchResultTable(searchResponse.concepts, perspectiveService);
       this.searchResultsTable.selectedRow.subscribe(
         selected => {

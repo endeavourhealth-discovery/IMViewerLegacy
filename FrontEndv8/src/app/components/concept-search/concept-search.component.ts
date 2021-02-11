@@ -65,6 +65,8 @@ export class ConceptSearchComponent implements AfterViewInit {
   }
 
   private doSearch() {
+    this.eventBus.cast(searchEvents.SEARCH_RESULT_PENDING_EVENT, this.searchQuery);
+
     this.searchRequest = this.service.advancedSearch(this.searchQuery)
       .subscribe(
         (searchResponse: SearchResponse) => {
