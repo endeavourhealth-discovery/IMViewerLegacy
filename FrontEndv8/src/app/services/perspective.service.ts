@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { Perspective } from '../models/Perspective';
-import { ConceptService } from './concept.service';
-import { LoggerService } from './logger.service';
+import {Injectable} from '@angular/core';
+import {Observable, Subject} from 'rxjs';
+import {Perspective} from '../models/Perspective';
+import {ConceptService} from './concept.service';
+import {LoggerService} from './logger.service';
+import {ConceptType} from '../models/objectmodel/ConceptType';
 
 @Injectable()
 export class Perspectives  {
@@ -160,5 +161,18 @@ export class Perspectives  {
     const perspective: Perspective = this.perspectivesMap.get(rootIri);
 
     return perspective;
+  }
+
+  getPerspectiveByConceptType(conceptType: ConceptType): Perspective {
+    switch (conceptType) {
+      case ConceptType.ValueSet:
+        return this.valueSets;
+      case ConceptType.Record:
+      case ConceptType.DataProperty:
+      case ConceptType.ObjectProperty:
+        return this.healthRecord;
+      default:
+        return this.ontology;
+    }
   }
 }
