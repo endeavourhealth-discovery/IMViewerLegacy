@@ -10,7 +10,7 @@ export class Perspectives  {
   ontology: Perspective = {
     "caption": "Semantic Ontology",
     "subtitle": "Complete conceptual definitions",
-    "description": "The semantic ontology is the set of concepts used in all parts of the information model, from clinical concepts through to data structure concepts",
+    "description": "The semantic ontology is the set of concepts used in all parts of the information model, from clinical concepts through to data structure concepts.",
     "primary": {state: "perspective/ontology", name: "Explore"},
     "image": "ontology.jpg",
     "icon": "fa-lightbulb",
@@ -21,7 +21,7 @@ export class Perspectives  {
   healthRecord: Perspective = {
     "caption": "Data Models",
     "subtitle": "Data model definition",
-    "description": "The data model is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but the data model, being created for a specific business of healthcare is separate to the ontology",
+    "description": "The data model is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but the data model, being created for a specific business of healthcare is separate to the ontology.",
     "primary": {state: "perspective/healthRecord", name: "Explore"},
     "additionalStates": [
       {state: "perspective/healthRecordOverview", name: "Overview"}
@@ -63,7 +63,7 @@ export class Perspectives  {
   valueSets: Perspective = {
     "caption": "Value Sets",
     "subtitle": "Value set and member explorer",
-    "description": "Business purpose specific collections of concepts from the ontology used in the data model or in query and contain concepts as defined in the ontology, using the ontology language, including advanced concept classes",
+    "description": "Business purpose specific collections of concepts from the ontology used in the data model or in query and contain concepts as defined in the ontology, using the ontology language, including advanced concept classes.",
     "primary": {state: "perspective/valueSets", name: "Explore"},
     "image": "valuesets.jpg",
     "icon": "fa-tasks",
