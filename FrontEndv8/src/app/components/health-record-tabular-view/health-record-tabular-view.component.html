@@ -75,8 +75,8 @@
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="propertiesTable.columns"></tr>
-      <tr mat-row *matRowDef="let row; columns: propertiesTable.columns;"></tr>
+      <tr mat-header-row *matHeaderRowDef="propertiesTableColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: propertiesTableColumns;"></tr>
     </table>
   </ng-container>
 </mat-expansion-panel>
