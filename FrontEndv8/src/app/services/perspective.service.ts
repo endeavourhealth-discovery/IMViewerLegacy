@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { Perspective } from '../models/Perspective';
-import { ConceptService } from './concept.service';
-import { LoggerService } from './logger.service';
+import {Injectable} from '@angular/core';
+import {Observable, Subject} from 'rxjs';
+import {Perspective} from '../models/Perspective';
+import {ConceptService} from './concept.service';
+import {LoggerService} from './logger.service';
+import {ConceptType} from '../models/objectmodel/ConceptType';
 
 @Injectable()
 export class Perspectives  {
@@ -31,34 +32,6 @@ export class Perspectives  {
     "color": "limegreen",
     "root": ":DiscoveryCommonDataModel"
   };
-
-  // healthRecord: Perspective = {
-  //   "caption": "Health Records",
-  //   "subtitle": "Health Record definition explorer",
-  //   "description": "The health record is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but the health record, being created for a specific business of healthcare is separate to the ontology",
-  //   "primary": {state: "perspective/healthRecord", name: "Explore"},
-  //   "additionalStates": [
-  //     {state: "perspective/healthRecordOverview", name: "Overview"}
-  //   ],
-  //   "image": "healthrecords.jpg",
-  //   "icon": "book",
-  //   "color": "limegreen",
-  //   "root": ":HealthRecord"
-  // };
-
-  // dataModel: Perspective = {
-  //   "caption": "Data Models",
-  //   "subtitle": "Data model definition",
-  //   "description": "The data model is a set of entities, attributes and value sets, all of which are defined precisely in the ontology, but the data model, being created for a specific business of healthcare is separate to the ontology",
-  //   "primary": {state: "perspective/dataModel", name: "Explore"},
-  //   "additionalStates": [
-  //     {state: "perspective/dataModelOverview", name: "Overview"}
-  //   ],
-  //   "image": "datamodels.jpg",
-  //   "icon": "fa-sitemap",
-  //   "color": "LightSkyBlue",
-  //   "root": ":DiscoveryCommonDataModel"
-  // };
 
   valueSets: Perspective = {
     "caption": "Value Sets",
@@ -92,17 +65,6 @@ export class Perspectives  {
     "color": "DarkTurquoise",
     "root": ":MAP_Map"
   };
-/*
-  search: Perspective = {
-    "caption": "Advanced Search",
-    "subtitle": "Advanced search of all concepts",
-    "description": "Allows advanced searching of all concepts, with additional filters such as legacy and code scheme",
-    "primary": {state: "perspective/search", name: "Search"},
-    "image": "search.jpg",
-    "icon": "fa-search",
-    "color": "darkorchid",
-    "root": null
-  };*/
 
   perspectives: Perspective[];
   perspectivesMap: Map<string, Perspective>;
@@ -160,5 +122,18 @@ export class Perspectives  {
     const perspective: Perspective = this.perspectivesMap.get(rootIri);
 
     return perspective;
+  }
+
+  getPerspectiveByConceptType(conceptType: ConceptType): Perspective {
+    switch (conceptType) {
+      case ConceptType.ValueSet:
+        return this.valueSets;
+      case ConceptType.Record:
+      case ConceptType.DataProperty:
+      case ConceptType.ObjectProperty:
+        return this.healthRecord;
+      default:
+        return this.ontology;
+    }
   }
 }

@@ -24,7 +24,7 @@ export class ConceptLibraryComponent implements OnInit {
     private log: LoggerService,
     private eventBus: NgEventBus) { }
 
-    @Input() concept: Concept;
+    @Input() concept: Concept | any;
     @Input()parents: Array<ConceptReferenceNode>;
     @Input()children: Array<ConceptReferenceNode>;
     mappedFrom: Array<ConceptReference>;
@@ -62,6 +62,20 @@ export class ConceptLibraryComponent implements OnInit {
     } else {
       this.eventBus.cast('app:conceptSelect', null);
     }
+  }
+
+  isMemberOf(conceptIri: string) {
+    this.service.isValuesetMember(conceptIri, this.concept.iri).subscribe(
+      (result) => {
+        if (!result.includedBy)
+          alert('Not included in this value set');
+        else if (!result.excludedBy)
+          alert('Included as descendant of [' + result.includedBy.name + ']');
+        else
+          alert('Included as descendant of [' + result.includedBy.name + ']\nbut further excluded as descendant of [' + result.excludedBy.name + ']');
+      },
+      (error) => this.log.error(error)
+    );
   }
 
 }
