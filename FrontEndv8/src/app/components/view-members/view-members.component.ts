@@ -22,7 +22,7 @@ import { ValueSet, ValueSetService } from './../../services/valueset.service';
 })
 export class ViewMembersComponent implements OnInit {
 
-  @Input() concept: Concept;
+  @Input() concept: Concept | any;
   @Input() parents: Array<ConceptReferenceNode>;
   @Input() children: Array<ConceptReferenceNode>;
   selectedConcept: Concept;

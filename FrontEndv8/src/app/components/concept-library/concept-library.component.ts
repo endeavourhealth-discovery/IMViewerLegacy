@@ -24,7 +24,7 @@ export class ConceptLibraryComponent implements OnInit {
     private log: LoggerService,
     private eventBus: NgEventBus) { }
 
-    @Input() concept: Concept;
+    @Input() concept: Concept | any;
     @Input()parents: Array<ConceptReferenceNode>;
     @Input()children: Array<ConceptReferenceNode>;
     mappedFrom: Array<ConceptReference>;
