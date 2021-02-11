@@ -22,3 +22,14 @@
     overflow: auto;
     max-height: calc(100vh - 400px);
   }
+
+  .mat-column-name {
+    flex: 0 0 calc(100% - 180px);
+  }
+  .mat-column-type {
+    flex: 0 0 32px;
+  }
+
+  .mat-column-codeScheme {
+    flex: 0 0 100px;
+  }

@@ -58,7 +58,7 @@ class ConceptSearchOptions {
   onResultCountChange() {
     this._searchRequest.size = this.resultCount;
 
-    this.onChangeSearchRequest()   
+    this.onChangeSearchRequest()
   }
 
   compareCodeSchemes(source: ConceptReference, target: ConceptReference): boolean {
@@ -103,8 +103,8 @@ class ConceptSearchResultTable {
   private _selectedRow: ConceptSearchResultRow;
 
   constructor(public rows: ConceptSearchResultRow[], private perspectiveService: Perspectives) {
-    this.allColumns = ["name", "type", "codeScheme"];
-    this.selectedColumns = ["name", "type", "codeScheme"];
+    this.allColumns = ["type", "name", "codeScheme"];
+    this.selectedColumns = ["type", "name", "codeScheme"];
     this.selectedRow = new Subject();
 
     // setup concept icon and color
@@ -135,7 +135,7 @@ class ConceptSearchResultTable {
         }
       }
 
-      row.subdued = row.weighting <= 0;
+      row.subdued = (row.conceptTypeName == 'Semantic concept' && row.weighting == 0);
     });
   }
 
