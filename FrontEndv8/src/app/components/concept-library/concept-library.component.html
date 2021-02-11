@@ -2,7 +2,8 @@
   <div class="example-container" hasBackdrop="true" style="height: calc(100%);">
 
     <!-- Dashboard content-->
-    <mat-tab-group style="width: 100%; height: calc(100vh - 450px);" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z1">
+    <mat-tab-group style="width: 100%; height: calc(100vh - 450px);" mat-stretch-tabs
+      class="example-stretched-tabs mat-elevation-z1">
       <mat-tab label="Inheritance" *ngIf="perspective.root == ':DiscoveryCommonDataModel'">
         <ng-template mat-tab-label>
           <mat-icon class="example-tab-icon">account_tree</mat-icon>
@@ -18,7 +19,8 @@
           Properties
         </ng-template>
         <ng-template matTabContent>
-          <health-record-tabular-view [concept]="concept" [children]="children" [parents]="parents"></health-record-tabular-view>
+          <health-record-tabular-view [concept]="concept" [children]="children" [parents]="parents">
+          </health-record-tabular-view>
         </ng-template>
       </mat-tab>
 
@@ -32,6 +34,68 @@
         </ng-template>
       </mat-tab>
 
+      <mat-tab label="Members" *ngIf="perspective.root == ':VSET_ValueSet'">
+        <ng-template mat-tab-label>
+          <mat-icon class="example-tab-icon">account_tree</mat-icon>
+          Expanded Members
+        </ng-template>
+        <ng-template matTabContent>
+
+          <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
+
+            <mat-form-field appearance="outline" fxFlex="25">
+              <mat-label>Filter 1</mat-label>
+              <mat-select [value]="'test'">
+                <mat-option [value]="'test'">test</mat-option>
+                <mat-option [value]="'test2'">test 2</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" fxFlex="25">
+              <mat-label>Filter 2</mat-label>
+              <mat-select [value]="'test2'">
+                <mat-option [value]="'test'">test</mat-option>
+                <mat-option [value]="'test2'">test 2</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" style="width: 100%" fxFlex="50">
+              <mat-label>Search</mat-label>
+              <mat-icon matPrefix style="cursor: pointer">search</mat-icon>
+              <input matInput
+                     placeholder="Search"
+                     id="conceptSearchInput"
+                     #conceptSearchInput>
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" appearance="outline" fxFlex="100" readonly>
+              <mat-label>Results:</mat-label>
+              <mat-wrapper>
+                <mat-nav-list dense style="height: 200px; overflow: auto;">
+                  <ng-container *ngFor="let member of concept.Member">
+                  <mat-list-item *ngIf="member.Exclude == false" (click)="nodeDblClick(member.iri)" (dblclick)="nodeDblClick(member.Class.iri)">
+                    <mat-icon matListIcon>add</mat-icon>
+                    <h3 matLine> {{member.Class.name}} </h3>
+                    <p matLine>
+                      <span> {{member.Class.iri}} </span>
+                    </p>
+                  </mat-list-item>
+                </ng-container>
+                </mat-nav-list>
+              </mat-wrapper>
+            </mat-form-field>
+
+            <mat-paginator fxFlex="100" [length]="100"
+              [pageSize]="10"
+              [pageSizeOptions]="[5, 10, 25, 100]">
+            </mat-paginator>
+
+
+
+          </div>
+        </ng-template>
+      </mat-tab>
+
       <mat-tab label="Mapped From/To" *ngIf="perspective.root == ':SemanticConcept'">
         <ng-template mat-tab-label>
           <mat-icon class="example-tab-icon">compare_arrows</mat-icon>
@@ -42,9 +106,11 @@
             <mat-label>Mapped from/to:</mat-label>
             <mat-wrapper>
               <mat-nav-list dense>
-                <a mat-list-item (click)="nodeClick(mapped.iri)" (dblclick)="nodeDblClick(mapped.iri)" *ngFor="let mapped of mappedFrom" style="height:15px;"> - {{ mapped.name }} </a>
-                <a mat-list-item (click)="nodeClick(mapped.iri)" (dblclick)="nodeDblClick(mapped.iri)" *ngFor="let mapped of mappedTo" style="height:15px;"> - {{ mapped.name }} </a>
-             </mat-nav-list>
+                <a mat-list-item (click)="nodeClick(mapped.iri)" (dblclick)="nodeDblClick(mapped.iri)"
+                  *ngFor="let mapped of mappedFrom" style="height:15px;"> - {{ mapped.name }} </a>
+                <a mat-list-item (click)="nodeClick(mapped.iri)" (dblclick)="nodeDblClick(mapped.iri)"
+                  *ngFor="let mapped of mappedTo" style="height:15px;"> - {{ mapped.name }} </a>
+              </mat-nav-list>
             </mat-wrapper>
           </mat-form-field>
         </ng-template>
