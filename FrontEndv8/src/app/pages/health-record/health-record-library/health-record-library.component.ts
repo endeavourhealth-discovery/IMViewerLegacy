@@ -52,20 +52,13 @@ export class HealthRecordLibraryComponent implements OnInit {
     this.conceptView.init();
   }
 
-  get selectedIri() {
-    return this.concept.iri;
-  }
-
   private onConceptAggregateChange(conceptAggregate: ConceptAggregate): void {
     if(conceptAggregate != null) {
       console.log("HealthRecordView.onConceptAggregateChange  conceptAggregate", JSON.stringify(conceptAggregate));
       this.concept = conceptAggregate.concept;
       this.children = conceptAggregate.children;
       this.parents = conceptAggregate.parents;
-      this.perspectiveService.getPerspective(this.selectedIri).subscribe(
-        (result) => this.perspective = result,
-        (error) => this.log.error(error)
-      );
+      this.perspective = this.perspectiveService.getPerspectiveByConceptType(this.concept.conceptType);
     }
     else {
       this.log.debug("onConceptAggregateChange - ConceptAggregate is null");

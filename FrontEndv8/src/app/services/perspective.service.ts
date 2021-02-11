@@ -85,35 +85,6 @@ export class Perspectives  {
     this.perspectives.forEach(perspective => this.perspectivesMap.set(perspective.root, perspective));
   }
 
-  getPerspective(iri: string): Observable<Perspective> {
-    let perspectiveObservable: Subject<Perspective> = new Subject();
-
-    this.conceptService.isOfType(iri, Array.from(this.perspectivesMap.keys())).subscribe(
-        (result) => {
-            if (result.length == 1) {
-                this.log.debug(`Got perspecive ${result[0].iri} for ${iri}`);
-                perspectiveObservable.next(this.perspectivesMap.get(result[0].iri));
-            }
-            else if (result.length > 1) {
-                const errorMessage = `warn - found multiple perspectives for concept ${iri}. Falling back on default`;
-                this.log.debug(errorMessage);
-                perspectiveObservable.error(errorMessage);
-            }
-            else {
-                const errorMessage = `warn - could not find perspective for concept ${iri}. Falling back on default`;
-                this.log.debug(errorMessage);
-                perspectiveObservable.error(errorMessage);
-            }
-        },
-        (error) => {
-            this.log.error(error)
-            perspectiveObservable.error("Problem retreiving perspective for concept (iri:" + iri + "). Cause: " + error);
-        }
-    )
-
-    return perspectiveObservable;
-  }
-
   getAllRootIris(): string[] {
     return this.perspectives.map(perspective => {return perspective.root} );
   }

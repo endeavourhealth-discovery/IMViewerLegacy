@@ -31,6 +31,8 @@ export class LibraryComponentComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.perspective = this.perspectiveService.getPerspectiveByConceptType(this.concept.conceptType);
+/*
     this.updatePerspective(this.concept.iri);
   }
 
@@ -39,6 +41,7 @@ export class LibraryComponentComponent implements OnInit {
         (result) => this.perspective = result,
         (error) => this.log.error(error)
       );
+*/
   }
 
   getSize() {

@@ -26,7 +26,7 @@ export class ConceptViewState {
     }
 
     public addHistoryItem(url: string) {
-        if(this._conceptAggregate != undefined || this._conceptAggregate.concept != null) {
+        if(this._conceptAggregate != undefined && this._conceptAggregate.concept != null) {
             this._history.unshift({url: url, concept: this._conceptAggregate.concept});
             this.history.next(this._history);
         }

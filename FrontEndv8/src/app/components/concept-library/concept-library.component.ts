@@ -36,10 +36,13 @@ export class ConceptLibraryComponent implements OnInit {
   }
 
   ngOnChanges(): void {
+    this.perspective = this.perspectiveService.getPerspectiveByConceptType(this.concept.conceptType);
+/*
     this.perspectiveService.getPerspective(this.concept.iri).subscribe(
       (result) => this.perspective = result,
       (error) => this.log.error(error)
     );
+*/
 
     this.service.findMappedFrom(this.concept.iri).subscribe(
       (result) => this.mappedFrom = result,

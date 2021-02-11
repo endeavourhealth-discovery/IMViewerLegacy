@@ -1,8 +1,8 @@
-<app-library-component
+<app-library-component *ngIf="concept"
   [relationships]="relationships"
   [concept]="concept"
   [children]="children"
   [parents]="parents"
-  [selectedIri]="selectedIri"
+  [selectedIri]="concept.iri"
   [perspective]="perspective">
 </app-library-component>

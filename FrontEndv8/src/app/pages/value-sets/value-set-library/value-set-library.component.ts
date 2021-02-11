@@ -51,10 +51,6 @@ export class ValueSetLibraryComponent implements OnInit {
     this.conceptView.init();
   }
 
-  get selectedIri() {
-    return this.concept.iri;
-  }
-
   private onConceptAggregateChange(conceptAggregate: ConceptAggregate): void {
     if(conceptAggregate != null) {
       // need to check if it's a valuset
@@ -62,10 +58,7 @@ export class ValueSetLibraryComponent implements OnInit {
         this.concept = conceptAggregate.concept;
         this.children = conceptAggregate.children;
         this.parents = conceptAggregate.parents;
-        this.perspectiveService.getPerspective(this.selectedIri).subscribe(
-          (result) => this.perspective = result,
-          (error) => this.log.error(error)
-        );
+        this.perspective = this.perspectiveService.getPerspectiveByConceptType(this.concept.conceptType);
       }
       else {
         // error time

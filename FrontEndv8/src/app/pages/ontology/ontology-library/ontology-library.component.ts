@@ -63,20 +63,19 @@ export class OntologyLibraryComponent implements OnInit {
     this.conceptView.init();
   }
 
-  get selectedIri() {
-    return this.concept.iri;
-  }
-
   private onConceptAggregateChange(conceptAggregate: ConceptAggregate): void {
     if (conceptAggregate != null) {
       console.log("SemanticOntologyView.onConceptAggregateChange  conceptAggregate", JSON.stringify(conceptAggregate));
       this.concept = conceptAggregate.concept;
       this.children = conceptAggregate.children;
       this.parents = conceptAggregate.parents;
+      this.perspective = this.perspectiveService.getPerspectiveByConceptType(this.concept.conceptType);
+/*
       this.perspectiveService.getPerspective(this.selectedIri).subscribe(
         (result) => this.perspective = result,
         (error) => this.log.error(error)
       );
+*/
     }
     else {
       this.log.debug("onConceptAggregateChange - ConceptAggregate is null");

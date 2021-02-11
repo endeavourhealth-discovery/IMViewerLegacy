@@ -5,10 +5,8 @@ import { Observable, Subject, zip } from 'rxjs';
 import { Concept } from '../models/objectmodel/Concept';
 import { environment } from '../../environments/environment';
 import {ConceptReference} from '../models/objectmodel/ConceptReference';
-import {HealthRecordNavigatorService} from '../components/health-record-navigator/health-record-navigator.service';
 import {SearchRequest} from '../models/search/SearchRequest';
 import {SearchResponse} from '../models/search/SearchResponse';
-import {Option} from '@angular/cli/models/interface';
 import {ConceptSummary} from '../models/search/ConceptSummary';
 import {ValueSetMembership} from '../models/valueset/ValueSetMembership';
 
@@ -21,7 +19,7 @@ export interface ConceptAggregate {
 @Injectable({
   providedIn: 'root'
 })
-export class ConceptService implements HealthRecordNavigatorService {
+export class ConceptService {
 
   constructor(private http: HttpClient) { }
 

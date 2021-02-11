@@ -41,7 +41,7 @@ export class ConceptSidebarSummaryComponent implements OnInit {
   ngOnInit() {
     this.summaryConcept = this.concept;
     this.summaryPerspective = this.perspective;
-    this.getExtras(this.concept.iri);
+    this.getExtras();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -49,19 +49,16 @@ export class ConceptSidebarSummaryComponent implements OnInit {
     // this.activateSummary(this.concept.iri);
   }
 
-  getExtras(iri: string) {
+  getExtras() {
     const root = this;
-    if (iri != null) {
+    if (this.concept != null) {
       this.timer = setTimeout(() => {
         root.sidebar = true;
       }, 1000);
 
-      this.perspectiveService.getPerspective(iri).subscribe(
-        (result) => this.summaryPerspective = result,
-        (error) => this.log.error(error)
-      );
+      this.summaryPerspective = this.perspectiveService.getPerspectiveByConceptType(this.concept.conceptType);
 
-      this.service.findUsages(iri).subscribe(
+      this.service.findUsages(this.concept.iri).subscribe(
         (result) => this.usages = result,
         (error) => this.log.error(error)
       );
@@ -82,13 +79,11 @@ export class ConceptSidebarSummaryComponent implements OnInit {
         root.sidebar = true;
       }, 1000);
 
-      this.perspectiveService.getPerspective(iri).subscribe(
-        (result) => this.summaryPerspective = result,
-        (error) => this.log.error(error)
-      );
-
       this.service.getConcept(iri).subscribe(
-        (result) => this.summaryConcept = result,
+        (result) => {
+          this.summaryConcept = result;
+          this.summaryPerspective = this.perspectiveService.getPerspectiveByConceptType(result.conceptType);
+        },
         (error) => this.log.error(error)
       );
 

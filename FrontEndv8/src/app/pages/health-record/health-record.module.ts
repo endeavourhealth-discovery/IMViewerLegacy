@@ -22,7 +22,6 @@ import {MatListModule} from '@angular/material/list';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { HealthRecordDialogComponent } from './health-record-create/health-record-dialog/health-record-dialog.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {HealthRecordNavigatorService} from '../../components/health-record-navigator/health-record-navigator.service';
 import {MatMenuModule} from '@angular/material/menu';
 import {HealthRecordRoutingModule} from './health-record-routing.module';
 import {MonacoEditorModule} from 'ngx-monaco-editor';
@@ -54,9 +53,6 @@ import {MonacoEditorModule} from 'ngx-monaco-editor';
     HealthRecordRoutingModule,
     MonacoEditorModule,
     NgJsonEditorModule
-  ],
-  providers: [
-    { provide: HealthRecordNavigatorService, useClass: ConceptService }
   ],
   declarations: [
     HealthRecordLibraryComponent,
