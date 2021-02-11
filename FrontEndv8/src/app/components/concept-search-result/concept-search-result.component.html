@@ -7,9 +7,9 @@
       <div fxLayout="row wrap" fxLayoutAlign="center stretch" >
 
         <p class="mat-caption" fxFlex="20">{{searchResultsTable.rowCount}} results</p>
-        
+
         <!-- sort order control -->
-        <!-- TODO - reinstate when sort implemented on backend 
+        <!-- TODO - reinstate when sort implemented on backend
           <mat-form-field appearance="outline">
           <mat-label>Sort by</mat-label>
           <mat-select [(ngModel)]="searchOptions.sortBySelection"
@@ -30,7 +30,7 @@
             <mat-option [value]="50">50</mat-option>
             <mat-option [value]="100">100</mat-option>
             <mat-option [value]="500">500</mat-option>
-          </mat-select>          
+          </mat-select>
         </mat-form-field>
 
         <!-- result column selection control -->
@@ -42,27 +42,24 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-       
+
         <div fxFlex="100" style="padding-bottom: 10px;">
           <mat-table [dataSource]="searchResultsTable.rows" style="width: 100%;">
             <ng-container matColumnDef="name">
-              <mat-header-cell *matHeaderCellDef style="width: 50%;">Name</mat-header-cell>
-              <mat-cell *matCellDef="let searchResult;">
-                <span class="select-highlight hover-highlight"
-                      [class.subdued]="searchResult.subdued"
-                      [class.selected]="searchResult.highlighted"
-                      style="cursor: pointer"
-                      (click)="searchResultsTable.onSelectSearchResultRow(searchResult)">
+              <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+              <mat-cell *matCellDef="let searchResult;" [matTooltip]="searchResult.iri + ' | ' + searchResult.name + ' [' + searchResult.weighting + ']'">
+                <span [class.subdued]="searchResult.subdued">
                   {{searchResult.name}}
                 </span>
               </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="type">
-              <mat-header-cell *matHeaderCellDef style="width: 20%;">Type</mat-header-cell>
-              <mat-cell *matCellDef="let searchResult;">
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
+              <mat-cell *matCellDef="let searchResult;" [class.subdued]="searchResult.subdued">
                   <mat-icon [ngStyle]="{'color': searchResult.conceptTypeColor}"
                             fontSet="fa"
+                            class="fa-fw"
                             fontIcon={{searchResult.conceptTypeIcon}}
                             [matTooltip]="searchResult.conceptTypeName"
                             matTooltipPosition="after"></mat-icon>
@@ -70,14 +67,16 @@
             </ng-container>
 
             <ng-container matColumnDef="codeScheme">
-              <mat-header-cell *matHeaderCellDef style="width: 30%;">Code Scheme</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef>Code Scheme</mat-header-cell>
               <mat-cell *matCellDef="let searchResult;" [class.subdued]="searchResult.subdued">
                 {{searchResult.scheme.name}}
               </mat-cell>
             </ng-container>
 
-            <mat-header-row *matHeaderRowDef="searchResultsTable.selectedColumns; sticky: true"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: searchResultsTable.selectedColumns" ></mat-row>
+            <mat-row *matRowDef="let row; columns: searchResultsTable.selectedColumns"  class="select-highlight hover-highlight"
+                     [class.selected]="row.highlighted"
+                     style="cursor: pointer"
+                     (click)="searchResultsTable.onSelectSearchResultRow(row)"></mat-row>
           </mat-table>
         </div>
 
