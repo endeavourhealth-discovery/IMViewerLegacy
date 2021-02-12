@@ -8,7 +8,7 @@
           <mat-wrapper>
             <mat-nav-list dense style="height: 200px; overflow: auto;">
               <ng-container *ngFor="let member of concept.Member">
-              <mat-list-item *ngIf="member.Exclude == false" (click)="nodeDblClick(member.iri)" (dblclick)="nodeDblClick(member.Class.iri)">
+              <mat-list-item *ngIf="member.Exclude == false" (click)="nodeDblClick(member.Class.iri)" (dblclick)="nodeDblClick(member.Class.iri)">
                 <mat-icon matListIcon>add</mat-icon>
                 <h3 matLine> {{member.Class.name}} </h3>
                 <p matLine>
@@ -25,7 +25,7 @@
           <mat-wrapper>
             <mat-nav-list multiple="false" dense style="height: 200px; overflow: auto;">
               <ng-container *ngFor="let member of concept.Member">
-              <mat-list-item *ngIf="member.Exclude == true" (click)="nodeDblClick(member.iri)" (dblclick)="nodeDblClick(member.Class.iri)">
+              <mat-list-item *ngIf="member.Exclude == true" (click)="nodeDblClick(member.Class.iri)" (dblclick)="nodeDblClick(member.Class.iri)">
                 <mat-icon matListIcon>remove</mat-icon>
                 <h3 matLine> {{member.Class.name}} </h3>
                 <p matLine>

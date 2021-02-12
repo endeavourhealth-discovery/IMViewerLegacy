@@ -34,7 +34,7 @@
         </ng-template>
       </mat-tab>
 
-      <mat-tab label="Members" *ngIf="perspective.root == ':VSET_ValueSet'">
+      <!-- <mat-tab label="Members" *ngIf="perspective.root == ':VSET_ValueSet'">
         <ng-template mat-tab-label>
           <mat-icon class="example-tab-icon">account_tree</mat-icon>
           Evaluated Members
@@ -90,11 +90,9 @@
               [pageSizeOptions]="[5, 10, 25, 100]">
             </mat-paginator>
 
-
-
           </div>
         </ng-template>
-      </mat-tab>
+      </mat-tab> -->
 
       <mat-tab label="Mapped From/To" *ngIf="perspective.root == ':SemanticConcept'">
         <ng-template mat-tab-label>
@@ -102,21 +100,45 @@
           Mapped from/to
         </ng-template>
         <ng-template matTabContent>
-          <mat-form-field floatLabel="always" appearance="outline" fxFlex="100">
-            <mat-label>Mapped from/to:</mat-label>
+
+          <mat-form-field floatLabel="always" appearance="outline" fxFlex="50" readonly>
+            <mat-label>Mapped From:</mat-label>
             <mat-wrapper>
-              <mat-nav-list dense>
-                <a mat-list-item (click)="nodeClick(mapped.iri)" (dblclick)="nodeDblClick(mapped.iri)"
-                  *ngFor="let mapped of mappedFrom" style="height:15px;"> - {{ mapped.name }} </a>
-                <a mat-list-item (click)="nodeClick(mapped.iri)" (dblclick)="nodeDblClick(mapped.iri)"
-                  *ngFor="let mapped of mappedTo" style="height:15px;"> - {{ mapped.name }} </a>
+              <mat-nav-list dense style="height: 200px; overflow: auto;">
+                <ng-container *ngFor="let mapped of mappedFrom">
+                <mat-list-item (click)="nodeClick(mapped.iri)">
+                  <mat-icon matListIcon>add</mat-icon>
+                  <h3 matLine> {{mapped.name}} </h3>
+                  <p matLine>
+                    <span> {{mapped.iri}} </span>
+                  </p>
+                </mat-list-item>
+              </ng-container>
               </mat-nav-list>
             </mat-wrapper>
           </mat-form-field>
+
+          <mat-form-field floatLabel="always" appearance="outline" fxFlex="100" readonly>
+            <mat-label>Mapped To:</mat-label>
+            <mat-wrapper>
+              <mat-nav-list dense style="height: 200px; overflow: auto;">
+                <ng-container *ngFor="let mapped of mappedTo">
+                <mat-list-item (click)="nodeClick(mapped.iri)">
+                  <mat-icon matListIcon>add</mat-icon>
+                  <h3 matLine> {{mapped.name}} </h3>
+                  <p matLine>
+                    <span> {{mapped.iri}} </span>
+                  </p>
+                </mat-list-item>
+              </ng-container>
+              </mat-nav-list>
+            </mat-wrapper>
+          </mat-form-field>
+
         </ng-template>
       </mat-tab>
 
-      <mat-tab label="Edit Concept">
+      <!-- <mat-tab label="Edit Concept">
         <ng-template mat-tab-label>
           <mat-icon class="example-tab-icon">edit</mat-icon>
           Edit Concept
@@ -124,7 +146,7 @@
         <ng-template matTabContent>
           <app-edit-concept [concept]="concept"></app-edit-concept>
         </ng-template>
-      </mat-tab>
+      </mat-tab> -->
 
     </mat-tab-group>
   </div>
