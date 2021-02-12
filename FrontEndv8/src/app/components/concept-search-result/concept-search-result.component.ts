@@ -174,18 +174,25 @@ export class ConceptSearchResultComponent implements OnInit  {
   public hasResponse: boolean;
   public searchResultPending: boolean;
 
+
   constructor(private eventBus: NgEventBus,
               private codeSchemes: CodeSchemes,
               private perspectiveService: Perspectives,
               private log: LoggerService) {
     this.searchResultPending = false;  
-    
-    this.eventBus.on(searchEvents.SEARCH_RESULT_PENDING_EVENT).subscribe((searchRequest: SearchRequest) => {
+  
+    this.eventBus.on(searchEvents.SEARCH_RESULT_PENDING_EVENT).subscribe((_searchRequest: SearchRequest) => {
       this.searchResultPending = true;  
+    });
+
+    this.eventBus.on(searchEvents.SEARCH_REQUEST_FAILED_EVENT).subscribe((_searchRequest: SearchRequest) => {
+      this.searchResultPending = false;  
+      this.hasResponse = false;
     });
 
     this.eventBus.on(searchEvents.SEARCH_RESULT_EVENT).subscribe((searchResponse: SearchResponse) => {
       this.searchResultPending = false;
+      this.searchRequestFailed = false;
       
       this.searchResultsTable = new ConceptSearchResultTable(searchResponse.concepts, perspectiveService);
       this.searchResultsTable.selectedRow.subscribe(

@@ -75,7 +75,8 @@ export class ConceptSearchComponent implements AfterViewInit {
           this.broadcastSearchResults(searchResponse);
         },
         (error) => {
-          this.log.error(error)
+          this.log.error(error);
+          this.eventBus.cast(searchEvents.SEARCH_REQUEST_FAILED_EVENT, this.searchQuery);
         }
       );
   }
