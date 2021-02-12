@@ -56,15 +56,7 @@ export class ConceptLibraryComponent implements OnInit {
   }
 
   nodeClick(iri: string) {
-    this.eventBus.cast('app:conceptSummary', iri);
-  }
-
-  nodeDblClick(iri: string) {
-    if (iri != null || iri !== undefined) {
-      this.eventBus.cast('app:conceptSelect', iri);
-    } else {
-      this.eventBus.cast('app:conceptSelect', null);
-    }
+    this.eventBus.cast('app:conceptSelect', iri);
   }
 
   isMemberOf(conceptIri: string) {

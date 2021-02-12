@@ -179,9 +179,14 @@ export class ConceptSearchResultComponent implements OnInit  {
               private perspectiveService: Perspectives,
               private log: LoggerService) {
     this.searchResultPending = false;  
-    
-    this.eventBus.on(searchEvents.SEARCH_RESULT_PENDING_EVENT).subscribe((searchRequest: SearchRequest) => {
+  
+    this.eventBus.on(searchEvents.SEARCH_RESULT_PENDING_EVENT).subscribe((_searchRequest: SearchRequest) => {
       this.searchResultPending = true;  
+    });
+
+    this.eventBus.on(searchEvents.SEARCH_REQUEST_FAILED_EVENT).subscribe((_searchRequest: SearchRequest) => {
+      this.searchResultPending = false;  
+      this.hasResponse = false;
     });
 
     this.eventBus.on(searchEvents.SEARCH_RESULT_EVENT).subscribe((searchResponse: SearchResponse) => {
