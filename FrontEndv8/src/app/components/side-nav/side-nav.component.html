@@ -1,16 +1,7 @@
 <div class="as-split-area-content">
   <app-concept-search></app-concept-search>
-  <div class="as-split-area-content" style="height: 100%">
+  <div class="as-split-area-content" style="height: calc(100vh - 140px)">
     <mat-tab-group mat-stretch-tabs class="example-stretched-tabs" style="height: 100%" #tabs>
-
-
-      <mat-tab label="Tree">
-        <ng-template mat-tab-label>
-          <mat-icon class="example-tab-icon">account_tree</mat-icon>
-          Tree
-        </ng-template>
-        <app-concept-hierarchy-view [root]="root" [concept]="concept" [children]="children" [parents]="parents"></app-concept-hierarchy-view>
-      </mat-tab>
 
       <!-- <mat-tab label="Quick Access">
         <ng-template mat-tab-label>
@@ -19,6 +10,14 @@
         </ng-template>
         <app-quick-access></app-quick-access>
       </mat-tab> -->
+
+      <mat-tab label="Tree">
+        <ng-template mat-tab-label>
+          <mat-icon class="example-tab-icon">account_tree</mat-icon>
+          Tree
+        </ng-template>
+        <app-concept-hierarchy-view [root]="root" [concept]="concept" [children]="children" [parents]="parents"></app-concept-hierarchy-view>
+      </mat-tab>
 
       <mat-tab label="History">
         <ng-template mat-tab-label>

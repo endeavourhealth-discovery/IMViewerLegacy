@@ -1,16 +1,11 @@
-import { ConceptReferenceNode } from '../../models/objectmodel/ConceptReferenceNode';
-import { NgEventBus } from 'ng-event-bus';
-import { Component, Input } from '@angular/core';
-import { ConceptService } from '../../services/concept.service';
-import { HealthRecordDefinition, FlatProperty } from '../../models/old/HealthRecordDefinition';
-import {Router} from '@angular/router';
-import { MatTableDataSource } from '@angular/material/table';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
+import { NgEventBus } from 'ng-event-bus';
 import { Concept } from '../../models/objectmodel/Concept';
-import {LoggerService} from '../../services/logger.service';
-import {ObjectModelVisitor} from '../../models/ObjectModelVisitor';
-import {ObjectPropertyValue} from '../../models/objectmodel/ObjectPropertyValue';
-import {DataPropertyValue} from '../../models/objectmodel/DataPropertyValue';
+import { ConceptReferenceNode } from '../../models/objectmodel/ConceptReferenceNode';
+import { ConceptService } from '../../services/concept.service';
+import { LoggerService } from '../../services/logger.service';
 
 const debug = (message: string) => { console.log(message); };
 
@@ -31,10 +26,8 @@ class HealthRecordTabularViewComponent {
   static DEFAULT_MIN_CARDINALITY: number = 0;
   static DEFAULT_MAX_CARDINALITY: string = "*";
 
-  healthRecordDefinition: HealthRecordDefinition;
-
-  propertiesTable: DataTable<FlatProperty>;
   propertiesTableData: any[] = [];
+  propertiesTableColumns: string[];
 
   ancestors: Concept[] = [];
   ancestorsTableDataList: any[][] = [];
@@ -58,7 +51,7 @@ class HealthRecordTabularViewComponent {
   }
 
   constructor(private service: ConceptService, private log: LoggerService, private router: Router, private eventBus: NgEventBus) {
-    this.propertiesTable = new DataTable<FlatProperty>(['name', 'type', 'cardinality']);
+    this.propertiesTableColumns = ['name', 'type', 'cardinality'];
 
     this.parentsChipListTemplateContext = {
       title: 'Parents',
@@ -129,36 +122,6 @@ class HealthRecordTabularViewComponent {
   }
 }
 
-class DataTable<D> {
-
-  public columns: string[]
-  public rows: MatTableDataSource<D> = new MatTableDataSource<D>();
-
-  constructor(columns: string[]) {
-    this.columns = columns;
-  }
-
-  setRows(rows: D[]) {
-    this.rows.data = rows;
-  }
-
-  clear() {
-    this.rows.data = [];
-  }
-
-  hasRows(): boolean {
-    return this.rows && this.rows.data.length > 0;
-  }
-
-  getRowCount(): number {
-    return (this.hasRows) ? this.rows.data.length : 0;
-  }
-
-  getTooltip(concept: Concept): string {
-    return `IRI - ${concept.iri} Description - ${concept.description ? concept.description : 'no data found'}`;
-  }
-}
-
 interface ChipListTemplateContext {
   title: string;
   chips: ConceptReferenceNode[];
@@ -166,6 +129,5 @@ interface ChipListTemplateContext {
 
 export {
   HealthRecordTabularViewComponent,
-  DataTable,
   ChipListTemplateContext
 };

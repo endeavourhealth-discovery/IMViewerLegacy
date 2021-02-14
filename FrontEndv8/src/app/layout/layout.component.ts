@@ -23,9 +23,7 @@ import { Perspectives } from '../services/perspective.service';
 })
 export class LayoutComponent implements OnInit, AfterViewInit {
   @HostBinding('class') componentCssClass = 'default-theme';
-  @ViewChild('searchInput', {static: true}) input: ElementRef;
   @ViewChild('sidenav', {static: true}) sideNav: MatSidenav;
-  @ViewChild('searchInput', { read: MatAutocompleteTrigger, static: true}) test: MatAutocompleteTrigger;
 
   user: User;
   menuItems: any[] = [];
@@ -57,49 +55,10 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    fromEvent(this.input.nativeElement,'keyup')
-      .pipe(
-        map((e:any) => e.target.value),
-        filter(v => v.length > 2),
-        debounceTime(200),
-        distinctUntilChanged(),
-        tap((text) => {
-          this.autoComplete(text)
-        })
-      )
-      .subscribe();
   }
 
   displayFn(concept: ConceptReference): string {
     return concept && concept.name ? concept.name : '';
-  }
-
-  autoComplete(term) {
-    if (term == null || term == '')
-      return;
-
-    if (this.searchCall) {
-      this.searchCall.unsubscribe();
-      this.searchCall = null;
-      this.results = [];
-    }
-    this.searchCall = this.conceptService.search(term)
-      .subscribe(
-        (result) => {
-          this.results = result;
-          this.searchCall.unsubscribe();
-          this.searchCall = null;
-        },
-        (error) => this.log.error(error)
-      );
-  }
-
-  inspectConcept(concept: ConceptReference) {
-    FindConceptUsagesDialogComponent.execute(this.dialog, concept).subscribe(
-      () => {
-      },
-      (error) => this.log.error(error)
-    )
   }
 
   logout() {
@@ -126,10 +85,6 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   goto(iri: string) {
     this.router.navigate([this.perspectives.current.primary.state, iri]);
-  }
-
-  search(evt: any) {
-
   }
 
   getHelp() {

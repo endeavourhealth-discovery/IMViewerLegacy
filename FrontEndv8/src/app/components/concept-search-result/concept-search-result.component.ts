@@ -3,6 +3,7 @@ import { NgEventBus } from 'ng-event-bus';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { ConceptReference } from 'src/app/models/objectmodel/ConceptReference';
 import { ConceptStatus } from 'src/app/models/objectmodel/ConceptStatus';
+import { Perspective } from 'src/app/models/Perspective';
 import { CodeSchemes, codeSchemesProvider } from 'src/app/models/search/CodeScheme';
 import * as searchEvents from 'src/app/models/search/SearchEvents';
 import { SearchRequest } from 'src/app/models/search/SearchRequest';
@@ -16,10 +17,11 @@ class ConceptSearchOptions {
   codeSchemeSelections: ConceptReference[];
   conceptStatusSelections: string[];
   sortBySelection: string;
+  resultCount: number;
 
   searchRequest: Observable<SearchRequest>
-  
-  constructor(private _searchRequest: SearchRequest, 
+
+  constructor(private _searchRequest: SearchRequest,
               public conceptStatusOptions: string[],
               public codeSchemeOptions: ConceptReference[],
               public sortByOptions: string[]) {
@@ -28,6 +30,7 @@ class ConceptSearchOptions {
     this.conceptStatusSelections = _searchRequest.statuses.map(status => { return ConceptStatus[status] } );
     this.codeSchemeSelections = _searchRequest.codeSchemes;
     this.sortBySelection = SortBy[_searchRequest.sortBy]
+    this.resultCount = _searchRequest.size;
   }
 
   // sync string selection in UI to model
@@ -51,6 +54,13 @@ class ConceptSearchOptions {
     this.onChangeSearchRequest()
   }
 
+  // TODO - temp method until pagination support is put in the backend
+  onResultCountChange() {
+    this._searchRequest.size = this.resultCount;
+
+    this.onChangeSearchRequest()
+  }
+
   compareCodeSchemes(source: ConceptReference, target: ConceptReference): boolean {
     return source.iri == target.iri;
   }
@@ -66,7 +76,88 @@ class ConceptSearchOptions {
   // filter change
   private onChangeSearchRequest() {
     const searchRequestSubject = this.searchRequest as Subject<SearchRequest>;
-    searchRequestSubject.next(this._searchRequest); 
+    searchRequestSubject.next(this._searchRequest);
+  }
+}
+
+interface ConceptSearchResultRow {
+  iri: string;
+  name: string;
+  types: ConceptReference[];
+  scheme: ConceptReference;
+  weighting: number;
+  highlighted?: boolean;
+  selected?: boolean;
+  subdued?: boolean;
+  conceptTypeColor?: string;
+  conceptTypeIcon?: string;
+  conceptTypeName?: string;
+}
+
+class ConceptSearchResultTable {
+
+  public selectedColumns: string[];
+  public allColumns: string[];
+  public selectedRow: Observable<ConceptSearchResultRow>;
+
+  private _selectedRow: ConceptSearchResultRow;
+
+  constructor(public rows: ConceptSearchResultRow[], private perspectiveService: Perspectives) {
+    this.allColumns = ["type", "name", "codeScheme"];
+    this.selectedColumns = ["type", "name", "codeScheme"];
+    this.selectedRow = new Subject();
+
+    // setup concept icon and color
+    this.rows.forEach(row => {
+      // default perspective
+      let perspective: Perspective = this.perspectiveService.ontology;
+      let conceptTypeName: string = perspective.caption;
+
+      if(row.types != null && row.types.length > 0) {
+
+        perspective = this.perspectiveService.getPerspectiveByRoot(row.types[0].iri);
+        conceptTypeName = row.types[0].name;
+
+        // default perspective
+        if(perspective == null) {
+          perspective = this.perspectiveService.ontology;
+        }
+      }
+
+      row.conceptTypeName = conceptTypeName;
+      row.conceptTypeColor = perspective.color;
+      row.conceptTypeIcon = perspective.icon;
+
+      if(row.scheme == null) {
+        row.scheme = {
+          iri: "",
+          name: "Default code"
+        }
+      }
+
+      row.subdued = (row.conceptTypeName == 'Semantic concept' && row.weighting == 0);
+    });
+  }
+
+  get hasRows(): boolean {
+    return this.rowCount > 0;
+  }
+
+  get rowCount(): number {
+    return (this.rows != null) ? (this.rows.length) : (0);
+  }
+
+  onSelectSearchResultRow(row: ConceptSearchResultRow) {
+    // remove old selection
+    if(this._selectedRow != null) {
+      this._selectedRow.highlighted = !this._selectedRow.highlighted
+    }
+
+    // set new selection
+    this._selectedRow = row;
+    this._selectedRow.highlighted = !this._selectedRow.highlighted;
+
+    (this.selectedRow as Subject<ConceptSearchResultRow>).next(this._selectedRow);
   }
 }
 
@@ -78,19 +169,39 @@ class ConceptSearchOptions {
 })
 export class ConceptSearchResultComponent implements OnInit  {
 
-  public searchResults: ConceptReference[];
+  public searchResultsTable: ConceptSearchResultTable;
   public searchOptions: ConceptSearchOptions;
   public hasResponse: boolean;
+  public searchResultPending: boolean;
 
-  private selectedSearchResult: string;  
-
-  constructor(private eventBus: NgEventBus, 
+  constructor(private eventBus: NgEventBus,
               private codeSchemes: CodeSchemes,
-              private perpsectiveService: Perspectives, 
+              private perspectiveService: Perspectives,
               private log: LoggerService) {
+    this.searchResultPending = false;  
+  
+    this.eventBus.on(searchEvents.SEARCH_RESULT_PENDING_EVENT).subscribe((_searchRequest: SearchRequest) => {
+      this.searchResultPending = true;  
+    });
+
+    this.eventBus.on(searchEvents.SEARCH_REQUEST_FAILED_EVENT).subscribe((_searchRequest: SearchRequest) => {
+      this.searchResultPending = false;  
+      this.hasResponse = false;
+    });
+
     this.eventBus.on(searchEvents.SEARCH_RESULT_EVENT).subscribe((searchResponse: SearchResponse) => {
-      this.searchResults = searchResponse.concepts;
+      this.searchResultPending = false;
       
+      this.searchResultsTable = new ConceptSearchResultTable(searchResponse.concepts, perspectiveService);
+      this.searchResultsTable.selectedRow.subscribe(
+        selected => {
+          this.eventBus.cast("app:conceptSelect", selected.iri);
+        },
+        error => {
+          this.log.error(`Warning - unable to read selected search result. Action - No selection event will be triggered. Cause - ${error}`);
+        }
+      )
+
       this.initSearchOptions(searchResponse.request).subscribe(
         (searchOptions: ConceptSearchOptions) => {
           this.searchOptions = searchOptions;
@@ -105,8 +216,8 @@ export class ConceptSearchResultComponent implements OnInit  {
           this.log.error(`Error - unable to create search options. Search may not function as user expects. Cause - ${error}.`);
         }
       );
-    }); 
-    
+    });
+
     this.hasResponse = false;
   }
 
@@ -117,23 +228,14 @@ export class ConceptSearchResultComponent implements OnInit  {
     //         value => this.setEmailMessage(emailControl)
     // );
   }
- 
+
   get hasResults() {
-    return this.hasResponse && this.searchResults.length > 0;
+    return this.hasResponse && this.searchResultsTable.hasRows
   }
-
-  onSelectSearchResult(conceptReference: ConceptReference) {
-    this.selectedSearchResult = conceptReference.iri;
-    this.eventBus.cast('app:conceptSelect', conceptReference.iri);
-  }
-
-  highlightSearchResult(conceptReference: ConceptReference): boolean {
-    return this.selectedSearchResult == conceptReference.iri;
-  } 
 
   private initSearchOptions(searchRequest: SearchRequest): Observable<ConceptSearchOptions> {
     const searchOptionsObservable: Subject<ConceptSearchOptions> = new ReplaySubject();
-    
+
     this.codeSchemes.codeSchemes.subscribe(
       (result) => {
         const conceptStatusOptions: string[] = Object.keys(ConceptStatus).filter(f => isNaN(Number(f)));
@@ -143,8 +245,9 @@ export class ConceptSearchResultComponent implements OnInit  {
       (error) => {
         this.log.error(`Error - unable to get a list of code schemes. Cause ${error}`);
       }
-    ); 
-    
+    );
+
     return searchOptionsObservable;
-  }  
+  }
+
 }

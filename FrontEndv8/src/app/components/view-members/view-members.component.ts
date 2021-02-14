@@ -22,7 +22,7 @@ import { ValueSet, ValueSetService } from './../../services/valueset.service';
 })
 export class ViewMembersComponent implements OnInit {
 
-  @Input() concept: Concept;
+  @Input() concept: Concept | any;
   @Input() parents: Array<ConceptReferenceNode>;
   @Input() children: Array<ConceptReferenceNode>;
   selectedConcept: Concept;
@@ -59,8 +59,7 @@ export class ViewMembersComponent implements OnInit {
   }
 
   ngOnChanges(): void {
-    let valueSet: ValueSet = this.valueSetService.toValueSet(this.concept);
-    this.initTree(valueSet);
+
   }
 
   private onError(error: any): void {
@@ -68,74 +67,19 @@ export class ViewMembersComponent implements OnInit {
   }
 
   private showSummaryDrawer(iri: string) {
-
     this.eventBus.cast('app:conceptSummary', iri);
-
-
-    // const root = this;
-    // if (iri != null) {
-    //   this.service.getConcept(iri).subscribe(
-    //     (concept) => {
-    //       this.selectedConcept = concept
-    //     },
-    //     (error) => this.onError(error)
-    //   );
-    // }
   }
 
-  private initTree(valueSet: ValueSet) {
-    this.busy = true;
-      // need to build up the children
-      forkJoin([this.initNode("Included", valueSet.included), this.initNode("Excluded", valueSet.excluded)]).subscribe(
-        ([included, excluded]) => {
-          this.busy = false;
-          let tree: ConceptReferenceNode = this.toConceptReferenceNode(this.concept.iri, this.concept.name, [included, excluded]);
-          this.treeController.setDataAndSelectedNode(tree, included);
-        },
-      (error) => {
-        this.busy = false;
-        this.log.error(error);
-      }
-    );
+  nodeClick(iri: string) {
+    this.eventBus.cast('app:conceptSummary', iri);
   }
 
-  private initNode(name: string, members: ConceptReference[] = []): Observable<ConceptReferenceNode> {
-    let nodeObservable: Subject<ConceptReferenceNode> = new ReplaySubject();
-
-    let node: ConceptReferenceNode = this.toConceptReferenceNode("app-value-set-library-" + name, name);
-
-    if(members != null && members.length > 0) {
-      let memberNodes: ConceptReferenceNode[] = members.map(child => this.toConceptReferenceNode(child.iri, child.name));
-      node.children = memberNodes;
-      node.hasChildren = true;
-      this.service.getConceptsHaveChildren(memberNodes.map(m => m.iri), false)
-        .subscribe(
-          (result) => {
-            memberNodes
-              .filter(m => result.includes(m.iri))
-              .forEach(m => m.hasChildren = true);
-            nodeObservable.next(node);
-            nodeObservable.complete();
-          },
-          (error) => this.log.error(error)
-        );
+  nodeDblClick(iri: string) {
+    if (iri != null || iri !== undefined) {
+      this.eventBus.cast('app:conceptSelect', iri);
+    } else {
+      this.eventBus.cast('app:conceptSelect', null);
     }
-    else {
-      nodeObservable.next(node);
-      nodeObservable.complete();
-    }
-
-    return nodeObservable;
-  }
-
-  private toConceptReferenceNode(iri: string, name: string, children: ConceptReferenceNode[] = []): ConceptReferenceNode {
-    let node: ConceptReferenceNode = new ConceptReferenceNode();
-    node.iri = iri
-    node.name = name;
-    node.hasChildren = children.length > 0;
-    node.children = children;
-
-    return node;
   }
 
   download(type: string, expanded: boolean) {

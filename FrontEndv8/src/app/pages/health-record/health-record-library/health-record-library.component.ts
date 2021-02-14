@@ -28,15 +28,13 @@ export class HealthRecordLibraryComponent implements OnInit {
   concept: Concept;
   parents: Array<ConceptReferenceNode>;
   children: Array<ConceptReferenceNode>;
-  mappedFrom: Array<ConceptReference>;
-  mappedTo: Array<ConceptReference>;
   perspective: Perspective;
   relationships = ['sn:116680003']; // this can move to the perspective
   hoveredConcept: Concept = new Concept(); // can this be moved into concept view to make it side-bar aware?
   conceptView: ConceptView;
   history = [];
 
-  @ViewChild(HealthRecordTabularViewComponent, { static: true }) tableView: HealthRecordTabularViewComponent;
+  // @ViewChild(HealthRecordTabularViewComponent, { static: true }) tableView: HealthRecordTabularViewComponent;
 
   constructor(private service: ConceptService,
               private perspectiveService: Perspectives,
@@ -48,18 +46,10 @@ export class HealthRecordLibraryComponent implements OnInit {
     this.conceptView = new ConceptView(service, perspectives, log, router, route, perspectives.healthRecord);
     this.conceptView.onNavigationStart(this.onConceptAggregateChange.bind(this), this.onError.bind(this) )
     this.conceptView.onNavigationEnd(this.onHistoryChange.bind(this), this.onError.bind(this) )
-
-    this.eventBus.on('app:conceptSummary').subscribe((iri: string) => {
-      this.showSummaryDrawer(iri);
-    });
   }
 
   ngOnInit() {
     this.conceptView.init();
-  }
-
-  get selectedIri() {
-    return this.concept.iri;
   }
 
   private onConceptAggregateChange(conceptAggregate: ConceptAggregate): void {
@@ -68,20 +58,7 @@ export class HealthRecordLibraryComponent implements OnInit {
       this.concept = conceptAggregate.concept;
       this.children = conceptAggregate.children;
       this.parents = conceptAggregate.parents;
-      this.perspectiveService.getPerspective(this.selectedIri).subscribe(
-        (result) => this.perspective = result,
-        (error) => this.log.error(error)
-      );
-
-      this.service.findMappedFrom(this.selectedIri).subscribe(
-        (result) => this.mappedFrom = result,
-        (error) => this.log.error(error)
-      );
-
-      this.service.findMappedTo(this.selectedIri).subscribe(
-        (result) => this.mappedTo = result,
-        (error) => this.log.error(error)
-      );
+      this.perspective = this.perspectiveService.getPerspectiveByConceptType(this.concept.conceptType);
     }
     else {
       this.log.debug("onConceptAggregateChange - ConceptAggregate is null");
@@ -94,21 +71,5 @@ export class HealthRecordLibraryComponent implements OnInit {
 
   private onError(error: any): void {
     this.log.error(error);
-  }
-
-  selectNode(iri: string):void {
-    this.eventBus.cast('app:conceptSelect', iri);
-  }
-
-  showSummaryDrawer(iri: string) {
-    const root = this;
-    if (iri != null) {
-      this.service.getConcept(iri).subscribe(
-        (hoveredConcept) => {
-          this.hoveredConcept = hoveredConcept
-        },
-        (error) => this.onError(error)
-      );
-    }
   }
 }

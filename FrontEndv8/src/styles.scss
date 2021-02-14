@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-$base-font-size: 16;
+$base-font-size: 14;
 $scale: $base-font-size / 16;
 
 html {
@@ -28,7 +28,7 @@ $custom-typography: mat-typography-config(
   $caption:       mat-typography-level(12px * $scale, 20px * $scale, 400),
   $button:        mat-typography-level(14px * $scale, 14px * $scale, 500),
     // Line-height must be unit-less fraction of the font-size.
-  $input:         mat-typography-level(14px * $scale, 1.125, 400)
+  $input:         mat-typography-level(14px * $scale, 1, 400)
 );
 
 // Include the common styles for Angular Material. We include this here so that you only

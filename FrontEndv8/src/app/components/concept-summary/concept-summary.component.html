@@ -1,0 +1,46 @@
+<mat-expansion-panel [expanded]="true" >
+  <mat-expansion-panel-header>
+    <mat-panel-title>Summary</mat-panel-title>
+    <mat-panel-description>
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+  <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
+    <mat-form-field floatLabel="always" appearance="outline" fxFlex="40">
+      <mat-label>Name:</mat-label>
+      <input dense matInput [value]="concept.name" disabled>
+    </mat-form-field>
+
+    <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+      <mat-label>Iri:</mat-label>
+      <input disabled matInput [value]="concept.iri">
+    </mat-form-field>
+
+    <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+      <mat-label>Namespace:</mat-label>
+      <input disabled matInput [value]="concept.iri">
+    </mat-form-field>
+
+    <mat-form-field floatLabel="always" appearance="outline" fxFlex="40">
+      <mat-label>Code:</mat-label>
+      <input disabled matInput [value]="concept.code">
+    </mat-form-field>
+
+    <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+      <mat-label>Scheme:</mat-label>
+      <input disabled matInput [value]="concept.scheme?.name">
+    </mat-form-field>
+
+    <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+      <mat-label>Status:</mat-label>
+      <input disabled matInput [value]="concept.status?.toString()">
+    </mat-form-field>
+
+    <mat-form-field floatLabel="always" appearance="outline" fxFlex="50">
+      <mat-label>Description:</mat-label>
+      <textarea disabled matInput [value]="concept.description" rows="10"></textarea>
+    </mat-form-field>
+
+    <app-concept-definition [concept]="concept" fxFlex="50"></app-concept-definition>
+
+  </div>
+</mat-expansion-panel>

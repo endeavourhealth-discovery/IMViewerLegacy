@@ -1,71 +1,128 @@
-<ng-container *ngIf="hasResponse; else noResponse">
-  <div fxLayout="column" fxLayoutAlign="center stretch" style="overflow: hidden;">
-    
-    <!-- results area -->
-    <div fxFlex="60" *ngIf="hasResults; else noResults"> 
-      <h2 class="mat-title">Search results for <i>"{{searchOptions.searchTerms}}"</i></h2>
-      <div fxLayout="row" fxLayoutAlign="space-between start" >
-        <p class="mat-caption">{{searchResults.length}} results</p>
-        
-        <!-- sort order control -->
-        <mat-form-field>
-          <mat-label>Sort by</mat-label>
-          <mat-select [(ngModel)]="searchOptions.sortBySelection"
-            (selectionChange)="searchOptions.onSortByChange()">
-            <mat-option *ngFor="let sortByOption of searchOptions.sortByOptions"
-              [value]="sortByOption">
-              {{sortByOption}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>          
-      </div>
-
-      <!-- results list -->
-      <mat-list *ngFor="let searchResult of searchResults">
-        <mat-list-item>
-          <span class="select-highlight hover-highlight" 
-                [class.selected]="highlightSearchResult(searchResult)" 
-                style="cursor: pointer"
-                (click)="onSelectSearchResult(searchResult)">
-            {{searchResult.name}}
-          </span>
-        </mat-list-item>
-      </mat-list>
-    </div>
-
-    <mat-divider></mat-divider>
-
-    <!-- filters area -->
-    <div fxFlex="40">
-      <div fxLayout="column" fxLayoutAlign="space-around stretch">
-        <h2 class="mat-title">Refine</h2>
-        <p class="mat-caption">{{searchOptions.appliedFilterCount}} filters applied</p>
-        
-        <!-- code scheme filter control -->
-        <mat-form-field>
-          <mat-label>Code scheme</mat-label>
-          <mat-select multiple [(ngModel)]="searchOptions.codeSchemeSelections"
-            (selectionChange)="searchOptions.onCodeSchemesChange()" [compareWith]="searchOptions.compareCodeSchemes">
-            <mat-option *ngFor="let codeSchemeOption of searchOptions.codeSchemeOptions" [value]="codeSchemeOption">
-              {{codeSchemeOption.name}}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <!-- concept status filter control -->
-        <mat-form-field>
-          <mat-label>Status</mat-label>
-          <mat-select multiple [(ngModel)]="searchOptions.conceptStatusSelections"
-            (selectionChange)="searchOptions.onConceptStatusChange()">
-            <mat-option *ngFor="let conceptStatusOption of searchOptions.conceptStatusOptions"
-              [value]="conceptStatusOption">
-              {{conceptStatusOption}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </div>
-  </div>
+<ng-container *ngIf="searchResultPending; else searchComplete">
+  <mat-spinner></mat-spinner>
 </ng-container>
+
+<ng-template #searchComplete>
+  <ng-container *ngIf="hasResponse; else noResponse">
+    <div fxLayout="row wrap" fxLayoutAlign="center stretch" style="min-height:calc(100vh - 300px);">
+
+      <!-- results area -->
+      <div fxFlex="100" *ngIf="hasResults; else noResults">
+        <h2 class="mat-title">Search results for <i>"{{searchOptions.searchTerms}}"</i></h2>
+        <div fxLayout="row wrap" fxLayoutAlign="center stretch" >
+
+          <p class="mat-caption" fxFlex="20">{{searchResultsTable.rowCount}} results</p>
+
+          <!-- sort order control -->
+          <!-- TODO - reinstate when sort implemented on backend
+            <mat-form-field appearance="outline">
+            <mat-label>Sort by</mat-label>
+            <mat-select [(ngModel)]="searchOptions.sortBySelection"
+              (selectionChange)="searchOptions.onSortByChange()">
+              <mat-option *ngFor="let sortByOption of searchOptions.sortByOptions"
+                [value]="sortByOption">
+                {{sortByOption}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field> -->
+
+          <!-- result set size control -->
+          <!-- TODO - remove and replace with paginator once paging implemented on backend -->
+          <mat-form-field appearance="outline" fxFlex="40">
+            <mat-label>Result count</mat-label>
+            <mat-select [(ngModel)]="searchOptions.resultCount" (selectionChange)="searchOptions.onResultCountChange()">
+              <mat-option [value]="25">25</mat-option>
+              <mat-option [value]="50">50</mat-option>
+              <mat-option [value]="100">100</mat-option>
+              <mat-option [value]="500">500</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- result column selection control -->
+          <mat-form-field appearance="outline" fxFlex="40">
+            <mat-label>Show result</mat-label>
+            <mat-select [(value)]="searchResultsTable.selectedColumns" multiple>
+              <mat-option *ngFor="let column of searchResultsTable.allColumns" [value]="column">
+                {{column}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div fxFlex="100" style="padding-bottom: 10px;">
+            <mat-table [dataSource]="searchResultsTable.rows" style="width: 100%;">
+              <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+                <mat-cell *matCellDef="let searchResult;" [matTooltip]="searchResult.iri + ' | ' + searchResult.name + ' [' + searchResult.weighting + ']'">
+                  <span [class.subdued]="searchResult.subdued">
+                    {{searchResult.name}}
+                  </span>
+                </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="type">
+                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                <mat-cell *matCellDef="let searchResult;" [class.subdued]="searchResult.subdued">
+                    <mat-icon [ngStyle]="{'color': searchResult.conceptTypeColor}"
+                              fontSet="fa"
+                              class="fa-fw"
+                              fontIcon={{searchResult.conceptTypeIcon}}
+                              [matTooltip]="searchResult.conceptTypeName"
+                              matTooltipPosition="after"></mat-icon>
+                </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="codeScheme">
+                <mat-header-cell *matHeaderCellDef>Code Scheme</mat-header-cell>
+                <mat-cell *matCellDef="let searchResult;" [class.subdued]="searchResult.subdued">
+                  {{searchResult.scheme.name}}
+                </mat-cell>
+              </ng-container>
+
+              <mat-row *matRowDef="let row; columns: searchResultsTable.selectedColumns"  class="select-highlight hover-highlight"
+                      [class.selected]="row.highlighted"
+                      style="cursor: pointer"
+                      (click)="searchResultsTable.onSelectSearchResultRow(row)"></mat-row>
+            </mat-table>
+          </div>
+
+          <mat-divider fxFlex="100"></mat-divider>
+
+        </div>
+      </div>
+
+      <!-- filters area -->
+      <div fxFlex="100" style="height: 100%; min-height: 100%;">
+        <div fxLayout="column" fxLayoutAlign="space-around stretch">
+          <h2 class="mat-title">Refine <small>({{searchOptions.appliedFilterCount}} filters applied)</small></h2>
+
+          <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start"  style="height: 100%; min-height: 100%;">
+            <!-- code scheme filter control -->
+            <mat-form-field appearance="outline" fxFlex="100">
+              <mat-label>Code scheme</mat-label>
+              <mat-select multiple [(ngModel)]="searchOptions.codeSchemeSelections"
+                (selectionChange)="searchOptions.onCodeSchemesChange()" [compareWith]="searchOptions.compareCodeSchemes">
+                <mat-option *ngFor="let codeSchemeOption of searchOptions.codeSchemeOptions" [value]="codeSchemeOption">
+                  {{codeSchemeOption.name}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <!-- concept status filter control -->
+            <mat-form-field appearance="outline" fxFlex="100">
+              <mat-label>Status</mat-label>
+              <mat-select multiple [(ngModel)]="searchOptions.conceptStatusSelections"
+                (selectionChange)="searchOptions.onConceptStatusChange()">
+                <mat-option *ngFor="let conceptStatusOption of searchOptions.conceptStatusOptions"
+                  [value]="conceptStatusOption">
+                  {{conceptStatusOption}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</ng-template>
 
 <ng-template #noResponse>
   <h2 class="mat-title">No search response</h2>

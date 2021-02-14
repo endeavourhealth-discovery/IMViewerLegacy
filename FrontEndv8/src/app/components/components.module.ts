@@ -47,6 +47,9 @@ import { SnomedLicenseDialog } from './snomed-license-dialog/snomed-license-dial
 import { UserProfileDialog } from './user-profile-dialog/user-profile-dialog.component';
 import { EditConceptComponent } from './edit-concept/edit-concept.component';
 import { ViewMembersComponent } from './view-members/view-members.component';
+import { ConceptLibraryComponent } from './concept-library/concept-library.component';
+import { ConceptSummaryComponent } from './concept-summary/concept-summary.component';
+import { ConceptSidebarSummaryComponent } from './concept-sidebar-summary/concept-sidebar-summary.component';
 
 
 @NgModule({
@@ -101,6 +104,9 @@ import { ViewMembersComponent } from './view-members/view-members.component';
     QuickAccessComponent,
     EditConceptComponent,
     ViewMembersComponent,
+    ConceptLibraryComponent,
+    ConceptSummaryComponent,
+    ConceptSidebarSummaryComponent,
   ],
   exports: [
     ConceptSearchComponent,
@@ -118,6 +124,7 @@ import { ViewMembersComponent } from './view-members/view-members.component';
     QuickAccessComponent,
     EditConceptComponent,
     ViewMembersComponent,
+    ConceptLibraryComponent,
   ],
   entryComponents: [
     FindConceptUsagesDialogComponent,

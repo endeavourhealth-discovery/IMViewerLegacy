@@ -1,16 +1,16 @@
-import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
-import {NgEventBus} from 'ng-event-bus';
-import {fromEvent, Subscription} from 'rxjs';
-import {debounceTime, distinctUntilChanged, filter, map, tap} from 'rxjs/operators';
-import {ConceptStatus} from 'src/app/models/objectmodel/ConceptStatus';
-import {CodeSchemes, codeSchemesProvider} from 'src/app/models/search/CodeScheme';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { NgEventBus } from 'ng-event-bus';
+import { fromEvent, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs/operators';
+import { ConceptStatus } from 'src/app/models/objectmodel/ConceptStatus';
+import { CodeSchemes, codeSchemesProvider } from 'src/app/models/search/CodeScheme';
 import * as searchEvents from 'src/app/models/search/SearchEvents';
-import {SearchRequest} from 'src/app/models/search/SearchRequest';
-import {SearchResponse} from 'src/app/models/search/SearchResponse';
-import {SortBy} from 'src/app/models/search/SortBy';
-import {Perspectives} from 'src/app/services/perspective.service';
-import {ConceptService} from '../../services/concept.service';
-import {LoggerService} from '../../services/logger.service';
+import { SearchRequest } from 'src/app/models/search/SearchRequest';
+import { SearchResponse } from 'src/app/models/search/SearchResponse';
+import { SortBy } from 'src/app/models/search/SortBy';
+import { Perspectives } from 'src/app/services/perspective.service';
+import { ConceptService } from '../../services/concept.service';
+import { LoggerService } from '../../services/logger.service';
 
 @Component({
   selector: 'app-concept-search',
@@ -65,6 +65,8 @@ export class ConceptSearchComponent implements AfterViewInit {
   }
 
   private doSearch() {
+    this.eventBus.cast(searchEvents.SEARCH_RESULT_PENDING_EVENT, this.searchQuery);
+
     this.searchRequest = this.service.advancedSearch(this.searchQuery)
       .subscribe(
         (searchResponse: SearchResponse) => {
@@ -73,7 +75,8 @@ export class ConceptSearchComponent implements AfterViewInit {
           this.broadcastSearchResults(searchResponse);
         },
         (error) => {
-          this.log.error(error)
+          this.log.error(error);
+          this.eventBus.cast(searchEvents.SEARCH_REQUEST_FAILED_EVENT, this.searchQuery);
         }
       );
   }
@@ -97,7 +100,7 @@ export class ConceptSearchComponent implements AfterViewInit {
     searchRequest.sortBy = SortBy.Usage;
 
     searchRequest.page = 1;
-    searchRequest.size = 20;
+    searchRequest.size = 25;
 
     return searchRequest;
   }

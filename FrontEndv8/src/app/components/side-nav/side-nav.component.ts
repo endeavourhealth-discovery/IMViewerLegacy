@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { MatTabGroup } from '@angular/material/tabs';
 import { NavigationEnd, Router } from '@angular/router';
 import { NgEventBus } from 'ng-event-bus';
@@ -20,20 +20,17 @@ export class SideNavComponent {
   @Input() relationships: string;
   @Input() selectedIri: string;
   @ViewChild('tabs', {static: true}) tabGroup: MatTabGroup;
-
-  @Output() openDialogEvent: EventEmitter<any> = new EventEmitter<any>();
-
   history = [];
   searchResults: any[] = [];
- 
+
   constructor(
     private router: Router,
     private log: LoggerService,
     private eventBus: NgEventBus) {
       this.routeEvent(this.router);
-      this.eventBus.on(searchEvents.SEARCH_RESULT_EVENT).subscribe(searchResponseEvent => {
+      this.eventBus.on(searchEvents.SEARCH_RESULT_PENDING_EVENT).subscribe(searchResultPendingEvent => {
         this.showSearchResultsTab();
-      });    
+      });
   }
 
   routeEvent(router: Router) {
@@ -54,11 +51,6 @@ export class SideNavComponent {
       this.eventBus.cast('app:conceptSelect', iri);
     }
   }
-
-  openDialog() {
-    this.openDialogEvent.emit();
-  }
-
 
   private showSearchResultsTab() {
     const searchResultsTabIndex: number = this.tabGroup._tabs.toArray().findIndex(tab => "Search Results" == tab.textLabel)
