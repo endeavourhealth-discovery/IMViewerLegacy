@@ -73,7 +73,7 @@
               <mat-wrapper>
                 <mat-nav-list dense style="height: 200px; overflow: auto;">
                   <ng-container *ngFor="let member of concept.Member">
-                  <mat-list-item *ngIf="member.Exclude == false" (click)="nodeDblClick(member.iri)" (dblclick)="nodeDblClick(member.Class.iri)">
+                  <mat-list-item *ngIf="member.Exclude == false" (click)="nodeClick(member.iri)" (dblclick)="nodeClick(member.Class.iri)">
                     <mat-icon matListIcon>add</mat-icon>
                     <h3 matLine> {{member.Class.name}} </h3>
                     <p matLine>
