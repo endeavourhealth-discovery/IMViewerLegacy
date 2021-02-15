@@ -4,7 +4,6 @@ import {ConceptReference} from './objectmodel/ConceptReference';
 import {ObjectPropertyValue} from './objectmodel/ObjectPropertyValue';
 import {DataPropertyValue} from './objectmodel/DataPropertyValue';
 import {Annotation} from './objectmodel/Annotation';
-import {ValueSetConcept} from './objectmodel/ValueSetConcept';
 
 // need notion of enter and exit visitor
 export class ObjectModelVisitor {
@@ -69,7 +68,7 @@ export class ObjectModelVisitor {
     if (concept.DisjointWith)
       this.DisjointWithVisitor(concept.DisjointWith);
 
-    let members: Set<ClassExpression> = (concept as ValueSetConcept).Member;
+    let members: Set<ClassExpression> = concept.Member;
     if (members != null) {
       this.MembersVisitor(members);
       this.visitExpressions(members)

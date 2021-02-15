@@ -23,6 +23,7 @@ export class Concept implements IMAnnotated {
   Expression: ClassExpression;
   DisjointWith: Array<ConceptReference>;
   Property: Set<PropertyConstraint>;
+  Member: Set<ClassExpression>;
 
   getAnnotations(): Set<Annotation> {
     throw new Error('Method not implemented.');

@@ -1,12 +1,9 @@
 import { Concept } from '../models/objectmodel/Concept';
 import { ClassExpression } from '../models/objectmodel/ClassExpression';
 import { ConceptReference } from '../models/objectmodel/ConceptReference';
-import { ObjectPropertyValue } from '../models/objectmodel/ObjectPropertyValue';
 import { ConceptService } from './concept.service';
 import { LoggerService } from './logger.service';
 import { Subject, Observable } from 'rxjs';
-import {ObjectModelVisitor} from '../models/ObjectModelVisitor';
-import {ValueSetConcept} from '../models/objectmodel/ValueSetConcept';
 
 export class ValueSet {
     concept: ConceptReference;
@@ -42,7 +39,7 @@ export class ValueSetService {
         excluded: []
       } as ValueSet;
 
-      let members: Set<ClassExpression> = (concept as ValueSetConcept).Member;
+      let members: Set<ClassExpression> = concept.Member;
       if (members) {
         members.forEach(m => {
           if (m.Exclude)
