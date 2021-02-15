@@ -53,12 +53,12 @@ export class HealthRecordDialogComponent implements OnInit {
   private _filter(value: string) {
     const filterValue = value.toLowerCase();
     if (value.length > 5) {
-      return this.service.search(value, ':HealthRecord', []).pipe(
+      /* return this.service.search(value, ':HealthRecord', []).pipe(
         filter(data => !!data),
         map((data) => {
           return data.filter(option => option.name.toLowerCase().includes(filterValue))
         })
-      );
+      ); */
     } else {
       let options: any[] = [{ iri: ':Encounter', name: 'Encounter (record entry)', description: '' },
       { iri: ':CriticalCareEncounter', name: 'Critical care encounter (record entry)', description: '' },
