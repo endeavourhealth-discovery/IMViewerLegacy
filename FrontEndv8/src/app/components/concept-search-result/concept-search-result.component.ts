@@ -27,8 +27,8 @@ class ConceptSearchOptions {
               public sortByOptions: string[]) {
     this.searchRequest = new Subject();
 
-    this.conceptStatusSelections = _searchRequest.statuses.map(status => { return ConceptStatus[status] } );
-    this.codeSchemeSelections = _searchRequest.codeSchemes;
+    this.conceptStatusSelections = _searchRequest.statusFilter.map(status => { return ConceptStatus[status] } );
+    this.codeSchemeSelections = _searchRequest.schemeFilter;
     this.sortBySelection = SortBy[_searchRequest.sortBy]
     this.resultCount = _searchRequest.size;
   }
@@ -36,13 +36,13 @@ class ConceptSearchOptions {
   // sync string selection in UI to model
   onConceptStatusChange() {
     const selected: ConceptStatus[] = this.conceptStatusSelections.map(selectedName => { return ConceptStatus[selectedName] });
-    this._searchRequest.statuses = selected;
+    this._searchRequest.statusFilter = selected;
 
     this.onChangeSearchRequest()
   }
 
   onCodeSchemesChange() {
-    this._searchRequest.codeSchemes = this.codeSchemeSelections;
+    this._searchRequest.schemeFilter = this.codeSchemeSelections;
 
     this.onChangeSearchRequest()
   }
@@ -66,7 +66,7 @@ class ConceptSearchOptions {
   }
 
   get searchTerms() {
-    return this._searchRequest.terms;
+    return this._searchRequest.termFilter;
   }
 
   get appliedFilterCount() {
@@ -83,7 +83,7 @@ class ConceptSearchOptions {
 interface ConceptSearchResultRow {
   iri: string;
   name: string;
-  types: ConceptReference[];
+  isDescendentOf: ConceptReference[];
   scheme: ConceptReference;
   weighting: number;
   highlighted?: boolean;
@@ -113,10 +113,10 @@ class ConceptSearchResultTable {
       let perspective: Perspective = this.perspectiveService.ontology;
       let conceptTypeName: string = perspective.caption;
 
-      if(row.types != null && row.types.length > 0) {
+      if(row.isDescendentOf != null && row.isDescendentOf.length > 0) {
 
-        perspective = this.perspectiveService.getPerspectiveByRoot(row.types[0].iri);
-        conceptTypeName = row.types[0].name;
+        perspective = this.perspectiveService.getPerspectiveByRoot(row.isDescendentOf[0].iri);
+        conceptTypeName = row.isDescendentOf[0].name;
 
         // default perspective
         if(perspective == null) {
@@ -178,20 +178,20 @@ export class ConceptSearchResultComponent implements OnInit  {
               private codeSchemes: CodeSchemes,
               private perspectiveService: Perspectives,
               private log: LoggerService) {
-    this.searchResultPending = false;  
-  
+    this.searchResultPending = false;
+
     this.eventBus.on(searchEvents.SEARCH_RESULT_PENDING_EVENT).subscribe((_searchRequest: SearchRequest) => {
-      this.searchResultPending = true;  
+      this.searchResultPending = true;
     });
 
     this.eventBus.on(searchEvents.SEARCH_REQUEST_FAILED_EVENT).subscribe((_searchRequest: SearchRequest) => {
-      this.searchResultPending = false;  
+      this.searchResultPending = false;
       this.hasResponse = false;
     });
 
     this.eventBus.on(searchEvents.SEARCH_RESULT_EVENT).subscribe((searchResponse: SearchResponse) => {
       this.searchResultPending = false;
-      
+
       this.searchResultsTable = new ConceptSearchResultTable(searchResponse.concepts, perspectiveService);
       this.searchResultsTable.selectedRow.subscribe(
         selected => {

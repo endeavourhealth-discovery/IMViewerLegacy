@@ -42,7 +42,7 @@ export class ConceptSearchComponent implements AfterViewInit {
         debounceTime(200),
         distinctUntilChanged(),
         tap((text) => {
-          this.searchQuery.terms = text;
+          this.searchQuery.termFilter = text;
           this.search();
         })
       )
@@ -89,13 +89,13 @@ export class ConceptSearchComponent implements AfterViewInit {
     let searchRequest: SearchRequest = new SearchRequest();
 
     this.codeSchemes.defaultCodeSchemes.subscribe(defaultCodeSchemes => {
-      searchRequest.codeSchemes = defaultCodeSchemes;
+      searchRequest.schemeFilter = defaultCodeSchemes;
     });
 
     // we want know which (if any) of these types our search results inherit from
-    searchRequest.types = this.perspectiveService.getAllRootIris();
+    searchRequest.markIfDescendentOf = this.perspectiveService.getAllRootIris();
 
-    searchRequest.statuses = [ConceptStatus.Active, ConceptStatus.Draft];
+    searchRequest.statusFilter = [ConceptStatus.Active, ConceptStatus.Draft];
 
     searchRequest.sortBy = SortBy.Usage;
 

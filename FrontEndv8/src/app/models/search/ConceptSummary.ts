@@ -7,6 +7,6 @@ export class ConceptSummary {
   scheme: ConceptReference;
   code: string;
   conceptType: ConceptType;
-  types: ConceptReference[];
+  isDescendentOf: ConceptReference[];
   weighting: number;
 }

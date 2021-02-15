@@ -3,12 +3,12 @@ import { ConceptStatus } from '../objectmodel/ConceptStatus';
 import { SortBy } from './SortBy';
 
 export class SearchRequest {
-  terms: string;
-  types: string[];
-  codeSchemes: ConceptReference[];
+  termFilter: string;
+  statusFilter: ConceptStatus[];
+  schemeFilter: ConceptReference[];
+  descendentFilter: String[];
+  markIfDescendentOf: string[];
   sortBy: SortBy;
-  statuses: ConceptStatus[];
   page: number = 1;
   size: number = 20;
-  
 }

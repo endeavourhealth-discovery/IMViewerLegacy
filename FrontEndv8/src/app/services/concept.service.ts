@@ -23,19 +23,6 @@ export class ConceptService {
 
   constructor(private http: HttpClient) { }
 
-  search(searchTerm: string, root: string = null, relationships: string[] = null, limit: number = 20) {
-    let params = new HttpParams();
-    params = params.append('nameTerm', searchTerm);
-    params = params.append('limit', limit.toString());
-    if (root)
-      params = params.append('root', root);
-    if (relationships != null) {
-      relationships.forEach(r => params = params.append('relationship', r));
-    }
-
-    return this.http.get<ConceptReference[]>(environment.api + 'api/concept/', { params });
-  }
-
   advancedSearch(request: SearchRequest) {
     return this.http.post<SearchResponse>(environment.api + 'api/concept/search', request);
   }
@@ -52,18 +39,6 @@ export class ConceptService {
       responseType: 'text'
     }
     return this.http.get<any>(environment.api + 'api/concept/' + iri, requestOptions);
-  }
-
-  getConceptHasChildren(iri: string, includeLegacy: boolean = false): Observable<Boolean> {
-    let params = new HttpParams();
-    params = params.append('includeLegacy', includeLegacy.toString());
-    return this.http.get<Boolean>(environment.api + 'api/concept/' + iri + '/hasChildren', {params});
-  }
-
-  getConceptsHaveChildren(iris: string[], includeLegacy: boolean = false): Observable<string[]> {
-    let params = new HttpParams();
-    params = params.append('includeLegacy', includeLegacy.toString());
-    return this.http.post<string[]>(environment.api + 'api/concept/haveChildren', iris, {params});
   }
 
   getConceptChildren(iri: string): Observable<Array<ConceptReferenceNode>> {
