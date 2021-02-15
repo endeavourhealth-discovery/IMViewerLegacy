@@ -12,7 +12,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ANTLRInputStream, CommonTokenStream } from 'antlr4ts';
 import { DiscoverySyntaxLexer } from '../../../discovery-syntax/DiscoverySyntaxLexer';
-import { DefinitionContext, DiscoverySyntaxParser } from '../../../discovery-syntax/DiscoverySyntaxParser';
+import { ConceptContext, DiscoverySyntaxParser } from '../../../discovery-syntax/DiscoverySyntaxParser';
 import TodoLangErrorListener, { ITodoLangError } from '../../../discovery-syntax/DiscoveryErrorListener';
 import { DiscoveryLanguageId } from '../../../discovery-syntax/DiscoveryLanguage';
 import { ConceptView, HistoryItem } from '../../../common/ConceptView';

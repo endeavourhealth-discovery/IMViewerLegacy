@@ -2,7 +2,7 @@ import { Concept } from './../../models/objectmodel/Concept';
 import { DiscoverySyntaxLexer } from './../../discovery-syntax/DiscoverySyntaxLexer';
 import { ANTLRInputStream, CommonTokenStream } from 'antlr4ts';
 import TodoLangErrorListener, { ITodoLangError } from './../../discovery-syntax/DiscoveryErrorListener';
-import { DefinitionContext, DiscoverySyntaxParser } from './../../discovery-syntax/DiscoverySyntaxParser';
+import { ConceptContext, DiscoverySyntaxParser } from './../../discovery-syntax/DiscoverySyntaxParser';
 import { DiscoveryLanguageId } from './../../discovery-syntax/DiscoveryLanguage';
 import { NgEventBus } from 'ng-event-bus';
 import { LoggerService } from 'src/app/services/logger.service';
@@ -67,7 +67,7 @@ export class EditConceptComponent implements OnInit {
     monaco.editor.setModelMarkers(model, DiscoveryLanguageId, ret.errors.map(e => this.toDiagnostics(e)))
   }
 
-  parse(code: string): { ast: DefinitionContext, errors: ITodoLangError[] } {
+  parse(code: string): { ast: ConceptContext, errors: ITodoLangError[] } {
     const inputStream = new ANTLRInputStream(code);
     const lexer = new DiscoverySyntaxLexer(inputStream);
     lexer.removeErrorListeners()
@@ -77,7 +77,7 @@ export class EditConceptComponent implements OnInit {
     const parser = new DiscoverySyntaxParser(tokenStream);
     parser.removeErrorListeners();
     parser.addErrorListener(todoLangErrorsListner);
-    const ast = parser.definition();
+    const ast = parser.concept();
     const errors: ITodoLangError[] = todoLangErrorsListner.getErrors();
     return { ast, errors };
   }

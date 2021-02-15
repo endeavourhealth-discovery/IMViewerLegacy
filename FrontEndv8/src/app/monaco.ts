@@ -6,7 +6,7 @@ import CancellationToken = monaco.CancellationToken;
 import ProviderResult = monaco.languages.ProviderResult;
 import CompletionList = monaco.languages.CompletionList;
 import Position = monaco.Position;
-import {DefinitionContext, DiscoverySyntaxParser} from './discovery-syntax/DiscoverySyntaxParser';
+import {ConceptContext, DiscoverySyntaxParser} from './discovery-syntax/DiscoverySyntaxParser';
 import TodoLangErrorListener, {ITodoLangError} from './discovery-syntax/DiscoveryErrorListener';
 import {ANTLRInputStream, CommonTokenStream} from 'antlr4ts';
 import {DiscoverySyntaxLexer} from './discovery-syntax/DiscoverySyntaxLexer';
@@ -46,7 +46,7 @@ export function getDiscoveryCompletionProvider(monaco) {
   };
 }
 
-export function parseAntlr(code: string): {ast:DefinitionContext, errors: ITodoLangError[]} {
+export function parseAntlr(code: string): {ast:ConceptContext, errors: ITodoLangError[]} {
   const inputStream = new ANTLRInputStream(code);
   const lexer = new DiscoverySyntaxLexer(inputStream);
   lexer.removeErrorListeners()
@@ -56,7 +56,7 @@ export function parseAntlr(code: string): {ast:DefinitionContext, errors: ITodoL
   const parser = new DiscoverySyntaxParser(tokenStream);
   parser.removeErrorListeners();
   parser.addErrorListener(todoLangErrorsListner);
-  const ast =  parser.definition();
+  const ast =  parser.concept();
   const errors: ITodoLangError[]  = todoLangErrorsListner.getErrors();
   return {ast, errors};
 }
