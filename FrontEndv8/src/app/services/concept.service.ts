@@ -31,8 +31,8 @@ export class ConceptService {
     return this.http.get<Concept>(environment.api + 'api/concept/' + iri);
   }
 
-  createConcept(iri: string, conceptDefintion: string): Observable<Concept> {
-    return this.http.post<Concept>(environment.api + 'api/concept/' + iri, conceptDefintion);
+  createConcept(conceptDefintion: string): Observable<Concept> {
+    return this.http.post<Concept>(environment.api + 'api/concept/', conceptDefintion);
   }
 
   getConceptImLang(iri: string): Observable<any> {
