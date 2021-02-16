@@ -7,6 +7,7 @@ import { CommonModule } from "@angular/common";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatCardModule } from "@angular/material/card";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { MatCardModule } from "@angular/material/card";
     CommonModule,
     MatDialogModule,
     MatExpansionModule,
-    MatCardModule
+    MatCardModule,
+    MatTooltipModule
   ],
   declarations: [EditConceptComponent],
   exports: [EditConceptComponent],
