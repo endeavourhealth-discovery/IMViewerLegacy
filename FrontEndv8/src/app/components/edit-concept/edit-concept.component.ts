@@ -1,7 +1,9 @@
 import { Concept } from './../../models/objectmodel/Concept';
 import { DiscoverySyntaxLexer } from './../../discovery-syntax/DiscoverySyntaxLexer';
 import { ANTLRInputStream, CommonTokenStream } from 'antlr4ts';
-import TodoLangErrorListener, { ITodoLangError } from './../../discovery-syntax/DiscoveryErrorListener';
+import TodoLangErrorListener, {
+  ITodoLangError,
+} from './../../discovery-syntax/DiscoveryErrorListener';
 import { ConceptContext, DiscoverySyntaxParser } from './../../discovery-syntax/DiscoverySyntaxParser';
 import { DiscoveryLanguageId } from './../../discovery-syntax/DiscoveryLanguage';
 import { NgEventBus } from 'ng-event-bus';
@@ -11,31 +13,43 @@ import { Perspectives } from 'src/app/services/perspective.service';
 import { ConceptService } from 'src/app/services/concept.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Component, OnInit, Input } from '@angular/core';
-import {Subject} from 'rxjs';
+import { Subject } from 'rxjs';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-edit-concept',
   templateUrl: './edit-concept.component.html',
-  styleUrls: ['./edit-concept.component.scss']
+  styleUrls: ['./edit-concept.component.scss'],
 })
 export class EditConceptComponent implements OnInit {
-
+  @Input() tab: boolean;
   @Input() concept: Concept;
   conceptText: string;
-  definitionText = 'SubClassOf (":VSET_Covid0" AND PROPERTY(":hasMembers" = some ("sn:1240521000000100" AND "sn:1240531000000103")))';
+  definitionText: string;
   definitionChanged: Subject<string> = new Subject<string>();
-  editorOptions = {theme: 'vs-dark', language: 'DiscoverySyntax',
-  wordWrap: 'wordWrapColumn',	wordWrapColumn: 80};
-  editorOptions2 = {theme: 'vs-dark', language: 'json',
-  wordWrap: 'wordWrapColumn',	wordWrapColumn: 80};
+  dialogRef: MatDialogRef<EditConceptComponent>;
+  editorOptions = {
+    theme: 'vs-dark',
+    language: 'DiscoverySyntax',
+    wordWrap: 'wordWrapColumn',
+    wordWrapColumn: 80,
+  };
+  editorOptions2 = {
+    theme: 'vs-dark',
+    language: 'json',
+    wordWrap: 'wordWrapColumn',
+    wordWrapColumn: 80,
+  };
 
 
-  constructor(private service: ConceptService,
+  constructor(
+    private service: ConceptService,
     public perspectives: Perspectives,
     private router: Router,
     private route: ActivatedRoute,
     private log: LoggerService,
-    private eventBus: NgEventBus) {
+    private eventBus: NgEventBus,
+  ) {
     this.definitionChanged
       .pipe(
         debounceTime(300), // wait 300ms after the last event before emitting last event
@@ -43,34 +57,36 @@ export class EditConceptComponent implements OnInit {
       )
       .subscribe(
         (evnt) => this.validate(evnt),
-        error => (error) => this.log.error(error)
+        (error) => (error) => this.log.error(error)
       );
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ngOnChanges(): void {
     // Edit Concept
     this.conceptText = JSON.stringify(this.concept, null, '\t');
     this.service.getConceptImLang(this.concept.iri).subscribe(
-      (result) => this.definitionText = result,
+      (result) => (this.definitionText = result),
       (error) => this.log.error(error)
     );
-
   }
 
   validate(evnt) {
-    let ret = this.parse(evnt);
+    const ret = this.parse(evnt);
 
     const model = monaco.editor.getModels()[0];
-    monaco.editor.setModelMarkers(model, DiscoveryLanguageId, ret.errors.map(e => this.toDiagnostics(e)))
+    monaco.editor.setModelMarkers(
+      model,
+      DiscoveryLanguageId,
+      ret.errors.map((e) => this.toDiagnostics(e))
+    );
   }
 
-  parse(code: string): { ast: ConceptContext, errors: ITodoLangError[] } {
+  parse(code: string): { ast: ConceptContext; errors: ITodoLangError[] } {
     const inputStream = new ANTLRInputStream(code);
     const lexer = new DiscoverySyntaxLexer(inputStream);
-    lexer.removeErrorListeners()
+    lexer.removeErrorListeners();
     const todoLangErrorsListner = new TodoLangErrorListener();
     lexer.addErrorListener(todoLangErrorsListner);
     const tokenStream = new CommonTokenStream(lexer);
@@ -89,4 +105,21 @@ export class EditConceptComponent implements OnInit {
     };
   }
 
+  onEdit() {
+    this.log.success('Created.');
+  }
+  onCreate() {
+    this.log.success('Created.');
+    document.getElementById('cancel').click();
+  }
+
+  // onOk() {
+  //   let update = this.service.updateUser(this.user);
+
+  //   if (update != null)
+  //     update.subscribe(
+  //       (ok) => this.dialogRef.close(true),
+  //       (error) => this.error = error
+  //     )
+  // }
 }

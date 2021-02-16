@@ -39,17 +39,19 @@ import { GraphNavigatorComponent } from './graph-navigator/graph-navigator.compo
 import { HealthRecordNavigatorComponent } from './health-record-navigator/health-record-navigator.component';
 import { HealthRecordTabularViewComponent } from './health-record-tabular-view/health-record-tabular-view.component';
 import { LibraryComponentComponent } from './library-component/library-component.component';
-import { MatWrapperComponent } from './mat-wrapper/mat-wrapper.component';
 import { QuickAccessComponent } from './quick-launch/quick-access.component';
 import { ResizeObserverDirective } from './resize-observer.directive';
 import { SideNavComponent } from './side-nav/side-nav.component';
 import { SnomedLicenseDialog } from './snomed-license-dialog/snomed-license-dialog.component';
 import { UserProfileDialog } from './user-profile-dialog/user-profile-dialog.component';
-import { EditConceptComponent } from './edit-concept/edit-concept.component';
 import { ViewMembersComponent } from './view-members/view-members.component';
 import { ConceptLibraryComponent } from './concept-library/concept-library.component';
 import { ConceptSummaryComponent } from './concept-summary/concept-summary.component';
 import { ConceptSidebarSummaryComponent } from './concept-sidebar-summary/concept-sidebar-summary.component';
+import { EditConceptComponentModule } from './edit-concept/edit-concept.module';
+import { MatWrapperComponent } from './mat-wrapper/mat-wrapper.component';
+import { EditConceptComponent } from './edit-concept/edit-concept.component';
+
 
 
 @NgModule({
@@ -83,7 +85,8 @@ import { ConceptSidebarSummaryComponent } from './concept-sidebar-summary/concep
     MatAutocompleteModule,
     MatDividerModule,
     MonacoEditorModule,
-    NgJsonEditorModule
+    NgJsonEditorModule,
+    EditConceptComponentModule
   ],
   declarations: [
     ConceptSearchComponent,
@@ -98,15 +101,14 @@ import { ConceptSidebarSummaryComponent } from './concept-sidebar-summary/concep
     ConceptDefinitionComponent,
     HealthRecordNavigatorComponent,
     LibraryComponentComponent,
-    MatWrapperComponent,
     SnomedLicenseDialog,
     UserProfileDialog,
     QuickAccessComponent,
-    EditConceptComponent,
     ViewMembersComponent,
     ConceptLibraryComponent,
     ConceptSummaryComponent,
     ConceptSidebarSummaryComponent,
+    MatWrapperComponent
   ],
   exports: [
     ConceptSearchComponent,
@@ -118,18 +120,18 @@ import { ConceptSidebarSummaryComponent } from './concept-sidebar-summary/concep
     ConceptDefinitionComponent,
     HealthRecordNavigatorComponent,
     LibraryComponentComponent,
-    MatWrapperComponent,
     SnomedLicenseDialog,
     UserProfileDialog,
     QuickAccessComponent,
-    EditConceptComponent,
     ViewMembersComponent,
     ConceptLibraryComponent,
+    MatWrapperComponent
   ],
   entryComponents: [
     FindConceptUsagesDialogComponent,
     SnomedLicenseDialog,
-    UserProfileDialog
+    UserProfileDialog,
+    EditConceptComponent
   ],
   providers: [
     CookieService

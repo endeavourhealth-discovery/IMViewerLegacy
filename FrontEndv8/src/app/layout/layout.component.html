@@ -11,6 +11,8 @@
     <mat-icon>help_outline</mat-icon>
   </button>
 
+  <button mat-icon-button class="icon" (click)="openEditor()"><mat-icon>add_circle_outline</mat-icon></button>
+
   <mat-menu #appMenu="matMenu" xPosition="before">
     <button mat-menu-item (click)="navigate('perspective/mainPage')"><i class="fas fa-fw fa-home"></i> Home</button>
     <ng-container *ngIf="menuItems">
