@@ -22,7 +22,7 @@
     </mat-card-content>
     <mat-card-actions>
       <div matTooltip="Syntax is invalid" [matTooltipDisabled]="isValidSyntax">
-        <button [disabled]="!isValidSyntax" color="primary" mat-button (click)="onEdit()">
+        <button [disabled]="!isValidSyntax" color="primary" mat-button (click)="onClick()">
           Edit
         </button>
       </div>
@@ -56,7 +56,7 @@
     <mat-dialog-actions>
       <button id="cancel" color="warn" mat-button mat-dialog-close>Cancel</button>
       <div matTooltip="Syntax is invalid" [matTooltipDisabled]="isValidSyntax">
-        <button [disabled]="!isValidSyntax" color="primary" mat-button (click)="onCreate()">Create</button>
+        <button [disabled]="!isValidSyntax" color="primary" mat-button (click)="onClick()">Create</button>
       </div>
 
     </mat-dialog-actions>

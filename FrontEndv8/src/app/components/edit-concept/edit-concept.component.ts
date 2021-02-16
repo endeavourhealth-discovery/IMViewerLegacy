@@ -28,6 +28,7 @@ export class EditConceptComponent implements OnInit {
   @Input() tab: boolean;
   @Input() concept: Concept;
   conceptText: string;
+  error: any;
   definitionText: string;
   definitionChanged: Subject<string> = new Subject<string>();
   dialogRef: MatDialogRef<EditConceptComponent>;
@@ -116,24 +117,14 @@ export class EditConceptComponent implements OnInit {
     };
   }
 
-  onEdit() {
-    this.log.success('Edited successfully.');
+  onClick() {
+    const create = this.service.createConcept(this.definitionText);
+    create.subscribe(
+      (ok) => {
+        this.log.success('Concept created successfully.');
+        document.getElementById('cancel').click();
+      },
+      (error) => (this.error = error)
+    );
   }
-  onCreate() {
-    // TODO this.service.createConcept
-    // const created = this.service.createConcept(this.definitionText);
-    // console.log(created);
-    this.log.success('Created successfully.');
-    document.getElementById('cancel').click();
-  }
-
-  // onOk() {
-  //   let update = this.service.updateUser(this.user);
-
-  //   if (update != null)
-  //     update.subscribe(
-  //       (ok) => this.dialogRef.close(true),
-  //       (error) => this.error = error
-  //     )
-  // }
 }
