@@ -1,10 +1,11 @@
 <div class="flex" fxLayout="row wrap" fxLayoutGap="16px grid">
   <mat-card *ngIf="tab; else elseBlock">
-    <mat-card-title>IMLang</mat-card-title>
+    <mat-card-subtitle>IMLang</mat-card-subtitle>
     <mat-card-content>
       <ngx-monaco-editor class="tab" [options]="editorOptions" [(ngModel)]="definitionText"
         (ngModelChange)="definitionChanged.next($event)">
       </ngx-monaco-editor>
+
       <!-- JSON editor for debugging purposes -->
       <!-- remove before live -->
       <mat-accordion>
@@ -20,13 +21,19 @@
       </mat-accordion>
     </mat-card-content>
     <mat-card-actions>
-      <button color="primary" mat-button (click)="onEdit()">Edit</button>
+      <div matTooltip="Syntax is invalid" [matTooltipDisabled]="isValidSyntax">
+        <button [disabled]="!isValidSyntax" color="primary" mat-button (click)="onEdit()">
+          Edit
+        </button>
+      </div>
     </mat-card-actions>
+
   </mat-card>
 
   <ng-template #elseBlock>
-    <h1 mat-dialog-title>IMLang</h1>
+    <h1 mat-dialog-title>Create concept</h1>
     <mat-dialog-content>
+      <h3 mat-dialog-title>IMLang</h3>
       <ngx-monaco-editor class="dialog" [options]="editorOptions" [(ngModel)]="definitionText"
         (ngModelChange)="definitionChanged.next($event)">
       </ngx-monaco-editor>
@@ -48,7 +55,10 @@
 
     <mat-dialog-actions>
       <button id="cancel" color="warn" mat-button mat-dialog-close>Cancel</button>
-      <button color="primary" mat-button (click)="onCreate()">Create</button>
+      <div matTooltip="Syntax is invalid" [matTooltipDisabled]="isValidSyntax">
+        <button [disabled]="!isValidSyntax" color="primary" mat-button (click)="onCreate()">Create</button>
+      </div>
+
     </mat-dialog-actions>
   </ng-template>
 

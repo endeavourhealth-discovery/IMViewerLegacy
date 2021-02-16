@@ -4,7 +4,10 @@ import { ANTLRInputStream, CommonTokenStream } from 'antlr4ts';
 import TodoLangErrorListener, {
   ITodoLangError,
 } from './../../discovery-syntax/DiscoveryErrorListener';
-import { ConceptContext, DiscoverySyntaxParser } from './../../discovery-syntax/DiscoverySyntaxParser';
+import {
+  ConceptContext,
+  DiscoverySyntaxParser,
+} from './../../discovery-syntax/DiscoverySyntaxParser';
 import { DiscoveryLanguageId } from './../../discovery-syntax/DiscoveryLanguage';
 import { NgEventBus } from 'ng-event-bus';
 import { LoggerService } from 'src/app/services/logger.service';
@@ -28,6 +31,15 @@ export class EditConceptComponent implements OnInit {
   definitionText: string;
   definitionChanged: Subject<string> = new Subject<string>();
   dialogRef: MatDialogRef<EditConceptComponent>;
+  get isValidSyntax(): boolean {
+    let validation;
+    try {
+      validation = this.parse(this.definitionText);
+      return !!this.definitionText && !validation.errors.length;
+    } catch (error) {
+      return false;
+    }
+  }
   editorOptions = {
     theme: 'vs-dark',
     language: 'DiscoverySyntax',
@@ -41,14 +53,13 @@ export class EditConceptComponent implements OnInit {
     wordWrapColumn: 80,
   };
 
-
   constructor(
     private service: ConceptService,
     public perspectives: Perspectives,
     private router: Router,
     private route: ActivatedRoute,
     private log: LoggerService,
-    private eventBus: NgEventBus,
+    private eventBus: NgEventBus
   ) {
     this.definitionChanged
       .pipe(
@@ -106,10 +117,13 @@ export class EditConceptComponent implements OnInit {
   }
 
   onEdit() {
-    this.log.success('Created.');
+    this.log.success('Edited successfully.');
   }
   onCreate() {
-    this.log.success('Created.');
+    // TODO this.service.createConcept
+    // const created = this.service.createConcept(this.definitionText);
+    // console.log(created);
+    this.log.success('Created successfully.');
     document.getElementById('cancel').click();
   }
 
