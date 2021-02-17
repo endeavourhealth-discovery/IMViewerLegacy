@@ -99,14 +99,14 @@ export class EditConceptComponent implements OnInit {
     const inputStream = new ANTLRInputStream(code);
     const lexer = new DiscoverySyntaxLexer(inputStream);
     lexer.removeErrorListeners();
-    const todoLangErrorsListner = new TodoLangErrorListener();
-    lexer.addErrorListener(todoLangErrorsListner);
+    const todoLangErrorListener = new TodoLangErrorListener();
+    lexer.addErrorListener(todoLangErrorListener);
     const tokenStream = new CommonTokenStream(lexer);
     const parser = new DiscoverySyntaxParser(tokenStream);
     parser.removeErrorListeners();
-    parser.addErrorListener(todoLangErrorsListner);
+    parser.addErrorListener(todoLangErrorListener);
     const ast = parser.concept();
-    const errors: ITodoLangError[] = todoLangErrorsListner.getErrors();
+    const errors: ITodoLangError[] = todoLangErrorListener.getErrors();
     return { ast, errors };
   }
 
@@ -121,8 +121,9 @@ export class EditConceptComponent implements OnInit {
     const create = this.service.createConcept(this.definitionText);
     create.subscribe(
       (ok) => {
+        this.conceptText = JSON.stringify(ok, null, '\t');
         this.log.success('Concept created successfully.');
-        document.getElementById('cancel').click();
+        // document.getElementById('cancel').click();
       },
       (error) => (this.error = error)
     );

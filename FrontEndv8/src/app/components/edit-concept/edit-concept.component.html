@@ -9,21 +9,20 @@
       <!-- JSON editor for debugging purposes -->
       <!-- remove before live -->
       <mat-accordion>
-        <mat-expansion-panel hideToggle>
+        <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              JSON
+              JSON - Debug View
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <ngx-monaco-editor [options]="editorOptions2" [(ngModel)]="conceptText"
-            (ngModelChange)="definitionChanged.next($event)"></ngx-monaco-editor>
+          <ngx-monaco-editor [options]="editorOptions2" [(ngModel)]="conceptText"></ngx-monaco-editor>
         </mat-expansion-panel>
       </mat-accordion>
     </mat-card-content>
     <mat-card-actions>
       <div matTooltip="Syntax is invalid" [matTooltipDisabled]="isValidSyntax">
-        <button [disabled]="!isValidSyntax" color="primary" mat-button (click)="onClick()">
-          Edit
+        <button [disabled]="!isValidSyntax" color="primary" mat-raised-button (click)="onClick()">
+          Save Changes
         </button>
       </div>
     </mat-card-actions>
@@ -41,22 +40,21 @@
       <!-- JSON editor for debugging purposes -->
       <!-- remove before live -->
       <mat-accordion>
-        <mat-expansion-panel hideToggle>
+        <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              JSON
+              JSON - Debug View
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <ngx-monaco-editor [options]="editorOptions2" [(ngModel)]="conceptText"
-            (ngModelChange)="definitionChanged.next($event)"></ngx-monaco-editor>
+          <ngx-monaco-editor [options]="editorOptions2" [(ngModel)]="conceptText"></ngx-monaco-editor>
         </mat-expansion-panel>
       </mat-accordion>
     </mat-dialog-content>
 
     <mat-dialog-actions>
-      <button id="cancel" color="warn" mat-button mat-dialog-close>Cancel</button>
+      <button id="cancel" color="warn" mat-raised-button mat-dialog-close>Cancel</button>
       <div matTooltip="Syntax is invalid" [matTooltipDisabled]="isValidSyntax">
-        <button [disabled]="!isValidSyntax" color="primary" mat-button (click)="onClick()">Create</button>
+        <button [disabled]="!isValidSyntax" color="primary" mat-raised-button (click)="onClick()">Create</button>
       </div>
 
     </mat-dialog-actions>
