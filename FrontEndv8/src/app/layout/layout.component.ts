@@ -89,7 +89,11 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   }
 
   openEditor() {
-    this.dialog.open(EditConceptComponent, { width: '55%' });
+    try {
+      document.getElementById('mat-tab-label-1-0').click();
+    } finally {
+      this.dialog.open(EditConceptComponent, { width: '55%' });
+    }
   }
 
   getHelp() {
