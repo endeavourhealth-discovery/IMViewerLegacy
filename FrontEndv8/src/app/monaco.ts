@@ -1,17 +1,17 @@
 import {DiscoveryLanguage, DiscoveryLanguageId, richLanguageConfiguration} from './discovery-syntax/DiscoveryLanguage';
 import {NgxMonacoEditorConfig} from 'ngx-monaco-editor';
-import ITextModel = monaco.editor.ITextModel;
-import CompletionContext = monaco.languages.CompletionContext;
-import CancellationToken = monaco.CancellationToken;
-import ProviderResult = monaco.languages.ProviderResult;
-import CompletionList = monaco.languages.CompletionList;
-import Position = monaco.Position;
-import {ConceptContext, DiscoverySyntaxParser} from './discovery-syntax/DiscoverySyntaxParser';
+import {DiscoverySyntaxParser} from './discovery-syntax/DiscoverySyntaxParser';
 import TodoLangErrorListener, {ITodoLangError} from './discovery-syntax/DiscoveryErrorListener';
 import {ANTLRInputStream, CommonTokenStream} from 'antlr4ts';
 import {DiscoverySyntaxLexer} from './discovery-syntax/DiscoverySyntaxLexer';
-import {ParserRuleContext} from 'antlr4ts/ParserRuleContext';
 import { CandidatesCollection, CodeCompletionCore } from 'antlr4-c3';
+import { HttpClient, HttpXhrBackend } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import ITextModel = monaco.editor.ITextModel;
+import IWordAtPosition = monaco.editor.IWordAtPosition;
+import ProviderResult = monaco.languages.ProviderResult;
+import CompletionList = monaco.languages.CompletionList;
+import Position = monaco.Position;
 
 export const monacoConfig: NgxMonacoEditorConfig = {
   onMonacoLoad: discoveryMonacoInit
@@ -22,13 +22,13 @@ export function discoveryMonacoInit() {
     monaco.languages.onLanguage(DiscoveryLanguageId, () => {
       monaco.languages.setMonarchTokensProvider(DiscoveryLanguageId, DiscoveryLanguage);
       monaco.languages.setLanguageConfiguration(DiscoveryLanguageId, richLanguageConfiguration);
-      monaco.languages.registerCompletionItemProvider(DiscoveryLanguageId, getDiscoveryCompletionProvider(monaco));
+      monaco.languages.registerCompletionItemProvider(DiscoveryLanguageId, getDiscoveryCompletionProvider());
     });
 }
 
-export function getDiscoveryCompletionProvider(monaco) {
+export function getDiscoveryCompletionProvider() {
   return {
-    provideCompletionItems(model: ITextModel, position: Position, context: CompletionContext, token: CancellationToken): ProviderResult<CompletionList> {
+    provideCompletionItems(model: ITextModel, position: Position): ProviderResult<CompletionList> {
       // get editor content before the pointer
       const text = model.getValueInRange({startLineNumber: 1, startColumn: 1, endLineNumber: position.lineNumber, endColumn: position.column});
       const parser = getParser(text);
@@ -37,6 +37,71 @@ export function getDiscoveryCompletionProvider(monaco) {
       return { suggestions: getSuggestions(model, position, parser, candidates)};
     }
   };
+}
+
+export function getSuggestions(model: ITextModel, position: Position, parser: DiscoverySyntaxParser, candidates: CandidatesCollection) {
+  const word = model.getWordUntilPosition(position);
+  const suggestions: string[] = [];
+  const httpClient = new HttpClient(new HttpXhrBackend({ build: () => new XMLHttpRequest() }));
+  for (const candidate of candidates.tokens) {
+    const keyword = parser.vocabulary.getDisplayName(candidate[0]).toLocaleLowerCase();
+    switch (keyword) {
+      // TODO
+      // case where context suggestions are needed
+      // getContextSuggestions and add to suggestions list
+      case 'quoted_string':
+        suggestions.push(`""`);
+        break;
+      case 'prefixiri':
+        suggestions.push(':');
+        break;
+      case 'iri_label':
+        suggestions.push('iri');
+        break;
+      case 'subclass':
+        suggestions.push('SubClassOf');
+        break;
+      case '':
+      default:
+        suggestions.push(keyword.startsWith(`'`) ? keyword.substr(1, keyword.length - 2) : keyword);
+    }
+  }
+
+  return buildCompletionItemList(suggestions, position, word);
+}
+
+export function buildCompletionItemList(suggestions: string[], position: Position, word: IWordAtPosition) {
+  const completionList: any[] = [];
+  for (const suggestion of suggestions) {
+    const completionItem = {
+      label: suggestion,
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: suggestion,
+      insertText: suggestion,
+      range: {
+        startLineNumber: position.lineNumber,
+        endLineNumber: position.lineNumber,
+        startColumn: word.startColumn,
+        endColumn: word.endColumn
+      }
+    };
+    completionList.push(completionItem);
+  }
+  return completionList;
+}
+
+export function getContextSuggestions() {
+  let contextSuggestions;
+  const httpClient = new HttpClient(new HttpXhrBackend({ build: () => new XMLHttpRequest() }));
+  httpClient.get<string[]>(environment.api + 'api/concept/search').subscribe(
+    (suggestions) => {
+      contextSuggestions = suggestions;
+      console.log(contextSuggestions);
+    },
+    (error) => console.log(error)
+  );
+  console.log(contextSuggestions);
+  // return contextSuggestions;
 }
 
 export function getParser(text: string) {
@@ -52,66 +117,4 @@ export function getParser(text: string) {
     const ast = parser.concept();
     const errors: ITodoLangError[] = todoLangErrorListener.getErrors();
     return parser;
-}
-
-export function getSuggestions(model: ITextModel, position: Position, parser: DiscoverySyntaxParser, candidates: CandidatesCollection) {
-  const word = model.getWordUntilPosition(position);
-  const keywords: string[] = [];
-  for (const candidate of candidates.tokens) {
-    keywords.push(parser.vocabulary.getDisplayName(candidate[0]));
-  }
-  const suggestions: any[] = [];
-  for (const keyword of keywords) {
-    const suggestion = {
-      label: keyword.toLocaleLowerCase(),
-      kind: monaco.languages.CompletionItemKind.Function,
-      documentation: keyword.toLocaleLowerCase(),
-      insertText: keyword.toLocaleLowerCase(),
-      range: {
-        startLineNumber: position.lineNumber,
-        endLineNumber: position.lineNumber,
-        startColumn: word.startColumn,
-        endColumn: word.endColumn
-      }
-    };
-    suggestions.push(suggestion);
-  }
-  return suggestions;
-}
-
-export function parseAntlr(code: string): {ast: ConceptContext, errors: ITodoLangError[]} {
-  const inputStream = new ANTLRInputStream(code);
-  const lexer = new DiscoverySyntaxLexer(inputStream);
-  lexer.removeErrorListeners();
-  const todoLangErrorsListner = new TodoLangErrorListener();
-  lexer.addErrorListener(todoLangErrorsListner);
-  const tokenStream = new CommonTokenStream(lexer);
-  const parser = new DiscoverySyntaxParser(tokenStream);
-  parser.removeErrorListeners();
-  parser.addErrorListener(todoLangErrorsListner);
-  const ast =  parser.concept();
-  const errors: ITodoLangError[]  = todoLangErrorsListner.getErrors();
-  return {ast, errors};
-}
-
-export function findLocation(ctx: ParserRuleContext, path: string = '') {
-  if (ctx.constructor.name != 'ExpressionContext' && ctx.constructor.name != 'ExpressionListContext') {
-    path += '|' + ctx.constructor.name;
-  }
-
-  if (!ctx.children) {
-    return path;
-  }
-
-  let l = ctx.children.length - 1;
-
-  while (l >= 0 && ctx.children[l].constructor.name == 'ErrorNode') {
-    l--;
-  }
-
-  if (l >= 0) {
-    const child = ctx.children[l];
-    path = findLocation(child as ParserRuleContext, path);
-  }
-  return path;
 }
