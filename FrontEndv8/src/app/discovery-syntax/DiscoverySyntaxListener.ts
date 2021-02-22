@@ -4,12 +4,12 @@
 import { ParseTreeListener } from 'antlr4ts/tree/ParseTreeListener';
 
 import { ConceptContext } from './DiscoverySyntaxParser';
+import { AnnotationsContext } from './DiscoverySyntaxParser';
 import { ClassAxiomContext } from './DiscoverySyntaxParser';
 import { PropertyAxiomContext } from './DiscoverySyntaxParser';
 import { TypeContext } from './DiscoverySyntaxParser';
 import { ClassTypeContext } from './DiscoverySyntaxParser';
 import { DataTypeContext } from './DiscoverySyntaxParser';
-import { ShapeContext } from './DiscoverySyntaxParser';
 import { RecordTypeContext } from './DiscoverySyntaxParser';
 import { ObjectPropertyContext } from './DiscoverySyntaxParser';
 import { DataPropertyContext } from './DiscoverySyntaxParser';
@@ -68,6 +68,17 @@ export interface DiscoverySyntaxListener extends ParseTreeListener {
 	exitConcept?: (ctx: ConceptContext) => void;
 
 	/**
+	 * Enter a parse tree produced by `DiscoverySyntaxParser.annotations`.
+	 * @param ctx the parse tree
+	 */
+	enterAnnotations?: (ctx: AnnotationsContext) => void;
+	/**
+	 * Exit a parse tree produced by `DiscoverySyntaxParser.annotations`.
+	 * @param ctx the parse tree
+	 */
+	exitAnnotations?: (ctx: AnnotationsContext) => void;
+
+	/**
 	 * Enter a parse tree produced by `DiscoverySyntaxParser.classAxiom`.
 	 * @param ctx the parse tree
 	 */
@@ -121,17 +132,6 @@ export interface DiscoverySyntaxListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitDataType?: (ctx: DataTypeContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `DiscoverySyntaxParser.shape`.
-	 * @param ctx the parse tree
-	 */
-	enterShape?: (ctx: ShapeContext) => void;
-	/**
-	 * Exit a parse tree produced by `DiscoverySyntaxParser.shape`.
-	 * @param ctx the parse tree
-	 */
-	exitShape?: (ctx: ShapeContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `DiscoverySyntaxParser.recordType`.

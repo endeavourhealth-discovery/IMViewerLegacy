@@ -1,14 +1,20 @@
 grammar DiscoverySyntax;
 
-concept : identifierIri type '.'
+concept : identifierIri
+        annotations ';'
+        type '.'
          EOF;
 
+annotations:
+    (';' label (';' label?)*)?
+    ;
 
 classAxiom  :
           subclassOf
         | equivalentTo
         | disjointWith
         ;
+
 propertyAxiom   :
         subpropertyOf
         |inverseOf
@@ -20,8 +26,6 @@ type :
      (classType
      |dataType
      |recordType
-     |shape
-     |valueSet
      |objectProperty
      |annotationProperty
      |dataProperty
@@ -30,41 +34,29 @@ type :
 
 classType :
     CLASS
-    (';' label (';' label?)*)?
      (';' classAxiom (';' classAxiom?)*)?
     ;
 
 dataType :
     DATATYPE
-    (';' label (';' label?)*)?
     ;
-shape :
-    SHAPE
-    (';' label (';' label?)*)?
-    (';' subclassOf)?
-    ';' shapeOf
-    (';' propertyConstraint (';' propertyConstraint))
-     ;
+
 recordType :
-    RECORDTYPE
-     (';' label (';' label?)*)?
+    RECORD
      (';' classAxiom (';' classAxiom?)*)?
     (';' role (';' role)*)?
      ;
 objectProperty :
     OBJECTPROPERTY
-     (';' label (';' label?)*)?
     (';' propertyAxiom (';' propertyAxiom)*)?
 
     ;
 dataProperty :
     DATAPROPERTY
-     (';' label (';' label?)*)?
      (';' propertyAxiom (';' propertyAxiom)*)?
     ;
 annotationProperty :
     ANNOTATION
-    (';' label (';' label?)*)?
     (';' propertyAxiom (';' propertyAxiom)*)?
     ;
 members :
@@ -78,7 +70,6 @@ expansion   :
 
 valueSet :
     VALUESET
-     (';' label (';' label?)*)?
     (';' subclassOf)?
     (';' members)?
     (';' expansion)?
@@ -255,9 +246,7 @@ TYPE : ('a '|'A '|'Type '| 'type ');
 
 TERM    : T E R M
     ;
-SHAPE : S H A P E
-    ;
-RECORDTYPE  : R E C O R D T Y P E
+RECORD  : R E C O R D
     ;
 
 TARGETCLASS : T A R G E T C L A S S
