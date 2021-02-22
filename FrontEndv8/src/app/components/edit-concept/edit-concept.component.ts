@@ -18,6 +18,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Component, OnInit, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 import { MatDialogRef } from '@angular/material/dialog';
+import { ConceptStatus } from 'src/app/models/objectmodel/ConceptStatus';
 
 @Component({
   selector: 'app-edit-concept',
@@ -27,6 +28,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 export class EditConceptComponent implements OnInit {
   @Input() tab: boolean;
   @Input() concept: Concept;
+  conceptForm: Concept;
   conceptText: string;
   error: any;
   definitionText: string;
@@ -41,6 +43,16 @@ export class EditConceptComponent implements OnInit {
       return false;
     }
   }
+
+  get isValidForm(): boolean {
+    return true;
+  }
+
+  statuses = [
+    { value: 'Draft'},
+    { value: 'Active'},
+    { value: 'Inactive'}
+  ];
   editorOptions = {
     theme: 'vs-dark',
     language: 'DiscoverySyntax',
@@ -73,7 +85,9 @@ export class EditConceptComponent implements OnInit {
       );
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.conceptForm = JSON.parse(JSON.stringify(this.concept));
+  }
 
   ngOnChanges(): void {
     // Edit Concept
@@ -127,5 +141,20 @@ export class EditConceptComponent implements OnInit {
       },
       (error) => (this.error = error)
     );
+  }
+
+  onSend() {
+    // const create = this.service.createConcept(this.definitionText);
+    // create.subscribe(
+    //   (ok) => {
+    //     this.conceptText = JSON.stringify(ok, null, '\t');
+    //     this.log.success('Concept created successfully.');
+    //     // document.getElementById('cancel').click();
+    //   },
+    //   (error) => (this.error = error)
+    // );
+    console.log(this.concept.status);
+    console.log(this.conceptForm.iri);
+    console.log(this.conceptForm.status);
   }
 }
