@@ -26,8 +26,8 @@
         <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
           <mat-label>Scheme:</mat-label>
           <mat-select [(ngModel)]="conceptForm.scheme">
-            <mat-option *ngFor="let scheme of schemes" [value]="scheme.value">
-              {{scheme.view}}
+            <mat-option [matTooltip]="scheme.iri" *ngFor="let scheme of schemes" [value]="scheme">
+              {{scheme.name}}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -35,8 +35,8 @@
         <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
           <mat-label>Status:</mat-label>
           <mat-select [(ngModel)]="conceptForm.status">
-            <mat-option *ngFor="let status of statuses" [value]="status.value">
-              {{status.value}}
+            <mat-option *ngFor="let status of statuses" [value]="status">
+              {{status}}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -44,8 +44,8 @@
         <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
           <mat-label>Type:</mat-label>
           <mat-select [(ngModel)]="conceptForm.conceptType">
-            <mat-option *ngFor="let conceptType of conceptTypes" [value]="conceptType.value">
-              {{conceptType.value}}
+            <mat-option *ngFor="let conceptType of conceptTypes" [value]="conceptType">
+              {{conceptType}}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -94,7 +94,66 @@
 
   <ng-template #elseBlock>
     <h1 mat-dialog-title>Create concept</h1>
+    <h1 mat-dialog-title>Form</h1>
     <mat-dialog-content>
+      <mat-form-field floatLabel="always" appearance="outline" fxFlex="40">
+        <mat-label>Name:</mat-label>
+        <input dense matInput [(ngModel)]="conceptForm.name">
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+        <mat-label>Iri:</mat-label>
+        <input matInput [(ngModel)]="conceptForm.iri">
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+        <mat-label>Version:</mat-label>
+        <input matInput [(ngModel)]="conceptForm.version">
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always" appearance="outline" fxFlex="40">
+        <mat-label>Code:</mat-label>
+        <input matInput [(ngModel)]="conceptForm.code">
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+        <mat-label>Scheme:</mat-label>
+        <mat-select [(ngModel)]="conceptForm.scheme">
+          <mat-option [matTooltip]="scheme.iri" *ngFor="let scheme of schemes" [value]="scheme">
+            {{scheme.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+        <mat-label>Status:</mat-label>
+        <mat-select [(ngModel)]="conceptForm.status">
+          <mat-option *ngFor="let status of statuses" [value]="status">
+            {{status}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+        <mat-label>Type:</mat-label>
+        <mat-select [(ngModel)]="conceptForm.conceptType">
+          <mat-option *ngFor="let conceptType of conceptTypes" [value]="conceptType">
+            {{conceptType}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="description" floatLabel="always" appearance="outline" fxFlex="50">
+        <mat-label>Description:</mat-label>
+        <textarea matInput [(ngModel)]="conceptForm.description" rows="10"></textarea>
+      </mat-form-field>
+      <mat-dialog-actions>
+        <div matTooltip="Form is invalid" [matTooltipDisabled]="isValidForm">
+          <button [disabled]="!isValidForm" color="primary" mat-raised-button (click)="onSend()">
+            Send form
+          </button>
+        </div>
+      </mat-dialog-actions>
       <h3 mat-dialog-title>IMLang</h3>
       <ngx-monaco-editor class="dialog" [options]="editorOptions" [(ngModel)]="definitionText"
         (ngModelChange)="definitionChanged.next($event)">

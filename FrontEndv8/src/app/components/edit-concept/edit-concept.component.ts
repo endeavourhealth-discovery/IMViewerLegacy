@@ -19,11 +19,15 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ConceptStatus } from 'src/app/models/objectmodel/ConceptStatus';
+import { ConceptType } from 'src/app/models/objectmodel/ConceptType';
+import { CodeSchemes, codeSchemesProvider } from 'src/app/models/search/CodeScheme';
+import { ConceptReference } from 'src/app/models/objectmodel/ConceptReference';
 
 @Component({
   selector: 'app-edit-concept',
   templateUrl: './edit-concept.component.html',
   styleUrls: ['./edit-concept.component.scss'],
+  providers: [ codeSchemesProvider ]
 })
 export class EditConceptComponent implements OnInit {
   @Input() tab: boolean;
@@ -34,11 +38,9 @@ export class EditConceptComponent implements OnInit {
   definitionText: string;
   definitionChanged: Subject<string> = new Subject<string>();
   dialogRef: MatDialogRef<EditConceptComponent>;
-
-  schemes: any[];
-  conceptTypes: any[];
-
-
+  conceptTypes: string[];
+  statuses: string[];
+  schemes: ConceptReference[];
   get isValidSyntax(): boolean {
     let validation;
     try {
@@ -53,11 +55,6 @@ export class EditConceptComponent implements OnInit {
     return true;
   }
 
-  statuses = [
-    { value: 'Draft'},
-    { value: 'Active'},
-    { value: 'Inactive'}
-  ];
   editorOptions = {
     theme: 'vs-dark',
     language: 'DiscoverySyntax',
@@ -77,7 +74,8 @@ export class EditConceptComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private log: LoggerService,
-    private eventBus: NgEventBus
+    private eventBus: NgEventBus,
+    private codeSchemes: CodeSchemes
   ) {
     this.definitionChanged
       .pipe(
@@ -91,7 +89,14 @@ export class EditConceptComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.conceptForm = JSON.parse(JSON.stringify(this.concept));
+    this.codeSchemes.allCodeSchemes.subscribe(allCodeSchemes => {
+      this.schemes = allCodeSchemes;
+    });
+    this.conceptTypes = Object.keys(ConceptType);
+    this.statuses = Object.keys(ConceptStatus).filter(f => isNaN(Number(f)));
+    this.conceptForm = !!this.concept
+      ? JSON.parse(JSON.stringify(this.concept))
+      : Concept.getConceptForm();
   }
 
   ngOnChanges(): void {
@@ -149,17 +154,15 @@ export class EditConceptComponent implements OnInit {
   }
 
   onSend() {
-    // const create = this.service.createConcept(this.definitionText);
-    // create.subscribe(
-    //   (ok) => {
-    //     this.conceptText = JSON.stringify(ok, null, '\t');
-    //     this.log.success('Concept created successfully.');
-    //     // document.getElementById('cancel').click();
-    //   },
-    //   (error) => (this.error = error)
-    // );
-    console.log(this.concept.status);
-    console.log(this.conceptForm.iri);
-    console.log(this.conceptForm.status);
+    const create = this.service.createConceptForm(this.conceptForm);
+    create.subscribe(
+      (ok) => {
+        this.conceptText = JSON.stringify(ok, null, '\t');
+        this.log.success('Concept created successfully.');
+        // document.getElementById('cancel').click();
+      },
+      (error) => (this.error = error)
+    );
+    console.log(this.conceptForm);
   }
 }

@@ -32,6 +32,11 @@ export class ConceptService {
   }
 
   createConcept(conceptDefintion: string): Observable<Concept> {
+    const params = new HttpParams().set('definitionText', conceptDefintion);
+    return this.http.post<Concept>(environment.api + 'api/concept/', {params});
+  }
+
+  createConceptForm(conceptDefintion: Concept): Observable<Concept> {
     return this.http.post<Concept>(environment.api + 'api/concept/', conceptDefintion);
   }
 
