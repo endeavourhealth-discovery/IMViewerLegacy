@@ -145,8 +145,10 @@ export class ConceptHierarchyViewComponent implements OnInit {
   // used for auto-expansion of selected node
   // in this instance we have children locally
   private expand(node: ConceptReferenceNode): void {
-    node.parents.forEach(parent => this.expand(parent))
-    this.treeControl.expand(node);
+    if (node.parents) {
+      node.parents.forEach(parent => this.expand(parent))
+      this.treeControl.expand(node);
+    }
   }
 
   private fetchChildren(iri: string): Observable<ConceptReferenceNode[]> {
