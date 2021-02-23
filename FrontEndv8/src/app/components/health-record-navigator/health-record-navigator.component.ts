@@ -8,7 +8,7 @@ import {Concept} from '../../models/objectmodel/Concept';
 import {ConceptReference} from '../../models/objectmodel/ConceptReference';
 import {ConceptReferenceNode} from '../../models/objectmodel/ConceptReferenceNode';
 import {LoggerService} from '../../services/logger.service';
-import {PropertyConstraint} from '../../models/objectmodel/PropertyConstraint';
+import {PropertyValue} from '../../models/objectmodel/PropertyValue';
 import {ConceptService} from '../../services/concept.service';
 
 @Component({
@@ -286,7 +286,7 @@ export class HealthRecordNavigatorComponent implements OnInit {
     map.set(this.concept.iri, s);
   }
 
-  private addPropertyValue(s, pc: PropertyConstraint, i: number, w: number) {
+  private addPropertyValue(s, pc: PropertyValue, i: number, w: number) {
     let l = this.pad;
 
     let g = s.append('g')
@@ -294,17 +294,17 @@ export class HealthRecordNavigatorComponent implements OnInit {
 
     const p = g
       .append('text')
-      .text(pc.Property.name + ': ')
+      .text((pc.property.name ? pc.property.name : pc.property.iri)  + ': ')
       .attr('font-size', this.textSize)
       .attr('x', l)
       .attr('y', (this.textSize * 3) + (this.textSize * i))
-      .on('click', () => this.nodeClick(pc.Property.iri))
-      .on('dblclick', () => this.nodeDblClick(pc.Property.iri));
+      .on('click', () => this.nodeClick(pc.property.iri))
+      .on('dblclick', () => this.nodeDblClick(pc.property.iri));
 
     l += p.node().getComputedTextLength() + 4;
 
     // Type
-    let valueType = (pc.ValueClass != null) ? pc.ValueClass : pc.DataType;
+    let valueType = pc.valueType;
 
     g = s.append('g')
       .attr('class', 'clickable');

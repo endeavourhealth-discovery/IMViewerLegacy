@@ -42,8 +42,8 @@
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef style="width: 30%;">Name</th>
         <td mat-cell *matCellDef="let row">
-          <span (click)="onClick(row.Property.iri)" (dblclick)="onDblClick(row.Property.iri)" class="clickable">
-            {{row.Property.name}}
+          <span (click)="onClick(row.property.iri)" (dblclick)="onDblClick(row.property.iri)" class="clickable">
+            {{row.property.name ? row.property.name : row.property.iri}}
           </span>
         </td>
       </ng-container>
@@ -51,20 +51,11 @@
       <ng-container matColumnDef="type">
         <th mat-header-cell *matHeaderCellDef style="width: 20%;">Type</th>
         <td mat-cell *matCellDef="let row">
-          <!-- if ValueType -->
-          <ng-container *ngIf="row.ValueClass">
-            <span (click)="onClick(row.ValueClass.iri)" (dblclick)="onDblClick(row.ValueClass.iri)" class="clickable">
-              {{row.ValueClass.name ? row.ValueClass.name : row.ValueClass.iri}}
+          <ng-container>
+            <span (click)="onClick(row.valueType.iri)" (dblclick)="onDblClick(row.valueType.iri)" class="clickable">
+              {{row.valueType.name ? row.valueType.name : row.valueType.iri}}
             </span>
           </ng-container>
-
-          <!-- if DataType -->
-          <ng-container *ngIf="row.DataType">
-            <span (click)="onClick(row.DataType.iri)" (dblclick)="onDblClick(row.DataType.iri)" class="clickable">
-             {{row.DataType.iri}}
-            </span>
-          </ng-container>
-
         </td>
       </ng-container>
 
