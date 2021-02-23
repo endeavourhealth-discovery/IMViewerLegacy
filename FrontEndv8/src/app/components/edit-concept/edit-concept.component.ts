@@ -34,6 +34,11 @@ export class EditConceptComponent implements OnInit {
   definitionText: string;
   definitionChanged: Subject<string> = new Subject<string>();
   dialogRef: MatDialogRef<EditConceptComponent>;
+
+  schemes: any[];
+  conceptTypes: any[];
+
+
   get isValidSyntax(): boolean {
     let validation;
     try {
