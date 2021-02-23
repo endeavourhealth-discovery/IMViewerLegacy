@@ -4,7 +4,7 @@ import {DiscoverySyntaxParser} from './discovery-syntax/DiscoverySyntaxParser';
 import TodoLangErrorListener, {ITodoLangError} from './discovery-syntax/DiscoveryErrorListener';
 import {ANTLRInputStream, CommonTokenStream} from 'antlr4ts';
 import {DiscoverySyntaxLexer} from './discovery-syntax/DiscoverySyntaxLexer';
-import { CandidatesCollection, CodeCompletionCore } from 'antlr4-c3';
+import {CandidatesCollection, CodeCompletionCore} from 'antlr4-c3/out/src/CodeCompletionCore';
 import { HttpClient, HttpXhrBackend, HttpParams  } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import ITextModel = monaco.editor.ITextModel;
