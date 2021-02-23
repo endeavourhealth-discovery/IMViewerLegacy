@@ -8,11 +8,11 @@ import { CandidatesCollection, CodeCompletionCore } from 'antlr4-c3';
 import { HttpClient, HttpXhrBackend, HttpParams  } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import ITextModel = monaco.editor.ITextModel;
-import ProviderResult = monaco.languages.ProviderResult;
 import CompletionList = monaco.languages.CompletionList;
 import CompletionItem = monaco.languages.CompletionItem;
 import IWordAtPosition = monaco.editor.IWordAtPosition;
 import Position = monaco.Position;
+import { ConceptReference } from './models/objectmodel/ConceptReference';
 
 export const monacoConfig: NgxMonacoEditorConfig = {
   onMonacoLoad: discoveryMonacoInit
@@ -29,20 +29,19 @@ export function discoveryMonacoInit() {
 
 export function getDiscoveryCompletionProvider() {
   return {
-    provideCompletionItems(model: ITextModel, position: Position): ProviderResult<CompletionList> {
+    provideCompletionItems(model: ITextModel, position: Position): monaco.Thenable<CompletionList> {
       // get editor content before the pointer
       const text = model.getValueInRange({startLineNumber: 1, startColumn: 1, endLineNumber: position.lineNumber, endColumn: position.column});
       const parser = getParser(text);
       const core = new CodeCompletionCore(parser as any);
       const candidates = core.collectCandidates(text.length);
-      return { suggestions: getSuggestions(model, position, parser, candidates)};
+      return getSuggestions(model, position, parser, candidates);
     }
   };
 }
 
-export function getSuggestions(model: ITextModel, position: Position, parser: DiscoverySyntaxParser, candidates: CandidatesCollection) {
+export async function getSuggestions(model: ITextModel, position: Position, parser: DiscoverySyntaxParser, candidates: CandidatesCollection) {
   const word = model.getWordUntilPosition(position);
-  const httpClient = new HttpClient(new HttpXhrBackend({ build: () => new XMLHttpRequest() }));
   const suggestions: CompletionItem[] = [];
   const range = {
     startLineNumber: position.lineNumber,
@@ -54,6 +53,10 @@ export function getSuggestions(model: ITextModel, position: Position, parser: Di
     const keyword = parser.vocabulary.getDisplayName(candidate[0]).toLocaleLowerCase();
     switch (keyword) {
       case 'quoted_string':
+        const conceptReferences = await getContextSuggestions(keyword, word);
+        conceptReferences.forEach(conceptReference => {
+          suggestions.push(buildCompletionItem(conceptReference.name, conceptReference.iri, range));
+        });
         suggestions.push(buildCompletionItem(keyword, `""`, range));
         break;
       case 'prefixiri':
@@ -74,8 +77,7 @@ export function getSuggestions(model: ITextModel, position: Position, parser: Di
           : buildCompletionItem(keyword, keyword, range));
     }
   }
-
-  return suggestions;
+  return {suggestions};
 }
 
 export function buildCompletionItem(label: string, value: string, range: any) {
@@ -91,7 +93,7 @@ export function buildCompletionItem(label: string, value: string, range: any) {
 export async function getContextSuggestions(keyword: string, word: IWordAtPosition) {
   const params = new HttpParams().set('keyword', keyword).set('word', word.word);
   const httpClient = new HttpClient(new HttpXhrBackend({ build: () => new XMLHttpRequest() }));
-  return await httpClient.get<CompletionItem[]>(environment.api + 'api/suggestions', { params }).toPromise();
+  return await httpClient.get<ConceptReference[]>(environment.api + 'api/concept/referenceSuggestions', { params }).toPromise();
 }
 
 export function getParser(text: string) {
