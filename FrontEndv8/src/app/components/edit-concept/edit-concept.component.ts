@@ -23,6 +23,7 @@ import { ConceptType } from 'src/app/models/objectmodel/ConceptType';
 import { CodeSchemes, codeSchemesProvider } from 'src/app/models/search/CodeScheme';
 import { ConceptReference } from 'src/app/models/objectmodel/ConceptReference';
 import { FormControl, Validators } from '@angular/forms';
+import { ConceptDto } from 'src/app/models/objectmodel/ConceptDto';
 
 @Component({
   selector: 'app-edit-concept',
@@ -33,7 +34,7 @@ import { FormControl, Validators } from '@angular/forms';
 export class EditConceptComponent implements OnInit {
   @Input() tab: boolean;
   @Input() concept: Concept;
-  conceptForm: Concept;
+  conceptDto: ConceptDto;
   conceptText: string;
   error: any;
   definitionText: string;
@@ -42,8 +43,9 @@ export class EditConceptComponent implements OnInit {
   conceptTypes: string[];
   statuses: string[];
   schemes: ConceptReference[];
+
   get isValid(): boolean {
-    return this.isValidForm && this.isValidForm;
+    return this.isValidForm && this.isValidSyntax;
   }
 
   get isValidSyntax(): boolean {
@@ -120,9 +122,9 @@ export class EditConceptComponent implements OnInit {
     });
     this.conceptTypes = Object.keys(ConceptType);
     this.statuses = Object.keys(ConceptStatus).filter(f => isNaN(Number(f)));
-    this.conceptForm = !!this.concept
+    this.conceptDto = !!this.concept
       ? JSON.parse(JSON.stringify(this.concept))
-      : Concept.getConceptForm();
+      : ConceptDto.getConceptForm();
   }
 
   ngOnChanges(): void {
@@ -168,8 +170,9 @@ export class EditConceptComponent implements OnInit {
   }
 
   onClick() {
-    const create = this.service.createConcept(this.definitionText);
-    create.subscribe(
+    this.conceptDto.definitionText = this.definitionText;
+    console.log(this.conceptDto);
+    this.service.createConcept(this.conceptDto).subscribe(
       (ok) => {
         this.conceptText = JSON.stringify(ok, null, '\t');
         this.log.success('Concept created successfully.');
@@ -177,18 +180,5 @@ export class EditConceptComponent implements OnInit {
       },
       (error) => (this.error = error)
     );
-  }
-
-  onSend() {
-    const create = this.service.createConceptForm(this.conceptForm);
-    create.subscribe(
-      (ok) => {
-        this.conceptText = JSON.stringify(ok, null, '\t');
-        this.log.success('Concept created successfully.');
-        // document.getElementById('cancel').click();
-      },
-      (error) => (this.error = error)
-    );
-    console.log(this.conceptForm);
   }
 }

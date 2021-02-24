@@ -25,19 +25,6 @@ export class Concept implements IMAnnotated {
   Property: Set<PropertyValue>;
   Member: Set<ClassExpression>;
 
-  static getConceptForm() {
-    return {
-      iri: '',
-      name: '',
-      description: '',
-      code: '',
-      scheme: '',
-      status: '',
-      version: 0,
-      conceptType: '',
-    } as unknown as Concept;
-  }
-
   getAnnotations(): Set<Annotation> {
     throw new Error('Method not implemented.');
   }

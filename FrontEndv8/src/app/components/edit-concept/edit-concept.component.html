@@ -1,75 +1,65 @@
 <div>
   <mat-card *ngIf="tab; else elseBlock">
-    <mat-card>
-      <mat-card-subtitle>Form</mat-card-subtitle>
-      <mat-card-content>
-        <mat-form-field floatLabel="always" appearance="outline" fxFlex="40">
-          <mat-label>Name:</mat-label>
-          <input matInput [(ngModel)]="conceptForm.name" [formControl]="validator.name" required>
-          <mat-error *ngIf="validator.name.invalid">{{errorMessage}}</mat-error>
-        </mat-form-field>
+    <mat-card-content>
+      <mat-form-field floatLabel="always" appearance="outline" fxFlex="40">
+        <mat-label>Name:</mat-label>
+        <input matInput [(ngModel)]="conceptDto.name" [formControl]="validator.name" required>
+        <mat-error *ngIf="validator.name.invalid">{{errorMessage}}</mat-error>
+      </mat-form-field>
 
-        <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
-          <mat-label>Iri:</mat-label>
-          <input matInput [(ngModel)]="conceptForm.iri" [formControl]="validator.iri" required>
-          <mat-error *ngIf="validator.iri.invalid">{{errorMessage}}</mat-error>
-        </mat-form-field>
+      <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+        <mat-label>Iri:</mat-label>
+        <input matInput [(ngModel)]="conceptDto.iri" [formControl]="validator.iri" required>
+        <mat-error *ngIf="validator.iri.invalid">{{errorMessage}}</mat-error>
+      </mat-form-field>
 
-        <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
-          <mat-label>Version:</mat-label>
-          <input matInput [(ngModel)]="conceptForm.version" [formControl]="validator.version" required>
-          <mat-error *ngIf="validator.version.invalid">{{errorMessage}}</mat-error>
-        </mat-form-field>
+      <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+        <mat-label>Version:</mat-label>
+        <input matInput [(ngModel)]="conceptDto.version" [formControl]="validator.version" required>
+        <mat-error *ngIf="validator.version.invalid">{{errorMessage}}</mat-error>
+      </mat-form-field>
 
-        <mat-form-field floatLabel="always" appearance="outline" fxFlex="40">
-          <mat-label>Code:</mat-label>
-          <input matInput [(ngModel)]="conceptForm.code" [formControl]="validator.code" required>
-          <mat-error *ngIf="validator.code.invalid">{{errorMessage}}</mat-error>
-        </mat-form-field>
+      <mat-form-field floatLabel="always" appearance="outline" fxFlex="40">
+        <mat-label>Code:</mat-label>
+        <input matInput [(ngModel)]="conceptDto.code" [formControl]="validator.code" required>
+        <mat-error *ngIf="validator.code.invalid">{{errorMessage}}</mat-error>
+      </mat-form-field>
 
-        <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
-          <mat-label>Scheme:</mat-label>
-          <mat-select [(ngModel)]="conceptForm.scheme" [formControl]="validator.scheme" required>
-            <mat-option [matTooltip]="scheme.iri" *ngFor="let scheme of schemes" [value]="scheme">
-              {{scheme.name}}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="validator.scheme.invalid">{{errorMessage}}</mat-error>
-        </mat-form-field>
+      <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+        <mat-label>Scheme:</mat-label>
+        <mat-select [(ngModel)]="conceptDto.scheme" [formControl]="validator.scheme" required>
+          <mat-option [matTooltip]="scheme.iri" *ngFor="let scheme of schemes" [value]="scheme">
+            {{scheme.name}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="validator.scheme.invalid">{{errorMessage}}</mat-error>
+      </mat-form-field>
 
-        <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
-          <mat-label>Status:</mat-label>
-          <mat-select [(ngModel)]="conceptForm.status">
-            <mat-option *ngFor="let status of statuses" [value]="status">
-              {{status}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+      <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+        <mat-label>Status:</mat-label>
+        <mat-select [(ngModel)]="conceptDto.status">
+          <mat-option *ngFor="let status of statuses" [value]="status">
+            {{status}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-        <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
-          <mat-label>Type:</mat-label>
-          <mat-select [(ngModel)]="conceptForm.conceptType">
-            <mat-option *ngFor="let conceptType of conceptTypes" [value]="conceptType">
-              {{conceptType}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+      <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
+        <mat-label>Type:</mat-label>
+        <mat-select [(ngModel)]="conceptDto.conceptType">
+          <mat-option *ngFor="let conceptType of conceptTypes" [value]="conceptType">
+            {{conceptType}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-        <mat-form-field class="description" floatLabel="always" appearance="outline" fxFlex="50">
-          <mat-label>Description:</mat-label>
-          <textarea matInput [(ngModel)]="conceptForm.description" rows="10" [formControl]="validator.description"
-            required></textarea>
-          <mat-error *ngIf="validator.description.invalid">{{errorMessage}}</mat-error>
-        </mat-form-field>
-      </mat-card-content>
-      <mat-card-actions>
-        <div matTooltip="Form is invalid" [matTooltipDisabled]="isValidForm">
-          <button [disabled]="!isValidForm" color="primary" mat-raised-button (click)="onSend()">
-            Send form
-          </button>
-        </div>
-      </mat-card-actions>
-    </mat-card>
+      <mat-form-field class="description" floatLabel="always" appearance="outline" fxFlex="50">
+        <mat-label>Description:</mat-label>
+        <textarea matInput [(ngModel)]="conceptDto.description" rows="10" [formControl]="validator.description"
+          required></textarea>
+        <mat-error *ngIf="validator.description.invalid">{{errorMessage}}</mat-error>
+      </mat-form-field>
+    </mat-card-content>
     <mat-card-subtitle style="padding-top: 10px;">IMLang</mat-card-subtitle>
     <mat-card-content>
       <ngx-monaco-editor class="tab" [options]="editorOptions" [(ngModel)]="definitionText"
@@ -91,7 +81,7 @@
     </mat-card-content>
     <mat-card-actions>
       <div matTooltip="Syntax is invalid" [matTooltipDisabled]="isValidSyntax">
-        <button [disabled]="!isValidSyntax" color="primary" mat-raised-button (click)="onClick()">
+        <button [disabled]="!isValid" color="primary" mat-raised-button (click)="onClick()">
           Save Changes
         </button>
       </div>
@@ -101,35 +91,34 @@
 
   <ng-template #elseBlock>
     <h1 mat-dialog-title>Create concept</h1>
-    <h1 mat-dialog-title>Form</h1>
     <mat-dialog-content>
       <mat-form-field floatLabel="always" appearance="outline" fxFlex="40">
         <mat-label>Name:</mat-label>
-        <input matInput [(ngModel)]="conceptForm.name" [formControl]="validator.name" required>
+        <input matInput [(ngModel)]="conceptDto.name" [formControl]="validator.name" required>
         <mat-error *ngIf="validator.name.invalid">{{errorMessage}}</mat-error>
       </mat-form-field>
 
       <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
         <mat-label>Iri:</mat-label>
-        <input matInput [(ngModel)]="conceptForm.iri" [formControl]="validator.iri" required>
+        <input matInput [(ngModel)]="conceptDto.iri" [formControl]="validator.iri" required>
         <mat-error *ngIf="validator.iri.invalid">{{errorMessage}}</mat-error>
       </mat-form-field>
 
       <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
         <mat-label>Version:</mat-label>
-        <input matInput [(ngModel)]="conceptForm.version" [formControl]="validator.version" required>
+        <input matInput [(ngModel)]="conceptDto.version" [formControl]="validator.version" required>
         <mat-error *ngIf="validator.version.invalid">{{errorMessage}}</mat-error>
       </mat-form-field>
 
       <mat-form-field floatLabel="always" appearance="outline" fxFlex="40">
         <mat-label>Code:</mat-label>
-        <input matInput [(ngModel)]="conceptForm.code" [formControl]="validator.code" required>
+        <input matInput [(ngModel)]="conceptDto.code" [formControl]="validator.code" required>
         <mat-error *ngIf="validator.code.invalid">{{errorMessage}}</mat-error>
       </mat-form-field>
 
       <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
         <mat-label>Scheme:</mat-label>
-        <mat-select [(ngModel)]="conceptForm.scheme" [formControl]="validator.scheme" required>
+        <mat-select [(ngModel)]="conceptDto.scheme" [formControl]="validator.scheme" required>
           <mat-option [matTooltip]="scheme.iri" *ngFor="let scheme of schemes" [value]="scheme">
             {{scheme.name}}
           </mat-option>
@@ -139,7 +128,7 @@
 
       <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
         <mat-label>Status:</mat-label>
-        <mat-select [(ngModel)]="conceptForm.status">
+        <mat-select [(ngModel)]="conceptDto.status">
           <mat-option *ngFor="let status of statuses" [value]="status">
             {{status}}
           </mat-option>
@@ -148,7 +137,7 @@
 
       <mat-form-field floatLabel="always" appearance="outline" fxFlex="30">
         <mat-label>Type:</mat-label>
-        <mat-select [(ngModel)]="conceptForm.conceptType">
+        <mat-select [(ngModel)]="conceptDto.conceptType">
           <mat-option *ngFor="let conceptType of conceptTypes" [value]="conceptType">
             {{conceptType}}
           </mat-option>
@@ -157,17 +146,10 @@
 
       <mat-form-field class="description" floatLabel="always" appearance="outline" fxFlex="50">
         <mat-label>Description:</mat-label>
-        <textarea matInput [(ngModel)]="conceptForm.description" rows="10" [formControl]="validator.description"
+        <textarea matInput [(ngModel)]="conceptDto.description" rows="10" [formControl]="validator.description"
           required></textarea>
         <mat-error *ngIf="validator.description.invalid">{{errorMessage}}</mat-error>
       </mat-form-field>
-      <mat-dialog-actions>
-        <div matTooltip="Form is invalid" [matTooltipDisabled]="isValidForm">
-          <button [disabled]="!isValidForm" color="primary" mat-raised-button (click)="onSend()">
-            Send form
-          </button>
-        </div>
-      </mat-dialog-actions>
       <h3 mat-dialog-title>IMLang</h3>
       <ngx-monaco-editor class="dialog" [options]="editorOptions" [(ngModel)]="definitionText"
         (ngModelChange)="definitionChanged.next($event)">
@@ -190,7 +172,7 @@
     <mat-dialog-actions>
       <button id="cancel" color="warn" mat-raised-button mat-dialog-close>Cancel</button>
       <div matTooltip="Syntax is invalid" [matTooltipDisabled]="isValidSyntax">
-        <button [disabled]="!isValidSyntax" color="primary" mat-raised-button (click)="onClick()">Create</button>
+        <button [disabled]="!isValid" color="primary" mat-raised-button (click)="onClick()">Create</button>
       </div>
 
     </mat-dialog-actions>

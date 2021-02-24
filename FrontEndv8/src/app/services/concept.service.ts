@@ -9,6 +9,7 @@ import {SearchRequest} from '../models/search/SearchRequest';
 import {SearchResponse} from '../models/search/SearchResponse';
 import {ConceptSummary} from '../models/search/ConceptSummary';
 import {ValueSetMembership} from '../models/valueset/ValueSetMembership';
+import { ConceptDto } from '../models/objectmodel/ConceptDto';
 
 export interface ConceptAggregate {
   concept: Concept;
@@ -31,13 +32,8 @@ export class ConceptService {
     return this.http.get<Concept>(environment.api + 'api/concept/' + iri);
   }
 
-  createConcept(conceptDefintion: string): Observable<Concept> {
-    const params = new HttpParams().set('definitionText', conceptDefintion);
-    return this.http.post<Concept>(environment.api + 'api/concept/', {params});
-  }
-
-  createConceptForm(conceptDefintion: Concept): Observable<Concept> {
-    return this.http.post<Concept>(environment.api + 'api/concept/', conceptDefintion);
+  createConcept(conceptDto: ConceptDto): Observable<Concept> {
+    return this.http.post<Concept>(environment.api + 'api/concept/', conceptDto);
   }
 
   getConceptImLang(iri: string): Observable<any> {
