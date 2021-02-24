@@ -8,6 +8,7 @@ import { LoggerService } from 'src/app/services/logger.service';
 import { NgEventBus } from 'ng-event-bus';
 import { Component, Input, OnInit } from '@angular/core';
 import { ConceptReference } from 'src/app/models/objectmodel/ConceptReference';
+import { ConceptSummary } from 'src/app/models/search/ConceptSummary';
 
 @Component({
   selector: 'app-concept-library',
@@ -29,6 +30,7 @@ export class ConceptLibraryComponent implements OnInit {
     @Input()children: Array<ConceptReferenceNode>;
     mappedFrom: Array<ConceptReference>;
     mappedTo: Array<ConceptReference>;
+    usedInList: Array<ConceptSummary>;
     @Input()perspective: Perspective;
     @Input() relationships = ['sn:116680003']; // this can move to the perspective
 
@@ -51,6 +53,11 @@ export class ConceptLibraryComponent implements OnInit {
 
     this.service.findMappedTo(this.concept.iri).subscribe(
       (result) => this.mappedTo = result,
+      (error) => this.log.error(error)
+    );
+
+    this.service.findUsages(this.concept.iri).subscribe(
+      (result) => this.usedInList = result,
       (error) => this.log.error(error)
     );
   }

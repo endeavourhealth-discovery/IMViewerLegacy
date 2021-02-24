@@ -138,6 +138,24 @@
         </ng-template>
       </mat-tab>
 
+      <mat-tab label="Used In" *ngIf="perspective.root == ':SemanticConcept'">
+        <mat-form-field style="display: unset;" floatLabel="always" appearance="outline" fxFlex="200" readonly>
+          <mat-wrapper>
+            <mat-nav-list dense style="height: 200px; overflow: auto;">
+              <ng-container *ngFor="let usedInItem of usedInList">
+              <mat-list-item (click)="nodeClick(usedInItem.iri)">
+                <mat-icon matListIcon>add</mat-icon>
+                <h3 matLine> {{usedInItem.name}} </h3>
+                  <p matLine>
+                    <span> {{usedInItem.iri}} </span>
+                  </p>
+              </mat-list-item>
+            </ng-container>
+            </mat-nav-list>
+          </mat-wrapper>
+        </mat-form-field>
+      </mat-tab>
+
       <mat-tab label="Edit Concept">
         <ng-template mat-tab-label>
           <mat-icon class="example-tab-icon">edit</mat-icon>
