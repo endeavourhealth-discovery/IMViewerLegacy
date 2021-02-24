@@ -22,6 +22,7 @@ import { ConceptStatus } from 'src/app/models/objectmodel/ConceptStatus';
 import { ConceptType } from 'src/app/models/objectmodel/ConceptType';
 import { CodeSchemes, codeSchemesProvider } from 'src/app/models/search/CodeScheme';
 import { ConceptReference } from 'src/app/models/objectmodel/ConceptReference';
+import { FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-edit-concept',
@@ -41,6 +42,10 @@ export class EditConceptComponent implements OnInit {
   conceptTypes: string[];
   statuses: string[];
   schemes: ConceptReference[];
+  get isValid(): boolean {
+    return this.isValidForm && this.isValidForm;
+  }
+
   get isValidSyntax(): boolean {
     let validation;
     try {
@@ -52,7 +57,17 @@ export class EditConceptComponent implements OnInit {
   }
 
   get isValidForm(): boolean {
-    return true;
+    const fields = Object.keys(this.validator);
+
+    let noError = true;
+    let i = 0;
+    while (noError && i < fields.length) {
+      if (this.validator[fields[i]].invalid) {
+        noError = false;
+      }
+      i++;
+    }
+    return noError;
   }
 
   editorOptions = {
@@ -67,6 +82,17 @@ export class EditConceptComponent implements OnInit {
     wordWrap: 'wordWrapColumn',
     wordWrapColumn: 80,
   };
+
+  validator = {
+    name: new FormControl('', [Validators.required]),
+    iri: new FormControl('', [Validators.required]),
+    code: new FormControl('', [Validators.required]),
+    version: new FormControl('', [Validators.required]),
+    description: new FormControl('', [Validators.required]),
+    scheme: new FormControl('', [Validators.required]),
+  };
+
+  errorMessage = 'Field is required';
 
   constructor(
     private service: ConceptService,

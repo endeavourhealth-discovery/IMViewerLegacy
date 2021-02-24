@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { EditConceptComponent } from './edit-concept.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,7 +25,8 @@ import { MatSelectModule } from '@angular/material/select';
     MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule
+    MatSelectModule,
+    ReactiveFormsModule
   ],
   declarations: [EditConceptComponent],
   exports: [EditConceptComponent],
