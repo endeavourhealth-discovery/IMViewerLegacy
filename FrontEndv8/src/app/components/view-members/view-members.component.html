@@ -7,12 +7,12 @@
           <mat-label>Included:</mat-label>
           <mat-wrapper>
             <mat-nav-list dense style="height: 200px; overflow: auto;">
-              <ng-container *ngFor="let member of concept.Member">
-              <mat-list-item *ngIf="member.Exclude == false" (click)="nodeDblClick(member.Class.iri)" (dblclick)="nodeDblClick(member.Class.iri)">
+              <ng-container *ngFor="let member of valueSet.included">
+              <mat-list-item (click)="nodeDblClick(member.iri)" (dblclick)="nodeDblClick(member.iri)">
                 <mat-icon matListIcon>add</mat-icon>
-                <h3 matLine> {{member.Class.name}} </h3>
+                <h3 matLine> {{member.name}} </h3>
                 <p matLine>
-                  <span> {{member.Class.iri}} </span>
+                  <span> {{member.iri}} </span>
                 </p>
               </mat-list-item>
             </ng-container>
@@ -24,12 +24,12 @@
           <mat-label>Excluded:</mat-label>
           <mat-wrapper>
             <mat-nav-list multiple="false" dense style="height: 200px; overflow: auto;">
-              <ng-container *ngFor="let member of concept.Member">
-              <mat-list-item *ngIf="member.Exclude == true" (click)="nodeDblClick(member.Class.iri)" (dblclick)="nodeDblClick(member.Class.iri)">
+              <ng-container *ngFor="let member of valueSet.excluded">
+              <mat-list-item (click)="nodeDblClick(member.iri)" (dblclick)="nodeDblClick(member.iri)">
                 <mat-icon matListIcon>remove</mat-icon>
-                <h3 matLine> {{member.Class.name}} </h3>
+                <h3 matLine> {{member.name}} </h3>
                 <p matLine>
-                  <span> {{member.Class.iri}} </span>
+                  <span> {{member.iri}} </span>
                 </p>
               </mat-list-item>
             </ng-container>

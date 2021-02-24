@@ -22,13 +22,14 @@ import { ValueSet, ValueSetService } from './../../services/valueset.service';
 })
 export class ViewMembersComponent implements OnInit {
 
-  @Input() concept: Concept | any;
+  @Input() concept: Concept;
   @Input() parents: Array<ConceptReferenceNode>;
   @Input() children: Array<ConceptReferenceNode>;
   selectedConcept: Concept;
   treeController: ConceptTreeController;
   conceptView: ConceptView;
   relationships = ['sn:116680003'];
+  valueSet: ValueSet;
   busy = false;
 
   constructor(private service: ConceptService,
@@ -59,7 +60,7 @@ export class ViewMembersComponent implements OnInit {
   }
 
   ngOnChanges(): void {
-
+    this.valueSet = this.valueSetService.toValueSet(this.concept);
   }
 
   private onError(error: any): void {
