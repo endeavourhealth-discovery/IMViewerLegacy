@@ -50,7 +50,12 @@
         <mat-label>Parents:</mat-label>
         <mat-wrapper>
           <mat-nav-list dense style="height: 100px; overflow: auto;">
-            <ng-container *ngFor="let parent of parents">
+            <div *ngIf="!this.parents?.length; else elseBlock">
+              <mat-list-item>
+                <h1 matLine>No data</h1>
+              </mat-list-item>
+            </div>
+            <ng-container elseBlock *ngFor="let parent of parents">
             <mat-list-item (click)="selectNode(parent.iri)">
               <mat-icon matListIcon>chevron_left</mat-icon>
               <h3 matLine> {{parent.name}} </h3>
@@ -67,7 +72,12 @@
         <mat-label>Children:</mat-label>
         <mat-wrapper>
           <mat-nav-list dense style="height: 100px; overflow: auto;">
-            <ng-container *ngFor="let child of children">
+            <div *ngIf="!this.children?.length; else elseBlock">
+              <mat-list-item>
+                <h1 matLine>No data</h1>
+              </mat-list-item>
+            </div>
+            <ng-container elseBlock *ngFor="let child of children">
             <mat-list-item (click)="selectNode(child.iri)">
               <mat-icon matListIcon>chevron_right</mat-icon>
               <h3 matLine> {{child.name}} </h3>
@@ -84,7 +94,12 @@
         <mat-label>Used in:</mat-label>
         <mat-wrapper>
           <mat-nav-list dense style="height: 100px; overflow: auto;">
-            <ng-container *ngFor="let usage of usages">
+            <div *ngIf="!this.usages?.length; else elseBlock">
+              <mat-list-item>
+                <h1 matLine>No data</h1>
+              </mat-list-item>
+            </div>
+            <ng-container elseBlock *ngFor="let usage of usages">
             <mat-list-item (click)="selectNode(usage.iri)">
               <mat-icon matListIcon>add</mat-icon>
               <h3 matLine> {{usage.name}} </h3>

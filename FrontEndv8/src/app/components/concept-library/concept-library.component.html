@@ -105,15 +105,20 @@
             <mat-label>Mapped From:</mat-label>
             <mat-wrapper>
               <mat-nav-list dense style="height: 200px; overflow: auto;">
-                <ng-container *ngFor="let mapped of mappedFrom">
-                <mat-list-item (click)="nodeClick(mapped.iri)">
-                  <mat-icon matListIcon>add</mat-icon>
-                  <h3 matLine> {{mapped.name}} </h3>
-                  <p matLine>
-                    <span> {{mapped.iri}} </span>
-                  </p>
-                </mat-list-item>
-              </ng-container>
+                <div *ngIf="!this.mappedFrom?.length; else elseBlock">
+                  <mat-list-item>
+                    <h1 matLine>No data</h1>
+                  </mat-list-item>
+                </div>
+                <ng-container elseBlock *ngFor="let mapped of mappedFrom">
+                  <mat-list-item (click)="nodeClick(mapped.iri)">
+                    <mat-icon matListIcon>add</mat-icon>
+                    <h3 matLine> {{mapped.name}} </h3>
+                    <p matLine>
+                      <span> {{mapped.iri}} </span>
+                    </p>
+                  </mat-list-item>
+                </ng-container>
               </mat-nav-list>
             </mat-wrapper>
           </mat-form-field>
@@ -122,15 +127,20 @@
             <mat-label>Mapped To:</mat-label>
             <mat-wrapper>
               <mat-nav-list dense style="height: 200px; overflow: auto;">
-                <ng-container *ngFor="let mapped of mappedTo">
-                <mat-list-item (click)="nodeClick(mapped.iri)">
-                  <mat-icon matListIcon>add</mat-icon>
-                  <h3 matLine> {{mapped.name}} </h3>
-                  <p matLine>
-                    <span> {{mapped.iri}} </span>
-                  </p>
-                </mat-list-item>
-              </ng-container>
+                <div *ngIf="!this.mappedTo?.length; else elseBlock">
+                  <mat-list-item>
+                    <h1 matLine>No data</h1>
+                  </mat-list-item>
+                </div>
+                <ng-container #elseBlock *ngFor="let mapped of mappedTo">
+                  <mat-list-item (click)="nodeClick(mapped.iri)">
+                    <mat-icon matListIcon>add</mat-icon>
+                    <h3 matLine> {{mapped.name}} </h3>
+                    <p matLine>
+                      <span> {{mapped.iri}} </span>
+                    </p>
+                  </mat-list-item>
+                </ng-container>
               </mat-nav-list>
             </mat-wrapper>
           </mat-form-field>
@@ -142,15 +152,20 @@
         <mat-form-field style="display: unset;" floatLabel="always" appearance="outline" fxFlex="200" readonly>
           <mat-wrapper>
             <mat-nav-list dense style="height: 200px; overflow: auto;">
-              <ng-container *ngFor="let usedInItem of usedInList">
-              <mat-list-item (click)="nodeClick(usedInItem.iri)">
-                <mat-icon matListIcon>add</mat-icon>
-                <h3 matLine> {{usedInItem.name}} </h3>
-                  <p matLine>
-                    <span> {{usedInItem.iri}} </span>
-                  </p>
-              </mat-list-item>
-            </ng-container>
+              <div *ngIf="!this.usedInList?.length; else elseBlock">
+                <mat-list-item>
+                  <h1 matLine>No data</h1>
+                </mat-list-item>
+              </div>
+              <ng-container #elseBlock *ngFor="let usedInItem of usedInList">
+                <mat-list-item (click)="nodeClick(usedInItem.iri)">
+                  <mat-icon matListIcon>add</mat-icon>
+                    <h3 matLine> {{usedInItem.name}} </h3>
+                    <p matLine>
+                      <span> {{usedInItem.iri}} </span>
+                    </p>
+                </mat-list-item>
+              </ng-container>
             </mat-nav-list>
           </mat-wrapper>
         </mat-form-field>
