@@ -62,10 +62,8 @@
             <mat-form-field appearance="outline" style="width: 100%" fxFlex="50">
               <mat-label>Search</mat-label>
               <mat-icon matPrefix style="cursor: pointer">search</mat-icon>
-              <input matInput
-                     placeholder="Search"
-                     id="conceptSearchInput"
-                     #conceptSearchInput (keyup.enter)="isMemberOf($event.target.value)">
+              <input matInput placeholder="Search" id="conceptSearchInput" #conceptSearchInput
+                (keyup.enter)="isMemberOf($event.target.value)">
             </mat-form-field>
 
             <mat-form-field floatLabel="always" appearance="outline" fxFlex="100" readonly>
@@ -73,21 +71,20 @@
               <mat-wrapper>
                 <mat-nav-list dense style="height: 200px; overflow: auto;">
                   <ng-container *ngFor="let member of concept.Member">
-                  <mat-list-item *ngIf="member.Exclude == false" (click)="nodeClick(member.iri)" (dblclick)="nodeClick(member.Class.iri)">
-                    <mat-icon matListIcon>add</mat-icon>
-                    <h3 matLine> {{member.Class.name}} </h3>
-                    <p matLine>
-                      <span> {{member.Class.iri}} </span>
-                    </p>
-                  </mat-list-item>
-                </ng-container>
+                    <mat-list-item *ngIf="member.Exclude == false" (click)="nodeClick(member.iri)"
+                      (dblclick)="nodeClick(member.Class.iri)">
+                      <mat-icon matListIcon>add</mat-icon>
+                      <h3 matLine> {{member.Class.name}} </h3>
+                      <p matLine>
+                        <span> {{member.Class.iri}} </span>
+                      </p>
+                    </mat-list-item>
+                  </ng-container>
                 </mat-nav-list>
               </mat-wrapper>
             </mat-form-field>
 
-            <mat-paginator fxFlex="100" [length]="100"
-              [pageSize]="10"
-              [pageSizeOptions]="[5, 10, 25, 100]">
+            <mat-paginator fxFlex="100" [length]="100" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]">
             </mat-paginator>
 
           </div>
@@ -110,15 +107,17 @@
                     <h1 matLine>No data</h1>
                   </mat-list-item>
                 </div>
-                <ng-container elseBlock *ngFor="let mapped of mappedFrom">
-                  <mat-list-item (click)="nodeClick(mapped.iri)">
-                    <mat-icon matListIcon>add</mat-icon>
-                    <h3 matLine> {{mapped.name}} </h3>
-                    <p matLine>
-                      <span> {{mapped.iri}} </span>
-                    </p>
-                  </mat-list-item>
-                </ng-container>
+                <ng-template #elseBlock>
+                  <ng-container *ngFor="let mapped of mappedFrom">
+                    <mat-list-item (click)="nodeClick(mapped.iri)">
+                      <mat-icon matListIcon>add</mat-icon>
+                      <h3 matLine> {{mapped.name}} </h3>
+                      <p matLine>
+                        <span> {{mapped.iri}} </span>
+                      </p>
+                    </mat-list-item>
+                  </ng-container>
+                </ng-template>
               </mat-nav-list>
             </mat-wrapper>
           </mat-form-field>
@@ -132,15 +131,17 @@
                     <h1 matLine>No data</h1>
                   </mat-list-item>
                 </div>
-                <ng-container #elseBlock *ngFor="let mapped of mappedTo">
-                  <mat-list-item (click)="nodeClick(mapped.iri)">
-                    <mat-icon matListIcon>add</mat-icon>
-                    <h3 matLine> {{mapped.name}} </h3>
-                    <p matLine>
-                      <span> {{mapped.iri}} </span>
-                    </p>
-                  </mat-list-item>
-                </ng-container>
+                <ng-template #elseBlock>
+                  <ng-container *ngFor="let mapped of mappedTo">
+                    <mat-list-item (click)="nodeClick(mapped.iri)">
+                      <mat-icon matListIcon>add</mat-icon>
+                      <h3 matLine> {{mapped.name}} </h3>
+                      <p matLine>
+                        <span> {{mapped.iri}} </span>
+                      </p>
+                    </mat-list-item>
+                  </ng-container>
+                </ng-template>
               </mat-nav-list>
             </mat-wrapper>
           </mat-form-field>
@@ -157,15 +158,17 @@
                   <h1 matLine>No data</h1>
                 </mat-list-item>
               </div>
-              <ng-container #elseBlock *ngFor="let usedInItem of usedInList">
-                <mat-list-item (click)="nodeClick(usedInItem.iri)">
-                  <mat-icon matListIcon>add</mat-icon>
+              <ng-template #elseBlock>
+                <ng-container *ngFor="let usedInItem of usedInList">
+                  <mat-list-item (click)="nodeClick(usedInItem.iri)">
+                    <mat-icon matListIcon>add</mat-icon>
                     <h3 matLine> {{usedInItem.name}} </h3>
                     <p matLine>
                       <span> {{usedInItem.iri}} </span>
                     </p>
-                </mat-list-item>
-              </ng-container>
+                  </mat-list-item>
+                </ng-container>
+              </ng-template>
             </mat-nav-list>
           </mat-wrapper>
         </mat-form-field>
