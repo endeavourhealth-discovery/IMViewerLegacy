@@ -73,13 +73,13 @@ export class EditConceptComponent implements OnInit {
   }
 
   editorOptions = {
-    theme: 'vs-dark',
+    theme: 'vs',
     language: 'DiscoverySyntax',
     wordWrap: 'wordWrapColumn',
     wordWrapColumn: 80,
   };
   editorOptions2 = {
-    theme: 'vs-dark',
+    theme: 'vs',
     language: 'json',
     wordWrap: 'wordWrapColumn',
     wordWrapColumn: 80,
