@@ -109,7 +109,6 @@ import { mapState } from 'vuex';
   computed: mapState(['conceptAggregate']),
   watch: {
     conceptAggregate(newValue, oldValue) {
-      console.log('triggered');
       this.concept = newValue.concept;
     },
   }

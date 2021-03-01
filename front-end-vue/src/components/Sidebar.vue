@@ -12,7 +12,7 @@
   </span>
 
   <TabView class="sidemenu">
-    <TabPanel class="sidemenu">
+    <TabPanel>
       <template #header>
         <font-awesome-icon
           :icon="['fas', 'project-diagram']"
@@ -22,14 +22,14 @@
       </template>
       <Tree :value="root" :expandedKeys="expandedKeys"></Tree>
     </TabPanel>
-    <TabPanel class="sidemenu">
+    <TabPanel>
       <template #header>
         <font-awesome-icon :icon="['fas', 'history']" style="padding: 1px" />
         <span>History</span>
       </template>
       List
     </TabPanel>
-    <TabPanel class="sidemenu">
+    <TabPanel>
       <template #header>
         <font-awesome-icon :icon="['fas', 'search']" style="padding: 1px" />
         <span>Search results</span>
@@ -59,22 +59,18 @@ interface TreeNode {
   computed: mapState(['conceptAggregate']),
   watch: {
     conceptAggregate(newValue, oldValue) {
-      console.log('triggered');
       this.createTree(newValue.concept, newValue.parents, newValue.children);
     },
   }
 })
 export default class Header extends Vue {
-  private conceptService = new ConceptService();
 
   searchResult = "";
   root: Array<TreeNode> = [];
   expandedKeys: any = {};
 
-  async mounted() {
-    console.log("updated");
-    this.createTree(store.state.conceptAggregate.concept, store.state.conceptAggregate.parents, store.state.conceptAggregate.children);
-  }
+  // async mounted() {
+  // }
 
   createTree(concept: any, parentHierarchy: any, children: any) {
     // const parent = this.createTreeNode(parentHierarchy[0].name, parentHierarchy[0].iri, "3");

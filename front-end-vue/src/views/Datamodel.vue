@@ -12,7 +12,6 @@ import ConceptDisplayPanel from "@/components/panels/ConceptDisplayPanel.vue"; /
 import Header from "@/components/Header.vue";
 import Sidebar from "@/components/Sidebar.vue";
 import store from "@/store/index";
-import ConceptService from "@/services/ConceptService";
 
 @Options({
   components: {
@@ -22,12 +21,9 @@ import ConceptService from "@/services/ConceptService";
   }
 })
 export default class Datamodel extends Vue {
-  private conceptService = new ConceptService();
   async mounted() {
-    console.log("Datamodel: " + this.$route.params.selectedIri);
-    store.state.datamodelIri = this.$route.params.selectedIri as string;
+    store.commit("updateDatamodelIri", this.$route.params.selectedIri as string);
     store.dispatch('fetchConceptAggregate', store.state.datamodelIri);
-    console.log(JSON.stringify(store.state));
   }
 }
 </script>

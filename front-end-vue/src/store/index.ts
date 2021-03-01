@@ -10,6 +10,15 @@ export default createStore({
     conceptAggregate: {} as any
   },
   mutations: {
+    updateOntologyIri(state, ontologyIri) {
+      state.ontologyIri = ontologyIri
+    },
+    updateDatamodelIri(state, datamodelIri) {
+      state.datamodelIri = datamodelIri
+    },
+    updateValuesetIri(state, valuesetIri) {
+      state.valuesetIri = valuesetIri
+    },
     updateConceptAggregate(state, conceptAggregate) {
       state.conceptAggregate = conceptAggregate
     },

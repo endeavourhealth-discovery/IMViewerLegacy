@@ -12,7 +12,6 @@ import ConceptDisplayPanel from "@/components/panels/ConceptDisplayPanel.vue"; /
 import Header from "@/components/Header.vue";
 import Sidebar from "@/components/Sidebar.vue";
 import store from "@/store/index";
-import ConceptService from "@/services/ConceptService";
 
 @Options({
   components: {
@@ -22,12 +21,9 @@ import ConceptService from "@/services/ConceptService";
   }
 })
 export default class Ontology extends Vue {
-  private conceptService = new ConceptService();
   async mounted() {
-    console.log("Ontology: " + this.$route.params.selectedIri);
-    store.state.ontologyIri = this.$route.params.selectedIri as string;
+    store.commit("updateOntologyIri", this.$route.params.selectedIri as string);
     store.dispatch('fetchConceptAggregate', store.state.ontologyIri);
-    console.log(JSON.stringify(store.state));
   }
 }
 </script>
