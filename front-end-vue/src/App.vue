@@ -5,19 +5,19 @@
         <div class="layout-menu-container p-mt-6">
           <div class="p-grid" style="text-align:center;">
             <div class="p-col-12" v-bind:class="{ active: isActive('Home') }">
-              <font-awesome-icon class="sidebutton" :icon="['fas', 'home']" size="4x" style="color:lightgrey; padding:5px" @click="$router.push({ name: 'Home', params: { conceptIri: 'owl:Thing' } })" />
+              <font-awesome-icon class="sidebutton" :icon="['fas', 'home']" size="4x" style="color:lightgrey; padding:5px" @click="$router.push({ name: 'Home'})" />
             </div>
 
             <div class="p-col-12" v-bind:class="{ active: isActive('Datamodel') }">
-              <font-awesome-icon class="sidebutton" :icon="['fas', 'lightbulb']" size="4x" style="color:lightgrey; padding:5px" @click="$router.push({ name: 'Datamodel', params: { conceptIri: ':HealthRecord' } })" />
+              <font-awesome-icon class="sidebutton" :icon="['fas', 'lightbulb']" size="4x" style="color:lightgrey; padding:5px" @click="$router.push({ name: 'Datamodel', params: { selectedIri: ':HealthRecord' } })" />
             </div>
 
             <div class="p-col-12" v-bind:class="{ active: isActive('Ontology') }">
-              <font-awesome-icon class="sidebutton" :icon="['fas', 'sitemap']" size="4x" style="color:lightgrey; padding:5px" @click="$router.push({ name: 'Ontology', params: { conceptIri: ':SemanticConcept' } })" />
+              <font-awesome-icon class="sidebutton" :icon="['fas', 'sitemap']" size="4x" style="color:lightgrey; padding:5px" @click="$router.push({ name: 'Ontology', params: { selectedIri: ':SemanticConcept' } })" />
             </div>
 
             <div class="p-col-12" v-bind:class="{ active: isActive('Valueset') }">
-              <font-awesome-icon class="sidebutton" :icon="['fas', 'tasks']" size="4x" style="color:lightgrey; padding:5px" @click="$router.push({ name: 'Valueset', params: { conceptIri: ':VSET_ValueSet' } })" />
+              <font-awesome-icon class="sidebutton" :icon="['fas', 'tasks']" size="4x" style="color:lightgrey; padding:5px" @click="$router.push({ name: 'Valueset', params: { selectedIri: ':VSET_ValueSet' } })" />
             </div>
           </div>
         </div>
