@@ -1,13 +1,23 @@
 <template>
   <span class="p-input-icon-left" style="width:100%">
     <i class="pi pi-search" />
-    <InputText type="text" v-model="searchResult" placeholder="Search" class="p-inputtext-lg" autoWidth="false" style="width:100%" />
+    <InputText
+      type="text"
+      v-model="searchResult"
+      placeholder="Search"
+      class="p-inputtext-lg"
+      autoWidth="false"
+      style="width:100%"
+    />
   </span>
 
   <TabView class="sidemenu">
     <TabPanel class="sidemenu">
       <template #header>
-        <font-awesome-icon :icon="['fas', 'project-diagram']" style="padding:1px" />
+        <font-awesome-icon
+          :icon="['fas', 'project-diagram']"
+          style="padding:1px"
+        />
         <span>Tree</span>
       </template>
       <Tree :value="root" :expandedKeys="expandedKeys"></Tree>
@@ -30,37 +40,45 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-import ConceptService from '../services/ConceptService';
+import { Options, Vue } from "vue-class-component";
+import ConceptService from "../services/ConceptService";
 
 interface TreeNode {
-  key: string,
-  label: string,
-  data: string,
-  icon: string,
-  leaf: boolean,
-  children: Array<TreeNode>,
+  key: string;
+  label: string;
+  data: string;
+  icon: string;
+  leaf: boolean;
+  children: Array<TreeNode>;
 }
 
 @Options({
-  components: {},
+  components: {}
 })
 export default class Header extends Vue {
   private conceptService = new ConceptService();
 
-  searchResult = '';
+  searchResult = "";
   root: Array<TreeNode> = [];
   expandedKeys: any = {};
 
   async mounted() {
+    const conceptIri: any = this.$router.currentRoute.value.params.conceptIri;
+    const concept = await (await this.conceptService.getConcept(conceptIri))
+      .data;
+    const parentHierarchy = await (
+      await this.conceptService.getConceptParentHierarchy(conceptIri)
+    ).data;
+    const children = await (
+      await this.conceptService.getConceptChildren(conceptIri)
+    ).data;
 
-    const conceptIri:any = this.$router.currentRoute.value.params.conceptIri;
-    const concept = await (await this.conceptService.getConcept(conceptIri)).data;
-    const parentHierarchy = await (await this.conceptService.getConceptParentHierarchy(conceptIri)).data;
-    const children = await (await this.conceptService.getConceptChildren(conceptIri)).data;
-
-    console.log(await (await this.conceptService.getConceptParents(conceptIri)).data);
-    console.log(await (await this.conceptService.getAncestorDefinitions(conceptIri)).data);
+    console.log(
+      await (await this.conceptService.getConceptParents(conceptIri)).data
+    );
+    console.log(
+      await (await this.conceptService.getAncestorDefinitions(conceptIri)).data
+    );
 
     this.createTree(concept, parentHierarchy, children);
   }
@@ -71,26 +89,31 @@ export default class Header extends Vue {
 
   createTree(concept: any, parentHierarchy: any, children: any) {
     // const parent = this.createTreeNode(parentHierarchy[0].name, parentHierarchy[0].iri, "3");
-    const selectedConcept = this.createTreeNode(concept.name, concept.iri, "3-0");
+    const selectedConcept = this.createTreeNode(
+      concept.name,
+      concept.iri,
+      "3-0"
+    );
     // parent.children.push(selectedConcept);
 
     children.forEach((child: any) => {
-      selectedConcept.children.push(this.createTreeNode(child.name, child.iri, "3-0-0"));
+      selectedConcept.children.push(
+        this.createTreeNode(child.name, child.iri, "3-0-0")
+      );
     });
     this.root = [];
     this.root.push(selectedConcept);
     this.expandedKeys[this.root[0].key] = true;
-
   }
 
   createTreeNode(conceptName: any, conceptIri: any, level: any) {
-    const node:TreeNode = {
+    const node: TreeNode = {
       key: level,
       label: conceptName,
-      icon: 'pi pi-fw pi-inbox',
+      icon: "pi pi-fw pi-inbox",
       data: conceptIri,
       leaf: false,
-      children: [],
+      children: []
     };
     return node;
   }
@@ -103,6 +126,6 @@ export default class Header extends Vue {
 }
 
 .p-tree .p-tree-container .p-treenode .p-treenode-content {
-    padding: 0rem!important;
+  padding: 0rem !important;
 }
 </style>

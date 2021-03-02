@@ -1,8 +1,8 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
-import Datamodel from "../views/Datamodel.vue"
-import Ontology from "../views/Ontology.vue"
-import Valueset from "../views/Valueset.vue"
+import Datamodel from "../views/Datamodel.vue";
+import Ontology from "../views/Ontology.vue";
+import Valueset from "../views/Valueset.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
