@@ -11,17 +11,17 @@ const routes: Array<RouteRecordRaw> = [
     component: Home
   },
   {
-    path: "/datamodel",
+    path: "/datamodel/:selectedIri",
     name: "Datamodel",
     component: Datamodel
   },
   {
-    path: "/ontology",
+    path: "/ontology/:selectedIri",
     name: "Ontology",
     component: Ontology
   },
   {
-    path: "/valueset",
+    path: "/valueset/:selectedIri",
     name: "Valueset",
     component: Valueset
   }
