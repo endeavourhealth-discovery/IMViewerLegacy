@@ -1,5 +1,5 @@
 <template>
-  <span class="p-input-icon-left" style="width:100%">
+  <span class="p-input-icon-left" style="width: 100%">
     <i class="pi pi-search" />
     <InputText
       type="text"
@@ -12,7 +12,7 @@
   </span>
 
   <TabView class="sidemenu">
-    <TabPanel class="sidemenu">
+    <TabPanel>
       <template #header>
         <font-awesome-icon
           :icon="['fas', 'project-diagram']"
@@ -22,16 +22,16 @@
       </template>
       <Tree :value="root" :expandedKeys="expandedKeys"></Tree>
     </TabPanel>
-    <TabPanel class="sidemenu">
+    <TabPanel>
       <template #header>
-        <font-awesome-icon :icon="['fas', 'history']" style="padding:1px" />
+        <font-awesome-icon :icon="['fas', 'history']" style="padding: 1px" />
         <span>History</span>
       </template>
       List
     </TabPanel>
-    <TabPanel class="sidemenu">
+    <TabPanel>
       <template #header>
-        <font-awesome-icon :icon="['fas', 'search']" style="padding:1px" />
+        <font-awesome-icon :icon="['fas', 'search']" style="padding: 1px" />
         <span>Search results</span>
       </template>
       Search
@@ -42,6 +42,8 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import ConceptService from "../services/ConceptService";
+import store from "@/store/index";
+import { mapState } from 'vuex';
 
 interface TreeNode {
   key: string;
@@ -53,39 +55,22 @@ interface TreeNode {
 }
 
 @Options({
-  components: {}
+  components: {},
+  computed: mapState(['conceptAggregate']),
+  watch: {
+    conceptAggregate(newValue, oldValue) {
+      this.createTree(newValue.concept, newValue.parents, newValue.children);
+    },
+  }
 })
 export default class Header extends Vue {
-  private conceptService = new ConceptService();
 
   searchResult = "";
   root: Array<TreeNode> = [];
   expandedKeys: any = {};
 
-  async mounted() {
-    const conceptIri: any = this.$router.currentRoute.value.params.conceptIri;
-    const concept = await (await this.conceptService.getConcept(conceptIri))
-      .data;
-    const parentHierarchy = await (
-      await this.conceptService.getConceptParentHierarchy(conceptIri)
-    ).data;
-    const children = await (
-      await this.conceptService.getConceptChildren(conceptIri)
-    ).data;
-
-    console.log(
-      await (await this.conceptService.getConceptParents(conceptIri)).data
-    );
-    console.log(
-      await (await this.conceptService.getAncestorDefinitions(conceptIri)).data
-    );
-
-    this.createTree(concept, parentHierarchy, children);
-  }
-
-  updated() {
-    console.log(this.$router.currentRoute.value.params.conceptIri);
-  }
+  // async mounted() {
+  // }
 
   createTree(concept: any, parentHierarchy: any, children: any) {
     // const parent = this.createTreeNode(parentHierarchy[0].name, parentHierarchy[0].iri, "3");

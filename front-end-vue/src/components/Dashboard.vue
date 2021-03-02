@@ -15,6 +15,8 @@
         <template #subtitle>
           Complete conceptual definitions
         </template>
+        <template #title> Semantic Ontology </template>
+        <template #subtitle> Complete conceptual definitions </template>
         <template #content>
           The semantic ontology is the set of concepts used in all parts of the
           information model, from clinical concepts through to data structure
@@ -37,6 +39,8 @@
         <template #subtitle>
           Data model definition
         </template>
+        <template #title> Data Models </template>
+        <template #subtitle> Data model definition </template>
         <template #content>
           The data model is a set of entities, attributes and value sets, all of
           which are defined precisely in the ontology, but the data model, being
@@ -60,6 +64,8 @@
         <template #subtitle>
           Value set and member explorer
         </template>
+        <template #title> Value Sets </template>
+        <template #subtitle> Value set and member explorer </template>
         <template #content>
           Business purpose specific collections of concepts from the ontology
           used in the data model or in query and contain concepts as defined in

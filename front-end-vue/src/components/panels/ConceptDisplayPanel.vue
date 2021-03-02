@@ -93,29 +93,29 @@
         ></Panel>
       </div>
     </div>
-
-    <!-- <Panel header="Mapped from/to and Used In" :toggleable="true">
-      <div class="p-grid">
-        <div class="p-col-4"><p><Strong>Mapped from:</Strong></p><Listbox v-model="selectedConcept" :options="concepts" optionLabel="name"></Listbox></div>
-        <div class="p-col-4"><p><Strong>Mapped to:</Strong></p><Listbox v-model="selectedConcept" :options="concepts" optionLabel="name" /></div>
-        <div class="p-col-4"><p><Strong>Used in:</Strong></p><Listbox v-model="selectedConcept" :options="concepts" optionLabel="name" /></div>
-      </div>
-    </Panel> -->
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import ConceptService from "../services/ConceptService";
-import Editor from "../components/Editor.vue";
+import ConceptService from "@/services/ConceptService";
+import Editor from "@/components/Editor.vue";
+import store from "@/store/index";
+import { mapState } from 'vuex';
 
 @Options({
   components: { Editor },
-  prop: {}
+  prop: {},
+  computed: mapState(['conceptAggregate']),
+  watch: {
+    conceptAggregate(newValue, oldValue) {
+      this.concept = newValue.concept;
+    },
+  }
 })
-export default class ConceptDisplay extends Vue {
+export default class ConceptDisplayPanel extends Vue {
   private conceptService = new ConceptService();
-  concept: any = {};
+  concept = {};
   selectedConcept = null;
   concepts = [
     { name: "Encounter (record type) | :Encounter", code: "Encounter" },
@@ -188,10 +188,8 @@ export default class ConceptDisplay extends Vue {
     ]
   };
 
-  async mounted() {
-    const conceptIri: any = this.$router.currentRoute.value.params.conceptIri;
-    this.concept = await (await this.conceptService.getConcept(conceptIri))
-      .data;
-  }
+  // async mounted() {
+    
+  // }
 }
 </script>
