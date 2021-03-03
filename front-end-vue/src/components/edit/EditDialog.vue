@@ -36,10 +36,10 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import { ConceptDto } from "../models/ConceptDto";
 import { Concept } from "@/models/Concept";
 import ConceptService from "@/services/ConceptService";
 import Editor from "./Editor.vue";
+import { ConceptDto } from "@/models/ConceptDto";
 
 @Options({
   components: {
@@ -50,8 +50,8 @@ import Editor from "./Editor.vue";
 export default class EditorDialog extends Vue {
   private display!: boolean;
   private definitionText!: string;
-  private updatedText = "";
   private concept!: Concept;
+  private updatedText = "";
   private isValidSyntax = true;
   private conceptDto = {} as ConceptDto;
 

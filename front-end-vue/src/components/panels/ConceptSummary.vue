@@ -40,7 +40,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import ConceptService from "@/services/ConceptService";
-import EditDialog from "@/components/EditDialog.vue";
+import EditDialog from "@/components/edit/EditDialog.vue";
 import store from "@/store/index";
 import { mapState } from "vuex";
 

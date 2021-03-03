@@ -165,7 +165,10 @@ export default class EditorDialog extends Vue {
     if (editor) {
       monaco.editor.create(editor, {
         value: this.definitionText,
-        language: "DiscoverySyntax"
+        language: "DiscoverySyntax",
+        wordWrap: "wordWrapColumn",
+        wordWrapColumn: this.wordWrapColumn,
+        automaticLayout: true
       });
 
       // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -233,12 +236,23 @@ export default class EditorDialog extends Vue {
     }
     editor?.removeAttribute("context");
   }
+
+  get wordWrapColumn() {
+    const width =
+      document.getElementById("container")?.clientWidth ||
+      window.innerWidth ||
+      document.documentElement.clientWidth ||
+      document.body.clientWidth;
+    return width < 700 ? 60 : 120;
+  }
 }
 </script>
 
 <style scoped>
 #container {
-  height: calc(100vh - 500px);
+  /* height: calc(100vh - 500px); */
+  height: 100%;
+  width: 100%;
 }
 
 .p-field {
