@@ -23,7 +23,7 @@ import store from "@/store/index";
 export default class Ontology extends Vue {
   async mounted() {
     store.commit("updateOntologyIri", this.$route.params.selectedIri as string);
-    store.dispatch('fetchConceptAggregate', store.state.ontologyIri);
+    store.dispatch("fetchConceptAggregate", store.state.ontologyIri);
   }
 }
 </script>

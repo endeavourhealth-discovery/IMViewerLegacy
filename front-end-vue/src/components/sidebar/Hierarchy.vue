@@ -1,8 +1,13 @@
 <template>
-  <Tree :value="root" :expandedKeys="expandedKeys"></Tree>
+  <Tree :value="root" selectionMode="single" :expandedKeys="expandedKeys" @node-select="onNodeSelect"></Tree>
+
+
+<!-- <Tree :value="nodes" selectionMode="single" v-model:selectionKeys="selectedKey2" :metaKeySelection="false" @node-select="onNodeSelect" @node-unselect="onNodeUnselect"></Tree> -->
+
 </template>
 
 <script lang="ts">
+import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { Options, Vue } from "vue-class-component";
 import { mapState } from "vuex";
 
@@ -61,6 +66,11 @@ export default class Hierarchy extends Vue {
       children: [],
     };
     return node;
+  }
+
+  onNodeSelect(node: any) {
+    const currentRoute = this.$route.name as RouteRecordName | undefined;
+    this.$router.push({ name: currentRoute, params: { selectedIri: node.data } });
   }
 }
 </script>

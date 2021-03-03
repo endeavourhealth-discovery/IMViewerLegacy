@@ -23,7 +23,7 @@ import store from "@/store/index";
 export default class Valueset extends Vue {
   async mounted() {
     store.commit("updateValuesetIri", this.$route.params.selectedIri as string);
-    store.dispatch('fetchConceptAggregate', store.state.valuesetIri);
+    store.dispatch("fetchConceptAggregate", store.state.valuesetIri);
   }
 }
 </script>
