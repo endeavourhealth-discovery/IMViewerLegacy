@@ -36,13 +36,13 @@
 import { Options, Vue } from "vue-class-component";
 import Dashboard from "@/components/Dashboard.vue"; // @ is an alias to /src
 import Header from "@/components/Header.vue";
-import Sidebar from "@/components/sidebar/Sidebar.vue";
+import SidebarControl from "@/components/sidebar/SidebarControl.vue";
 
 @Options({
   components: {
     Dashboard,
     Header,
-    Sidebar
+    SidebarControl
   }
 })
 export default class App extends Vue {
