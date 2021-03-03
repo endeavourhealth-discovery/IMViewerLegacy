@@ -13,7 +13,6 @@ import Header from "@/components/Header.vue";
 import SidebarControl from "@/components/sidebar/SidebarControl.vue";
 import store from "@/store/index";
 
-
 @Options({
   components: {
     Dashboard,
@@ -23,7 +22,7 @@ import store from "@/store/index";
 })
 export default class Home extends Vue {
   async mounted() {
-    store.dispatch('fetchConceptAggregate', store.state.homeIri);
+    store.dispatch("fetchConceptAggregate", store.state.homeIri);
   }
 }
 </script>

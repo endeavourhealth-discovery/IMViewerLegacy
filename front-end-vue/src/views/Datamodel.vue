@@ -23,7 +23,7 @@ import store from "@/store/index";
 export default class Datamodel extends Vue {
   async mounted() {
     store.commit("updateDatamodelIri", this.$route.params.selectedIri as string);
-    store.dispatch('fetchConceptAggregate', store.state.datamodelIri);
+    store.dispatch("fetchConceptAggregate", store.state.datamodelIri);
   }
 }
 </script>

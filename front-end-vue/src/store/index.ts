@@ -4,8 +4,8 @@ import ConceptService from "../services/ConceptService"
 export default createStore({
   state: {
     homeIri: "owl:Thing",
-    ontologyIri: ":HealthRecord",
-    datamodelIri: ":SemanticConcept",
+    ontologyIri: ":SemanticConcept",
+    datamodelIri: ":HealthRecord",
     valuesetIri: ":VSET_ValueSet",
     conceptAggregate: {} as any
   },
