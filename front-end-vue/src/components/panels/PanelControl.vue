@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ConceptSummary/>
+    <ConceptSummary />
 
     <Panel
       header="Defintion"
@@ -42,10 +42,6 @@
       {{ concept }}
     </Panel>
 
-    <Panel header="Editor" :toggleable="true">
-      <Editor />
-    </Panel>
-
     <div class="p-grid">
       <div class="p-col-4">
         <Panel header="Mapped from" :toggleable="true"
@@ -81,10 +77,9 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import ConceptSummary from "@/components/panels/ConceptSummary.vue";
-import Editor from "@/components/Editor.vue";
 
 @Options({
-  components: { ConceptSummary, Editor }
+  components: { ConceptSummary }
 })
 export default class PanelControl extends Vue {
   concept = {};
@@ -161,7 +156,7 @@ export default class PanelControl extends Vue {
   };
 
   // async mounted() {
-    
+
   // }
 }
 </script>
