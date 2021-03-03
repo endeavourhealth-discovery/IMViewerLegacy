@@ -114,7 +114,6 @@ import { mapState } from "vuex";
       ).data;
       const model = monaco.editor.getModels()[0];
       model.setValue(this.definitionText);
-      // this.initMonaco();
     }
   }
 })
@@ -216,16 +215,16 @@ export default class Editor extends Vue {
     this.schemeOptions = (await ConceptService.getSchemeOptions()).data;
   }
 
-  // beforeUnmount() {
-  //   const editor = document.getElementById("container");
-  //   const model = monaco.editor.getModels()[0];
-  //   model.dispose();
-  //   while (editor?.firstChild) {
-  //     const childNode = editor?.lastChild;
-  //     if (childNode) editor.removeChild(childNode);
-  //   }
-  //   editor?.removeAttribute("context");
-  // }
+  beforeUnmount() {
+    const editor = document.getElementById("container");
+    const model = monaco.editor.getModels()[0];
+    model.dispose();
+    while (editor?.firstChild) {
+      const childNode = editor?.lastChild;
+      if (childNode) editor.removeChild(childNode);
+    }
+    editor?.removeAttribute("context");
+  }
 
   submit() {
     const conceptDto = new ConceptDto(
