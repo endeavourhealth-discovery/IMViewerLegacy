@@ -9,12 +9,6 @@
             style="color:orange; padding:5px"
           />
         </template>
-        <template #title>
-          Semantic Ontology
-        </template>
-        <template #subtitle>
-          Complete conceptual definitions
-        </template>
         <template #title> Semantic Ontology </template>
         <template #subtitle> Complete conceptual definitions </template>
         <template #content>
@@ -32,12 +26,6 @@
             size="6x"
             style="color:limegreen; padding:5px"
           />
-        </template>
-        <template #title>
-          Data Models
-        </template>
-        <template #subtitle>
-          Data model definition
         </template>
         <template #title> Data Models </template>
         <template #subtitle> Data model definition </template>
@@ -58,12 +46,6 @@
             style="color:brown; padding:5px"
           />
         </template>
-        <template #title>
-          Value Sets
-        </template>
-        <template #subtitle>
-          Value set and member explorer
-        </template>
         <template #title> Value Sets </template>
         <template #subtitle> Value set and member explorer </template>
         <template #content>
@@ -80,11 +62,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 
-@Options({
-  props: {
-    msg: String
-  }
-})
+@Options({})
 export default class Dashboard extends Vue {
   msg!: string;
 }

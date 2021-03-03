@@ -36,7 +36,7 @@
 import { Options, Vue } from "vue-class-component";
 import Dashboard from "@/components/Dashboard.vue"; // @ is an alias to /src
 import Header from "@/components/Header.vue";
-import Sidebar from "@/components/Sidebar.vue";
+import Sidebar from "@/components/sidebar/Sidebar.vue";
 
 @Options({
   components: {

@@ -10,7 +10,7 @@
 import { Options, Vue } from "vue-class-component";
 import ConceptDisplayPanel from "@/components/panels/ConceptDisplayPanel.vue"; // @ is an alias to /src
 import Header from "@/components/Header.vue";
-import Sidebar from "@/components/Sidebar.vue";
+import Sidebar from "@/components/sidebar/Sidebar.vue";
 import store from "@/store/index";
 
 @Options({
