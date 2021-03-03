@@ -43,6 +43,8 @@ import OrganizationChart from "primevue/organizationchart";
 import Textarea from "primevue/textarea";
 import Dropdown from 'primevue/dropdown';
 import Tooltip from 'primevue/tooltip';
+import Dialog from 'primevue/dialog';
+import SplitButton from 'primevue/splitbutton';
 
 createApp(App)
   .use(store)
@@ -69,5 +71,7 @@ createApp(App)
   .component("OrganizationChart", OrganizationChart)
   .component("Textarea", Textarea)
   .component("DropDown", Dropdown)
+  .component("Dialog", Dialog)
+  .component("SplitButton", SplitButton)
   .component("font-awesome-icon", FontAwesomeIcon)
   .mount("#app");
