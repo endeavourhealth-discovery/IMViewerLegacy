@@ -1,49 +1,10 @@
 <template>
-  <span class="p-input-icon-left" style="width: 100%">
-    <i class="pi pi-search" />
-    <InputText
-      type="text"
-      v-model="searchResult"
-      placeholder="Search"
-      class="p-inputtext-lg"
-      autoWidth="false"
-      style="width: 100%"
-    />
-  </span>
-
-  <TabView class="sidemenu">
-    <TabPanel>
-      <template #header>
-        <font-awesome-icon
-          :icon="['fas', 'project-diagram']"
-          style="padding: 1px"
-        />
-        <span>Tree</span>
-      </template>
-      <Tree :value="root" :expandedKeys="expandedKeys"></Tree>
-    </TabPanel>
-    <TabPanel>
-      <template #header>
-        <font-awesome-icon :icon="['fas', 'history']" style="padding: 1px" />
-        <span>History</span>
-      </template>
-      List
-    </TabPanel>
-    <TabPanel>
-      <template #header>
-        <font-awesome-icon :icon="['fas', 'search']" style="padding: 1px" />
-        <span>Search results</span>
-      </template>
-      Search
-    </TabPanel>
-  </TabView>
+  <Tree :value="root" :expandedKeys="expandedKeys"></Tree>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import ConceptService from "@/services/ConceptService";
-import store from "@/store/index";
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
 interface TreeNode {
   key: string;
@@ -56,15 +17,14 @@ interface TreeNode {
 
 @Options({
   components: {},
-  computed: mapState(['conceptAggregate']),
+  computed: mapState(["conceptAggregate"]),
   watch: {
     conceptAggregate(newValue, oldValue) {
       this.createTree(newValue.concept, newValue.parents, newValue.children);
     },
-  }
+  },
 })
-export default class Header extends Vue {
-
+export default class Hierarchy extends Vue {
   searchResult = "";
   root: Array<TreeNode> = [];
   expandedKeys: any = {};
@@ -106,10 +66,6 @@ export default class Header extends Vue {
 </script>
 
 <style>
-.sidemenu .p-tabview-panels {
-  height: calc(100vh - 270px);
-}
-
 .p-tree .p-tree-container .p-treenode .p-treenode-content {
   padding: 0rem !important;
 }

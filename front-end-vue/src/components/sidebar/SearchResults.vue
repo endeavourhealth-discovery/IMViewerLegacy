@@ -1,11 +1,11 @@
-<template>History</template>
+<template>SearchResults</template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 @Options({
   components: {},
 })
-export default class History extends Vue {}
+export default class SearchResults extends Vue {}
 </script>
 
 <style>

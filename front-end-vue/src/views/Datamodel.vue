@@ -1,23 +1,23 @@
 <template>
   <div class="p-grid">
     <div class="p-col-12"><Header /></div>
-    <div class="p-col-4"><Sidebar /></div>
-    <div class="p-col-8"><ConceptDisplayPanel /></div>
+    <div class="p-col-4"><SidebarControl /></div>
+    <div class="p-col-8"><PanelControl /></div>
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import ConceptDisplayPanel from "@/components/panels/ConceptDisplayPanel.vue"; // @ is an alias to /src
+import PanelControl from "@/components/panels/PanelControl.vue"; // @ is an alias to /src
 import Header from "@/components/Header.vue";
-import Sidebar from "@/components/sidebar/Sidebar.vue";
+import SidebarControl from "@/components/sidebar/SidebarControl.vue";
 import store from "@/store/index";
 
 @Options({
   components: {
-    ConceptDisplayPanel,
+    PanelControl,
     Header,
-    Sidebar
+    SidebarControl
   }
 })
 export default class Datamodel extends Vue {
