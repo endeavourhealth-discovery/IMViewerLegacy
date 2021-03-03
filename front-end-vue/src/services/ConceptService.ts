@@ -1,3 +1,4 @@
+import { ConceptDto } from "@/models/ConceptDto";
 import axios from "axios";
 
 export default class ConceptService {
@@ -25,6 +26,10 @@ export default class ConceptService {
 
   public static async getSchemeOptions() {
     return this.getConceptChildren(":551000252107");
+  }
+
+  public static async saveConcept(conceptDto: ConceptDto) {
+    return axios.post(this.api + "api/concept", conceptDto);
   }
 
   public static async getConceptImLang(iri: string) {
