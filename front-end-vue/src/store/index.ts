@@ -5,7 +5,7 @@ export default createStore({
   state: {
     homeIri: "owl:Thing",
     ontologyIri: ":SemanticConcept",
-    datamodelIri: ":HealthRecord",
+    datamodelIri: ":DiscoveryCommonDataModel",
     valuesetIri: ":VSET_ValueSet",
     conceptAggregate: {} as any
   },

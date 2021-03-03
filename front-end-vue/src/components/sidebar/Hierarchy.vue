@@ -37,22 +37,38 @@ export default class Hierarchy extends Vue {
   // async mounted() {
   // }
 
+  // convertParentHeirarchyIntoTree(parents: any) {
+  //   parents.forEach((parentNode: any) => {
+  //     const parent = this.createTreeNode(parentNode.name, parentNode.iri, "0");
+  //     if (parentNode.parents) {
+  //       this.convertParentHeirarchyIntoTree(parentNode.parents);
+  //     } else {
+  //       parent.children
+  //     }
+  //   });
+  // }
+
   createTree(concept: any, parentHierarchy: any, children: any) {
-    // const parent = this.createTreeNode(parentHierarchy[0].name, parentHierarchy[0].iri, "3");
     const selectedConcept = this.createTreeNode(
       concept.name,
       concept.iri,
-      "3-0"
+      "0"
     );
-    // parent.children.push(selectedConcept);
 
     children.forEach((child: any) => {
       selectedConcept.children.push(
-        this.createTreeNode(child.name, child.iri, "3-0-0")
+        this.createTreeNode(child.name, child.iri, "1")
       );
     });
     this.root = [];
-    this.root.push(selectedConcept);
+
+    if(parentHierarchy.length) {
+      const parent = this.createTreeNode(parentHierarchy[0].name, parentHierarchy[0].iri, "0");
+      parent.children.push(selectedConcept);
+      this.root.push(parent);
+    } else {
+      this.root.push(selectedConcept);
+    }
     this.expandedKeys[this.root[0].key] = true;
   }
 
