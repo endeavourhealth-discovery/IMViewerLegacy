@@ -17,6 +17,21 @@
           <p><strong>Scheme:</strong> {{ concept.scheme.name }}</p>
           <p><strong>Type:</strong> {{ concept.conceptType }}</p>
         </div>
+        <div class="p-col-9" v-if="concept.name"></div>
+        <div class="p-col-2" v-if="concept.name">
+          <SplitButton
+            label="Edit"
+            icon="pi pi-pencil"
+            @click="openEditDialog()"
+            :model="items"
+          ></SplitButton>
+        </div>
+        <EditDialog
+          @closeDialog="closeDialog"
+          :display="display"
+          :concept="editorConcept"
+          :definitionText="editorDefinitionText"
+        />
       </div>
     </Panel>
 
@@ -60,10 +75,6 @@
       {{ concept }}
     </Panel>
 
-    <Panel header="Editor" :toggleable="true">
-      <Editor />
-    </Panel>
-
     <div class="p-grid">
       <div class="p-col-4">
         <Panel header="Mapped from" :toggleable="true"
@@ -99,23 +110,61 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import ConceptService from "@/services/ConceptService";
-import Editor from "@/components/Editor.vue";
+import EditDialog from "@/components/EditDialog.vue";
 import store from "@/store/index";
 import { mapState } from "vuex";
 
 @Options({
-  components: { Editor },
+  components: { EditDialog },
   prop: {},
   computed: mapState(["conceptAggregate"]),
   watch: {
-    conceptAggregate(newValue, oldValue) {
+    async conceptAggregate(newValue, oldValue) {
       this.concept = newValue.concept;
+      this.definitionText = this.definitionText = (
+        await ConceptService.getConceptImLang(newValue.concept.iri)
+      ).data;
     }
   }
 })
 export default class ConceptDisplayPanel extends Vue {
+  editDialogView = true;
   concept = {};
+  definitionText = "";
   selectedConcept = null;
+  display = false;
+
+  get editorConcept() {
+    return this.editDialogView ? this.concept : {};
+  }
+
+  get editorDefinitionText() {
+    return this.editDialogView ? this.definitionText : "";
+  }
+
+  closeDialog() {
+    this.display = false;
+  }
+
+  openAddDialog() {
+    this.editDialogView = false;
+    this.display = true;
+  }
+
+  openEditDialog() {
+    this.editDialogView = true;
+    this.display = true;
+  }
+
+  items = [
+    {
+      label: "Create new",
+      icon: "pi pi-plus",
+      command: () => {
+        this.openAddDialog();
+      }
+    }
+  ];
   concepts = [
     { name: "Encounter (record type) | :Encounter", code: "Encounter" },
     { name: "Encounter (type) | :1741000252102", code: "Patient" },
@@ -188,7 +237,7 @@ export default class ConceptDisplayPanel extends Vue {
   };
 
   // async mounted() {
-    
+
   // }
 }
 </script>
