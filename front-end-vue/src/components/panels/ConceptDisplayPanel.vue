@@ -101,20 +101,19 @@ import { Options, Vue } from "vue-class-component";
 import ConceptService from "@/services/ConceptService";
 import Editor from "@/components/Editor.vue";
 import store from "@/store/index";
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
 @Options({
   components: { Editor },
   prop: {},
-  computed: mapState(['conceptAggregate']),
+  computed: mapState(["conceptAggregate"]),
   watch: {
     conceptAggregate(newValue, oldValue) {
       this.concept = newValue.concept;
-    },
+    }
   }
 })
 export default class ConceptDisplayPanel extends Vue {
-  private conceptService = new ConceptService();
   concept = {};
   selectedConcept = null;
   concepts = [

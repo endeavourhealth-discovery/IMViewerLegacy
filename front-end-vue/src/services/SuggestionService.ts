@@ -8,24 +8,16 @@ export default class SuggestionService {
     keyword: string,
     word: string
   ): Promise<ConceptReference[]> {
-    try {
-      const response = await axios.get<ConceptReference[]>(
-        this.api + "api/concept/referenceSuggestions",
-        {
-          params: {
-            keyword: keyword,
-            word: word,
-          },
-        }
-      );
-      if (response.status !== 200) {
-        return [{ name: "test", iri: "123" }];
+    const response = await axios.get<ConceptReference[]>(
+      this.api + "api/concept/referenceSuggestions",
+      {
+        params: {
+          keyword: keyword,
+          word: word,
+        },
       }
+    );
 
-      return response.data;
-    } catch (error) {
-      return [{ iri: "123", name: "test" }];
-    }
-    return [];
+    return response.data;
   }
 }

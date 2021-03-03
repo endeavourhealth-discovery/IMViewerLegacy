@@ -2,31 +2,19 @@
   <div class="p-fluid p-formgrid p-grid">
     <div class="p-field p-col-12 p-md-4">
       <span class="p-float-label">
-        <InputText
-          class="p-inputtext-sm"
-          v-model="conceptDto.iri"
-          type="text"
-        />
+        <InputText class="p-inputtext-sm" v-model="concept.iri" type="text" />
         <label for="Iri">Iri</label>
       </span>
     </div>
     <div class="p-field p-col-12 p-md-4">
       <span class="p-float-label">
-        <InputText
-          class="p-inputtext-sm"
-          v-model="conceptDto.name"
-          type="text"
-        />
+        <InputText class="p-inputtext-sm" v-model="concept.name" type="text" />
         <label for="Name">Name</label>
       </span>
     </div>
     <div class="p-field p-col-12 p-md-4">
       <span class="p-float-label">
-        <InputText
-          class="p-inputtext-sm"
-          v-model="conceptDto.code"
-          type="text"
-        />
+        <InputText class="p-inputtext-sm" v-model="concept.code" type="text" />
         <label for="Name">Code</label>
       </span>
     </div>
@@ -34,7 +22,7 @@
       <span class="p-float-label">
         <Textarea
           class="p-inputtext-sm"
-          v-model="conceptDto.description"
+          v-model="concept.description"
           rows="4"
         />
         <label for="address">Description</label>
@@ -44,7 +32,7 @@
       <span class="p-float-label">
         <InputText
           class="p-inputtext-sm"
-          v-model="conceptDto.version"
+          v-model="concept.version"
           type="text"
         />
         <label for="Version">Version</label>
@@ -54,7 +42,7 @@
       <span class="p-float-label">
         <Dropdown
           class="p-inputtext-sm"
-          v-model="conceptDto.status"
+          v-model="concept.status"
           :options="statusOptions"
         />
         <label>Status</label>
@@ -64,8 +52,9 @@
       <span class="p-float-label">
         <Dropdown
           class="p-inputtext-sm"
-          v-model="conceptDto.scheme"
-          :options="statusOptions"
+          v-model="concept.scheme"
+          :options="schemeOptions"
+          optionLabel="name"
         />
         <label>Scheme</label>
       </span>
@@ -107,14 +96,32 @@ import { DiscoverySyntaxLexer } from "@/discovery-syntax/DiscoverySyntaxLexer";
 import { ConceptDto } from "../models/ConceptDto";
 import Dropdown from "primevue/dropdown";
 import { ConceptStatus } from "@/models/ConceptStatus";
+import { Concept } from "@/models/Concept";
+import ConceptService from "@/services/ConceptService";
+import { ConceptReference } from "@/models/ConceptReference";
+import { mapState } from "vuex";
 
 @Options({
   components: {
     Dropdown
+  },
+  computed: mapState(["conceptAggregate"]),
+  watch: {
+    async conceptAggregate(newValue, oldValue) {
+      this.concept = newValue.concept;
+      this.definitionText = (
+        await ConceptService.getConceptImLang(newValue.concept.iri)
+      ).data;
+      const model = monaco.editor.getModels()[0];
+      model.setValue(this.definitionText);
+      // this.initMonaco();
+    }
   }
 })
 export default class Editor extends Vue {
-  private conceptDto = new ConceptDto();
+  private definitionText = "";
+  private schemeOptions: ConceptReference[] = [];
+  private concept: Concept = {} as Concept;
 
   get statusOptions() {
     return Object.keys(ConceptStatus).filter(f => isNaN(Number(f)));
@@ -123,8 +130,8 @@ export default class Editor extends Vue {
   get isValidSyntax(): boolean {
     let validation;
     try {
-      validation = this.parse(this.conceptDto.definitionText);
-      return !!this.conceptDto.definitionText && !validation.errors.length;
+      validation = this.parse(this.definitionText);
+      return !!this.definitionText && !validation.errors.length;
     } catch (error) {
       return false;
     }
@@ -158,7 +165,7 @@ export default class Editor extends Vue {
 
     if (editor) {
       monaco.editor.create(editor, {
-        // value: "function hello() {\n\talert('Hello world!');\n}",
+        value: this.definitionText,
         language: "DiscoverySyntax"
       });
 
@@ -166,14 +173,14 @@ export default class Editor extends Vue {
       const that = this;
       const model = monaco.editor.getModels()[0];
       model.onDidChangeContent(event => {
-        that.conceptDto.definitionText = model.getValue();
+        that.definitionText = model.getValue();
         that.validate();
       });
     }
   }
 
   validate() {
-    const ret = this.parse(this.conceptDto.definitionText);
+    const ret = this.parse(this.definitionText);
     const model = monaco.editor.getModels()[0];
     monaco.editor.setModelMarkers(
       model,
@@ -204,12 +211,35 @@ export default class Editor extends Vue {
     };
   }
 
-  mounted() {
+  async mounted() {
     this.initMonaco();
+    this.schemeOptions = (await ConceptService.getSchemeOptions()).data;
   }
 
+  // beforeUnmount() {
+  //   const editor = document.getElementById("container");
+  //   const model = monaco.editor.getModels()[0];
+  //   model.dispose();
+  //   while (editor?.firstChild) {
+  //     const childNode = editor?.lastChild;
+  //     if (childNode) editor.removeChild(childNode);
+  //   }
+  //   editor?.removeAttribute("context");
+  // }
+
   submit() {
-    console.log(this.conceptDto);
+    const conceptDto = new ConceptDto(
+      this.concept.iri,
+      this.concept.name,
+      this.concept.description,
+      this.concept.code,
+      this.concept.scheme,
+      this.concept.status,
+      this.concept.version,
+      this.definitionText
+    );
+    console.log(conceptDto);
+    console.log(this.definitionText);
   }
 }
 </script>
