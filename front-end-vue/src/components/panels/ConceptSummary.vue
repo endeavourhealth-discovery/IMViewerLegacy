@@ -69,7 +69,7 @@ export default class ConceptSummary extends Vue {
   }
 
   get editorDefinitionText() {
-    return this.editDialogView ? this.definitionText : "";
+    return this.editDialogView ? this.definitionText : "type ";
   }
 
   closeDialog() {
