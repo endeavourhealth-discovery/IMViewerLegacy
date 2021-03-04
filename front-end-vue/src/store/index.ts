@@ -25,11 +25,10 @@ export default createStore({
       state.conceptAggregate = conceptAggregate;
     },
     updateHistory(state, historyItem) {
-      state.history = state.history.filter(function(obj) {
-        return obj.url !== historyItem.url;
+      state.history = state.history.filter(function(el) {
+        return el.url !== historyItem.url;
       });
-      state.history.push(historyItem);
-      state.history = ([] as HistoryItem[]).concat(state.history).reverse();
+      state.history.splice(0, 0, historyItem);
     },
   },
   actions: {
