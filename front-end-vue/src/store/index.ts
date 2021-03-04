@@ -25,14 +25,11 @@ export default createStore({
       state.conceptAggregate = conceptAggregate;
     },
     updateHistory(state, historyItem) {
-      state.history.push(historyItem);
-      const uniqueList = state.history.filter((obj, pos, arr) => {
-        return (
-          arr.map((mapObj) => mapObj.conceptName).indexOf(obj.conceptName) ===
-          pos
-        );
+      state.history = state.history.filter(function(obj) {
+        return obj.url !== historyItem.url;
       });
-      state.history = ([] as HistoryItem[]).concat(uniqueList).reverse();
+      state.history.push(historyItem);
+      state.history = ([] as HistoryItem[]).concat(state.history).reverse();
     },
   },
   actions: {
