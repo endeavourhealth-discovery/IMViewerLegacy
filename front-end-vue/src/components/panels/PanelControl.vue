@@ -154,9 +154,5 @@ export default class PanelControl extends Vue {
       }
     ]
   };
-
-  // async mounted() {
-
-  // }
 }
 </script>

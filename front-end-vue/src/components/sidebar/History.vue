@@ -1,12 +1,35 @@
-<template>History</template>
+<template>
+  <Listbox
+    v-model="selectedHistoryItem"
+    :options="history"
+    optionLabel="conceptName"
+    @click="navigate"
+  />
+</template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
+import store from "@/store/index";
+import { HistoryItem } from "@/models/HistoryItem";
+
 @Options({
-  components: {},
+  components: {}
 })
-export default class History extends Vue {}
+export default class History extends Vue {
+  selectedHistoryItem: HistoryItem = {} as HistoryItem;
+
+  get history() {
+    const currentView = this.$route.name as string;
+    const viewHistory = store.state.history.filter(obj => {
+      return obj.view === currentView;
+    });
+    return viewHistory;
+  }
+
+  navigate() {
+    this.$router.push(this.selectedHistoryItem.url);
+  }
+}
 </script>
 
-<style>
-</style>
+<style></style>

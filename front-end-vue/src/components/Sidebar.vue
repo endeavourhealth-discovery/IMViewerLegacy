@@ -41,9 +41,7 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import ConceptService from "../services/ConceptService";
-import store from "@/store/index";
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
 interface TreeNode {
   key: string;
@@ -56,15 +54,14 @@ interface TreeNode {
 
 @Options({
   components: {},
-  computed: mapState(['conceptAggregate']),
+  computed: mapState(["conceptAggregate"]),
   watch: {
     conceptAggregate(newValue, oldValue) {
       this.createTree(newValue.concept, newValue.parents, newValue.children);
-    },
+    }
   }
 })
 export default class Header extends Vue {
-
   searchResult = "";
   root: Array<TreeNode> = [];
   expandedKeys: any = {};
