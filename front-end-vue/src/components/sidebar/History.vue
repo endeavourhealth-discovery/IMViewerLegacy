@@ -4,7 +4,14 @@
     :options="history"
     optionLabel="conceptName"
     @click="navigate"
-  />
+  >
+    <template #option="slotProps">
+      <div>
+        <span>{{ slotProps.option.conceptName }}</span>
+        <Divider />
+      </div>
+    </template>
+  </Listbox>
 </template>
 
 <script lang="ts">

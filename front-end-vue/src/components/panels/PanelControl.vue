@@ -10,6 +10,10 @@
       {{ concept }}
     </Panel>
 
+    <Panel header="Graph" :toggleable="true" v-if="$route.name == 'Datamodel'">
+      <Graph />
+    </Panel>
+
     <Panel
       header="Properties"
       :toggleable="true"
@@ -77,9 +81,10 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import ConceptSummary from "@/components/panels/ConceptSummary.vue";
+import Graph from "./Graph.vue";
 
 @Options({
-  components: { ConceptSummary }
+  components: { ConceptSummary, Graph }
 })
 export default class PanelControl extends Vue {
   concept = {};
