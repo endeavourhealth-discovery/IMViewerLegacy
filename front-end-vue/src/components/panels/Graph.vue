@@ -1,7 +1,4 @@
 <template>
-  <!-- <p>{{ concept }}</p>
-  <p>{{ parents }}</p>
-  <p>{{ children }}</p> -->
   <div id="content">
     <svg width="500" height="400">
       <g class="links"></g>
@@ -27,6 +24,8 @@ import { mapState } from "vuex";
       this.children = newValue.children;
       this.graphData = this.getGraphData();
       this.initD3();
+      console.log(this.children);
+      console.log(this.parents);
     }
   }
 })
@@ -42,15 +41,7 @@ export default class Graph extends Vue {
     name: ":Section",
     children: [
       {
-        name: "Properties",
-        children: [
-          {
-            name: "A"
-          },
-          {
-            name: "B"
-          }
-        ]
+        name: "Properties"
       },
       {
         name: "Parents"
@@ -76,13 +67,15 @@ export default class Graph extends Vue {
       children: [
         {
           name: "Properties",
-          children: this.getChildrenProperties()
+          children: this.getPropertyNodes()
         },
         {
-          name: "Parents"
+          name: "Parents",
+          children: this.getInheritanceNodes(this.parents)
         },
         {
-          name: "Children"
+          name: "Children",
+          children: this.getInheritanceNodes(this.children)
         },
         {
           name: "Mapped To"
@@ -97,15 +90,26 @@ export default class Graph extends Vue {
     };
   }
 
-  getChildrenProperties() {
-    if (!this.concept) {
+  getInheritanceNodes(leaf: any) {
+    if (!leaf) {
       return [];
     }
-    const childrenProperties: { name: string }[] = [];
-    this.concept.Property.forEach(property => {
-      childrenProperties.push({ name: property.property.name });
+    const nodes: { name: string }[] = [];
+    leaf.forEach((element: { name: any }) => {
+      nodes.push({ name: element.name });
     });
-    return childrenProperties;
+    return nodes;
+  }
+
+  getPropertyNodes() {
+    if (!this.concept || !this.concept.Property) {
+      return [];
+    }
+    const nodes: { name: string }[] = [];
+    this.concept.Property.forEach(property => {
+      nodes.push({ name: property.property.name });
+    });
+    return nodes;
   }
 
   initD3() {
