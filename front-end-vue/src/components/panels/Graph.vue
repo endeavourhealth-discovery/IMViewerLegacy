@@ -1,6 +1,9 @@
 <template>
+  {{ mappedTo }}
+  {{ usages }}
+  <div title="This is my tooltip">{{ mappedFrom }}</div>
   <div id="content">
-    <svg width="500" height="400">
+    <svg width="700" height="400" id="svg">
       <g class="links"></g>
       <g class="nodes"></g>
     </svg>
@@ -12,6 +15,7 @@ import { Options, Vue } from "vue-class-component";
 import * as d3 from "d3";
 import { Concept } from "@/models/Concept";
 import { mapState } from "vuex";
+import svgPanZoom from "svg-pan-zoom";
 
 @Options({
   components: {},
@@ -22,10 +26,11 @@ import { mapState } from "vuex";
       this.concept = newValue.concept;
       this.parents = newValue.parents;
       this.children = newValue.children;
+      this.mappedFrom = newValue.mappedFrom;
+      this.mappedTo = newValue.mappedTo;
+      this.usages = newValue.usages;
       this.graphData = this.getGraphData();
       this.initD3();
-      console.log(this.children);
-      console.log(this.parents);
     }
   }
 })
@@ -33,12 +38,15 @@ export default class Graph extends Vue {
   concept = {} as Concept;
   parents = {};
   children = {};
+  mappedFrom = {};
+  mappedTo = {};
+  usages = {};
 
-  width = 500;
+  width = 700;
   height = 400;
 
   graphData = {
-    name: ":Section",
+    name: "Data model",
     children: [
       {
         name: "Properties"
@@ -63,7 +71,8 @@ export default class Graph extends Vue {
 
   getGraphData() {
     return {
-      name: `${this.concept.iri} | ${this.concept.name}`,
+      // name: `${this.concept.iri} | ${this.concept.name}`,
+      name: this.$route.params.selectedIri,
       children: [
         {
           name: "Properties",
@@ -71,26 +80,29 @@ export default class Graph extends Vue {
         },
         {
           name: "Parents",
-          children: this.getInheritanceNodes(this.parents)
+          children: this.getNodes(this.parents)
         },
         {
-          name: "Children",
-          children: this.getInheritanceNodes(this.children)
+          name: "Children"
+          // children: this.getNodes(this.children)
         },
         {
           name: "Mapped To"
+          // children: this.getNodes(this.mappedTo)
         },
         {
           name: "Mapped From"
+          // children: this.getNodes(this.mappedFrom)
         },
         {
           name: "Used In"
+          // children: this.getNodes(this.usages)
         }
       ]
     };
   }
 
-  getInheritanceNodes(leaf: any) {
+  getNodes(leaf: any) {
     if (!leaf) {
       return [];
     }
@@ -119,7 +131,7 @@ export default class Graph extends Vue {
     const simulation = d3
       .forceSimulation(nodes as any)
       .force("charge", d3.forceManyBody().strength(-1000))
-      .force("center", d3.forceCenter(this.width / 2, this.height / 2))
+      .force("center", d3.forceCenter(this.width / 8, this.height / 5))
       .force("link", d3.forceLink().links(links))
       .on("tick", () => {
         const u = d3
@@ -174,11 +186,33 @@ export default class Graph extends Vue {
 
     d3.select("#content")
       .selectAll("g.nodes")
-      .on("click", function(event: any) {
-        console.log(event.srcElement.id);
-        d3.select(event.srcElement.id)
-          .insert("p")
-          .text("text");
+      .on("mouseover", function(event: any) {
+        const nameId = event.srcElement.id.startsWith(":")
+          ? event.srcElement.id.substring(1)
+          : event.srcElement.id;
+        const currentNode = root
+          .descendants()
+          .filter(node => node.data.name === nameId);
+        const title = `${currentNode[0]?.data.name}-${currentNode[0]?.data
+          .children?.length || 0}`;
+        const id = "#" + nameId;
+        const element = d3.select(id).nodes()[0] as HTMLElement;
+        if (element) element.innerHTML = title;
+
+        // d3.select(id)
+        //   .insert("p")
+        //   .text("text");
+      })
+      .on("mouseout", function(event: any) {
+        const nameId = event.srcElement.id.startsWith(":")
+          ? event.srcElement.id.substring(1)
+          : event.srcElement.id;
+        const currentNode = root
+          .descendants()
+          .filter(node => node.data.name === nameId);
+        const id = "#" + nameId;
+        const element = d3.select(id).nodes()[0] as HTMLElement;
+        if (element) element.innerHTML = currentNode[0].data.name;
       });
   }
 
@@ -195,11 +229,30 @@ export default class Graph extends Vue {
 
   mounted() {
     this.initD3();
+    svgPanZoom("#svg", {
+      zoomEnabled: true,
+      controlIconsEnabled: true,
+      fit: false,
+      center: true,
+      dblClickZoomEnabled: false
+    });
   }
 }
 </script>
 
 <style>
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 60px;
+  height: 28px;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
 circle {
   fill: cadetblue;
 }
