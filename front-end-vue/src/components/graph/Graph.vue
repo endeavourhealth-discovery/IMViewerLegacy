@@ -1,7 +1,4 @@
 <template>
-  {{ mappedTo }}
-  {{ usages }}
-  <div title="This is my tooltip">{{ mappedFrom }}</div>
   <div id="content">
     <svg width="700" height="400" id="svg">
       <g class="links"></g>
@@ -14,65 +11,34 @@
 import { Options, Vue } from "vue-class-component";
 import * as d3 from "d3";
 import { Concept } from "@/models/Concept";
-import { mapState } from "vuex";
 import svgPanZoom from "svg-pan-zoom";
 
 @Options({
   components: {},
-  computed: mapState(["conceptAggregate"]),
+  props: ["concept", "parents", "children", "mappedFrom", "mappedTo", "usages"],
   watch: {
-    async conceptAggregate(newValue, oldValue) {
-      this.removeD3();
-      this.concept = newValue.concept;
-      this.parents = newValue.parents;
-      this.children = newValue.children;
-      this.mappedFrom = newValue.mappedFrom;
-      this.mappedTo = newValue.mappedTo;
-      this.usages = newValue.usages;
-      this.graphData = this.getGraphData();
-      this.initD3();
+    concept: {
+      handler: function(val, oldVal) {
+        this.removeD3();
+        this.initD3();
+      }
     }
   }
 })
 export default class Graph extends Vue {
-  concept = {} as Concept;
-  parents = {};
-  children = {};
-  mappedFrom = {};
-  mappedTo = {};
-  usages = {};
+  concept!: Concept;
+  parents!: unknown;
+  children!: unknown;
+  mappedFrom!: unknown;
+  mappedTo!: unknown;
+  usages!: unknown;
 
   width = 700;
   height = 400;
 
-  graphData = {
-    name: "Data model",
-    children: [
-      {
-        name: "Properties"
-      },
-      {
-        name: "Parents"
-      },
-      {
-        name: "Children"
-      },
-      {
-        name: "Mapped To"
-      },
-      {
-        name: "Mapped From"
-      },
-      {
-        name: "Used In"
-      }
-    ]
-  };
-
-  getGraphData() {
+  get graphData() {
     return {
-      // name: `${this.concept.iri} | ${this.concept.name}`,
-      name: this.$route.params.selectedIri,
+      name: this.concept.name,
       children: [
         {
           name: "Properties",
@@ -83,20 +49,20 @@ export default class Graph extends Vue {
           children: this.getNodes(this.parents)
         },
         {
-          name: "Children"
-          // children: this.getNodes(this.children)
+          name: "Children",
+          children: this.getNodes(this.children)
         },
         {
-          name: "Mapped To"
-          // children: this.getNodes(this.mappedTo)
+          name: "Mapped To",
+          children: this.getNodes(this.mappedTo)
         },
         {
-          name: "Mapped From"
-          // children: this.getNodes(this.mappedFrom)
+          name: "Mapped From",
+          children: this.getNodes(this.mappedFrom)
         },
         {
-          name: "Used In"
-          // children: this.getNodes(this.usages)
+          name: "Used In",
+          children: this.getNodes(this.usages)
         }
       ]
     };
@@ -107,10 +73,14 @@ export default class Graph extends Vue {
       return [];
     }
     const nodes: { name: string }[] = [];
-    leaf.forEach((element: { name: any }) => {
-      nodes.push({ name: element.name });
-    });
-    return nodes;
+    try {
+      leaf.forEach((element: { name: any }) => {
+        nodes.push({ name: element.name });
+      });
+    } finally {
+      // eslint-disable-next-line no-unsafe-finally
+      return nodes;
+    }
   }
 
   getPropertyNodes() {
@@ -212,8 +182,16 @@ export default class Graph extends Vue {
           .filter(node => node.data.name === nameId);
         const id = "#" + nameId;
         const element = d3.select(id).nodes()[0] as HTMLElement;
-        if (element) element.innerHTML = currentNode[0].data.name;
+        if (element) element.innerHTML = currentNode[0].data.name as string;
       });
+
+    svgPanZoom("#svg", {
+      zoomEnabled: true,
+      controlIconsEnabled: true,
+      fit: false,
+      center: true,
+      dblClickZoomEnabled: false
+    });
   }
 
   removeD3() {
@@ -229,13 +207,6 @@ export default class Graph extends Vue {
 
   mounted() {
     this.initD3();
-    svgPanZoom("#svg", {
-      zoomEnabled: true,
-      controlIconsEnabled: true,
-      fit: false,
-      center: true,
-      dblClickZoomEnabled: false
-    });
   }
 }
 </script>
