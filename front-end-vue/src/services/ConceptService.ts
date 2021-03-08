@@ -19,6 +19,18 @@ export default class ConceptService {
   public static async getConceptChildren(iri: string) {
     return axios.get(this.api + "api/concept/" + iri + "/children");
   }
+  
+  public static async getConceptUsages(iri: string) {
+    return axios.get(this.api + "api/concept/" + iri + "/usages");
+  }
+
+  public static async getConceptMappedFrom(iri: string) {
+    return axios.get(this.api + "api/concept/" + iri + "/mappedFrom");
+  }
+
+  public static async getConceptMappedTo(iri: string) {
+    return axios.get(this.api + "api/concept/" + iri + "/mappedTo");
+  }
 
   public static async getAncestorDefinitions(iri: string) {
     return axios.get(this.api + "api/concept/" + iri + "/parents/definitions");

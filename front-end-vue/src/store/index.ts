@@ -37,10 +37,16 @@ export default createStore({
       const parents = (await ConceptService.getConceptParentHierarchy(iri))
         .data;
       const children = (await ConceptService.getConceptChildren(iri)).data;
+      const mappedFrom = (await ConceptService.getConceptMappedFrom(iri)).data;
+      const mappedTo = (await ConceptService.getConceptMappedTo(iri)).data;
+      const usages = (await ConceptService.getConceptUsages(iri)).data;
       commit("updateConceptAggregate", {
         concept: concept,
         parents: parents,
         children: children,
+        mappedFrom: mappedFrom,
+        mappedTo: mappedTo,
+        usages: usages
       });
     },
   },
