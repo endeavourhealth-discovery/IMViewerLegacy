@@ -1,6 +1,6 @@
 <template>
   <div id="content">
-    <svg width="700" height="400" id="svg">
+    <svg width="100%" height="600" id="svg">
       <g class="links"></g>
       <g class="nodes"></g>
     </svg>
@@ -34,7 +34,7 @@ export default class Graph extends Vue {
   usages!: unknown;
 
   width = 700;
-  height = 400;
+  height = 600;
 
   get graphData() {
     return {
