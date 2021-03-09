@@ -14,39 +14,11 @@
       <GraphWrapper />
     </Panel>
 
-    <Panel
-      header="Properties"
-      :toggleable="true"
-      v-if="$route.name == 'Datamodel'"
-    >
-      <DataTable :value="properties" class="p-datatable-sm">
-        <!-- <template #header>
-          Properties
-        </template> -->
-        <Column field="name" header="Name"></Column>
-        <Column field="iri" header="Iri"></Column>
-        <Column field="type" header="Type"></Column>
-        <Column field="cardinality" header="Cardinality"></Column>
-      </DataTable>
-    </Panel>
-
-    <Panel
-      header="Inheritance"
-      :toggleable="true"
-      v-if="$route.name == 'Datamodel'"
-    >
-      <OrganizationChart :value="inheritance">
-        <template #default="slotProps">
-          <span>{{ slotProps.node.data.label }}</span>
-        </template>
-      </OrganizationChart>
-    </Panel>
-
-    <Panel header="Members" :toggleable="true" v-if="$route.name == 'Valueset'">
+    <!-- <Panel header="Members" :toggleable="true" v-if="$route.name == 'Valueset'">
       {{ concept }}
-    </Panel>
+    </Panel> -->
 
-    <div class="p-grid">
+    <!-- <div class="p-grid">
       <div class="p-col-4">
         <Panel header="Mapped from" :toggleable="true"
           ><Listbox
@@ -74,7 +46,7 @@
           ></Listbox
         ></Panel>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
