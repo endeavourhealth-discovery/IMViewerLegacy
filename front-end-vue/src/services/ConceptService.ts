@@ -1,8 +1,13 @@
+import { SearchRequest } from './../models/search/SearchRequest';
 import { ConceptDto } from "@/models/ConceptDto";
 import axios from "axios";
 
 export default class ConceptService {
   static api = "http://localhost:8080/";
+
+  public static async advancedSearch(request: SearchRequest) {
+    return axios.post(this.api + "api/concept/search", request);
+  }
 
   public static async getConcept(iri: string) {
     return axios.get(this.api + "api/concept/" + iri);
