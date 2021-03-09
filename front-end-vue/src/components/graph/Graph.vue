@@ -51,18 +51,6 @@ export default class Graph extends Vue {
         {
           name: "Children",
           children: this.getNodes(this.children)
-        },
-        {
-          name: "MappedTo",
-          children: this.getNodes(this.mappedTo)
-        },
-        {
-          name: "MappedFrom",
-          children: this.getNodes(this.mappedFrom)
-        },
-        {
-          name: "UsedIn",
-          children: this.getNodes(this.usages)
         }
       ]
     };
@@ -131,23 +119,46 @@ export default class Graph extends Vue {
 
         lines.exit().remove();
 
-        const leafNodes = d3
+        const circles = d3
+          .select(".nodes")
+          .selectAll("circle")
+          .data(nodes);
+
+        circles
+          .enter()
+          .append("circle")
+          .attr("r", 5)
+          .merge(circles as any)
+          .attr("cx", function(d: any) {
+            return d.x;
+          })
+          .attr("cy", function(d: any) {
+            return d.y;
+          })
+          .attr("id", function(d: any) {
+            const name = d.data.name;
+            return /\s/.test(name) ? name.replace(/\s/g, "") : name;
+          });
+
+        circles.exit().remove();
+
+        const textNodes = d3
           .select(".nodes")
           .selectAll("text")
           .data(nodes);
 
-        leafNodes
+        textNodes
           .enter()
           .append("text")
           .text(function(d: any) {
             return d.data.name;
           })
-          .merge(leafNodes as any)
+          .merge(textNodes as any)
           .attr("x", function(d: any) {
             return d.x;
           })
           .attr("y", function(d: any) {
-            return d.y;
+            return d.y * 1.1;
           })
           .attr("dy", function(d) {
             return 5;
@@ -157,7 +168,7 @@ export default class Graph extends Vue {
             return /\s/.test(name) ? name.replace(/\s/g, "") : name;
           });
 
-        leafNodes.exit().remove();
+        textNodes.exit().remove();
       });
 
     d3.select("#content")
@@ -174,10 +185,6 @@ export default class Graph extends Vue {
         const id = "#" + nameId;
         const element = d3.select(id).nodes()[0] as HTMLElement;
         if (element && currentNode[0]?.data.name) element.innerHTML = title;
-
-        // d3.select(id)
-        //   .insert("p")
-        //   .text("text");
       })
       .on("mouseout", function(event: any) {
         const nameId = event.srcElement.id.startsWith(":")
@@ -189,6 +196,14 @@ export default class Graph extends Vue {
         const id = "#" + nameId;
         const element = d3.select(id).nodes()[0] as HTMLElement;
         if (element) element.innerHTML = currentNode[0].data.name as string;
+      })
+      .on("click", function(event: any) {
+        const nameId = event.srcElement.id.startsWith(":")
+          ? event.srcElement.id.substring(1)
+          : event.srcElement.id;
+        const currentNode = root
+          .descendants()
+          .filter(node => node.data.name === nameId);
       });
 
     svgPanZoom("#svg", {
@@ -218,20 +233,22 @@ export default class Graph extends Vue {
 </script>
 
 <style>
-div.tooltip {
-  position: absolute;
-  text-align: center;
-  width: 60px;
-  height: 28px;
-  padding: 2px;
-  font: 12px sans-serif;
-  background: lightsteelblue;
-  border: 0px;
-  border-radius: 8px;
-  pointer-events: none;
-}
 circle {
   fill: cadetblue;
+}
+circle#Properties,
+circle#Children,
+circle#Parents {
+  fill: rgb(161, 174, 219);
+  fill-opacity: 1;
+  cursor: pointer;
+}
+text#Properties,
+text#Children,
+text#Parents {
+  fill: black;
+  font-size: 11px;
+  cursor: default;
 }
 line {
   stroke: #ccc;
@@ -241,5 +258,6 @@ text {
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   fill: #666;
   font-size: 12px;
+  cursor: pointer;
 }
 </style>
