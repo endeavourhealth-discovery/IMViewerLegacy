@@ -53,15 +53,15 @@ export default class Graph extends Vue {
           children: this.getNodes(this.children)
         },
         {
-          name: "Mapped To",
+          name: "MappedTo",
           children: this.getNodes(this.mappedTo)
         },
         {
-          name: "Mapped From",
+          name: "MappedFrom",
           children: this.getNodes(this.mappedFrom)
         },
         {
-          name: "Used In",
+          name: "UsedIn",
           children: this.getNodes(this.usages)
         }
       ]
@@ -104,14 +104,15 @@ export default class Graph extends Vue {
       .force("center", d3.forceCenter(this.width / 8, this.height / 5))
       .force("link", d3.forceLink().links(links))
       .on("tick", () => {
-        const u = d3
+        const lines = d3
           .select(".links")
           .selectAll("line")
           .data(links);
 
-        u.enter()
+        lines
+          .enter()
           .append("line")
-          .merge(u as any)
+          .merge(lines as any)
           .attr("x1", function(d: any) {
             return d.source.x;
           })
@@ -125,19 +126,20 @@ export default class Graph extends Vue {
             return d.target.y;
           });
 
-        u.exit().remove();
+        lines.exit().remove();
 
-        const u2 = d3
+        const leafNodes = d3
           .select(".nodes")
           .selectAll("text")
           .data(nodes);
 
-        u2.enter()
+        leafNodes
+          .enter()
           .append("text")
           .text(function(d: any) {
             return d.data.name;
           })
-          .merge(u2 as any)
+          .merge(leafNodes as any)
           .attr("x", function(d: any) {
             return d.x;
           })
@@ -148,10 +150,11 @@ export default class Graph extends Vue {
             return 5;
           })
           .attr("id", function(d: any) {
-            return `${d.data.name}`;
+            const name = d.data.name;
+            return /\s/.test(name) ? name.replace(/\s/g, "") : name;
           });
 
-        u2.exit().remove();
+        leafNodes.exit().remove();
       });
 
     d3.select("#content")
@@ -167,7 +170,7 @@ export default class Graph extends Vue {
           .children?.length || 0}`;
         const id = "#" + nameId;
         const element = d3.select(id).nodes()[0] as HTMLElement;
-        if (element) element.innerHTML = title;
+        if (element && currentNode[0]?.data.name) element.innerHTML = title;
 
         // d3.select(id)
         //   .insert("p")
