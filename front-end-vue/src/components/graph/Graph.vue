@@ -95,12 +95,15 @@ export default class Graph extends Vue {
   }
 
   initD3() {
+    this.width = +d3.select("svg").attr("width");
+    this.height = +d3.select("svg").attr("height");
+
     const root = d3.hierarchy(this.graphData);
     const links = root.links() as d3.SimulationLinkDatum<any>[];
     const nodes = root.descendants();
     const simulation = d3
       .forceSimulation(nodes as any)
-      .force("charge", d3.forceManyBody().strength(-1000))
+      .force("charge", d3.forceManyBody().strength(-750))
       .force("center", d3.forceCenter(this.width / 8, this.height / 5))
       .force("link", d3.forceLink().links(links))
       .on("tick", () => {
