@@ -12,6 +12,7 @@ import { Options, Vue } from "vue-class-component";
 import * as d3 from "d3";
 import { Concept } from "@/models/Concept";
 import svgPanZoom from "svg-pan-zoom";
+import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 
 @Options({
   components: {},
@@ -20,6 +21,8 @@ import svgPanZoom from "svg-pan-zoom";
     concept: {
       handler: function(val, oldVal) {
         this.removeD3();
+        this.graphData = this.getGraphData();
+        this.root = d3.hierarchy(this.graphData);
         this.initD3();
       }
     }
@@ -29,14 +32,12 @@ export default class Graph extends Vue {
   concept!: Concept;
   parents!: unknown;
   children!: unknown;
-  mappedFrom!: unknown;
-  mappedTo!: unknown;
-  usages!: unknown;
-
+  graphData = this.getGraphData();
+  root = d3.hierarchy(this.graphData);
   width = 700;
   height = 600;
 
-  get graphData() {
+  getGraphData() {
     return {
       name: this.concept.name,
       children: [
@@ -60,10 +61,10 @@ export default class Graph extends Vue {
     if (!leaf) {
       return [];
     }
-    const nodes: { name: string }[] = [];
+    const nodes: { name: string; value: string }[] = [];
     try {
-      leaf.forEach((element: { name: any }) => {
-        nodes.push({ name: element.name });
+      leaf.forEach((element: { name: any; iri: any }) => {
+        nodes.push({ name: element.name, value: element.iri });
       });
     } finally {
       // eslint-disable-next-line no-unsafe-finally
@@ -75,9 +76,9 @@ export default class Graph extends Vue {
     if (!this.concept || !this.concept.Property) {
       return [];
     }
-    const nodes: { name: string }[] = [];
+    const nodes: { name: string; iri: string }[] = [];
     this.concept.Property.forEach(property => {
-      nodes.push({ name: property.property.name });
+      nodes.push({ name: property.property.name, iri: property.iri });
     });
     return nodes;
   }
@@ -85,10 +86,10 @@ export default class Graph extends Vue {
   initD3() {
     this.width = +d3.select("svg").attr("width");
     this.height = +d3.select("svg").attr("height");
-
-    const root = d3.hierarchy(this.graphData);
-    const links = root.links() as d3.SimulationLinkDatum<any>[];
-    const nodes = root.descendants();
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this;
+    const links = this.root.links() as d3.SimulationLinkDatum<any>[];
+    const nodes = this.root.descendants();
     const simulation = d3
       .forceSimulation(nodes as any)
       .force("charge", d3.forceManyBody().strength(-750))
@@ -166,6 +167,9 @@ export default class Graph extends Vue {
           .attr("id", function(d: any) {
             const name = d.data.name;
             return /\s/.test(name) ? name.replace(/\s/g, "") : name;
+          })
+          .attr("link", function(d: any) {
+            return d.iri;
           });
 
         textNodes.exit().remove();
@@ -174,36 +178,30 @@ export default class Graph extends Vue {
     d3.select("#content")
       .selectAll("g.nodes")
       .on("mouseover", function(event: any) {
-        const nameId = event.srcElement.id.startsWith(":")
-          ? event.srcElement.id.substring(1)
-          : event.srcElement.id;
-        const currentNode = root
-          .descendants()
-          .filter(node => node.data.name === nameId);
-        const title = `${currentNode[0]?.data.name}-${currentNode[0]?.data
-          .children?.length || 0}`;
-        const id = "#" + nameId;
-        const element = d3.select(id).nodes()[0] as HTMLElement;
-        if (element && currentNode[0]?.data.name) element.innerHTML = title;
+        console.log(that.concept.Property);
+        // const currentNode = that.root
+        //   .descendants()
+        //   .filter(node => node.data.name === event.srcElement.id);
+        //   const title = `${currentNode[0]?.data.name}-${currentNode[0]?.data
+        //     .children?.length || 0}`;
+        //   const id = "#" + event.srcElement.id;
+        //   const element = d3.select(id).nodes()[0] as HTMLElement;
+        //   if (element && currentNode[0]?.data.name) element.innerHTML = title;
       })
-      .on("mouseout", function(event: any) {
-        const nameId = event.srcElement.id.startsWith(":")
-          ? event.srcElement.id.substring(1)
-          : event.srcElement.id;
-        const currentNode = root
-          .descendants()
-          .filter(node => node.data.name === nameId);
-        const id = "#" + nameId;
-        const element = d3.select(id).nodes()[0] as HTMLElement;
-        if (element) element.innerHTML = currentNode[0].data.name as string;
-      })
+      // .on("mouseout", function(event: any) {
+      //   const currentNode = root
+      //     .descendants()
+      //     .filter(node => node.data.name === event.srcElement.id);
+      //   const id = "#" + event.srcElement.id;
+      //   const element = d3.select(id).nodes()[0] as HTMLElement;
+      //   if (element) element.innerHTML = currentNode[0].data.name as string;
+      // })
       .on("click", function(event: any) {
-        const nameId = event.srcElement.id.startsWith(":")
-          ? event.srcElement.id.substring(1)
-          : event.srcElement.id;
-        const currentNode = root
-          .descendants()
-          .filter(node => node.data.name === nameId);
+        if (event.srcElement.localName === "circle") {
+          that.onCircleClick(event);
+        } else {
+          that.onTextClick(event);
+        }
       });
 
     svgPanZoom("#svg", {
@@ -213,6 +211,36 @@ export default class Graph extends Vue {
       center: true,
       dblClickZoomEnabled: false
     });
+  }
+
+  onCircleClick(event: any) {
+    const currentNode = this.root
+      .descendants()
+      .filter((node: any) => node.data.name === event.srcElement.id);
+    console.log(currentNode);
+    console.log(!!currentNode[0].children);
+    if (currentNode[0].children) {
+      (currentNode[0] as any)._children = currentNode[0].children;
+      currentNode[0].children = undefined;
+    } else {
+      currentNode[0].children = (currentNode[0] as any)._children;
+      (currentNode[0] as any)._children = undefined;
+    }
+    this.removeD3();
+    this.initD3();
+  }
+
+  onTextClick(event: any) {
+    const currentNode = this.root
+      .descendants()
+      .filter((node: any) => node.data.name === event.srcElement.innerHTML);
+    const iri = (currentNode[0].data as any)?.value;
+    const currentRoute = this.$route.name as RouteRecordName | undefined;
+    if (iri)
+      this.$router.push({
+        name: currentRoute,
+        params: { selectedIri: iri }
+      });
   }
 
   removeD3() {
