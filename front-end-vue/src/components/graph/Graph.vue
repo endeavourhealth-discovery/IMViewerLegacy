@@ -16,7 +16,7 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 
 @Options({
   components: {},
-  props: ["concept", "parents", "children", "mappedFrom", "mappedTo", "usages"],
+  props: ["concept", "parents", "children"],
   watch: {
     concept: {
       handler: function(val, oldVal) {
@@ -38,23 +38,27 @@ export default class Graph extends Vue {
   height = 600;
 
   getGraphData() {
-    return {
-      name: this.concept.name,
-      children: [
-        {
-          name: "Properties",
-          children: this.getPropertyNodes()
-        },
-        {
-          name: "Parents",
-          children: this.getNodes(this.parents)
-        },
-        {
-          name: "Children",
-          children: this.getNodes(this.children)
-        }
-      ]
-    };
+    const currentConceptName = this.concept.name;
+    const properties = this.getPropertyNodes();
+    const parents = this.getNodes(this.parents);
+    const children = this.getNodes(this.children);
+    const graphData: any = { name: currentConceptName, children: [] };
+    if (properties.length)
+      graphData.children.push({
+        name: "Properties",
+        children: properties
+      });
+    if (parents.length)
+      graphData.children.push({
+        name: "Parents",
+        children: parents
+      });
+    if (children.length)
+      graphData.children.push({
+        name: "Children",
+        children: children
+      });
+    return graphData;
   }
 
   getNodes(leaf: any) {
