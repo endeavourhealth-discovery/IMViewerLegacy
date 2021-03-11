@@ -81,7 +81,20 @@
             <Column field="scheme.name" header="Scheme" :sortable="true"></Column> -->
           </DataTable>
 
-          <OverlayPanel ref="op" id="overlay_panel" style="width: 450px" :breakpoints="{'960px': '75vw'}"> {{hoveredResult.name}} </OverlayPanel>
+          <OverlayPanel ref="op" id="overlay_panel" style="width: 700px" :breakpoints="{'960px': '75vw'}">
+            <div class="p-grid">
+              <div class="p-col-6" v-if="hoveredResult.name">
+                <p><strong>Name:</strong> {{ hoveredResult.name }}</p>
+                <p><strong>Iri:</strong> {{ hoveredResult.iri }}</p>
+                <p><strong>Code:</strong> {{ hoveredResult.code }}</p>
+              </div>
+              <div class="p-col-6" v-if="hoveredResult.name">
+                <p><strong>Status:</strong> <span v-if="hoveredResult.status">{{ hoveredResult.status }}</span></p>
+                <p><strong>Scheme:</strong> <span v-if="hoveredResult.scheme">{{ hoveredResult.scheme.name }}</span></p>
+                <p><strong>Type:</strong> {{ hoveredResult.conceptType }}</p>
+              </div>
+            </div>
+          </OverlayPanel>
         </div>
         <div class="p-field p-col-12 p-md-12">
           <span class="p-float-label">
@@ -139,7 +152,7 @@ export default class SidebarControl extends Vue {
   results: SearchResponse = new SearchResponse();
   selectedResult = {} as ConceptSummary;
   active = 0;
-  hoveredResult = {} as ConceptSummary;
+  hoveredResult = {} as ConceptSummary | any;
 
   statusOptions = ["Active", "Draft", "Inactive"];
   schemeOptions = [
