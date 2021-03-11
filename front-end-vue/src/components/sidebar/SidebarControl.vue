@@ -4,6 +4,7 @@
     <InputText
       type="text"
       v-model="searchTerm"
+      @input="this.active = 2"
       @change="search()"
       placeholder="Search"
       class="p-inputtext-lg"
@@ -36,15 +37,81 @@
         <span>Search results</span>
       </template>
 
-      <DataTable :value="results" v-model:selection="selectedResult" @row-select="onNodeSelect" selectionMode="single" dataKey="iri" class="p-datatable-sm" style="height:50vh;overflow:auto;">
-        <template #header>
-            Results
-        </template>
-        <Column field="name" header="Name"></Column>
-        <Column field="conceptType" header="Type"></Column>
-        <Column field="scheme.name" header="Scheme"></Column>
-    </DataTable>
-      <!-- <SearchResults /> -->
+      <div class="p-fluid p-grid">
+        <div class="p-field p-col-12 p-md-12" style="height: 65vh">
+          <DataTable
+            :value="results"
+            v-model:selection="selectedResult"
+            @row-select="onNodeSelect"
+            selectionMode="single"
+            dataKey="iri"
+            class="p-datatable-sm"
+            :scrollable="true"
+            scrollHeight="60vh"
+            removableSort
+            :paginator="true"
+            paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+            :rowsPerPageOptions="[15, 25, 50]"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            :rows="15"
+          >
+            <template #header> Results </template>
+            <!-- <Column field="name" header="Name"></Column> -->
+
+            <Column field="name" header="Name">
+              <template #body="slotProps">
+                <div @mouseenter="toggle($event, slotProps.data)" @mouseleave="toggle($event, slotProps.data)">
+                <font-awesome-icon
+                  class="sidebutton"
+                  :icon="[
+                    'fas',
+                    getPerspectiveByConceptType(slotProps.data.conceptType)
+                      .icon,
+                  ]"
+                  size="2x"
+                  style="color: lightgrey; padding: 5px"
+                />
+                {{ slotProps.data.name }}
+
+                </div>
+              </template>
+            </Column>
+
+            <!-- <Column field="conceptType" header="Type" :sortable="true"></Column>
+            <Column field="scheme.name" header="Scheme" :sortable="true"></Column> -->
+          </DataTable>
+
+          <OverlayPanel ref="op" id="overlay_panel" style="width: 450px" :breakpoints="{'960px': '75vw'}"> {{hoveredResult.name}} </OverlayPanel>
+        </div>
+        <div class="p-field p-col-12 p-md-12">
+          <span class="p-float-label">
+            <MultiSelect
+              id="status"
+              v-model="selectedStatus"
+              @change="search()"
+              :options="statusOptions"
+              placeholder="Select Status"
+              display="chip"
+            />
+            <label for="status">Select Status:</label>
+          </span>
+        </div>
+
+        <div class="p-field p-col-12 p-md-12">
+          <span class="p-float-label">
+            <MultiSelect
+              id="scheme"
+              v-model="selectedSchemes"
+              @change="search()"
+              :options="schemeOptions"
+              optionLabel="name"
+              placeholder="Select Schemes"
+              display="chip"
+            />
+            <label for="scheme">Select Scheme:</label>
+          </span>
+        </div>
+      </div>
     </TabPanel>
   </TabView>
 </template>
@@ -60,82 +127,141 @@ import { SearchResponse } from "@/models/search/SearchResponse";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { ConceptReference } from "@/models/ConceptReference";
 import { SortBy } from "@/models/search/SortBy";
+import { ConceptType } from "@/models/search/ConceptType";
 import { ConceptStatus } from "@/models/ConceptStatus";
+import { ConceptSummary } from "@/models/search/ConceptSummary";
 
 @Options({
-  components: { Hierarchy, History, SearchResults },
+  components: { Hierarchy, History, SearchResults }
 })
 export default class SidebarControl extends Vue {
   searchTerm = "";
   results: SearchResponse = new SearchResponse();
-  selectedResult = {} as ConceptReference;
+  selectedResult = {} as ConceptSummary;
   active = 0;
+  hoveredResult = {} as ConceptSummary;
+
+  statusOptions = ["Active", "Draft", "Inactive"];
+  schemeOptions = [
+    {
+      iri: ":891081000252108",
+      name: "Barts Cerner code"
+    },
+    {
+      iri: ":891051000252101",
+      name: "CTV3 Code"
+    },
+    {
+      iri: ":891071000252105",
+      name: "Discovery code"
+    },
+    {
+      iri: ":891031000252107",
+      name: "EMIS local code"
+    },
+    {
+      iri: ":581000252100",
+      name: "Homerton Cerner code"
+    },
+    {
+      iri: ":891021000252109",
+      name: "ICD10 code"
+    },
+    {
+      iri: ":891041000252103",
+      name: "OPCS4 code"
+    },
+    {
+      iri: ":891141000252104",
+      name: "Read 2 code"
+    },
+    {
+      iri: ":891101000252101",
+      name: "Snomed-CT code"
+    },
+    {
+      iri: ":631000252102",
+      name: "TPP local codes"
+    },
+    {
+      iri: ":891111000252103",
+      name: "Term based code"
+    }
+  ];
+  selectedStatus = ["Active", "Draft"];
+  selectedSchemes = [
+    {
+      iri: ":891071000252105",
+      name: "Discovery code"
+    },
+    {
+      iri: ":891101000252101",
+      name: "Snomed-CT code"
+    },
+    {
+      iri: ":891111000252103",
+      name: "Term based code"
+    }
+  ];
 
   async search() {
-    this.active = 2;
     const searchRequest = new SearchRequest();
     searchRequest.termFilter = this.searchTerm;
     searchRequest.sortBy = SortBy.Usage;
     searchRequest.page = 1;
-    searchRequest.size = 25;
-    searchRequest.schemeFilter = [
-    // {
-    //     "iri":":891081000252108",
-    //     "name":"Barts Cerner code",
-    // },
-    // {
-    //     "iri":":891051000252101",
-    //     "name":"CTV3 Code",
-    // },
-    {
-        "iri":":891071000252105",
-        "name":"Discovery code",
-    },
-    // {
-    //     "iri":":891031000252107",
-    //     "name":"EMIS local code",
-    // },
-    // {
-    //     "iri":":581000252100",
-    //     "name":"Homerton Cerner code",
-    // },
-    // {
-    //     "iri":":891021000252109",
-    //     "name":"ICD10 code",
-    // },
-    // {
-    //     "iri":":891041000252103",
-    //     "name":"OPCS4 code",
-    // },
-    // {
-    //     "iri":":891141000252104",
-    //     "name":"Read 2 code",
-    // },
-    {
-        "iri":":891101000252101",
-        "name":"Snomed-CT code",
-    },
-    // {
-    //     "iri":":631000252102",
-    //     "name":"TPP local codes",
-    // },
-    {
-        "iri":":891111000252103",
-        "name":"Term based code",
+    searchRequest.size = 100;
+    searchRequest.schemeFilter = this.selectedSchemes;
+    searchRequest.markIfDescendentOf = [
+      ":DiscoveryCommonDataModel",
+      ":SemanticConcept",
+      ":VSET_ValueSet"
+    ];
+
+    searchRequest.statusFilter = [];
+    this.selectedStatus.forEach(status => {
+      if (status == "Active") {
+        searchRequest.statusFilter.push(ConceptStatus.Active);
+      }
+      if (status == "Draft") {
+        searchRequest.statusFilter.push(ConceptStatus.Draft);
+      }
+      if (status == "Inactive") {
+        searchRequest.statusFilter.push(ConceptStatus.Inactive);
+      }
+    });
+    this.results = await (await ConceptService.advancedSearch(searchRequest))
+      .data.concepts;
+  }
+
+  getPerspectiveByConceptType(conceptType: ConceptType): any {
+    switch (conceptType) {
+      case ConceptType.ValueSet:
+        return { name: "Valueset", icon: "tasks" };
+      case ConceptType.Record:
+      case ConceptType.DataProperty:
+      case ConceptType.ObjectProperty:
+        return { name: "Datamodel", icon: "sitemap" };
+      default:
+        return { name: "Ontology", icon: "lightbulb" };
     }
-  ];
-    searchRequest.markIfDescendentOf = [":DiscoveryCommonDataModel", ":SemanticConcept", ":VSET_ValueSet"]
-    // searchRequest.statusFilter = [ConceptStatus.Active, ConceptStatus.Draft];
-    this.results = await (await ConceptService.advancedSearch(searchRequest)).data.concepts;
   }
 
   onNodeSelect() {
     const currentRoute = this.$route.name as RouteRecordName | undefined;
     console.log(this.selectedResult);
+    const perspective = this.getPerspectiveByConceptType(
+      this.selectedResult.conceptType
+    );
     this.$router.push({
-      name: currentRoute,
+      name: perspective.name,
       params: { selectedIri: this.selectedResult.iri }
     });
+  }
+
+  toggle(event: any, data: any) {
+    this.hoveredResult = data
+    const x = this.$refs.op as any;
+    x.toggle(event);
   }
 }
 </script>
