@@ -20,7 +20,7 @@
             >
               <font-awesome-icon
                 class="sidebutton"
-                :icon="['fas', 'lightbulb']"
+                :icon="['fas', 'sitemap']"
                 size="4x"
                 style="color: lightgrey; padding: 5px"
                 @click="
@@ -38,7 +38,7 @@
             >
               <font-awesome-icon
                 class="sidebutton"
-                :icon="['fas', 'sitemap']"
+                :icon="['fas', 'lightbulb']"
                 size="4x"
                 style="color: lightgrey; padding: 5px"
                 @click="

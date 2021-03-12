@@ -45,6 +45,8 @@ import Dropdown from 'primevue/dropdown';
 import Tooltip from 'primevue/tooltip';
 import Dialog from 'primevue/dialog';
 import SplitButton from 'primevue/splitbutton';
+import MultiSelect from 'primevue/multiselect';
+import OverlayPanel from 'primevue/overlaypanel';
 
 createApp(App)
   .use(store)
@@ -73,5 +75,7 @@ createApp(App)
   .component("DropDown", Dropdown)
   .component("Dialog", Dialog)
   .component("SplitButton", SplitButton)
+  .component("MultiSelect", MultiSelect)
+  .component("OverlayPanel", OverlayPanel)
   .component("font-awesome-icon", FontAwesomeIcon)
   .mount("#app");
