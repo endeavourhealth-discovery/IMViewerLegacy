@@ -23,7 +23,11 @@ import { mapState } from "vuex";
       this.removeD3();
       this.graphData = {};
       this.root = {};
-      this.graphData = this.getGraphData(newValue.concept, newValue.parents, newValue.children);
+      this.graphData = this.getGraphData(
+        newValue.concept,
+        newValue.parents,
+        newValue.children
+      );
       this.root = d3.hierarchy(this.graphData);
       console.log(this.root);
       this.initD3();
@@ -68,7 +72,7 @@ export default class Graph extends Vue {
     }
   }
 
-  getPropertyNodes(concept: Concept,) {
+  getPropertyNodes(concept: Concept) {
     if (!concept || !concept.Property) {
       return [];
     }
@@ -207,29 +211,32 @@ export default class Graph extends Vue {
 
         textNodes.exit().remove();
 
-        // const lineLabels = d3
-        //   .select(".links")
-        //   .selectAll("text")
-        //   .data(links);
+        const lineLabels = d3
+          .select(".links")
+          .selectAll("text")
+          .data(links);
 
-        // lineLabels
-        //   .enter()
-        //   // .merge(lineLabels as any)
-        //   .append("text")
-        //   .attr("class", "labelText")
-        //   .attr("x", function(d: any) {
-        //     if (d.source.data.name === "Properties") return d.target.x;
-        //   })
-        //   .attr("y", function(d: any) {
-        //     if (d.source.data.name === "Properties") return d.target.y;
-        //   })
-        //   .text(function(d: any) {
-        //     if (d.source.data.name === "Properties") {
-        //       return d.target.data.name;
-        //     }
-        //   });
+        lineLabels
+          .enter()
+          .append("text")
+          .attr("class", "labelText")
+          .attr("x", function(d: any) {
+            if (d.source.data.name === "Properties")
+              return (d.target.x + d.source.x) / 2;
+            return 0;
+          })
+          .attr("y", function(d: any) {
+            if (d.source.data.name === "Properties")
+              return (d.target.y + d.source.y) / 2;
+            return 0;
+          })
+          .text(function(d: any) {
+            if (d.source.data.name === "Properties") {
+              return d.target.data.name;
+            }
+          });
 
-        // lineLabels.exit().remove();
+        lineLabels.exit().remove();
       });
 
     d3.select("#content")
