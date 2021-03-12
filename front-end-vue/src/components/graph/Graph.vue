@@ -104,8 +104,8 @@ export default class Graph extends Vue {
     const nodes = this.root.descendants();
     const simulation = d3
       .forceSimulation(nodes as any)
-      // .force("charge", d3.forceManyBody().strength(-50))
-      // .force("collision", d3.forceCollide().radius(-20))
+      // .force("charge", d3.forceManyBody().strength(-100))
+      // .force("collision", d3.forceCollide().strength(10).radius(10))
       // .force(
       //   "x",
       //   d3.forceX().x(function(d: any) {
@@ -120,63 +120,10 @@ export default class Graph extends Vue {
       //     return d.y * 2;
       //   })
       // )
-      .force("charge", d3.forceManyBody().strength(-20))
-      // .force("center", d3.forceCenter(this.height / 2, this.width / 2))
-      .force(
-        "link",
-        d3
-          .forceLink()
-          .links(links)
-          .strength(-0.01)
-      )
+      // .force("charge", d3.forceManyBody().distanceMin(300).distanceMax(1000).strength(-70))
+      // .force("center1", d3.forceCenter(this.width - 100).strength(200))
+      // .force("center2", d3.forceCenter(this.width + 100))
       .on("tick", () => {
-        const lines = d3
-          .select(".links")
-          .selectAll("line")
-          .data(links);
-
-        lines
-          .enter()
-          .append("line")
-          .merge(lines as any)
-          .attr("x1", function(d: any) {
-            if (d.source.depth === 0) return 0;
-            if (d.source.data.name === "Properties") return 0;
-            if (d.source.data.name === "Children")
-              return that.windowRect.width / 4;
-            if (d.source.data.name === "Parents")
-              return that.windowRect.width / -4;
-            return d.source.x;
-          })
-          .attr("y1", function(d: any) {
-            if (d.source.depth === 0) return 0;
-            if (d.source.data.name === "Properties")
-              return that.windowRect.height / 4;
-            if (d.source.data.name === "Children")
-              return that.windowRect.height / -4;
-            if (d.source.data.name === "Parents")
-              return that.windowRect.height / -4;
-            return d.source.y;
-          })
-          .attr("x2", function(d: any) {
-            if (d.target.data.name === "Properties") return 0;
-            if (d.target.data.name === "Children")
-              return that.windowRect.width / 4;
-            if (d.target.data.name === "Parents")
-              return that.windowRect.width / -4;
-            return d.target.x;
-          })
-          .attr("y2", function(d: any) {
-            if (d.target.data.name === "Properties")
-              return that.windowRect.height / 4;
-            if (d.target.data.name === "Children")
-              return that.windowRect.height / -4;
-            if (d.target.data.name === "Parents")
-              return that.windowRect.height / -4;
-            return d.target.y;
-          });
-
-        lines.exit().remove();
 
         const circles = d3
           .select(".nodes")
@@ -191,17 +138,17 @@ export default class Graph extends Vue {
           })
           .merge(circles as any)
           .attr("cx", function(d: any) {
-            if (d.depth === 0) return 0;
-            if (d.data.name === "Properties") return 0;
-            if (d.data.name === "Children") return that.windowRect.width / 4;
-            if (d.data.name === "Parents") return that.windowRect.width / -4;
+            if (d.depth === 0) { d.x = 0}
+            if (d.data.name === "Properties") { d.x =  0; }
+            if (d.data.name === "Children") { d.x =  that.windowRect.width / 4; }
+            if (d.data.name === "Parents") { d.x =  that.windowRect.width / -4; }
             return d.x;
           })
           .attr("cy", function(d: any) {
-            if (d.depth === 0) return 0;
-            if (d.data.name === "Properties") return that.windowRect.height / 4;
-            if (d.data.name === "Children") return that.windowRect.height / -4;
-            if (d.data.name === "Parents") return that.windowRect.height / -4;
+            if (d.depth === 0) { d.y =  0; }
+            if (d.data.name === "Properties") { d.y = that.windowRect.height / 4; }
+            if (d.data.name === "Children") { d.y = that.windowRect.height / -4; }
+            if (d.data.name === "Parents") { d.y = that.windowRect.height / -4; }
             return d.y;
           })
           .attr("id", function(d: any) {
@@ -210,6 +157,30 @@ export default class Graph extends Vue {
           });
 
         circles.exit().remove();
+
+        const lines = d3
+          .select(".links")
+          .selectAll("line")
+          .data(links);
+
+        lines
+          .enter()
+          .append("line")
+          .merge(lines as any)
+          .attr("x1", function(d: any) {
+            return d.source.x;
+          })
+          .attr("y1", function(d: any) {
+            return d.source.y;
+          })
+          .attr("x2", function(d: any) {
+            return d.target.x;
+          })
+          .attr("y2", function(d: any) {
+            return d.target.y;
+          });
+
+        lines.exit().remove();
 
         const textNodes = d3
           .select(".nodes")
@@ -225,21 +196,9 @@ export default class Graph extends Vue {
           })
           .merge(textNodes as any)
           .attr("x", function(d: any) {
-            if (d.depth === 0) return 0;
-            if (d.data.name === "Properties") return 0;
-            if (d.data.name === "Children") return that.windowRect.width / 4;
-            if (d.data.name === "Parents") return that.windowRect.width / -4;
             return d.x;
           })
           .attr("y", function(d: any) {
-            if (d.depth === 0) return -20;
-            if (d.data.name === "Properties")
-              return that.windowRect.height / 4 - 20;
-            if (d.data.name === "Children")
-              return that.windowRect.height / -4 - 20;
-            if (d.data.name === "Parents")
-              return that.windowRect.height / -4 - 20;
-            if (d.y >= 0) return d.y + 20;
             return d.y - 20;
           })
           .attr("id", function(d: any) {
@@ -252,29 +211,29 @@ export default class Graph extends Vue {
 
         textNodes.exit().remove();
 
-        const lineLabels = d3
-          .select(".links")
-          .selectAll("text")
-          .data(links);
+        // const lineLabels = d3
+        //   .select(".links")
+        //   .selectAll("text")
+        //   .data(links);
 
-        lineLabels
-          .enter()
-          // .merge(lineLabels as any)
-          .append("text")
-          .attr("class", "labelText")
-          .attr("x", function(d: any) {
-            if (d.source.data.name === "Properties") return d.target.x;
-          })
-          .attr("y", function(d: any) {
-            if (d.source.data.name === "Properties") return d.target.y;
-          })
-          .text(function(d: any) {
-            if (d.source.data.name === "Properties") {
-              return d.target.data.name;
-            }
-          });
+        // lineLabels
+        //   .enter()
+        //   // .merge(lineLabels as any)
+        //   .append("text")
+        //   .attr("class", "labelText")
+        //   .attr("x", function(d: any) {
+        //     if (d.source.data.name === "Properties") return d.target.x;
+        //   })
+        //   .attr("y", function(d: any) {
+        //     if (d.source.data.name === "Properties") return d.target.y;
+        //   })
+        //   .text(function(d: any) {
+        //     if (d.source.data.name === "Properties") {
+        //       return d.target.data.name;
+        //     }
+        //   });
 
-        lineLabels.exit().remove();
+        // lineLabels.exit().remove();
       });
 
     d3.select("#content")
