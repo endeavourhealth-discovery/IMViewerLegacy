@@ -35,31 +35,23 @@ export default class Graph extends Vue {
   children!: unknown;
   graphData = this.getGraphData();
   root = d3.hierarchy(this.graphData);
-  width = 700;
-  height = 600;
   windowRect = { height: 600, width: 700 };
 
   getGraphData() {
     const currentConceptName = this.concept.name;
-    const properties = this.getPropertyNodes();
-    const parents = this.getNodes(this.parents);
-    const children = this.getNodes(this.children);
     const graphData: any = { name: currentConceptName, children: [] };
-    if (properties.length)
-      graphData.children.push({
-        name: "Properties",
-        children: properties
-      });
-    if (parents.length)
-      graphData.children.push({
-        name: "Parents",
-        children: parents
-      });
-    if (children.length)
-      graphData.children.push({
-        name: "Children",
-        children: children
-      });
+    graphData.children.push({
+      name: "Properties",
+      children: this.getPropertyNodes()
+    });
+    graphData.children.push({
+      name: "Parents",
+      children: this.getNodes(this.parents)
+    });
+    graphData.children.push({
+      name: "Children",
+      children: this.getNodes(this.children)
+    });
     return graphData;
   }
 
@@ -94,10 +86,8 @@ export default class Graph extends Vue {
   }
 
   initD3() {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.windowRect = document.getElementById("svg")?.getBoundingClientRect()!;
-    this.width = +d3.select("svg").attr("width");
-    this.height = +d3.select("svg").attr("height");
-    console.log(this.height, this.width);
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     const links = this.root.links() as d3.SimulationLinkDatum<any>[];
@@ -106,6 +96,13 @@ export default class Graph extends Vue {
       .forceSimulation(nodes as any)
       .force("charge", d3.forceManyBody().strength(-750))
       .force("link", d3.forceLink().links(links))
+      .force(
+        "collision",
+        d3
+          .forceCollide()
+          .radius(60)
+          .strength(1)
+      )
       .on("tick", () => {
         const circles = d3
           .select(".nodes")
@@ -240,11 +237,11 @@ export default class Graph extends Vue {
     d3.select("#content")
       .selectAll("g.nodes")
       .on("mouseover", function(event: any) {
-        console.log(that.concept.Property);
+        // console.log(that.concept.Property);
         // console.log(event);
       })
       .on("mouseout", function(event: any) {
-        console.log("mouseout");
+        // console.log("mouseout");
       })
       .on("click", function(event: any) {
         if (event.srcElement.localName === "circle") {
