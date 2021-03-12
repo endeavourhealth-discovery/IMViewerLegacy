@@ -104,27 +104,9 @@ export default class Graph extends Vue {
     const nodes = this.root.descendants();
     const simulation = d3
       .forceSimulation(nodes as any)
-      // .force("charge", d3.forceManyBody().strength(-100))
-      // .force("collision", d3.forceCollide().strength(10).radius(10))
-      // .force(
-      //   "x",
-      //   d3.forceX().x(function(d: any) {
-      //     if (d.x <= 0) return d.x * -2;
-      //     return d.x * 2;
-      //   })
-      // )
-      // .force(
-      //   "y",
-      //   d3.forceY().y(function(d: any) {
-      //     if (d.y >= 0) return d.y * -2;
-      //     return d.y * 2;
-      //   })
-      // )
-      // .force("charge", d3.forceManyBody().distanceMin(300).distanceMax(1000).strength(-70))
-      // .force("center1", d3.forceCenter(this.width - 100).strength(200))
-      // .force("center2", d3.forceCenter(this.width + 100))
+      .force("charge", d3.forceManyBody().strength(-750))
+      .force("link", d3.forceLink().links(links))
       .on("tick", () => {
-
         const circles = d3
           .select(".nodes")
           .selectAll("circle")
@@ -138,17 +120,33 @@ export default class Graph extends Vue {
           })
           .merge(circles as any)
           .attr("cx", function(d: any) {
-            if (d.depth === 0) { d.x = 0}
-            if (d.data.name === "Properties") { d.x =  0; }
-            if (d.data.name === "Children") { d.x =  that.windowRect.width / 4; }
-            if (d.data.name === "Parents") { d.x =  that.windowRect.width / -4; }
+            if (d.depth === 0) {
+              d.x = 0;
+            }
+            if (d.data.name === "Properties") {
+              d.x = 0;
+            }
+            if (d.data.name === "Children") {
+              d.x = that.windowRect.width / 4;
+            }
+            if (d.data.name === "Parents") {
+              d.x = that.windowRect.width / -4;
+            }
             return d.x;
           })
           .attr("cy", function(d: any) {
-            if (d.depth === 0) { d.y =  0; }
-            if (d.data.name === "Properties") { d.y = that.windowRect.height / 4; }
-            if (d.data.name === "Children") { d.y = that.windowRect.height / -4; }
-            if (d.data.name === "Parents") { d.y = that.windowRect.height / -4; }
+            if (d.depth === 0) {
+              d.y = 0;
+            }
+            if (d.data.name === "Properties") {
+              d.y = that.windowRect.height / 4;
+            }
+            if (d.data.name === "Children") {
+              d.y = that.windowRect.height / -4;
+            }
+            if (d.data.name === "Parents") {
+              d.y = that.windowRect.height / -4;
+            }
             return d.y;
           })
           .attr("id", function(d: any) {
@@ -178,7 +176,10 @@ export default class Graph extends Vue {
           })
           .attr("y2", function(d: any) {
             return d.target.y;
-          });
+          })
+          .attr("stroke-width", 1)
+          .attr("stroke", "black")
+          .attr("stroke-dasharray", "1,4");
 
         lines.exit().remove();
 
