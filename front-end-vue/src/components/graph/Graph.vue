@@ -19,8 +19,9 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
   props: ["concept", "parents", "children"],
   watch: {
     concept: {
-      handler: function(val, oldVal) {
+      handler: async function(val, oldVal) {
         this.removeD3();
+        // await new Promise(resolve => setTimeout(resolve, 1000));
         this.graphData = this.getGraphData();
         this.root = d3.hierarchy(this.graphData);
         this.initD3();
@@ -36,6 +37,7 @@ export default class Graph extends Vue {
   root = d3.hierarchy(this.graphData);
   width = 700;
   height = 600;
+  windowRect = { height: 600, width: 700 };
 
   getGraphData() {
     const currentConceptName = this.concept.name;
@@ -80,25 +82,53 @@ export default class Graph extends Vue {
     if (!this.concept || !this.concept.Property) {
       return [];
     }
-    const nodes: { name: string; iri: string }[] = [];
+    const nodes: any[] = [];
     this.concept.Property.forEach(property => {
-      nodes.push({ name: property.property.name, iri: property.iri });
+      nodes.push({
+        name: property.property.name,
+        iri: property.property.iri,
+        type: property.valueType.name
+      });
     });
     return nodes;
   }
 
   initD3() {
+    this.windowRect = document.getElementById("svg")?.getBoundingClientRect()!;
     this.width = +d3.select("svg").attr("width");
     this.height = +d3.select("svg").attr("height");
+    console.log(this.height, this.width);
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     const links = this.root.links() as d3.SimulationLinkDatum<any>[];
     const nodes = this.root.descendants();
     const simulation = d3
       .forceSimulation(nodes as any)
-      .force("charge", d3.forceManyBody().strength(-750))
-      .force("center", d3.forceCenter(this.width / 8, this.height / 5))
-      .force("link", d3.forceLink().links(links))
+      // .force("charge", d3.forceManyBody().strength(-50))
+      // .force("collision", d3.forceCollide().radius(-20))
+      // .force(
+      //   "x",
+      //   d3.forceX().x(function(d: any) {
+      //     if (d.x <= 0) return d.x * -2;
+      //     return d.x * 2;
+      //   })
+      // )
+      // .force(
+      //   "y",
+      //   d3.forceY().y(function(d: any) {
+      //     if (d.y >= 0) return d.y * -2;
+      //     return d.y * 2;
+      //   })
+      // )
+      .force("charge", d3.forceManyBody().strength(-20))
+      // .force("center", d3.forceCenter(this.height / 2, this.width / 2))
+      .force(
+        "link",
+        d3
+          .forceLink()
+          .links(links)
+          .strength(-0.01)
+      )
       .on("tick", () => {
         const lines = d3
           .select(".links")
@@ -110,15 +140,39 @@ export default class Graph extends Vue {
           .append("line")
           .merge(lines as any)
           .attr("x1", function(d: any) {
+            if (d.source.depth === 0) return 0;
+            if (d.source.data.name === "Properties") return 0;
+            if (d.source.data.name === "Children")
+              return that.windowRect.width / 4;
+            if (d.source.data.name === "Parents")
+              return that.windowRect.width / -4;
             return d.source.x;
           })
           .attr("y1", function(d: any) {
+            if (d.source.depth === 0) return 0;
+            if (d.source.data.name === "Properties")
+              return that.windowRect.height / 4;
+            if (d.source.data.name === "Children")
+              return that.windowRect.height / -4;
+            if (d.source.data.name === "Parents")
+              return that.windowRect.height / -4;
             return d.source.y;
           })
           .attr("x2", function(d: any) {
+            if (d.target.data.name === "Properties") return 0;
+            if (d.target.data.name === "Children")
+              return that.windowRect.width / 4;
+            if (d.target.data.name === "Parents")
+              return that.windowRect.width / -4;
             return d.target.x;
           })
           .attr("y2", function(d: any) {
+            if (d.target.data.name === "Properties")
+              return that.windowRect.height / 4;
+            if (d.target.data.name === "Children")
+              return that.windowRect.height / -4;
+            if (d.target.data.name === "Parents")
+              return that.windowRect.height / -4;
             return d.target.y;
           });
 
@@ -132,12 +186,22 @@ export default class Graph extends Vue {
         circles
           .enter()
           .append("circle")
-          .attr("r", 5)
+          .attr("r", function(d: any) {
+            return 5;
+          })
           .merge(circles as any)
           .attr("cx", function(d: any) {
+            if (d.depth === 0) return 0;
+            if (d.data.name === "Properties") return 0;
+            if (d.data.name === "Children") return that.windowRect.width / 4;
+            if (d.data.name === "Parents") return that.windowRect.width / -4;
             return d.x;
           })
           .attr("cy", function(d: any) {
+            if (d.depth === 0) return 0;
+            if (d.data.name === "Properties") return that.windowRect.height / 4;
+            if (d.data.name === "Children") return that.windowRect.height / -4;
+            if (d.data.name === "Parents") return that.windowRect.height / -4;
             return d.y;
           })
           .attr("id", function(d: any) {
@@ -156,17 +220,27 @@ export default class Graph extends Vue {
           .enter()
           .append("text")
           .text(function(d: any) {
+            if (d.data.type) return d.data.type;
             return d.data.name;
           })
           .merge(textNodes as any)
           .attr("x", function(d: any) {
+            if (d.depth === 0) return 0;
+            if (d.data.name === "Properties") return 0;
+            if (d.data.name === "Children") return that.windowRect.width / 4;
+            if (d.data.name === "Parents") return that.windowRect.width / -4;
             return d.x;
           })
           .attr("y", function(d: any) {
-            return d.y * 1.1;
-          })
-          .attr("dy", function(d) {
-            return 5;
+            if (d.depth === 0) return -20;
+            if (d.data.name === "Properties")
+              return that.windowRect.height / 4 - 20;
+            if (d.data.name === "Children")
+              return that.windowRect.height / -4 - 20;
+            if (d.data.name === "Parents")
+              return that.windowRect.height / -4 - 20;
+            if (d.y >= 0) return d.y + 20;
+            return d.y - 20;
           })
           .attr("id", function(d: any) {
             const name = d.data.name;
@@ -177,29 +251,41 @@ export default class Graph extends Vue {
           });
 
         textNodes.exit().remove();
+
+        const lineLabels = d3
+          .select(".links")
+          .selectAll("text")
+          .data(links);
+
+        lineLabels
+          .enter()
+          // .merge(lineLabels as any)
+          .append("text")
+          .attr("class", "labelText")
+          .attr("x", function(d: any) {
+            if (d.source.data.name === "Properties") return d.target.x;
+          })
+          .attr("y", function(d: any) {
+            if (d.source.data.name === "Properties") return d.target.y;
+          })
+          .text(function(d: any) {
+            if (d.source.data.name === "Properties") {
+              return d.target.data.name;
+            }
+          });
+
+        lineLabels.exit().remove();
       });
 
     d3.select("#content")
       .selectAll("g.nodes")
       .on("mouseover", function(event: any) {
         console.log(that.concept.Property);
-        // const currentNode = that.root
-        //   .descendants()
-        //   .filter(node => node.data.name === event.srcElement.id);
-        //   const title = `${currentNode[0]?.data.name}-${currentNode[0]?.data
-        //     .children?.length || 0}`;
-        //   const id = "#" + event.srcElement.id;
-        //   const element = d3.select(id).nodes()[0] as HTMLElement;
-        //   if (element && currentNode[0]?.data.name) element.innerHTML = title;
+        // console.log(event);
       })
-      // .on("mouseout", function(event: any) {
-      //   const currentNode = root
-      //     .descendants()
-      //     .filter(node => node.data.name === event.srcElement.id);
-      //   const id = "#" + event.srcElement.id;
-      //   const element = d3.select(id).nodes()[0] as HTMLElement;
-      //   if (element) element.innerHTML = currentNode[0].data.name as string;
-      // })
+      .on("mouseout", function(event: any) {
+        console.log("mouseout");
+      })
       .on("click", function(event: any) {
         if (event.srcElement.localName === "circle") {
           that.onCircleClick(event);
@@ -221,8 +307,6 @@ export default class Graph extends Vue {
     const currentNode = this.root
       .descendants()
       .filter((node: any) => node.data.name === event.srcElement.id);
-    console.log(currentNode);
-    console.log(!!currentNode[0].children);
     if (currentNode[0].children) {
       (currentNode[0] as any)._children = currentNode[0].children;
       currentNode[0].children = undefined;
