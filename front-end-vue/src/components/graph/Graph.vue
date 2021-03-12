@@ -13,44 +13,42 @@ import * as d3 from "d3";
 import { Concept } from "@/models/Concept";
 import svgPanZoom from "svg-pan-zoom";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
+import { mapState } from "vuex";
 
 @Options({
   components: {},
-  props: ["concept", "parents", "children"],
+  computed: mapState(["conceptAggregate"]),
   watch: {
-    concept: {
-      handler: async function(val, oldVal) {
-        this.removeD3();
-        // await new Promise(resolve => setTimeout(resolve, 1000));
-        this.graphData = this.getGraphData();
-        this.root = d3.hierarchy(this.graphData);
-        this.initD3();
-      }
+    async conceptAggregate(newValue, oldValue) {
+      this.removeD3();
+      this.graphData = {};
+      this.root = {};
+      this.graphData = this.getGraphData(newValue.concept, newValue.parents, newValue.children);
+      this.root = d3.hierarchy(this.graphData);
+      console.log(this.root);
+      this.initD3();
     }
   }
 })
 export default class Graph extends Vue {
-  concept!: Concept;
-  parents!: unknown;
-  children!: unknown;
-  graphData = this.getGraphData();
+  graphData = this.getGraphData({} as Concept, [], []);
   root = d3.hierarchy(this.graphData);
   windowRect = { height: 600, width: 700 };
 
-  getGraphData() {
-    const currentConceptName = this.concept.name;
-    const graphData: any = { name: currentConceptName, children: [] };
+  getGraphData(concept: Concept, parents: unknown, children: unknown) {
+    console.log(concept.name);
+    const graphData: any = { name: concept.name, children: [] };
     graphData.children.push({
       name: "Properties",
-      children: this.getPropertyNodes()
+      children: this.getPropertyNodes(concept)
     });
     graphData.children.push({
       name: "Parents",
-      children: this.getNodes(this.parents)
+      children: this.getNodes(parents)
     });
     graphData.children.push({
       name: "Children",
-      children: this.getNodes(this.children)
+      children: this.getNodes(children)
     });
     return graphData;
   }
@@ -70,12 +68,12 @@ export default class Graph extends Vue {
     }
   }
 
-  getPropertyNodes() {
-    if (!this.concept || !this.concept.Property) {
+  getPropertyNodes(concept: Concept,) {
+    if (!concept || !concept.Property) {
       return [];
     }
     const nodes: any[] = [];
-    this.concept.Property.forEach(property => {
+    concept.Property.forEach(property => {
       nodes.push({
         name: property.property.name,
         iri: property.property.iri,

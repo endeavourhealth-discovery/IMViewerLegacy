@@ -11,7 +11,7 @@
     </Panel>
 
     <Panel header="Graph" :toggleable="true" v-if="$route.name == 'Datamodel'">
-      <GraphWrapper />
+      <Graph />
     </Panel>
 
     <!-- <Panel header="Members" :toggleable="true" v-if="$route.name == 'Valueset'">
@@ -53,10 +53,10 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import ConceptSummary from "@/components/panels/ConceptSummary.vue";
-import GraphWrapper from "../graph/GraphWrapper.vue";
+import Graph from "../graph/Graph.vue";
 
 @Options({
-  components: { ConceptSummary, GraphWrapper }
+  components: { ConceptSummary, Graph }
 })
 export default class PanelControl extends Vue {
   concept = {};
