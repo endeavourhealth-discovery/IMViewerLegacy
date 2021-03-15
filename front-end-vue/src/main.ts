@@ -48,6 +48,12 @@ import SplitButton from 'primevue/splitbutton';
 import MultiSelect from 'primevue/multiselect';
 import OverlayPanel from 'primevue/overlaypanel';
 
+import TTComponent from '@/components/tripletree/TTComponent.vue';
+import TTExpression from '@/components/tripletree/TTExpression.vue';
+import TTEdit from '@/components/tripletree/TTEdit.vue';
+import TTExpressionList from '@/components/tripletree/TTExpressionList.vue';
+import TTIRIEdit from '@/components/tripletree/TTIRIEdit.vue';
+
 createApp(App)
   .use(store)
   .use(router)
@@ -78,4 +84,11 @@ createApp(App)
   .component("MultiSelect", MultiSelect)
   .component("OverlayPanel", OverlayPanel)
   .component("font-awesome-icon", FontAwesomeIcon)
+
+  .component("TTComponent", TTComponent)
+  .component("TTEdit", TTEdit)
+  .component("TTExpression", TTExpression)
+  .component("TTExpressionList", TTExpressionList)
+  .component("TTIRIEdit", TTIRIEdit)
+
   .mount("#app");
