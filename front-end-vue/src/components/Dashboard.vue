@@ -4,9 +4,9 @@
       <Card>
         <template #header>
           <font-awesome-icon
-            :icon="['fas', 'lightbulb']"
-            size="6x"
-            style="color:orange; padding:5px"
+              :icon="['fas', 'lightbulb']"
+              size="6x"
+              style="color:orange; padding:5px"
           />
         </template>
         <template #title> Semantic Ontology </template>
@@ -22,9 +22,9 @@
       <Card>
         <template #header>
           <font-awesome-icon
-            :icon="['fas', 'sitemap']"
-            size="6x"
-            style="color:limegreen; padding:5px"
+              :icon="['fas', 'sitemap']"
+              size="6x"
+              style="color:limegreen; padding:5px"
           />
         </template>
         <template #title> Data Models </template>
@@ -41,9 +41,9 @@
       <Card>
         <template #header>
           <font-awesome-icon
-            :icon="['fas', 'tasks']"
-            size="6x"
-            style="color:brown; padding:5px"
+              :icon="['fas', 'tasks']"
+              size="6x"
+              style="color:brown; padding:5px"
           />
         </template>
         <template #title> Value Sets </template>
@@ -56,15 +56,36 @@
         </template>
       </Card>
     </div>
+    <div class="p-col-12">
+      <Card>
+        <template #title>
+          Concept details
+        </template>
+        <template #content v-if="concept && schema">
+          <FormGenerator :schema="schema" :concept="concept"/>
+        </template>
+      </Card>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { Options, Vue } from 'vue-class-component';
+import FormGenerator from "./tripletree/FormGenerator.vue"
+import ConceptService from '@/services/ConceptService';
+import {mapState} from 'vuex';
 
-@Options({})
+@Options({
+  components: { FormGenerator }
+})
 export default class Dashboard extends Vue {
-  msg!: string;
+  concept = null;
+  schema = null;
+
+  async beforeMount() {
+    this.schema = (await ConceptService.getTTFormSchema()).data;
+    this.concept = (await ConceptService.getTTConcept(":25451000252115")).data;
+  }
 }
 </script>
 
