@@ -20,7 +20,7 @@
           :name="predicate+'-name'"
           v-model="name"/>-->
     </div>
-    <div><small>{{conceptKey}}</small></div>
+    <div v-if="checkForHttp(conceptKey)"><small>{{conceptKey}}</small></div>
   </div>
 </template>
 
@@ -32,26 +32,6 @@ import ConceptService from '@/services/ConceptService';
   name: "TTIRIEdit",
   props: ["property", "prefix", "size", "conceptValue", "conceptKey"],
   emits: ["update:componentValue"],
-  // watch: {
-  //   componentValue: {
-  //     immediate: true,
-  //     handler(n, o) {
-  //       this.splitValue(n);
-  //     }
-  //   },
-  //   iri: {
-  //     immediate: true,
-  //     handler(n, o) {
-  //       this.onChange();
-  //     }
-  //   },
-  //   prefix: {
-  //     immediate: true,
-  //     handler(n, o) {
-  //       this.onChange();
-  //     }
-  //   }
-  // }
 })
 export default class TTIRIEdit extends Vue {
   conceptValue!: any;
@@ -62,20 +42,12 @@ export default class TTIRIEdit extends Vue {
     this.namespaces = ConceptService.getNamespaces();
   }
 
-  // splitValue(n: any) {
-  //   if (n) {
-  //     const full = n.iri;
-
-  //     const i = full.lastIndexOf('#');
-
-  //     this.prefix = full.substring(0, i + 1);
-  //     this.iri = full.substring(i + 1);
-  //   }
-  // }
-
   onChange() {
-    // this.componentValue.iri = this.prefix + this.iri;
     this.$emit("update:componentValue", this.conceptValue);
+  }
+
+  checkForHttp(string: string){
+    return /^https?:/.test(string);
   }
 }
 </script>
