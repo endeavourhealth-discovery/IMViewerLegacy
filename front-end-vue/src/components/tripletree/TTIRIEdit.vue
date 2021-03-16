@@ -29,28 +29,29 @@ import {Options, Vue} from "vue-class-component";
 import ConceptService from '@/services/ConceptService';
 
 @Options({
+  name: "TTIRIEdit",
   props: ["label", "predicate", "size", "componentValue"],
   emits: ["update:componentValue"],
-  watch: {
-    componentValue: {
-      immediate: true,
-      handler(n, o) {
-        this.splitValue(n);
-      }
-    },
-    iri: {
-      immediate: true,
-      handler(n, o) {
-        this.onChange();
-      }
-    },
-    prefix: {
-      immediate: true,
-      handler(n, o) {
-        this.onChange();
-      }
-    }
-  }
+  // watch: {
+  //   componentValue: {
+  //     immediate: true,
+  //     handler(n, o) {
+  //       this.splitValue(n);
+  //     }
+  //   },
+  //   iri: {
+  //     immediate: true,
+  //     handler(n, o) {
+  //       this.onChange();
+  //     }
+  //   },
+  //   prefix: {
+  //     immediate: true,
+  //     handler(n, o) {
+  //       this.onChange();
+  //     }
+  //   }
+  // }
 })
 export default class TTIRIEdit extends Vue {
   componentValue!: any;
@@ -64,19 +65,19 @@ export default class TTIRIEdit extends Vue {
     this.namespaces = ConceptService.getNamespaces();
   }
 
-  splitValue(n: any) {
-    if (n) {
-      const full = n.iri;
+  // splitValue(n: any) {
+  //   if (n) {
+  //     const full = n.iri;
 
-      const i = full.lastIndexOf('#');
+  //     const i = full.lastIndexOf('#');
 
-      this.prefix = full.substring(0, i + 1);
-      this.iri = full.substring(i + 1);
-    }
-  }
+  //     this.prefix = full.substring(0, i + 1);
+  //     this.iri = full.substring(i + 1);
+  //   }
+  // }
 
   onChange() {
-    this.componentValue.iri = this.prefix + this.iri;
+    // this.componentValue.iri = this.prefix + this.iri;
     this.$emit("update:componentValue", this.componentValue);
   }
 }

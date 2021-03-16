@@ -45,6 +45,7 @@ import store from "@/store/index";
 import { mapState } from "vuex";
 
 @Options({
+  name: "conceptSummary",
   components: { EditDialog },
   prop: {},
   computed: mapState(["conceptAggregate"]),

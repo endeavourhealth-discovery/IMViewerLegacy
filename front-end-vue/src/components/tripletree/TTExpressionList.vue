@@ -3,7 +3,7 @@
     <AccordionTab :header="label">
       <div v-for="(item, i) in componentValue" :key="i">
         <Divider v-if="i > 0"/>
-        <TTComponent :schema="schema" :concept="item"></TTComponent>
+        <TTComponent :concept="item"></TTComponent>
       </div>
     </AccordionTab>
   </Accordion>
@@ -11,11 +11,25 @@
 
 <script lang="ts">
 import {Options, Vue} from "vue-class-component";
+import { ConceptDetailsSchema } from '@/models/ConceptDetailsSchema';
 
 @Options({
-  props: ["label", "predicate", "componentValue", "schema"]
+  name: "TTExpressionList",
+  props: ["label", "predicate", "componentValue"]
 })
 export default class TTExpressionList extends Vue {
+  componentValue: any;
+  conceptSchema: Array<ConceptDetailsSchema> = [];
+
+  mounted() {
+    this.generateSchema(this.componentValue);
+  }
+
+  generateSchema(conceptObject: object){
+    for (const [key, value] of Object.entries(conceptObject)){
+      this.conceptSchema.push(new ConceptDetailsSchema(key, value))
+    }
+  }
 }
 </script>
 

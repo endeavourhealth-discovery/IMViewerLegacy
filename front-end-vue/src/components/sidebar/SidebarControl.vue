@@ -145,6 +145,7 @@ import { ConceptStatus } from "@/models/ConceptStatus";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 
 @Options({
+  name: "sideBarControl",
   components: { Hierarchy, History, SearchResults }
 })
 export default class SidebarControl extends Vue {

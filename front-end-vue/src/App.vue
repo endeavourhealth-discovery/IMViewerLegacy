@@ -88,6 +88,7 @@ import SidebarControl from "@/components/sidebar/SidebarControl.vue";
 import store from "@/store/index";
 
 @Options({
+  name: "app",
   components: {
     Dashboard,
     Header,

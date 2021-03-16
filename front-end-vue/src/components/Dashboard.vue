@@ -57,35 +57,22 @@
       </Card>
     </div>
     <div class="p-col-12">
-      <Card>
-        <template #title>
-          Concept details
-        </template>
-        <template #content v-if="concept && schema">
-          <FormGenerator :schema="schema" :concept="concept"/>
-        </template>
-      </Card>
+      <concept-details></concept-details>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
-import FormGenerator from "./tripletree/FormGenerator.vue"
-import ConceptService from '@/services/ConceptService';
+import ConceptDetails from './conceptDetails/ConceptDetails.vue';
 import {mapState} from 'vuex';
 
 @Options({
-  components: { FormGenerator }
+  name: "dashBoard",
+  components: { ConceptDetails }
 })
 export default class Dashboard extends Vue {
-  concept = null;
-  schema = null;
 
-  async beforeMount() {
-    this.schema = (await ConceptService.getTTFormSchema()).data;
-    this.concept = (await ConceptService.getTTConcept(":25451000252115")).data;
-  }
 }
 </script>
 

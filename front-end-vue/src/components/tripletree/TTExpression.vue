@@ -10,6 +10,7 @@ import {Options, Vue} from "vue-class-component";
 import TreeTable from 'primevue/treetable';
 
 @Options({
+  name: "TTExpression",
   components: {TreeTable },
   props: ["label", "predicate", "componentValue"],
   watch: {

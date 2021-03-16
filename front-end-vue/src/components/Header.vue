@@ -64,6 +64,7 @@
 import { Options, Vue } from "vue-class-component";
 
 @Options({
+  name: "headerIM",
   components: {}
 })
 export default class Header extends Vue {}

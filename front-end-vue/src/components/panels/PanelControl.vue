@@ -56,6 +56,7 @@ import ConceptSummary from "@/components/panels/ConceptSummary.vue";
 import Graph from "../graph/Graph.vue";
 
 @Options({
+  name: "panelControl",
   components: { ConceptSummary, Graph }
 })
 export default class PanelControl extends Vue {

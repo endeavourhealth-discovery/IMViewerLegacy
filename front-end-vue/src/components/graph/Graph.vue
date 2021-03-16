@@ -16,6 +16,7 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { mapState } from "vuex";
 
 @Options({
+  name: "graph",
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {

@@ -13,6 +13,7 @@
 import {Options, Vue} from "vue-class-component";
 
 @Options({
+  name: "TTEdit",
   props: ["label", "predicate", "componentValue", "size"],
   emits: ["update:componentValue"]
 })

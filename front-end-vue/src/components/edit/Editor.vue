@@ -110,6 +110,7 @@ import { ConceptReference } from "@/models/ConceptReference";
 import Dropdown from "primevue/dropdown";
 import { ConceptStatus } from "@/models/ConceptStatus";
 @Options({
+  name: "editor",
   components: { Dropdown },
   props: ["definitionText", "concept"]
 })
