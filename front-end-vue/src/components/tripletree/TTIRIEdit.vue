@@ -6,21 +6,24 @@
         style="width: 20%"
         :placeholder="prefix"
         :options = "namespaces"
-        optionLabel = "prefix"
-        :optionValue = "prefix"
-        :modelValue="prefix"/>
+        optionLabel="prefix"
+        v-model="editPrefix"
+        v-on:change="onPrefixChange()"
+      />
       <InputText
         style="width: 80%"
         type="text"
-        :name="predicate+'-name'"
-        v-model="conceptValue"/>
+        :name="property+'-name'"
+        v-model="editValue"
+        v-on:change="onValueChange()"
+      />
 <!--      <InputText
           style="width: 80%"
           type="text"
           :name="predicate+'-name'"
           v-model="name"/>-->
     </div>
-    <div v-if="checkForHttp(conceptKey)"><small>{{conceptKey}}</small></div>
+    <div v-if="checkForHttp(editConceptKey)"><small>{{editConceptKey}}</small></div>
   </div>
 </template>
 
@@ -31,19 +34,34 @@ import ConceptService from '@/services/ConceptService';
 @Options({
   name: "TTIRIEdit",
   props: ["property", "prefix", "size", "conceptValue", "conceptKey"],
-  emits: ["update:componentValue"],
+  emits: ["update:conceptValue"],
 })
 export default class TTIRIEdit extends Vue {
-  conceptValue!: any;
+  conceptValue!: string;
+  conceptKey!: string;
   name?: string;
-  namespaces?: any[];
+  namespaces: any[] = [];
+  property!: string;
+  prefix!: string;
+  editValue: string = this.conceptValue;
+  editPrefix: {prefix: string, uri: string} = {prefix: this.prefix, uri: ""};
+  editConceptKey: any = this.conceptKey;
 
   beforeMount() {
     this.namespaces = ConceptService.getNamespaces();
   }
 
-  onChange() {
-    this.$emit("update:componentValue", this.conceptValue);
+  onValueChange() {
+    this.$emit("update:IRIValue");
+  }
+
+  onPrefixChange(){
+    if (/^https?:/.test(this.editValue)){
+      this.editValue = this.editPrefix.uri + this.editValue.substring(this.editValue.lastIndexOf("#") + 1)
+    } else if (/^https?:/.test(this.editConceptKey)){
+      this.editConceptKey = this.editPrefix.uri + this.editValue.substring(this.editValue.lastIndexOf("#") + 1)
+    }
+    this.$emit("update:IRIPrefix")
   }
 
   checkForHttp(string: string){
