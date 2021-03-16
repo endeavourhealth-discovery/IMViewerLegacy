@@ -1,22 +1,12 @@
 <template>
-  <!-- <template v-for="(field, index) in getKeys(concept)" :key="index">
-    <component v-if="concept[field]"
-               :is="getFieldType(field)"
-               :schema="schema"
-               :predicate="field"
-               :size="12"
-               :label="field"
-               :componentValue="concept[field]"
-               @update:componentValue="concept[field] = $event">
-    </component>
-  </template> -->
   <template v-for="(cSchema, index) in conceptSchemas" :key="index">
     <component
                :is="cSchema.control"
-               :predicate="cSchema.prefix"
+               :prefix="cSchema.prefix"
                :size="cSchema.size"
-               :label="cSchema.property"
-               :componentValue="cSchema.conceptValue"
+               :property="cSchema.property"
+               :conceptKey="cSchema.conceptKey"
+               :conceptValue="cSchema.conceptValue"
                >
     </component>
   </template>
@@ -33,10 +23,6 @@ import { ConceptDetailsSchema } from '@/models/ConceptDetailsSchema';
 export default class TTComponent extends Vue {
   concept?:any;
   conceptSchemas: Array<ConceptDetailsSchema> = [];
-
-  // getKeys(o: any) {
-  //   return Object.keys(o);
-  // }
 
   getFieldType(field: string) {
     if (this.concept[field].constructor == Array)

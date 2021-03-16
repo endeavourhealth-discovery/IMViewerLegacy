@@ -25,7 +25,7 @@ export default class ConceptService {
   public static async getConceptChildren(iri: string) {
     return axios.get(this.api + "api/concept/" + iri + "/children");
   }
-  
+
   public static async getConceptUsages(iri: string) {
     return axios.get(this.api + "api/concept/" + iri + "/usages");
   }
@@ -69,7 +69,7 @@ export default class ConceptService {
 
     public static getNamespaces() {
       return [
-          { uri: 'http://envhealth.info/im#', prefix : ':' },
+          { uri: 'http://envhealth.info/im#', prefix : 'im:' },
           { uri: 'http://snomed.info/sct#', prefix : 'sn:' },
           { uri: 'http://www.w3.org/2002/07/owl#', prefix : 'owl:' },
           { uri: 'http://www.w3.org/2000/01/rdf-schema#', prefix : 'rdfs:' },

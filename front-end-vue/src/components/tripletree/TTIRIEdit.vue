@@ -1,26 +1,26 @@
 <template>
   <div :class="'p-field p-col-'+size">
-    <label ><strong>{{ label }}: </strong></label>
+    <label ><strong>{{ property }}: </strong></label>
     <div class="p-inputgroup">
       <DropDown
         style="width: 20%"
-        placeholder="Prefix"
+        :placeholder="prefix"
         :options = "namespaces"
         optionLabel = "prefix"
-        optionValue = "uri"
-        v-model="prefix"/>
+        :optionValue = "prefix"
+        :modelValue="prefix"/>
       <InputText
         style="width: 80%"
         type="text"
         :name="predicate+'-name'"
-        v-model="iri"/>
+        v-model="conceptValue"/>
 <!--      <InputText
           style="width: 80%"
           type="text"
           :name="predicate+'-name'"
           v-model="name"/>-->
     </div>
-    <div><small>{{prefix}}{{iri}}</small></div>
+    <div><small>{{conceptKey}}</small></div>
   </div>
 </template>
 
@@ -30,7 +30,7 @@ import ConceptService from '@/services/ConceptService';
 
 @Options({
   name: "TTIRIEdit",
-  props: ["label", "predicate", "size", "componentValue"],
+  props: ["property", "prefix", "size", "conceptValue", "conceptKey"],
   emits: ["update:componentValue"],
   // watch: {
   //   componentValue: {
@@ -54,11 +54,8 @@ import ConceptService from '@/services/ConceptService';
   // }
 })
 export default class TTIRIEdit extends Vue {
-  componentValue!: any;
-  prefix = "";
-  iri = "";
+  conceptValue!: any;
   name?: string;
-  options = ['im:', 'sn:']; // TODO: get from API
   namespaces?: any[];
 
   beforeMount() {
@@ -78,7 +75,7 @@ export default class TTIRIEdit extends Vue {
 
   onChange() {
     // this.componentValue.iri = this.prefix + this.iri;
-    this.$emit("update:componentValue", this.componentValue);
+    this.$emit("update:componentValue", this.conceptValue);
   }
 }
 </script>

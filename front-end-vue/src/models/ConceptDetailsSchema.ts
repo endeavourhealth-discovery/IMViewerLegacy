@@ -15,7 +15,7 @@ export class ConceptDetailsSchema {
     this.prefix = this.getPrefix(key, value);
     this.size = this.getSize(value);
     this.conceptKey = key;
-    this.conceptValue = value;
+    this.conceptValue = this.getValue(value);
   }
 
   getProperty(key: string){
@@ -88,6 +88,22 @@ export class ConceptDetailsSchema {
         }
     } else {
       return "";
+    }
+  }
+
+  getValue(value: any) {
+    if (Array.isArray(value)){
+      return value
+    } else if (typeof(value) === "string"){
+      return value
+    } else if (typeof(value) === "object"){
+      const results: Array<Record<string, any>> = []
+      for (const [key, data] of Object.entries(value)){
+        const obj: {[k: string]: any} = {}
+        obj[key] = data;
+        results.push(obj)
+      }
+      return results
     }
   }
 }

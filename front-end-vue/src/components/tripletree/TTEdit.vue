@@ -1,11 +1,12 @@
 <template>
   <div :class="'p-field p-col-'+size">
-    <label><strong>{{ label }}: </strong></label>
+    <label><strong>{{ property }}: </strong></label>
     <InputText
         type="text"
-        :name="predicate"
-        :value="componentValue"
-        @input="$emit('update:componentValue', $event.target.value)"/>
+        :name="property"
+        :value="conceptValue"
+        @input="$emit('update:componentValue', $event.target.value)"
+    />
   </div>
 </template>
 
@@ -14,7 +15,7 @@ import {Options, Vue} from "vue-class-component";
 
 @Options({
   name: "TTEdit",
-  props: ["label", "predicate", "componentValue", "size"],
+  props: ["property", "prefix", "componentValue", "size", "conceptValue"],
   emits: ["update:componentValue"]
 })
 export default class TTEdit extends Vue {
