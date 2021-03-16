@@ -4,8 +4,8 @@
     <InputText
         type="text"
         :name="property"
-        :value="conceptValue"
-        @input="$emit('update:componentValue', $event.target.value)"
+        v-model="editValue"
+        v-on:change="onValueChange()"
     />
   </div>
 </template>
@@ -15,10 +15,17 @@ import {Options, Vue} from "vue-class-component";
 
 @Options({
   name: "TTEdit",
-  props: ["property", "prefix", "componentValue", "size", "conceptValue"],
-  emits: ["update:componentValue"]
+  props: ["property", "prefix", "conceptValue", "size", "conceptValue"],
+  emits: ["update:conceptValue"]
 })
 export default class TTEdit extends Vue {
+  conceptValue!: string;
+  property!: string;
+  editValue: string = this.conceptValue;
+
+  onValueChange(){
+    this.$emit("update:NameValue", this.editValue, this.conceptValue)
+  }
 }
 </script>
 

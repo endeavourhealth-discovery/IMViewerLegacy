@@ -52,7 +52,7 @@ export default class TTIRIEdit extends Vue {
   }
 
   onValueChange() {
-    this.$emit("update:IRIValue");
+    this.$emit("update:IRIValue", this.editValue, this.conceptValue);
   }
 
   onPrefixChange(){
@@ -61,7 +61,7 @@ export default class TTIRIEdit extends Vue {
     } else if (/^https?:/.test(this.editConceptKey)){
       this.editConceptKey = this.editPrefix.uri + this.editValue.substring(this.editValue.lastIndexOf("#") + 1)
     }
-    this.$emit("update:IRIPrefix")
+    this.$emit("update:IRIPrefix") // finish emits new value + old value
   }
 
   checkForHttp(string: string){
