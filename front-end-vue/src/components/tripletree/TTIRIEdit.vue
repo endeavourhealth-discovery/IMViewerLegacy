@@ -14,7 +14,7 @@
         style="width: 80%"
         type="text"
         :name="property+'-name'"
-        v-model="editValue"
+        v-model="editConceptValue"
         v-on:change="onValueChange()"
       />
 <!--      <InputText
@@ -34,7 +34,7 @@ import ConceptService from '@/services/ConceptService';
 @Options({
   name: "TTIRIEdit",
   props: ["property", "prefix", "size", "conceptValue", "conceptKey"],
-  emits: ["update:conceptValue"],
+  emits: ["update:IRIValue", "update:IRIPrefix"],
 })
 export default class TTIRIEdit extends Vue {
   conceptValue!: string;
@@ -43,7 +43,7 @@ export default class TTIRIEdit extends Vue {
   namespaces: any[] = [];
   property!: string;
   prefix!: string;
-  editValue: string = this.conceptValue;
+  editConceptValue: string = this.conceptValue;
   editPrefix: {prefix: string, uri: string} = {prefix: this.prefix, uri: ""};
   editConceptKey: any = this.conceptKey;
 
@@ -52,16 +52,20 @@ export default class TTIRIEdit extends Vue {
   }
 
   onValueChange() {
-    this.$emit("update:IRIValue", this.editValue, this.conceptValue);
+    const updated: {} = { [this.editConceptKey]: this.editConceptValue};
+    const original: {} = { [this.conceptKey]: this.conceptValue}
+    this.$emit("update:IRIValue", updated, original);
   }
 
   onPrefixChange(){
-    if (/^https?:/.test(this.editValue)){
-      this.editValue = this.editPrefix.uri + this.editValue.substring(this.editValue.lastIndexOf("#") + 1)
-    } else if (/^https?:/.test(this.editConceptKey)){
-      this.editConceptKey = this.editPrefix.uri + this.editValue.substring(this.editValue.lastIndexOf("#") + 1)
+    if (this.checkForHttp(this.editConceptValue)){
+      this.editConceptValue = this.editPrefix.uri + this.editConceptValue.substring(this.editConceptValue.lastIndexOf("#") + 1)
+    } else if (this.checkForHttp(this.editConceptKey)){
+      this.editConceptKey = this.editPrefix.uri + this.editConceptValue.substring(this.editConceptValue.lastIndexOf("#") + 1);
     }
-    this.$emit("update:IRIPrefix") // finish emits new value + old value
+    const updated: {} = { [this.editConceptKey]: this.editConceptValue};
+    const original: {} = { [this.conceptKey]: this.conceptValue}
+    this.$emit("update:IRIPrefix", updated, original);
   }
 
   checkForHttp(string: string){

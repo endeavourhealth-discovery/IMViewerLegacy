@@ -16,7 +16,7 @@ import {Options, Vue} from "vue-class-component";
 @Options({
   name: "TTEdit",
   props: ["property", "prefix", "conceptValue", "size", "conceptValue"],
-  emits: ["update:conceptValue"]
+  emits: ["update:nameValue"]
 })
 export default class TTEdit extends Vue {
   conceptValue!: string;
@@ -24,7 +24,7 @@ export default class TTEdit extends Vue {
   editValue: string = this.conceptValue;
 
   onValueChange(){
-    this.$emit("update:NameValue", this.editValue, this.conceptValue)
+    this.$emit("update:nameValue", this.editValue, this.conceptValue)
   }
 }
 </script>
