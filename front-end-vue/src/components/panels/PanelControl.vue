@@ -2,11 +2,7 @@
   <div>
     <ConceptSummary />
 
-    <Panel
-      header="Defintion"
-      :toggleable="true"
-      v-if="$route.name == 'Ontology'"
-    >
+    <Panel header="Defintion" :toggleable="true">
       {{ concept }}
     </Panel>
 
@@ -14,7 +10,7 @@
       <Graph />
     </Panel>
 
-    <!-- <Panel header="Members" :toggleable="true" v-if="$route.name == 'Valueset'">
+    <!-- <Panel header="Members" :toggleable="true">
       {{ concept }}
     </Panel> -->
 
