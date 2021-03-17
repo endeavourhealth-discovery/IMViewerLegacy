@@ -8,7 +8,24 @@ export default createStore({
     conceptIri: "owl:Thing",
     conceptAggregate: {} as any,
     history: [] as HistoryItem[],
-    searchResults: []
+    searchResults: [],
+    filters: {
+      selectedStatus: ["Active", "Draft"],
+      selectedSchemes: [
+        {
+          iri: ":891071000252105",
+          name: "Discovery code"
+        },
+        {
+          iri: ":891101000252101",
+          name: "Snomed-CT code"
+        },
+        {
+          iri: ":891111000252103",
+          name: "Term based code"
+        }
+      ]
+    }
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -25,6 +42,9 @@ export default createStore({
     },
     updateSearchResults(state, searchResults) {
       state.searchResults = searchResults;
+    },
+    updateFilters(state, filters) {
+      state.filters = filters;
     },
 
   },
