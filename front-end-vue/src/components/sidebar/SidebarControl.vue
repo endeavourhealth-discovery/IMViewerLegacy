@@ -40,7 +40,7 @@
       <div class="p-fluid p-grid">
         <div class="p-field p-col-12 p-md-12" style="height: 65vh">
           <DataTable
-            :value="results"
+            :value="$store.state.searchResults"
             v-model:selection="selectedResult"
             @row-select="onNodeSelect"
             selectionMode="single"
@@ -143,9 +143,17 @@ import { SortBy } from "@/models/search/SortBy";
 import { ConceptType } from "@/models/search/ConceptType";
 import { ConceptStatus } from "@/models/ConceptStatus";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
+import store from "@/store/index";
+import { mapState } from "vuex";
 
 @Options({
-  components: { Hierarchy, History, SearchResults }
+  components: { Hierarchy, History, SearchResults },
+  computed: mapState(["searchResults"]),
+  watch: {
+    searchResults(newValue, oldValue) {
+      this.results = newValue;
+    }
+  }
 })
 export default class SidebarControl extends Vue {
   searchTerm = "";
@@ -242,8 +250,8 @@ export default class SidebarControl extends Vue {
         searchRequest.statusFilter.push(ConceptStatus.Inactive);
       }
     });
-    this.results = await (await ConceptService.advancedSearch(searchRequest))
-      .data.concepts;
+
+    store.dispatch("fetchSearchResults", searchRequest);
   }
 
   getPerspectiveByConceptType(conceptType: ConceptType): any {
@@ -260,13 +268,8 @@ export default class SidebarControl extends Vue {
   }
 
   onNodeSelect() {
-    const currentRoute = this.$route.name as RouteRecordName | undefined;
-    console.log(this.selectedResult);
-    const perspective = this.getPerspectiveByConceptType(
-      this.selectedResult.conceptType
-    );
     this.$router.push({
-      name: perspective.name,
+      name: "Concept",
       params: { selectedIri: this.selectedResult.iri }
     });
   }

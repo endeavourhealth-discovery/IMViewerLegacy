@@ -13,60 +13,6 @@
                 @click="$router.push({ name: 'Home' })"
               />
             </div>
-
-            <div
-              class="p-col-12"
-              v-bind:class="{ active: isActive('Datamodel') }"
-            >
-              <font-awesome-icon
-                class="sidebutton"
-                :icon="['fas', 'sitemap']"
-                size="4x"
-                style="color: lightgrey; padding: 5px"
-                @click="
-                  $router.push({
-                    name: 'Datamodel',
-                    params: { selectedIri: this.$store.state.datamodelIri },
-                  })
-                "
-              />
-            </div>
-
-            <div
-              class="p-col-12"
-              v-bind:class="{ active: isActive('Ontology') }"
-            >
-              <font-awesome-icon
-                class="sidebutton"
-                :icon="['fas', 'lightbulb']"
-                size="4x"
-                style="color: lightgrey; padding: 5px"
-                @click="
-                  $router.push({
-                    name: 'Ontology',
-                    params: { selectedIri: this.$store.state.ontologyIri },
-                  })
-                "
-              />
-            </div>
-
-            <div
-              class="p-col-12"
-              v-bind:class="{ active: isActive('Valueset') }"
-            >
-              <font-awesome-icon
-                class="sidebutton"
-                :icon="['fas', 'tasks']"
-                size="4x"
-                style="color: lightgrey; padding: 5px"
-                @click="
-                  $router.push({
-                    name: 'Valueset',
-                    params: { selectedIri: this.$store.state.valuesetIri },
-                  })
-                "
-              />
-            </div>
           </div>
         </div>
       </div>

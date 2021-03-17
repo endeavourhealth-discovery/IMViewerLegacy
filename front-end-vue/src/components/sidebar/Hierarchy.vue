@@ -43,20 +43,6 @@ export default class Hierarchy extends Vue {
   root: Array<TreeNode> = [];
   expandedKeys: any = {};
 
-  // async mounted() {
-  // }
-
-  // convertParentHeirarchyIntoTree(parents: any) {
-  //   parents.forEach((parentNode: any) => {
-  //     const parent = this.createTreeNode(parentNode.name, parentNode.iri, "0");
-  //     if (parentNode.parents) {
-  //       this.convertParentHeirarchyIntoTree(parentNode.parents);
-  //     } else {
-  //       parent.children
-  //     }
-  //   });
-  // }
-
   createTree(concept: any, parentHierarchy: any, children: any) {
     const selectedConcept = this.createTreeNode(concept.name, concept.iri, "0");
 
@@ -94,9 +80,8 @@ export default class Hierarchy extends Vue {
   }
 
   onNodeSelect(node: any) {
-    const currentRoute = this.$route.name as RouteRecordName | undefined;
     this.$router.push({
-      name: currentRoute,
+      name: "Concept",
       params: { selectedIri: node.data }
     });
   }

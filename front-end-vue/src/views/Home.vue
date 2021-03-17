@@ -22,7 +22,8 @@ import store from "@/store/index";
 })
 export default class Home extends Vue {
   async mounted() {
-    store.dispatch("fetchConceptAggregate", store.state.homeIri);
+    store.commit("updateConceptIri", "owl:Thing");
+    store.dispatch("fetchConceptAggregate", store.state.conceptIri);
   }
 }
 </script>

@@ -20,10 +20,10 @@ import store from "@/store/index";
     SidebarControl
   }
 })
-export default class Valueset extends Vue {
+export default class Concept extends Vue {
   async mounted() {
-    store.commit("updateValuesetIri", this.$route.params.selectedIri as string);
-    store.dispatch("fetchConceptAggregate", store.state.valuesetIri);
+    store.commit("updateConceptIri", this.$route.params.selectedIri as string);
+    store.dispatch("fetchConceptAggregate", store.state.conceptIri);
   }
 }
 </script>

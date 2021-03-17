@@ -1,25 +1,18 @@
+import { SearchRequest } from './../models/search/SearchRequest';
 import { createStore } from "vuex";
 import ConceptService from "../services/ConceptService";
 import { HistoryItem } from "../models/HistoryItem";
 
 export default createStore({
   state: {
-    homeIri: "owl:Thing",
-    ontologyIri: ":SemanticConcept",
-    datamodelIri: ":DiscoveryCommonDataModel",
-    valuesetIri: ":VSET_ValueSet",
+    conceptIri: "owl:Thing",
     conceptAggregate: {} as any,
     history: [] as HistoryItem[],
+    searchResults: []
   },
   mutations: {
-    updateOntologyIri(state, ontologyIri) {
-      state.ontologyIri = ontologyIri;
-    },
-    updateDatamodelIri(state, datamodelIri) {
-      state.datamodelIri = datamodelIri;
-    },
-    updateValuesetIri(state, valuesetIri) {
-      state.valuesetIri = valuesetIri;
+    updateConceptIri(state, conceptIri) {
+      state.conceptIri = conceptIri;
     },
     updateConceptAggregate(state, conceptAggregate) {
       state.conceptAggregate = conceptAggregate;
@@ -30,6 +23,10 @@ export default createStore({
       });
       state.history.splice(0, 0, historyItem);
     },
+    updateSearchResults(state, searchResults) {
+      state.searchResults = searchResults;
+    },
+
   },
   actions: {
     async fetchConceptAggregate({ commit }, iri) {
@@ -51,6 +48,10 @@ export default createStore({
         properties: properties
       });
     },
+    async fetchSearchResults({ commit }, searchRequest: SearchRequest) {
+      const searchResults = (await ConceptService.advancedSearch(searchRequest)).data.concepts;
+      commit("updateSearchResults", searchResults)
+    }
   },
   modules: {},
 });
