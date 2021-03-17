@@ -57,4 +57,8 @@ export default class ConceptService {
       responseType: "text",
     });
   }
+
+  public static getConceptProperties(iri: string) {
+    return axios.get(this.api + "api/concept/" + iri + "/properties");
+  }
 }

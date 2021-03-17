@@ -20,31 +20,65 @@ import { mapState } from "vuex";
   computed: mapState(["conceptAggregate"]),
   watch: {
     async conceptAggregate(newValue, oldValue) {
-      this.removeD3();
-      this.graphData = {};
-      this.root = {};
+      this.stopSimulation();
+      console.log(JSON.stringify(newValue.concept.conceptType));
       this.graphData = this.getGraphData(
         newValue.concept,
         newValue.parents,
-        newValue.children
+        newValue.children,
+        newValue.properties
       );
       this.root = d3.hierarchy(this.graphData);
-      console.log(this.root);
       this.initD3();
+      this.simulation.tick();
+      this.initSvgPanZoom();
     }
   }
 })
 export default class Graph extends Vue {
-  graphData = this.getGraphData({} as Concept, [], []);
+  graphData = this.getGraphData({} as Concept, [], [], []);
   root = d3.hierarchy(this.graphData);
   windowRect = { height: 600, width: 700 };
+  simulation: d3.Simulation<
+    d3.SimulationNodeDatum,
+    undefined
+  > = {} as d3.Simulation<d3.SimulationNodeDatum, undefined>;
 
-  getGraphData(concept: Concept, parents: unknown, children: unknown) {
-    console.log(concept.name);
+  stopSimulation() {
+    try {
+      d3.selectAll("circle").remove();
+      d3.selectAll("text").remove();
+      d3.selectAll("line").remove();
+      this.simulation.stop();
+    } catch (error) {
+      console.log("Simulation did not stop");
+    }
+  }
+
+  getGraphData(
+    concept: Concept,
+    parents: unknown,
+    children: unknown,
+    properties: unknown
+  ) {
+    if (concept.conceptType === "Class") {
+      return {
+        name: concept.name,
+        children: [
+          {
+            name: "Child",
+            children: [
+              { name: "bone structure of distal radius" },
+              { name: "Fracture" }
+            ]
+          }
+        ]
+      };
+    }
     const graphData: any = { name: concept.name, children: [] };
     graphData.children.push({
       name: "Properties",
-      children: this.getPropertyNodes(concept)
+      children: this.getPropertyNodes(properties)
     });
     graphData.children.push({
       name: "Parents",
@@ -72,19 +106,30 @@ export default class Graph extends Vue {
     }
   }
 
-  getPropertyNodes(concept: Concept) {
-    if (!concept || !concept.Property) {
+  getPropertyNodes(properties: any) {
+    if (!properties) {
       return [];
     }
     const nodes: any[] = [];
-    concept.Property.forEach(property => {
+    properties.forEach((property: any) => {
       nodes.push({
         name: property.property.name,
         iri: property.property.iri,
-        type: property.valueType.name
+        type: property.valueType.name || property.valueType.iri,
+        inheritedFrom: property.inheritedFrom
       });
     });
     return nodes;
+  }
+
+  initSvgPanZoom() {
+    svgPanZoom("#svg", {
+      zoomEnabled: true,
+      controlIconsEnabled: true,
+      fit: false,
+      center: true,
+      dblClickZoomEnabled: false
+    });
   }
 
   initD3() {
@@ -94,7 +139,7 @@ export default class Graph extends Vue {
     const that = this;
     const links = this.root.links() as d3.SimulationLinkDatum<any>[];
     const nodes = this.root.descendants();
-    const simulation = d3
+    this.simulation = d3
       .forceSimulation(nodes as any)
       .force("charge", d3.forceManyBody().strength(-750))
       .force("link", d3.forceLink().links(links))
@@ -115,6 +160,7 @@ export default class Graph extends Vue {
           .enter()
           .append("circle")
           .attr("r", function(d: any) {
+            if (d.depth === 0) return 10;
             return 5;
           })
           .merge(circles as any)
@@ -151,6 +197,11 @@ export default class Graph extends Vue {
           .attr("id", function(d: any) {
             const name = d.data.name;
             return /\s/.test(name) ? name.replace(/\s/g, "") : name;
+          })
+          .attr("class", function(d: any) {
+            if (d.depth === 0) return "root";
+            if (d.data.inheritedFrom) return "inherited";
+            return "";
           });
 
         circles.exit().remove();
@@ -207,6 +258,18 @@ export default class Graph extends Vue {
           })
           .attr("link", function(d: any) {
             return d.iri;
+          })
+          .attr("inheritedFromIri", function(d: any) {
+            if (d.data.inheritedFrom) return d.data.inheritedFrom.iri;
+            return "";
+          })
+          .attr("inheritedFromName", function(d: any) {
+            if (d.data.inheritedFrom) return d.data.inheritedFrom.name;
+            return "";
+          })
+          .attr("propertyType", function(d: any) {
+            if (d.data.type) return d.data.type;
+            return d.data.name;
           });
 
         textNodes.exit().remove();
@@ -219,16 +282,13 @@ export default class Graph extends Vue {
         lineLabels
           .enter()
           .append("text")
+          .merge(lineLabels as any)
           .attr("class", "labelText")
           .attr("x", function(d: any) {
-            if (d.source.data.name === "Properties")
-              return (d.target.x + d.source.x) / 2;
-            return 0;
+            return (d.target.x + d.source.x) / 2;
           })
           .attr("y", function(d: any) {
-            if (d.source.data.name === "Properties")
-              return (d.target.y + d.source.y) / 2;
-            return 0;
+            return (d.target.y + d.source.y) / 2;
           })
           .text(function(d: any) {
             if (d.source.data.name === "Properties") {
@@ -241,13 +301,8 @@ export default class Graph extends Vue {
 
     d3.select("#content")
       .selectAll("g.nodes")
-      .on("mouseover", function(event: any) {
-        // console.log(that.concept.Property);
-        // console.log(event);
-      })
-      .on("mouseout", function(event: any) {
-        // console.log("mouseout");
-      })
+      .on("mouseover", that.onMouseOver)
+      .on("mouseout", that.onMouseOut)
       .on("click", function(event: any) {
         if (event.srcElement.localName === "circle") {
           that.onCircleClick(event);
@@ -255,14 +310,23 @@ export default class Graph extends Vue {
           that.onTextClick(event);
         }
       });
+  }
 
-    svgPanZoom("#svg", {
-      zoomEnabled: true,
-      controlIconsEnabled: true,
-      fit: false,
-      center: true,
-      dblClickZoomEnabled: false
-    });
+  onMouseOver(event: any) {
+    const inheritedFrom =
+      event.srcElement.attributes.inheritedFromName.nodeValue;
+    if (inheritedFrom) {
+      const title = `${event.srcElement.innerHTML} - Inherited from ${inheritedFrom}`;
+      event.srcElement.innerHTML = title;
+    }
+  }
+
+  onMouseOut(event: any) {
+    const type = event.srcElement.attributes.propertyType.value;
+    if (type) {
+      const title = `${type}`;
+      event.srcElement.innerHTML = title;
+    }
   }
 
   onCircleClick(event: any) {
@@ -276,8 +340,10 @@ export default class Graph extends Vue {
       currentNode[0].children = (currentNode[0] as any)._children;
       (currentNode[0] as any)._children = undefined;
     }
-    this.removeD3();
+    this.stopSimulation();
     this.initD3();
+    this.simulation.tick();
+    this.initSvgPanZoom();
   }
 
   onTextClick(event: any) {
@@ -292,32 +358,23 @@ export default class Graph extends Vue {
         params: { selectedIri: iri }
       });
   }
-
-  removeD3() {
-    d3.select("#content")
-      .selectAll("g")
-      .selectAll("text")
-      .remove();
-    d3.select("#content")
-      .selectAll("g")
-      .selectAll("line")
-      .remove();
-  }
-
-  mounted() {
-    this.initD3();
-  }
 }
 </script>
 
 <style>
+.root {
+  fill: rgb(0, 75, 136);
+}
+.inherited {
+  fill: grey;
+}
 circle {
   fill: cadetblue;
 }
 circle#Properties,
 circle#Children,
 circle#Parents {
-  fill: rgb(161, 174, 219);
+  fill: rgb(33, 150, 243);
   fill-opacity: 1;
   cursor: pointer;
 }

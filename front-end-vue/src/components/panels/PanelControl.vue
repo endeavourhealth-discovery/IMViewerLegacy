@@ -10,7 +10,7 @@
       {{ concept }}
     </Panel>
 
-    <Panel header="Graph" :toggleable="true" v-if="$route.name == 'Datamodel'">
+    <Panel header="Graph" :toggleable="true">
       <Graph />
     </Panel>
 
