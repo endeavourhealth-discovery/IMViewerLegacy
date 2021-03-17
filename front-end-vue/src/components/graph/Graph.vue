@@ -20,8 +20,8 @@ import { mapState } from "vuex";
   computed: mapState(["conceptAggregate"]),
   watch: {
     async conceptAggregate(newValue, oldValue) {
-      this.removeD3();
-      // await new Promise(resolve => setTimeout(resolve, 2000));
+      this.stopSimulation();
+      console.log(JSON.stringify(newValue.concept.conceptType));
       this.graphData = this.getGraphData(
         newValue.concept,
         newValue.parents,
@@ -30,6 +30,8 @@ import { mapState } from "vuex";
       );
       this.root = d3.hierarchy(this.graphData);
       this.initD3();
+      this.simulation.tick();
+      this.initSvgPanZoom();
     }
   }
 })
@@ -37,6 +39,21 @@ export default class Graph extends Vue {
   graphData = this.getGraphData({} as Concept, [], [], []);
   root = d3.hierarchy(this.graphData);
   windowRect = { height: 600, width: 700 };
+  simulation: d3.Simulation<
+    d3.SimulationNodeDatum,
+    undefined
+  > = {} as d3.Simulation<d3.SimulationNodeDatum, undefined>;
+
+  stopSimulation() {
+    try {
+      d3.selectAll("circle").remove();
+      d3.selectAll("text").remove();
+      d3.selectAll("line").remove();
+      this.simulation.stop();
+    } catch (error) {
+      console.log("Simulation did not stop");
+    }
+  }
 
   getGraphData(
     concept: Concept,
@@ -44,6 +61,20 @@ export default class Graph extends Vue {
     children: unknown,
     properties: unknown
   ) {
+    if (concept.conceptType === "Class") {
+      return {
+        name: concept.name,
+        children: [
+          {
+            name: "Child",
+            children: [
+              { name: "bone structure of distal radius" },
+              { name: "Fracture" }
+            ]
+          }
+        ]
+      };
+    }
     const graphData: any = { name: concept.name, children: [] };
     graphData.children.push({
       name: "Properties",
@@ -91,6 +122,16 @@ export default class Graph extends Vue {
     return nodes;
   }
 
+  initSvgPanZoom() {
+    svgPanZoom("#svg", {
+      zoomEnabled: true,
+      controlIconsEnabled: true,
+      fit: false,
+      center: true,
+      dblClickZoomEnabled: false
+    });
+  }
+
   initD3() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.windowRect = document.getElementById("svg")?.getBoundingClientRect()!;
@@ -98,7 +139,7 @@ export default class Graph extends Vue {
     const that = this;
     const links = this.root.links() as d3.SimulationLinkDatum<any>[];
     const nodes = this.root.descendants();
-    const simulation = d3
+    this.simulation = d3
       .forceSimulation(nodes as any)
       .force("charge", d3.forceManyBody().strength(-750))
       .force("link", d3.forceLink().links(links))
@@ -241,16 +282,13 @@ export default class Graph extends Vue {
         lineLabels
           .enter()
           .append("text")
+          .merge(lineLabels as any)
           .attr("class", "labelText")
           .attr("x", function(d: any) {
-            if (d.source.data.name === "Properties")
-              return (d.target.x + d.source.x) / 2;
-            return 0;
+            return (d.target.x + d.source.x) / 2;
           })
           .attr("y", function(d: any) {
-            if (d.source.data.name === "Properties")
-              return (d.target.y + d.source.y) / 2;
-            return 0;
+            return (d.target.y + d.source.y) / 2;
           })
           .text(function(d: any) {
             if (d.source.data.name === "Properties") {
@@ -272,14 +310,6 @@ export default class Graph extends Vue {
           that.onTextClick(event);
         }
       });
-
-    svgPanZoom("#svg", {
-      zoomEnabled: true,
-      controlIconsEnabled: true,
-      fit: false,
-      center: true,
-      dblClickZoomEnabled: false
-    });
   }
 
   onMouseOver(event: any) {
@@ -310,8 +340,10 @@ export default class Graph extends Vue {
       currentNode[0].children = (currentNode[0] as any)._children;
       (currentNode[0] as any)._children = undefined;
     }
-    this.removeD3();
+    this.stopSimulation();
     this.initD3();
+    this.simulation.tick();
+    this.initSvgPanZoom();
   }
 
   onTextClick(event: any) {
@@ -325,19 +357,6 @@ export default class Graph extends Vue {
         name: currentRoute,
         params: { selectedIri: iri }
       });
-  }
-
-  removeD3() {
-    d3.selectAll("g.nodes")
-      .selectAll("*")
-      .remove();
-    d3.selectAll("g.links")
-      .selectAll("*")
-      .remove();
-  }
-
-  mounted() {
-    this.initD3();
   }
 }
 </script>
