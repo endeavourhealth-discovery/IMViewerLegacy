@@ -1,3 +1,4 @@
+import { ConceptType } from './../models/search/ConceptType';
 import { SearchRequest } from './../models/search/SearchRequest';
 import { createStore } from "vuex";
 import ConceptService from "../services/ConceptService";
@@ -8,7 +9,25 @@ export default createStore({
     conceptIri: "owl:Thing",
     conceptAggregate: {} as any,
     history: [] as HistoryItem[],
-    searchResults: []
+    searchResults: [],
+    filters: {
+      selectedStatus: ["Active", "Draft"],
+      selectedSchemes: [
+        {
+          iri: ":891071000252105",
+          name: "Discovery code"
+        },
+        {
+          iri: ":891101000252101",
+          name: "Snomed-CT code"
+        },
+        {
+          iri: ":891111000252103",
+          name: "Term based code"
+        }
+      ],
+      selectedTypes: ["Class", "ObjectProperty", "DataProperty", "DataType", "Annotation", "Individual", "Record", "ValueSet", "Folder", "Term", "Legacy", "CategoryGroup"]
+    }
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -26,6 +45,9 @@ export default createStore({
     updateSearchResults(state, searchResults) {
       state.searchResults = searchResults;
     },
+    updateFilters(state, filters) {
+      state.filters = filters;
+    },
 
   },
   actions: {
@@ -38,6 +60,7 @@ export default createStore({
       const mappedTo = (await ConceptService.getConceptMappedTo(iri)).data;
       const usages = (await ConceptService.getConceptUsages(iri)).data;
       const properties = (await ConceptService.getConceptProperties(iri)).data;
+      const members = (await ConceptService.getConceptMembers(iri)).data;
       commit("updateConceptAggregate", {
         concept: concept,
         parents: parents,
@@ -45,7 +68,8 @@ export default createStore({
         mappedFrom: mappedFrom,
         mappedTo: mappedTo,
         usages: usages,
-        properties: properties
+        properties: properties,
+        members: members
       });
     },
     async fetchSearchResults({ commit }, searchRequest: SearchRequest) {

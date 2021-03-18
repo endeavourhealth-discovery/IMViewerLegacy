@@ -37,6 +37,10 @@ export default class ConceptService {
     return axios.get(this.api + "api/concept/" + iri + "/mappedTo");
   }
 
+  public static async getConceptMembers(iri: string) {
+    return axios.get(this.api + "api/concept/" + iri + "/members");
+  }
+
   public static async getAncestorDefinitions(iri: string) {
     return axios.get(this.api + "api/concept/" + iri + "/parents/definitions");
   }
