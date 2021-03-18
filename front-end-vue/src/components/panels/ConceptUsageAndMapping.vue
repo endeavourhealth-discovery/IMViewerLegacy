@@ -3,6 +3,10 @@
     <div class="p-col-4">
       <Panel header="Mapped from" :toggleable="true"
         ><Listbox
+          listStyle="height:200px"
+          :filter="true"
+          emptyMessage="No results found"
+          emptyFilterMessage="No results found"
           v-model="selectedMappedFrom"
           @click="onNodeSelect(selectedMappedFrom)"
           :options="$store.state.conceptAggregate.mappedFrom"
@@ -13,6 +17,10 @@
     <div class="p-col-4">
       <Panel header="Mapped to" :toggleable="true"
         ><Listbox
+          listStyle="height:200px"
+          :filter="true"
+          emptyMessage="No results found"
+          emptyFilterMessage="No results found"
           v-model="selectedMappedTo"
           @click="onNodeSelect(selectedMappedTo)"
           :options="$store.state.conceptAggregate.mappedTo"
@@ -23,6 +31,10 @@
     <div class="p-col-4">
       <Panel header="Used In" :toggleable="true"
         ><Listbox
+          listStyle="height:200px"
+          :filter="true"
+          emptyMessage="No results found"
+          emptyFilterMessage="No results found"
           v-model="selectedUsage"
           @click="onNodeSelect(selectedUsage)"
           :options="$store.state.conceptAggregate.usages"
@@ -41,9 +53,9 @@ import { Options, Vue } from "vue-class-component";
   prop: {}
 })
 export default class ConceptUsageAndMapping extends Vue {
-    selectedMappedFrom: {} = {};
-    selectedMappedTo: {} = {};
-    selectedUsage: {} = {};
+  selectedMappedFrom: {} = {};
+  selectedMappedTo: {} = {};
+  selectedUsage: {} = {};
 
   onNodeSelect(concept: any) {
     this.$router.push({
