@@ -61,4 +61,8 @@ export default class ConceptService {
   public static getConceptProperties(iri: string) {
     return axios.get(this.api + "api/concept/" + iri + "/properties");
   }
+
+  public static getConceptGraph(iri: string) {
+    return axios.get(this.api + "api/concept/" + iri + "/graph");
+  }
 }

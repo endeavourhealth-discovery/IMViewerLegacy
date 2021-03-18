@@ -10,10 +10,10 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import * as d3 from "d3";
-import { Concept } from "@/models/Concept";
 import svgPanZoom from "svg-pan-zoom";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { mapState } from "vuex";
+import ConceptService from "@/services/ConceptService";
 
 @Options({
   components: {},
@@ -22,12 +22,10 @@ import { mapState } from "vuex";
     async conceptAggregate(newValue, oldValue) {
       this.stopSimulation();
       console.log(JSON.stringify(newValue.concept.conceptType));
-      this.graphData = this.getGraphData(
-        newValue.concept,
-        newValue.parents,
-        newValue.children,
-        newValue.properties
-      );
+      this.graphData = (
+        await ConceptService.getConceptGraph(newValue.concept.iri)
+      ).data;
+      console.log(JSON.stringify(this.graphData));
       this.root = d3.hierarchy(this.graphData);
       this.initD3();
       this.simulation.tick();
@@ -36,7 +34,7 @@ import { mapState } from "vuex";
   }
 })
 export default class Graph extends Vue {
-  graphData = this.getGraphData({} as Concept, [], [], []);
+  graphData = {};
   root = d3.hierarchy(this.graphData);
   windowRect = { height: 600, width: 700 };
   simulation: d3.Simulation<
@@ -51,75 +49,8 @@ export default class Graph extends Vue {
       d3.selectAll("line").remove();
       this.simulation.stop();
     } catch (error) {
-      console.log("Simulation did not stop");
+      // console.log("Simulation did not stop");
     }
-  }
-
-  getGraphData(
-    concept: Concept,
-    parents: unknown,
-    children: unknown,
-    properties: unknown
-  ) {
-    if (concept.conceptType === "Class") {
-      return {
-        name: concept.name,
-        children: [
-          {
-            name: "Child",
-            children: [
-              { name: "bone structure of distal radius" },
-              { name: "Fracture" }
-            ]
-          }
-        ]
-      };
-    }
-    const graphData: any = { name: concept.name, children: [] };
-    graphData.children.push({
-      name: "Properties",
-      children: this.getPropertyNodes(properties)
-    });
-    graphData.children.push({
-      name: "Parents",
-      children: this.getNodes(parents)
-    });
-    graphData.children.push({
-      name: "Children",
-      children: this.getNodes(children)
-    });
-    return graphData;
-  }
-
-  getNodes(leaf: any) {
-    if (!leaf) {
-      return [];
-    }
-    const nodes: { name: string; value: string }[] = [];
-    try {
-      leaf.forEach((element: { name: any; iri: any }) => {
-        nodes.push({ name: element.name, value: element.iri });
-      });
-    } finally {
-      // eslint-disable-next-line no-unsafe-finally
-      return nodes;
-    }
-  }
-
-  getPropertyNodes(properties: any) {
-    if (!properties) {
-      return [];
-    }
-    const nodes: any[] = [];
-    properties.forEach((property: any) => {
-      nodes.push({
-        name: property.property.name,
-        iri: property.property.iri,
-        type: property.valueType.name || property.valueType.iri,
-        inheritedFrom: property.inheritedFrom
-      });
-    });
-    return nodes;
   }
 
   initSvgPanZoom() {
@@ -200,7 +131,7 @@ export default class Graph extends Vue {
           })
           .attr("class", function(d: any) {
             if (d.depth === 0) return "root";
-            if (d.data.inheritedFrom) return "inherited";
+            if (d.data.inheritedFromIri) return "inherited";
             return "";
           });
 
@@ -242,8 +173,7 @@ export default class Graph extends Vue {
           .enter()
           .append("text")
           .text(function(d: any) {
-            if (d.data.type) return d.data.type;
-            return d.data.name;
+            return d.data.valueTypeName || d.data.name;
           })
           .merge(textNodes as any)
           .attr("x", function(d: any) {
@@ -252,24 +182,20 @@ export default class Graph extends Vue {
           .attr("y", function(d: any) {
             return d.y - 20;
           })
-          .attr("id", function(d: any) {
-            const name = d.data.name;
-            return /\s/.test(name) ? name.replace(/\s/g, "") : name;
+          .attr("name", function(d: any) {
+            return d.data.valueTypeName || d.data.name;
           })
-          .attr("link", function(d: any) {
-            return d.iri;
+          .attr("id", function(d: any) {
+            return d.data.valueTypeIri || d.data.iri;
           })
           .attr("inheritedFromIri", function(d: any) {
-            if (d.data.inheritedFrom) return d.data.inheritedFrom.iri;
-            return "";
+            return d.data.inheritedFromIri;
           })
           .attr("inheritedFromName", function(d: any) {
-            if (d.data.inheritedFrom) return d.data.inheritedFrom.name;
-            return "";
+            return d.data.inheritedFromName;
           })
           .attr("propertyType", function(d: any) {
-            if (d.data.type) return d.data.type;
-            return d.data.name;
+            return d.data.propertyType;
           });
 
         textNodes.exit().remove();
@@ -291,9 +217,7 @@ export default class Graph extends Vue {
             return (d.target.y + d.source.y) / 2;
           })
           .text(function(d: any) {
-            if (d.source.data.name === "Properties") {
-              return d.target.data.name;
-            }
+            return d.target.data.propertyType;
           });
 
         lineLabels.exit().remove();
@@ -313,8 +237,9 @@ export default class Graph extends Vue {
   }
 
   onMouseOver(event: any) {
+    console.log(event.srcElement);
     const inheritedFrom =
-      event.srcElement.attributes.inheritedFromName.nodeValue;
+      event.srcElement.attributes.inheritedFromName?.nodeValue;
     if (inheritedFrom) {
       const title = `${event.srcElement.innerHTML} - Inherited from ${inheritedFrom}`;
       event.srcElement.innerHTML = title;
@@ -322,10 +247,9 @@ export default class Graph extends Vue {
   }
 
   onMouseOut(event: any) {
-    const type = event.srcElement.attributes.propertyType.value;
-    if (type) {
-      const title = `${type}`;
-      event.srcElement.innerHTML = title;
+    const originalTitle = event.srcElement.attributes.name?.value;
+    if (originalTitle) {
+      event.srcElement.innerHTML = originalTitle;
     }
   }
 
@@ -347,10 +271,7 @@ export default class Graph extends Vue {
   }
 
   onTextClick(event: any) {
-    const currentNode = this.root
-      .descendants()
-      .filter((node: any) => node.data.name === event.srcElement.innerHTML);
-    const iri = (currentNode[0].data as any)?.value;
+    const iri = event.srcElement.attributes.id.nodeValue;
     const currentRoute = this.$route.name as RouteRecordName | undefined;
     if (iri)
       this.$router.push({
