@@ -34,12 +34,12 @@ export default class Home extends Vue {
       icon: 'pi pi-fw pi-user',
       items: [
         {
-          label: 'Register',
-          icon: 'pi pi-fw pi-user-plus'
-        },
-        {
           label: 'Login',
           icon: 'pi pi-fw pi-user-minus'
+        },
+        {
+          label: 'Register',
+          icon: 'pi pi-fw pi-user-plus'
         },
       ]
     }
