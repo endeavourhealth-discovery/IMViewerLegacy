@@ -27,9 +27,24 @@
       <label for="scheme">Select Scheme:</label>
     </span>
   </div>
+
+  <div class="p-field p-col-12 p-md-12">
+    <span class="p-float-label">
+      <MultiSelect
+        id="conceptType"
+        v-model="$store.state.filters.selectedTypes"
+        @change="search()"
+        :options="typeOptions"
+        placeholder="Select Concept Type"
+        display="chip"
+      />
+      <label for="scheme">Select Concept Type:</label>
+    </span>
+  </div>
 </template>
 
 <script lang="ts">
+import { ConceptType } from "@/models/search/ConceptType";
 import { Options, Vue } from "vue-class-component";
 
 @Options({
@@ -84,6 +99,7 @@ export default class Filters extends Vue {
       name: "Term based code"
     }
   ];
+  typeOptions = ["Class", "ObjectProperty", "DataProperty", "DataType", "Annotation", "Individual", "Record", "ValueSet", "Folder", "Term", "Legacy", "CategoryGroup"]
 }
 </script>
 

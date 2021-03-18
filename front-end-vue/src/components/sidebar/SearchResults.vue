@@ -1,5 +1,5 @@
 <template>
-  <div class="p-field p-col-12 p-md-12" style="height: 65vh">
+  <div class="p-field p-col-12 p-md-12" style="height: 60vh">
     <DataTable
       :value="$store.state.searchResults"
       v-model:selection="selectedResult"
@@ -8,7 +8,7 @@
       dataKey="iri"
       class="p-datatable-sm"
       :scrollable="true"
-      scrollHeight="60vh"
+      scrollHeight="55vh"
       removableSort
       :paginator="true"
       paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"

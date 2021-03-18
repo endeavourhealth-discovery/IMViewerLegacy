@@ -1,3 +1,4 @@
+import { ConceptType } from './../models/search/ConceptType';
 import { SearchRequest } from './../models/search/SearchRequest';
 import { createStore } from "vuex";
 import ConceptService from "../services/ConceptService";
@@ -24,7 +25,8 @@ export default createStore({
           iri: ":891111000252103",
           name: "Term based code"
         }
-      ]
+      ],
+      selectedTypes: ["Class", "ObjectProperty", "DataProperty", "DataType", "Annotation", "Individual", "Record", "ValueSet", "Folder", "Term", "Legacy", "CategoryGroup"]
     }
   },
   mutations: {
@@ -58,6 +60,7 @@ export default createStore({
       const mappedTo = (await ConceptService.getConceptMappedTo(iri)).data;
       const usages = (await ConceptService.getConceptUsages(iri)).data;
       const properties = (await ConceptService.getConceptProperties(iri)).data;
+      const members = (await ConceptService.getConceptMembers(iri)).data;
       commit("updateConceptAggregate", {
         concept: concept,
         parents: parents,
@@ -65,7 +68,8 @@ export default createStore({
         mappedFrom: mappedFrom,
         mappedTo: mappedTo,
         usages: usages,
-        properties: properties
+        properties: properties,
+        members: members
       });
     },
     async fetchSearchResults({ commit }, searchRequest: SearchRequest) {

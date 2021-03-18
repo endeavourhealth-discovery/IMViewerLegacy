@@ -55,6 +55,7 @@ import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
 import { ConceptStatus } from "@/models/ConceptStatus";
 import store from "@/store/index";
+import { ConceptType } from "@/models/search/ConceptType";
 
 @Options({
   components: { Hierarchy, History, SearchResults, Filters }
@@ -85,6 +86,47 @@ export default class SidebarControl extends Vue {
       }
       if (status == "Inactive") {
         searchRequest.statusFilter.push(ConceptStatus.Inactive);
+      }
+    });
+
+
+    searchRequest.typeFilter = [];
+    store.state.filters.selectedTypes.forEach(type => {
+      if (type == "Class") {
+        searchRequest.typeFilter.push(ConceptType.Class);
+      }
+      if (type == "ObjectProperty") {
+        searchRequest.typeFilter.push(ConceptType.ObjectProperty);
+      }
+      if (type == "DataProperty") {
+        searchRequest.typeFilter.push(ConceptType.DataProperty);
+      }
+      if (type == "DataType") {
+        searchRequest.typeFilter.push(ConceptType.DataType);
+      }
+      if (type == "Annotation") {
+        searchRequest.typeFilter.push(ConceptType.Annotation);
+      }
+      if (type == "Individual") {
+        searchRequest.typeFilter.push(ConceptType.Individual);
+      }
+      if (type == "Record") {
+        searchRequest.typeFilter.push(ConceptType.Record);
+      }
+      if (type == "ValueSet") {
+        searchRequest.typeFilter.push(ConceptType.ValueSet);
+      }
+      if (type == "Folder") {
+        searchRequest.typeFilter.push(ConceptType.Folder);
+      }
+      if (type == "Term") {
+        searchRequest.typeFilter.push(ConceptType.Term);
+      }
+      if (type == "Legacy") {
+        searchRequest.typeFilter.push(ConceptType.Legacy);
+      }
+      if (type == "CategoryGroup") {
+        searchRequest.typeFilter.push(ConceptType.CategoryGroup);
       }
     });
 
