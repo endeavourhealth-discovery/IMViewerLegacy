@@ -2,13 +2,18 @@ import { SearchRequest } from './../models/search/SearchRequest';
 import { createStore } from "vuex";
 import ConceptService from "../services/ConceptService";
 import { HistoryItem } from "../models/HistoryItem";
+import { User } from "../models/User";
 
 export default createStore({
   state: {
     conceptIri: "owl:Thing",
     conceptAggregate: {} as any,
     history: [] as HistoryItem[],
-    searchResults: []
+    searchResults: [],
+    user: {} as User,
+    token: "" as string,
+    refreshToken: "" as string,
+    isAuthenticated: false as boolean
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -26,6 +31,12 @@ export default createStore({
     updateSearchResults(state, searchResults) {
       state.searchResults = searchResults;
     },
+    updateUser(state, user){
+      state.user = user;
+    },
+    updateIsAuthenticated(state, authStatus){
+      state.isAuthenticated = authStatus;
+    }
 
   },
   actions: {
@@ -51,7 +62,14 @@ export default createStore({
     async fetchSearchResults({ commit }, searchRequest: SearchRequest) {
       const searchResults = (await ConceptService.advancedSearch(searchRequest)).data.concepts;
       commit("updateSearchResults", searchResults)
-    }
+    },
+    // async authenticateToken({ commit }){
+    //   if (){ // finish once AWS cognito is setup
+    //     commit("updateIsAuthenticated", true)
+    //   } else {
+    //     commit("updateIsAuthenticated", false)
+    //   }
+    // }
   },
   modules: {},
 });

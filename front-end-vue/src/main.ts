@@ -47,6 +47,7 @@ import Dialog from 'primevue/dialog';
 import SplitButton from 'primevue/splitbutton';
 import MultiSelect from 'primevue/multiselect';
 import OverlayPanel from 'primevue/overlaypanel';
+import Menubar from 'primevue/menubar';
 
 createApp(App)
   .use(store)
@@ -78,4 +79,5 @@ createApp(App)
   .component("MultiSelect", MultiSelect)
   .component("OverlayPanel", OverlayPanel)
   .component("font-awesome-icon", FontAwesomeIcon)
+  .component("Menubar", Menubar)
   .mount("#app");

@@ -1,6 +1,7 @@
 <template>
   <div class="p-grid">
-    <div class="p-col-12"><Header /></div>
+    <div class="p-col-11"><Header /></div>
+    <div class="p-col-1"><Menubar :model="items" /></div>
     <div class="p-col-4"><SidebarControl /></div>
     <div class="p-col-8"><Dashboard /></div>
   </div>
@@ -18,12 +19,36 @@ import store from "@/store/index";
     Dashboard,
     Header,
     SidebarControl
-  }
+  },
+  props: ['user']
 })
 export default class Home extends Vue {
   async mounted() {
     store.commit("updateConceptIri", "owl:Thing");
     store.dispatch("fetchConceptAggregate", store.state.conceptIri);
   }
+
+  items: [{}] = [
+    {
+      label: 'User',
+      icon: 'pi pi-fw pi-user',
+      items: [
+        {
+          label: 'Register',
+          icon: 'pi pi-fw pi-user-plus'
+        },
+        {
+          label: 'Login',
+          icon: 'pi pi-fw pi-user-minus'
+        },
+      ]
+    }
+  ]
+
+  // getUserMenuItems() {
+  //   if (this.user){
+
+  //   }
+  // }
 }
 </script>
