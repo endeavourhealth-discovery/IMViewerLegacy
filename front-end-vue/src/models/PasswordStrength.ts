@@ -1,6 +1,6 @@
 export enum PasswordStrength{
-  weak,
-  medium,
-  strong,
-  fail
+  weak = "weak",
+  medium = "medium",
+  strong = "strong",
+  fail = "fail"
 }

@@ -1,5 +1,7 @@
 <template>
-  <router-view />
+  <div class="p-d-flex p-flex-row p-jc-center">
+      <router-view />
+  </div>
 </template>
 
 <script>
@@ -18,6 +20,6 @@ export default class User extends Vue {
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>
