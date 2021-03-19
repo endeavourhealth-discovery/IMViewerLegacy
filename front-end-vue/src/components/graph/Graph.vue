@@ -1,9 +1,10 @@
 <template>
+  {{ !!graphData }}
   <div id="content">
-    <svg width="100%" height="600" id="svg">
+    <!-- <svg width="100%" height="600" id="svg">
       <g class="links"></g>
       <g class="nodes"></g>
-    </svg>
+    </svg> -->
   </div>
 </template>
 
@@ -20,38 +21,35 @@ import ConceptService from "@/services/ConceptService";
   computed: mapState(["conceptAggregate"]),
   watch: {
     async conceptAggregate(newValue, oldValue) {
-      this.stopSimulation();
-      console.log(JSON.stringify(newValue.concept.conceptType));
       this.graphData = (
         await ConceptService.getConceptGraph(newValue.concept.iri)
       ).data;
-      console.log(JSON.stringify(this.graphData));
-      this.root = d3.hierarchy(this.graphData);
-      this.initD3();
-      this.simulation.tick();
+      this.drawTree();
       this.initSvgPanZoom();
     }
   }
 })
 export default class Graph extends Vue {
   graphData = {};
-  root = d3.hierarchy(this.graphData);
-  windowRect = { height: 600, width: 700 };
-  simulation: d3.Simulation<
-    d3.SimulationNodeDatum,
-    undefined
-  > = {} as d3.Simulation<d3.SimulationNodeDatum, undefined>;
-
-  stopSimulation() {
-    try {
-      d3.selectAll("circle").remove();
-      d3.selectAll("text").remove();
-      d3.selectAll("line").remove();
-      this.simulation.stop();
-    } catch (error) {
-      // console.log("Simulation did not stop");
-    }
-  }
+  svg: any = {};
+  duration: any = {};
+  margin = { top: 20, right: 90, bottom: 30, left: 90 };
+  width = 960 - this.margin.left - this.margin.right;
+  height = 500 - this.margin.top - this.margin.bottom;
+  root: any = {};
+  tree = {
+    name: "father",
+    children: [
+      {
+        name: "son1",
+        children: [{ name: "grandson" }, { name: "grandson2" }]
+      },
+      {
+        name: "son2",
+        children: [{ name: "grandson3" }, { name: "grandson4" }]
+      }
+    ]
+  };
 
   initSvgPanZoom() {
     svgPanZoom("#svg", {
@@ -63,257 +61,231 @@ export default class Graph extends Vue {
     });
   }
 
-  initD3() {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    this.windowRect = document.getElementById("svg")?.getBoundingClientRect()!;
+  collapse(d: any) {
+    if (d.children) {
+      d._children = d.children;
+      d._children.forEach(this.collapse);
+      d.children = null;
+    }
+  }
+
+  drawTree() {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
-    const links = this.root.links() as d3.SimulationLinkDatum<any>[];
-    const nodes = this.root.descendants();
-    this.simulation = d3
-      .forceSimulation(nodes as any)
-      .force("charge", d3.forceManyBody().strength(-750))
-      .force("link", d3.forceLink().links(links))
-      .force(
-        "collision",
-        d3
-          .forceCollide()
-          .radius(60)
-          .strength(1)
-      )
-      .on("tick", () => {
-        const circles = d3
-          .select(".nodes")
-          .selectAll("circle")
-          .data(nodes);
+    // Set the dimensions and margins of the diagram
 
-        circles
-          .enter()
-          .append("circle")
-          .attr("r", function(d: any) {
-            if (d.depth === 0) return 10;
-            return 5;
-          })
-          .merge(circles as any)
-          .attr("cx", function(d: any) {
-            if (d.depth === 0) {
-              d.x = 0;
-            }
-            if (d.data.name === "Properties") {
-              d.x = 0;
-            }
-            if (d.data.name === "Children") {
-              d.x = that.windowRect.width / 4;
-            }
-            if (d.data.name === "Parents") {
-              d.x = that.windowRect.width / -4;
-            }
-            return d.x;
-          })
-          .attr("cy", function(d: any) {
-            if (d.depth === 0) {
-              d.y = 0;
-            }
-            if (d.data.name === "Properties") {
-              d.y = that.windowRect.height / 4;
-            }
-            if (d.data.name === "Children") {
-              d.y = that.windowRect.height / -4;
-            }
-            if (d.data.name === "Parents") {
-              d.y = that.windowRect.height / -4;
-            }
-            return d.y;
-          })
-          .attr("id", function(d: any) {
-            const name = d.data.name;
-            return /\s/.test(name) ? name.replace(/\s/g, "") : name;
-          })
-          .attr("class", function(d: any) {
-            if (d.depth === 0) return "root";
-            if (d.data.inheritedFromIri) return "inherited";
-            return "";
-          });
+    // append the svg object to the body of the page
+    // appends a 'group' element to 'svg'
+    // moves the 'group' element to the top left margin
+    this.svg = d3
+      .select("#content")
+      .append("svg")
+      .attr("width", this.width + this.margin.right + this.margin.left)
+      .attr("height", this.height + this.margin.top + this.margin.bottom)
+      .append("g")
+      .attr(
+        "transform",
+        "translate(" + this.margin.left + "," + this.margin.top + ")"
+      );
 
-        circles.exit().remove();
+    const i = 0;
+    this.duration = 750;
 
-        const lines = d3
-          .select(".links")
-          .selectAll("line")
-          .data(links);
+    // declares a tree layout and assigns the size
+    const treemap = d3.tree().size([this.height, this.width]);
 
-        lines
-          .enter()
-          .append("line")
-          .merge(lines as any)
-          .attr("x1", function(d: any) {
-            return d.source.x;
-          })
-          .attr("y1", function(d: any) {
-            return d.source.y;
-          })
-          .attr("x2", function(d: any) {
-            return d.target.x;
-          })
-          .attr("y2", function(d: any) {
-            return d.target.y;
-          })
-          .attr("stroke-width", 1)
-          .attr("stroke", "black")
-          .attr("stroke-dasharray", "1,4");
+    // Assigns parent, children, height, depth
+    this.root = d3.hierarchy(this.graphData, function(d: any) {
+      return d.children;
+    });
+    this.root.x0 = this.height / 2;
+    this.root.y0 = 0;
 
-        lines.exit().remove();
+    // Collapse after the second level
+    this.root.children.forEach(this.collapse);
 
-        const textNodes = d3
-          .select(".nodes")
-          .selectAll("text")
-          .data(nodes);
+    const treeData = treemap(this.root);
 
-        textNodes
-          .enter()
-          .append("text")
-          .text(function(d: any) {
-            return d.data.valueTypeName || d.data.name;
-          })
-          .merge(textNodes as any)
-          .attr("x", function(d: any) {
-            return d.x;
-          })
-          .attr("y", function(d: any) {
-            return d.y - 20;
-          })
-          .attr("name", function(d: any) {
-            return d.data.valueTypeName || d.data.name;
-          })
-          .attr("id", function(d: any) {
-            return d.data.valueTypeIri || d.data.iri;
-          })
-          .attr("inheritedFromIri", function(d: any) {
-            return d.data.inheritedFromIri;
-          })
-          .attr("inheritedFromName", function(d: any) {
-            return d.data.inheritedFromName;
-          })
-          .attr("propertyType", function(d: any) {
-            return d.data.propertyType;
-          });
+    this.update(this.root);
+  }
 
-        textNodes.exit().remove();
+  update(source: any) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this;
+    // Assigns the x and y position for the nodes
+    const root = d3.hierarchy(source);
+    // Compute the new tree layout.
+    const nodes = root.descendants(),
+      links = root.descendants().slice(1);
 
-        const lineLabels = d3
-          .select(".links")
-          .selectAll("text")
-          .data(links);
+    // Normalize for fixed-depth.
+    nodes.forEach(function(d: any) {
+      d.y = d.depth * 180;
+    });
 
-        lineLabels
-          .enter()
-          .append("text")
-          .merge(lineLabels as any)
-          .attr("class", "labelText")
-          .attr("x", function(d: any) {
-            return (d.target.x + d.source.x) / 2;
-          })
-          .attr("y", function(d: any) {
-            return (d.target.y + d.source.y) / 2;
-          })
-          .text(function(d: any) {
-            return d.target.data.propertyType;
-          });
+    // ****************** Nodes section ***************************
 
-        lineLabels.exit().remove();
+    // Update the nodes...
+    const node = this.svg.selectAll("g.node").data(nodes, function(d: any) {
+      return d.id;
+    });
+
+    // Enter any new modes at the parent's previous position.
+    const nodeEnter = node
+      .enter()
+      .append("g")
+      .attr("class", "node")
+      .attr("transform", function(d: any) {
+        return "translate(" + source.y0 + "," + source.x0 + ")";
+      })
+      .on("click", this.click);
+
+    // Add Circle for the nodes
+    nodeEnter
+      .append("circle")
+      .attr("class", "node")
+      .attr("r", 1e-6)
+      .style("fill", function(d: any) {
+        return d._children ? "lightsteelblue" : "#fff";
       });
 
-    d3.select("#content")
-      .selectAll("g.nodes")
-      .on("mouseover", that.onMouseOver)
-      .on("mouseout", that.onMouseOut)
-      .on("click", function(event: any) {
-        if (event.srcElement.localName === "circle") {
-          that.onCircleClick(event);
-        } else {
-          that.onTextClick(event);
-        }
+    // Add labels for the nodes
+    nodeEnter
+      .append("text")
+      .attr("dy", ".35em")
+      .attr("x", function(d: any) {
+        return d.children || d._children ? -13 : 13;
+      })
+      .attr("text-anchor", function(d: any) {
+        return d.children || d._children ? "end" : "start";
+      })
+      .text(function(d: any) {
+        return d.data.name;
       });
+
+    // UPDATE
+    const nodeUpdate = nodeEnter.merge(node as any);
+
+    // Transition to the proper position for the node
+    nodeUpdate
+      .transition()
+      .duration(this.duration)
+      .attr("transform", function(d: any) {
+        return "translate(" + d.y + "," + d.x + ")";
+      });
+
+    // Update the node attributes and style
+    nodeUpdate
+      .select("circle.node")
+      .attr("r", 10)
+      .style("fill", function(d: any) {
+        return d._children ? "lightsteelblue" : "#fff";
+      })
+      .attr("cursor", "pointer");
+
+    // Remove any exiting nodes
+    const nodeExit = node
+      .exit()
+      .transition()
+      .duration(this.duration)
+      .attr("transform", function(d: any) {
+        return "translate(" + source.y + "," + source.x + ")";
+      })
+      .remove();
+
+    // On exit reduce the node circles size to 0
+    nodeExit.select("circle").attr("r", 1e-6);
+
+    // On exit reduce the opacity of text labels
+    nodeExit.select("text").style("fill-opacity", 1e-6);
+
+    // ****************** links section ***************************
+
+    // Update the links...
+    const link = this.svg.selectAll("path.link").data(links, function(d: any) {
+      return d.id;
+    });
+
+    // Enter any new links at the parent's previous position.
+    const linkEnter = link
+      .enter()
+      .insert("path", "g")
+      .attr("class", "link")
+      .attr("d", function(d: any) {
+        const o = { x: source.x0, y: source.y0 };
+        return that.diagonal(o, o);
+      });
+
+    // UPDATE
+    const linkUpdate = linkEnter.merge(link as any);
+
+    // Transition back to the parent element position
+    linkUpdate
+      .transition()
+      .duration(this.duration)
+      .attr("d", function(d: any) {
+        return that.diagonal(d, d.parent);
+      });
+
+    // Remove any exiting links
+    const linkExit = link
+      .exit()
+      .transition()
+      .duration(this.duration)
+      .attr("d", function(d: any) {
+        const o = { x: source.x, y: source.y };
+        return that.diagonal(o, o);
+      })
+      .remove();
+
+    // Store the old positions for transition.
+    nodes.forEach(function(d: any) {
+      d.x0 = d.x;
+      d.y0 = d.y;
+    });
+
+    // Creates a curved (diagonal) path from parent to the child nodes
   }
 
-  onMouseOver(event: any) {
-    console.log(event.srcElement);
-    const inheritedFrom =
-      event.srcElement.attributes.inheritedFromName?.nodeValue;
-    if (inheritedFrom) {
-      const title = `${event.srcElement.innerHTML} - Inherited from ${inheritedFrom}`;
-      event.srcElement.innerHTML = title;
-    }
+  diagonal(s: any, d: any) {
+    const path = `M ${s.y} ${s.x}
+            C ${(s.y + d.y) / 2} ${s.x},
+              ${(s.y + d.y) / 2} ${d.x},
+              ${d.y} ${d.x}`;
+
+    return path;
   }
 
-  onMouseOut(event: any) {
-    const originalTitle = event.srcElement.attributes.name?.value;
-    if (originalTitle) {
-      event.srcElement.innerHTML = originalTitle;
-    }
-  }
-
-  onCircleClick(event: any) {
-    const currentNode = this.root
-      .descendants()
-      .filter((node: any) => node.data.name === event.srcElement.id);
-    if (currentNode[0].children) {
-      (currentNode[0] as any)._children = currentNode[0].children;
-      currentNode[0].children = undefined;
+  // Toggle children on click.
+  click(d: any) {
+    if (d.children) {
+      d._children = d.children;
+      d.children = null;
     } else {
-      currentNode[0].children = (currentNode[0] as any)._children;
-      (currentNode[0] as any)._children = undefined;
+      d.children = d._children;
+      d._children = null;
     }
-    this.stopSimulation();
-    this.initD3();
-    this.simulation.tick();
-    this.initSvgPanZoom();
-  }
-
-  onTextClick(event: any) {
-    const iri = event.srcElement.attributes.id.nodeValue;
-    const currentRoute = this.$route.name as RouteRecordName | undefined;
-    if (iri)
-      this.$router.push({
-        name: currentRoute,
-        params: { selectedIri: iri }
-      });
+    // const treemap = d3.tree().size([this.height, this.width]);
+    // const treeData = treemap(this.root);
+    this.update(d);
   }
 }
 </script>
 
 <style>
-.root {
-  fill: rgb(0, 75, 136);
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 3px;
 }
-.inherited {
-  fill: grey;
+
+.node text {
+  font: 12px sans-serif;
 }
-circle {
-  fill: cadetblue;
-}
-circle#Properties,
-circle#Children,
-circle#Parents {
-  fill: rgb(33, 150, 243);
-  fill-opacity: 1;
-  cursor: pointer;
-}
-text#Properties,
-text#Children,
-text#Parents {
-  fill: black;
-  font-size: 11px;
-  cursor: default;
-}
-line {
+
+.link {
+  fill: none;
   stroke: #ccc;
-}
-text {
-  text-anchor: middle;
-  font-family: "Helvetica Neue", Helvetica, sans-serif;
-  fill: #666;
-  font-size: 12px;
-  cursor: pointer;
+  stroke-width: 2px;
 }
 </style>
