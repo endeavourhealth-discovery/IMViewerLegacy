@@ -48,6 +48,8 @@ import SplitButton from 'primevue/splitbutton';
 import MultiSelect from 'primevue/multiselect';
 import OverlayPanel from 'primevue/overlaypanel';
 import Menubar from 'primevue/menubar';
+import InlineMessage from 'primevue/inlinemessage';
+import Message from 'primevue/message';
 
 createApp(App)
   .use(store)
@@ -80,4 +82,6 @@ createApp(App)
   .component("OverlayPanel", OverlayPanel)
   .component("font-awesome-icon", FontAwesomeIcon)
   .component("Menubar", Menubar)
+  .component("InlineMessage", InlineMessage)
+  .component("Message", Message)
   .mount("#app");

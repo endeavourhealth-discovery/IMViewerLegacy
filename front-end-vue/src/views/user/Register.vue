@@ -1,7 +1,7 @@
 <template>
     <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center">
     <template #header>
-      <i class="pi pi-fw pi-user" style="fontSize: 50px; margin: 1em;"/>
+      <i class="pi pi-fw pi-user-plus" style="fontSize: 50px; margin: 1em;"/>
     </template>
     <template #title>
       Register
@@ -26,7 +26,12 @@
         </div>
         <div class="p-field">
           <label for="fieldPassword1">Password</label>
-          <InputText id="fieldPassword1" type="password" v-model="password1"/>
+          <InputText id="fieldPassword1" type="password" aria-describedby="password-help" v-model="password1"/>
+          <InlineMessage v-if="passwordStrength === 'strong'" severity="success">Password Strength: Strong</InlineMessage>
+          <InlineMessage v-if="passwordStrength === 'medium'" severity="success">Password Strength: Medium</InlineMessage>
+          <InlineMessage v-if="passwordStrength === 'weak'" severity="warn">Password Strength: Weak</InlineMessage>
+          <InlineMessage v-if="passwordStrength === 'fail'" severity="error">Invalid Password</InlineMessage>
+          <small id="password-help">Password min length of 6 characters. <br> Improve password strength with a mixture of UPPERCASE, lowercase, numbers and special characters [!@#$%^&*].</small>
         </div>
         <div class="p-field">
           <label for="fieldPassword2">Confirm Password</label>
@@ -46,27 +51,37 @@ import { PasswordStrength } from "@/models/PasswordStrength";
 
 @Options({
   name: "Register",
-  watch: {
-    email1(){
-      this.email1Verified = this.verifyEmail(this.email1)
+  emits: ["userCreated"],
+  watch:{
+    email1(newValue) {
+      this.checkPasswordStrength(newValue);
     },
-    email2(){
-      this.email2Verified = this.verifyEmail(this.email2);
-    }
-  },
-  emits: ["userCreated"]
+    email2(newValue){
+      this.emailsMatch = this.verifyIsEmail(newValue);
+    },
+    password1(newValue) {
+      this.checkPasswordStrength(newValue);
+    },
+    password2(newValue) {
+      this.passwordsMatch = this.verifyPasswordsMatch();
+    },
+
+  }
 })
 
 export default class Register extends Vue{
   email1 = "";
   email1Verified = false
   email2 = "";
-  email2Verified = false
+  emailsMatch = false
   firstName = "";
   lastName = "";
   password1 = "";
   password2 = "";
   passwordStrength: PasswordStrength = PasswordStrength.weak;
+  passwordsMatch = false;
+
+
 
   verifyIsEmail(email: any){
     if (/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email)){
@@ -111,17 +126,20 @@ export default class Register extends Vue{
   checkPasswordStrength(password: any){
     const strongCheck = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
     const mediumCheck = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
+    const weakCheck = new RegExp("^(?=.{6,})")
     if (strongCheck.test(password)){
       this.passwordStrength = PasswordStrength.strong;
     } else if (mediumCheck.test(password)){
       this.passwordStrength = PasswordStrength.medium;
-    } else {
+    } else if (weakCheck.test(password)){
       this.passwordStrength = PasswordStrength.weak;
+    } else {
+      this.passwordStrength = PasswordStrength.fail;
     }
   }
 
   handleSubmit(){
-    if (this.verifyIsEmail(this.email1) && this.verifyIsEmail(this.email2) && this.verifyEmailsMatch() && this.verifyPasswordsMatch() && this.verifyFirstName() && this.verifyLastName()){
+    if (this.verifyIsEmail(this.email1) && this.verifyIsEmail(this.email2) && this.verifyEmailsMatch() && this.verifyPasswordsMatch() && this.passwordStrength !== PasswordStrength.fail && this.verifyFirstName() && this.verifyLastName()){
       const user = new User(this.firstName, this.lastName, this.email1, this.password1)
       this.$emit("userCreated", user)
     } else {
