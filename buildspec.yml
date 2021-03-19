@@ -11,10 +11,9 @@ phases:
       - echo $IP of CodeBuild Instance
   build:
     commands:
-      - cd $CODEBUILD_SRC_DIR
-      - chmod +x aws_scripts/build.sh
-      - echo IM Client Build started on `date`
-      - aws_scripts/build.sh mvn -B package
+      - cd $CODEBUILD_SRC_DIR/front-end-vue
+      - npm run build || true
+      - npm run build
   post_build:
     commands:
       - IP=$(curl http://checkip.amazonaws.com)/32
