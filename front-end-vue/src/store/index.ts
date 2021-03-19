@@ -13,7 +13,8 @@ export default createStore({
     user: {} as User,
     token: "" as string,
     refreshToken: "" as string,
-    isAuthenticated: false as boolean
+    isAuthenticated: false as boolean,
+    isLoggedIn: false as boolean
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -36,6 +37,9 @@ export default createStore({
     },
     updateIsAuthenticated(state, authStatus){
       state.isAuthenticated = authStatus;
+    },
+    updateIsLoggedIn(state, status){
+      state.isLoggedIn = status
     }
 
   },
@@ -63,6 +67,9 @@ export default createStore({
       const searchResults = (await ConceptService.advancedSearch(searchRequest)).data.concepts;
       commit("updateSearchResults", searchResults)
     },
+    async getUser({ commit }, token: string){
+      // after UserService exists
+    }
     // async authenticateToken({ commit }){
     //   if (){ // finish once AWS cognito is setup
     //     commit("updateIsAuthenticated", true)

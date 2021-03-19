@@ -1,4 +1,4 @@
-const strongCheck = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+const strongCheck = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
 
 const mediumCheck = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
 
@@ -7,17 +7,19 @@ export class User {
   lastName: string;
   email: string;
   password: string;
+  id: string;
 
   constructor(
     firstName: string,
     lastName: string,
     email: string,
-    password: string
+    password: string,
   ){
     this.firstName = this.verifyFirstName(firstName);
     this.lastName = this.verifyLastName(lastName);
     this.email = this.verifyEmail(email);
     this.password = this.verifyPassword(password).result;
+    this.id = "";
   }
 
   verifyEmail(email: any){

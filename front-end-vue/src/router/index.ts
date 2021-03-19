@@ -36,7 +36,7 @@ const routes: Array<RouteRecordRaw> = [
         component: UserDetails
       },
       {
-        path: ":id/edit",
+        path: "/edit:id",
         name: "UserEdit",
         component: UserEdit
       }

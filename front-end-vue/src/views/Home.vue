@@ -1,7 +1,7 @@
 <template>
   <div class="p-grid">
     <div class="p-col-11"><Header /></div>
-    <div class="p-col-1"><Menubar :model="items" /></div>
+    <div class="p-col-1"><Menubar :model="getItems()" /></div>
     <div class="p-col-4"><SidebarControl /></div>
     <div class="p-col-8"><Dashboard /></div>
   </div>
@@ -13,6 +13,8 @@ import Dashboard from "@/components/Dashboard.vue"; // @ is an alias to /src
 import Header from "@/components/Header.vue";
 import SidebarControl from "@/components/sidebar/SidebarControl.vue";
 import store from "@/store/index";
+import { User } from "../models/User";
+import { mapState } from "vuex";
 
 @Options({
   components: {
@@ -20,15 +22,26 @@ import store from "@/store/index";
     Header,
     SidebarControl
   },
-  props: ['user']
+  computed: {...mapState(['user', 'isLoggedIn'])}
 })
 export default class Home extends Vue {
+  user!: User;
+  isLoggedIn!: boolean;
+
   async mounted() {
     store.commit("updateConceptIri", "owl:Thing");
     store.dispatch("fetchConceptAggregate", store.state.conceptIri);
   }
 
-  items: [{}] = [
+  getItems(){
+    if (this.isLoggedIn){
+      return this.accountItems
+    } else {
+      return this.loginItems
+    }
+  }
+
+  loginItems: [{}] = [
     {
       label: 'User',
       icon: 'pi pi-fw pi-user',
@@ -47,10 +60,23 @@ export default class Home extends Vue {
     }
   ]
 
-  // getUserMenuItems() {
-  //   if (this.user){
-
-  //   }
-  // }
+  accountItems: [{}] = [
+    {
+      label: "Account",
+      icon: 'pi pi-fw pi-user',
+      items: [
+        {
+          label: 'Account',
+          icon: 'pi pi-fw pi-user-minus',
+          to: '/user/' //+ this.user.id
+        },
+        {
+          label: 'Logout',
+          icon: 'pi pi-fw pi-user-plus',
+          to: '/user/edit/' //+ this.user.id
+        },
+      ]
+    }
+  ]
 }
 </script>
