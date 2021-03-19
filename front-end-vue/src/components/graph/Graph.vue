@@ -58,86 +58,102 @@ export default class Graph extends Vue {
     });
   }
 
-  drawTree() {
-    const root = d3.hierarchy(this.graphData);
-    // const links = root.links() as d3.SimulationLinkDatum<any>[];
-    // const nodes = root.descendants();
-
-    const treeLayout = d3.tree();
-    treeLayout.size([400, 200]);
-    treeLayout(this.root);
-
-    // Nodes
-    d3.select("g.nodes")
-      .selectAll("circle")
-      .data(this.root.descendants())
-      .enter()
-      .append("circle")
-      .classed("node", true)
-      .attr("cx", function(d: any) {
-        return d.x;
-      })
-      .attr("cy", function(d: any) {
-        return d.y;
-      })
-      .attr("cursor", "pointer")
-      .attr("r", 4);
-
-    // Text
-    d3.select("g.nodes")
-      .selectAll("text")
-      .data(this.root.descendants())
-      .enter()
-      .append("text")
-      .classed("text", true)
-      .attr("cx", function(d: any) {
-        return d.x;
-      })
-      .attr("cy", function(d: any) {
-        return d.y;
-      })
-      .attr("text", 4);
-
-    // Links
-    d3.select("g.links")
-      .selectAll("line")
-      .data(this.root.links())
-      .enter()
-      .append("line")
-      .classed("link", true)
-      .attr("x1", function(d: any) {
-        return d.source.x;
-      })
-      .attr("y1", function(d: any) {
-        return d.source.y;
-      })
-      .attr("x2", function(d: any) {
-        return d.target.x;
-      })
-      .attr("y2", function(d: any) {
-        return d.target.y;
-      });
+  eraseTree() {
+    d3.selectAll("g")
+      .selectAll("*")
+      .remove();
   }
 
-  onCircleClick(event: any) {
-    const currentNode = this.root
-      .descendants()
-      .filter((node: any) => node.data.name === event.srcElement.id);
-    if (currentNode[0].children) {
-      (currentNode[0] as any)._children = currentNode[0].children;
-      currentNode[0].children = undefined;
-    }
+  drawTree() {
+    this.eraseTree();
+    const margin = { top: 20, right: 90, bottom: 30, left: 90 };
+    const width = 660 - margin.left - margin.right;
+    const height = 500 - margin.top - margin.bottom;
+    const treemap = d3.tree().size([height, width]);
+    let nodes: any = d3.hierarchy(this.graphData, (d: any) => d.children);
+    nodes = treemap(nodes);
+    const g = d3.selectAll("g");
+
+    // add the links between the nodes
+    const link = g
+      .selectAll(".link")
+      .data(nodes.descendants().slice(1))
+      .enter()
+      .append("path")
+      .attr("class", "link")
+      .attr("d", (d: any) => {
+        return (
+          "M" +
+          d.y +
+          "," +
+          d.x +
+          "C" +
+          (d.y + d.parent.y) / 2 +
+          "," +
+          d.x +
+          " " +
+          (d.y + d.parent.y) / 2 +
+          "," +
+          d.parent.x +
+          " " +
+          d.parent.y +
+          "," +
+          d.parent.x
+        );
+      });
+
+    // add nodes
+    const node: any = g
+      .selectAll(".node")
+      .data(nodes.descendants())
+      .enter()
+      .append("g")
+      .attr(
+        "class",
+        (d: any) => "node" + (d.children ? " node--internal" : " node--leaf")
+      )
+      .attr("transform", (d: any) => "translate(" + d.y + "," + d.x + ")")
+      .attr("cursor", "pointer");
+
+    // add circles to nodes
+    node
+      .append("circle")
+      .attr("r", 5)
+      .attr("class", "circle");
+
+    // add text nodes
+    node
+      .append("text")
+      .attr("id", (d: any) => d.data.valueTypeIri)
+      .attr("dy", ".35em")
+      .attr("x", (d: any) => (d.children ? -10 : 10))
+      .attr("y", (d: any) =>
+        d.children && d.depth !== 0 ? -(d.data.value + 5) : d
+      )
+      .style("text-anchor", (d: any) => (d.children ? "end" : "start"))
+      .text((d: any) => d.data.valueTypeName || d.data.name);
+
+    // add text property nodes
+    node
+      .append("text")
+      .attr("id", (d: any) => d.data.iri)
+      .attr("dy", ".35em")
+      .attr("x", (d: any) => -10)
+      .attr("y", (d: any) => -(d.data.value + 5))
+      .style("text-anchor", (d: any) => "end")
+      .text((d: any) =>
+        d.parent?.data.name === "Properties" ? d.data.name : ""
+      );
   }
 }
 </script>
 
 <style>
-.node {
+.circle {
   fill: #fff;
   stroke: steelblue;
   stroke-width: 3px;
 }
-
 .text {
   font: 12px sans-serif;
 }
