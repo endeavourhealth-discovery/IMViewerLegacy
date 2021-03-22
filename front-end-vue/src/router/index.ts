@@ -32,12 +32,12 @@ const routes: Array<RouteRecordRaw> = [
         component: Register
       },
       {
-        path: ":id",
+        path: "my-account",
         name: "UserDetails",
         component: UserDetails
       },
       {
-        path: "/edit:id",
+        path: "my-account/edit",
         name: "UserEdit",
         component: UserEdit
       }
