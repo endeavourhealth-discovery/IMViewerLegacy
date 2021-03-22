@@ -3,8 +3,10 @@
     <div class="layout-main">
       <div class="home">
         <div class="p-grid">
-          <div class="p-col-10"><Header /></div>
-          <div class="p-col-2"><Menubar :model="getItems()" /></div>
+          <div class="p-col-12 p-d-flex p-flex-row">
+            <div class="header-grow"><Header /></div>
+            <div class="user-menu"><Menubar :model="getItems()" /></div>
+          </div>
           <div class="p-col-4"><SidebarControl /></div>
           <div v-if="isHome" class="p-col-8"><Dashboard /></div>
           <router-view v-if="!isHome"/>
@@ -105,5 +107,16 @@ export default class Root extends Vue{
 </script>
 
 <style>
+
+.header-grow {
+  flex-grow: 1;
+}
+
+.user-menu {
+  height: 100%;
+  margin-left: 5px;
+  width: 12.5rem
+}
+
 
 </style>
