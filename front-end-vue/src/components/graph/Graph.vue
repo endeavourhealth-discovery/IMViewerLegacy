@@ -1,5 +1,4 @@
 <template>
-  {{ !!graphData }}
   <div id="content">
     <svg width="100%" height="600" id="svg">
       <g class="links"></g>
@@ -126,6 +125,8 @@ export default class Graph extends Vue {
       .attr("y", (d: any) =>
         d.children && d.depth !== 0 ? -(d.data.value + 5) : d
       )
+      .attr("name", (d: any) => d.data.valueTypeName || d.data.name)
+      .attr("inheritedFrom", (d: any) => d.data.inheritedFromName)
       .style("text-anchor", (d: any) =>
         d.children || d.depth <= 1 ? "end" : "start"
       )
@@ -150,29 +151,25 @@ export default class Graph extends Vue {
 
     d3.select("#content")
       .selectAll("text")
-      // .on("mouseover", this.onMouseOver)
-      // .on("mouseout", this.onMouseOut)
+      .on("mouseover", this.onMouseOver)
+      .on("mouseout", this.onMouseOut)
       .on("click", this.onTextClick);
   }
 
-  // TODO - add hover to inform of inherited properties
+  onMouseOver(event: any) {
+    const inheritedFrom = event.srcElement.attributes.inheritedFrom?.nodeValue;
+    if (inheritedFrom) {
+      const title = `${event.srcElement.innerHTML} - Inherited from ${inheritedFrom}`;
+      event.srcElement.innerHTML = title;
+    }
+  }
 
-  // onMouseOver(event: any) {
-  //   console.log(event.srcElement.attributes);
-  //   const inheritedFrom =
-  //     event.srcElement.attributes.inheritedFromName?.nodeValue;
-  //   if (inheritedFrom) {
-  //     const title = `${event.srcElement.innerHTML} - Inherited from ${inheritedFrom}`;
-  //     event.srcElement.innerHTML = title;
-  //   }
-  // }
-
-  // onMouseOut(event: any) {
-  //   // const originalTitle = event.srcElement.attributes.name?.value;
-  //   // if (originalTitle) {
-  //   //   event.srcElement.innerHTML = originalTitle;
-  //   // }
-  // }
+  onMouseOut(event: any) {
+    const originalTitle = event.srcElement.attributes.name.nodeValue;
+    if (originalTitle) {
+      event.srcElement.innerHTML = originalTitle;
+    }
+  }
 
   onCircleClick(event: any) {
     if (
