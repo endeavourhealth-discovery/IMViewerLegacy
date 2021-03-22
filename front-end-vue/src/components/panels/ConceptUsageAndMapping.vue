@@ -1,7 +1,7 @@
 <template>
   <div class="p-grid">
-    <div class="p-col-4">
-      <Panel header="Mapped from" :toggleable="true"
+    <div class="p-col-6">
+      <Panel header="Mapped" :toggleable="true"
         ><Listbox
           listStyle="height:200px"
           :filter="true"
@@ -9,12 +9,12 @@
           emptyFilterMessage="No results found"
           v-model="selectedMappedFrom"
           @click="onNodeSelect(selectedMappedFrom)"
-          :options="$store.state.conceptAggregate.mappedFrom"
+          :options="$store.state.conceptAggregate.mapped"
           optionLabel="name"
         ></Listbox
       ></Panel>
     </div>
-    <div class="p-col-4">
+    <!-- <div class="p-col-4">
       <Panel header="Mapped to" :toggleable="true"
         ><Listbox
           listStyle="height:200px"
@@ -27,8 +27,8 @@
           optionLabel="name"
         ></Listbox
       ></Panel>
-    </div>
-    <div class="p-col-4">
+    </div> -->
+    <div class="p-col-6">
       <Panel header="Used In" :toggleable="true"
         ><Listbox
           listStyle="height:200px"

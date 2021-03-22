@@ -65,8 +65,7 @@ export default createStore({
         concept: concept,
         parents: parents,
         children: children,
-        mappedFrom: mappedFrom,
-        mappedTo: mappedTo,
+        mapped: mappedFrom.concat(mappedTo),
         usages: usages,
         properties: properties,
         members: members
