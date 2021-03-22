@@ -8,7 +8,7 @@
       My Account Details
     </template>
     <template #content>
-      <div class="p-fluid p-d-flex p-flex-column p-jc-start">
+      <div class="p-fluid p-d-flex p-flex-column p-jc-start user-edit-form">
         <div class="p-field">
           <label for="firstName">First Name</label>
           <InputText id="firstName" type="text" :placeholder="user.firstName" v-model="firstName" />
@@ -18,8 +18,17 @@
           <InputText id="lastName" type="text" :placeholder="user.lastName" v-model="lastName" />
         </div>
         <div class="p-field">
-          <label for="email">Email Address</label>
-          <InputText id="email" type="text" :placeholder="user.email" v-model="email" />
+          <label for="email1">Email Address</label>
+          <div class="p-d-flex p-flex-row p-ai-center">
+            <InputText id="email1" type="text" :placeholder="user.email" v-model="email1" v-on:focus="setShowEmail1Notice(true)" v-on:blur="setShowEmail1Notice(false)"/>
+            <i v-if="showEmail1Notice && email1Verified" class="pi pi-check-circle" style="color: #439446; fontSize: 2em" />
+            <i v-if="showEmail1Notice && !email1Verified" class="pi pi-times-circle" style="color: #e60017; fontSize: 2em" />
+          </div>
+        </div>
+        <div class="p-field">
+          <label for="email2">Confirm Email Address</label>
+          <InputText id="email2" type="text" :placeholder="user.email" v-model="email2" v-on:blur="setShowEmail2Notice()" />
+          <InlineMessage v-if="showEmail2Notice" severity="error">Email addresses do not match!</InlineMessage>
         </div>
         <div v-if="!showPasswordEdit" class="p-d-flex p-flex-row p-jc-center p-field">
           <Button class="password-edit p-button-secondary" type="submit" label="Change Password" v-on:click.prevent="editPasswordClicked(true)" />
@@ -34,7 +43,8 @@
           <InlineMessage v-if="passwordStrength === 'strong'" severity="success">Password Strength: Strong</InlineMessage>
           <InlineMessage v-if="passwordStrength === 'medium'" severity="success">Password Strength: Medium</InlineMessage>
           <InlineMessage v-if="passwordStrength === 'weak'" severity="warn">Password Strength: Weak</InlineMessage>
-          <InlineMessage v-if="passwordStrength === 'fail' && password1 !== ''" severity="error">Invalid Password</InlineMessage>
+          <InlineMessage v-if="passwordStrength === 'fail' && passwordNew1 !== ''" severity="error">Invalid Password</InlineMessage>
+          <small id="password-help">Password min length 6 characters. Improve password strength with a mixture of UPPERCASE, lowercase, numbers and special characters [!@#$%^&*].</small>
         </div>
         <div v-if="showPasswordEdit" class="p-field">
           <label for="passwordNew2">Confirm New Password</label>
@@ -57,6 +67,8 @@ import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
 import { User } from "@/models/User";
 import Swal from 'sweetalert2';
+import { verifyIsEmail, verifyPasswordsMatch, verifyEmailsMatch, verifyIsName, checkPasswordStrength } from "@/helpers/UserMethods";
+import { PasswordStrength } from "@/models/PasswordStrength";
 
 @Options({
   name: "UserEdit",
@@ -67,19 +79,76 @@ import Swal from 'sweetalert2';
     user(){
       return store.state.user;
     }
+  },
+  watch: {
+    email1: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.email1Verified = verifyIsEmail(newValue);
+      }
+    },
+    email2: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.emailsMatch = verifyEmailsMatch(this.email1, this.email2);
+      }
+    },
+    passwordNew1: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.passwordStrength = checkPasswordStrength(newValue);
+      }
+    },
+    passwordNew2: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.passwordsMatch = verifyPasswordsMatch(this.password1, this.password2);
+      }
+    },
   }
 })
 
 export default class UserEdit extends Vue {
   user!: User;
-  firstName = this.user.firstName;
-  lastName = this.user.lastName;
-  email = this.user.email;
+  firstName = "";
+  lastName = "";
+  email1 = "";
+  email2 = "";
+  email1Verified = false;
+  emailsMatch = false;
+  showEmail1Notice = false;
+  showEmail2Notice = false;
   passwordOld = "";
   passwordNew1 = "";
   passwordNew2 = "";
+  passwordStrength: PasswordStrength = PasswordStrength.fail;
   showPasswordEdit = false;
   passwordsMatch = false;
+
+  mounted() {
+    if (this.user.firstName){//remove this later!!!!!!!!
+      this.firstName = this.user.firstName;
+      this.lastName = this.user.lastName;
+      this.email1 = this.user.email;
+      this.email2 = this.user.email;
+    }
+  }
+
+  // password1Changed(){
+  //   this.passwordStrength = checkPasswordStrength(this.passwordNew1);
+  // }
+
+  // password2Changed(){
+  //   this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, this.passwordNew2);
+  // }
+
+  // email1Changed(){
+  //   this.email1Verified = verifyIsEmail(this.email1);
+  // }
+
+  // email2Changed(){
+  //   this.emailsMatch = verifyEmailsMatch(this.email1, this.email2);
+  // }
 
   editPasswordClicked(result: boolean) {
     if (result === false){
@@ -90,9 +159,17 @@ export default class UserEdit extends Vue {
     this.showPasswordEdit = result;
   }
 
+  setShowEmail1Notice(result: boolean){
+    this.showEmail1Notice = result;
+  }
+
+  setShowEmail2Notice() {
+    this.showEmail2Notice = this.emailsMatch? false: true;
+  }
+
   handleEditSubmit(){
     if (this.showPasswordEdit && (this.passwordNew1 === this.passwordNew2)) {//add old password verification
-      const updatedUser = new User(this.firstName, this.lastName, this.email, this.passwordNew1);
+      const updatedUser = new User(this.firstName, this.lastName, this.email1, this.passwordNew1);
       // user Service call here
     } else if (this.showPasswordEdit){
       Swal.fire({
@@ -103,6 +180,10 @@ export default class UserEdit extends Vue {
     }
   }
 
+  resetForm(){
+    return null;
+  }
+
 }
 </script>
 
@@ -110,7 +191,10 @@ export default class UserEdit extends Vue {
 
 .user-edit, .password-edit, .password-edit {
   width: fit-content !important;
+}
 
+.user-edit-form {
+  max-width: 30em;
 }
 
 </style>

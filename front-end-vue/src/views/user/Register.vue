@@ -74,7 +74,7 @@ import { verifyIsEmail, verifyPasswordsMatch, verifyEmailsMatch, verifyIsName, c
     email2: {
       immediate: true,
       handler(newValue, oldValue){
-        this.emailsMatch = verifyIsEmail(newValue);
+        this.emailsMatch = verifyEmailsMatch(this.email1, this.email2);
       }
     },
     password1: {
