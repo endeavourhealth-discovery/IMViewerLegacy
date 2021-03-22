@@ -3,7 +3,7 @@ import { ConceptDto } from "@/models/ConceptDto";
 import axios from "axios";
 
 export default class ConceptService {
-  static api = "http://localhost:8080/";
+  static api = process.env.VUE_APP_API;
 
   public static async advancedSearch(request: SearchRequest) {
     return axios.post(this.api + "api/concept/search", request);

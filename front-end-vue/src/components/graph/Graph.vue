@@ -1,4 +1,5 @@
 <template>
+  {{ !!graphData }}
   <div id="content">
     <svg width="100%" height="600" id="svg">
       <g class="links"></g>
@@ -14,44 +15,38 @@ import svgPanZoom from "svg-pan-zoom";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { mapState } from "vuex";
 import ConceptService from "@/services/ConceptService";
+import { HierarchyNode } from "d3";
 
 @Options({
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {
     async conceptAggregate(newValue, oldValue) {
-      this.stopSimulation();
-      console.log(JSON.stringify(newValue.concept.conceptType));
       this.graphData = (
         await ConceptService.getConceptGraph(newValue.concept.iri)
       ).data;
-      console.log(JSON.stringify(this.graphData));
       this.root = d3.hierarchy(this.graphData);
-      this.initD3();
-      this.simulation.tick();
+      this.drawTree();
       this.initSvgPanZoom();
     }
   }
 })
 export default class Graph extends Vue {
   graphData = {};
-  root = d3.hierarchy(this.graphData);
-  windowRect = { height: 600, width: 700 };
-  simulation: d3.Simulation<
-    d3.SimulationNodeDatum,
-    undefined
-  > = {} as d3.Simulation<d3.SimulationNodeDatum, undefined>;
-
-  stopSimulation() {
-    try {
-      d3.selectAll("circle").remove();
-      d3.selectAll("text").remove();
-      d3.selectAll("line").remove();
-      this.simulation.stop();
-    } catch (error) {
-      // console.log("Simulation did not stop");
-    }
-  }
+  root: HierarchyNode<unknown> = {} as HierarchyNode<unknown>;
+  tree = {
+    name: "father",
+    children: [
+      {
+        name: "son1",
+        children: [{ name: "grandson" }, { name: "grandson2" }]
+      },
+      {
+        name: "son2",
+        children: [{ name: "grandson3" }, { name: "grandson4" }]
+      }
+    ]
+  };
 
   initSvgPanZoom() {
     svgPanZoom("#svg", {
@@ -63,257 +58,109 @@ export default class Graph extends Vue {
     });
   }
 
-  initD3() {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    this.windowRect = document.getElementById("svg")?.getBoundingClientRect()!;
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const that = this;
-    const links = this.root.links() as d3.SimulationLinkDatum<any>[];
-    const nodes = this.root.descendants();
-    this.simulation = d3
-      .forceSimulation(nodes as any)
-      .force("charge", d3.forceManyBody().strength(-750))
-      .force("link", d3.forceLink().links(links))
-      .force(
-        "collision",
-        d3
-          .forceCollide()
-          .radius(60)
-          .strength(1)
+  eraseTree() {
+    d3.selectAll("g")
+      .selectAll("*")
+      .remove();
+  }
+
+  drawTree() {
+    this.eraseTree();
+    const margin = { top: 20, right: 90, bottom: 30, left: 90 };
+    const width = 660 - margin.left - margin.right;
+    const height = 500 - margin.top - margin.bottom;
+    const treemap = d3.tree().size([height, width]);
+    let nodes: any = d3.hierarchy(this.graphData, (d: any) => d.children);
+    nodes = treemap(nodes);
+    const g = d3.selectAll("g");
+
+    // add the links between the nodes
+    const link = g
+      .selectAll(".link")
+      .data(nodes.descendants().slice(1))
+      .enter()
+      .append("path")
+      .attr("class", "link")
+      .attr("d", (d: any) => {
+        return (
+          "M" +
+          d.y +
+          "," +
+          d.x +
+          "C" +
+          (d.y + d.parent.y) / 2 +
+          "," +
+          d.x +
+          " " +
+          (d.y + d.parent.y) / 2 +
+          "," +
+          d.parent.x +
+          " " +
+          d.parent.y +
+          "," +
+          d.parent.x
+        );
+      });
+
+    // add nodes
+    const node: any = g
+      .selectAll(".node")
+      .data(nodes.descendants())
+      .enter()
+      .append("g")
+      .attr(
+        "class",
+        (d: any) => "node" + (d.children ? " node--internal" : " node--leaf")
       )
-      .on("tick", () => {
-        const circles = d3
-          .select(".nodes")
-          .selectAll("circle")
-          .data(nodes);
+      .attr("transform", (d: any) => "translate(" + d.y + "," + d.x + ")")
+      .attr("cursor", "pointer");
 
-        circles
-          .enter()
-          .append("circle")
-          .attr("r", function(d: any) {
-            if (d.depth === 0) return 10;
-            return 5;
-          })
-          .merge(circles as any)
-          .attr("cx", function(d: any) {
-            if (d.depth === 0) {
-              d.x = 0;
-            }
-            if (d.data.name === "Properties") {
-              d.x = 0;
-            }
-            if (d.data.name === "Children") {
-              d.x = that.windowRect.width / 4;
-            }
-            if (d.data.name === "Parents") {
-              d.x = that.windowRect.width / -4;
-            }
-            return d.x;
-          })
-          .attr("cy", function(d: any) {
-            if (d.depth === 0) {
-              d.y = 0;
-            }
-            if (d.data.name === "Properties") {
-              d.y = that.windowRect.height / 4;
-            }
-            if (d.data.name === "Children") {
-              d.y = that.windowRect.height / -4;
-            }
-            if (d.data.name === "Parents") {
-              d.y = that.windowRect.height / -4;
-            }
-            return d.y;
-          })
-          .attr("id", function(d: any) {
-            const name = d.data.name;
-            return /\s/.test(name) ? name.replace(/\s/g, "") : name;
-          })
-          .attr("class", function(d: any) {
-            if (d.depth === 0) return "root";
-            if (d.data.inheritedFromIri) return "inherited";
-            return "";
-          });
+    // add circles to nodes
+    node
+      .append("circle")
+      .attr("r", 5)
+      .attr("class", "circle");
 
-        circles.exit().remove();
+    // add text nodes
+    node
+      .append("text")
+      .attr("id", (d: any) => d.data.valueTypeIri)
+      .attr("dy", ".35em")
+      .attr("x", (d: any) => (d.children ? -10 : 10))
+      .attr("y", (d: any) =>
+        d.children && d.depth !== 0 ? -(d.data.value + 5) : d
+      )
+      .style("text-anchor", (d: any) => (d.children ? "end" : "start"))
+      .text((d: any) => d.data.valueTypeName || d.data.name);
 
-        const lines = d3
-          .select(".links")
-          .selectAll("line")
-          .data(links);
-
-        lines
-          .enter()
-          .append("line")
-          .merge(lines as any)
-          .attr("x1", function(d: any) {
-            return d.source.x;
-          })
-          .attr("y1", function(d: any) {
-            return d.source.y;
-          })
-          .attr("x2", function(d: any) {
-            return d.target.x;
-          })
-          .attr("y2", function(d: any) {
-            return d.target.y;
-          })
-          .attr("stroke-width", 1)
-          .attr("stroke", "black")
-          .attr("stroke-dasharray", "1,4");
-
-        lines.exit().remove();
-
-        const textNodes = d3
-          .select(".nodes")
-          .selectAll("text")
-          .data(nodes);
-
-        textNodes
-          .enter()
-          .append("text")
-          .text(function(d: any) {
-            return d.data.valueTypeName || d.data.name;
-          })
-          .merge(textNodes as any)
-          .attr("x", function(d: any) {
-            return d.x;
-          })
-          .attr("y", function(d: any) {
-            return d.y - 20;
-          })
-          .attr("name", function(d: any) {
-            return d.data.valueTypeName || d.data.name;
-          })
-          .attr("id", function(d: any) {
-            return d.data.valueTypeIri || d.data.iri;
-          })
-          .attr("inheritedFromIri", function(d: any) {
-            return d.data.inheritedFromIri;
-          })
-          .attr("inheritedFromName", function(d: any) {
-            return d.data.inheritedFromName;
-          })
-          .attr("propertyType", function(d: any) {
-            return d.data.propertyType;
-          });
-
-        textNodes.exit().remove();
-
-        const lineLabels = d3
-          .select(".links")
-          .selectAll("text")
-          .data(links);
-
-        lineLabels
-          .enter()
-          .append("text")
-          .merge(lineLabels as any)
-          .attr("class", "labelText")
-          .attr("x", function(d: any) {
-            return (d.target.x + d.source.x) / 2;
-          })
-          .attr("y", function(d: any) {
-            return (d.target.y + d.source.y) / 2;
-          })
-          .text(function(d: any) {
-            return d.target.data.propertyType;
-          });
-
-        lineLabels.exit().remove();
-      });
-
-    d3.select("#content")
-      .selectAll("g.nodes")
-      .on("mouseover", that.onMouseOver)
-      .on("mouseout", that.onMouseOut)
-      .on("click", function(event: any) {
-        if (event.srcElement.localName === "circle") {
-          that.onCircleClick(event);
-        } else {
-          that.onTextClick(event);
-        }
-      });
-  }
-
-  onMouseOver(event: any) {
-    console.log(event.srcElement);
-    const inheritedFrom =
-      event.srcElement.attributes.inheritedFromName?.nodeValue;
-    if (inheritedFrom) {
-      const title = `${event.srcElement.innerHTML} - Inherited from ${inheritedFrom}`;
-      event.srcElement.innerHTML = title;
-    }
-  }
-
-  onMouseOut(event: any) {
-    const originalTitle = event.srcElement.attributes.name?.value;
-    if (originalTitle) {
-      event.srcElement.innerHTML = originalTitle;
-    }
-  }
-
-  onCircleClick(event: any) {
-    const currentNode = this.root
-      .descendants()
-      .filter((node: any) => node.data.name === event.srcElement.id);
-    if (currentNode[0].children) {
-      (currentNode[0] as any)._children = currentNode[0].children;
-      currentNode[0].children = undefined;
-    } else {
-      currentNode[0].children = (currentNode[0] as any)._children;
-      (currentNode[0] as any)._children = undefined;
-    }
-    this.stopSimulation();
-    this.initD3();
-    this.simulation.tick();
-    this.initSvgPanZoom();
-  }
-
-  onTextClick(event: any) {
-    const iri = event.srcElement.attributes.id.nodeValue;
-    const currentRoute = this.$route.name as RouteRecordName | undefined;
-    if (iri)
-      this.$router.push({
-        name: currentRoute,
-        params: { selectedIri: iri }
-      });
+    // add text property nodes
+    node
+      .append("text")
+      .attr("id", (d: any) => d.data.iri)
+      .attr("dy", ".35em")
+      .attr("x", (d: any) => -10)
+      .attr("y", (d: any) => -(d.data.value + 5))
+      .style("text-anchor", (d: any) => "end")
+      .text((d: any) =>
+        d.parent?.data.name === "Properties" ? d.data.name : ""
+      );
   }
 }
 </script>
 
 <style>
-.root {
-  fill: rgb(0, 75, 136);
+.circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 3px;
 }
-.inherited {
-  fill: grey;
+.text {
+  font: 12px sans-serif;
 }
-circle {
-  fill: cadetblue;
-}
-circle#Properties,
-circle#Children,
-circle#Parents {
-  fill: rgb(33, 150, 243);
-  fill-opacity: 1;
-  cursor: pointer;
-}
-text#Properties,
-text#Children,
-text#Parents {
-  fill: black;
-  font-size: 11px;
-  cursor: default;
-}
-line {
+
+.link {
+  fill: none;
   stroke: #ccc;
-}
-text {
-  text-anchor: middle;
-  font-family: "Helvetica Neue", Helvetica, sans-serif;
-  fill: #666;
-  font-size: 12px;
-  cursor: pointer;
+  stroke-width: 2px;
 }
 </style>
