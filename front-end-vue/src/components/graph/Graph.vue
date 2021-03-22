@@ -16,6 +16,7 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { mapState } from "vuex";
 import ConceptService from "@/services/ConceptService";
 import { HierarchyNode } from "d3";
+import GraphData from "../../models/GraphData";
 
 @Options({
   components: {},
@@ -32,21 +33,17 @@ import { HierarchyNode } from "d3";
   }
 })
 export default class Graph extends Vue {
-  graphData = {};
+  graphData: GraphData = {} as GraphData;
   root: HierarchyNode<unknown> = {} as HierarchyNode<unknown>;
-  tree = {
-    name: "father",
-    children: [
-      {
-        name: "son1",
-        children: [{ name: "grandson" }, { name: "grandson2" }]
-      },
-      {
-        name: "son2",
-        children: [{ name: "grandson3" }, { name: "grandson4" }]
-      }
-    ]
-  };
+  margin: any = {};
+  width = 660;
+  height = 500;
+
+  monuted() {
+    this.margin = { top: 20, right: 90, bottom: 30, left: 90 };
+    this.width = 660 - this.margin.left - this.margin.right;
+    this.height = 500 - this.margin.top - this.margin.bottom;
+  }
 
   initSvgPanZoom() {
     svgPanZoom("#svg", {
@@ -66,10 +63,8 @@ export default class Graph extends Vue {
 
   drawTree() {
     this.eraseTree();
-    const margin = { top: 20, right: 90, bottom: 30, left: 90 };
-    const width = 660 - margin.left - margin.right;
-    const height = 500 - margin.top - margin.bottom;
-    const treemap = d3.tree().size([height, width]);
+
+    const treemap = d3.tree().size([this.height, this.width]);
     let nodes: any = d3.hierarchy(this.graphData, (d: any) => d.children);
     nodes = treemap(nodes);
     const g = d3.selectAll("g");
@@ -119,18 +114,21 @@ export default class Graph extends Vue {
     node
       .append("circle")
       .attr("r", 5)
+      .attr("id", (d: any) => d.data.valueTypeIri || d.data.iri || d.data.name)
       .attr("class", "circle");
 
     // add text nodes
     node
       .append("text")
-      .attr("id", (d: any) => d.data.valueTypeIri)
+      .attr("id", (d: any) => d.data.valueTypeIri || d.data.iri)
       .attr("dy", ".35em")
-      .attr("x", (d: any) => (d.children ? -10 : 10))
+      .attr("x", (d: any) => (d.children || d.depth <= 1 ? -10 : 10))
       .attr("y", (d: any) =>
         d.children && d.depth !== 0 ? -(d.data.value + 5) : d
       )
-      .style("text-anchor", (d: any) => (d.children ? "end" : "start"))
+      .style("text-anchor", (d: any) =>
+        d.children || d.depth <= 1 ? "end" : "start"
+      )
       .text((d: any) => d.data.valueTypeName || d.data.name);
 
     // add text property nodes
@@ -144,6 +142,65 @@ export default class Graph extends Vue {
       .text((d: any) =>
         d.parent?.data.name === "Properties" ? d.data.name : ""
       );
+
+    // set event listeners
+    d3.select("#content")
+      .selectAll("circle")
+      .on("click", this.onCircleClick);
+
+    d3.select("#content")
+      .selectAll("text")
+      // .on("mouseover", this.onMouseOver)
+      // .on("mouseout", this.onMouseOut)
+      .on("click", this.onTextClick);
+  }
+
+  // TODO - add hover to inform of inherited properties
+
+  // onMouseOver(event: any) {
+  //   console.log(event.srcElement.attributes);
+  //   const inheritedFrom =
+  //     event.srcElement.attributes.inheritedFromName?.nodeValue;
+  //   if (inheritedFrom) {
+  //     const title = `${event.srcElement.innerHTML} - Inherited from ${inheritedFrom}`;
+  //     event.srcElement.innerHTML = title;
+  //   }
+  // }
+
+  // onMouseOut(event: any) {
+  //   // const originalTitle = event.srcElement.attributes.name?.value;
+  //   // if (originalTitle) {
+  //   //   event.srcElement.innerHTML = originalTitle;
+  //   // }
+  // }
+
+  onCircleClick(event: any) {
+    if (
+      event.srcElement.id === "Parents" ||
+      event.srcElement.id === "Children" ||
+      event.srcElement.id === "Properties"
+    ) {
+      const currentParent = (this.graphData as any).children.filter(
+        (child: any) => child.name === event.srcElement.id
+      );
+      if (currentParent[0].children.length) {
+        (currentParent[0] as any)._children = currentParent[0].children;
+        currentParent[0].children = [];
+      } else {
+        currentParent[0].children = (currentParent[0] as any)._children;
+        (currentParent[0] as any)._children = [];
+      }
+      this.drawTree();
+    }
+  }
+
+  onTextClick(event: any) {
+    const currentRoute = this.$route.name as RouteRecordName | undefined;
+    if (event.srcElement.id)
+      this.$router.push({
+        name: currentRoute,
+        params: { selectedIri: event.srcElement.id }
+      });
   }
 }
 </script>
