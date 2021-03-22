@@ -1,5 +1,5 @@
 <template>
-  <div v-if="currentUser" class="p-d-flex p-flex-row p-ai-center">
+  <div v-if="user" class="p-d-flex p-flex-row p-ai-center">
     <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-details-card">
       <template #header>
         <i class="pi pi-fw pi-user" style="fontSize: 50px; margin: 1em;" />
@@ -8,13 +8,25 @@
         My Account Details
       </template>
       <template #content>
-        <InputText type="text" :placeholder="currentUser.firstName" disabled />
-        <InputText type="text" :placeholder="currentUser.lastName" disabled />
-        <InputText type="text" :placeholder="currentUser.email" disabled />
-        <Button class="user-edit" type="submit" label="Edit" v-on:click.prevent="handleEditClicked"/>
+        <div class="p-fluid p-d-flex p-flex-column p-jc-start">
+          <div class="p-field">
+            <label for="firstName">First Name</label>
+            <InputText id="firstName" type="text" :placeholder="user.firstName" disabled />
+          </div>
+          <div class="p-field">
+            <label for="lastName">Last Name</label>
+            <InputText id="lastName" type="text" :placeholder="user.lastName" disabled />
+          </div>
+          <div class="p-field">
+            <label for="email">Email Address</label>
+            <InputText id="email" type="text" :placeholder="user.email" disabled />
+          </div>
+          <div class="p-d-flex p-flex-row p-jc-center">
+            <Button class="user-edit" type="submit" label="Edit" v-on:click.prevent="handleEditClicked"/>
+          </div>
+        </div>
       </template>
     </Card>
-
   </div>
 </template>
 
@@ -27,7 +39,11 @@ import store from "@/store/index";
   components: {
 
   },
-  props: ["currentUser"]
+  computed: {
+    user(){
+      return store.state.user;
+    }
+  }
 })
 
 export default class UserDetails extends Vue {
@@ -38,6 +54,10 @@ export default class UserDetails extends Vue {
 }
 </script>
 
-<style>
+<style scoped>
+
+.user-edit {
+  width: fit-content !important;
+}
 
 </style>
