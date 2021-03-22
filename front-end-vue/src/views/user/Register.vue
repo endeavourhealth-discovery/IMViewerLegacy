@@ -44,7 +44,7 @@
           <InputText id="fieldPassword2" type="password" v-model="password2"/>
         </div>
         <div class="p-d-flex p-flex-row p-jc-center">
-          <ConfirmDialogue></ConfirmDialogue>
+          <!-- <ConfirmDialogue></ConfirmDialogue> -->
           <Button class="user-submit" type="submit" label="Submit" v-on:click.prevent="handleSubmit"/>
         </div>
       </div>
