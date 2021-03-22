@@ -1,29 +1,19 @@
 <template>
-  <div class="p-grid">
-    <div class="p-col-12"><Header /></div>
-    <div class="p-col-4"><SidebarControl /></div>
-    <div class="p-col-8"><PanelControl /></div>
-  </div>
+  <div class="p-col-8"><PanelControl /></div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import PanelControl from "@/components/panels/PanelControl.vue"; // @ is an alias to /src
-import Header from "@/components/Header.vue";
-import SidebarControl from "@/components/sidebar/SidebarControl.vue";
 import store from "@/store/index";
 
 @Options({
+  name: "Concept",
   components: {
     PanelControl,
-    Header,
-    SidebarControl
   }
 })
 export default class Concept extends Vue {
-  async mounted() {
-    store.commit("updateConceptIri", this.$route.params.selectedIri as string);
-    store.dispatch("fetchConceptAggregate", store.state.conceptIri);
-  }
+
 }
 </script>

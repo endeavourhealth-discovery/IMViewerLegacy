@@ -1,37 +1,60 @@
 <template>
-  <div class="p-grid">
-    <div class="p-col-11"><Header /></div>
-    <div class="p-col-1"><Menubar :model="getItems()" /></div>
-    <div class="p-col-4"><SidebarControl /></div>
-    <div class="p-col-8"><Dashboard /></div>
-  </div>
+  <side-nav />
+    <div class="layout-main">
+      <div class="home">
+        <div class="p-grid">
+          <div class="p-col-10"><Header /></div>
+          <div class="p-col-2"><Menubar :model="getItems()" /></div>
+          <div class="p-col-4"><SidebarControl /></div>
+          <div v-if="isHome" class="p-col-8"><Dashboard /></div>
+          <router-view v-if="!isHome"/>
+        </div>
+      </div>
+    </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import Dashboard from "@/components/Dashboard.vue"; // @ is an alias to /src
+import {Options, Vue} from "vue-class-component";
+import SideNav from "@/components/sidenav/SideNav.vue";
 import Header from "@/components/Header.vue";
 import SidebarControl from "@/components/sidebar/SidebarControl.vue";
-import store from "@/store/index";
-import { User } from "../models/User";
+import Dashboard from "@/components/Dashboard.vue";
 import { mapState } from "vuex";
+import { User } from "../models/User";
+import store from "@/store/index";
 
 @Options({
+  name: "Root",
   components: {
-    Dashboard,
+    SideNav,
     Header,
-    SidebarControl
+    SidebarControl,
+    Dashboard
   },
   computed: {...mapState(['user', 'isLoggedIn'])}
 })
-export default class Home extends Vue {
-  user!: User;
-  isLoggedIn!: boolean;
+
+export default class Root extends Vue{
+  isHome = true;
 
   async mounted() {
-    store.commit("updateConceptIri", "owl:Thing");
-    store.dispatch("fetchConceptAggregate", store.state.conceptIri);
+    if (this.$route.name === "Home"){
+      store.commit("updateConceptIri", "owl:Thing");
+      store.dispatch("fetchConceptAggregate", store.state.conceptIri);
+    } else if (this.$route.name === "Concept") {
+      store.commit("updateConceptIri", this.$route.params.selectedIri as string);
+      store.dispatch("fetchConceptAggregate", store.state.conceptIri);
+    }
+
+    if (this.$route.name !== "Home"){
+      this.isHome = false
+    } else {
+      this.isHome = true
+    }
   }
+
+  user!: User;
+  isLoggedIn!: boolean;
 
   getItems(){
     if (this.isLoggedIn){
@@ -80,3 +103,7 @@ export default class Home extends Vue {
   ]
 }
 </script>
+
+<style>
+
+</style>

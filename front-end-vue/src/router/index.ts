@@ -11,6 +11,7 @@ import Login from "../views/user/Login.vue";
 import Register from "../views/user/Register.vue";
 import UserDetails from "../views/user/UserDetails.vue";
 import UserEdit from "../views/user/UserEdit.vue";
+import Welcome from "../views/Welcome.vue";
 import { HistoryItem } from "../models/HistoryItem";
 import store from "@/store/index";
 
@@ -46,12 +47,14 @@ const routes: Array<RouteRecordRaw> = [
     path: "/home",
     name: "Home",
     component: Home,
-    alias: "/"
-  },
-  {
-    path: "/concept/:selectedIri",
-    name: "Concept",
-    component: Datamodel,
+    alias: "/",
+    children: [
+      {
+        path: "/concept/:selectedIri",
+        name: "Concept",
+        component: Datamodel,
+      }
+    ]
   }
 ];
 
