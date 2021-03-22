@@ -1,4 +1,5 @@
 <template>
+  <div class="p-d-flex p-flex-row p-ai-center">
     <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center register-card">
     <template #header>
       <i class="pi pi-fw pi-user-plus" style="fontSize: 50px; margin: 1em;"/>
@@ -49,6 +50,7 @@
       </div>
     </template>
   </Card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -56,6 +58,7 @@ import { Options, Vue } from "vue-class-component";
 import { User } from "@/models/User";
 import store from "@/store/index";
 import { PasswordStrength } from "@/models/PasswordStrength";
+import Swal from 'sweetalert2';
 
 @Options({
   name: "Register",
@@ -98,7 +101,7 @@ export default class Register extends Vue{
   lastName = "";
   password1 = "";
   password2 = "";
-  passwordStrength: PasswordStrength = PasswordStrength.weak;
+  passwordStrength: PasswordStrength = PasswordStrength.fail;
   passwordsMatch = false;
   showEmail1Notice = false;
   showEmail2Notice = false;
@@ -170,22 +173,55 @@ export default class Register extends Vue{
     if (this.verifyIsEmail(this.email1) && this.verifyIsEmail(this.email2) && this.verifyEmailsMatch() && this.verifyPasswordsMatch() && this.passwordStrength !== PasswordStrength.fail && this.verifyFirstName() && this.verifyLastName()){
       const user = new User(this.firstName, this.lastName, this.email1.toLowerCase(), this.password1)
       this.$emit("userCreated", user)
-      this.$confirm.require({
-        message: "User created successfully!",
-        header: "Success",
-        icon: "pi pi-check",
-        acceptLabel: "Login",
-        rejectLabel: "Close",
-        accept: () => {
-          this.$router.push({name: "Login"});
-        },
-        reject: () => {
-          this.$confirm.close();
+      // this.$confirm.require({
+      //   message: "User created successfully!",
+      //   header: "Success",
+      //   icon: "pi pi-check",
+      //   acceptLabel: "Login",
+      //   rejectLabel: "Close",
+      //   accept: () => {
+      //     this.$router.push({name: "Login"});
+      //   },
+      //   reject: () => {
+      //     this.$confirm.close();
+      //   } // prime vue version -- ugly...
+      // })
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: "User created",
+        showCancelButton: true,
+        confirmButtonText: 'Login'
+      }).then( (result) => {
+        if (result.isConfirmed){
+          this.$router.push({name: "Login"})
         }
       })
     } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'User creation failed.',
+        confirmButtonText: 'Close'
+      })
+      this.clearForm();
       throw new Error("User creation failed")
     }
+  }
+
+  clearForm() {
+    this.email1 = "";
+    this.email1Verified = false;
+    this.email2 = "";
+    this.emailsMatch = false;
+    this.firstName = "";
+    this.lastName = "";
+    this.password1 = "";
+    this.password2 = "";
+    this.passwordStrength = PasswordStrength.fail;
+    this.passwordsMatch = false;
+    this.showEmail1Notice = false;
+    this.showEmail2Notice = false;
   }
 }
 </script>

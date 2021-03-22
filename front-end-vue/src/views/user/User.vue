@@ -1,5 +1,5 @@
 <template>
-  <div class="p-d-flex p-flex-row p-jc-center">
+  <div class="p-d-flex p-flex-row p-jc-center user-container">
       <router-view />
   </div>
 </template>
@@ -21,5 +21,9 @@ export default class User extends Vue {
 </script>
 
 <style scoped>
+
+.user-container {
+  height: 100vh;
+}
 
 </style>
