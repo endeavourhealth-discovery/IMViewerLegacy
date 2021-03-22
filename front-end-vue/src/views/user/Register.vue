@@ -18,8 +18,8 @@
         </div>
         <div class="p-field">
           <label for="fieldEmail2">Confirm Email Address</label>
-          <InputText id="fieldEmail2" type="text" v-model="email2" v-on:blur="setShowEmail2Notice(true)" />
-          <InlineMessage v-if="showEmail2Notice && !passwordsMatch" severity="error">Email addresses do not match!</InlineMessage>
+          <InputText id="fieldEmail2" type="text" v-model="email2" v-on:blur="setShowEmail2Notice()" />
+          <InlineMessage v-if="showEmail2Notice" severity="error">Email addresses do not match!</InlineMessage>
         </div>
         <div class="p-field">
           <label for="fieldFirstName">First Name</label>
@@ -43,9 +43,9 @@
           <InputText id="fieldPassword2" type="password" v-model="password2"/>
         </div>
         <div class="p-d-flex p-flex-row p-jc-center">
+          <ConfirmDialogue></ConfirmDialogue>
           <Button class="user-submit" type="submit" label="Submit" v-on:click.prevent="handleSubmit"/>
         </div>
-
       </div>
     </template>
   </Card>
@@ -107,8 +107,8 @@ export default class Register extends Vue{
     this.showEmail1Notice = result;
   }
 
-  setShowEmail2Notice(result: boolean){
-    this.showEmail2Notice = result;
+  setShowEmail2Notice(){
+    this.showEmail2Notice = this.emailsMatch? false: true;
   }
 
   verifyIsEmail(email: any){
@@ -128,7 +128,7 @@ export default class Register extends Vue{
   }
 
   verifyEmailsMatch(){
-    if (this.email1 === this.email2){
+    if (this.email1.toLowerCase() === this.email2.toLowerCase()){
       return true;
     } else {
       return false;
@@ -168,8 +168,21 @@ export default class Register extends Vue{
 
   handleSubmit(){
     if (this.verifyIsEmail(this.email1) && this.verifyIsEmail(this.email2) && this.verifyEmailsMatch() && this.verifyPasswordsMatch() && this.passwordStrength !== PasswordStrength.fail && this.verifyFirstName() && this.verifyLastName()){
-      const user = new User(this.firstName, this.lastName, this.email1, this.password1)
+      const user = new User(this.firstName, this.lastName, this.email1.toLowerCase(), this.password1)
       this.$emit("userCreated", user)
+      this.$confirm.require({
+        message: "User created successfully!",
+        header: "Success",
+        icon: "pi pi-check",
+        acceptLabel: "Login",
+        rejectLabel: "Close",
+        accept: () => {
+          this.$router.push({name: "Login"});
+        },
+        reject: () => {
+          this.$confirm.close();
+        }
+      })
     } else {
       throw new Error("User creation failed")
     }

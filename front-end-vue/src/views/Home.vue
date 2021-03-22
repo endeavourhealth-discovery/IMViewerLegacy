@@ -26,7 +26,7 @@ import { User } from "../models/User";
 import store from "@/store/index";
 
 @Options({
-  name: "Root",
+  name: "Home",
   components: {
     SideNav,
     Header,
@@ -36,22 +36,18 @@ import store from "@/store/index";
   computed: {...mapState(['user', 'isLoggedIn'])}
 })
 
-export default class Root extends Vue{
+export default class Home extends Vue{
   isHome = true;
 
   async mounted() {
+    this.isHome = this.$route.name === "Home"? true: false;
+
     if (this.$route.name === "Home"){
       store.commit("updateConceptIri", "owl:Thing");
       store.dispatch("fetchConceptAggregate", store.state.conceptIri);
     } else if (this.$route.name === "Concept") {
       store.commit("updateConceptIri", this.$route.params.selectedIri as string);
       store.dispatch("fetchConceptAggregate", store.state.conceptIri);
-    }
-
-    if (this.$route.name !== "Home"){
-      this.isHome = false
-    } else {
-      this.isHome = true
     }
   }
 
@@ -116,6 +112,10 @@ export default class Root extends Vue{
   height: 100%;
   margin-left: 5px;
   width: 12.5rem
+}
+
+.p-menubar {
+  height: 100%;
 }
 
 

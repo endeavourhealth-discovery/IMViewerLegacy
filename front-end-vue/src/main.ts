@@ -50,11 +50,14 @@ import OverlayPanel from 'primevue/overlaypanel';
 import Menubar from 'primevue/menubar';
 import InlineMessage from 'primevue/inlinemessage';
 import Message from 'primevue/message';
+import ConfirmationService from 'primevue/confirmationservice';
+import ConfirmDialogue from 'primevue/confirmdialog';
 
 createApp(App)
   .use(store)
   .use(router)
   .use(PrimeVue, { ripple: true })
+  .use(ConfirmationService)
   .directive('tooltip', Tooltip)
   .component("Card", Card)
   .component("TabView", TabView)
@@ -84,4 +87,5 @@ createApp(App)
   .component("Menubar", Menubar)
   .component("InlineMessage", InlineMessage)
   .component("Message", Message)
+  .component("ConfirmDialogue", ConfirmDialogue)
   .mount("#app");
