@@ -59,6 +59,7 @@ import { User } from "@/models/User";
 import store from "@/store/index";
 import { PasswordStrength } from "@/models/PasswordStrength";
 import Swal from 'sweetalert2';
+import { verifyIsEmail, verifyPasswordsMatch, verifyEmailsMatch, verifyIsName, checkPasswordStrength } from "@/helpers/UserMethods";
 
 @Options({
   name: "Register",
@@ -67,25 +68,25 @@ import Swal from 'sweetalert2';
     email1: {
       immediate: true,
       handler(newValue, oldValue){
-        this.email1Verified = this.verifyIsEmail(newValue);
+        this.email1Verified = verifyIsEmail(newValue);
       }
     },
     email2: {
       immediate: true,
       handler(newValue, oldValue){
-        this.emailsMatch = this.verifyIsEmail(newValue);
+        this.emailsMatch = verifyIsEmail(newValue);
       }
     },
     password1: {
       immediate: true,
       handler(newValue, oldValue){
-        this.checkPasswordStrength(newValue);
+        this.passwordStrength = checkPasswordStrength(newValue);
       }
     },
     password2: {
       immediate: true,
       handler(newValue, oldValue){
-        this.passwordsMatch = this.verifyPasswordsMatch();
+        this.passwordsMatch = verifyPasswordsMatch(this.password1, this.password2);
       }
     },
 
@@ -114,63 +115,8 @@ export default class Register extends Vue{
     this.showEmail2Notice = this.emailsMatch? false: true;
   }
 
-  verifyIsEmail(email: any){
-    if (/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email)){
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  verifyPasswordsMatch(){
-    if (this.password1 === this.password2){
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  verifyEmailsMatch(){
-    if (this.email1.toLowerCase() === this.email2.toLowerCase()){
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  verifyFirstName(){
-    if (/^[a-zA-Z]+$/.test(this.firstName)){
-      return true;
-    } else {
-      return false
-    }
-  }
-
-  verifyLastName(){
-    if (/^[a-zA-Z]+$/.test(this.lastName)){
-      return true
-    } else {
-      return false
-    }
-  }
-
-  checkPasswordStrength(password: any){
-    const strongCheck = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
-    const mediumCheck = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
-    const weakCheck = new RegExp("^(?=.{6,})")
-    if (strongCheck.test(password)){
-      this.passwordStrength = PasswordStrength.strong;
-    } else if (mediumCheck.test(password)){
-      this.passwordStrength = PasswordStrength.medium;
-    } else if (weakCheck.test(password)){
-      this.passwordStrength = PasswordStrength.weak;
-    } else {
-      this.passwordStrength = PasswordStrength.fail;
-    }
-  }
-
   handleSubmit(){
-    if (this.verifyIsEmail(this.email1) && this.verifyIsEmail(this.email2) && this.verifyEmailsMatch() && this.verifyPasswordsMatch() && this.passwordStrength !== PasswordStrength.fail && this.verifyFirstName() && this.verifyLastName()){
+    if (verifyIsEmail(this.email1) && verifyIsEmail(this.email2) && verifyEmailsMatch(this.email1, this.email2) && verifyPasswordsMatch(this.password1, this.password2) && this.passwordStrength !== PasswordStrength.fail && verifyIsName(this.firstName) && verifyIsName(this.lastName)){
       const user = new User(this.firstName, this.lastName, this.email1.toLowerCase(), this.password1)
       this.$emit("userCreated", user)
       // this.$confirm.require({
