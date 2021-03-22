@@ -2,7 +2,11 @@
   <div class="p-grid">
     <div class="p-col-6">
       <Panel header="Included Members" :toggleable="true"
-        ><Listbox listStyle="height:200px" :filter="true" emptyMessage="No results found" emptyFilterMessage="No results found"
+        ><Listbox
+          listStyle="height:200px"
+          :filter="true"
+          emptyMessage="No results found"
+          emptyFilterMessage="No results found"
           v-model="selectedIncludedMember"
           @click="onNodeSelect(selectedIncludedMember)"
           :options="$store.state.conceptAggregate.members.included"
@@ -12,7 +16,11 @@
     </div>
     <div class="p-col-6">
       <Panel header="Excluded Members" :toggleable="true"
-        ><Listbox listStyle="height:200px" :filter="true" emptyMessage="No results found" emptyFilterMessage="No results found"
+        ><Listbox
+          listStyle="height:200px"
+          :filter="true"
+          emptyMessage="No results found"
+          emptyFilterMessage="No results found"
           v-model="selectedExcludedMember"
           @click="onNodeSelect(selectedExcludedMember)"
           :options="$store.state.conceptAggregate.members.excluded"
