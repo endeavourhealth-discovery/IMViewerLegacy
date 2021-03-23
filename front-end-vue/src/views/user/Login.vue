@@ -8,7 +8,7 @@
         Login
       </template>
       <template #content>
-        <div class="p-fluid">
+        <div class="p-fluid login-form">
           <div class="p-field">
             <label for="fieldEmail">Email Address</label>
             <InputText id="fieldEmail" type="text" v-model="email" />
@@ -52,11 +52,14 @@ export default class Login extends Vue {
 
 .login-card {
   padding: 0 2em;
-  max-width: 50vw;
 }
 
 .user-submit {
   width: fit-content !important;
+}
+
+.login-form {
+  max-width: 25em;
 }
 
 </style>

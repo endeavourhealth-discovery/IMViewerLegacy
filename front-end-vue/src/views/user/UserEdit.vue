@@ -1,6 +1,6 @@
 <template>
   <div v-if="user" class="p-d-flex p-flex-row p-ai-center">
-  <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-details-card">
+  <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-edit-card">
     <template #header>
       <i class="pi pi-fw pi-user-edit" style="fontSize: 50px; margin: 1em;" />
     </template>
@@ -214,7 +214,11 @@ export default class UserEdit extends Vue {
 }
 
 .user-edit-form {
-  max-width: 30em;
+  max-width: 25em;
+}
+
+.user-edit-card {
+  padding: 0 2em;
 }
 
 </style>

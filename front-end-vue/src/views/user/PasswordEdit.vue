@@ -104,12 +104,16 @@ export default class PasswordEdit extends Vue{
 
 <style scoped>
 
+.password-edit-card {
+  padding: 0 2em;
+}
+
 .user-edit {
   width: fit-content !important;
 }
 
 .password-edit-form {
-  max-width: 30em;
+  max-width: 25em;
 }
 
 </style>

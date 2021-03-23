@@ -8,7 +8,7 @@
         My Account Details
       </template>
       <template #content>
-        <div class="p-fluid p-d-flex p-flex-column p-jc-start">
+        <div class="p-fluid p-d-flex p-flex-column p-jc-start user-details-form">
           <div class="p-field">
             <label for="firstName">First Name</label>
             <InputText id="firstName" type="text" :placeholder="user.firstName" disabled />
@@ -58,6 +58,14 @@ export default class UserDetails extends Vue {
 
 .user-edit {
   width: fit-content !important;
+}
+
+.user-details-form {
+  max-width: 25em;
+}
+
+.user-details-card {
+  padding: 0 2em;
 }
 
 </style>

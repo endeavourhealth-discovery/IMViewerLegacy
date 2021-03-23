@@ -192,11 +192,10 @@ export default class Register extends Vue{
 
 .register-card {
   padding: 0 2em;
-  max-width: 50vw;
 }
 
 .register-form {
-  max-width: 30em;
+  max-width: 25em;
 }
 
 </style>
