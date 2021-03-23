@@ -6,7 +6,7 @@ import {
 } from "vue-router";
 import Home from "../views/Home.vue";
 import Datamodel from "../views/Concept.vue";
-import User from "../views/user/User.vue";
+import User from "../views/User.vue";
 import Login from "../components/user/Login.vue";
 import Register from "../components/user/Register.vue";
 import UserDetails from "../components/user/UserDetails.vue";

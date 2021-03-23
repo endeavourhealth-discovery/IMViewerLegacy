@@ -52,6 +52,12 @@ import InlineMessage from 'primevue/inlinemessage';
 import Message from 'primevue/message';
 import ConfirmationService from 'primevue/confirmationservice';
 import ConfirmDialogue from 'primevue/confirmdialog';
+import {Amplify, Auth} from 'aws-amplify';
+import awsconfig from "./aws-exports";
+
+
+Amplify.configure(awsconfig)
+Auth.configure(awsconfig)
 
 createApp(App)
   .use(store)
