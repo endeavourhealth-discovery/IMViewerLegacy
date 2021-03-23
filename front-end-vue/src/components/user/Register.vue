@@ -61,6 +61,7 @@ import store from "@/store/index";
 import { PasswordStrength } from "@/models/PasswordStrength";
 import Swal from 'sweetalert2';
 import { verifyIsEmail, verifyPasswordsMatch, verifyEmailsMatch, verifyIsName, checkPasswordStrength } from "@/helpers/UserMethods";
+import AuthService from "@/services/AuthService";
 
 @Options({
   name: "Register",
@@ -122,42 +123,58 @@ export default class Register extends Vue{
   }
 
   handleSubmit(){
-    if (verifyIsEmail(this.email1) && verifyIsEmail(this.email2) && verifyEmailsMatch(this.email1, this.email2) && verifyPasswordsMatch(this.password1, this.password2) && this.passwordStrength !== PasswordStrength.fail && verifyIsName(this.firstName) && verifyIsName(this.lastName)){
+    if (this.allVerified()){
       const user = new User(this.firstName, this.lastName, this.email1.toLowerCase(), this.password1)
-      this.$emit("userCreated", user)
-      // this.$confirm.require({
-      //   message: "User created successfully!",
-      //   header: "Success",
-      //   icon: "pi pi-check",
-      //   acceptLabel: "Login",
-      //   rejectLabel: "Close",
-      //   accept: () => {
-      //     this.$router.push({name: "Login"});
-      //   },
-      //   reject: () => {
-      //     this.$confirm.close();
-      //   } // prime vue version -- ugly...
-      // })
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: "User created",
-        showCancelButton: true,
-        confirmButtonText: 'Login'
-      }).then( (result) => {
-        if (result.isConfirmed){
-          this.$router.push({name: "Login"})
+      AuthService.register(user)
+      .then( (res) => {
+        if (res.status === 201){
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: res.message,
+            showCancelButton: true,
+            confirmButtonText: 'Login'
+          })
+          .then( (result) => {
+            this.$emit("userCreated", user)
+            if (result.isConfirmed){
+              this.$router.push({name: "Login"})
+            } else {
+              this.clearForm()
+            }
+          })
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: "Error",
+            text: res.message,
+            confirmButtonText: "Close"
+          })
         }
       })
+      .catch ( err => {
+        console.log(err)
+      })
+    // this.$confirm.require({
+    //   message: "User created successfully!",
+    //   header: "Success",
+    //   icon: "pi pi-check",
+    //   acceptLabel: "Login",
+    //   rejectLabel: "Close",
+    //   accept: () => {
+    //     this.$router.push({name: "Login"});
+    //   },
+    //   reject: () => {
+    //     this.$confirm.close();
+    //   } // prime vue version -- ugly...
+    // })
     } else {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'User creation failed.',
+        text: 'User creation failed. Check input data.',
         confirmButtonText: 'Close'
       })
-      // this.clearForm();
-      // throw new Error("User creation failed")
     }
   }
 
@@ -175,6 +192,21 @@ export default class Register extends Vue{
     this.showEmail1Notice = false;
     this.showEmail2Notice = false;
     this.showPassword2Notice = false;
+  }
+
+  allVerified() {
+    if (
+      verifyIsEmail(this.email1) &&
+      verifyIsEmail(this.email2) &&
+      verifyEmailsMatch(this.email1, this.email2) &&
+      verifyPasswordsMatch(this.password1, this.password2) &&
+      this.passwordStrength !== PasswordStrength.fail && verifyIsName(this.firstName) &&
+      verifyIsName(this.lastName)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 </script>
