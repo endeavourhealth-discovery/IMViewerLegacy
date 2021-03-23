@@ -1,8 +1,15 @@
 <template>
   <div class="p-grid">
     <div class="p-col-6">
-      <Panel header="Included Members" :toggleable="true"
-        ><Listbox
+      <Panel header="Included Members" :toggleable="true">
+        <template #icons>
+          <button class="p-panel-header-icon p-link p-mr-2" @click="toggle">
+            <span class="pi pi-cog"></span>
+          </button>
+          <Menu id="config_menu" ref="menu" :model="items" :popup="true" />
+        </template>
+
+        <Listbox
           listStyle="height:200px"
           :filter="true"
           emptyMessage="No results found"
@@ -33,6 +40,8 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
+import ConceptService from "@/services/ConceptService";
+import store from "@/store";
 
 @Options({
   components: {},
@@ -42,11 +51,83 @@ export default class ConceptMembers extends Vue {
   selectedIncludedMember: {} = {};
   selectedExcludedMember: {} = {};
 
+  items = [
+    {
+      label: "Members",
+      items: [
+        {
+          label: "Download JSON",
+          icon: "pi pi-download",
+          command: () => {
+            this.downloadMembers("application/json", false);
+          }
+        },
+        {
+          label: "Download CSV",
+          icon: "pi pi-download",
+          command: () => {
+            this.downloadMembers("text/csv", false);
+          }
+        }
+      ]
+    },
+    {
+      label: "Expanded",
+      items: [
+        {
+          label: "Download JSON",
+          icon: "pi pi-download",
+          command: () => {
+            this.downloadMembers("application/json", true);
+          }
+        },
+        {
+          label: "Download CSV",
+          icon: "pi pi-download",
+          command: () => {
+            this.downloadMembers("text/csv", true);
+          }
+        }
+      ]
+    }
+  ];
+
   onNodeSelect(concept: any) {
     this.$router.push({
       name: "Concept",
       params: { selectedIri: concept.iri }
     });
+  }
+
+  toggle(event: any) {
+    const x = this.$refs.menu as any;
+    x.toggle(event);
+  }
+
+  downloadMembers(type: string, expanded: boolean) {
+    const concept = store.state.conceptAggregate.concept;
+    const filename = concept.name + ("text/csv" === type ? ".csv" : ".json");
+    ConceptService.getConceptMembers(concept.iri, false)
+      .then(response => {
+        console.log(response.data);
+        this.downloadFile(response.data, filename, type);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  downloadFile(data: any, filename: string, type: string) {
+    const a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style.display = "none";
+    const blob = new Blob([data], { type: type });
+    const url = window.URL.createObjectURL(blob);
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    // this.busy = false;
   }
 }
 </script>
