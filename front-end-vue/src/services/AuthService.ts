@@ -17,7 +17,7 @@ export default {
       return { status: 201, message: "User registered successfully"}
     } catch (err) {
       console.log(err)
-      return { status: 400, error: err, message: "auth signUp failed"}
+      return { status: 400, error: err, message: "User registration failed"}
     }
   },
 
@@ -31,10 +31,10 @@ export default {
     }
   },
 
-  async signIn(userToSignIn: User, password: string){
+  async signIn(username: string, password: string){
     try {
-      const user = await Auth.signIn(userToSignIn.email, password)
-        return {status: 200, user: user, message: "signIn successful"};
+      const user = await Auth.signIn(username, password)
+      return {status: 200, user: user, message: "signIn successful"};
     } catch(err) {
       return {status: 403, error: err, message: "signIn failed"}
     }

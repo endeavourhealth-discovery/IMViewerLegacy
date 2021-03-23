@@ -126,7 +126,7 @@ export default class Register extends Vue{
     if (this.allVerified()){
       const user = new User(this.firstName, this.lastName, this.email1.toLowerCase(), this.password1)
       AuthService.register(user)
-      .then( (res) => {
+      .then( res => {
         if (res.status === 201){
           Swal.fire({
             icon: 'success',
@@ -135,7 +135,7 @@ export default class Register extends Vue{
             showCancelButton: true,
             confirmButtonText: 'Login'
           })
-          .then( (result) => {
+          .then( result => {
             this.$emit("userCreated", user)
             if (result.isConfirmed){
               this.$router.push({name: "Login"})

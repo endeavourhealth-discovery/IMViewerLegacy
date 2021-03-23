@@ -30,6 +30,7 @@
 import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
 import Swal from 'sweetalert2';
+import AuthService from "@/services/AuthService";
 
 @Options({
   name: "Login",
@@ -43,7 +44,31 @@ export default class Login extends Vue {
   password = "";
 
   handleSubmit() {
-    console.log("submitted")
+    AuthService.signIn(this.email, this.password)
+    .then(res => {
+      if (res.status === 200){
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Login successful"
+        })
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: res.message,
+          confirmButtonText: "Close"
+        })
+      }
+    })
+    .catch(err => {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Authentication error",
+        confirmButtonText: "Close"
+      })
+    })
   }
 }
 </script>
