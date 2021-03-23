@@ -144,12 +144,12 @@ export default class Register extends Vue{
             title: 'Success',
             text: res.message,
             showCancelButton: true,
-            confirmButtonText: 'Login'
+            confirmButtonText: 'Continue'
           })
           .then( result => {
             this.$emit("userCreated", user)
             if (result.isConfirmed){
-              this.$router.push({name: "Login"})
+              this.$router.push({name: "ConfirmCode"})
             } else {
               this.clearForm()
             }
