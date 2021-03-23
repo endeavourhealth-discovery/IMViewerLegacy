@@ -17,10 +17,10 @@
 
 <script lang="ts">
 import {Options, Vue} from "vue-class-component";
-import SideNav from "@/components/sidenav/SideNav.vue";
-import Header from "@/components/Header.vue";
+import SideNav from "@/components/home/SideNav.vue";
+import Header from "@/components/home/Header.vue";
 import SidebarControl from "@/components/sidebar/SidebarControl.vue";
-import Dashboard from "@/components/Dashboard.vue";
+import Dashboard from "@/components/home/Dashboard.vue";
 import { mapState } from "vuex";
 import { User } from "../models/User";
 import store from "@/store/index";
