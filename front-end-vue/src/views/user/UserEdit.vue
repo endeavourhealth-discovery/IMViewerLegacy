@@ -48,7 +48,8 @@
         </div>
         <div v-if="showPasswordEdit" class="p-field">
           <label for="passwordNew2">Confirm New Password</label>
-          <InputText id="passwordNew2" type="password" v-model="passwordNew2" />
+          <InputText id="passwordNew2" type="password" v-model="passwordNew2" v-on:blur="setShowPassword2Notice" />
+          <InlineMessage v-if="showPassword2Notice" severity="error">New passwords do not match!</InlineMessage>
         </div>
         <div v-if="showPasswordEdit" class="p-d-flex p-flex-row p-jc-center p-field">
           <Button class="password-edit p-button-secondary" type="submit" label="Cancel Password Edit" v-on:click.prevent="editPasswordClicked(false)" />
@@ -124,6 +125,7 @@ export default class UserEdit extends Vue {
   passwordStrength: PasswordStrength = PasswordStrength.fail;
   showPasswordEdit = false;
   passwordsMatch = false;
+  showPassword2Notice = false;
 
   mounted() {
     if (this.user.firstName){//remove this later!!!!!!!!
@@ -165,6 +167,10 @@ export default class UserEdit extends Vue {
 
   setShowEmail2Notice() {
     this.showEmail2Notice = this.emailsMatch? false: true;
+  }
+
+  setShowPassword2Notice(){
+    this.showPassword2Notice = this.passwordsMatch? false: true;
   }
 
   handleEditSubmit(){
