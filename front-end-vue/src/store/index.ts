@@ -60,7 +60,7 @@ export default createStore({
       const mappedTo = (await ConceptService.getConceptMappedTo(iri)).data;
       const usages = (await ConceptService.getConceptUsages(iri)).data;
       const properties = (await ConceptService.getConceptProperties(iri)).data;
-      const members = (await ConceptService.getConceptMembers(iri)).data;
+      const members = (await ConceptService.getConceptMembers(iri, false)).data;
       commit("updateConceptAggregate", {
         concept: concept,
         parents: parents,
