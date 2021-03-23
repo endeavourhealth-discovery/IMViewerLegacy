@@ -102,7 +102,7 @@ import { PasswordStrength } from "@/models/PasswordStrength";
     passwordNew2: {
       immediate: true,
       handler(newValue, oldValue){
-        this.passwordsMatch = verifyPasswordsMatch(this.password1, this.password2);
+        this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, this.passwordNew2);
       }
     },
   }
@@ -168,20 +168,34 @@ export default class UserEdit extends Vue {
   }
 
   handleEditSubmit(){
-    if (this.showPasswordEdit && (this.passwordNew1 === this.passwordNew2)) {//add old password verification
+    if (this.showPasswordEdit && this.passwordsMatch && this.email1Verified && this.emailsMatch) {//add old password verification
       const updatedUser = new User(this.firstName, this.lastName, this.email1, this.passwordNew1);
       // user Service call here
     } else if (this.showPasswordEdit){
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: "Error, incorrect password"
+        icon: "error",
+        title: "Error",
+        text: "Error. Password error or updated details error."
+      })
+    } else if (this.user.firstName === this.firstName && this.user.lastName === this.lastName && this.user.email === this.email1){
+      Swal.fire({
+        icon: "warning",
+        title: "Nothing to update",
+        text: "Account details have not been edited"
+      })
+    } else if (this.email1Verified && this.emailsMatch){
+      const updatedUser = new User(this.firstName, this.lastName, this.email1, "")
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error with user form"
       })
     }
   }
 
   resetForm(){
-    return null;
+    return null; //finish once user is added
   }
 
 }

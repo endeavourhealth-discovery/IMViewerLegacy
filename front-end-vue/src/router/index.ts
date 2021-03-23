@@ -11,7 +11,7 @@ import Login from "../views/user/Login.vue";
 import Register from "../views/user/Register.vue";
 import UserDetails from "../views/user/UserDetails.vue";
 import UserEdit from "../views/user/UserEdit.vue";
-import Welcome from "../views/Welcome.vue";
+import PasswordEdit from "../views/user/PasswordEdit.vue";
 import { HistoryItem } from "../models/HistoryItem";
 import store from "@/store/index";
 
@@ -40,6 +40,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "my-account/edit",
         name: "UserEdit",
         component: UserEdit
+      },
+      {
+        path: "my-account/password-edit",
+        name: "PasswordEdit",
+        component: PasswordEdit
       }
     ]
   },
