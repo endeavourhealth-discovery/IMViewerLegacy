@@ -2,10 +2,10 @@
   <div v-if="user" class="p-d-flex p-flex-row p-ai-center">
   <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-details-card">
     <template #header>
-      <i class="pi pi-fw pi-user" style="fontSize: 50px; margin: 1em;" />
+      <i class="pi pi-fw pi-user-edit" style="fontSize: 50px; margin: 1em;" />
     </template>
     <template #title>
-      My Account Details
+      Edit My Account
     </template>
     <template #content>
       <div class="p-fluid p-d-flex p-flex-column p-jc-start user-edit-form">
