@@ -7,11 +7,12 @@ import {
 import Home from "../views/Home.vue";
 import Datamodel from "../views/Concept.vue";
 import User from "../views/user/User.vue";
-import Login from "../views/user/Login.vue";
-import Register from "../views/user/Register.vue";
-import UserDetails from "../views/user/UserDetails.vue";
-import UserEdit from "../views/user/UserEdit.vue";
-import PasswordEdit from "../views/user/PasswordEdit.vue";
+import Login from "../components/user/Login.vue";
+import Register from "../components/user/Register.vue";
+import UserDetails from "../components/user/UserDetails.vue";
+import UserEdit from "../components/user/UserEdit.vue";
+import PasswordEdit from "../components/user/PasswordEdit.vue";
+import ConfirmCode from "../components/user/ConfirmCode.vue";
 import { HistoryItem } from "../models/HistoryItem";
 import store from "@/store/index";
 
@@ -25,6 +26,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "login",
         name: "Login",
         component: Login
+      },
+      {
+        path: "confirm-code",
+        name: "ConfirmCode",
+        component: ConfirmCode
       },
       {
         path: "register",
