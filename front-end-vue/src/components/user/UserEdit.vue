@@ -10,6 +10,10 @@
     <template #content>
       <div class="p-fluid p-d-flex p-flex-column p-jc-start user-edit-form">
         <div class="p-field">
+          <label for="username">Username</label>
+          <InputText id="username" type="text" :placeholder="user.username" v-model="username" />
+        </div>
+        <div class="p-field">
           <label for="firstName">First Name</label>
           <InputText id="firstName" type="text" :placeholder="user.firstName" v-model="firstName" />
         </div>
@@ -82,6 +86,12 @@ import { PasswordStrength } from "@/models/PasswordStrength";
     }
   },
   watch: {
+    username: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.username = newValue;
+      }
+    },
     email1: {
       immediate: true,
       handler(newValue, oldValue){
@@ -111,6 +121,7 @@ import { PasswordStrength } from "@/models/PasswordStrength";
 
 export default class UserEdit extends Vue {
   user!: User;
+  username = "";
   firstName = "";
   lastName = "";
   email1 = "";
@@ -129,6 +140,7 @@ export default class UserEdit extends Vue {
 
   mounted() {
     if (this.user.firstName){//remove this later!!!!!!!!
+      this.username = this.user.username
       this.firstName = this.user.firstName;
       this.lastName = this.user.lastName;
       this.email1 = this.user.email;
@@ -175,7 +187,7 @@ export default class UserEdit extends Vue {
 
   handleEditSubmit(){
     if (this.showPasswordEdit && this.passwordsMatch && this.email1Verified && this.emailsMatch) {//add old password verification
-      const updatedUser = new User(this.firstName, this.lastName, this.email1, this.passwordNew1);
+      const updatedUser = new User(this.username, this.firstName, this.lastName, this.email1, this.passwordNew1);
       // user Service call here
     } else if (this.showPasswordEdit){
       Swal.fire({
@@ -190,7 +202,7 @@ export default class UserEdit extends Vue {
         text: "Account details have not been edited"
       })
     } else if (this.email1Verified && this.emailsMatch){
-      const updatedUser = new User(this.firstName, this.lastName, this.email1, "")
+      const updatedUser = new User(this.username, this.firstName, this.lastName, this.email1, "")
     } else {
       Swal.fire({
         icon: "error",

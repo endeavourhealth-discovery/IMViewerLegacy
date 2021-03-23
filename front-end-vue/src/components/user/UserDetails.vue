@@ -10,6 +10,10 @@
       <template #content>
         <div class="p-fluid p-d-flex p-flex-column p-jc-start user-details-form">
           <div class="p-field">
+            <label for="username">Username</label>
+            <InputText id="username" type="text" :placeholder="user.username" disabled />
+          </div>
+          <div class="p-field">
             <label for="firstName">First Name</label>
             <InputText id="firstName" type="text" :placeholder="user.firstName" disabled />
           </div>

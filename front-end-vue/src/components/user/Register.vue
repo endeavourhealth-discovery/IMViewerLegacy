@@ -10,6 +10,10 @@
     <template #content>
       <div class="p-fluid register-form">
         <div class="p-field">
+          <label for="fieldUsername">Username</label>
+          <InputText id="fieldUsername" type="text" v-model="username" />
+        </div>
+        <div class="p-field">
           <label for="fieldEmail">Email Address</label>
           <div class="p-d-flex p-flex-row p-ai-center">
             <InputText id="fieldEmail" type="text" v-model="email1" v-on:focus="setShowEmail1Notice(true)" v-on:blur="setShowEmail1Notice(false)"/>
@@ -67,6 +71,12 @@ import AuthService from "@/services/AuthService";
   name: "Register",
   emits: ["userCreated"],
   watch:{
+    username: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.username = newValue;
+      }
+    },
     email1: {
       immediate: true,
       handler(newValue, oldValue){
@@ -96,6 +106,7 @@ import AuthService from "@/services/AuthService";
 })
 
 export default class Register extends Vue{
+  username = "";
   email1 = "";
   email1Verified = false
   email2 = "";
@@ -124,7 +135,7 @@ export default class Register extends Vue{
 
   handleSubmit(){
     if (this.allVerified()){
-      const user = new User(this.firstName, this.lastName, this.email1.toLowerCase(), this.password1)
+      const user = new User(this.username, this.firstName, this.lastName, this.email1.toLowerCase(), this.password1)
       AuthService.register(user)
       .then( res => {
         if (res.status === 201){

@@ -10,8 +10,8 @@
       <template #content>
         <div class="p-fluid login-form">
           <div class="p-field">
-            <label for="fieldEmail">Email Address</label>
-            <InputText id="fieldEmail" type="text" v-model="email" />
+            <label for="fieldUsername">Username</label>
+            <InputText id="fieldUsername" type="text" v-model="username" />
           </div>
           <div class="p-field">
             <label for="fieldPassword">Password</label>
@@ -40,11 +40,11 @@ import AuthService from "@/services/AuthService";
 })
 
 export default class Login extends Vue {
-  email = "";
+  username = "";
   password = "";
 
   handleSubmit() {
-    AuthService.signIn(this.email, this.password)
+    AuthService.signIn(this.username, this.password)
     .then(res => {
       if (res.status === 200){
         Swal.fire({

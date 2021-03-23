@@ -5,7 +5,7 @@ export default {
   async register(userToRegister: User){
     try {
       const { user } = await Auth.signUp({
-        username: userToRegister.email, //change to actual username?
+        username: userToRegister.username,
         password: userToRegister.password,
         attributes: {
           email: userToRegister.email,
@@ -23,7 +23,7 @@ export default {
 
   async confirmRegister(userToConfirmRegistration: User, code: string) {
     try {
-      await Auth.confirmSignUp(userToConfirmRegistration.email, code)
+      await Auth.confirmSignUp(userToConfirmRegistration.username, code)
       return {status: 200, message: "register confirmation successful"};
     } catch(err) {
       console.log(err);
@@ -42,7 +42,7 @@ export default {
 
   async resendConfirmationCode(userForCode: User){
     try {
-      await Auth.resendSignUp(userForCode.email)
+      await Auth.resendSignUp(userForCode.username)
       return {status: 200, message: "code resent successfully"}
     } catch(err) {
       return {status: 400, error: err, message: "error resending code"}
