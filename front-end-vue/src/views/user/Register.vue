@@ -41,7 +41,8 @@
         </div>
         <div class="p-field">
           <label for="fieldPassword2">Confirm Password</label>
-          <InputText id="fieldPassword2" type="password" v-model="password2"/>
+          <InputText id="fieldPassword2" type="password" v-model="password2" v-on:blur="setShowPassword2Notice" />
+          <InlineMessage v-if="showPassword2Notice" severity="error">Passwords do not match!</InlineMessage>
         </div>
         <div class="p-d-flex p-flex-row p-jc-center">
           <!-- <ConfirmDialogue></ConfirmDialogue> -->
@@ -106,6 +107,7 @@ export default class Register extends Vue{
   passwordsMatch = false;
   showEmail1Notice = false;
   showEmail2Notice = false;
+  showPassword2Notice = false;
 
   setShowEmail1Notice(result: boolean){
     this.showEmail1Notice = result;
@@ -113,6 +115,10 @@ export default class Register extends Vue{
 
   setShowEmail2Notice(){
     this.showEmail2Notice = this.emailsMatch? false: true;
+  }
+
+  setShowPassword2Notice(){
+    this.showPassword2Notice = this.passwordsMatch? false: true;
   }
 
   handleSubmit(){
@@ -150,8 +156,8 @@ export default class Register extends Vue{
         text: 'User creation failed.',
         confirmButtonText: 'Close'
       })
-      this.clearForm();
-      throw new Error("User creation failed")
+      // this.clearForm();
+      // throw new Error("User creation failed")
     }
   }
 
@@ -168,6 +174,7 @@ export default class Register extends Vue{
     this.passwordsMatch = false;
     this.showEmail1Notice = false;
     this.showEmail2Notice = false;
+    this.showPassword2Notice = false;
   }
 }
 </script>
