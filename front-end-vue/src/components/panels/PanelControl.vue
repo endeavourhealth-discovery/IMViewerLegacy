@@ -10,16 +10,23 @@
       :toggleable="true"
       v-if="
         $store.state.conceptAggregate.concept &&
-        $store.state.conceptAggregate.concept.conceptType != 'ValueSet'
+          $store.state.conceptAggregate.concept.conceptType != 'ValueSet'
       "
     >
       <Graph />
     </Panel>
 
+    <ConceptTable
+      v-if="
+        $store.state.conceptAggregate.concept &&
+          $store.state.conceptAggregate.concept.conceptType != 'ValueSet'
+      "
+    />
+
     <ConceptMembers
       v-if="
         $store.state.conceptAggregate.concept &&
-        $store.state.conceptAggregate.concept.conceptType == 'ValueSet'
+          $store.state.conceptAggregate.concept.conceptType == 'ValueSet'
       "
     />
 
@@ -33,6 +40,7 @@ import ConceptSummary from "@/components/panels/ConceptSummary.vue";
 import Graph from "../graph/Graph.vue";
 import ConceptUsageAndMapping from "@/components/panels/ConceptUsageAndMapping.vue";
 import ConceptMembers from "@/components/panels/ConceptMembers.vue";
+import ConceptTable from "./ConceptTable.vue";
 
 @Options({
   components: {
@@ -40,6 +48,7 @@ import ConceptMembers from "@/components/panels/ConceptMembers.vue";
     Graph,
     ConceptUsageAndMapping,
     ConceptMembers,
+    ConceptTable
   }
 })
 export default class PanelControl extends Vue {}
