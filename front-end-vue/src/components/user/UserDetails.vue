@@ -1,5 +1,5 @@
 <template>
-  <div v-if="user" class="p-d-flex p-flex-row p-ai-center">
+  <div class="p-d-flex p-flex-row p-ai-center">
     <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-details-card">
       <template #header>
         <i class="pi pi-fw pi-user" style="fontSize: 50px; margin: 1em;" />
@@ -8,7 +8,7 @@
         My Account Details
       </template>
       <template #content>
-        <div class="p-fluid p-d-flex p-flex-column p-jc-start user-details-form">
+        <div v-if="isLoggedIn" class="p-fluid p-d-flex p-flex-column p-jc-start user-details-form">
           <div class="p-field">
             <label for="username">Username</label>
             <InputText id="username" type="text" :placeholder="user.username" disabled />
@@ -45,7 +45,10 @@ import store from "@/store/index";
   },
   computed: {
     user(){
-      return store.state.user;
+      return store.state.currentUser;
+    },
+    isLoggedIn(){
+      return store.state.isLoggedIn;
     }
   }
 })

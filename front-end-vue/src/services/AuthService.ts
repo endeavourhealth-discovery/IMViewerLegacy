@@ -33,7 +33,9 @@ export default {
   async signIn(username: string, password: string){
     try {
       const user = await Auth.signIn(username, password)
+      console.log(user); //delete this!!!!!!!!
       const signedInUser = new User(user.username, user.attributes['custom:forename'], user.attributes['custom:surname'], user.attributes.email, "")
+      signedInUser.setId(user.attributes.sub);
       const accessToken = user.signInUserSession.accessToken.jwtToken;
       const idToken = user.signInUserSession.idToken.jwtToken;
       const refreshToken = user.signInUserSession.refreshToken.jwtToken;
@@ -66,14 +68,14 @@ export default {
     }
   },
 
-  // async updateUser(userToUpdate: User){
-  //   const user = await Auth.currentAuthenticatedUser();
-  //   if (user.attributes.sub === userToUpdate.id){
-  //     const atts: object = {
-  //       email: userToUpdate.email,
-  //       "custom:forename": userToUpdate.firstName,
-  //       "custom:surname": userToUpdate.lastName,
-  //     }
-  //   }
-  // }
+  async updateUser(userToUpdate: User){
+    const user = await Auth.currentAuthenticatedUser();
+    if (user.attributes.sub === userToUpdate.id){
+      const atts: object = {
+        email: userToUpdate.email,
+        "custom:forename": userToUpdate.firstName,
+        "custom:surname": userToUpdate.lastName,
+      }
+    }
+  }
 }

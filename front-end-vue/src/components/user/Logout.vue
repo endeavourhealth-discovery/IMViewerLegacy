@@ -13,8 +13,8 @@
             <div class="p-text-left">Current User:</div>
           </div>
           <div class="p-field">
-            <div v-if="currentuser" class="p-text-left p-text-capitalize">{{currentuser.username}}</div>
-            <div v-if="!currentUser" class="p-text-left p-text-capitalize">Guest</div>
+            <div v-if="isLoggedIn" class="p-text-left p-text-capitalize">{{currentUser.username}}</div>
+            <div v-if="!isLoggedIn" class="p-text-left p-text-capitalize">Guest</div>
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
             <Button class="user-submit" type="submit" label="Logout" v-on:click.prevent="handleSubmit" />
@@ -36,6 +36,9 @@ import AuthService from "@/services/AuthService";
   computed: {
     currentUser(){
       return store.state.currentUser;
+    },
+    isLoggedIn(){
+      return store.state.isLoggedIn;
     }
   }
 })

@@ -84,6 +84,9 @@ import { PasswordStrength } from "@/models/PasswordStrength";
   computed: {
     user(){
       return store.state.currentUser;
+    },
+    isLoggedIn(){
+      return store.state.isLoggedIn;
     }
   },
   watch: {
