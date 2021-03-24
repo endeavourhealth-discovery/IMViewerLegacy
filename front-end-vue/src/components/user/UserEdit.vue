@@ -82,7 +82,7 @@ import { PasswordStrength } from "@/models/PasswordStrength";
   },
   computed: {
     user(){
-      return store.state.user;
+      return store.state.currentUser;
     }
   },
   watch: {

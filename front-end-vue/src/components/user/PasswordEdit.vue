@@ -56,7 +56,7 @@ import Swal from "sweetalert2";
   },
   computed: {
     user(){
-      return store.state.user;
+      return store.state.currentUser;
     }
   },
   watch: {

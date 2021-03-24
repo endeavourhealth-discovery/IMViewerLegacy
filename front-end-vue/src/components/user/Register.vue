@@ -152,6 +152,7 @@ export default class Register extends Vue{
           .then( result => {
             this.$emit("userCreated", user)
             if (result.isConfirmed){
+              store.commit("updateRegisteredUsername", this.username)
               this.$router.push({name: "ConfirmCode"})
             } else {
               this.clearForm()

@@ -11,7 +11,7 @@
         <div class="p-fluid code-form">
           <div class="p-field">
             <label for="fieldUsername">Username</label>
-            <InputText id="fieldUsername" type="text" v-model="username" />
+            <InputText id="fieldUsername" type="text" v-model="username" :placeholder="username" />
           </div>
           <div class="p-field">
             <label for="fieldCode">Confirmation code</label>
@@ -43,6 +43,11 @@ import Swal from "sweetalert2";
 
 @Options({
   name: "ConfirmCode",
+  computed: {
+    registeredUsername(){
+      return store.state.registeredUsername;
+    }
+  },
   watch: {
     code: {
       immediate: true,
@@ -61,9 +66,16 @@ import Swal from "sweetalert2";
 })
 
 export default class ConfirmCode extends Vue{
+  registeredUsername!: string;
   code = "";
   codeVerified = false;
   username = "";
+
+  mounted(){
+    if (this.registeredUsername && this.registeredUsername !== ""){
+      this.username = this.registeredUsername
+    }
+  }
 
   verifyCode(){
     this.codeVerified = /^(?=.{6,})/.test(this.code)

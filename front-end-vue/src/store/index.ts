@@ -10,7 +10,8 @@ export default createStore({
     conceptAggregate: {} as any,
     history: [] as HistoryItem[],
     searchResults: [],
-    user: {} as User,
+    currentUser: {} as User,
+    registeredUsername: "" as string,
     token: "" as string,
     refreshToken: "" as string,
     isAuthenticated: false as boolean,
@@ -33,7 +34,10 @@ export default createStore({
       state.searchResults = searchResults;
     },
     updateUser(state, user){
-      state.user = user;
+      state.currentUser = user;
+    },
+    updateRegisteredUsername(state, username){
+      state.registeredUsername = username;
     },
     updateIsAuthenticated(state, authStatus){
       state.isAuthenticated = authStatus;
