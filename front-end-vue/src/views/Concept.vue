@@ -24,6 +24,8 @@ export default class Concept extends Vue {
   async mounted() {
     store.commit("updateConceptIri", this.$route.params.selectedIri as string);
     store.dispatch("fetchConceptAggregate", store.state.conceptIri);
+    store.dispatch("fetchConceptMapped", store.state.conceptIri);
+    store.dispatch("fetchConceptUsages", store.state.conceptIri);
   }
 }
 </script>
