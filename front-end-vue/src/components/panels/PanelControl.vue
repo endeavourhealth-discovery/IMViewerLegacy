@@ -5,7 +5,7 @@
     <!-- <Panel header="Defintion" :toggleable="true">
     </Panel> -->
 
-    <Panel
+    <!-- <Panel
       header="Graph"
       :toggleable="true"
       v-if="
@@ -17,6 +17,13 @@
     </Panel>
 
     <ConceptTable
+      v-if="
+        $store.state.conceptAggregate.concept &&
+          $store.state.conceptAggregate.concept.conceptType != 'ValueSet'
+      "
+    /> -->
+
+    <ConceptDetails
       v-if="
         $store.state.conceptAggregate.concept &&
           $store.state.conceptAggregate.concept.conceptType != 'ValueSet'
@@ -37,18 +44,16 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import ConceptSummary from "@/components/panels/ConceptSummary.vue";
-import Graph from "../graph/Graph.vue";
 import ConceptUsageAndMapping from "@/components/panels/ConceptUsageAndMapping.vue";
 import ConceptMembers from "@/components/panels/ConceptMembers.vue";
-import ConceptTable from "./ConceptTable.vue";
+import ConceptDetails from "./ConceptDetails.vue";
 
 @Options({
   components: {
     ConceptSummary,
-    Graph,
     ConceptUsageAndMapping,
     ConceptMembers,
-    ConceptTable
+    ConceptDetails
   }
 })
 export default class PanelControl extends Vue {}

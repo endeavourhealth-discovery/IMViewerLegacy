@@ -4,6 +4,7 @@
       <div class="p-grid">
         <div class="p-col-6" v-if="concept.name">
           <ScrollPanel style="width: 100%; height: 100px">
+            <p><strong>Description:</strong></p>
             {{ concept.description }}
           </ScrollPanel>
         </div>
@@ -60,6 +61,7 @@ import { mapState } from "vuex";
       this.definitionText = this.definitionText = (
         await ConceptService.getConceptImLang(newValue.concept.iri)
       ).data;
+      console.log(this.definitionText);
     }
   }
 })
