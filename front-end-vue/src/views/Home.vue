@@ -33,11 +33,20 @@ import store from "@/store/index";
     SidebarControl,
     Dashboard
   },
-  computed: {...mapState(['user', 'isLoggedIn'])}
+  computed: {
+    user(){
+      return store.state.currentUser;
+    },
+    isLoggedIn(){
+      return store.state.isLoggedIn;
+    }
+  }
 })
 
 export default class Home extends Vue{
   isHome = true;
+  user!: User;
+  isLoggedIn!: boolean;
 
   async mounted() {
     this.isHome = this.$route.name === "Home"? true: false;
@@ -50,9 +59,6 @@ export default class Home extends Vue{
       store.dispatch("fetchConceptAggregate", store.state.conceptIri);
     }
   }
-
-  user!: User;
-  isLoggedIn!: boolean;
 
   getItems(){
     if (this.isLoggedIn){

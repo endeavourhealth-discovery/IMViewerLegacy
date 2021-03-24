@@ -53,12 +53,18 @@ export default class Login extends Vue {
     AuthService.signIn(this.username, this.password)
     .then(res => {
       if (res.status === 200){
+        store.commit("updateCurrentUser", res.user);
+        store.commit("updateIdToken", res.idToken);
+        store.commit("updateRefreshToken", res.refreshToken);
+        store.commit("updateAccessToken", res.accessToken);
+        store.commit("updateRegisteredUsername", "");
+        store.commit("updateIsLoggedIn", true);
         Swal.fire({
           icon: "success",
           title: "Success",
           text: "Login successful"
         })
-        .then(res => {
+        .then(result => {
           this.$router.push({name: "Home"})
         })
       } else {

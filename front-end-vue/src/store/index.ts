@@ -12,9 +12,9 @@ export default createStore({
     searchResults: [],
     currentUser: {} as User,
     registeredUsername: "" as string,
-    token: "" as string,
-    refreshToken: "" as string,
-    isAuthenticated: false as boolean,
+    accessToken: localStorage.getItem("accessToken") as string,
+    idToken: localStorage.getItem("idToken") as string,
+    refreshToken: localStorage.getItem("refreshToken") as string,
     isLoggedIn: false as boolean
   },
   mutations: {
@@ -33,19 +33,24 @@ export default createStore({
     updateSearchResults(state, searchResults) {
       state.searchResults = searchResults;
     },
-    updateUser(state, user){
+    updateCurrentUser(state, user){
       state.currentUser = user;
     },
     updateRegisteredUsername(state, username){
       state.registeredUsername = username;
     },
-    updateIsAuthenticated(state, authStatus){
-      state.isAuthenticated = authStatus;
-    },
     updateIsLoggedIn(state, status){
-      state.isLoggedIn = status
+      state.isLoggedIn = status;
+    },
+    updateAccessToken(state, token){
+      localStorage.setItem("accessToken", token);
+    },
+    updateIdToken(state, token){
+      localStorage.setItem("idToken", token);
+    },
+    updateRefreshToken(state, token){
+      localStorage.setItem("refreshToken", token);
     }
-
   },
   actions: {
     async fetchConceptAggregate({ commit }, iri) {
@@ -71,9 +76,6 @@ export default createStore({
       const searchResults = (await ConceptService.advancedSearch(searchRequest)).data.concepts;
       commit("updateSearchResults", searchResults)
     },
-    async getUser({ commit }, token: string){
-      // after UserService exists
-    }
     // async authenticateToken({ commit }){
     //   if (){ // finish once AWS cognito is setup
     //     commit("updateIsAuthenticated", true)

@@ -33,9 +33,11 @@ export default {
   async signIn(username: string, password: string){
     try {
       const user = await Auth.signIn(username, password)
-      console.log(user) // remove!!!!!
-      // const signedInUser = new User(user.username, user.attributes['custom:forename'], user.attributes['custom:surname'], user.attributes.email, "")
-      return {status: 200, user: user, message: "signIn successful"};
+      const signedInUser = new User(user.username, user.attributes['custom:forename'], user.attributes['custom:surname'], user.attributes.email, "")
+      const accessToken = user.signInUserSession.accessToken.jwtToken;
+      const idToken = user.signInUserSession.idToken.jwtToken;
+      const refreshToken = user.signInUserSession.refreshToken.jwtToken;
+      return {status: 200, user: signedInUser, accessToken: accessToken, idToken: idToken, refreshToken: refreshToken, message: "signIn successful"};
     } catch(err) {
       console.log(err);
       if (err.code === "UserNotConfirmedException"){
