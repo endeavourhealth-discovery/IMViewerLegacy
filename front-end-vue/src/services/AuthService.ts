@@ -21,9 +21,9 @@ export default {
     }
   },
 
-  async confirmRegister(userToConfirmRegistration: User, code: string) {
+  async confirmRegister(username: string, code: string) {
     try {
-      await Auth.confirmSignUp(userToConfirmRegistration.username, code)
+      await Auth.confirmSignUp(username, code)
       return {status: 200, message: "register confirmation successful"};
     } catch(err) {
       console.log(err);
@@ -40,9 +40,9 @@ export default {
     }
   },
 
-  async resendConfirmationCode(userForCode: User){
+  async resendConfirmationCode(username: string){
     try {
-      await Auth.resendSignUp(userForCode.username)
+      await Auth.resendSignUp(username)
       return {status: 200, message: "code resent successfully"}
     } catch(err) {
       return {status: 400, error: err, message: "error resending code"}

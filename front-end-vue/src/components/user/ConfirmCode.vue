@@ -10,18 +10,25 @@
       <template #content>
         <div class="p-fluid code-form">
           <div class="p-field">
-            <label for="fieldEmail">Please enter your 6-digit confirmation code</label>
+            <label for="fieldUsername">Username</label>
+            <InputText id="fieldUsername" type="text" v-model="username" />
+          </div>
+          <div class="p-field">
+            <label for="fieldCode">Confirmation code</label>
             <div class="p-d-flex p-flex-row p-ai-center">
-              <InputText id="fieldEmail" type="password" v-model="code" />
+              <InputText id="fieldCode" type="password" v-model="code" />
               <i v-if="codeVerified" class="pi pi-check-circle" style="color: #439446; fontSize: 2em" />
               <i v-if="!codeVerified && code!== ''" class="pi pi-times-circle" style="color: #e60017; fontSize: 2em" />
             </div>
-            <small id="code-help">Your code should arrive by email from Amazon</small>
+            <small id="code-help">Your 6-digit code should arrive by email from Amazon</small>
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
             <Button class="user-submit" type="submit" label="Submit" v-on:click.prevent="handleSubmit" />
           </div>
         </div>
+      </template>
+      <template #footer>
+        <small>Not received a code? <br><Button class="p-button-secondary p-button-sm code-request" type="submit" label="Request a new code" v-on:click.prevent="requestCode"/></small>
       </template>
     </Card>
   </div>
@@ -36,11 +43,6 @@ import Swal from "sweetalert2";
 
 @Options({
   name: "ConfirmCode",
-  computed: {
-    user(){
-      return store.state.user
-    }
-  },
   watch: {
     code: {
       immediate: true,
@@ -48,22 +50,28 @@ import Swal from "sweetalert2";
         this.code = newValue;
         this.verifyCode();
       }
+    },
+    username: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.username = newValue;
+      }
     }
   }
 })
 
 export default class ConfirmCode extends Vue{
-  user!: User;
   code = "";
   codeVerified = false;
+  username = "";
 
   verifyCode(){
     this.codeVerified = /^(?=.{6,})/.test(this.code)
   }
 
   handleSubmit(){
-    if (this.codeVerified){
-      AuthService.confirmRegister(this.user, this.code)
+    if (this.codeVerified && this.username !== ""){
+      AuthService.confirmRegister(this.username, this.code)
       .then( res => {
         if (res.status === 200){
           Swal.fire({
@@ -98,6 +106,32 @@ export default class ConfirmCode extends Vue{
         text: "Code must be 6 digits"
       })
     }
+  }
+
+  requestCode(){
+    AuthService.resendConfirmationCode(this.username)
+    .then(res => {
+      if (res.status === 200){
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Code has been resent to email for: " + this.username
+        })
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Error! Code resending failed. Please contact an admin."
+        })
+      }
+    })
+    .catch(err => {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Internal application error"
+      })
+    })
   }
 
 }

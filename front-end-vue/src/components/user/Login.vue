@@ -22,6 +22,12 @@
           </div>
         </div>
       </template>
+      <template #footer>
+        <small>Don't have an account yet? <a id="register-link" @click="$router.push({name: 'Register'})">Register here</a></small>
+        <br>
+        <br>
+        <small>Recieved a confirmation code? <a id="code-link" @click="$router.push({name: 'ConfirmCode'})">Enter it here</a></small>
+      </template>
     </Card>
   </div>
 </template>
@@ -85,6 +91,10 @@ export default class Login extends Vue {
 
 .login-form {
   max-width: 25em;
+}
+
+#register-link:hover, #code-link:hover {
+  cursor: pointer;
 }
 
 </style>
