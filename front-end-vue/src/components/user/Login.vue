@@ -58,6 +58,9 @@ export default class Login extends Vue {
           title: "Success",
           text: "Login successful"
         })
+        .then(res => {
+          this.$router.push({name: "Home"})
+        })
       } else {
         console.log(res.message)
         if (res.status === 401){

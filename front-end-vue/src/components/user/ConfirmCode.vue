@@ -93,6 +93,7 @@ export default class ConfirmCode extends Vue{
             confirmButtonText: "Login"
           })
           .then( result => {
+            store.commit("updateRegisteredUsername", this.username)
             this.$router.push({name: "Login"})
           })
         } else {
