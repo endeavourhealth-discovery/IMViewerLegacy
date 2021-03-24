@@ -4,6 +4,7 @@
     selectionMode="single"
     :expandedKeys="expandedKeys"
     @node-select="onNodeSelect"
+    @node-expand="onNodeExpand"
   ></Tree>
 
   <!-- <Tree :value="nodes" selectionMode="single" v-model:selectionKeys="selectedKey2" :metaKeySelection="false" @node-select="onNodeSelect" @node-unselect="onNodeUnselect"></Tree> -->
@@ -14,6 +15,7 @@ import { HistoryItem } from "@/models/HistoryItem";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { Options, Vue } from "vue-class-component";
 import { mapState } from "vuex";
+import ConceptService from '@/services/ConceptService';
 
 interface TreeNode {
   key: string;
@@ -44,12 +46,15 @@ export default class Hierarchy extends Vue {
   expandedKeys: any = {};
 
   createTree(concept: any, parentHierarchy: any, children: any) {
-    const selectedConcept = this.createTreeNode(concept.name, concept.iri, "0");
+    let index = 1;
+    const selectedConcept = this.createTreeNode(concept.name, concept.iri, index, concept.hasChildren);
+    index++;
 
     children.forEach((child: any) => {
       selectedConcept.children.push(
-        this.createTreeNode(child.name, child.iri, "1")
+        this.createTreeNode(child.name, child.iri, index, child.hasChildren)
       );
+      index++;
     });
     this.root = [];
 
@@ -57,23 +62,25 @@ export default class Hierarchy extends Vue {
       const parent = this.createTreeNode(
         parentHierarchy[0].name,
         parentHierarchy[0].iri,
-        "0"
+        "0",
+        parentHierarchy[0].hasChildren
       );
       parent.children.push(selectedConcept);
       this.root.push(parent);
     } else {
       this.root.push(selectedConcept);
     }
-    this.expandedKeys[this.root[0].key] = true;
+    this.expandedKeys[0] = true;
+    this.expandedKeys[1] = true;
   }
 
-  createTreeNode(conceptName: any, conceptIri: any, level: any) {
+  createTreeNode(conceptName: any, conceptIri: any, level: any, hasChildren: boolean) {
     const node: TreeNode = {
       key: level,
       label: conceptName,
       icon: "pi pi-fw pi-inbox",
       data: conceptIri,
-      leaf: false,
+      leaf: !hasChildren,
       children: []
     };
     return node;
@@ -83,6 +90,22 @@ export default class Hierarchy extends Vue {
     this.$router.push({
       name: "Concept",
       params: { selectedIri: node.data }
+    });
+  }
+
+  async onNodeExpand(node: TreeNode) {
+    console.log(node);
+    const children = await (await ConceptService.getConceptChildren(node.data)).data;
+
+    let index = 0;
+
+    node.children = [];
+
+    children.forEach((child: any) => {
+      node.children.push(
+        this.createTreeNode(child.name, child.iri, node.key + '-' + index, child.hasChildren)
+      );
+      index++;
     });
   }
 }
