@@ -75,6 +75,15 @@ export default {
         "custom:forename": userToUpdate.firstName,
         "custom:surname": userToUpdate.lastName,
       }
+      Auth.updateUserAttributes(user, atts)
+      .then(()=> {
+        return {status: 200, message: "User updated successfully"}
+      })
+      .catch(err => {
+        return {status: 400, error:err, message: "Error updating user at server"}
+      })
+    } else {
+      return {status: 403, message: "Authentication error with server"}
     }
   }
 }
