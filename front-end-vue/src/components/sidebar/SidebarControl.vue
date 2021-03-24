@@ -89,7 +89,6 @@ export default class SidebarControl extends Vue {
       }
     });
 
-
     searchRequest.typeFilter = [];
     store.state.filters.selectedTypes.forEach(type => {
       if (type == "Class") {
@@ -137,6 +136,6 @@ export default class SidebarControl extends Vue {
 
 <style>
 .sidemenu .p-tabview-panels {
-  height: calc(100vh - 270px);
+  height: 78vh;
 }
 </style>
