@@ -102,8 +102,8 @@ export default class ConfirmCode extends Vue{
     else {
       Swal.fire({
         icon: "warning",
-        title: "Invalid Code",
-        text: "Code must be 6 digits"
+        title: "Invalid Credentials",
+        text: "Username or Confirmation Code incorrect."
       })
     }
   }
