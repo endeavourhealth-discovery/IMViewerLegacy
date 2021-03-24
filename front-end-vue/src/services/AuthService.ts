@@ -9,15 +9,14 @@ export default {
         password: userToRegister.password,
         attributes: {
           email: userToRegister.email,
-          'custom:firstName': userToRegister.firstName,
-          'custom:lastName': userToRegister.lastName
+          'custom:forename': userToRegister.firstName,
+          'custom:surname': userToRegister.lastName
         }
       })
-      console.log(user)
       return { status: 201, message: "User registered successfully"}
     } catch (err) {
-      console.log(err)
-      return { status: 400, error: err, message: "User registration failed"}
+      console.log(err);
+      return { status: 400, error: err, message: "User registration failed"};
     }
   },
 
@@ -34,8 +33,11 @@ export default {
   async signIn(username: string, password: string){
     try {
       const user = await Auth.signIn(username, password)
+      console.log(user) // remove!!!!!
+      // const signedInUser = new User(user.username, user.attributes['custom:forename'], user.attributes['custom:surname'], user.attributes.email, "")
       return {status: 200, user: user, message: "signIn successful"};
     } catch(err) {
+      console.log(err);
       return {status: 403, error: err, message: "signIn failed"}
     }
   },
@@ -45,6 +47,7 @@ export default {
       await Auth.resendSignUp(username)
       return {status: 200, message: "code resent successfully"}
     } catch(err) {
+      console.log(err);
       return {status: 400, error: err, message: "error resending code"}
     }
   },
@@ -56,5 +59,16 @@ export default {
     } catch (err) {
       return {status: 400, error: err, message: "error signing out"}
     }
-  }
+  },
+
+  // async updateUser(userToUpdate: User){
+  //   const user = await Auth.currentAuthenticatedUser();
+  //   if (user.attributes.sub === userToUpdate.id){
+  //     const atts: object = {
+  //       email: userToUpdate.email,
+  //       "custom:forename": userToUpdate.firstName,
+  //       "custom:surname": userToUpdate.lastName,
+  //     }
+  //   }
+  // }
 }
