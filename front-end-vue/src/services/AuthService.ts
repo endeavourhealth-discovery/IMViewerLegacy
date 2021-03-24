@@ -33,7 +33,6 @@ export default {
   async signIn(username: string, password: string){
     try {
       const user = await Auth.signIn(username, password)
-      console.log(user); //delete this!!!!!!!!
       const signedInUser = new User(user.username, user.attributes['custom:forename'], user.attributes['custom:surname'], user.attributes.email, "")
       signedInUser.setId(user.attributes.sub);
       const accessToken = user.signInUserSession.accessToken.jwtToken;
