@@ -3,6 +3,16 @@
     <Panel header="Summary" :toggleable="true">
       <div class="p-grid">
         <div class="p-col-6" v-if="concept.name">
+          <p><strong>Name:</strong> {{ concept.name }}</p>
+          <p><strong>Iri:</strong> {{ concept.iri }}</p>
+          <p><strong>Code:</strong> {{ concept.code }}</p>
+        </div>
+        <div class="p-col-6" v-if="concept.name">
+          <p><strong>Status:</strong> {{ concept.status }}</p>
+          <p><strong>Scheme:</strong> {{ concept.scheme.name }}</p>
+          <p><strong>Type:</strong> {{ concept.conceptType }}</p>
+        </div>
+        <div class="p-col-6" v-if="concept.name">
           <ScrollPanel style="width: 100%; height: 100px">
             <p><strong>Description:</strong></p>
             <div>{{ concept.description }}</div>
@@ -15,16 +25,6 @@
               {{ index !== definitionDisplay.length - 1 ? item + ";" : item }}
             </div>
           </ScrollPanel>
-        </div>
-        <div class="p-col-6" v-if="concept.name">
-          <p><strong>Name:</strong> {{ concept.name }}</p>
-          <p><strong>Iri:</strong> {{ concept.iri }}</p>
-          <p><strong>Code:</strong> {{ concept.code }}</p>
-        </div>
-        <div class="p-col-6" v-if="concept.name">
-          <p><strong>Status:</strong> {{ concept.status }}</p>
-          <p><strong>Scheme:</strong> {{ concept.scheme.name }}</p>
-          <p><strong>Type:</strong> {{ concept.conceptType }}</p>
         </div>
         <div class="p-col-10" v-if="concept.name"></div>
         <div class="p-col-2" v-if="concept.name">
