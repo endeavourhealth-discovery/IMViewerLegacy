@@ -77,8 +77,7 @@ export default createStore({
       commit("updateSearchResults", searchResults)
     },
     logoutCurrentUser({ commit }){
-      const guest = new User("guest", "", "", "", "");
-      commit("updateCurrentUser", guest);
+      commit("updateCurrentUser", undefined);
       commit("updateIsLoggedIn", false)
       commit("updateAccessToken", "");
       commit("updateIdToken", "");

@@ -13,8 +13,8 @@
             <div class="p-text-left">Current User:</div>
           </div>
           <div class="p-field">
-            <div v-if="username" class="p-text-left p-text-capitalize">{{username}}</div>
-            <div v-if="!username" class="p-text-left p-text-capitalize">Guest</div>
+            <div v-if="currentuser" class="p-text-left p-text-capitalize">{{currentuser.username}}</div>
+            <div v-if="!currentUser" class="p-text-left p-text-capitalize">Guest</div>
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
             <Button class="user-submit" type="submit" label="Logout" v-on:click.prevent="handleSubmit" />
@@ -34,8 +34,8 @@ import AuthService from "@/services/AuthService";
 @Options({
   name: "Logout",
   computed: {
-    username(){
-      return store.state.currentUser.username;
+    currentUser(){
+      return store.state.currentUser;
     }
   }
 })
@@ -65,6 +65,7 @@ export default class Logout extends Vue {
               this.$router.push({name: "Home"})
             })
           } else {
+            store.dispatch("logoutCurrentUser");
             Swal.fire({
               icon: "error",
               title: "Error",
