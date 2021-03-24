@@ -38,6 +38,9 @@ export default {
       return {status: 200, user: user, message: "signIn successful"};
     } catch(err) {
       console.log(err);
+      if (err.code === "UserNotConfirmedException"){
+        return {status: 401, error:err, message: err.message} //message: "User is not confirmed."
+      }
       return {status: 403, error: err, message: "signIn failed"}
     }
   },

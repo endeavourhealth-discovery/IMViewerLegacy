@@ -20,7 +20,7 @@
               <i v-if="codeVerified" class="pi pi-check-circle" style="color: #439446; fontSize: 2em" />
               <i v-if="!codeVerified && code!== ''" class="pi pi-times-circle" style="color: #e60017; fontSize: 2em" />
             </div>
-            <small id="code-help">Your 6-digit code should arrive by email from Amazon</small>
+            <small id="code-help">Your 6-digit code should arrive by email from<br>no-reply@verificationemail.com</small>
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
             <Button class="user-submit" type="submit" label="Submit" v-on:click.prevent="handleSubmit" />

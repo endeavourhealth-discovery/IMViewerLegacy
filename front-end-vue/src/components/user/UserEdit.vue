@@ -48,7 +48,7 @@
           <InlineMessage v-if="passwordStrength === 'medium'" severity="success">Password Strength: Medium</InlineMessage>
           <InlineMessage v-if="passwordStrength === 'weak'" severity="warn">Password Strength: Weak</InlineMessage>
           <InlineMessage v-if="passwordStrength === 'fail' && passwordNew1 !== ''" severity="error">Invalid Password</InlineMessage>
-          <small id="password-help">Password min length 6 characters. Improve password strength with a mixture of UPPERCASE, lowercase, numbers and special characters [!@#$%^&*].</small>
+          <small id="password-help">Password min length 8 characters. Improve password strength with a mixture of UPPERCASE, lowercase, numbers and special characters [!@#$%^&*].</small>
         </div>
         <div v-if="showPasswordEdit" class="p-field">
           <label for="passwordNew2">Confirm New Password</label>

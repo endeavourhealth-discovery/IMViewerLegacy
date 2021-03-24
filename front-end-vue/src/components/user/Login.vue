@@ -59,12 +59,30 @@ export default class Login extends Vue {
           text: "Login successful"
         })
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: res.message,
-          confirmButtonText: "Close"
-        })
+        console.log(res.message)
+        if (res.status === 401){
+          Swal.fire({
+            icon: "warning",
+            title: "User Unconfirmed",
+            text: "Account has not been confirmed. Please confirm account to continue.",
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Confirm Account"
+          })
+          .then(result => {
+            if (result.isConfirmed){
+              store.commit("updateRegisteredUsername", this.username)
+              this.$router.push({name: "ConfirmCode"})
+            }
+          })
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: res.message,
+            confirmButtonText: "Close"
+          })
+        }
       }
     })
     .catch(err => {

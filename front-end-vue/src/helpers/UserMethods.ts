@@ -34,8 +34,8 @@ export function verifyIsName(name: string){
 
 export function checkPasswordStrength(password: any){
   const strongCheck = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
-  const mediumCheck = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
-  const weakCheck = new RegExp("^(?=.{6,})")
+  const mediumCheck = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})");
+  const weakCheck = new RegExp("^(?=.{8,})")
   if (strongCheck.test(password)){
     return PasswordStrength.strong;
   } else if (mediumCheck.test(password)){
