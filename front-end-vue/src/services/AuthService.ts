@@ -60,9 +60,9 @@ export default {
   async signOut(){
     try {
       await Auth.signOut({ global: true })
-      return {status: 200, message: "signout successful"}
+      return {status: 200, message: "Logged out successfully"}
     } catch (err) {
-      return {status: 400, error: err, message: "error signing out"}
+      return {status: 400, error: err, message: "Error logging out"}
     }
   },
 

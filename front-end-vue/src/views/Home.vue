@@ -93,14 +93,24 @@ export default class Home extends Vue{
       icon: 'pi pi-fw pi-user',
       items: [
         {
-          label: 'Account',
+          label: 'My Account',
           icon: 'pi pi-fw pi-user-minus',
-          to: '/user/' //+ this.user.id
+          to: '/user/my-account' //+ this.user.id
+        },
+        {
+          label: "Edit Account Details",
+          icon: 'pi pi-fw pi-user-edit',
+          to: "/user/my-account/edit"
+        },
+        {
+          label: "Change Password",
+          icon: "pi pi-fw pi-lock",
+          to: "/user/my-account/password-edit"
         },
         {
           label: 'Logout',
           icon: 'pi pi-fw pi-user-plus',
-          to: '/user/edit/' //+ this.user.id
+          to: '/user/logout' //+ this.user.id
         },
       ]
     }

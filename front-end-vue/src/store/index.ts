@@ -76,6 +76,14 @@ export default createStore({
       const searchResults = (await ConceptService.advancedSearch(searchRequest)).data.concepts;
       commit("updateSearchResults", searchResults)
     },
+    logoutCurrentUser({ commit }){
+      const guest = new User("guest", "", "", "", "");
+      commit("updateCurrentUser", guest);
+      commit("updateIsLoggedIn", false)
+      commit("updateAccessToken", "");
+      commit("updateIdToken", "");
+      commit("updateRefreshToken", "");
+    }
     // async authenticateToken({ commit }){
     //   if (){ // finish once AWS cognito is setup
     //     commit("updateIsAuthenticated", true)
