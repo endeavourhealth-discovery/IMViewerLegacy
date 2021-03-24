@@ -24,6 +24,8 @@ export default class Home extends Vue {
   async mounted() {
     store.commit("updateConceptIri", "owl:Thing");
     store.dispatch("fetchConceptAggregate", store.state.conceptIri);
+    store.dispatch("fetchConceptMapped", store.state.conceptIri);
+    store.dispatch("fetchConceptUsages", store.state.conceptIri);
   }
 }
 </script>

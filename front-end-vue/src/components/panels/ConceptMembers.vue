@@ -15,7 +15,7 @@
           emptyMessage="No results found"
           emptyFilterMessage="No results found"
           v-model="selectedIncludedMember"
-          @click="onNodeSelect(selectedIncludedMember)"
+          @change="onNodeSelect(selectedIncludedMember)"
           :options="$store.state.conceptAggregate.members.included"
           optionLabel="concept.name"
         ></Listbox
@@ -29,7 +29,7 @@
           emptyMessage="No results found"
           emptyFilterMessage="No results found"
           v-model="selectedExcludedMember"
-          @click="onNodeSelect(selectedExcludedMember)"
+          @change="onNodeSelect(selectedExcludedMember)"
           :options="$store.state.conceptAggregate.members.excluded"
           optionLabel="concept.name"
         ></Listbox
@@ -92,10 +92,10 @@ export default class ConceptMembers extends Vue {
     }
   ];
 
-  onNodeSelect(concept: any) {
+  onNodeSelect(member: any) {
     this.$router.push({
       name: "Concept",
-      params: { selectedIri: concept.iri }
+      params: { selectedIri: member.concept.iri }
     });
   }
 

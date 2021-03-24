@@ -8,8 +8,8 @@
           emptyMessage="No results found"
           emptyFilterMessage="No results found"
           v-model="selectedMappedFrom"
-          @click="onNodeSelect(selectedMappedFrom)"
-          :options="$store.state.conceptAggregate.mapped"
+          @change="onNodeSelect(selectedMappedFrom)"
+          :options="$store.state.mapped"
           optionLabel="name"
         ></Listbox
       ></Panel>
@@ -36,8 +36,8 @@
           emptyMessage="No results found"
           emptyFilterMessage="No results found"
           v-model="selectedUsage"
-          @click="onNodeSelect(selectedUsage)"
-          :options="$store.state.conceptAggregate.usages"
+          @change="onNodeSelect(selectedUsage)"
+          :options="$store.state.usages"
           optionLabel="name"
         ></Listbox
       ></Panel>

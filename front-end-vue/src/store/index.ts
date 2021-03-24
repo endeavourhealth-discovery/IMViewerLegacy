@@ -8,6 +8,8 @@ export default createStore({
   state: {
     conceptIri: "owl:Thing",
     conceptAggregate: {} as any,
+    mapped: [],
+    usages: [],
     history: [] as HistoryItem[],
     searchResults: [],
     filters: {
@@ -36,6 +38,12 @@ export default createStore({
     updateConceptAggregate(state, conceptAggregate) {
       state.conceptAggregate = conceptAggregate;
     },
+    updateConceptMapped(state, mapped) {
+      state.mapped = mapped;
+    },
+    updateConceptUsages(state, usages) {
+      state.usages = usages;
+    },
     updateHistory(state, historyItem) {
       state.history = state.history.filter(function(el) {
         return el.url !== historyItem.url;
@@ -56,21 +64,26 @@ export default createStore({
       const parents = (await ConceptService.getConceptParentHierarchy(iri))
         .data;
       const children = (await ConceptService.getConceptChildren(iri)).data;
-      const mappedFrom = (await ConceptService.getConceptMappedFrom(iri)).data;
-      const mappedTo = (await ConceptService.getConceptMappedTo(iri)).data;
-      const usages = (await ConceptService.getConceptUsages(iri)).data;
       const properties = (await ConceptService.getConceptProperties(iri)).data;
       const members = (await ConceptService.getConceptMembers(iri, false)).data;
       commit("updateConceptAggregate", {
         concept: concept,
         parents: parents,
         children: children,
-        mapped: mappedFrom.concat(mappedTo),
-        usages: usages,
         properties: properties,
         members: members
       });
     },
+    async fetchConceptMapped({ commit }, iri) {
+      const mappedFrom = (await ConceptService.getConceptMappedFrom(iri)).data;
+      const mappedTo = (await ConceptService.getConceptMappedTo(iri)).data;
+      commit("updateConceptMapped", mappedFrom.concat(mappedTo));
+    },
+    async fetchConceptUsages({ commit }, iri) {
+      const usages = (await ConceptService.getConceptUsages(iri)).data;
+      commit("updateConceptUsages", usages);
+    },
+
     async fetchSearchResults({ commit }, searchRequest: SearchRequest) {
       const searchResults = (await ConceptService.advancedSearch(searchRequest)).data.concepts;
       commit("updateSearchResults", searchResults)
