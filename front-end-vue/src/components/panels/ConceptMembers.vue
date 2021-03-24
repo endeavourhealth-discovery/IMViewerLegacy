@@ -132,5 +132,4 @@ export default class ConceptMembers extends Vue {
 }
 </script>
 
-<style>
-</style>
+<style></style>

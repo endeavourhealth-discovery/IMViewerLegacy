@@ -99,9 +99,21 @@ export default class Filters extends Vue {
       name: "Term based code"
     }
   ];
-  typeOptions = ["Class", "ObjectProperty", "DataProperty", "DataType", "Annotation", "Individual", "Record", "ValueSet", "Folder", "Term", "Legacy", "CategoryGroup"]
+  typeOptions = [
+    "Class",
+    "ObjectProperty",
+    "DataProperty",
+    "DataType",
+    "Annotation",
+    "Individual",
+    "Record",
+    "ValueSet",
+    "Folder",
+    "Term",
+    "Legacy",
+    "CategoryGroup"
+  ];
 }
 </script>
 
-<style>
-</style>
+<style></style>

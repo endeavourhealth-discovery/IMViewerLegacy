@@ -2,7 +2,7 @@ import {
   createRouter,
   createWebHashHistory,
   RouteRecordRaw,
-  viewDepthKey,
+  viewDepthKey
 } from "vue-router";
 import Home from "../views/Home.vue";
 import Datamodel from "../views/Concept.vue";
@@ -13,18 +13,18 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Home",
-    component: Home,
+    component: Home
   },
   {
     path: "/concept/:selectedIri",
     name: "Concept",
-    component: Datamodel,
+    component: Datamodel
   }
 ];
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes,
+  routes
 });
 
 router.beforeEach((to, from, next) => {

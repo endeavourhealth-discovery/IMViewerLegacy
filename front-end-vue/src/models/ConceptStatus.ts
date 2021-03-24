@@ -1,5 +1,5 @@
 export enum ConceptStatus {
-    Draft,
-    Active,
-    Inactive
-  }
+  Draft,
+  Active,
+  Inactive
+}

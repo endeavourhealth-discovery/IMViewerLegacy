@@ -13,8 +13,8 @@ export default class SuggestionService {
       {
         params: {
           keyword: keyword,
-          word: word,
-        },
+          word: word
+        }
       }
     );
 

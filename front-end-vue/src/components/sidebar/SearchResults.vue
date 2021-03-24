@@ -29,7 +29,7 @@
               class="sidebutton"
               :icon="[
                 'fas',
-                getPerspectiveByConceptType(slotProps.data.conceptType).icon,
+                getPerspectiveByConceptType(slotProps.data.conceptType).icon
               ]"
               size="2x"
               style="color: lightgrey; padding: 5px"
@@ -122,5 +122,4 @@ export default class SearchResults extends Vue {
 }
 </script>
 
-<style>
-</style>
+<style></style>

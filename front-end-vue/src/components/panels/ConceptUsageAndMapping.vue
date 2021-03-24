@@ -66,5 +66,4 @@ export default class ConceptUsageAndMapping extends Vue {
 }
 </script>
 
-<style>
-</style>
+<style></style>

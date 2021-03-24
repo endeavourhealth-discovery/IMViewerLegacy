@@ -12,7 +12,8 @@
         <template #title> Maps </template>
         <template #subtitle> Data model maps </template>
         <template #content>
-          Data model maps specify how data is transformed from a data model to a particular database.
+          Data model maps specify how data is transformed from a data model to a
+          particular database.
         </template>
       </Card>
     </div>
@@ -28,7 +29,8 @@
         <template #title> Workflow Manager </template>
         <template #subtitle> subtitle </template>
         <template #content>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse lectus neque, blandit id posuere vel, ullamcorper ac velit.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+          lectus neque, blandit id posuere vel, ullamcorper ac velit.
         </template>
       </Card>
     </div>

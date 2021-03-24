@@ -1,5 +1,5 @@
-import { ConceptType } from './../models/search/ConceptType';
-import { SearchRequest } from './../models/search/SearchRequest';
+import { ConceptType } from "./../models/search/ConceptType";
+import { SearchRequest } from "./../models/search/SearchRequest";
 import { createStore } from "vuex";
 import ConceptService from "../services/ConceptService";
 import { HistoryItem } from "../models/HistoryItem";
@@ -28,7 +28,20 @@ export default createStore({
           name: "Term based code"
         }
       ],
-      selectedTypes: ["Class", "ObjectProperty", "DataProperty", "DataType", "Annotation", "Individual", "Record", "ValueSet", "Folder", "Term", "Legacy", "CategoryGroup"]
+      selectedTypes: [
+        "Class",
+        "ObjectProperty",
+        "DataProperty",
+        "DataType",
+        "Annotation",
+        "Individual",
+        "Record",
+        "ValueSet",
+        "Folder",
+        "Term",
+        "Legacy",
+        "CategoryGroup"
+      ]
     }
   },
   mutations: {
@@ -55,8 +68,7 @@ export default createStore({
     },
     updateFilters(state, filters) {
       state.filters = filters;
-    },
-
+    }
   },
   actions: {
     async fetchConceptAggregate({ commit }, iri) {
@@ -85,9 +97,10 @@ export default createStore({
     },
 
     async fetchSearchResults({ commit }, searchRequest: SearchRequest) {
-      const searchResults = (await ConceptService.advancedSearch(searchRequest)).data.concepts;
-      commit("updateSearchResults", searchResults)
+      const searchResults = (await ConceptService.advancedSearch(searchRequest))
+        .data.concepts;
+      commit("updateSearchResults", searchResults);
     }
   },
-  modules: {},
+  modules: {}
 });

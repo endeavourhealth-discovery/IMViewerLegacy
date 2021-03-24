@@ -15,7 +15,7 @@ import { HistoryItem } from "@/models/HistoryItem";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { Options, Vue } from "vue-class-component";
 import { mapState } from "vuex";
-import ConceptService from '@/services/ConceptService';
+import ConceptService from "@/services/ConceptService";
 
 interface TreeNode {
   key: string;
@@ -47,7 +47,12 @@ export default class Hierarchy extends Vue {
 
   createTree(concept: any, parentHierarchy: any, children: any) {
     let index = 1;
-    const selectedConcept = this.createTreeNode(concept.name, concept.iri, index, concept.hasChildren);
+    const selectedConcept = this.createTreeNode(
+      concept.name,
+      concept.iri,
+      index,
+      concept.hasChildren
+    );
     index++;
 
     children.forEach((child: any) => {
@@ -74,7 +79,12 @@ export default class Hierarchy extends Vue {
     this.expandedKeys[1] = true;
   }
 
-  createTreeNode(conceptName: any, conceptIri: any, level: any, hasChildren: boolean) {
+  createTreeNode(
+    conceptName: any,
+    conceptIri: any,
+    level: any,
+    hasChildren: boolean
+  ) {
     const node: TreeNode = {
       key: level,
       label: conceptName,
@@ -95,7 +105,8 @@ export default class Hierarchy extends Vue {
 
   async onNodeExpand(node: TreeNode) {
     console.log(node);
-    const children = await (await ConceptService.getConceptChildren(node.data)).data;
+    const children = await (await ConceptService.getConceptChildren(node.data))
+      .data;
 
     let index = 0;
 
@@ -103,7 +114,12 @@ export default class Hierarchy extends Vue {
 
     children.forEach((child: any) => {
       node.children.push(
-        this.createTreeNode(child.name, child.iri, node.key + '-' + index, child.hasChildren)
+        this.createTreeNode(
+          child.name,
+          child.iri,
+          node.key + "-" + index,
+          child.hasChildren
+        )
       );
       index++;
     });
