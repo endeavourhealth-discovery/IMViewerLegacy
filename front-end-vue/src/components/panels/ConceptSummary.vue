@@ -5,13 +5,15 @@
         <div class="p-col-6" v-if="concept.name">
           <ScrollPanel style="width: 100%; height: 100px">
             <p><strong>Description:</strong></p>
-            {{ concept.description }}
+            <div>{{ concept.description }}</div>
           </ScrollPanel>
         </div>
         <div class="p-col-6" v-if="concept.name">
           <ScrollPanel style="width: 100%; height: 100px">
             <p><strong>Definition:</strong></p>
-            {{ definitionText }}
+            <div v-for="(item, index) in definitionDisplay" :key="item">
+              {{ index !== definitionDisplay.length - 1 ? item + ";" : item }}
+            </div>
           </ScrollPanel>
         </div>
         <div class="p-col-6" v-if="concept.name">
@@ -61,7 +63,6 @@ import { mapState } from "vuex";
       this.definitionText = this.definitionText = (
         await ConceptService.getConceptImLang(newValue.concept.iri)
       ).data;
-      console.log(this.definitionText);
     }
   }
 })
@@ -71,6 +72,10 @@ export default class ConceptSummary extends Vue {
   definitionText = "";
 
   display = false;
+
+  get definitionDisplay() {
+    return this.definitionText.split(";");
+  }
 
   get editorConcept() {
     return this.editDialogView ? this.concept : {};
