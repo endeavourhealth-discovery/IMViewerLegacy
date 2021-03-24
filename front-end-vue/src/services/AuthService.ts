@@ -68,22 +68,27 @@ export default {
   },
 
   async updateUser(userToUpdate: User){
-    const user = await Auth.currentAuthenticatedUser();
-    if (user.attributes.sub === userToUpdate.id){
-      const atts: object = {
-        email: userToUpdate.email,
-        "custom:forename": userToUpdate.firstName,
-        "custom:surname": userToUpdate.lastName,
+    try{
+      const user = await Auth.currentAuthenticatedUser()
+      if (user.attributes.sub === userToUpdate.id){
+        const atts: object = {
+          email: userToUpdate.email,
+          "custom:forename": userToUpdate.firstName,
+          "custom:surname": userToUpdate.lastName,
+        }
+        Auth.updateUserAttributes(user, atts)
+        .then(()=> {
+          return {status: 200, message: "User updated successfully"}
+        })
+        .catch(err => {
+          console.log(err)
+          return {status: 400, error:err, message: "Error updating user at server"}
+        })
+      } else {
+        return {status: 403, message: "Authentication error with server"}
       }
-      Auth.updateUserAttributes(user, atts)
-      .then(()=> {
-        return {status: 200, message: "User updated successfully"}
-      })
-      .catch(err => {
-        return {status: 400, error:err, message: "Error updating user at server"}
-      })
-    } else {
-      return {status: 403, message: "Authentication error with server"}
+    } catch (err) {
+      return {status: 500, error: err, message: "Error authenticating current user"}
     }
   }
 }

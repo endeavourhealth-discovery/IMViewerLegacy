@@ -75,6 +75,7 @@ import { User } from "@/models/User";
 import Swal from 'sweetalert2';
 import { verifyIsEmail, verifyPasswordsMatch, verifyEmailsMatch, verifyIsName, checkPasswordStrength } from "@/helpers/UserMethods";
 import { PasswordStrength } from "@/models/PasswordStrength";
+import AuthService from "@/services/AuthService";
 
 @Options({
   name: "UserEdit",
@@ -192,7 +193,8 @@ export default class UserEdit extends Vue {
   handleEditSubmit(){
     if (this.showPasswordEdit && this.passwordsMatch && this.email1Verified && this.emailsMatch) {//add old password verification
       const updatedUser = new User(this.username, this.firstName, this.lastName, this.email1, this.passwordNew1);
-      // user Service call here
+      updatedUser.setId(this.user.id);
+      //Password and userUpdate here
     } else if (this.showPasswordEdit){
       Swal.fire({
         icon: "error",
@@ -207,6 +209,24 @@ export default class UserEdit extends Vue {
       })
     } else if (this.email1Verified && this.emailsMatch){
       const updatedUser = new User(this.username, this.firstName, this.lastName, this.email1, "")
+      updatedUser.setId(this.user.id);
+      AuthService.updateUser(updatedUser)
+      .then((res: any) => { //potential dodgy fix for res potentially undefined error...
+        if (res.status === 200){
+          Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: "Account details updated successfully"
+          })
+        }
+        else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: res.message
+          })
+        }
+      })
     } else {
       Swal.fire({
         icon: "error",
