@@ -70,12 +70,12 @@ export default class Home extends Vue{
 
   loginItems: [{}] = [
     {
-      label: 'User',
-      icon: 'pi pi-fw pi-user',
+      label: 'User Menu',
+      icon: 'pi pi-fw pi-users',
       items: [
         {
           label: 'Login',
-          icon: 'pi pi-fw pi-user-minus',
+          icon: 'pi pi-fw pi-user',
           to: '/user/login'
         },
         {
@@ -89,16 +89,16 @@ export default class Home extends Vue{
 
   accountItems: [{}] = [
     {
-      label: "Account",
+      label: "User menu",
       icon: 'pi pi-fw pi-user',
       items: [
         {
           label: 'My Account',
-          icon: 'pi pi-fw pi-user-minus',
+          icon: 'pi pi-fw pi-user',
           to: '/user/my-account' //+ this.user.id
         },
         {
-          label: "Edit Account Details",
+          label: "Edit Account",
           icon: 'pi pi-fw pi-user-edit',
           to: "/user/my-account/edit"
         },
@@ -109,7 +109,7 @@ export default class Home extends Vue{
         },
         {
           label: 'Logout',
-          icon: 'pi pi-fw pi-user-plus',
+          icon: 'pi pi-fw pi-lock-open',
           to: '/user/logout' //+ this.user.id
         },
       ]

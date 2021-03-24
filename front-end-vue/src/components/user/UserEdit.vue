@@ -11,7 +11,8 @@
       <div class="p-fluid p-d-flex p-flex-column p-jc-start user-edit-form">
         <div class="p-field">
           <label for="username">Username</label>
-          <InputText id="username" type="text" :placeholder="user.username" v-model="username" />
+          <InputText id="username" type="text" :placeholder="user.username" v-model="username" disabled/>
+          <small id="user-help">Username cannot currently be changed</small>
         </div>
         <div class="p-field">
           <label for="firstName">First Name</label>
