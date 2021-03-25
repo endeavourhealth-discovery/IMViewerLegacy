@@ -71,11 +71,12 @@ const routes: Array<RouteRecordRaw> = [
         name: "ForgotPasswordSubmit",
         component: ForgotPasswordSubmit
       },
-      {
-        path: "account-recovery",
-        name: "RecoverByEmail",
-        component: RecoverByEmail
-      }
+      //this isn't currently possible with AWS Auth
+      // {
+      //   path: "account-recovery",
+      //   name: "RecoverByEmail",
+      //   component: RecoverByEmail
+      // }
     ]
   },
   {

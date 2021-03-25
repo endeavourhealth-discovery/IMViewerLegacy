@@ -121,5 +121,30 @@ export default {
       }
       return {status: 400, error: err, message: "Error submitting password-reset credentials"}
     }
-  }
+  },
+
+  async forgotUsername(email: string){
+    try {
+      await Auth.verifyCurrentUserAttribute(email)
+      return {status: 200, message: "Account recovery code sent"}
+    } catch (err) {
+      console.log(err);
+      return {status: 400, error: err, message: "Error submitting email"}
+    }
+  },
+
+  // currently not a feature with AWS Auth
+  // async forgotUsernameSubmit(email: string, code: string){
+  //   try {
+  //     await Auth.(email, code); // finish this if ever becomes a feature
+  //     return {status:200, message: "Account recovered successfully"};
+  //   } catch (err) {
+  //     console.log(err);
+  //     if (err.code === "ExpiredCodeException"){
+  //       return {status: 403, error: err, message: "Code has expired"}
+  //     }
+  //     return {status: 400, error: err, message: "Error submitting account recovery credentials"}
+  //   }
+  // },
+
 }
