@@ -16,6 +16,7 @@ import ConfirmCode from "../components/user/ConfirmCode.vue";
 import Logout from "../components/user/Logout.vue";
 import ForgotPassword from "../components/user/ForgotPassword.vue";
 import ForgotPasswordSubmit from "../components/user/ForgotPasswordSubmit.vue";
+import RecoverByEmail from "../components/user/RecoverByEmail.vue";
 import { HistoryItem } from "../models/HistoryItem";
 import store from "@/store/index";
 
@@ -69,6 +70,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "password-recovery/submit",
         name: "ForgotPasswordSubmit",
         component: ForgotPasswordSubmit
+      },
+      {
+        path: "account-recovery",
+        name: "RecoverByEmail",
+        component: RecoverByEmail
       }
     ]
   },
