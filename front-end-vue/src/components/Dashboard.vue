@@ -106,10 +106,10 @@ export default class Dashboard extends Vue {
   msg!: string;
 
   chartConceptTypes = {
-    labels: ["Class", "ObjectProperty", "DataProperty", "DataType", "Annotation", "Individual", "Record", "ValueSet", "Folder", "Term", "Legacy", "CategoryGroup"],
+    labels: ["Annotation", "Class", "DataProperty", "DataType", "Folder", "Individual", "Legacy", "ObjectProperty", "Record", "Term", "ValueSet"],
     datasets: [
       {
-        data: [300, 50, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+        data: [23, 1156416, 66, 1, 0, 0, 1474735, 1732, 92, 0, 1174],
         backgroundColor: ["#00876c", "#429a71", "#6aac77", "#8fbe7e", "#b4cf87", "#d9e094", "#fff1a3", "#fbd687", "#f7ba70", "#f29d5f", "#eb7f54", "#e15f50", "#d43d51"],
         hoverBackgroundColor: ["#00876c", "#3a966b", "#5da46a", "#7eb269", "#a1bf6a", "#c4ca6d", "#e8d575", "#eabe61", "#eaa653", "#e98d4b", "#e57449", "#de594c", "#d43d51"]
       }
@@ -117,10 +117,11 @@ export default class Dashboard extends Vue {
   };
 
   chartConceptSchemes = {
-    labels: ["Barts Cerner code", "CTV3 Code", "Discovery code", "EMIS local code", "Homerton Cerner code", "ICD10 code", "OPCS4 code", "Read 2 code", "Snomed-CT code", "TPP local codes", "Term based code"],
+    // labels: ["Barts Cerner code", "CTV3 Code", "Discovery code", "EMIS local code", "Homerton Cerner code", "ICD10 code", "OPCS4 code", "Read 2 code", "Snomed-CT code", "TPP local codes", "Term based code"],
+    labels: ["Snomed-CT code", "EMIS local code", "CTV3 Code", "Read 2 code", "TPP local codes", "ICD10 code", "Term based code", "OPCS4 code", "Discovery code", "N/A", "Barts Cerner code"],
     datasets: [
       {
-        data: [300, 50, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+        data: [1029846, 1015779, 276841, 156192, 18902, 17934, 12079, 11251, 1972, 145, 5],
         backgroundColor: ["#00876c", "#429a71", "#6aac77", "#8fbe7e", "#b4cf87", "#d9e094", "#fff1a3", "#fbd687", "#f7ba70", "#f29d5f", "#eb7f54", "#e15f50", "#d43d51"],
         hoverBackgroundColor: ["#00876c", "#3a966b", "#5da46a", "#7eb269", "#a1bf6a", "#c4ca6d", "#e8d575", "#eabe61", "#eaa653", "#e98d4b", "#e57449", "#de594c", "#d43d51"]
       }
@@ -131,7 +132,7 @@ export default class Dashboard extends Vue {
     labels: ["Active", "Draft", "Inactive"],
     datasets: [
       {
-        data: [300, 50, 100],
+        data: [2220887, 129658, 283694],
         backgroundColor: ["#00876c", "#fff1a3","#d43d51"],
         hoverBackgroundColor: ["#00876c", "#e8d575", "#d43d51"]
       }
@@ -139,12 +140,17 @@ export default class Dashboard extends Vue {
   };
 
   tabledata = [
-    {label: "Semantic Concepts", total: 1000},
-    {label: "Datamodels", total: 1000},
-    {label: "Valuesets", total: 1000},
-    {label: "type4", total: 1000},
-    {label: "type5", total: 1000},
-    {label: "type6", total: 1000},
+    {label: "Snomed-CT code", total: 1029846},
+    {label: "EMIS local code", total: 1015779},
+    {label: "CTV3 Code", total: 276841},
+    {label: "Read 2 code", total: 156192},
+    {label: "TPP local codes", total: 18902},
+    {label: "ICD10 code", total: 17934},
+    {label: "Term based code", total: 12079},
+    {label: "OPCS4 code", total: 11251},
+    {label: "Discovery code", total: 1972},
+    {label: "N/A", total: 145},
+    {label: "Barts Cerner code", total: 5},
   ]
 }
 </script>
