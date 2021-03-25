@@ -11,7 +11,7 @@
         <div class="p-fluid p-d-flex p-flex-column p-jc-start password-edit-form">
           <div v-if="user.firstName" class="p-field">
             <label for="userName">User: </label>
-            <p>{{ user.firstName + " " + user.lastName}}</p>
+            <p>{{ user.username}}</p>
           </div>
           <div class="p-field">
             <label for="passwordOld">Current Password</label>
@@ -48,6 +48,7 @@ import { verifyPasswordsMatch, checkPasswordStrength } from "@/helpers/UserMetho
 import { PasswordStrength } from "@/models/PasswordStrength";
 import store from "@/store/index";
 import Swal from "sweetalert2";
+import AuthService from "@/services/AuthService";
 
 @Options({
   name: "PasswordEdit",
@@ -90,7 +91,25 @@ export default class PasswordEdit extends Vue{
 
   handleEditSubmit(){
     if (this.passwordsMatch && this.passwordStrength !== PasswordStrength.fail){
-      // user service here
+      AuthService.changePassword(this.passwordOld, this.passwordNew1)
+      .then(res => {
+        if (res.status === 200){
+          Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: "Password successfully updated"
+          })
+          .then(() => {
+            this.$router.push({name: "Home"});
+          })
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: res.message
+          })
+        }
+      })
     } else {
       Swal.fire({
         icon: "error",

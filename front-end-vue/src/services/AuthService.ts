@@ -91,19 +91,12 @@ export default {
 
   async changePassword(oldPassword: string, newPassword: string){
     try {
-      Auth.currentAuthenticatedUser()
-      .then(user => {
-        console.log(user)
-        Auth.changePassword(user, user.password, newPassword)
-        .then(res => {
-          return {status: 200, message: "Password successfully changed"}
-          })
-        .catch(err => {
-          return {status: 403, error:err, message: "Error authenticating user and changing password"}
-        })
-      })
+      const user = await Auth.currentAuthenticatedUser()
+      await Auth.changePassword(user, oldPassword, newPassword)
+      return {status: 200, message: "Password successfully changed"}
     } catch (err) {
-      return {status: 500, error: err, message: "Error contacting server with password change request"}
+      console.log(err);
+      return {status: 500, error: err, message: "Error updating password with server"}
     }
   }
 
