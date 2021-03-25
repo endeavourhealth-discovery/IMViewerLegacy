@@ -1,7 +1,7 @@
 <template>
   <div class="p-grid">
     <div class="p-col-6">
-      <Card>
+      <Card class="modulecard">
         <template #header>
           <font-awesome-icon
             :icon="['fas', 'map']"
@@ -16,12 +16,12 @@
           particular database.
         </template>
         <template #footer>
-          <Button label="Open Mapping Module" />
+          <Button label="Open Mapping Module" :disabled="true" />
       </template>
       </Card>
     </div>
     <div class="p-col-6">
-      <Card>
+      <Card class="modulecard">
         <template #header>
           <font-awesome-icon
             :icon="['fas', 'tasks']"
@@ -35,19 +35,19 @@
           Lorem ipsum dolor sit amet, consectetur adipiscing elit.
         </template>
         <template #footer>
-          <Button label="Open Workflow Manager Module" />
+          <Button label="Open Workflow Manager Module" :disabled="true" />
       </template>
       </Card>
     </div>
 
     <div class="p-col-6">
-      <Card>
+      <Card class="dashcard">
         <template #title> Ontology Overview </template>
         <template #subtitle>
           A brief overview of the concepts stored in the Ontology
         </template>
         <template #content>
-          <DataTable :value="tabledata" class="p-datatable-sm">
+          <DataTable :value="tabledata" class="p-datatable-sm" :scrollable="true" scrollHeight="250px">
             <template #header>
                 Ontology Data
             </template>
@@ -59,37 +59,37 @@
     </div>
 
     <div class="p-col-6">
-      <Card>
+      <Card class="dashcard">
         <template #title> Ontology Concept Types </template>
         <template #subtitle>
           A brief overview of the types of data stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptTypes" height="100"/>
+          <Chart type="pie" :data="chartConceptTypes" height="100" />
         </template>
       </Card>
     </div>
 
     <div class="p-col-6">
-      <Card>
+      <Card class="dashcard">
         <template #title> Ontology Concept Schemes </template>
         <template #subtitle>
           A brief overview of the schemes of data stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptSchemes" height="100"/>
+          <Chart type="pie" :data="chartConceptSchemes" height="100" />
         </template>
       </Card>
     </div>
 
     <div class="p-col-6">
-      <Card>
+      <Card class="dashcard">
         <template #title> Ontology Concept Status </template>
         <template #subtitle>
           A brief overview of the status of concepts stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptStatus" height="100"/>
+          <Chart type="pie" :data="chartConceptStatus" height="100" />
         </template>
       </Card>
     </div>
@@ -156,4 +156,13 @@ export default class Dashboard extends Vue {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style>
+.dashcard {
+  height: 400px;
+}
+
+.modulecard {
+  height: 300px;
+}
+
+</style>
