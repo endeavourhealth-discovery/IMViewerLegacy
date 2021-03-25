@@ -153,22 +153,6 @@ export default class UserEdit extends Vue {
     }
   }
 
-  // password1Changed(){
-  //   this.passwordStrength = checkPasswordStrength(this.passwordNew1);
-  // }
-
-  // password2Changed(){
-  //   this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, this.passwordNew2);
-  // }
-
-  // email1Changed(){
-  //   this.email1Verified = verifyIsEmail(this.email1);
-  // }
-
-  // email2Changed(){
-  //   this.emailsMatch = verifyEmailsMatch(this.email1, this.email2);
-  // }
-
   editPasswordClicked(result: boolean) {
     if (result === false){
       this.passwordOld = "";
@@ -211,12 +195,16 @@ export default class UserEdit extends Vue {
       const updatedUser = new User(this.username, this.firstName, this.lastName, this.email1, "")
       updatedUser.setId(this.user.id);
       AuthService.updateUser(updatedUser)
-      .then((res: any) => { //potential dodgy fix for res potentially undefined error...
+      .then((res) => {
         if (res.status === 200){
           Swal.fire({
             icon: "success",
             title: "Success",
             text: "Account details updated successfully"
+          })
+          .then(() => {
+            store.commit("updateCurrentUser", res.user);
+            this.$router.push({name: "UserDetails"})
           })
         }
         else {
@@ -239,6 +227,22 @@ export default class UserEdit extends Vue {
   resetForm(){
     return null; //finish once user is added
   }
+
+  // password1Changed(){
+  //   this.passwordStrength = checkPasswordStrength(this.passwordNew1);
+  // }
+
+  // password2Changed(){
+  //   this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, this.passwordNew2);
+  // }
+
+  // email1Changed(){
+  //   this.email1Verified = verifyIsEmail(this.email1);
+  // }
+
+  // email2Changed(){
+  //   this.emailsMatch = verifyEmailsMatch(this.email1, this.email2);
+  // }
 
 }
 </script>

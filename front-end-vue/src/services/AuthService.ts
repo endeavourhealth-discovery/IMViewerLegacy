@@ -68,7 +68,7 @@ export default {
   },
 
   async updateUser(userToUpdate: User){
-    try{
+    try {
       const user = await Auth.currentAuthenticatedUser()
       if (user.attributes.sub === userToUpdate.id){
         const atts: object = {
@@ -76,19 +76,35 @@ export default {
           "custom:forename": userToUpdate.firstName,
           "custom:surname": userToUpdate.lastName,
         }
-        Auth.updateUserAttributes(user, atts)
-        .then(()=> {
-          return {status: 200, message: "User updated successfully"}
-        })
-        .catch(err => {
-          console.log(err)
-          return {status: 400, error:err, message: "Error updating user at server"}
-        })
+        await Auth.updateUserAttributes(user, atts)
+        const updateResults = await Auth.currentAuthenticatedUser();
+        const updatedUser = new User(updateResults.username, updateResults.attributes["custom:forename"], updateResults.attributes["custom:surname"], updateResults.attributes.email, "");
+        return {status: 200, user: updatedUser, message: "User updated successfully"}
       } else {
         return {status: 403, message: "Authentication error with server"}
       }
     } catch (err) {
+      console.log(err)
       return {status: 500, error: err, message: "Error authenticating current user"}
     }
+  },
+
+  async changePassword(oldPassword: string, newPassword: string){
+    try {
+      Auth.currentAuthenticatedUser()
+      .then(user => {
+        console.log(user)
+        Auth.changePassword(user, user.password, newPassword)
+        .then(res => {
+          return {status: 200, message: "Password successfully changed"}
+          })
+        .catch(err => {
+          return {status: 403, error:err, message: "Error authenticating user and changing password"}
+        })
+      })
+    } catch (err) {
+      return {status: 500, error: err, message: "Error contacting server with password change request"}
+    }
   }
+
 }
