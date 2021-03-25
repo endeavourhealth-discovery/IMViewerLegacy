@@ -19,10 +19,10 @@
         </div>
       </template>
       <template #footer>
-        <!-- <small>Forgot your username? <a id="account-recovery-link" @click="$router.push({name: 'RecoverByEmail'})">Recover Account</a></small> -->
+        <small>Forgot your username? <a id="account-recovery-link" class="footer-link" @click="$router.push({name: 'RecoverByEmail'})">Recover Account</a></small>
         <br>
         <br>
-        <small>Already have a recovery code? <a id="password-submit-link" @click="$router.push({name: 'ForgotPasswordSubmit'})">Submit Code</a></small>
+        <small>Already have a recovery code? <a id="password-submit-link" class="footer-link" @click="$router.push({name: 'ForgotPasswordSubmit'})">Submit Code</a></small>
       </template>
     </Card>
   </div>
@@ -91,6 +91,10 @@ export default class ForgotPassword extends Vue {
 
 .recovery-form {
   max-width: 25em;
+}
+
+.footer-link:hover {
+  cursor: pointer;
 }
 
 </style>

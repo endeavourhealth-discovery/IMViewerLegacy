@@ -23,13 +23,13 @@
         </div>
       </template>
       <template #footer>
-        <small>Don't have an account yet? <a id="register-link" @click="$router.push({name: 'Register'})">Register here</a></small>
+        <small>Don't have an account yet? <a id="register-link" class="footer-link" @click="$router.push({name: 'Register'})">Register here</a></small>
         <br>
         <br>
-        <small>Recieved a confirmation code? <a id="code-link" @click="$router.push({name: 'ConfirmCode'})">Enter it here</a></small>
+        <small>Recieved a confirmation code? <a id="code-link" class="footer-link" @click="$router.push({name: 'ConfirmCode'})">Enter it here</a></small>
         <br>
         <br>
-        <small>Forgot your password or username? <br><a id="recover-link" @click="$router.push({name: 'AccountRecovery'})"> Recover account</a></small>
+        <small>Forgot your password or username? <br><a id="recover-link" class="footer-link" @click="$router.push({name: 'ForgotPassword'})"> Recover account</a></small>
       </template>
     </Card>
   </div>
@@ -123,7 +123,7 @@ export default class Login extends Vue {
   max-width: 25em;
 }
 
-#register-link:hover, #code-link:hover {
+.footer-link:hover {
   cursor: pointer;
 }
 

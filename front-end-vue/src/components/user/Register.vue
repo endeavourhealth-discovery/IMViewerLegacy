@@ -55,7 +55,7 @@
       </div>
     </template>
     <template #footer>
-      <span>Already have an account? <a id="login-link" @click="$router.push({name: 'Login'})">Login here</a></span>
+      <span>Already have an account? <a id="login-link" class="footer-link" @click="$router.push({name: 'Login'})">Login here</a></span>
     </template>
   </Card>
   </div>
@@ -245,7 +245,7 @@ export default class Register extends Vue{
   max-width: 25em;
 }
 
-#login-link:hover {
+.footer-link:hover {
   cursor: pointer;
 }
 
