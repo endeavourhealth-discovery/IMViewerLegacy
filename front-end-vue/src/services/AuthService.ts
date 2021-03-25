@@ -96,8 +96,27 @@ export default {
       return {status: 200, message: "Password successfully changed"}
     } catch (err) {
       console.log(err);
-      return {status: 500, error: err, message: "Error updating password with server"}
+      return {status: 400, error: err, message: "Error updating password with server"}
+    }
+  },
+
+  async forgotPassword(username: string){
+    try {
+      await Auth.forgotPassword(username);
+      return {status: 200, message: "Password reset request sent to server"};
+    } catch (err) {
+      console.log(err);
+      return {status: 400, error: err, message: "Error resetting password from server"};
+    }
+  },
+
+  async forgotPasswordSubmit(username: string, code: string, newPassword: string){
+    try {
+      await Auth.forgotPasswordSubmit(username, code, newPassword);
+      return {status:200, message: "Password reset successfully"};
+    } catch (err) {
+      console.log(err);
+      return {status: 400, error: err, message: "Error submitting password reset credentials"}
     }
   }
-
 }
