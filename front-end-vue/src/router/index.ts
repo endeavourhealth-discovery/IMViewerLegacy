@@ -14,7 +14,8 @@ import UserEdit from "../components/user/UserEdit.vue";
 import PasswordEdit from "../components/user/PasswordEdit.vue";
 import ConfirmCode from "../components/user/ConfirmCode.vue";
 import Logout from "../components/user/Logout.vue";
-import AccountRecovery from "../components/user/AccountRecovery.vue";
+import ForgotPassword from "../components/user/ForgotPassword.vue";
+import ForgotPasswordSubmit from "../components/user/ForgotPasswordSubmit.vue";
 import { HistoryItem } from "../models/HistoryItem";
 import store from "@/store/index";
 
@@ -60,9 +61,14 @@ const routes: Array<RouteRecordRaw> = [
         component: Logout
       },
       {
-        path: "recover-account",
-        name: "AccountRecovery",
-        component: AccountRecovery
+        path: "password-recovery",
+        name: "ForgotPassword",
+        component: ForgotPassword
+      },
+      {
+        path: "password-recovery/submit",
+        name: "ForgotPasswordSubmit",
+        component: ForgotPasswordSubmit
       }
     ]
   },

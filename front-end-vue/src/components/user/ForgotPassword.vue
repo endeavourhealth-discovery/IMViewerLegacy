@@ -20,6 +20,9 @@
       </template>
       <template #footer>
         <small>Forgot your username? <a id="account-recovery-link" @click="$router.push({name: 'RecoverByEmail'})">Recover Account</a></small>
+        <br>
+        <br>
+        <small>Already have a recovery code? <a id="password-submit-link" @click="$router.push({name: 'ForgotPasswordSubmit'})">Submit Code</a></small>
       </template>
     </Card>
   </div>
@@ -31,10 +34,10 @@ import Swal from 'sweetalert2';
 import AuthService from "@/services/AuthService";
 
 @Options({
-  name: "AccountRecovery"
+  name: "ForgotPassword"
 })
 
-export default class AccountRecovery extends Vue {
+export default class ForgotPassword extends Vue {
   username = "";
 
   handleSubmit(){
