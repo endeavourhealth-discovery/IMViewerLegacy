@@ -42,10 +42,13 @@
         </div>
       </template>
       <template #footer>
-        <small>Forgot your username? <a id="account-recovery-link" class="footer-link" @click="$router.push({name: 'RecoverByEmail'})">Recover Account</a></small>
+        <!-- <small>Forgot your username? <a id="account-recovery-link" class="footer-link" @click="$router.push({name: 'RecoverByEmail'})">Recover Account</a></small>
         <br>
-        <br>
+        <br> -->
         <small>Request a new code <a id="password-submit-link" class="footer-link" @click="$router.push({name: 'ForgotPasswordSubmit'})">here</a></small>
+        <br>
+        <br>
+        <small>If you have forgotten your username, please contact an admin</small>
       </template>
     </Card>
   </div>
