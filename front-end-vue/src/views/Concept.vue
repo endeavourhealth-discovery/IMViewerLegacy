@@ -2,7 +2,7 @@
   <div class="p-grid">
     <div class="p-col-12"><Header /></div>
     <div class="p-col-4"><SidebarControl /></div>
-    <div class="p-col-8"><PanelControl /></div>
+    <div class="p-col-8" style="height: calc(100vh - 123px); overflow: auto;"><PanelControl /></div>
   </div>
 </template>
 

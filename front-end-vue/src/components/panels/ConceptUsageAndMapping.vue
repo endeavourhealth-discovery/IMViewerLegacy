@@ -3,7 +3,7 @@
     <div class="p-col-6">
       <Panel header="Mapped" :toggleable="true"
         ><Listbox
-          listStyle="height:200px"
+          listStyle="height:300px"
           :filter="true"
           emptyMessage="No results found"
           emptyFilterMessage="No results found"
@@ -31,7 +31,7 @@
     <div class="p-col-6">
       <Panel header="Used In" :toggleable="true"
         ><Listbox
-          listStyle="height:200px"
+          listStyle="height:300px"
           :filter="true"
           emptyMessage="No results found"
           emptyFilterMessage="No results found"

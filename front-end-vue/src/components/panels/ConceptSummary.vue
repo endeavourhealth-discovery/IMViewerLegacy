@@ -29,14 +29,6 @@
             </div>
           </ScrollPanel>
         </div>
-        <!-- <div class="p-col-2" v-if="concept.name">
-          <SplitButton
-            label="Edit"
-            icon="pi pi-pencil"
-            @click="openEditDialog()"
-            :model="items"
-          ></SplitButton>
-        </div> -->
         <EditDialog
           @closeDialog="closeDialog"
           :display="display"

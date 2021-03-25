@@ -135,7 +135,7 @@ export default class SidebarControl extends Vue {
 </script>
 
 <style>
-.sidemenu .p-tabview-panels {
-  height: 78vh;
+.sidemenu .p-tabview-panel {
+  height: calc(100vh - 250px);
 }
 </style>

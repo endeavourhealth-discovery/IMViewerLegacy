@@ -5,6 +5,7 @@
     :expandedKeys="expandedKeys"
     @node-select="onNodeSelect"
     @node-expand="onNodeExpand"
+    style="height:100%;overflow:auto"
   ></Tree>
 
   <!-- <Tree :value="nodes" selectionMode="single" v-model:selectionKeys="selectedKey2" :metaKeySelection="false" @node-select="onNodeSelect" @node-unselect="onNodeUnselect"></Tree> -->

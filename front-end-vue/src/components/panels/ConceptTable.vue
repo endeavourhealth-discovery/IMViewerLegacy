@@ -4,6 +4,7 @@
     :rowsPerPageOptions="[10, 25, 50]"
     :paginator="true"
     :rows="10"
+    style="height:604px;"
   >
     <template #empty>
       No records found

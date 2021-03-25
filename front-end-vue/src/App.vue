@@ -52,6 +52,11 @@ export default class App extends Vue {
 </script>
 
 <style>
+
+body {
+  overflow: hidden;
+}
+
 .p-button {
   width: 90%;
   text-align: center;
