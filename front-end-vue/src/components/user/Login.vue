@@ -27,6 +27,9 @@
         <br>
         <br>
         <small>Recieved a confirmation code? <a id="code-link" @click="$router.push({name: 'ConfirmCode'})">Enter it here</a></small>
+        <br>
+        <br>
+        <small>Forgot your password or username? <br><a id="recover-link" @click="$router.push({name: 'AccountRecovery'})"> Recover account</a></small>
       </template>
     </Card>
   </div>

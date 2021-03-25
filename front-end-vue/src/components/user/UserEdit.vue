@@ -197,7 +197,7 @@ export default class UserEdit extends Vue {
               Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: res2.message
+                text: "Password update failed, but user details updated successfully. " + res2.message
               })
             }
           })
