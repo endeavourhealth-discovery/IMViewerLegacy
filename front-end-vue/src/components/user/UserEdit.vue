@@ -175,10 +175,40 @@ export default class UserEdit extends Vue {
   }
 
   handleEditSubmit(){
-    if (this.showPasswordEdit && this.passwordsMatch && this.email1Verified && this.emailsMatch) {//add old password verification
+    if (this.showPasswordEdit && this.passwordsMatch && this.email1Verified && this.emailsMatch) {
       const updatedUser = new User(this.username, this.firstName, this.lastName, this.email1, this.passwordNew1);
       updatedUser.setId(this.user.id);
-      //Password and userUpdate here
+      AuthService.updateUser(updatedUser)
+      .then(res => {
+        if (res.status === 200){
+          AuthService.changePassword(this.passwordOld, this.passwordNew1)
+          .then(res2 => {
+            if (res2.status === 200){
+              Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: "User details and password successfully updated"
+              })
+              .then(() => {
+                store.commit("updateCurrentUser", res.user);
+                this.$router.push({name: "UserDetails"});
+              })
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: res2.message
+              })
+            }
+          })
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: res.message
+          })
+        }
+      })
     } else if (this.showPasswordEdit){
       Swal.fire({
         icon: "error",
