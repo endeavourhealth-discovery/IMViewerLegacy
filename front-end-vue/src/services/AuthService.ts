@@ -116,7 +116,10 @@ export default {
       return {status:200, message: "Password reset successfully"};
     } catch (err) {
       console.log(err);
-      return {status: 400, error: err, message: "Error submitting password reset credentials"}
+      if (err.code === "ExpiredCodeException"){
+        return {status: 403, error: err, message: "Code has expired"}
+      }
+      return {status: 400, error: err, message: "Error submitting password-reset credentials"}
     }
   }
 }

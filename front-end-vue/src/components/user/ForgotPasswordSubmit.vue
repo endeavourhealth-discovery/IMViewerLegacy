@@ -1,19 +1,177 @@
 <template>
-  <h1>ForgotPasswordSubmit</h1>
+  <div class="p-d-flex p-flex-row p-ai-center">
+    <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center recovery-card">
+      <template #header>
+        <i class="pi pi-fw pi-user" style="fontSize: 50px; margin-top: 1em;"/>
+      </template>
+      <template #title>
+        Account Recovery: <br><br>Submit Password Reset Code
+      </template>
+      <template #content>
+        <div class="p-fluid recovery-form">
+          <div class="p-field">
+            <label for="fieldUsername">Username</label>
+            <InputText id="fieldUsername" type="text" v-model="username" :placeholder="registeredUsername" />
+          </div>
+          <div class="p-field">
+            <label for="fieldCode">Confirmation code</label>
+            <div class="p-d-flex p-flex-row p-ai-center">
+              <InputText id="fieldCode" type="password" v-model="code" />
+              <i v-if="codeVerified" class="pi pi-check-circle" style="color: #439446; fontSize: 2em" />
+              <i v-if="!codeVerified && code!== ''" class="pi pi-times-circle" style="color: #e60017; fontSize: 2em" />
+            </div>
+            <small id="code-help">Your 6-digit code should arrive by email from<br>no-reply@verificationemail.com</small>
+          </div>
+          <div class="p-field">
+            <label for="fieldPassword1">New Password</label>
+            <InputText id="fieldPassword1" type="password" aria-describedby="password-help" v-model="newPassword1"/>
+            <InlineMessage v-if="passwordStrength === 'strong'" severity="success">Password Strength: Strong</InlineMessage>
+            <InlineMessage v-if="passwordStrength === 'medium'" severity="success">Password Strength: Medium</InlineMessage>
+            <InlineMessage v-if="passwordStrength === 'weak'" severity="warn">Password Strength: Weak</InlineMessage>
+            <InlineMessage v-if="passwordStrength === 'fail' && newPassword1 !== ''" severity="error">Invalid Password</InlineMessage>
+            <small id="password-help">Password min length 8 characters. Improve password strength with a mixture of UPPERCASE, lowercase, numbers and special characters [!@#$%^&*].</small>
+          </div>
+          <div class="p-field">
+            <label for="fieldPassword2">Confirm New Password</label>
+            <InputText id="fieldPassword2" type="password" v-model="newPassword2" v-on:blur="setShowPassword2Notice" />
+            <InlineMessage v-if="showPassword2Notice" severity="error">Passwords do not match!</InlineMessage>
+          </div>
+          <div class="p-d-flex p-flex-row p-jc-center">
+            <Button class="user-submit" type="submit" label="Reset Password" v-on:click.prevent="handleSubmit" />
+          </div>
+        </div>
+      </template>
+      <template #footer>
+        <small>Forgot your username? <a id="account-recovery-link" @click="$router.push({name: 'RecoverByEmail'})">Recover Account</a></small>
+        <br>
+        <br>
+        <small>Already have a recovery code? <a id="password-submit-link" @click="$router.push({name: 'ForgotPasswordSubmit'})">Submit Code</a></small>
+      </template>
+    </Card>
+  </div>
 </template>
 
 <script lang="ts">
 import {Options, Vue} from "vue-class-component";
+import store from "@/store/index";
+import AuthService from "@/services/AuthService";
+import { PasswordStrength } from "@/models/PasswordStrength";
+import { verifyPasswordsMatch, checkPasswordStrength } from "@/helpers/UserMethods";
+import Swal from "sweetalert2";
 
 @Options({
-  name: "ForgotPasswordSubmit"
+  name: "ForgotPasswordSubmit",
+  computed: {
+    registeredUsername(){
+      return store.state.registeredUsername;
+    }
+  },
+  watch: {
+    code: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.code = newValue;
+        this.verifyCode();
+      }
+    },
+    username: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.username = newValue;
+      }
+    },
+    newPassword1: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.passwordStrength = checkPasswordStrength(newValue);
+      }
+    },
+    newPassword2: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.passwordsMatch = verifyPasswordsMatch(this.newPassword1, this.newPassword2);
+      }
+    },
+  }
 })
 
 export default class ForgotPasswordSubmit extends Vue {
+  registeredUsername!: string;
+  code = "";
+  codeVerified = false;
+  username = "";
+  newPassword1 = "";
+  newPassword2 = "";
+  passwordStrength: PasswordStrength = PasswordStrength.fail;
+  passwordsMatch = false;
+  showPassword2Notice = false
 
+  mounted(){
+    if (this.registeredUsername && this.registeredUsername !== ""){
+      this.username = this.registeredUsername
+    }
+  }
+
+  setShowPassword2Notice(){
+    this.showPassword2Notice = this.passwordsMatch? false: true;
+  }
+
+  verifyCode(){
+    this.codeVerified = /^(?=.{6,})/.test(this.code);
+  }
+
+  handleSubmit(){
+    if (this.codeVerified && this.username !== "" && this.passwordsMatch && this.passwordStrength !== PasswordStrength.fail){
+      AuthService.forgotPasswordSubmit(this.username, this.code, this.newPassword1)
+      .then(res => {
+        if (res.status === 200){
+          Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: "Password sucessfully reset",
+            confirmButtonText: "Continue"
+          })
+          .then(() => {
+            this.$router.push({name: "Login"})
+          })
+        } else if (res.status === 403) {
+          Swal.fire({
+            icon: "error",
+            title: "Code Expired",
+            text: "Password reset code has expired. Please request a new code",
+            showCancelButton: true,
+            confirmButtonText: "Request new code"
+          })
+          .then((result) => {
+            if (result.isConfirmed){
+              this.$router.push({name: "ForgotPassword"})
+            }
+          })
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: res.message + ". Check input data."
+          })
+        }
+      })
+    }
+  }
 }
 </script>
 
 <style scoped>
+
+.recovery-card {
+  padding: 0 2em;
+}
+
+.user-submit {
+  width: fit-content !important;
+}
+
+.recovery-form {
+  max-width: 25em;
+}
 
 </style>

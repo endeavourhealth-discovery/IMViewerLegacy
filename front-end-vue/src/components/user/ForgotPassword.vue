@@ -14,12 +14,12 @@
             <InputText id="fieldUsername" type="text" v-model="username" />
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
-            <Button class="user-submit" type="submit" label="Reset Password" v-on:click.prevent="handleSubmit" />
+            <Button class="user-submit" type="submit" label="Request Reset Code" v-on:click.prevent="handleSubmit" />
           </div>
         </div>
       </template>
       <template #footer>
-        <small>Forgot your username? <a id="account-recovery-link" @click="$router.push({name: 'RecoverByEmail'})">Recover Account</a></small>
+        <!-- <small>Forgot your username? <a id="account-recovery-link" @click="$router.push({name: 'RecoverByEmail'})">Recover Account</a></small> -->
         <br>
         <br>
         <small>Already have a recovery code? <a id="password-submit-link" @click="$router.push({name: 'ForgotPasswordSubmit'})">Submit Code</a></small>
@@ -32,6 +32,7 @@
 import {Options, Vue} from "vue-class-component";
 import Swal from 'sweetalert2';
 import AuthService from "@/services/AuthService";
+import store from "@/store/index";
 
 @Options({
   name: "ForgotPassword"
@@ -57,10 +58,11 @@ export default class ForgotPassword extends Vue {
             Swal.fire({
               icon: "success",
               title: "Password reset!",
-              text: "Password has been reset for account: " + this.username + ". An email has been sent with instuctions on account recovery."
+              text: "Password has been reset for account: " + this.username + ". An email has been sent with a recovery code."
             })
             .then(() => {
-              this.$router.push({name: "PasswordReset"})
+              store.commit("updateRegisteredUsername", this.username)
+              this.$router.push({name: "ForgotPasswordSubmit"})
             })
           } else {
             Swal.fire({
