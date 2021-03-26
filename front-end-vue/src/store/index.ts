@@ -95,14 +95,19 @@ export default createStore({
         console.log(err)
         return {status: 500, error: err, message: "Logout (store) failed"}
       }
+    },
+    async authenticateCurrentUser({ commit, dispatch }){
+      const res = await AuthService.getCurrentAuthenticatedUser();
+      if (res.status === 200){
+        commit("updateIsLoggedIn", true);
+        commit("updateCurrentUser", res.user);
+        commit("updateIdToken", res.idToken);
+        commit("updateAccessToken", res.accessToken);
+        commit("updateRefreshToken", res.refreshToken);
+      } else {
+        commit("updateIsLoggedIn", false);
+      }
     }
-    // async authenticateToken({ commit }){
-    //   if (){ // finish once AWS cognito is setup
-    //     commit("updateIsAuthenticated", true)
-    //   } else {
-    //     commit("updateIsAuthenticated", false)
-    //   }
-    // }
   },
   modules: {},
 });

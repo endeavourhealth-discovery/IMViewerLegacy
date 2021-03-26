@@ -135,8 +135,13 @@ export default {
 
   async getCurrentAuthenticatedUser(){
     try {
-      const user = await Auth.currentAuthenticatedUser()
-      return {status: 200, user: user, message: "User authenticated successfully"}
+      const cognitoUser = await Auth.currentAuthenticatedUser();
+      const user = new User(cognitoUser.username, cognitoUser.attributes['custom:forename'], cognitoUser.attributes['custom:surname'], cognitoUser.attributes.email, "")
+      user.setId(cognitoUser.attributes.sub);
+      const accessToken = cognitoUser.signInUserSession.accessToken.jwtToken;
+      const idToken = cognitoUser.signInUserSession.idToken.jwtToken;
+      const refreshToken = cognitoUser.signInUserSession.refreshToken.jwtToken;
+      return {status: 200, user: user, accessToken: accessToken, idToken: idToken, refreshToken: refreshToken, message: "User authenticated successfully"}
     } catch (err) {
       console.log(err);
       return {status: 403, error:err, message: "Error authenticating current user"}
