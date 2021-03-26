@@ -2,7 +2,7 @@ import { ConceptReference } from "@/models/ConceptReference";
 import axios, { AxiosResponse } from "axios";
 
 export default class SuggestionService {
-  static api = "http://localhost:8080/";
+  static api = process.env.VUE_APP_API;
 
   public static async getIriSuggestions(
     keyword: string,
@@ -13,8 +13,8 @@ export default class SuggestionService {
       {
         params: {
           keyword: keyword,
-          word: word,
-        },
+          word: word
+        }
       }
     );
 

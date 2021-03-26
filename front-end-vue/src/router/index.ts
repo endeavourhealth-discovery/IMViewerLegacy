@@ -2,7 +2,7 @@ import {
   createRouter,
   createWebHashHistory,
   RouteRecordRaw,
-  viewDepthKey,
+  viewDepthKey
 } from "vue-router";
 import Home from "../views/Home.vue";
 import Datamodel from "../views/Concept.vue";
@@ -13,18 +13,18 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Home",
-    component: Home,
+    component: Home
   },
   {
     path: "/concept/:selectedIri",
     name: "Concept",
-    component: Datamodel,
+    component: Datamodel
   }
 ];
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes,
+  routes
 });
 
 router.beforeEach((to, from, next) => {
@@ -33,6 +33,8 @@ router.beforeEach((to, from, next) => {
   if (to.name?.toString() == "Concept") {
     store.commit("updateConceptIri", to.params.selectedIri as string);
     store.dispatch("fetchConceptAggregate", store.state.conceptIri);
+    store.dispatch("fetchConceptMapped", store.state.conceptIri);
+    store.dispatch("fetchConceptUsages", store.state.conceptIri);
   }
   next();
 });

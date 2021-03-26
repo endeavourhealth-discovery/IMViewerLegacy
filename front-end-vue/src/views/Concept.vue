@@ -1,8 +1,8 @@
 <template>
   <div class="p-grid">
     <div class="p-col-12"><Header /></div>
-    <div class="p-col-4"><SidebarControl /></div>
-    <div class="p-col-8"><PanelControl /></div>
+    <div class="p-col-3"><SidebarControl /></div>
+    <div class="p-col-9" style="height: calc(100vh - 123px); overflow: auto;"><PanelControl /></div>
   </div>
 </template>
 
@@ -24,6 +24,8 @@ export default class Concept extends Vue {
   async mounted() {
     store.commit("updateConceptIri", this.$route.params.selectedIri as string);
     store.dispatch("fetchConceptAggregate", store.state.conceptIri);
+    store.dispatch("fetchConceptMapped", store.state.conceptIri);
+    store.dispatch("fetchConceptUsages", store.state.conceptIri);
   }
 }
 </script>

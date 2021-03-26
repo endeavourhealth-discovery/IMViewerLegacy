@@ -41,18 +41,20 @@ import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup"; //optional for column grouping
 import OrganizationChart from "primevue/organizationchart";
 import Textarea from "primevue/textarea";
-import Dropdown from 'primevue/dropdown';
-import Tooltip from 'primevue/tooltip';
-import Dialog from 'primevue/dialog';
-import SplitButton from 'primevue/splitbutton';
-import MultiSelect from 'primevue/multiselect';
-import OverlayPanel from 'primevue/overlaypanel';
+import Dropdown from "primevue/dropdown";
+import Tooltip from "primevue/tooltip";
+import Dialog from "primevue/dialog";
+import SplitButton from "primevue/splitbutton";
+import MultiSelect from "primevue/multiselect";
+import OverlayPanel from "primevue/overlaypanel";
+import Chart from "primevue/chart";
+import Menu from "primevue/menu";
 
 createApp(App)
   .use(store)
   .use(router)
   .use(PrimeVue, { ripple: true })
-  .directive('tooltip', Tooltip)
+  .directive("tooltip", Tooltip)
   .component("Card", Card)
   .component("TabView", TabView)
   .component("TabPanel", TabPanel)
@@ -77,5 +79,7 @@ createApp(App)
   .component("SplitButton", SplitButton)
   .component("MultiSelect", MultiSelect)
   .component("OverlayPanel", OverlayPanel)
+  .component("Menu", Menu)
+  .component("Chart", Chart)
   .component("font-awesome-icon", FontAwesomeIcon)
   .mount("#app");
