@@ -105,7 +105,9 @@ export default createStore({
         commit("updateAccessToken", res.accessToken);
         commit("updateRefreshToken", res.refreshToken);
       } else {
-        commit("updateIsLoggedIn", false);
+        console.log(res.error);
+        //refresh token call here?
+        dispatch("logoutCurrentUser");
       }
     }
   },

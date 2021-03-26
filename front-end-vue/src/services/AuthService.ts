@@ -146,7 +146,7 @@ export default {
       console.log(err);
       return {status: 403, error:err, message: "Error authenticating current user"}
     }
-  }
+  },
 
   // currently not a feature with AWS Auth
   // async forgotUsernameSubmit(email: string, code: string){

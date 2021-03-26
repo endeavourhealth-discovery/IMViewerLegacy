@@ -24,6 +24,7 @@ import Dashboard from "@/components/home/Dashboard.vue";
 import { mapState } from "vuex";
 import { User } from "../models/User";
 import store from "@/store/index";
+import AuthService from "@/services/AuthService";
 
 @Options({
   name: "Home",
@@ -50,6 +51,9 @@ export default class Home extends Vue{
 
   async mounted() {
     this.isHome = this.$route.name === "Home"? true: false;
+
+    // check for user and log them in if found or logout if not
+    store.dispatch("authenticateCurrentUser")
 
     if (this.$route.name === "Home"){
       store.commit("updateConceptIri", "owl:Thing");
