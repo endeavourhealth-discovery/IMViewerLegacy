@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --port 8081",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -13,6 +13,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.0-3",
     "antlr4-c3": "^1.1.15",
     "antlr4ts": "^0.5.0-alpha.4",
+    "aws-amplify": "^3.3.25",
     "axios": "^0.21.1",
     "chart.js": "^2.9.4",
     "core-js": "^3.6.5",
@@ -26,6 +27,7 @@
     "primevue": "^3.2.4",
     "sass-loader": "^8.0.2",
     "svg-pan-zoom": "^3.6.1",
+    "sweetalert2": "^10.15.6",
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.0-0",

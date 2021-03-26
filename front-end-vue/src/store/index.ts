@@ -2,6 +2,8 @@ import { SearchRequest } from "./../models/search/SearchRequest";
 import { createStore } from "vuex";
 import ConceptService from "../services/ConceptService";
 import { HistoryItem } from "../models/HistoryItem";
+import { User } from "../models/User";
+import AuthService from "@/services/AuthService";
 
 export default createStore({
   state: {
@@ -13,6 +15,9 @@ export default createStore({
     members: [],
     history: [] as HistoryItem[],
     searchResults: [],
+    currentUser: {} as User,
+    registeredUsername: "" as string,
+    isLoggedIn: false as boolean,
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
@@ -76,6 +81,15 @@ export default createStore({
     updateLoading(state, loading) {
       state.loading.set(loading.key, loading.value);
     },
+    updateCurrentUser(state, user){
+      state.currentUser = user;
+    },
+    updateRegisteredUsername(state, username){
+      state.registeredUsername = username;
+    },
+    updateIsLoggedIn(state, status){
+      state.isLoggedIn = status;
+    },
   },
   actions: {
     async fetchConceptAggregate({ commit }, iri) {
@@ -114,10 +128,39 @@ export default createStore({
       commit("updateLoading", { key: "searchResults", value: true });
       await new Promise((resolve) => setTimeout(resolve, 2000));
       const searchResults = (await ConceptService.advancedSearch(searchRequest))
-        .data.concepts;
+          .data.concepts;
       commit("updateSearchResults", searchResults);
       commit("updateLoading", { key: "searchResults", value: false });
     },
+    async logoutCurrentUser({ commit }){
+      try {
+        const res = await AuthService.signOut()
+        if (res.status === 200){
+          commit("updateCurrentUser", null);
+          commit("updateIsLoggedIn", false)
+          return res;
+        } else {
+          console.log(res.error);
+          return res
+        }
+      } catch (err) {
+        console.log(err)
+        return {status: 500, error: err, message: "Logout (store) failed"}
+      }
+    },
+    async authenticateCurrentUser({ commit, dispatch }){
+      const res = await AuthService.getCurrentAuthenticatedUser();
+      if (res.status === 200){
+        commit("updateIsLoggedIn", true);
+        commit("updateCurrentUser", res.user);
+        return {authenticated: true};
+      } else {
+        console.log(res.error);
+        //refresh token call here?
+        dispatch("logoutCurrentUser");
+        return {authenticated: false};
+      }
+    }
   },
   modules: {},
 });
