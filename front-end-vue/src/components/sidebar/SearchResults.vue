@@ -1,6 +1,15 @@
 <template>
   <div class="p-field p-col-12 p-md-12" style="height: 60vh">
+    <div
+      class="p-grid p-jc-center"
+      v-if="$store.state.loading.get('searchResults')"
+    >
+      <div class="p-col-6">
+        <ProgressSpinner />
+      </div>
+    </div>
     <DataTable
+      v-else
       :value="$store.state.searchResults"
       v-model:selection="selectedResult"
       @row-select="onNodeSelect"
