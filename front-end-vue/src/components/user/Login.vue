@@ -57,10 +57,7 @@ export default class Login extends Vue {
     .then(res => {
       if (res.status === 200){
         store.commit("updateCurrentUser", res.user);
-        store.commit("updateIdToken", res.idToken);
-        store.commit("updateRefreshToken", res.refreshToken);
-        store.commit("updateAccessToken", res.accessToken);
-        store.commit("updateRegisteredUsername", "");
+        store.commit("updateRegisteredUsername", null);
         store.commit("updateIsLoggedIn", true);
         Swal.fire({
           icon: "success",

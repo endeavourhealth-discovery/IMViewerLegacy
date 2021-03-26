@@ -35,10 +35,7 @@ export default {
       const user = await Auth.signIn(username, password)
       const signedInUser = new User(user.username, user.attributes['custom:forename'], user.attributes['custom:surname'], user.attributes.email, "")
       signedInUser.setId(user.attributes.sub);
-      const accessToken = user.signInUserSession.accessToken.jwtToken;
-      const idToken = user.signInUserSession.idToken.jwtToken;
-      const refreshToken = user.signInUserSession.refreshToken.jwtToken;
-      return {status: 200, user: signedInUser, accessToken: accessToken, idToken: idToken, refreshToken: refreshToken, message: "signIn successful"};
+      return {status: 200, user: signedInUser, message: "signIn successful"};
     } catch(err) {
       console.log(err);
       if (err.code === "UserNotConfirmedException"){
@@ -138,10 +135,7 @@ export default {
       const cognitoUser = await Auth.currentAuthenticatedUser();
       const user = new User(cognitoUser.username, cognitoUser.attributes['custom:forename'], cognitoUser.attributes['custom:surname'], cognitoUser.attributes.email, "")
       user.setId(cognitoUser.attributes.sub);
-      const accessToken = cognitoUser.signInUserSession.accessToken.jwtToken;
-      const idToken = cognitoUser.signInUserSession.idToken.jwtToken;
-      const refreshToken = cognitoUser.signInUserSession.refreshToken.jwtToken;
-      return {status: 200, user: user, accessToken: accessToken, idToken: idToken, refreshToken: refreshToken, message: "User authenticated successfully"}
+      return {status: 200, user: user, message: "User authenticated successfully"}
     } catch (err) {
       console.log(err);
       return {status: 403, error:err, message: "Error authenticating current user"}

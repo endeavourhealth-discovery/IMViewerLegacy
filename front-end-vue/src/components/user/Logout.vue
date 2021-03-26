@@ -57,8 +57,6 @@ export default class Logout extends Vue {
       if (result.isConfirmed){
         store.dispatch("logoutCurrentUser")
         .then((res) => {
-          console.log("test4")
-          console.log(res)
           if (res.status === 200){
             Swal.fire({
               icon: "success",

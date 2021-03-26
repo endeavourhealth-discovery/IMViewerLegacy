@@ -13,9 +13,6 @@ export default createStore({
     searchResults: [],
     currentUser: {} as User,
     registeredUsername: "" as string,
-    accessToken: localStorage.getItem("accessToken") as string,
-    idToken: localStorage.getItem("idToken") as string,
-    refreshToken: localStorage.getItem("refreshToken") as string,
     isLoggedIn: false as boolean
   },
   mutations: {
@@ -43,15 +40,6 @@ export default createStore({
     updateIsLoggedIn(state, status){
       state.isLoggedIn = status;
     },
-    updateAccessToken(state, token){
-      localStorage.setItem("accessToken", token);
-    },
-    updateIdToken(state, token){
-      localStorage.setItem("idToken", token);
-    },
-    updateRefreshToken(state, token){
-      localStorage.setItem("refreshToken", token);
-    }
   },
   actions: {
     async fetchConceptAggregate({ commit }, iri) {
@@ -83,9 +71,6 @@ export default createStore({
         if (res.status === 200){
           commit("updateCurrentUser", null);
           commit("updateIsLoggedIn", false)
-          commit("updateAccessToken", null);
-          commit("updateIdToken", null);
-          commit("updateRefreshToken", null);
           return res;
         } else {
           console.log(res.error);
@@ -101,9 +86,6 @@ export default createStore({
       if (res.status === 200){
         commit("updateIsLoggedIn", true);
         commit("updateCurrentUser", res.user);
-        commit("updateIdToken", res.idToken);
-        commit("updateAccessToken", res.accessToken);
-        commit("updateRefreshToken", res.refreshToken);
         return {authenticated: true};
       } else {
         console.log(res.error);

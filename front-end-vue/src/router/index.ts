@@ -124,6 +124,8 @@ router.beforeEach((to, from, next) => {
         next({
           path: "/user/login"
         })
+      } else {
+        next();
       }
     })
   } else {
