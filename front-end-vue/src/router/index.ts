@@ -44,17 +44,26 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "my-account",
         name: "UserDetails",
-        component: UserDetails
+        component: UserDetails,
+        meta: {
+          requiresAuth: true
+        }
       },
       {
         path: "my-account/edit",
         name: "UserEdit",
-        component: UserEdit
+        component: UserEdit,
+        meta: {
+          requiresAuth: true
+        }
       },
       {
         path: "my-account/password-edit",
         name: "PasswordEdit",
-        component: PasswordEdit
+        component: PasswordEdit,
+        meta: {
+          requiresAuth: true
+        }
       },
       {
         path: "logout",
@@ -106,8 +115,20 @@ router.beforeEach((to, from, next) => {
     store.commit("updateConceptIri", to.params.selectedIri as string);
     store.dispatch("fetchConceptAggregate", store.state.conceptIri);
   }
-  // if ((to.name === 'UserDetails' || to.name === 'UserEdit') && !isAuthenticated) next ({ name: 'Login' })
-  next();
+  if (to.matched.some(record => record.meta.requiresAuth)){
+    store.dispatch("authenticateCurrentUser")
+    .then(res => {
+      console.log("auth guard user authenticated:" + res.authenticated)
+      if (!res.authenticated){
+        console.log("redirecting to login")
+        next({
+          path: "/user/login"
+        })
+      }
+    })
+  } else {
+    next();
+  }
 });
 
 export default router;

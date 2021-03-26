@@ -104,10 +104,12 @@ export default createStore({
         commit("updateIdToken", res.idToken);
         commit("updateAccessToken", res.accessToken);
         commit("updateRefreshToken", res.refreshToken);
+        return {authenticated: true};
       } else {
         console.log(res.error);
         //refresh token call here?
         dispatch("logoutCurrentUser");
+        return {authenticated: false};
       }
     }
   },
