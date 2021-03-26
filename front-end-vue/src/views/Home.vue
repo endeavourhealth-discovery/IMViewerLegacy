@@ -8,7 +8,7 @@
             <div class="user-menu"><Menubar :model="getItems()" /></div>
           </div>
           <div class="p-col-3"><SidebarControl /></div>
-          <div v-if="isHome" class="p-col-9"><Dashboard /></div>
+          <div v-if="isHome" class="p-col-9" style="height: calc(100vh - 123px); overflow: auto;"><Dashboard /></div>
           <router-view v-if="!isHome"/>
         </div>
       </div>
