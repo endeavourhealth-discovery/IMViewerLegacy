@@ -144,7 +144,7 @@ export default class UserEdit extends Vue {
   showPassword2Notice = false;
 
   mounted() {
-    if (this.user.firstName){//remove this later!!!!!!!!
+    if (this.user){
       this.username = this.user.username
       this.firstName = this.user.firstName;
       this.lastName = this.user.lastName;

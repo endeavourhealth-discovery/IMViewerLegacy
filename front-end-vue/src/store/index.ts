@@ -77,11 +77,11 @@ export default createStore({
       commit("updateSearchResults", searchResults)
     },
     logoutCurrentUser({ commit }){
-      commit("updateCurrentUser", undefined);
+      commit("updateCurrentUser", null);
       commit("updateIsLoggedIn", false)
-      commit("updateAccessToken", "");
-      commit("updateIdToken", "");
-      commit("updateRefreshToken", "");
+      commit("updateAccessToken", null);
+      commit("updateIdToken", null);
+      commit("updateRefreshToken", null);
     }
     // async authenticateToken({ commit }){
     //   if (){ // finish once AWS cognito is setup
