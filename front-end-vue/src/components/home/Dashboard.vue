@@ -95,26 +95,39 @@
     </div>
   </div>
 
-  
+
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
+import ReportService from "@/services/ReportService";
 
-@Options({})
+@Options({
+  name: "Dashboard"
+})
 export default class Dashboard extends Vue {
   msg!: string;
+  chartConceptTypes: any = {};
 
-  chartConceptTypes = {
-    labels: ["Annotation", "Class", "DataProperty", "DataType", "Folder", "Individual", "Legacy", "ObjectProperty", "Record", "Term", "ValueSet"],
-    datasets: [
-      {
-        data: [23, 1156416, 66, 1, 0, 0, 1474735, 1732, 92, 0, 1174],
+  mounted(){
+    ReportService.getConceptTypeReport()
+    .then(res => {
+      this.chartConceptTypes = {
+      labels: [],
+      datasets: [{data: [
+      ],
         backgroundColor: ["#00876c", "#429a71", "#6aac77", "#8fbe7e", "#b4cf87", "#d9e094", "#fff1a3", "#fbd687", "#f7ba70", "#f29d5f", "#eb7f54", "#e15f50", "#d43d51"],
-        hoverBackgroundColor: ["#00876c", "#3a966b", "#5da46a", "#7eb269", "#a1bf6a", "#c4ca6d", "#e8d575", "#eabe61", "#eaa653", "#e98d4b", "#e57449", "#de594c", "#d43d51"]
+        hoverBackgroundColor: ["#00876c", "#3a966b", "#5da46a", "#7eb269", "#a1bf6a", "#c4ca6d", "#e8d575", "#eabe61", "#eaa653", "#e98d4b", "#e57449", "#de594c", "#d43d51"]}]
+      };
+      for (const type of res.data){
+        this.chartConceptTypes.labels.push(type.label);
+        this.chartConceptTypes.datasets[0].data.push(type.count);
       }
-    ]
-  };
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }
 
   chartConceptSchemes = {
     // labels: ["Barts Cerner code", "CTV3 Code", "Discovery code", "EMIS local code", "Homerton Cerner code", "ICD10 code", "OPCS4 code", "Read 2 code", "Snomed-CT code", "TPP local codes", "Term based code"],
