@@ -1,4 +1,3 @@
-import { ConceptType } from "./../models/search/ConceptType";
 import { SearchRequest } from "./../models/search/SearchRequest";
 import { createStore } from "vuex";
 import ConceptService from "../services/ConceptService";
@@ -6,10 +5,12 @@ import { HistoryItem } from "../models/HistoryItem";
 
 export default createStore({
   state: {
+    loading: new Map<string, boolean>(),
     conceptIri: "owl:Thing",
     conceptAggregate: {} as any,
     mapped: [],
     usages: [],
+    members: [],
     history: [] as HistoryItem[],
     searchResults: [],
     filters: {
@@ -17,16 +18,16 @@ export default createStore({
       selectedSchemes: [
         {
           iri: ":891071000252105",
-          name: "Discovery code"
+          name: "Discovery code",
         },
         {
           iri: ":891101000252101",
-          name: "Snomed-CT code"
+          name: "Snomed-CT code",
         },
         {
           iri: ":891111000252103",
-          name: "Term based code"
-        }
+          name: "Term based code",
+        },
       ],
       selectedTypes: [
         "Class",
@@ -40,9 +41,9 @@ export default createStore({
         "Folder",
         "Term",
         "Legacy",
-        "CategoryGroup"
-      ]
-    }
+        "CategoryGroup",
+      ],
+    },
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -57,6 +58,9 @@ export default createStore({
     updateConceptUsages(state, usages) {
       state.usages = usages;
     },
+    updateConceptMembers(state, members) {
+      state.members = members;
+    },
     updateHistory(state, historyItem) {
       state.history = state.history.filter(function(el) {
         return el.url !== historyItem.url;
@@ -68,7 +72,10 @@ export default createStore({
     },
     updateFilters(state, filters) {
       state.filters = filters;
-    }
+    },
+    updateLoading(state, loading) {
+      state.loading.set(loading.key, loading.value);
+    },
   },
   actions: {
     async fetchConceptAggregate({ commit }, iri) {
@@ -77,30 +84,40 @@ export default createStore({
         .data;
       const children = (await ConceptService.getConceptChildren(iri)).data;
       const properties = (await ConceptService.getConceptProperties(iri)).data;
-      const members = (await ConceptService.getConceptMembers(iri, false)).data;
       commit("updateConceptAggregate", {
         concept: concept,
         parents: parents,
         children: children,
         properties: properties,
-        members: members
       });
     },
     async fetchConceptMapped({ commit }, iri) {
+      commit("updateLoading", { key: "mapped", value: true });
       const mappedFrom = (await ConceptService.getConceptMappedFrom(iri)).data;
       const mappedTo = (await ConceptService.getConceptMappedTo(iri)).data;
       commit("updateConceptMapped", mappedFrom.concat(mappedTo));
+      commit("updateLoading", { key: "mapped", value: false });
     },
     async fetchConceptUsages({ commit }, iri) {
+      commit("updateLoading", { key: "usages", value: true });
       const usages = (await ConceptService.getConceptUsages(iri)).data;
       commit("updateConceptUsages", usages);
+      commit("updateLoading", { key: "usages", value: false });
     },
-
+    async fetchConceptMembers({ commit }, iri) {
+      commit("updateLoading", { key: "members", value: true });
+      const members = (await ConceptService.getConceptMembers(iri, false)).data;
+      commit("updateConceptMembers", members);
+      commit("updateLoading", { key: "members", value: false });
+    },
     async fetchSearchResults({ commit }, searchRequest: SearchRequest) {
+      commit("updateLoading", { key: "searchResults", value: true });
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       const searchResults = (await ConceptService.advancedSearch(searchRequest))
         .data.concepts;
       commit("updateSearchResults", searchResults);
-    }
+      commit("updateLoading", { key: "searchResults", value: false });
+    },
   },
-  modules: {}
+  modules: {},
 });

@@ -8,29 +8,46 @@
           </button>
           <Menu id="config_menu" ref="menu" :model="items" :popup="true" />
         </template>
-
+        <div
+          class="p-grid p-jc-center"
+          v-if="$store.state.loading.get('members')"
+        >
+          <div class="p-col-6">
+            <ProgressSpinner />
+          </div>
+        </div>
         <Listbox
+          v-else
           listStyle="height:300px"
           :filter="true"
           emptyMessage="No results found"
           emptyFilterMessage="No results found"
           v-model="selectedIncludedMember"
           @change="onNodeSelect(selectedIncludedMember)"
-          :options="$store.state.conceptAggregate.members.included"
+          :options="$store.state.members.included"
           optionLabel="concept.name"
         ></Listbox
       ></Panel>
     </div>
     <div class="p-col-6">
-      <Panel header="Excluded Members" :toggleable="true"
-        ><Listbox
+      <Panel header="Excluded Members" :toggleable="true">
+        <div
+          class="p-grid p-jc-center"
+          v-if="$store.state.loading.get('members')"
+        >
+          <div class="p-col-6">
+            <ProgressSpinner />
+          </div>
+        </div>
+        <Listbox
+          v-else
           listStyle="height:300px"
           :filter="true"
           emptyMessage="No results found"
           emptyFilterMessage="No results found"
           v-model="selectedExcludedMember"
           @change="onNodeSelect(selectedExcludedMember)"
-          :options="$store.state.conceptAggregate.members.excluded"
+          :options="$store.state.members.excluded"
           optionLabel="concept.name"
         ></Listbox
       ></Panel>

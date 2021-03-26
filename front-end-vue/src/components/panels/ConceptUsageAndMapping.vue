@@ -1,8 +1,18 @@
 <template>
   <div class="p-grid">
     <div class="p-col-6">
-      <Panel header="Mapped" :toggleable="true"
-        ><Listbox
+      <Panel header="Mapped" :toggleable="true">
+        <div
+          class="p-grid p-jc-center"
+          v-if="$store.state.loading.get('mapped')"
+        >
+          <div class="p-col-6">
+            <ProgressSpinner />
+          </div>
+        </div>
+
+        <Listbox
+          v-else
           listStyle="height:300px"
           :filter="true"
           emptyMessage="No results found"
@@ -11,8 +21,9 @@
           @change="onNodeSelect(selectedMappedFrom)"
           :options="$store.state.mapped"
           optionLabel="name"
-        ></Listbox
-      ></Panel>
+        >
+        </Listbox>
+      </Panel>
     </div>
     <!-- <div class="p-col-4">
       <Panel header="Mapped to" :toggleable="true"
@@ -30,7 +41,16 @@
     </div> -->
     <div class="p-col-6">
       <Panel header="Used In" :toggleable="true"
-        ><Listbox
+        ><div
+          class="p-grid p-jc-center"
+          v-if="$store.state.loading.get('usages')"
+        >
+          <div class="p-col-6">
+            <ProgressSpinner />
+          </div>
+        </div>
+        <Listbox
+          v-else
           listStyle="height:300px"
           :filter="true"
           emptyMessage="No results found"

@@ -49,6 +49,7 @@ import MultiSelect from "primevue/multiselect";
 import OverlayPanel from "primevue/overlaypanel";
 import Chart from "primevue/chart";
 import Menu from "primevue/menu";
+import ProgressSpinner from 'primevue/progressspinner';
 
 createApp(App)
   .use(store)
@@ -56,6 +57,7 @@ createApp(App)
   .use(PrimeVue, { ripple: true })
   .directive("tooltip", Tooltip)
   .component("Card", Card)
+  .component("ProgressSpinner", ProgressSpinner)
   .component("TabView", TabView)
   .component("TabPanel", TabPanel)
   .component("InputText", InputText)

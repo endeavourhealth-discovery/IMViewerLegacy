@@ -35,6 +35,7 @@ router.beforeEach((to, from, next) => {
     store.dispatch("fetchConceptAggregate", store.state.conceptIri);
     store.dispatch("fetchConceptMapped", store.state.conceptIri);
     store.dispatch("fetchConceptUsages", store.state.conceptIri);
+    store.dispatch("fetchConceptMembers", store.state.conceptIri);
   }
   next();
 });
