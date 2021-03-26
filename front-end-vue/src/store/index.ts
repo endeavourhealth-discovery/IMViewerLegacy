@@ -3,6 +3,7 @@ import { createStore } from "vuex";
 import ConceptService from "../services/ConceptService";
 import { HistoryItem } from "../models/HistoryItem";
 import { User } from "../models/User";
+import AuthService from "@/services/AuthService";
 
 export default createStore({
   state: {
@@ -76,12 +77,24 @@ export default createStore({
       const searchResults = (await ConceptService.advancedSearch(searchRequest)).data.concepts;
       commit("updateSearchResults", searchResults)
     },
-    logoutCurrentUser({ commit }){
-      commit("updateCurrentUser", null);
-      commit("updateIsLoggedIn", false)
-      commit("updateAccessToken", null);
-      commit("updateIdToken", null);
-      commit("updateRefreshToken", null);
+    async logoutCurrentUser({ commit }){
+      try {
+        const res = await AuthService.signOut()
+        if (res.status === 200){
+          commit("updateCurrentUser", null);
+          commit("updateIsLoggedIn", false)
+          commit("updateAccessToken", null);
+          commit("updateIdToken", null);
+          commit("updateRefreshToken", null);
+          return res;
+        } else {
+          console.log(res.error);
+          return res
+        }
+      } catch (err) {
+        console.log(err)
+        return {status: 500, error: err, message: "Logout (store) failed"}
+      }
     }
     // async authenticateToken({ commit }){
     //   if (){ // finish once AWS cognito is setup

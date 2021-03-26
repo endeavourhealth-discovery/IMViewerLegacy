@@ -55,10 +55,11 @@ export default class Logout extends Vue {
     })
     .then(result => {
       if (result.isConfirmed){
-        AuthService.signOut()
+        store.dispatch("logoutCurrentUser")
         .then((res) => {
+          console.log("test4")
+          console.log(res)
           if (res.status === 200){
-            store.dispatch("logoutCurrentUser");
             Swal.fire({
               icon: "success",
               title: "Success",
@@ -68,7 +69,6 @@ export default class Logout extends Vue {
               this.$router.push({name: "Home"})
             })
           } else {
-            store.dispatch("logoutCurrentUser");
             Swal.fire({
               icon: "error",
               title: "Error",
