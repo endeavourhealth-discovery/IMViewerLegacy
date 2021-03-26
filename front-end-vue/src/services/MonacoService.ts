@@ -4,7 +4,7 @@ import CompletionList = monaco.languages.CompletionList;
 import CompletionItem = monaco.languages.CompletionItem;
 import Position = monaco.Position;
 import ErrorListener, {
-  Error,
+  Error
 } from "../discovery-syntax/DiscoveryErrorListener";
 import { ANTLRInputStream, CommonTokenStream } from "antlr4ts";
 import { DiscoverySyntaxLexer } from "../discovery-syntax/DiscoverySyntaxLexer";
@@ -18,7 +18,7 @@ function buildCompletionItem(label: string, value: string, range: any) {
     kind: monaco.languages.CompletionItemKind.Function,
     // documentation: suggestion,
     insertText: value,
-    range,
+    range
   };
 }
 
@@ -49,7 +49,7 @@ async function getSuggestions(
     startLineNumber: position.lineNumber,
     endLineNumber: position.lineNumber,
     startColumn: word.startColumn,
-    endColumn: word.endColumn,
+    endColumn: word.endColumn
   };
   for (const candidate of candidates.tokens) {
     const keyword = parser.vocabulary
@@ -61,7 +61,7 @@ async function getSuggestions(
           keyword,
           word.word
         );
-        conceptReferences.forEach((conceptReference) => {
+        conceptReferences.forEach(conceptReference => {
           suggestions.push(
             buildCompletionItem(
               conceptReference.name,
@@ -108,12 +108,12 @@ export function getDiscoveryCompletionProvider() {
         startLineNumber: 1,
         startColumn: 1,
         endLineNumber: position.lineNumber,
-        endColumn: position.column,
+        endColumn: position.column
       });
       const parser = getParser(text);
       const core = new CodeCompletionCore(parser as any);
       const candidates = core.collectCandidates(text.length);
       return getSuggestions(model, position, parser, candidates);
-    },
+    }
   };
 }

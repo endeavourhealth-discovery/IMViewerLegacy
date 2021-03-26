@@ -7,8 +7,8 @@
             <div class="header-grow"><Header /></div>
             <div class="user-menu"><Menubar :model="getItems()" /></div>
           </div>
-          <div class="p-col-4"><SidebarControl /></div>
-          <div v-if="isHome" class="p-col-8"><Dashboard /></div>
+          <div class="p-col-3"><SidebarControl /></div>
+          <div v-if="isHome" class="p-col-9"><Dashboard /></div>
           <router-view v-if="!isHome"/>
         </div>
       </div>
@@ -57,11 +57,12 @@ export default class Home extends Vue{
 
     if (this.$route.name === "Home"){
       store.commit("updateConceptIri", "owl:Thing");
-      store.dispatch("fetchConceptAggregate", store.state.conceptIri);
     } else if (this.$route.name === "Concept") {
       store.commit("updateConceptIri", this.$route.params.selectedIri as string);
-      store.dispatch("fetchConceptAggregate", store.state.conceptIri);
     }
+    store.dispatch("fetchConceptAggregate", store.state.conceptIri);
+    store.dispatch("fetchConceptMapped", store.state.conceptIri);
+    store.dispatch("fetchConceptUsages", store.state.conceptIri);
   }
 
   getItems(){

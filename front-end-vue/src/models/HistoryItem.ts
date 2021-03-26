@@ -1,7 +1,5 @@
 export interface HistoryItem {
-    url: string;
-    conceptName: string;
-    view: string;
+  url: string;
+  conceptName: string;
+  view: string;
 }
-
- 

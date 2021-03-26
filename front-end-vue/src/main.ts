@@ -47,6 +47,9 @@ import Dialog from 'primevue/dialog';
 import SplitButton from 'primevue/splitbutton';
 import MultiSelect from 'primevue/multiselect';
 import OverlayPanel from 'primevue/overlaypanel';
+import Chart from "primevue/chart";
+import Menu from "primevue/menu";
+import ProgressSpinner from 'primevue/progressspinner';
 import Menubar from 'primevue/menubar';
 import InlineMessage from 'primevue/inlinemessage';
 import Message from 'primevue/message';
@@ -64,8 +67,9 @@ createApp(App)
   .use(router)
   .use(PrimeVue, { ripple: true })
   .use(ConfirmationService)
-  .directive('tooltip', Tooltip)
+  .directive("tooltip", Tooltip)
   .component("Card", Card)
+  .component("ProgressSpinner", ProgressSpinner)
   .component("TabView", TabView)
   .component("TabPanel", TabPanel)
   .component("InputText", InputText)
@@ -89,6 +93,8 @@ createApp(App)
   .component("SplitButton", SplitButton)
   .component("MultiSelect", MultiSelect)
   .component("OverlayPanel", OverlayPanel)
+  .component("Menu", Menu)
+  .component("Chart", Chart)
   .component("font-awesome-icon", FontAwesomeIcon)
   .component("Menubar", Menubar)
   .component("InlineMessage", InlineMessage)

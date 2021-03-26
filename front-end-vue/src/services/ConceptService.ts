@@ -1,9 +1,9 @@
-import { SearchRequest } from './../models/search/SearchRequest';
+import { SearchRequest } from "./../models/search/SearchRequest";
 import { ConceptDto } from "@/models/ConceptDto";
 import axios from "axios";
 
 export default class ConceptService {
-  static api = "http://localhost:8080/";
+  static api = process.env.VUE_APP_API;
 
   public static async advancedSearch(request: SearchRequest) {
     return axios.post(this.api + "api/concept/search", request);
@@ -24,7 +24,7 @@ export default class ConceptService {
   public static async getConceptChildren(iri: string) {
     return axios.get(this.api + "api/concept/" + iri + "/children");
   }
-  
+
   public static async getConceptUsages(iri: string) {
     return axios.get(this.api + "api/concept/" + iri + "/usages");
   }
@@ -35,6 +35,16 @@ export default class ConceptService {
 
   public static async getConceptMappedTo(iri: string) {
     return axios.get(this.api + "api/concept/" + iri + "/mappedTo");
+  }
+
+  public static async getConceptMembers(iri: string, expanded: boolean) {
+    if (expanded) {
+      return axios.get(
+        this.api + "api/concept/" + iri + "/members?expanded=true"
+      );
+    } else {
+      return axios.get(this.api + "api/concept/" + iri + "/members");
+    }
   }
 
   public static async getAncestorDefinitions(iri: string) {
@@ -52,13 +62,17 @@ export default class ConceptService {
   public static async getConceptImLang(iri: string) {
     return axios.get(this.api + "api/concept/" + iri, {
       headers: {
-        accept: "application/imlang",
+        accept: "application/imlang"
       },
-      responseType: "text",
+      responseType: "text"
     });
   }
 
   public static getConceptProperties(iri: string) {
     return axios.get(this.api + "api/concept/" + iri + "/properties");
+  }
+
+  public static getConceptGraph(iri: string) {
+    return axios.get(this.api + "api/concept/" + iri + "/graph");
   }
 }

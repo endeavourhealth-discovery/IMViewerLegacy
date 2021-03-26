@@ -58,10 +58,17 @@ export default class Header extends Vue {}
 <style>
 .header .p-card-header {
   width: 5%;
+  padding-top: 10px;
   float: left;
 }
 
 .header .p-card-content {
   display: contents;
+  margin-left: 10px;
+}
+
+.header .p-card-title,
+.header .p-card-subtitle {
+  padding-left: 100px;
 }
 </style>

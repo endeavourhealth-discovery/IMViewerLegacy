@@ -1,5 +1,5 @@
-import { SearchRequest } from './SearchRequest';
-import { ConceptSummary } from './ConceptSummary';
+import { SearchRequest } from "./SearchRequest";
+import { ConceptSummary } from "./ConceptSummary";
 
 export class SearchResponse {
   pageStart!: number;

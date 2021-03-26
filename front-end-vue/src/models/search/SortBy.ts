@@ -1,4 +1,4 @@
 export enum SortBy {
-    Usage,
-    Length
-  }
+  Usage,
+  Length
+}

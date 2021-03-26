@@ -1,12 +1,11 @@
-import { ConceptReference } from '@/models/ConceptReference';
-
+import { ConceptReference } from "@/models/ConceptReference";
 
 export class ConceptSummary {
-  name: string = "";
-  iri: string = "";
+  name = "";
+  iri = "";
   scheme: ConceptReference = {} as ConceptReference;
-  code: string = "";
+  code = "";
   conceptType: any;
   isDescendentOf: ConceptReference[] = [];
-  weighting: number = 0;
+  weighting = 0;
 }

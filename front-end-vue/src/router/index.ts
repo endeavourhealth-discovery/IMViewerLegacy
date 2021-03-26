@@ -2,7 +2,7 @@ import {
   createRouter,
   createWebHashHistory,
   RouteRecordRaw,
-  viewDepthKey,
+  viewDepthKey
 } from "vue-router";
 import Home from "../views/Home.vue";
 import Datamodel from "../views/Concept.vue";
@@ -105,7 +105,7 @@ const routes: Array<RouteRecordRaw> = [
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes,
+  routes
 });
 
 router.beforeEach((to, from, next) => {
@@ -114,6 +114,9 @@ router.beforeEach((to, from, next) => {
   if (to.name?.toString() == "Concept") {
     store.commit("updateConceptIri", to.params.selectedIri as string);
     store.dispatch("fetchConceptAggregate", store.state.conceptIri);
+    store.dispatch("fetchConceptMapped", store.state.conceptIri);
+    store.dispatch("fetchConceptUsages", store.state.conceptIri);
+    store.dispatch("fetchConceptMembers", store.state.conceptIri);
   }
   if (to.matched.some(record => record.meta.requiresAuth)){
     store.dispatch("authenticateCurrentUser")
