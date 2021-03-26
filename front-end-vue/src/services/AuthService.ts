@@ -133,6 +133,16 @@ export default {
     }
   },
 
+  async getCurrentAuthenticatedUser(){
+    try {
+      const user = await Auth.currentAuthenticatedUser()
+      return {status: 200, user: user, message: "User authenticated successfully"}
+    } catch (err) {
+      console.log(err);
+      return {status: 403, error:err, message: "Error authenticating current user"}
+    }
+  }
+
   // currently not a feature with AWS Auth
   // async forgotUsernameSubmit(email: string, code: string){
   //   try {
