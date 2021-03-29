@@ -16,4 +16,8 @@ export default class ReportService {
   public static async getConceptStatusReport(){
     return axios.get(this.api + "api/report/concept/status");
   }
+
+  public static async getConceptCategoryReport(){
+    return axios.get(this.api + "api/report/concept/category");
+  }
 }

@@ -1,6 +1,6 @@
 <template>
-  <div class="p-grid">
-    <div class="p-col-6">
+  <div class="p-grid dashboard-container">
+    <div class="p-col-6 modulecard-container">
       <Card class="modulecard">
         <template #header>
           <font-awesome-icon
@@ -20,7 +20,7 @@
       </template>
       </Card>
     </div>
-    <div class="p-col-6">
+    <div class="p-col-6 modulecard-container">
       <Card class="modulecard">
         <template #header>
           <font-awesome-icon
@@ -40,56 +40,56 @@
       </Card>
     </div>
 
-    <div class="p-col-6">
+    <div class="p-col-6 dashcard-container">
       <Card class="dashcard">
         <template #title> Ontology Overview </template>
         <template #subtitle>
           A brief overview of the concepts stored in the Ontology
         </template>
         <template #content>
-          <DataTable :value="tabledata" class="p-datatable-sm" :scrollable="true" scrollHeight="250px">
+          <DataTable :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="250px">
             <template #header>
                 Ontology Data
             </template>
             <Column field="label" header="Label"></Column>
-            <Column field="total" header="Total"></Column>
+            <Column field="count" header="Total"></Column>
         </DataTable>
         </template>
       </Card>
     </div>
 
-    <div class="p-col-6">
+    <div class="p-col-6 dashcard-container">
       <Card class="dashcard">
         <template #title> Ontology Concept Types </template>
         <template #subtitle>
           A brief overview of the types of data stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptTypes" :height="100" />
+          <Chart type="pie" :data="chartConceptTypes" :options="chartOptions" :height="windowHeight/8" />
         </template>
       </Card>
     </div>
 
-    <div class="p-col-6">
+    <div class="p-col-6 dashcard-container">
       <Card class="dashcard">
         <template #title> Ontology Concept Schemes </template>
         <template #subtitle>
           A brief overview of the schemes of data stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptSchemes" :height="100" />
+          <Chart type="pie" :data="chartConceptSchemes" :options="chartOptions" :height="windowHeight/8" />
         </template>
       </Card>
     </div>
 
-    <div class="p-col-6">
+    <div class="p-col-6 dashcard-container">
       <Card class="dashcard">
         <template #title> Ontology Concept Status </template>
         <template #subtitle>
           A brief overview of the status of concepts stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptStatus" :height="100" />
+          <Chart type="pie" :data="chartConceptStatus" :options="chartOptions" :height="windowHeight/8"/>
         </template>
       </Card>
     </div>
@@ -104,13 +104,28 @@ import ReportService from "@/services/ReportService";
 const palette = require("../../../node_modules/google-palette");
 
 @Options({
-  name: "Dashboard"
+  name: "Dashboard",
+  watch: {
+    windowHeight: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.windowHeight = newValue;
+      }
+    },
+  }
 })
 export default class Dashboard extends Vue {
   msg!: string;
   chartConceptTypes: any = {};
   chartConceptSchemes: any = {};
   chartConceptStatus: any = {};
+  tableData: any = [];
+  chartOptions: any = {
+    legend: {
+      position: 'right'
+    }
+  };
+  windowHeight = window.innerHeight;
 
   mounted(){
     ReportService.getConceptTypeReport()
@@ -190,21 +205,24 @@ export default class Dashboard extends Vue {
       this.chartConceptStatus.datasets[0].backgroundColor = bgsFixed;
       this.chartConceptStatus.datasets[0].hoverBackgroundColor = hoversLighter;
     })
+
+    ReportService.getConceptCategoryReport()
+    .then(res => {
+      this.tableData = res.data
+    })
+
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.onResize)
+    })
   }
 
-  tabledata = [
-    {label: "Snomed-CT code", total: 1029846},
-    {label: "EMIS local code", total: 1015779},
-    {label: "CTV3 Code", total: 276841},
-    {label: "Read 2 code", total: 156192},
-    {label: "TPP local codes", total: 18902},
-    {label: "ICD10 code", total: 17934},
-    {label: "Term based code", total: 12079},
-    {label: "OPCS4 code", total: 11251},
-    {label: "Discovery code", total: 1972},
-    {label: "N/A", total: 145},
-    {label: "Barts Cerner code", total: 5},
-  ]
+  beforeDestroy(){
+    window.removeEventListener('resize', this.onResize);
+  }
+
+  onResize(){
+    this.windowHeight = window.innerHeight;
+  }
 
   colorLighter(color: string){
     const rgbColor = this.hexToRgb(color);
@@ -238,13 +256,27 @@ export default class Dashboard extends Vue {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style scoped>
+
+.dashboard-container {
+  height: 100%;
+}
+
 .dashcard {
-  height: 400px;
+  height: 100%;
 }
 
 .modulecard {
-  height: 300px;
+  height: 100%;
 }
+
+.p-chart {
+  height: fit-content;
+}
+/* @media (min-width: 1000px){
+  .dashcard-container {
+    max-height: 30vh;
+}
+} */
 
 </style>
