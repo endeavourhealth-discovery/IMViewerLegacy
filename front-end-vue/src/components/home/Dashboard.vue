@@ -1,6 +1,6 @@
 <template>
   <div class="p-grid dashboard-container">
-    <div class="p-col-6 modulecard-container">
+    <div class="p-col-6 modulecard-container" id="module-card">
       <Card class="modulecard">
         <template #header>
           <font-awesome-icon
@@ -65,7 +65,7 @@
           A brief overview of the types of data stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptTypes" :options="chartOptions" :height="windowHeight/8" />
+          <Chart type="pie" :data="chartConceptTypes" :options="chartOptions" :height="graphHeight" />
         </template>
       </Card>
     </div>
@@ -77,7 +77,7 @@
           A brief overview of the schemes of data stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptSchemes" :options="chartOptions" :height="windowHeight/8" />
+          <Chart type="pie" :data="chartConceptSchemes" :options="chartOptions" :height="graphHeight" />
         </template>
       </Card>
     </div>
@@ -89,7 +89,7 @@
           A brief overview of the status of concepts stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptStatus" :options="chartOptions" :height="windowHeight/8"/>
+          <Chart type="pie" :data="chartConceptStatus" :options="chartOptions" :height="graphHeight"/>
         </template>
       </Card>
     </div>
@@ -109,7 +109,7 @@ const palette = require("../../../node_modules/google-palette");
     windowHeight: {
       immediate: true,
       handler(newValue, oldValue){
-        this.windowHeight = newValue;
+        this.setGraphHeight(newValue);
       }
     },
   }
@@ -125,7 +125,8 @@ export default class Dashboard extends Vue {
       position: 'right'
     }
   };
-  windowHeight = window.innerHeight;
+  windowHeight = 0;
+  graphHeight = 200;
 
   mounted(){
     ReportService.getConceptTypeReport()
@@ -214,6 +215,9 @@ export default class Dashboard extends Vue {
     this.$nextTick(() => {
       window.addEventListener('resize', this.onResize)
     })
+
+    this.windowHeight = window.innerHeight;
+
   }
 
   beforeDestroy(){
@@ -222,6 +226,16 @@ export default class Dashboard extends Vue {
 
   onResize(){
     this.windowHeight = window.innerHeight;
+  }
+
+  setGraphHeight(windowHeight: number){
+    const header = document.getElementById('header-home');
+    const card = document.getElementById('module-card');
+    if (header && card){
+      this.graphHeight = Math.floor((windowHeight - header.clientHeight - card.clientHeight)/16)
+    } else {
+      this.graphHeight = 100;
+    }
   }
 
   colorLighter(color: string){
