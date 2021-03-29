@@ -129,11 +129,12 @@ export default class Dashboard extends Vue {
       }
       const length = Object.keys(res.data).length;
       const bgs = palette('tol-rainbow', length);
-      const bgsFixed = bgs.map(function(color:string){return '#' + color} )
-      const hovers = palette('tol-dv', length);
-      const hoversFixed = hovers.map(function(color:string){return '#' + color})
+      const bgsFixed = bgs.map((color:string) => '#' + color)
+      const hovers = palette('tol-rainbow', length);
+      const hoversFixed = hovers.map((color:string) => '#' + color)
+      const hoversLighter = hoversFixed.map((color: string) => this.colorLighter(color))
       this.chartConceptTypes.datasets[0].backgroundColor = bgsFixed;
-      this.chartConceptTypes.datasets[0].hoverBackgroundColor = hoversFixed;
+      this.chartConceptTypes.datasets[0].hoverBackgroundColor = hoversLighter;
     })
     .catch(err => {
       console.log(err);
@@ -155,11 +156,12 @@ export default class Dashboard extends Vue {
       }
       const length = Object.keys(res.data).length;
       const bgs = palette('tol-rainbow', length);
-      const bgsFixed = bgs.map(function(color:string){return '#' + color} )
-      const hovers = palette('tol-dv', length);
-      const hoversFixed = hovers.map(function(color:string){return '#' + color})
+      const bgsFixed = bgs.map((color:string) => '#' + color)
+      const hovers = palette('tol-rainbow', length);
+      const hoversFixed = hovers.map((color:string) => '#' + color);
+      const hoversLighter = hoversFixed.map((color: string) => this.colorLighter(color))
       this.chartConceptSchemes.datasets[0].backgroundColor = bgsFixed;
-      this.chartConceptSchemes.datasets[0].hoverBackgroundColor = hoversFixed;
+      this.chartConceptSchemes.datasets[0].hoverBackgroundColor = hoversLighter;
     })
     .catch(err => {
       console.log(err);
@@ -181,11 +183,12 @@ export default class Dashboard extends Vue {
       }
       const length = Object.keys(res.data).length;
       const bgs = palette('tol-rainbow', length);
-      const bgsFixed = bgs.map(function(color:string){return '#' + color} )
-      const hovers = palette('tol-dv', length);
-      const hoversFixed = hovers.map(function(color:string){return '#' + color})
+      const bgsFixed = bgs.map((color:string) => '#' + color)
+      const hovers = palette('tol-rainbow', length);
+      const hoversFixed = hovers.map((color:string) => '#' + color);
+      const hoversLighter = hoversFixed.map((color: string) => this.colorLighter(color))
       this.chartConceptStatus.datasets[0].backgroundColor = bgsFixed;
-      this.chartConceptStatus.datasets[0].hoverBackgroundColor = hoversFixed;
+      this.chartConceptStatus.datasets[0].hoverBackgroundColor = hoversLighter;
     })
   }
 
@@ -202,6 +205,35 @@ export default class Dashboard extends Vue {
     {label: "N/A", total: 145},
     {label: "Barts Cerner code", total: 5},
   ]
+
+  colorLighter(color: string){
+    const rgbColor = this.hexToRgb(color);
+    if (rgbColor){
+      const rDiff = (255 - rgbColor.r) * 0.5;
+      const gDiff = (255 - rgbColor.g) * 0.5;
+      const bDiff = (255 - rgbColor.b) * 0.5;
+      const newHex = this.rgbToHex(Math.round(rgbColor.r + rDiff), Math.round(rgbColor.g + gDiff), Math.round(rgbColor.b + bDiff))
+      return newHex
+    }
+  }
+
+  hexToRgb(hex:string) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
+
+  componentToHex(c:number) {
+    const hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  }
+
+  rgbToHex(r:number, g:number, b:number) {
+    return "#" + this.componentToHex(r) + this.componentToHex(g) + this.componentToHex(b);
+  }
 }
 </script>
 
