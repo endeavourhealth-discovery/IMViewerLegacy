@@ -65,7 +65,7 @@
           A brief overview of the types of data stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptTypes" height="100" />
+          <Chart type="pie" :data="chartConceptTypes" :height="100" />
         </template>
       </Card>
     </div>
@@ -77,7 +77,7 @@
           A brief overview of the schemes of data stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptSchemes" height="100" />
+          <Chart type="pie" :data="chartConceptSchemes" :height="100" />
         </template>
       </Card>
     </div>
@@ -89,7 +89,7 @@
           A brief overview of the status of concepts stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptStatus" height="100" />
+          <Chart type="pie" :data="chartConceptStatus" :height="100" />
         </template>
       </Card>
     </div>
@@ -101,6 +101,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import ReportService from "@/services/ReportService";
+const palette = require("../../../node_modules/google-palette");
 
 @Options({
   name: "Dashboard"
@@ -108,49 +109,85 @@ import ReportService from "@/services/ReportService";
 export default class Dashboard extends Vue {
   msg!: string;
   chartConceptTypes: any = {};
+  chartConceptSchemes: any = {};
+  chartConceptStatus: any = {};
 
   mounted(){
     ReportService.getConceptTypeReport()
     .then(res => {
       this.chartConceptTypes = {
-      labels: [],
-      datasets: [{data: [
-      ],
-        backgroundColor: ["#00876c", "#429a71", "#6aac77", "#8fbe7e", "#b4cf87", "#d9e094", "#fff1a3", "#fbd687", "#f7ba70", "#f29d5f", "#eb7f54", "#e15f50", "#d43d51"],
-        hoverBackgroundColor: ["#00876c", "#3a966b", "#5da46a", "#7eb269", "#a1bf6a", "#c4ca6d", "#e8d575", "#eabe61", "#eaa653", "#e98d4b", "#e57449", "#de594c", "#d43d51"]}]
+        labels: [],
+        datasets: [{
+          data: [],
+          backgroundColor: [],
+          hoverBackgroundColor: []
+          }]
       };
       for (const type of res.data){
         this.chartConceptTypes.labels.push(type.label);
         this.chartConceptTypes.datasets[0].data.push(type.count);
       }
+      const length = Object.keys(res.data).length;
+      const bgs = palette('tol-rainbow', length);
+      const bgsFixed = bgs.map(function(color:string){return '#' + color} )
+      const hovers = palette('tol-dv', length);
+      const hoversFixed = hovers.map(function(color:string){return '#' + color})
+      this.chartConceptTypes.datasets[0].backgroundColor = bgsFixed;
+      this.chartConceptTypes.datasets[0].hoverBackgroundColor = hoversFixed;
     })
     .catch(err => {
       console.log(err);
     })
+
+    ReportService.getConceptSchemeReport()
+    .then(res => {
+      this.chartConceptSchemes = {
+        labels: [],
+        datasets: [{
+          data:[],
+          backgroundColor: [],
+          hoverBackgroundColor: []
+        }]
+      }
+      for (const schema of res.data){
+        this.chartConceptSchemes.labels.push(schema.label);
+        this.chartConceptSchemes.datasets[0].data.push(schema.count);
+      }
+      const length = Object.keys(res.data).length;
+      const bgs = palette('tol-rainbow', length);
+      const bgsFixed = bgs.map(function(color:string){return '#' + color} )
+      const hovers = palette('tol-dv', length);
+      const hoversFixed = hovers.map(function(color:string){return '#' + color})
+      this.chartConceptSchemes.datasets[0].backgroundColor = bgsFixed;
+      this.chartConceptSchemes.datasets[0].hoverBackgroundColor = hoversFixed;
+    })
+    .catch(err => {
+      console.log(err);
+    })
+
+    ReportService.getConceptStatusReport()
+    .then(res => {
+      this.chartConceptStatus = {
+        labels: [],
+        datasets: [{
+          data: [],
+          backgroundColor: [],
+          hoverBackgroundColor: []
+        }]
+      }
+      for (const status of res.data){
+        this.chartConceptStatus.labels.push(status.label);
+        this.chartConceptStatus.datasets[0].data.push(status.count)
+      }
+      const length = Object.keys(res.data).length;
+      const bgs = palette('tol-rainbow', length);
+      const bgsFixed = bgs.map(function(color:string){return '#' + color} )
+      const hovers = palette('tol-dv', length);
+      const hoversFixed = hovers.map(function(color:string){return '#' + color})
+      this.chartConceptStatus.datasets[0].backgroundColor = bgsFixed;
+      this.chartConceptStatus.datasets[0].hoverBackgroundColor = hoversFixed;
+    })
   }
-
-  chartConceptSchemes = {
-    // labels: ["Barts Cerner code", "CTV3 Code", "Discovery code", "EMIS local code", "Homerton Cerner code", "ICD10 code", "OPCS4 code", "Read 2 code", "Snomed-CT code", "TPP local codes", "Term based code"],
-    labels: ["Snomed-CT code", "EMIS local code", "CTV3 Code", "Read 2 code", "TPP local codes", "ICD10 code", "Term based code", "OPCS4 code", "Discovery code", "N/A", "Barts Cerner code"],
-    datasets: [
-      {
-        data: [1029846, 1015779, 276841, 156192, 18902, 17934, 12079, 11251, 1972, 145, 5],
-        backgroundColor: ["#00876c", "#429a71", "#6aac77", "#8fbe7e", "#b4cf87", "#d9e094", "#fff1a3", "#fbd687", "#f7ba70", "#f29d5f", "#eb7f54", "#e15f50", "#d43d51"],
-        hoverBackgroundColor: ["#00876c", "#3a966b", "#5da46a", "#7eb269", "#a1bf6a", "#c4ca6d", "#e8d575", "#eabe61", "#eaa653", "#e98d4b", "#e57449", "#de594c", "#d43d51"]
-      }
-    ]
-  };
-
-  chartConceptStatus = {
-    labels: ["Active", "Draft", "Inactive"],
-    datasets: [
-      {
-        data: [2220887, 129658, 283694],
-        backgroundColor: ["#00876c", "#fff1a3","#d43d51"],
-        hoverBackgroundColor: ["#00876c", "#e8d575", "#d43d51"]
-      }
-    ]
-  };
 
   tabledata = [
     {label: "Snomed-CT code", total: 1029846},
