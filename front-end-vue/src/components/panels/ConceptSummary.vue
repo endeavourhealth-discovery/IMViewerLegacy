@@ -23,11 +23,10 @@
           <p><strong>Scheme:</strong> {{ concept.scheme.name }}</p>
           <p><strong>Type:</strong> {{ concept.conceptType }}</p>
           <p><strong>Definition:</strong></p>
-          <ScrollPanel style="width: 100%; height: 100px" class="custom">
-            <div v-for="(item, index) in definitionDisplay" :key="item">
-              {{ index !== definitionDisplay.length - 1 ? item + ";" : item }}
-            </div>
-          </ScrollPanel>
+          <Definition
+            :definition="this.definitionText"
+            style="width: 95%; height: 100px;"
+          />
         </div>
         <EditDialog
           @closeDialog="closeDialog"
@@ -44,11 +43,11 @@
 import { Options, Vue } from "vue-class-component";
 import ConceptService from "@/services/ConceptService";
 import EditDialog from "@/components/edit/EditDialog.vue";
-import store from "@/store/index";
 import { mapState } from "vuex";
+import Definition from "./Definition.vue";
 
 @Options({
-  components: { EditDialog },
+  components: { EditDialog, Definition },
   prop: {},
   computed: mapState(["conceptAggregate"]),
   watch: {
@@ -82,10 +81,6 @@ export default class ConceptSummary extends Vue {
       }
     }
   ];
-
-  get definitionDisplay() {
-    return this.definitionText.split(";");
-  }
 
   get editorConcept() {
     return this.editDialogView ? this.concept : {};
