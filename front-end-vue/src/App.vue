@@ -1,53 +1,17 @@
 <template>
   <div class="layout-wrapper layout-static">
-    <transition name="layout-sidebar">
-      <div class="layout-sidebar layout-sidebar-dark">
-        <div class="layout-menu-container p-mt-6">
-          <div class="p-grid" style="text-align: center">
-            <div class="p-col-12" v-bind:class="{ active: isActive('Home') }">
-              <font-awesome-icon
-                class="sidebutton"
-                :icon="['fas', 'home']"
-                size="4x"
-                style="color: lightgrey; padding: 5px"
-                @click="$router.push({ name: 'Home' })"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </transition>
-
-    <div class="layout-main">
-      <div class="home">
-        <router-view />
-      </div>
-    </div>
+    <router-view />
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import Dashboard from "@/components/Dashboard.vue"; // @ is an alias to /src
-import Header from "@/components/Header.vue";
-import SidebarControl from "@/components/sidebar/SidebarControl.vue";
-import store from "@/store/index";
 
 @Options({
-  components: {
-    Dashboard,
-    Header,
-    SidebarControl
-  }
+  name: 'App'
 })
 export default class App extends Vue {
-  isActive(item: string) {
-    if (this.$route.name == item) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+
 }
 </script>
 
@@ -62,11 +26,4 @@ body {
   text-align: center;
 }
 
-.sidebutton {
-  cursor: pointer;
-}
-
-.layout-sidebar .active .sidebutton {
-  color: grey !important;
-}
 </style>
