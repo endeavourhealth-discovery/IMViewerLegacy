@@ -14,9 +14,9 @@
           <InputText id="fieldUsername" type="text" v-model="username" />
         </div>
         <div class="p-field">
-          <label for="fieldEmail">Email Address</label>
+          <label for="fieldEmail1">Email Address</label>
           <div class="p-d-flex p-flex-row p-ai-center">
-            <InputText id="fieldEmail" type="text" v-model="email1" v-on:focus="setShowEmail1Notice(true)" v-on:blur="setShowEmail1Notice(false)"/>
+            <InputText id="fieldEmail1" type="text" v-model="email1" v-on:focus="setShowEmail1Notice(true)" v-on:blur="setShowEmail1Notice(false)"/>
             <i v-if="showEmail1Notice && email1Verified" class="pi pi-check-circle" style="color: #439446; fontSize: 2em" />
             <i v-if="showEmail1Notice && !email1Verified" class="pi pi-times-circle" style="color: #e60017; fontSize: 2em" />
           </div>

@@ -52,9 +52,39 @@ describe("register.vue prefilled", () => {
   it("should render data to form", async () => {
     const userNameField = wrapper.find("#fieldUsername");
     let userNameInput = userNameField.element as HTMLInputElement;
+    const emailField = wrapper.find("#fieldEmail1");
+    let email1Input = emailField.element as HTMLInputElement;
+    const email2Field = wrapper.find("#fieldEmail2");
+    let email2Input = email2Field.element as HTMLInputElement;
+    const firstNameField = wrapper.find("#fieldFirstName");
+    let firstNameInput = firstNameField.element as HTMLInputElement;
+    const lastNameField = wrapper.find("#fieldLastName");
+    let lastNameInput = lastNameField.element as HTMLInputElement;
+    const password1Field = wrapper.find("#fieldPassword1");
+    let password1Input = password1Field.element as HTMLInputElement;
+    const password2Field = wrapper.find("#fieldPassword2");
+    let password2Input = password2Field.element as HTMLInputElement;
     await wrapper.vm.$nextTick();
     expect(userNameField.exists()).toBe(true);
     expect(userNameField.element.id).toBe('fieldUsername');
     expect(userNameInput.value).toBe("DevTest");
+    expect(emailField.exists()).toBe(true);
+    expect(emailField.element.id).toBe('fieldEmail1');
+    expect(email1Input.value).toBe("devtest@ergo.co.uk");
+    expect(email2Field.exists()).toBe(true);
+    expect(email2Field.element.id).toBe('fieldEmail2');
+    expect(email2Input.value).toBe("devtest@ergo.co.uk");
+    expect(firstNameField.exists()).toBe(true);
+    expect(firstNameField.element.id).toBe('fieldFirstName');
+    expect(firstNameInput.value).toBe("John");
+    expect(lastNameField.exists()).toBe(true);
+    expect(lastNameField.element.id).toBe('fieldLastName');
+    expect(lastNameInput.value).toBe("Doe");
+    expect(password1Field.exists()).toBe(true);
+    expect(password1Field.element.id).toBe('fieldPassword1');
+    expect(password1Input.value).toBe("12345678");
+    expect(password2Field.exists()).toBe(true);
+    expect(password2Field.element.id).toBe('fieldPassword2');
+    expect(password2Input.value).toBe("12345678");
   })
 })
