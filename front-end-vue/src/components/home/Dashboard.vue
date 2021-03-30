@@ -112,6 +112,12 @@ const palette = require("../../../node_modules/google-palette");
         this.setGraphHeight(newValue);
       }
     },
+    windowWidth: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.setLegendOptions(newValue);
+      }
+    }
   }
 })
 export default class Dashboard extends Vue {
@@ -126,6 +132,7 @@ export default class Dashboard extends Vue {
     }
   };
   windowHeight = 0;
+  windowWidth = 0;
   graphHeight = 200;
 
   mounted(){
@@ -217,6 +224,7 @@ export default class Dashboard extends Vue {
     })
 
     this.windowHeight = window.innerHeight;
+    this.windowWidth = window.innerWidth;
 
   }
 
@@ -226,6 +234,7 @@ export default class Dashboard extends Vue {
 
   onResize(){
     this.windowHeight = window.innerHeight;
+    this.windowWidth = window.innerWidth;
   }
 
   setGraphHeight(windowHeight: number){
@@ -233,6 +242,9 @@ export default class Dashboard extends Vue {
     const card = document.getElementById('module-card');
     if (header && card){
       this.graphHeight = Math.floor((windowHeight - header.clientHeight - card.clientHeight)/16)
+      if (this.graphHeight < 38){
+        this.graphHeight = 38 //minimum height for graph to render
+      }
     } else {
       this.graphHeight = 100;
     }
@@ -241,7 +253,7 @@ export default class Dashboard extends Vue {
   colorLighter(color: string){
     const rgbColor = this.hexToRgb(color);
     if (rgbColor){
-      const rDiff = (255 - rgbColor.r) * 0.5;
+      const rDiff = (255 - rgbColor.r) * 0.5; //0.5 = 50% lighter than original colour
       const gDiff = (255 - rgbColor.g) * 0.5;
       const bDiff = (255 - rgbColor.b) * 0.5;
       const newHex = this.rgbToHex(Math.round(rgbColor.r + rDiff), Math.round(rgbColor.g + gDiff), Math.round(rgbColor.b + bDiff))
@@ -265,6 +277,30 @@ export default class Dashboard extends Vue {
 
   rgbToHex(r:number, g:number, b:number) {
     return "#" + this.componentToHex(r) + this.componentToHex(g) + this.componentToHex(b);
+  }
+
+  setLegendOptions(width: number){
+    if (width < 1364){
+      this.chartOptions = {
+        legend: {
+          position: 'right',
+          labels: {
+            boxWidth: 20,
+            fontSize: 10
+          }
+        }
+      }
+    } else {
+      this.chartOptions = {
+        legend: {
+          position: 'right',
+          labels: {
+            boxWidth: 40,
+            fontSize: 12
+          }
+        }
+      }
+    }
   }
 }
 </script>
