@@ -75,4 +75,46 @@ describe("verifyIsName", () => {
     const name = "";
     expect(verifyIsName(name)).toBe(false);
   })
+
+  it("should fail if name contains non alphabetic characters", () => {
+    const name = "John&Doe";
+    expect(verifyIsName(name)).toBe(false);
+  })
+
+  it("should fail with whitespace", () => {
+    const name = "John Doe";
+    expect(verifyIsName(name)).toBe(false);
+  })
+
+  it("should fail with numbers", () => {
+    const name = "John2";
+    expect(verifyIsName(name)).toBe(false)
+  })
+
+  it("should pass with valid name", () => {
+    const name = "John";
+    expect(verifyIsName(name)).toBe(true);
+  })
+
+  it("should allow hyphens in the middle of names", () => {
+    const name = "Mary-Jane";
+    expect(verifyIsName(name)).toBe(true);
+  })
+
+  it("should not allow hyphens as end characters", () => {
+    const name = "-mary";
+    const name2 = "mary-";
+    expect(verifyIsName(name)).toBe(false);
+    expect(verifyIsName(name)).toBe(false);
+  })
+
+  it("should allow apostrophies as second character", () => {
+    const name = "O'Keith";
+    expect(verifyIsName(name)).toBe(true);
+  })
+
+  it("should not allow hyphens anywhere else", () => {
+    const name = "'''''''''";
+    expect(verifyIsName(name)).toBe(false);
+  })
 })

@@ -25,7 +25,7 @@ export function verifyEmailsMatch(email1: string, email2: string){
 }
 
 export function verifyIsName(name: string){
-  if (name !== "" && /^[a-zA-Z]+$/.test(name)){
+  if (name !== "" && /^[a-zA-Z]'?[a-zA-Z]+-?[a-zA-Z]+$/.test(name)){
     return true;
   } else {
     return false
