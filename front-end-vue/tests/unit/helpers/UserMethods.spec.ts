@@ -70,4 +70,9 @@ describe("verifyPasswordsMatch", () => {
   })
 })
 
-
+describe("verifyIsName", () => {
+  it("should fail if empty", () => {
+    const name = "";
+    expect(verifyIsName(name)).toBe(false);
+  })
+})
