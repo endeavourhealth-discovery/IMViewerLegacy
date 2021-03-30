@@ -9,7 +9,7 @@ export function verifyIsEmail(email: any){
 }
 
 export function verifyPasswordsMatch(password1: string, password2:string){
-  if (password1 === password2){
+  if (password1 !== "" && password2 !== "" && password1 === password2){
     return true;
   } else {
     return false;
@@ -17,7 +17,7 @@ export function verifyPasswordsMatch(password1: string, password2:string){
 }
 
 export function verifyEmailsMatch(email1: string, email2: string){
-  if (email1.toLowerCase() === email2.toLowerCase()){
+  if (email1 !== "" && email2 !== "" && email1.toLowerCase() === email2.toLowerCase()){
     return true;
   } else {
     return false;
