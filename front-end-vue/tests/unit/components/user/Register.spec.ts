@@ -113,4 +113,40 @@ describe("register.vue prefilled", () => {
     expect(wrapper.vm.email2).toBe("devtest@ergo.co.uk");
     expect(wrapper.vm.emailsMatch).toBe(true);
   })
+
+  it("should check password strength __ fail", async () => {
+    wrapper.vm.password1 = "1234";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.password1).toBe("1234");
+    expect(wrapper.vm.passwordStrength).toBe(PasswordStrength.fail);
+  })
+
+  it("should check password strength __ weak", async () => {
+    wrapper.vm.password1 = "12345678";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.password1).toBe("12345678");
+    expect(wrapper.vm.passwordStrength).toBe(PasswordStrength.weak);
+  })
+
+  it("should check password strength __ medium", async () => {
+    wrapper.vm.password1 = "1234abcd";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.password1).toBe("1234abcd");
+    expect(wrapper.vm.passwordStrength).toBe(PasswordStrength.medium);
+  })
+
+  it("should check password strength __ strong", async () => {
+    wrapper.vm.password1 = "1234ABc%";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.password1).toBe("1234ABc%");
+    expect(wrapper.vm.passwordStrength).toBe(PasswordStrength.strong);
+  })
+
+  it("should check passwords match __ fail", async () => {
+    wrapper.vm.password2 = "12345679";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.password1).toBe("12345678");
+    expect(wrapper.vm.password2).toBe("12345679");
+    expect(wrapper.vm.passwordsMatch).toBe(false);
+  })
 })
