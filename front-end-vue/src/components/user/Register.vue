@@ -67,7 +67,7 @@ import { User } from "@/models/User";
 import store from "@/store/index";
 import { PasswordStrength } from "@/models/PasswordStrength";
 import Swal from 'sweetalert2';
-import { verifyIsEmail, verifyPasswordsMatch, verifyEmailsMatch, verifyIsName, checkPasswordStrength } from "@/helpers/UserMethods";
+import { verifyIsUsername, verifyIsEmail, verifyPasswordsMatch, verifyEmailsMatch, verifyIsName, checkPasswordStrength } from "@/helpers/UserMethods";
 import AuthService from "@/services/AuthService";
 
 @Options({
@@ -123,6 +123,7 @@ export default class Register extends Vue{
   showEmail1Notice = false;
   showEmail2Notice = false;
   showPassword2Notice = false;
+  showUsernameNotice = false;
 
   setShowEmail1Notice(result: boolean){
     this.showEmail1Notice = result;
@@ -157,6 +158,13 @@ export default class Register extends Vue{
             } else {
               this.clearForm()
             }
+          })
+        } else if (res.status === 409) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Username already taken. Please pick another username",
+            confirmButtonText: "Close"
           })
         } else {
           Swal.fire({
@@ -212,6 +220,7 @@ export default class Register extends Vue{
 
   allVerified() {
     if (
+      verifyIsUsername(this.username) &&
       verifyIsEmail(this.email1) &&
       verifyIsEmail(this.email2) &&
       verifyEmailsMatch(this.email1, this.email2) &&

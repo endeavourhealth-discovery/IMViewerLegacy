@@ -25,10 +25,18 @@ export function verifyEmailsMatch(email1: string, email2: string){
 }
 
 export function verifyIsName(name: string){
-  if (/^[a-zA-Z]+$/.test(name)){
+  if (name !== "" && /^[a-zA-Z]+$/.test(name)){
     return true;
   } else {
     return false
+  }
+}
+
+export function verifyIsUsername(name: string){
+  if (name !== "" && /^[a-zA-Z0-9]/.test(name)){
+    return true;
+  } else {
+    return false;
   }
 }
 
