@@ -201,6 +201,8 @@ describe("register.vue prefilled", () => {
     expect(wrapper.vm.showEmail1Notice).toBe(false);
     expect(wrapper.vm.showEmail2Notice).toBe(false);
     expect(wrapper.vm.showPassword2Notice).toBe(false);
+    expect(wrapper.vm.showFirstNameNotice).toBe(false);
+    expect(wrapper.vm.showLastNameNotice).toBe(false);
   })
 
   it("should verify form ready to submit __ username ___ fail", async () => {

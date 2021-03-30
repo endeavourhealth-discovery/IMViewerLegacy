@@ -23,16 +23,18 @@
         </div>
         <div class="p-field">
           <label for="fieldEmail2">Confirm Email Address</label>
-          <InputText id="fieldEmail2" type="text" v-model="email2" v-on:blur="setShowEmail2Notice()" />
+          <InputText id="fieldEmail2" type="text" v-model="email2" v-on:blur="setShowEmail2Notice" />
           <InlineMessage v-if="showEmail2Notice" severity="error">Email addresses do not match!</InlineMessage>
         </div>
         <div class="p-field">
           <label for="fieldFirstName">First Name</label>
-          <InputText id="fieldFirstName" type="text" v-model="firstName"/>
+          <InputText id="fieldFirstName" type="text" v-model="firstName" v-on:blur="setShowFirstNameNotice" />
+          <InlineMessage v-if="showFirstNameNotice" severity="error">First name contains unexpected characters. A-Z and hyphens only allowed e.g."Mary-Anne"</InlineMessage>
         </div>
         <div class="p-field">
           <label for="fieldLastName">Last Name</label>
-          <InputText id="fieldLastName" type="text" v-model="lastName"/>
+          <InputText id="fieldLastName" type="text" v-model="lastName" v-on:blur="setShowLastNameNotice" />
+          <InlineMessage v-if="showLastNameNotice" severity="error">Last name contains unexpected characters. A-Z, apostropies and hyphens only allowed e.g."O'Keith-Smith"</InlineMessage>
         </div>
         <div class="p-field">
           <label for="fieldPassword1">Password</label>
@@ -92,6 +94,18 @@ import AuthService from "@/services/AuthService";
         this.emailsMatch = verifyEmailsMatch(this.email1, this.email2);
       }
     },
+    firstName: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.firstNameVerified = verifyIsName(newValue);
+      }
+    },
+    lastName: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.lastNameVerified = verifyIsName(newValue);
+      }
+    },
     password1: {
       immediate: true,
       handler(newValue, oldValue){
@@ -104,18 +118,19 @@ import AuthService from "@/services/AuthService";
         this.passwordsMatch = verifyPasswordsMatch(this.password1, this.password2);
       }
     },
-
   }
 })
 
 export default class Register extends Vue{
   username = "";
   email1 = "";
-  email1Verified = false
+  email1Verified = false;
   email2 = "";
-  emailsMatch = false
+  emailsMatch = false;
   firstName = "";
+  firstNameVerified = false;
   lastName = "";
+  lastNameVerified = false;
   password1 = "";
   password2 = "";
   passwordStrength: PasswordStrength = PasswordStrength.fail;
@@ -124,6 +139,8 @@ export default class Register extends Vue{
   showEmail2Notice = false;
   showPassword2Notice = false;
   showUsernameNotice = false;
+  showFirstNameNotice = false;
+  showLastNameNotice = false;
 
   setShowEmail1Notice(result: boolean){
     this.showEmail1Notice = result;
@@ -135,6 +152,14 @@ export default class Register extends Vue{
 
   setShowPassword2Notice(){
     this.showPassword2Notice = this.passwordsMatch? false: true;
+  }
+
+  setShowFirstNameNotice(){
+    this.showFirstNameNotice = this.firstNameVerified? false: true;
+  }
+
+  setShowLastNameNotice(){
+    this.showLastNameNotice = this.lastNameVerified? false: true;
   }
 
   handleSubmit(){
@@ -216,6 +241,8 @@ export default class Register extends Vue{
     this.showEmail1Notice = false;
     this.showEmail2Notice = false;
     this.showPassword2Notice = false;
+    this.showFirstNameNotice = false;
+    this.showLastNameNotice = false;
   }
 
   allVerified() {
