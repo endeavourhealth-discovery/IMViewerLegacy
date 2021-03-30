@@ -280,4 +280,9 @@ describe("register.vue prefilled", () => {
     const allVerifiedResult = wrapper.vm.allVerified();
     expect(allVerifiedResult).toBe(false);
   })
+
+  it("should verify form ready to submit __ pass", async () => {
+    const allVerifiedResult = wrapper.vm.allVerified();
+    expect(allVerifiedResult).toBe(true);
+  })
 })
