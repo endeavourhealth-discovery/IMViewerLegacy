@@ -11,34 +11,34 @@
       <div class="p-fluid register-form">
         <div class="p-field">
           <label for="fieldUsername">Username</label>
-          <InputText id="fieldUsername" type="text" v-model="username" />
+          <InputText id="fieldUsername" type="text" maxlength="50" v-model="username" />
         </div>
         <div class="p-field">
           <label for="fieldEmail1">Email Address</label>
           <div class="p-d-flex p-flex-row p-ai-center">
-            <InputText id="fieldEmail1" type="text" v-model="email1" v-on:focus="setShowEmail1Notice(true)" v-on:blur="setShowEmail1Notice(false)"/>
+            <InputText id="fieldEmail1" type="text" maxlength="50" v-model="email1" v-on:focus="setShowEmail1Notice(true)" v-on:blur="setShowEmail1Notice(false)"/>
             <i v-if="showEmail1Notice && email1Verified" class="pi pi-check-circle" style="color: #439446; fontSize: 2em" />
             <i v-if="showEmail1Notice && !email1Verified" class="pi pi-times-circle" style="color: #e60017; fontSize: 2em" />
           </div>
         </div>
         <div class="p-field">
           <label for="fieldEmail2">Confirm Email Address</label>
-          <InputText id="fieldEmail2" type="text" v-model="email2" v-on:blur="setShowEmail2Notice" />
+          <InputText id="fieldEmail2" type="text" maxlength="50" v-model="email2" v-on:blur="setShowEmail2Notice" />
           <InlineMessage v-if="showEmail2Notice" severity="error">Email addresses do not match!</InlineMessage>
         </div>
         <div class="p-field">
           <label for="fieldFirstName">First Name</label>
-          <InputText id="fieldFirstName" type="text" v-model="firstName" v-on:blur="setShowFirstNameNotice" />
+          <InputText id="fieldFirstName" type="text" maxlength="50" v-model="firstName" v-on:blur="setShowFirstNameNotice" />
           <InlineMessage v-if="showFirstNameNotice" severity="error">First name contains unexpected characters. A-Z and hyphens only allowed e.g."Mary-Anne"</InlineMessage>
         </div>
         <div class="p-field">
           <label for="fieldLastName">Last Name</label>
-          <InputText id="fieldLastName" type="text" v-model="lastName" v-on:blur="setShowLastNameNotice" />
+          <InputText id="fieldLastName" type="text" maxlength="50" v-model="lastName" v-on:blur="setShowLastNameNotice" />
           <InlineMessage v-if="showLastNameNotice" severity="error">Last name contains unexpected characters. A-Z, apostropies and hyphens only allowed e.g."O'Keith-Smith"</InlineMessage>
         </div>
         <div class="p-field">
           <label for="fieldPassword1">Password</label>
-          <InputText id="fieldPassword1" type="password" aria-describedby="password-help" v-model="password1"/>
+          <InputText id="fieldPassword1" type="password" maxlength="50" aria-describedby="password-help" v-model="password1"/>
           <InlineMessage v-if="passwordStrength === 'strong'" severity="success">Password Strength: Strong</InlineMessage>
           <InlineMessage v-if="passwordStrength === 'medium'" severity="success">Password Strength: Medium</InlineMessage>
           <InlineMessage v-if="passwordStrength === 'weak'" severity="warn">Password Strength: Weak</InlineMessage>
@@ -47,7 +47,7 @@
         </div>
         <div class="p-field">
           <label for="fieldPassword2">Confirm Password</label>
-          <InputText id="fieldPassword2" type="password" v-model="password2" v-on:blur="setShowPassword2Notice" />
+          <InputText id="fieldPassword2" type="password" maxlength="50" v-model="password2" v-on:blur="setShowPassword2Notice" />
           <InlineMessage v-if="showPassword2Notice" severity="error">Passwords do not match!</InlineMessage>
         </div>
         <div class="p-d-flex p-flex-row p-jc-center">
