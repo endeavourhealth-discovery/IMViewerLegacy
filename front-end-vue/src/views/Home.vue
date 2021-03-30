@@ -3,7 +3,7 @@
     <div class="layout-main">
       <div class="home">
         <div class="p-grid">
-          <div class="p-col-12 p-d-flex p-flex-row">
+          <div class="p-col-12 p-d-flex p-flex-row" id="header-home">
             <div class="header-grow"><Header /></div>
             <div class="user-menu"><Menubar :model="getItems()" /></div>
           </div>
