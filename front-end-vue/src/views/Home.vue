@@ -56,7 +56,7 @@ export default class Home extends Vue{
     store.dispatch("authenticateCurrentUser")
 
     if (this.$route.name === "Home"){
-      store.commit("updateConceptIri", "owl:Thing");
+      store.commit("updateConceptIri", "http://www.w3.org/2002/07/owl#Thing");
     } else if (this.$route.name === "Concept") {
       store.commit("updateConceptIri", this.$route.params.selectedIri as string);
     }
