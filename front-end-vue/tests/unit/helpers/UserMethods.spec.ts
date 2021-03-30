@@ -118,3 +118,10 @@ describe("verifyIsName", () => {
     expect(verifyIsName(name)).toBe(false);
   })
 })
+
+describe("verifyIsUsername", () => {
+  it("should fail if empty", () => {
+    const username = "";
+    expect(verifyIsUsername(username)).toBe(false);
+  })
+})
