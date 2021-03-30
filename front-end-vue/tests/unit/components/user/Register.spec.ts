@@ -203,8 +203,79 @@ describe("register.vue prefilled", () => {
     expect(wrapper.vm.showPassword2Notice).toBe(false);
   })
 
-  it("should verify form ready to submit __ fail", async () => {
+  it("should verify form ready to submit __ username ___ fail", async () => {
     wrapper.vm.username = "";
+    await wrapper.vm.$nextTick();
+    const allVerifiedResult = wrapper.vm.allVerified();
+    expect(allVerifiedResult).toBe(false);
+  })
+
+  it("should verify form ready to submit __ email1 ___ fail", async () => {
+    wrapper.vm.email1 = "";
+    await wrapper.vm.$nextTick();
+    const allVerifiedResult = wrapper.vm.allVerified();
+    expect(allVerifiedResult).toBe(false);
+  })
+
+  it("should verify form ready to submit __ email2 ___ fail", async () => {
+    wrapper.vm.email2 = "";
+    await wrapper.vm.$nextTick();
+    const allVerifiedResult = wrapper.vm.allVerified();
+    expect(allVerifiedResult).toBe(false);
+  })
+
+  it("should verify form ready to submit __ firstName ___ fail", async () => {
+    wrapper.vm.firstName = "";
+    await wrapper.vm.$nextTick();
+    const allVerifiedResult = wrapper.vm.allVerified();
+    expect(allVerifiedResult).toBe(false);
+  })
+
+  it("should verify form ready to submit __ lastname ___ fail", async () => {
+    wrapper.vm.lastName = "";
+    await wrapper.vm.$nextTick();
+    const allVerifiedResult = wrapper.vm.allVerified();
+    expect(allVerifiedResult).toBe(false);
+  })
+
+  it("should verify form ready to submit __ password1 ___ fail", async () => {
+    wrapper.vm.password1 = "";
+    await wrapper.vm.$nextTick();
+    const allVerifiedResult = wrapper.vm.allVerified();
+    expect(allVerifiedResult).toBe(false);
+  })
+
+  it("should verify form ready to submit __ password2 ___ fail", async () => {
+    wrapper.vm.username = "";
+    await wrapper.vm.$nextTick();
+    const allVerifiedResult = wrapper.vm.allVerified();
+    expect(allVerifiedResult).toBe(false);
+  })
+
+  it("should verify form ready to submit __ emailVerified ___ fail", async () => {
+    wrapper.vm.email1 = "devtest.ergo.co.uk"
+    await wrapper.vm.$nextTick();
+    const allVerifiedResult = wrapper.vm.allVerified();
+    expect(allVerifiedResult).toBe(false);
+  })
+
+  it("should verify form ready to submit __ emailsMatch ___ fail", async () => {
+    wrapper.vm.email2 = "devtest@ergo.com"
+    await wrapper.vm.$nextTick();
+    const allVerifiedResult = wrapper.vm.allVerified();
+    expect(allVerifiedResult).toBe(false);
+  })
+
+  it("should verify form ready to submit __ passwordStrength ___ fail", async () => {
+    wrapper.vm.password1 = "1234";
+    wrapper.vm.password2 = "1234";
+    await wrapper.vm.$nextTick();
+    const allVerifiedResult = wrapper.vm.allVerified();
+    expect(allVerifiedResult).toBe(false);
+  })
+
+  it("should verify form ready to submit __ passwordsmatch ___ fail", async () => {
+    wrapper.vm.password2 = "1234"
     await wrapper.vm.$nextTick();
     const allVerifiedResult = wrapper.vm.allVerified();
     expect(allVerifiedResult).toBe(false);
