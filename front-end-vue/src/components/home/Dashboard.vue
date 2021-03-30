@@ -283,7 +283,7 @@ export default class Dashboard extends Vue {
     if (width < 1364){
       this.chartOptions = {
         legend: {
-          position: 'right',
+          position: 'bottom',
           labels: {
             boxWidth: 20,
             fontSize: 10
