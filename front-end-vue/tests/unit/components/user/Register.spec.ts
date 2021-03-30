@@ -87,4 +87,30 @@ describe("register.vue prefilled", () => {
     expect(password2Field.element.id).toBe('fieldPassword2');
     expect(password2Input.value).toBe("12345678");
   })
+
+  it("should fail emailVerified with incorrect email format", async () => {
+    wrapper.vm.email1 = "johndoe.co.uk";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.email1).toBe("johndoe.co.uk")
+    expect(wrapper.vm.email1Verified).toBe(false);
+  })
+
+  it("should pass emailVerified with correct email format", async () => {
+    expect(wrapper.vm.email1).toBe("devtest@ergo.co.uk");
+    expect(wrapper.vm.email1Verified).toBe(true);
+  })
+
+  it("should check if emails match __ false", async () => {
+    wrapper.vm.email2 = "devtest.co.uk";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.email1).toBe("devtest@ergo.co.uk");
+    expect(wrapper.vm.email2).toBe("devtest.co.uk");
+    expect(wrapper.vm.emailsMatch).toBe(false);
+  })
+
+  it("should check if emails match __ true", async () => {
+    expect(wrapper.vm.email1).toBe("devtest@ergo.co.uk");
+    expect(wrapper.vm.email2).toBe("devtest@ergo.co.uk");
+    expect(wrapper.vm.emailsMatch).toBe(true);
+  })
 })
