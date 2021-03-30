@@ -8,7 +8,7 @@ import AuthService from "@/services/AuthService";
 export default createStore({
   state: {
     loading: new Map<string, boolean>(),
-    conceptIri: "owl:Thing",
+    conceptIri: "http://www.w3.org/2002/07/owl#Thing",
     conceptAggregate: {} as any,
     mapped: [],
     usages: [],
