@@ -33,7 +33,7 @@ export function verifyIsName(name: string){
 }
 
 export function verifyIsUsername(name: string){
-  if (name !== "" && /^[a-zA-Z0-9]/.test(name)){
+  if (name !== "" && /^[-_a-zA-Z0-9]+$/.test(name)){
     return true;
   } else {
     return false;

@@ -124,4 +124,21 @@ describe("verifyIsUsername", () => {
     const username = "";
     expect(verifyIsUsername(username)).toBe(false);
   })
+
+  it("should fail with whitespace", () => {
+    const username = "John Doe";
+    expect(verifyIsUsername(username)).toBe(false);
+  })
+
+  it("should fail with non - _ characters", () => {
+    const username = "J()&^$&*";
+    expect(verifyIsUsername(username)).toBe(false);
+  })
+
+  it("should allow '-' and '_' characters", () => {
+    const username = "john_doe";
+    const username2 = "john-doe";
+    expect(verifyIsUsername(username)).toBe(true);
+    expect(verifyIsUsername(username2)).toBe(true);
+  })
 })
