@@ -51,4 +51,12 @@ describe("userEdit.vue empty", () => {
     expect(email2Field.element.id).toBe('email2')
     expect(email2Input.value).toBe("john.doe@ergosoft.co.uk");
   })
+
+  it("transfers currentUser details into editable variables", () => {
+    expect(wrapper.vm.username).toBe(wrapper.vm.user.username);
+    expect(wrapper.vm.firstName).toBe(wrapper.vm.user.firstName);
+    expect(wrapper.vm.lastName).toBe(wrapper.vm.user.lastName);
+    expect(wrapper.vm.email1).toBe(wrapper.vm.user.email);
+    expect(wrapper.vm.email2).toBe(wrapper.vm.user.email);
+  })
 })

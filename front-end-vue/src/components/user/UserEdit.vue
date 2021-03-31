@@ -16,11 +16,13 @@
         </div>
         <div class="p-field">
           <label for="firstName">First Name</label>
-          <InputText id="firstName" type="text" :placeholder="user.firstName" v-model="firstName" />
+          <InputText id="firstName" type="text" :placeholder="user.firstName" v-model="firstName" v-on:blur="setShowFirstNameNotice" />
+          <InlineMessage v-if="showFirstNameNotice" severity="error">First name contains unexpected characters. A-Z and hyphens only allowed e.g."Mary-Anne"</InlineMessage>
         </div>
         <div class="p-field">
           <label for="lastName">Last Name</label>
-          <InputText id="lastName" type="text" :placeholder="user.lastName" v-model="lastName" />
+          <InputText id="lastName" type="text" :placeholder="user.lastName" v-model="lastName" v-on:blur="setShowLastNameNotice" />
+          <InlineMessage v-if="showLastNameNotice" severity="error">Last name contains unexpected characters. A-Z, apostropies and hyphens only allowed e.g."O'Keith-Smith"</InlineMessage>
         </div>
         <div class="p-field">
           <label for="email1">Email Address</label>
@@ -58,6 +60,9 @@
         </div>
         <div v-if="showPasswordEdit" class="p-d-flex p-flex-row p-jc-center p-field">
           <Button class="password-edit p-button-secondary" type="submit" label="Cancel Password Edit" v-on:click.prevent="editPasswordClicked(false)" />
+        </div>
+        <div class="p-d-flex p-flex-row p-jc-center p-field">
+          <Button class="form-reset p-button-warning" type="button" label="Reset" v-on:click.prevent="resetForm" />
         </div>
         <div class="p-d-flex p-flex-row p-jc-center">
           <Button class="user-edit" type="submit" label="Update" v-on:click.prevent="handleEditSubmit"/>
@@ -115,6 +120,18 @@ import AuthService from "@/services/AuthService";
         this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, this.passwordNew2);
       }
     },
+    firstName: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.firstNameVerified = verifyIsName(newValue);
+      }
+    },
+    lastName: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.lastNameVerified = verifyIsName(newValue);
+      }
+    },
   }
 })
 
@@ -123,7 +140,9 @@ export default class UserEdit extends Vue {
   isLoggedIn!: boolean;
   username = "";
   firstName = "";
+  firstNameVerified = false;
   lastName = "";
+  lastNameVerified = false;
   email1 = "";
   email2 = "";
   email1Verified = false;
@@ -137,6 +156,8 @@ export default class UserEdit extends Vue {
   showPasswordEdit = false;
   passwordsMatch = false;
   showPassword2Notice = false;
+  showFirstNameNotice = false;
+  showLastNameNotice = false;
 
   mounted() {
     if (this.user && this.isLoggedIn){
@@ -169,8 +190,16 @@ export default class UserEdit extends Vue {
     this.showPassword2Notice = this.passwordsMatch? false: true;
   }
 
+  setShowFirstNameNotice(){
+    this.showFirstNameNotice = this.firstNameVerified? false: true;
+  }
+
+  setShowLastNameNotice(){
+    this.showLastNameNotice = this.lastNameVerified? false: true;
+  }
+
   handleEditSubmit(){
-    if (this.showPasswordEdit && this.passwordsMatch && this.email1Verified && this.emailsMatch) {
+    if (this.showPasswordEdit && this.passwordsMatch && this.passwordStrength !== PasswordStrength.fail && this.allVerified()) {
       const updatedUser = new User(this.username, this.firstName, this.lastName, this.email1, this.passwordNew1);
       updatedUser.setId(this.user.id);
       AuthService.updateUser(updatedUser)
@@ -216,7 +245,7 @@ export default class UserEdit extends Vue {
         title: "Nothing to update",
         text: "Account details have not been edited"
       })
-    } else if (this.email1Verified && this.emailsMatch){
+    } else if (this.allVerified()){
       const updatedUser = new User(this.username, this.firstName, this.lastName, this.email1, "")
       updatedUser.setId(this.user.id);
       AuthService.updateUser(updatedUser)
@@ -249,32 +278,45 @@ export default class UserEdit extends Vue {
     }
   }
 
-  resetForm(){
-    return null; //finish once user is added
+  allVerified() {
+    if (
+      verifyIsEmail(this.email1) &&
+      verifyIsEmail(this.email2) &&
+      verifyEmailsMatch(this.email1, this.email2) &&
+      verifyIsName(this.firstName) &&
+      verifyIsName(this.lastName)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
-  // password1Changed(){
-  //   this.passwordStrength = checkPasswordStrength(this.passwordNew1);
-  // }
-
-  // password2Changed(){
-  //   this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, this.passwordNew2);
-  // }
-
-  // email1Changed(){
-  //   this.email1Verified = verifyIsEmail(this.email1);
-  // }
-
-  // email2Changed(){
-  //   this.emailsMatch = verifyEmailsMatch(this.email1, this.email2);
-  // }
-
+  resetForm(){
+    Swal.fire({
+      icon: "warning",
+      title: "Warning",
+      text: "Are you sure you want to reset this form? Any changes you have made will be lost!",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Reset"
+    })
+    .then((result) => {
+      if (result.isConfirmed){
+        this.username = this.user.username
+        this.firstName = this.user.firstName;
+        this.lastName = this.user.lastName;
+        this.email1 = this.user.email;
+        this.email2 = this.user.email;
+      }
+    })
+  }
 }
 </script>
 
 <style scoped>
 
-.user-edit, .password-edit, .password-edit {
+.user-edit, .password-edit, .form-reset {
   width: fit-content !important;
 }
 
