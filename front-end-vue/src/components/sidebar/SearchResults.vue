@@ -17,7 +17,7 @@
       dataKey="iri"
       class="p-datatable-sm"
       :scrollable="true"
-      scrollHeight="55vh"
+      scrollHeight="40vh"
       removableSort
       :paginator="true"
       paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
