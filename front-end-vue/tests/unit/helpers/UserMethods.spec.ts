@@ -141,4 +141,9 @@ describe("verifyIsUsername", () => {
     expect(verifyIsUsername(username)).toBe(true);
     expect(verifyIsUsername(username2)).toBe(true);
   })
+
+  it("should pass with alphabet and number combinations", () => {
+    const username = "Jo4n2345asdf";
+    expect(verifyIsUsername(username)).toBe(true);
+  })
 })

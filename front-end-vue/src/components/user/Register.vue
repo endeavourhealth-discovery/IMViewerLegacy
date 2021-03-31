@@ -11,7 +11,8 @@
       <div class="p-fluid register-form">
         <div class="p-field">
           <label for="fieldUsername">Username</label>
-          <InputText id="fieldUsername" type="text" maxlength="50" v-model="username" />
+          <InputText id="fieldUsername" type="text" maxlength="50" v-model="username" v-on:blur="setShowUsernameNotice" />
+          <InlineMessage v-if="showUsernameNotice" severity="error">Username contains unexpected characters. A-Z, 0-9 and hyphen/underscore(-_) only allowed e.g."John-Doe2"</InlineMessage>
         </div>
         <div class="p-field">
           <label for="fieldEmail1">Email Address</label>
@@ -79,7 +80,7 @@ import AuthService from "@/services/AuthService";
     username: {
       immediate: true,
       handler(newValue, oldValue){
-        this.username = newValue;
+        this.usernameVerified = verifyIsUsername(newValue);
       }
     },
     email1: {
@@ -123,6 +124,7 @@ import AuthService from "@/services/AuthService";
 
 export default class Register extends Vue{
   username = "";
+  usernameVerified = false;
   email1 = "";
   email1Verified = false;
   email2 = "";
@@ -141,6 +143,10 @@ export default class Register extends Vue{
   showUsernameNotice = false;
   showFirstNameNotice = false;
   showLastNameNotice = false;
+
+  setShowUsernameNotice(){
+    this.showUsernameNotice = this.usernameVerified? false: true;
+  }
 
   setShowEmail1Notice(result: boolean){
     this.showEmail1Notice = result;
