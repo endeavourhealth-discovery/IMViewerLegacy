@@ -1,5 +1,5 @@
 <template>
-  <div v-if="user" class="p-d-flex p-flex-row p-ai-center">
+  <div v-if="isLoggedIn" class="p-d-flex p-flex-row p-ai-center">
   <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-edit-card">
     <template #header>
       <i class="pi pi-fw pi-user-edit" style="fontSize: 50px; margin: 1em;" />
@@ -91,12 +91,6 @@ import AuthService from "@/services/AuthService";
     }
   },
   watch: {
-    username: {
-      immediate: true,
-      handler(newValue, oldValue){
-        this.username = newValue;
-      }
-    },
     email1: {
       immediate: true,
       handler(newValue, oldValue){
@@ -126,6 +120,7 @@ import AuthService from "@/services/AuthService";
 
 export default class UserEdit extends Vue {
   user!: User;
+  isLoggedIn!: boolean;
   username = "";
   firstName = "";
   lastName = "";
@@ -144,7 +139,7 @@ export default class UserEdit extends Vue {
   showPassword2Notice = false;
 
   mounted() {
-    if (this.user){
+    if (this.user && this.isLoggedIn){
       this.username = this.user.username
       this.firstName = this.user.firstName;
       this.lastName = this.user.lastName;
