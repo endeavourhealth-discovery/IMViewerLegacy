@@ -7,7 +7,7 @@ export class SearchRequest {
   termFilter!: string;
   statusFilter!: ConceptStatus[];
   typeFilter!: ConceptType[];
-  schemeFilter!: ConceptReference[];
+  schemeFilter!: string[];
   descendentFilter!: string[];
   markIfDescendentOf!: string[];
   sortBy!: SortBy;

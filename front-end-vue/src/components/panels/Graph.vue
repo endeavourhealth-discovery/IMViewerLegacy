@@ -16,6 +16,7 @@ import { mapState } from "vuex";
 import ConceptService from "@/services/ConceptService";
 import { HierarchyNode } from "d3";
 import GraphData from "../../models/GraphData";
+import {IM} from '@/vocabulary/IM';
 
 @Options({
   components: {},
@@ -23,7 +24,7 @@ import GraphData from "../../models/GraphData";
   watch: {
     async conceptAggregate(newValue, oldValue) {
       this.graphData = (
-        await ConceptService.getConceptGraph(newValue.concept.iri)
+        await ConceptService.getConceptGraph(newValue.concept[IM.IRI])
       ).data;
       this.root = d3.hierarchy(this.graphData);
       this.drawTree();
@@ -141,6 +142,7 @@ export default class Graph extends Vue {
       .attr("y", (d: any) => -(d.data.value + 5))
       .style("text-anchor", (d: any) => "end")
       .text((d: any) =>
+        d.parent?.data.name === "Properties" ? d.data.name : ""
         d.parent?.data.name === "Properties" ? d.data.name : ""
       );
 

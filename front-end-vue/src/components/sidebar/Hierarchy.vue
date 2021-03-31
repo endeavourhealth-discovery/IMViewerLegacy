@@ -18,6 +18,7 @@ import { Options, Vue } from "vue-class-component";
 import { mapState } from "vuex";
 import ConceptService from "@/services/ConceptService";
 import {RDFS} from '@/vocabulary/RDFS';
+import {IM} from '@/vocabulary/IM';
 
 interface TreeNode {
   key: string;
@@ -51,7 +52,7 @@ export default class Hierarchy extends Vue {
     let index = 1;
     const selectedConcept = this.createTreeNode(
       concept[RDFS.LABEL],
-      concept['@id'],
+      concept[IM.IRI],
       index,
       concept.hasChildren
     );
