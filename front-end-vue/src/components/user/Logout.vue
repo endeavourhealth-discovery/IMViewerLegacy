@@ -13,7 +13,9 @@
             <div class="p-text-left">Current User:</div>
           </div>
           <div class="p-field">
-            <div v-if="isLoggedIn" class="p-text-left p-text-capitalize">{{currentUser.username}}</div>
+            <div v-if="isLoggedIn" class="p-text-left p-text-capitalize">
+              <p id="username-display">{{currentUser.username}}</p>
+            </div>
             <div v-if="!isLoggedIn" class="p-text-left p-text-capitalize">Guest</div>
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
