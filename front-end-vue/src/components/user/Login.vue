@@ -11,7 +11,7 @@
         <div class="p-fluid login-form">
           <div class="p-field">
             <label for="fieldUsername">Username</label>
-            <InputText id="fieldUsername" type="text" v-model="username" />
+            <InputText id="fieldUsername" type="text" v-model="username" :placeholder="username" />
           </div>
           <div class="p-field">
             <label for="fieldPassword">Password</label>
@@ -35,7 +35,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
 import Swal from 'sweetalert2';
@@ -43,14 +43,23 @@ import AuthService from "@/services/AuthService";
 
 @Options({
   name: "Login",
-  components: {
-
+  computed: {
+    registeredUsername(){
+      return store.state.registeredUsername;
+    }
   }
 })
 
 export default class Login extends Vue {
+  registeredUsername!: string;
   username = "";
   password = "";
+
+  mounted(){
+    if (this.registeredUsername && this.registeredUsername !== ""){
+      this.username = this.registeredUsername;
+    }
+  }
 
   handleSubmit() {
     AuthService.signIn(this.username, this.password)
