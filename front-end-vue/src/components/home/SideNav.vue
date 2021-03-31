@@ -12,17 +12,33 @@
               @click="$router.push({ name: 'Home' })"
             />
           </div>
+          <div class="p-col-12" v-bind:class="{ active: isActive('Workflow') }">
+            <font-awesome-icon
+              class="sidebutton"
+              :icon="['fas', 'tasks']"
+              size="4x"
+              style="color: lightgrey; padding: 5px"
+            />
+          </div>
+          <div class="p-col-12" v-bind:class="{ active: isActive('Mapping') }">
+            <font-awesome-icon
+              class="sidebutton"
+              :icon="['fas', 'map']"
+              size="4x"
+              style="color: lightgrey; padding: 5px"
+            />
+          </div>
         </div>
       </div>
     </div>
   </transition>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import { Options, Vue } from "vue-class-component";
 
 @Options({
-  name: 'SideNav'
+  name: "SideNav"
 })
 export default class SideNav extends Vue {
   isActive(item: string) {
@@ -36,7 +52,6 @@ export default class SideNav extends Vue {
 </script>
 
 <style scoped>
-
 .p-button {
   width: 90%;
   text-align: center;
@@ -49,5 +64,4 @@ export default class SideNav extends Vue {
 .layout-sidebar .active .sidebutton {
   color: grey !important;
 }
-
 </style>

@@ -37,7 +37,7 @@
         <span>Search results</span>
       </template>
 
-      <div class="p-fluid p-grid">
+      <div class="p-fluid p-grid" style="height:100%;overflow:auto">
         <SearchResults />
         <Filters :search="search" />
       </div>
@@ -69,7 +69,7 @@ export default class SidebarControl extends Vue {
     searchRequest.sortBy = SortBy.Usage;
     searchRequest.page = 1;
     searchRequest.size = 100;
-    searchRequest.schemeFilter = store.state.filters.selectedSchemes;
+    searchRequest.schemeFilter = store.state.filters.selectedSchemes.map(s => s.iri);
     searchRequest.markIfDescendentOf = [
       ":DiscoveryCommonDataModel",
       ":SemanticConcept",
@@ -118,14 +118,8 @@ export default class SidebarControl extends Vue {
       if (type == "Folder") {
         searchRequest.typeFilter.push(ConceptType.Folder);
       }
-      if (type == "Term") {
-        searchRequest.typeFilter.push(ConceptType.Term);
-      }
       if (type == "Legacy") {
         searchRequest.typeFilter.push(ConceptType.Legacy);
-      }
-      if (type == "CategoryGroup") {
-        searchRequest.typeFilter.push(ConceptType.CategoryGroup);
       }
     });
 

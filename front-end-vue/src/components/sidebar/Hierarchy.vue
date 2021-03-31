@@ -17,6 +17,8 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { Options, Vue } from "vue-class-component";
 import { mapState } from "vuex";
 import ConceptService from "@/services/ConceptService";
+import {RDFS} from '@/vocabulary/RDFS';
+import {IM} from '@/vocabulary/IM';
 
 interface TreeNode {
   key: string;
@@ -35,7 +37,7 @@ interface TreeNode {
       this.createTree(newValue.concept, newValue.parents, newValue.children);
       this.$store.commit("updateHistory", {
         url: this.$route.fullPath,
-        conceptName: newValue.concept.name,
+        conceptName: newValue.concept[RDFS.LABEL],
         view: this.$route.name
       } as HistoryItem);
     }
@@ -49,8 +51,8 @@ export default class Hierarchy extends Vue {
   createTree(concept: any, parentHierarchy: any, children: any) {
     let index = 1;
     const selectedConcept = this.createTreeNode(
-      concept.name,
-      concept.iri,
+      concept[RDFS.LABEL],
+      concept[IM.IRI],
       index,
       concept.hasChildren
     );

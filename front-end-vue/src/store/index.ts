@@ -8,7 +8,7 @@ import AuthService from "@/services/AuthService";
 export default createStore({
   state: {
     loading: new Map<string, boolean>(),
-    conceptIri: "owl:Thing",
+    conceptIri: "http://www.w3.org/2002/07/owl#Thing",
     conceptAggregate: {} as any,
     mapped: [],
     usages: [],
@@ -22,15 +22,15 @@ export default createStore({
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
         {
-          iri: ":891071000252105",
+          iri: "http://endhealth.info/im#891071000252105",
           name: "Discovery code",
         },
         {
-          iri: ":891101000252101",
+          iri: "http://endhealth.info/im#891101000252101",
           name: "Snomed-CT code",
         },
         {
-          iri: ":891111000252103",
+          iri: "http://endhealth.info/im#891111000252103",
           name: "Term based code",
         },
       ],
@@ -44,9 +44,7 @@ export default createStore({
         "Record",
         "ValueSet",
         "Folder",
-        "Term",
         "Legacy",
-        "CategoryGroup",
       ],
     },
   },

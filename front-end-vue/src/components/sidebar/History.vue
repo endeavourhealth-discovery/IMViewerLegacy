@@ -4,6 +4,7 @@
     :options="history"
     optionLabel="conceptName"
     @click="navigate"
+    style="height:100%;overflow:auto"
   >
     <template #option="slotProps">
       <div>
@@ -26,9 +27,8 @@ export default class History extends Vue {
   selectedHistoryItem: HistoryItem = {} as HistoryItem;
 
   get history() {
-    const currentView = this.$route.name as string;
     const viewHistory = store.state.history.filter(obj => {
-      return obj.view === currentView;
+      return !!obj.conceptName;
     });
     return viewHistory;
   }
