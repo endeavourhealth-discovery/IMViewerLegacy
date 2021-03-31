@@ -22,11 +22,15 @@ describe("register.vue empty", () => {
   it("should start with all checks false/fail", () => {
     expect(wrapper.vm.email1Verified).toBe(false);
     expect(wrapper.vm.emailsMatch).toBe(false);
+    expect(wrapper.vm.firstNameVerified).toBe(false);
+    expect(wrapper.vm.lastNameVerified).toBe(false);
     expect(wrapper.vm.passwordStrength).toBe(PasswordStrength.fail);
     expect(wrapper.vm.passwordsMatch).toBe(false);
     expect(wrapper.vm.showEmail1Notice).toBe(false);
     expect(wrapper.vm.showEmail2Notice).toBe(false);
     expect(wrapper.vm.showPassword2Notice).toBe(false);
+    expect(wrapper.vm.showFirstNameNotice).toBe(false);
+    expect(wrapper.vm.showLastNameNotice).toBe(false);
   })
 })
 

@@ -11,30 +11,30 @@
       <div class="p-fluid p-d-flex p-flex-column p-jc-start user-edit-form">
         <div class="p-field">
           <label for="username">Username</label>
-          <InputText id="username" type="text" :placeholder="user.username" v-model="username" disabled/>
+          <InputText id="username" type="text" v-model="username" disabled/>
           <small id="user-help">Username cannot currently be changed</small>
         </div>
         <div class="p-field">
           <label for="firstName">First Name</label>
-          <InputText id="firstName" type="text" :placeholder="user.firstName" v-model="firstName" v-on:blur="setShowFirstNameNotice" />
+          <InputText id="firstName" type="text" v-model="firstName" v-on:blur="setShowFirstNameNotice" />
           <InlineMessage v-if="showFirstNameNotice" severity="error">First name contains unexpected characters. A-Z and hyphens only allowed e.g."Mary-Anne"</InlineMessage>
         </div>
         <div class="p-field">
           <label for="lastName">Last Name</label>
-          <InputText id="lastName" type="text" :placeholder="user.lastName" v-model="lastName" v-on:blur="setShowLastNameNotice" />
+          <InputText id="lastName" type="text" v-model="lastName" v-on:blur="setShowLastNameNotice" />
           <InlineMessage v-if="showLastNameNotice" severity="error">Last name contains unexpected characters. A-Z, apostropies and hyphens only allowed e.g."O'Keith-Smith"</InlineMessage>
         </div>
         <div class="p-field">
           <label for="email1">Email Address</label>
           <div class="p-d-flex p-flex-row p-ai-center">
-            <InputText id="email1" type="text" :placeholder="user.email" v-model="email1" v-on:focus="setShowEmail1Notice(true)" v-on:blur="setShowEmail1Notice(false)"/>
+            <InputText id="email1" type="text" v-model="email1" v-on:focus="setShowEmail1Notice(true)" v-on:blur="setShowEmail1Notice(false)"/>
             <i v-if="showEmail1Notice && email1Verified" class="pi pi-check-circle" style="color: #439446; fontSize: 2em" />
             <i v-if="showEmail1Notice && !email1Verified" class="pi pi-times-circle" style="color: #e60017; fontSize: 2em" />
           </div>
         </div>
         <div class="p-field">
           <label for="email2">Confirm Email Address</label>
-          <InputText id="email2" type="text" :placeholder="user.email" v-model="email2" v-on:blur="setShowEmail2Notice()" />
+          <InputText id="email2" type="text" v-model="email2" v-on:blur="setShowEmail2Notice()" />
           <InlineMessage v-if="showEmail2Notice" severity="error">Email addresses do not match!</InlineMessage>
         </div>
         <div v-if="!showPasswordEdit" class="p-d-flex p-flex-row p-jc-center p-field">

@@ -8,7 +8,7 @@ import Button from "primevue/button";
 import { User } from "@/models/User";
 import { PasswordStrength } from "@/models/PasswordStrength";
 
-describe("userEdit.vue empty", () => {
+describe("userEdit.vue no password edit", () => {
   let wrapper: any;
 
   beforeEach(() => {
@@ -58,5 +58,17 @@ describe("userEdit.vue empty", () => {
     expect(wrapper.vm.lastName).toBe(wrapper.vm.user.lastName);
     expect(wrapper.vm.email1).toBe(wrapper.vm.user.email);
     expect(wrapper.vm.email2).toBe(wrapper.vm.user.email);
+  })
+
+  it("should start with all checks true and notices false", () => {
+    expect(wrapper.vm.email1Verified).toBe(true);
+    expect(wrapper.vm.emailsMatch).toBe(true);
+    expect(wrapper.vm.firstNameVerified).toBe(true);
+    expect(wrapper.vm.lastNameVerified).toBe(true);
+    expect(wrapper.vm.showEmail1Notice).toBe(false);
+    expect(wrapper.vm.showEmail2Notice).toBe(false);
+    expect(wrapper.vm.showPassword2Notice).toBe(false);
+    expect(wrapper.vm.showFirstNameNotice).toBe(false);
+    expect(wrapper.vm.showLastNameNotice).toBe(false);
   })
 })
