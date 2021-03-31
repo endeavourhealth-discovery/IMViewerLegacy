@@ -234,6 +234,7 @@ export default class Register extends Vue{
 
   clearForm() {
     this.username = "";
+    this.usernameVerified = false;
     this.email1 = "";
     this.email1Verified = false;
     this.email2 = "";
