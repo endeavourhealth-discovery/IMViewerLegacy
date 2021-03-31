@@ -118,6 +118,29 @@ describe("register.vue prefilled", () => {
     expect(wrapper.vm.emailsMatch).toBe(true);
   })
 
+  it("should check if firstName is valid __ false", async () => {
+    wrapper.vm.firstName = "John$";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.firstNameVerified).toBe(false);
+  })
+
+  it("should check if firstName is valid __ true", async () => {
+    wrapper.vm.firstName = "John";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.firstNameVerified).toBe(true);
+  })
+
+  it("should check if lastName is valid __ false", async () => {
+    wrapper.vm.lastName = "D*e";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.lastNameVerified).toBe(false);
+  })
+
+  it("should check if lastName is valid __ true", async () => {
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.lastNameVerified).toBe(true);
+  })
+
   it("should check password strength __ fail", async () => {
     wrapper.vm.password1 = "1234";
     await wrapper.vm.$nextTick();

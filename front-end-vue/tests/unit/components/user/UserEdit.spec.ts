@@ -71,4 +71,107 @@ describe("userEdit.vue no password edit", () => {
     expect(wrapper.vm.showFirstNameNotice).toBe(false);
     expect(wrapper.vm.showLastNameNotice).toBe(false);
   })
+
+  it("should change showPasswordEdit when password edit button is clicked", () => {
+    expect(wrapper.vm.showPasswordEdit).toBe(false);
+    const passwordButton = wrapper.find(".password-edit");
+    passwordButton.trigger("click");
+    wrapper.vm.$nextTick();
+    expect(wrapper.vm.showPasswordEdit).toBe(true);
+  })
+
+  it("should fail emailVerified with incorrect email format", async () => {
+    wrapper.vm.email1 = "johndoe.co.uk";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.email1).toBe("johndoe.co.uk")
+    expect(wrapper.vm.email1Verified).toBe(false);
+  })
+
+  it("should pass emailVerified with correct email format", async () => {
+    expect(wrapper.vm.email1).toBe("john.doe@ergosoft.co.uk");
+    expect(wrapper.vm.email1Verified).toBe(true);
+  })
+
+  it("should check if emails match __ false", async () => {
+    wrapper.vm.email2 = "devtest@ergosoft.co.uk";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.email1).toBe("john.doe@ergosoft.co.uk");
+    expect(wrapper.vm.email2).toBe("devtest@ergosoft.co.uk");
+    expect(wrapper.vm.emailsMatch).toBe(false);
+  })
+
+  it("should check if emails match __ true", async () => {
+    expect(wrapper.vm.email1).toBe("john.doe@ergosoft.co.uk");
+    expect(wrapper.vm.email2).toBe("john.doe@ergosoft.co.uk");
+    expect(wrapper.vm.emailsMatch).toBe(true);
+  })
+
+  it("should check if firstName is valid __ false", async () => {
+    wrapper.vm.firstName = "John$";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.firstNameVerified).toBe(false);
+  })
+
+  it("should check if firstName is valid __ true", async () => {
+    wrapper.vm.firstName = "John";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.firstNameVerified).toBe(true);
+  })
+
+  it("should check if lastName is valid __ false", async () => {
+    wrapper.vm.lastName = "D*e";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.lastNameVerified).toBe(false);
+  })
+
+  it("should check if lastName is valid __ true", async () => {
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.lastNameVerified).toBe(true);
+  })
+
+  it("should check password strength __ fail", async () => {
+    wrapper.vm.passwordNew1 = "1234";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.passwordNew1).toBe("1234");
+    expect(wrapper.vm.passwordStrength).toBe(PasswordStrength.fail);
+  })
+
+  it("should check password strength __ weak", async () => {
+    wrapper.vm.passwordNew1 = "12345678";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.passwordNew1).toBe("12345678");
+    expect(wrapper.vm.passwordStrength).toBe(PasswordStrength.weak);
+  })
+
+  it("should check password strength __ medium", async () => {
+    wrapper.vm.passwordNew1 = "1234abcd";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.passwordNew1).toBe("1234abcd");
+    expect(wrapper.vm.passwordStrength).toBe(PasswordStrength.medium);
+  })
+
+  it("should check password strength __ strong", async () => {
+    wrapper.vm.passwordNew1 = "1234ABc%";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.passwordNew1).toBe("1234ABc%");
+    expect(wrapper.vm.passwordStrength).toBe(PasswordStrength.strong);
+  })
+
+  it("should check passwords match __ fail", async () => {
+    wrapper.vm.passwordNew1 = "12345678";
+    wrapper.vm.passwordNew2 = "12345679";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.passwordNew1).toBe("12345678");
+    expect(wrapper.vm.passwordNew2).toBe("12345679");
+    expect(wrapper.vm.passwordsMatch).toBe(false);
+  })
+
+  it("should check passwords match __ pass", async () => {
+    wrapper.vm.passwordNew1 = "12345678";
+    wrapper.vm.passwordNew2 = "12345678";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.passwordNew1).toBe("12345678");
+    expect(wrapper.vm.passwordNew2).toBe("12345678");
+    expect(wrapper.vm.passwordsMatch).toBe(true);
+  })
 })

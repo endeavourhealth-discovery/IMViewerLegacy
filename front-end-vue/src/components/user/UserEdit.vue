@@ -303,11 +303,15 @@ export default class UserEdit extends Vue {
     })
     .then((result) => {
       if (result.isConfirmed){
-        this.username = this.user.username
+        this.username = this.user.username;
         this.firstName = this.user.firstName;
         this.lastName = this.user.lastName;
         this.email1 = this.user.email;
         this.email2 = this.user.email;
+        this.showFirstNameNotice = false;
+        this.showLastNameNotice = false;
+        this.showEmail1Notice = false;
+        this.showEmail2Notice = false;
       }
     })
   }
