@@ -11,7 +11,7 @@
         <div class="p-fluid p-d-flex p-flex-column p-jc-start password-edit-form">
           <div v-if="user.firstName" class="p-field">
             <label for="userName">User: </label>
-            <p>{{ user.username}}</p>
+            <p id="username">{{ user.username}}</p>
           </div>
           <div class="p-field">
             <label for="passwordOld">Current Password</label>
@@ -70,7 +70,7 @@ import AuthService from "@/services/AuthService";
     passwordNew2: {
       immediate: true,
       handler(newValue, oldValue){
-        this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, this.passwordNew2)
+        this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, newValue)
       }
     }
   }
