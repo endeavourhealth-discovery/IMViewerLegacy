@@ -143,7 +143,6 @@ export default class Graph extends Vue {
       .style("text-anchor", (d: any) => "end")
       .text((d: any) =>
         d.parent?.data.name === "Properties" ? d.data.name : ""
-        d.parent?.data.name === "Properties" ? d.data.name : ""
       );
 
     // set event listeners
