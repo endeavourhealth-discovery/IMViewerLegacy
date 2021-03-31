@@ -4,6 +4,7 @@
     :options="history"
     optionLabel="conceptName"
     @click="navigate"
+    style="height:100%;overflow:auto"
   >
     <template #option="slotProps">
       <div>

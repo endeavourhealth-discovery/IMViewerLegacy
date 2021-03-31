@@ -37,7 +37,7 @@
         <span>Search results</span>
       </template>
 
-      <div class="p-fluid p-grid">
+      <div class="p-fluid p-grid" style="height:100%;overflow:auto">
         <SearchResults />
         <Filters :search="search" />
       </div>
