@@ -1,4 +1,5 @@
 import { verifyIsEmail, verifyPasswordsMatch, verifyIsName, verifyIsUsername, checkPasswordStrength} from "@/helpers/UserMethods";
+import { PasswordStrength } from "@/models/PasswordStrength";
 
 describe("verifyIsEmail", () => {
   it("should fail if empty", () => {
@@ -145,5 +146,37 @@ describe("verifyIsUsername", () => {
   it("should pass with alphabet and number combinations", () => {
     const username = "Jo4n2345asdf";
     expect(verifyIsUsername(username)).toBe(true);
+  })
+})
+
+describe("checkPasswordStrength", () => {
+  it("should return fail for a password that is too short", () => {
+    const password = "123456";
+    expect(checkPasswordStrength(password)).toBe(PasswordStrength.fail);
+  })
+
+  it("should return weak for a password of only 1 type (8 chars lower/upper/number/symbol)", () => {
+    const password = "12345678";
+    expect(checkPasswordStrength(password)).toBe(PasswordStrength.weak);
+  })
+
+  it("should return medium for a password of 2 types", () => {
+    const password = "1234acbd";
+    expect(checkPasswordStrength(password)).toBe(PasswordStrength.medium);
+  })
+
+  it("should return medium for a password of 3 types", () => {
+    const password = "12ABacbd";
+    expect(checkPasswordStrength(password)).toBe(PasswordStrength.medium);
+  })
+
+  it("should return strong for a password of 4 types", () => {
+    const password = "12ABab*&";
+    expect(checkPasswordStrength(password)).toBe(PasswordStrength.strong);
+  })
+
+  it("should return fail for a empty password", () => {
+    const password = "";
+    expect(checkPasswordStrength(password)).toBe(PasswordStrength.fail);
   })
 })
