@@ -1,7 +1,7 @@
 <template>
   <transition name="layout-sidebar">
     <div class="layout-sidebar layout-sidebar-dark">
-      <div class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center">
+      <div id="sidebar" class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center">
         <div>
           <p class="im-logo">IM</p>
         </div>
@@ -33,9 +33,10 @@
           </div>
         </div>
         <div class="footer user-settings ">
-          <i v-if="!isLoggedIn" class="pi pi-users user-icon" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"></i>
-          <Avatar v-if="isLoggedIn" class="avatar-icon" icon="pi pi-user" size="large" shape="circle" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
-          <Menu id="overlay_menu" ref="menu" :model="getItems()" :popup="true" />
+          <i v-if="!isLoggedIn" id="user-icon" class="pi pi-users user-icon" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"></i>
+          <Avatar v-if="isLoggedIn" id="user-icon" class="avatar-icon" icon="pi pi-user" size="large" shape="circle" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
+          <Menu ref="menu" :model="getItems()" :popup="true" class="popup-user" />
+          <!-- <MegaMenu :model="items" orientation="vertical"/> -->
           <i class="pi pi-cog settings-icon"></i>
         </div>
       </div>
@@ -57,13 +58,17 @@ import { User } from "@/models/User";
     isLoggedIn(){
       return store.state.isLoggedIn;
     }
-  }
+  },
 })
 
 export default class SideNav extends Vue {
   currentUser!: User;
   isLoggedIn!: boolean;
   $refs!: any;
+
+  popupClass(){
+    this.isLoggedIn? "user-popup": "user-popup"
+  }
 
   isActive(item: string) {
     if (this.$route.name == item) {
