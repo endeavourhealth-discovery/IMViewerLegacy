@@ -65,7 +65,10 @@
           A brief overview of the types of data stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptTypes" :options="chartOptions" :height="graphHeight" />
+          <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportType')">
+            <ProgressSpinner />
+          </div>
+          <Chart v-if="!$store.state.loading.get('reportType')" type="pie" :data="chartConceptTypes" :options="chartOptions" :height="graphHeight" />
         </template>
       </Card>
     </div>
@@ -77,7 +80,10 @@
           A brief overview of the schemes of data stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptSchemes" :options="chartOptions" :height="graphHeight" />
+          <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportScheme')">
+            <ProgressSpinner />
+          </div>
+          <Chart v-if="!$store.state.loading.get('reportScheme')" type="pie" :data="chartConceptSchemes" :options="chartOptions" :height="graphHeight" />
         </template>
       </Card>
     </div>
@@ -89,7 +95,10 @@
           A brief overview of the status of concepts stored in the Ontology
         </template>
         <template #content>
-          <Chart type="pie" :data="chartConceptStatus" :options="chartOptions" :height="graphHeight"/>
+          <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportStatus')">
+            <ProgressSpinner />
+          </div>
+          <Chart v-if="!$store.state.loading.get('reportStatus')" type="pie" :data="chartConceptStatus" :options="chartOptions" :height="graphHeight"/>
         </template>
       </Card>
     </div>
@@ -101,6 +110,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import ReportService from "@/services/ReportService";
+import store from "@/store/index";
 const palette = require("../../../node_modules/google-palette");
 
 @Options({
@@ -136,6 +146,7 @@ export default class Dashboard extends Vue {
   graphHeight = 200;
 
   mounted(){
+    store.commit("updateLoading", {key: "reportType", value: true})
     ReportService.getConceptTypeReport()
     .then(res => {
       this.chartConceptTypes = {
@@ -158,11 +169,14 @@ export default class Dashboard extends Vue {
       const hoversLighter = hoversFixed.map((color: string) => this.colorLighter(color))
       this.chartConceptTypes.datasets[0].backgroundColor = bgsFixed;
       this.chartConceptTypes.datasets[0].hoverBackgroundColor = hoversLighter;
+      store.commit("updateLoading", {key: "reportType", value: false})
     })
     .catch(err => {
+      store.commit("updateLoading", {key: "reportType", value: false})
       console.log(err);
     })
 
+    store.commit("updateLoading", {key: "reportScheme", value: true})
     ReportService.getConceptSchemeReport()
     .then(res => {
       this.chartConceptSchemes = {
@@ -185,11 +199,14 @@ export default class Dashboard extends Vue {
       const hoversLighter = hoversFixed.map((color: string) => this.colorLighter(color))
       this.chartConceptSchemes.datasets[0].backgroundColor = bgsFixed;
       this.chartConceptSchemes.datasets[0].hoverBackgroundColor = hoversLighter;
+      store.commit("updateLoading", {key: "reportScheme", value: false})
     })
     .catch(err => {
+      store.commit("updateLoading", {key: "reportScheme", value: false})
       console.log(err);
     })
 
+    store.commit("updateLoading", {key: "reportStatus", value: true})
     ReportService.getConceptStatusReport()
     .then(res => {
       this.chartConceptStatus = {
@@ -212,6 +229,11 @@ export default class Dashboard extends Vue {
       const hoversLighter = hoversFixed.map((color: string) => this.colorLighter(color))
       this.chartConceptStatus.datasets[0].backgroundColor = bgsFixed;
       this.chartConceptStatus.datasets[0].hoverBackgroundColor = hoversLighter;
+      store.commit("updateLoading", {key: "reportStatus", value: false})
+    })
+    .catch(err => {
+      store.commit("updateLoading", {key: "reportStatus", value: false})
+      console.log(err);
     })
 
     ReportService.getConceptCategoryReport()
@@ -305,7 +327,6 @@ export default class Dashboard extends Vue {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
 .dashboard-container {
@@ -323,10 +344,9 @@ export default class Dashboard extends Vue {
 .p-chart {
   height: fit-content;
 }
-/* @media (min-width: 1000px){
-  .dashcard-container {
-    max-height: 30vh;
+
+.loading-container {
+  height: 100%;
 }
-} */
 
 </style>
