@@ -73,14 +73,7 @@ import Swal from "sweetalert2";
     code: {
       immediate: true,
       handler(newValue, oldValue){
-        this.code = newValue;
         this.verifyCode();
-      }
-    },
-    username: {
-      immediate: true,
-      handler(newValue, oldValue){
-        this.username = newValue;
       }
     },
     newPassword1: {
@@ -92,7 +85,7 @@ import Swal from "sweetalert2";
     newPassword2: {
       immediate: true,
       handler(newValue, oldValue){
-        this.passwordsMatch = verifyPasswordsMatch(this.newPassword1, this.newPassword2);
+        this.passwordsMatch = verifyPasswordsMatch(this.newPassword1, newValue);
       }
     },
   }
@@ -107,7 +100,7 @@ export default class ForgotPasswordSubmit extends Vue {
   newPassword2 = "";
   passwordStrength: PasswordStrength = PasswordStrength.fail;
   passwordsMatch = false;
-  showPassword2Notice = false
+  showPassword2Notice = false;
 
   mounted(){
     if (this.registeredUsername && this.registeredUsername !== ""){

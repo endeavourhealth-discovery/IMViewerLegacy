@@ -11,19 +11,19 @@
         <div v-if="isLoggedIn" class="p-fluid p-d-flex p-flex-column p-jc-start user-details-form">
           <div class="p-field">
             <label for="username">Username</label>
-            <InputText id="username" type="text" :placeholder="user.username" disabled />
+            <InputText id="username" type="text" :value="currentUser.username" disabled />
           </div>
           <div class="p-field">
             <label for="firstName">First Name</label>
-            <InputText id="firstName" type="text" :placeholder="user.firstName" disabled />
+            <InputText id="firstName" type="text" :value="currentUser.firstName" disabled />
           </div>
           <div class="p-field">
             <label for="lastName">Last Name</label>
-            <InputText id="lastName" type="text" :placeholder="user.lastName" disabled />
+            <InputText id="lastName" type="text" :value="currentUser.lastName" disabled />
           </div>
           <div class="p-field">
             <label for="email">Email Address</label>
-            <InputText id="email" type="text" :placeholder="user.email" disabled />
+            <InputText id="email" type="text" :value="currentUser.email" disabled />
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
             <Button class="user-edit" type="submit" label="Edit" v-on:click.prevent="handleEditClicked"/>
@@ -34,9 +34,10 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
+import { User } from "@/models/User";
 
 @Options({
   name: "UserDetails",
@@ -44,7 +45,7 @@ import store from "@/store/index";
 
   },
   computed: {
-    user(){
+    currentUser(){
       return store.state.currentUser;
     },
     isLoggedIn(){
@@ -54,6 +55,8 @@ import store from "@/store/index";
 })
 
 export default class UserDetails extends Vue {
+  currentUser!: User;
+  isLoggedIn!: boolean;
 
   handleEditClicked() {
     this.$router.push({name: "UserEdit"})
