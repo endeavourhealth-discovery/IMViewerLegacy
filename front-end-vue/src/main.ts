@@ -55,6 +55,8 @@ import InlineMessage from 'primevue/inlinemessage';
 import Message from 'primevue/message';
 import ConfirmationService from 'primevue/confirmationservice';
 import ConfirmDialogue from 'primevue/confirmdialog';
+import Avatar from 'primevue/avatar';
+
 import {Amplify, Auth} from 'aws-amplify';
 import awsconfig from "./aws-exports";
 
@@ -100,4 +102,5 @@ createApp(App)
   .component("InlineMessage", InlineMessage)
   .component("Message", Message)
   .component("ConfirmDialogue", ConfirmDialogue)
+  .component("Avatar", Avatar)
   .mount("#app");
