@@ -52,16 +52,9 @@ import Swal from "sweetalert2";
     code: {
       immediate: true,
       handler(newValue, oldValue){
-        this.code = newValue;
         this.verifyCode();
       }
     },
-    username: {
-      immediate: true,
-      handler(newValue, oldValue){
-        this.username = newValue;
-      }
-    }
   }
 })
 

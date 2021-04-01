@@ -11,32 +11,35 @@
       <div class="p-fluid register-form">
         <div class="p-field">
           <label for="fieldUsername">Username</label>
-          <InputText id="fieldUsername" type="text" v-model="username" />
+          <InputText id="fieldUsername" type="text" maxlength="50" v-model="username" v-on:blur="setShowUsernameNotice" />
+          <InlineMessage v-if="showUsernameNotice" severity="error">Username contains unexpected characters. A-Z, 0-9 and hyphen/underscore(-_) only allowed e.g."John-Doe2"</InlineMessage>
         </div>
         <div class="p-field">
-          <label for="fieldEmail">Email Address</label>
+          <label for="fieldEmail1">Email Address</label>
           <div class="p-d-flex p-flex-row p-ai-center">
-            <InputText id="fieldEmail" type="text" v-model="email1" v-on:focus="setShowEmail1Notice(true)" v-on:blur="setShowEmail1Notice(false)"/>
+            <InputText id="fieldEmail1" type="text" maxlength="50" v-model="email1" v-on:focus="setShowEmail1Notice(true)" v-on:blur="setShowEmail1Notice(false)"/>
             <i v-if="showEmail1Notice && email1Verified" class="pi pi-check-circle" style="color: #439446; fontSize: 2em" />
             <i v-if="showEmail1Notice && !email1Verified" class="pi pi-times-circle" style="color: #e60017; fontSize: 2em" />
           </div>
         </div>
         <div class="p-field">
           <label for="fieldEmail2">Confirm Email Address</label>
-          <InputText id="fieldEmail2" type="text" v-model="email2" v-on:blur="setShowEmail2Notice()" />
+          <InputText id="fieldEmail2" type="text" maxlength="50" v-model="email2" v-on:blur="setShowEmail2Notice" />
           <InlineMessage v-if="showEmail2Notice" severity="error">Email addresses do not match!</InlineMessage>
         </div>
         <div class="p-field">
           <label for="fieldFirstName">First Name</label>
-          <InputText id="fieldFirstName" type="text" v-model="firstName"/>
+          <InputText id="fieldFirstName" type="text" maxlength="50" v-model="firstName" v-on:blur="setShowFirstNameNotice" />
+          <InlineMessage v-if="showFirstNameNotice" severity="error">First name contains unexpected characters. A-Z and hyphens only allowed e.g."Mary-Anne"</InlineMessage>
         </div>
         <div class="p-field">
           <label for="fieldLastName">Last Name</label>
-          <InputText id="fieldLastName" type="text" v-model="lastName"/>
+          <InputText id="fieldLastName" type="text" maxlength="50" v-model="lastName" v-on:blur="setShowLastNameNotice" />
+          <InlineMessage v-if="showLastNameNotice" severity="error">Last name contains unexpected characters. A-Z, apostropies and hyphens only allowed e.g."O'Keith-Smith"</InlineMessage>
         </div>
         <div class="p-field">
           <label for="fieldPassword1">Password</label>
-          <InputText id="fieldPassword1" type="password" aria-describedby="password-help" v-model="password1"/>
+          <InputText id="fieldPassword1" type="password" maxlength="50" aria-describedby="password-help" v-model="password1"/>
           <InlineMessage v-if="passwordStrength === 'strong'" severity="success">Password Strength: Strong</InlineMessage>
           <InlineMessage v-if="passwordStrength === 'medium'" severity="success">Password Strength: Medium</InlineMessage>
           <InlineMessage v-if="passwordStrength === 'weak'" severity="warn">Password Strength: Weak</InlineMessage>
@@ -45,7 +48,7 @@
         </div>
         <div class="p-field">
           <label for="fieldPassword2">Confirm Password</label>
-          <InputText id="fieldPassword2" type="password" v-model="password2" v-on:blur="setShowPassword2Notice" />
+          <InputText id="fieldPassword2" type="password" maxlength="50" v-model="password2" v-on:blur="setShowPassword2Notice" />
           <InlineMessage v-if="showPassword2Notice" severity="error">Passwords do not match!</InlineMessage>
         </div>
         <div class="p-d-flex p-flex-row p-jc-center">
@@ -67,7 +70,7 @@ import { User } from "@/models/User";
 import store from "@/store/index";
 import { PasswordStrength } from "@/models/PasswordStrength";
 import Swal from 'sweetalert2';
-import { verifyIsEmail, verifyPasswordsMatch, verifyEmailsMatch, verifyIsName, checkPasswordStrength } from "@/helpers/UserMethods";
+import { verifyIsUsername, verifyIsEmail, verifyPasswordsMatch, verifyEmailsMatch, verifyIsName, checkPasswordStrength } from "@/helpers/UserMethods";
 import AuthService from "@/services/AuthService";
 
 @Options({
@@ -77,7 +80,7 @@ import AuthService from "@/services/AuthService";
     username: {
       immediate: true,
       handler(newValue, oldValue){
-        this.username = newValue;
+        this.usernameVerified = verifyIsUsername(newValue);
       }
     },
     email1: {
@@ -92,6 +95,18 @@ import AuthService from "@/services/AuthService";
         this.emailsMatch = verifyEmailsMatch(this.email1, this.email2);
       }
     },
+    firstName: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.firstNameVerified = verifyIsName(newValue);
+      }
+    },
+    lastName: {
+      immediate: true,
+      handler(newValue, oldValue){
+        this.lastNameVerified = verifyIsName(newValue);
+      }
+    },
     password1: {
       immediate: true,
       handler(newValue, oldValue){
@@ -104,18 +119,20 @@ import AuthService from "@/services/AuthService";
         this.passwordsMatch = verifyPasswordsMatch(this.password1, this.password2);
       }
     },
-
   }
 })
 
 export default class Register extends Vue{
   username = "";
+  usernameVerified = false;
   email1 = "";
-  email1Verified = false
+  email1Verified = false;
   email2 = "";
-  emailsMatch = false
+  emailsMatch = false;
   firstName = "";
+  firstNameVerified = false;
   lastName = "";
+  lastNameVerified = false;
   password1 = "";
   password2 = "";
   passwordStrength: PasswordStrength = PasswordStrength.fail;
@@ -123,6 +140,13 @@ export default class Register extends Vue{
   showEmail1Notice = false;
   showEmail2Notice = false;
   showPassword2Notice = false;
+  showUsernameNotice = false;
+  showFirstNameNotice = false;
+  showLastNameNotice = false;
+
+  setShowUsernameNotice(){
+    this.showUsernameNotice = this.usernameVerified? false: true;
+  }
 
   setShowEmail1Notice(result: boolean){
     this.showEmail1Notice = result;
@@ -134,6 +158,14 @@ export default class Register extends Vue{
 
   setShowPassword2Notice(){
     this.showPassword2Notice = this.passwordsMatch? false: true;
+  }
+
+  setShowFirstNameNotice(){
+    this.showFirstNameNotice = this.firstNameVerified? false: true;
+  }
+
+  setShowLastNameNotice(){
+    this.showLastNameNotice = this.lastNameVerified? false: true;
   }
 
   handleSubmit(){
@@ -157,6 +189,13 @@ export default class Register extends Vue{
             } else {
               this.clearForm()
             }
+          })
+        } else if (res.status === 409) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Username already taken. Please pick another username",
+            confirmButtonText: "Close"
           })
         } else {
           Swal.fire({
@@ -194,6 +233,8 @@ export default class Register extends Vue{
   }
 
   clearForm() {
+    this.username = "";
+    this.usernameVerified = false;
     this.email1 = "";
     this.email1Verified = false;
     this.email2 = "";
@@ -207,10 +248,13 @@ export default class Register extends Vue{
     this.showEmail1Notice = false;
     this.showEmail2Notice = false;
     this.showPassword2Notice = false;
+    this.showFirstNameNotice = false;
+    this.showLastNameNotice = false;
   }
 
   allVerified() {
     if (
+      verifyIsUsername(this.username) &&
       verifyIsEmail(this.email1) &&
       verifyIsEmail(this.email2) &&
       verifyEmailsMatch(this.email1, this.email2) &&

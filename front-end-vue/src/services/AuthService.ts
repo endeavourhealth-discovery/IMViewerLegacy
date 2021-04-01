@@ -16,7 +16,11 @@ export default {
       return { status: 201, message: "User registered successfully"}
     } catch (err) {
       console.log(err);
-      return { status: 400, error: err, message: "User registration failed"};
+      if (err.code === "UsernameExistsException"){
+        return {status: 409, error: err, message: "Username already exists"}
+      } else {
+        return { status: 400, error: err, message: "User registration failed"};
+      }
     }
   },
 
