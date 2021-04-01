@@ -21,6 +21,21 @@ body {
   overflow: hidden;
 }
 
+.popup-user {
+  background-color: #3b3e47 !important;
+  left: 100px !important;
+  bottom: 95px !important;
+  top: unset !important;
+}
+
+.popup-user ul li a .p-menuitem-icon {
+  color: lightgray !important;
+}
+
+.popup-user ul li a .p-menuitem-text {
+  color: lightgray !important;
+}
+
 .p-button {
   width: 90%;
   text-align: center;
