@@ -17,7 +17,12 @@
               <strong>Name:</strong>
               {{ concept["http://www.w3.org/2000/01/rdf-schema#label"] }}
             </p>
-            <Button id="synonyms-button" class="p-button-rounded" icon="pi pi-book" iconPos="right" @click="handleSynonymsClick($event)"></Button>
+            <Button id="synonyms-button" class="p-button-rounded" icon="pi pi-book" iconPos="right" aria:haspopup="true" aria-controls="overlay_panel" @click="handleSynonymsClick($event)"></Button>
+            <OverlayPanel ref="op" id="overlay_panel" style="width: fit-content;" >
+              <DataTable :value="synonyms" :paginator="true" :rows="10" responsiveLayout="scroll">
+                <Column field="synonym" header="Synonyms"></Column>
+              </DataTable>
+            </OverlayPanel>
           </div>
           <p><strong>Iri:</strong> {{ concept["@id"] }}</p>
           <p>
@@ -75,13 +80,22 @@ import Definition from "./Definition.vue";
   name: "ConceptSummary",
   components: { EditDialog, Definition },
   prop: {},
-  computed: mapState(["conceptAggregate"]),
+  computed: mapState(["conceptAggregate", "conceptIri"]),
   watch: {
     async conceptAggregate(newValue, oldValue) {
       this.concept = newValue.concept;
       this.definitionText = this.definitionText = (
         await ConceptService.getConceptImLang(newValue.concept.iri)
       ).data;
+    },
+    async conceptIri(newValue, oldValue) {
+      await ConceptService.getConceptSynonyms(newValue)
+      .then(res => {
+        this.synonyms = [];
+        for (const data of res.data){
+          this.synonyms.push({"synonym": data})
+        }
+      })
     }
   }
 })
@@ -90,6 +104,8 @@ export default class ConceptSummary extends Vue {
   concept = {} as any;
   definitionText = "";
   display = false;
+  synonyms = [];
+  conceptIri!: string;
 
   items = [
     {
@@ -143,6 +159,11 @@ export default class ConceptSummary extends Vue {
   toggle(event: any) {
     const x = this.$refs.menu as any;
     x.toggle(event);
+  }
+
+  handleSynonymsClick(event: any) {
+    const y = this.$refs.op as any;
+    y.toggle(event);
   }
 }
 </script>
