@@ -34,11 +34,11 @@
         >
           <p>
             <strong>Status:</strong>
-            {{ concept["http://endhealth.info/im#status"]["@id"] }}
+            {{ concept["http://endhealth.info/im#status"]["name"] }}
           </p>
           <p>
             <strong>Scheme:</strong>
-            {{ concept["http://endhealth.info/im#scheme"]["@id"] }}
+            {{ concept["http://endhealth.info/im#scheme"]["name"] }}
           </p>
           <p>
             <strong>Types:</strong>
@@ -108,7 +108,7 @@ export default class ConceptSummary extends Vue {
     const types: string[] = [];
     this.concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].forEach(
       (typeObject: any) => {
-        types.push(typeObject["@id"]);
+        types.push(typeObject["name"]);
       }
     );
     return types.join();
