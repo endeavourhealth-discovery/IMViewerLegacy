@@ -17,6 +17,7 @@ import ConceptTable from "./ConceptTable.vue";
 import Graph from "./Graph.vue";
 
 @Options({
+  name: "ConceptDetails",
   components: { ConceptTable, Graph }
 })
 export default class DetailsSummary extends Vue {}

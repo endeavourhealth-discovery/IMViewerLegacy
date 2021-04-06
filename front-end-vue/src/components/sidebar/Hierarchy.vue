@@ -30,6 +30,7 @@ interface TreeNode {
 }
 
 @Options({
+  name: "Hierarchy",
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {

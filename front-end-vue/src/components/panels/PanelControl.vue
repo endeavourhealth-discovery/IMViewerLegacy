@@ -49,6 +49,7 @@ import ConceptMembers from "@/components/panels/ConceptMembers.vue";
 import ConceptDetails from "./ConceptDetails.vue";
 
 @Options({
+  name: "PanelControl",
   components: {
     ConceptSummary,
     ConceptUsageAndMapping,

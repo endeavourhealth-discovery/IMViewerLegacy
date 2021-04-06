@@ -48,6 +48,7 @@ import { Options, Vue } from "vue-class-component";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 
 @Options({
+  name: "ConceptTable",
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {

@@ -21,6 +21,7 @@ import store from "@/store/index";
 import { HistoryItem } from "@/models/HistoryItem";
 
 @Options({
+  name: "History",
   components: {}
 })
 export default class History extends Vue {
