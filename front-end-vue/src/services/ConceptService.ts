@@ -71,4 +71,8 @@ export default class ConceptService {
   public static getConceptGraph(iri: string) {
     return axios.get(this.api + "api/concept/graph", { params: { iri: iri }});
   }
+
+  public static getConceptSynonyms(iri: string){
+    return axios.get(this.api + "api/concept/synonyms", { params: { iri: iri }});
+  }
 }
