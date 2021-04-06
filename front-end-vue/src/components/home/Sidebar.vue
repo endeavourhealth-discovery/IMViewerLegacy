@@ -53,6 +53,7 @@ interface TreeNode {
 }
 
 @Options({
+  name: "Sidebar",
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {

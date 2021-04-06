@@ -69,6 +69,7 @@
 import { Options, Vue } from "vue-class-component";
 
 @Options({
+  name: "ConceptUsageAndMapping",
   components: {},
   prop: {}
 })

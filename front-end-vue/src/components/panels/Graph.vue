@@ -19,6 +19,7 @@ import GraphData from "../../models/GraphData";
 import {IM} from '@/vocabulary/IM';
 
 @Options({
+  name: "Graph",
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {

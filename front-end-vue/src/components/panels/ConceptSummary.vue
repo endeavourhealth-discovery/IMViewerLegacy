@@ -69,6 +69,7 @@ import { mapState } from "vuex";
 import Definition from "./Definition.vue";
 
 @Options({
+  name: "ConceptSummary",
   components: { EditDialog, Definition },
   prop: {},
   computed: mapState(["conceptAggregate"]),

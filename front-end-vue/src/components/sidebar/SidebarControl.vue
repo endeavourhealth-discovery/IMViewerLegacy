@@ -58,6 +58,7 @@ import store from "@/store/index";
 import { ConceptType } from "@/models/search/ConceptType";
 
 @Options({
+  name: "SidebarControl",
   components: { Hierarchy, History, SearchResults, Filters }
 })
 export default class SidebarControl extends Vue {

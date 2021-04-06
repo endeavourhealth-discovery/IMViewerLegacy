@@ -48,6 +48,7 @@ import { ConceptType } from "@/models/search/ConceptType";
 import { Options, Vue } from "vue-class-component";
 
 @Options({
+  name: "Filters",
   components: {},
   props: ["search"]
 })

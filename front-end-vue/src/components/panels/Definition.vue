@@ -11,6 +11,7 @@ import {
   richLanguageConfiguration
 } from "@/discovery-syntax/DiscoveryLanguage";
 @Options({
+  name: "Definition",
   components: {},
   props: ["definition"],
   watch: {

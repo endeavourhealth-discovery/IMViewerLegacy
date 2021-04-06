@@ -30,6 +30,7 @@ interface TreeNode {
 }
 
 @Options({
+  name: "Hierarchy",
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {
@@ -100,6 +101,9 @@ export default class Hierarchy extends Vue {
   }
 
   onNodeSelect(node: any) {
+
+    console.log("test");
+    console.log(node);
     this.$router.push({
       name: "Concept",
       params: { selectedIri: node.data }

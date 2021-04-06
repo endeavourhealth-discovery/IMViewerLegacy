@@ -42,6 +42,7 @@ import Editor from "./Editor.vue";
 import { ConceptDto } from "@/models/ConceptDto";
 
 @Options({
+  name: "EditDialog",
   components: {
     Editor
   },

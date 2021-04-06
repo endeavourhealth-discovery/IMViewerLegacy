@@ -61,6 +61,7 @@ import ConceptService from "@/services/ConceptService";
 import store from "@/store";
 
 @Options({
+  name: "ConceptMembers",
   components: {},
   prop: {}
 })

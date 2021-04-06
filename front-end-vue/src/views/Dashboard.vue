@@ -1,109 +1,110 @@
 <template>
-  <div class="p-grid dashboard-container">
-    <div class="p-col-6 modulecard-container" id="module-card">
-      <Card class="modulecard">
-        <template #header>
-          <font-awesome-icon
-            :icon="['fas', 'map']"
-            size="6x"
-            style="color: orange; padding: 5px"
-          />
+  <div class="p-col-9" style="height: calc(100vh - 123px); overflow: auto;">
+    <div class="p-grid dashboard-container">
+      <div class="p-col-6 modulecard-container" id="module-card">
+        <Card class="modulecard">
+          <template #header>
+            <font-awesome-icon
+              :icon="['fas', 'map']"
+              size="6x"
+              style="color: orange; padding: 5px"
+            />
+          </template>
+          <template #title> Mapping Module </template>
+          <template #subtitle> Data model maps </template>
+          <template #content>
+            Data model maps specify how data is transformed from a data model to a
+            particular database.
+          </template>
+          <template #footer>
+            <Button label="Open Mapping Module" :disabled="true" />
         </template>
-        <template #title> Mapping Module </template>
-        <template #subtitle> Data model maps </template>
-        <template #content>
-          Data model maps specify how data is transformed from a data model to a
-          particular database.
+        </Card>
+      </div>
+      <div class="p-col-6 modulecard-container">
+        <Card class="modulecard">
+          <template #header>
+            <font-awesome-icon
+              :icon="['fas', 'tasks']"
+              size="6x"
+              style="color: brown; padding: 5px"
+            />
+          </template>
+          <template #title> Workflow Manager </template>
+          <template #subtitle> Helps to manage the workflow </template>
+          <template #content>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          </template>
+          <template #footer>
+            <Button label="Open Workflow Manager Module" :disabled="true" />
         </template>
-        <template #footer>
-          <Button label="Open Mapping Module" :disabled="true" />
-      </template>
-      </Card>
-    </div>
-    <div class="p-col-6 modulecard-container">
-      <Card class="modulecard">
-        <template #header>
-          <font-awesome-icon
-            :icon="['fas', 'tasks']"
-            size="6x"
-            style="color: brown; padding: 5px"
-          />
-        </template>
-        <template #title> Workflow Manager </template>
-        <template #subtitle> Helps to manage the workflow </template>
-        <template #content>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        </template>
-        <template #footer>
-          <Button label="Open Workflow Manager Module" :disabled="true" />
-      </template>
-      </Card>
-    </div>
+        </Card>
+      </div>
 
-    <div class="p-col-6 dashcard-container">
-      <Card class="dashcard">
-        <template #title> Ontology Overview </template>
-        <template #subtitle>
-          A brief overview of the concepts stored in the Ontology
-        </template>
-        <template #content>
-          <DataTable :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="250px">
-            <template #header>
-                Ontology Data
-            </template>
-            <Column field="label" header="Label"></Column>
-            <Column field="count" header="Total"></Column>
-        </DataTable>
-        </template>
-      </Card>
-    </div>
+      <div class="p-col-6 dashcard-container">
+        <Card class="dashcard">
+          <template #title> Ontology Overview </template>
+          <template #subtitle>
+            A brief overview of the concepts stored in the Ontology
+          </template>
+          <template #content>
+            <DataTable :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="250px">
+              <template #header>
+                  Ontology Data
+              </template>
+              <Column field="label" header="Label"></Column>
+              <Column field="count" header="Total"></Column>
+          </DataTable>
+          </template>
+        </Card>
+      </div>
 
-    <div class="p-col-6 dashcard-container">
-      <Card class="dashcard">
-        <template #title> Ontology Concept Types </template>
-        <template #subtitle>
-          A brief overview of the types of data stored in the Ontology
-        </template>
-        <template #content>
-          <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportType')">
-            <ProgressSpinner />
-          </div>
-          <Chart v-if="!$store.state.loading.get('reportType')" type="pie" :data="chartConceptTypes" :options="chartOptions" :height="graphHeight" />
-        </template>
-      </Card>
-    </div>
+      <div class="p-col-6 dashcard-container">
+        <Card class="dashcard">
+          <template #title> Ontology Concept Types </template>
+          <template #subtitle>
+            A brief overview of the types of data stored in the Ontology
+          </template>
+          <template #content>
+            <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportType')">
+              <ProgressSpinner />
+            </div>
+            <Chart v-if="!$store.state.loading.get('reportType')" type="pie" :data="chartConceptTypes" :options="chartOptions" :height="graphHeight" />
+          </template>
+        </Card>
+      </div>
 
-    <div class="p-col-6 dashcard-container">
-      <Card class="dashcard">
-        <template #title> Ontology Concept Schemes </template>
-        <template #subtitle>
-          A brief overview of the schemes of data stored in the Ontology
-        </template>
-        <template #content>
-          <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportScheme')">
-            <ProgressSpinner />
-          </div>
-          <Chart v-if="!$store.state.loading.get('reportScheme')" type="pie" :data="chartConceptSchemes" :options="chartOptions" :height="graphHeight" />
-        </template>
-      </Card>
-    </div>
+      <div class="p-col-6 dashcard-container">
+        <Card class="dashcard">
+          <template #title> Ontology Concept Schemes </template>
+          <template #subtitle>
+            A brief overview of the schemes of data stored in the Ontology
+          </template>
+          <template #content>
+            <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportScheme')">
+              <ProgressSpinner />
+            </div>
+            <Chart v-if="!$store.state.loading.get('reportScheme')" type="pie" :data="chartConceptSchemes" :options="chartOptions" :height="graphHeight" />
+          </template>
+        </Card>
+      </div>
 
-    <div class="p-col-6 dashcard-container">
-      <Card class="dashcard">
-        <template #title> Ontology Concept Status </template>
-        <template #subtitle>
-          A brief overview of the status of concepts stored in the Ontology
-        </template>
-        <template #content>
-          <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportStatus')">
-            <ProgressSpinner />
-          </div>
-          <Chart v-if="!$store.state.loading.get('reportStatus')" type="pie" :data="chartConceptStatus" :options="chartOptions" :height="graphHeight"/>
-        </template>
-      </Card>
+      <div class="p-col-6 dashcard-container">
+        <Card class="dashcard">
+          <template #title> Ontology Concept Status </template>
+          <template #subtitle>
+            A brief overview of the status of concepts stored in the Ontology
+          </template>
+          <template #content>
+            <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportStatus')">
+              <ProgressSpinner />
+            </div>
+            <Chart v-if="!$store.state.loading.get('reportStatus')" type="pie" :data="chartConceptStatus" :options="chartOptions" :height="graphHeight"/>
+          </template>
+        </Card>
+      </div>
     </div>
   </div>
-
 
 </template>
 
@@ -111,7 +112,7 @@
 import { Options, Vue } from "vue-class-component";
 import ReportService from "@/services/ReportService";
 import store from "@/store/index";
-const palette = require("../../../node_modules/google-palette");
+const palette = require("../../node_modules/google-palette");
 
 @Options({
   name: "Dashboard",

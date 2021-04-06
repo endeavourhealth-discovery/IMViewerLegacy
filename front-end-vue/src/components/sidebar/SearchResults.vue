@@ -90,6 +90,7 @@ import { Options, Vue } from "vue-class-component";
 import { mapState } from "vuex";
 
 @Options({
+  name: "SearchResults",
   components: {},
   computed: mapState(["searchResults"]),
   watch: {
