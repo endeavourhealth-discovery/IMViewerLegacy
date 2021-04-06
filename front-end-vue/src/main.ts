@@ -57,6 +57,8 @@ import ConfirmationService from 'primevue/confirmationservice';
 import ConfirmDialogue from 'primevue/confirmdialog';
 import Avatar from 'primevue/avatar';
 import MegaMenu from 'primevue/megamenu';
+import Timeline from 'primevue/timeline';
+import SelectButton from 'primevue/selectbutton';
 
 import {Amplify, Auth} from 'aws-amplify';
 import awsconfig from "./aws-exports";
@@ -105,4 +107,6 @@ createApp(App)
   .component("ConfirmDialogue", ConfirmDialogue)
   .component("Avatar", Avatar)
   .component("MegaMenu", MegaMenu)
+  .component("Timeline", Timeline)
+  .component("SelectButton", SelectButton)
   .mount("#app");

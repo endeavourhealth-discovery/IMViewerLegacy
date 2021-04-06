@@ -54,7 +54,6 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
   watch: {
     async conceptAggregate(newValue, oldValue) {
       this.properties = newValue.properties;
-      console.log(this.properties);
     }
   }
 })

@@ -12,7 +12,7 @@
               :icon="['fas', 'home']"
               size="4x"
               style="color: lightgrey; padding: 5px"
-              @click="$router.push({ name: 'Home' })"
+              @click="$router.push({ name: 'Dashboard' })"
             />
           </div>
           <div v-bind:class="{ active: isActive('Workflow') }">

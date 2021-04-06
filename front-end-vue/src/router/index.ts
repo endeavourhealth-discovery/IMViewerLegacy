@@ -5,7 +5,9 @@ import {
   viewDepthKey
 } from "vue-router";
 import Home from "../views/Home.vue";
+import Dashboard from "../views/Dashboard.vue";
 import Datamodel from "../views/Concept.vue";
+import Workflow from "../views/Workflow.vue";
 import User from "../views/User.vue";
 import Login from "../components/user/Login.vue";
 import Register from "../components/user/Register.vue";
@@ -89,17 +91,27 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
-    path: "/home",
+    path: "/",
     name: "Home",
     component: Home,
-    alias: "/",
     children: [
+      {
+        path: "/dashboard",
+        name: "Dashboard",
+        alias: "/home",
+        component: Dashboard,
+      },
       {
         path: "/concept/:selectedIri",
         name: "Concept",
         component: Datamodel,
       }
     ]
+  },
+  {
+    path: "/workflow",
+    name: "Workflow",
+    component: Workflow,
   }
 ];
 
