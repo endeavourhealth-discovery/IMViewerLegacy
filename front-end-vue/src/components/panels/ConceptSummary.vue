@@ -19,7 +19,7 @@
             </p>
             <Button id="synonyms-button" class="p-button-rounded" icon="pi pi-book" iconPos="right" aria:haspopup="true" aria-controls="overlay_panel" @click="handleSynonymsClick($event)"></Button>
             <OverlayPanel ref="op" id="overlay_panel" style="width: fit-content;" >
-              <DataTable :value="synonyms" :paginator="true" :rows="10" responsiveLayout="scroll">
+              <DataTable :value="synonyms" :paginator="synonyms.length > 10 ? true: false" :rows="10" responsiveLayout="scroll">
                 <Column field="synonym" header="Synonyms"></Column>
               </DataTable>
             </OverlayPanel>
