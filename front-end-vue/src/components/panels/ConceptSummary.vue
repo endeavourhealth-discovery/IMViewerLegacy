@@ -12,10 +12,13 @@
           class="p-col-6"
           v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']"
         >
-          <p>
-            <strong>Name:</strong>
-            {{ concept["http://www.w3.org/2000/01/rdf-schema#label"] }}
-          </p>
+          <div class="p-d-flex p-flex-row p-jc-start p-ai-center">
+            <p>
+              <strong>Name:</strong>
+              {{ concept["http://www.w3.org/2000/01/rdf-schema#label"] }}
+            </p>
+            <Button id="synonyms-button" class="p-button-rounded" icon="pi pi-book" iconPos="right" @click="handleSynonymsClick($event)"></Button>
+          </div>
           <p><strong>Iri:</strong> {{ concept["@id"] }}</p>
           <p>
             <strong>Code:</strong>
@@ -144,7 +147,7 @@ export default class ConceptSummary extends Vue {
 }
 </script>
 
-<style>
+<style scoped>
 .custom .p-scrollpanel-wrapper {
   border-right: 9px solid #f4f4f4;
 }
@@ -157,5 +160,9 @@ export default class ConceptSummary extends Vue {
 
 .custom .p-scrollpanel-bar:hover {
   background-color: #135ba1 !important;
+}
+
+p {
+  margin: 0;
 }
 </style>
