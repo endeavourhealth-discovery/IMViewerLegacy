@@ -42,7 +42,7 @@
       </div>
 
       <div class="p-col-6 dashcard-container">
-        <Card class="dashcard">
+        <Card class="dashcard dash-table">
           <template #title> Ontology Overview </template>
           <template #subtitle>
             A brief overview of the concepts stored in the Ontology
@@ -60,7 +60,7 @@
       </div>
 
       <div class="p-col-6 dashcard-container">
-        <Card class="dashcard">
+        <Card class="dashcard dash-pie">
           <template #title> Ontology Concept Types </template>
           <template #subtitle>
             A brief overview of the types of data stored in the Ontology
@@ -75,7 +75,7 @@
       </div>
 
       <div class="p-col-6 dashcard-container">
-        <Card class="dashcard">
+        <Card class="dashcard dash-pie">
           <template #title> Ontology Concept Schemes </template>
           <template #subtitle>
             A brief overview of the schemes of data stored in the Ontology
@@ -90,7 +90,7 @@
       </div>
 
       <div class="p-col-6 dashcard-container">
-        <Card class="dashcard">
+        <Card class="dashcard dash-pie">
           <template #title> Ontology Concept Status </template>
           <template #subtitle>
             A brief overview of the status of concepts stored in the Ontology
@@ -261,15 +261,24 @@ export default class Dashboard extends Vue {
   }
 
   setGraphHeight(windowHeight: number){
-    const header = document.getElementById('header-home');
-    const card = document.getElementById('module-card');
-    if (header && card){
-      this.graphHeight = Math.floor((windowHeight - header.clientHeight - card.clientHeight)/16)
-      if (this.graphHeight < 38){
-        this.graphHeight = 38 //minimum height for graph to render
-      }
-    } else {
+    // const header = document.getElementById('header-home');
+    // const card = document.getElementById('module-card');
+    // if (header && card){
+    //   this.graphHeight = Math.floor((windowHeight - header.clientHeight - card.clientHeight)/16)
+    //   if (this.graphHeight < 38){
+    //     this.graphHeight = 38 //minimum height for graph to render
+    //   }
+    // } else {
+    //   this.graphHeight = 100;
+    // }
+    if (this.windowHeight > 1000) {
+      this.graphHeight = 200;
+    } else if (this.windowHeight > 900) {
       this.graphHeight = 100;
+    } else if (this.windowHeight > 800) {
+      this.graphHeight = 750;
+    } else {
+      this.graphHeight = 50;
     }
   }
 
@@ -303,7 +312,7 @@ export default class Dashboard extends Vue {
   }
 
   setLegendOptions(width: number){
-    if (width < 1364){
+    if (width < 2041){
       this.chartOptions = {
         legend: {
           position: 'bottom',
