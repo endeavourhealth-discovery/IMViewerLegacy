@@ -96,9 +96,9 @@ const routes: Array<RouteRecordRaw> = [
     component: Home,
     children: [
       {
-        path: "/dashboard",
+        path: "",
         name: "Dashboard",
-        alias: "/home",
+        alias: ["/home", "/dashboard"],
         component: Dashboard,
       },
       {

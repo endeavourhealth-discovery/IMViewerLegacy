@@ -16,7 +16,7 @@ import { mapState } from "vuex";
 import ConceptService from "@/services/ConceptService";
 import { HierarchyNode } from "d3";
 import GraphData from "../../models/GraphData";
-import {IM} from '@/vocabulary/IM';
+import { IM } from "@/vocabulary/IM";
 
 @Options({
   name: "Graph",
@@ -124,9 +124,9 @@ export default class Graph extends Vue {
       .attr("id", (d: any) => d.data.valueTypeIri || d.data.iri)
       .attr("dy", ".35em")
       .attr("x", (d: any) => (d.children || d.depth <= 1 ? -10 : 10))
-      .attr("y", (d: any) =>
-        d.children && d.depth !== 0 ? -(d.data.value + 5) : d
-      )
+      .attr("y", (d: any) => {
+        d.children && d.depth !== 0 ? 0 : d;
+      })
       .attr("name", (d: any) => d.data.valueTypeName || d.data.name)
       .attr("inheritedFrom", (d: any) => d.data.inheritedFromName)
       .style("text-anchor", (d: any) =>
@@ -140,7 +140,7 @@ export default class Graph extends Vue {
       .attr("id", (d: any) => d.data.iri)
       .attr("dy", ".35em")
       .attr("x", (d: any) => -10)
-      .attr("y", (d: any) => -(d.data.value + 5))
+      .attr("y", (d: any) => 0)
       .style("text-anchor", (d: any) => "end")
       .text((d: any) =>
         d.parent?.data.name === "Properties" ? d.data.name : ""
@@ -167,7 +167,7 @@ export default class Graph extends Vue {
   }
 
   onMouseOut(event: any) {
-    const originalTitle = event.srcElement.attributes.name.nodeValue;
+    const originalTitle = event.srcElement.attributes.name?.nodeValue;
     if (originalTitle) {
       event.srcElement.innerHTML = originalTitle;
     }
@@ -189,6 +189,7 @@ export default class Graph extends Vue {
         currentParent[0].children = (currentParent[0] as any)._children;
         (currentParent[0] as any)._children = [];
       }
+
       this.drawTree();
     }
   }

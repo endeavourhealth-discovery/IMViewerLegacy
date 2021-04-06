@@ -42,12 +42,17 @@ export default class Home extends Vue {
   isLoggedIn!: boolean;
 
   async mounted() {
-    // this.isHome = this.$route.name === "Home"? true: false;
-
     // check for user and log them in if found or logout if not
     store.dispatch("authenticateCurrentUser");
+    this.updateRoute();
+  }
 
-    if (this.$route.name === "Home") {
+  updated() {
+    this.updateRoute();
+  }
+
+  updateRoute() {
+    if (this.$route.name === "Home" || this.$route.name === "Dashboard") {
       store.commit("updateConceptIri", "http://www.w3.org/2002/07/owl#Thing");
     } else if (this.$route.name === "Concept") {
       store.commit(
@@ -59,6 +64,7 @@ export default class Home extends Vue {
     store.dispatch("fetchConceptMapped", store.state.conceptIri);
     store.dispatch("fetchConceptUsages", store.state.conceptIri);
   }
+
 }
 </script>
 
