@@ -104,8 +104,18 @@ export default class ConceptSummary extends Vue {
   concept = {} as any;
   definitionText = "";
   display = false;
-  synonyms = [];
+  synonyms = [] as any;
   conceptIri!: string;
+
+  async mounted() {
+    await ConceptService.getConceptSynonyms(this.conceptIri)
+      .then(res => {
+        this.synonyms = [];
+        for (const data of res.data){
+          this.synonyms.push({"synonym": data})
+        }
+      })
+  }
 
   items = [
     {
@@ -185,5 +195,9 @@ export default class ConceptSummary extends Vue {
 
 p {
   margin: 0;
+}
+
+#synonyms-button {
+  margin-left: 0.5em;
 }
 </style>
