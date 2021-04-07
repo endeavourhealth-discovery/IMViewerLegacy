@@ -4,52 +4,9 @@
       <mapping-module />
       <workflow-manager />
       <ontology-overview :tableData="tableData" />
-
-
-      <div class="p-col-6 dashcard-container">
-        <Card class="dashcard dash-pie">
-          <template #title> Ontology Concept Types </template>
-          <template #subtitle>
-            A brief overview of the types of data stored in the Ontology
-          </template>
-          <template #content>
-            <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportType')">
-              <ProgressSpinner />
-            </div>
-            <Chart v-if="!$store.state.loading.get('reportType')" type="pie" :data="chartConceptTypes" :options="chartOptions" :height="graphHeight" />
-          </template>
-        </Card>
-      </div>
-
-      <div class="p-col-6 dashcard-container">
-        <Card class="dashcard dash-pie">
-          <template #title> Ontology Concept Schemes </template>
-          <template #subtitle>
-            A brief overview of the schemes of data stored in the Ontology
-          </template>
-          <template #content>
-            <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportScheme')">
-              <ProgressSpinner />
-            </div>
-            <Chart v-if="!$store.state.loading.get('reportScheme')" type="pie" :data="chartConceptSchemes" :options="chartOptions" :height="graphHeight" />
-          </template>
-        </Card>
-      </div>
-
-      <div class="p-col-6 dashcard-container">
-        <Card class="dashcard dash-pie">
-          <template #title> Ontology Concept Status </template>
-          <template #subtitle>
-            A brief overview of the status of concepts stored in the Ontology
-          </template>
-          <template #content>
-            <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportStatus')">
-              <ProgressSpinner />
-            </div>
-            <Chart v-if="!$store.state.loading.get('reportStatus')" type="pie" :data="chartConceptStatus" :options="chartOptions" :height="graphHeight"/>
-          </template>
-        </Card>
-      </div>
+      <concept-types :chartConceptTypes="chartConceptTypes" :chartOptions="chartOptions" :graphHeight="graphHeight" />
+      <concept-schemes :chartConceptSchemes="chartConceptSchemes" :chartOptions="chartOptions" :graphHeight="graphHeight" />
+      <concept-status :chartConceptStatus="chartConceptStatus" :chartOptions="chartOptions" :graphHeight="graphHeight" />
     </div>
   </div>
 
@@ -63,13 +20,19 @@ const palette = require("../../node_modules/google-palette");
 import MappingModule from "@/components/dashboard/MappingModule.vue";
 import WorkflowManager from "@/components/dashboard/WorkflowManager.vue";
 import OntologyOverview from "@/components/dashboard/OntologyOverview.vue";
+import ConceptTypes from "@/components/dashboard/ConceptTypes.vue";
+import ConceptSchemes from "@/components/dashboard/ConceptSchemes.vue";
+import ConceptStatus from "@/components/dashboard/ConceptStatus.vue";
 
 @Options({
   name: "Dashboard",
   components: {
     "mapping-module": MappingModule,
     "workflow-manager": WorkflowManager,
-    "ontology-overview": OntologyOverview
+    "ontology-overview": OntologyOverview,
+    "concept-types": ConceptTypes,
+    "concept-schemes": ConceptSchemes,
+    "concept-status": ConceptStatus
   },
   watch: {
     windowHeight: {
@@ -102,6 +65,20 @@ export default class Dashboard extends Vue {
   graphHeight = 200;
 
   mounted(){
+
+    // table data
+    store.commit("updateLoading", {key: "reportCategory", value: true})
+    ReportService.getConceptCategoryReport()
+    .then(res => {
+      this.tableData = res.data
+      store.commit("updateLoading", {key: "reportCategory", value: false})
+    })
+    .catch(err => {
+      console.log(err);
+      store.commit("updateLoading", {key: "reportCategory", value: false})
+    })
+
+    // chart type
     store.commit("updateLoading", {key: "reportType", value: true})
     ReportService.getConceptTypeReport()
     .then(res => {
@@ -132,6 +109,7 @@ export default class Dashboard extends Vue {
       console.log(err);
     })
 
+    // chart scheme
     store.commit("updateLoading", {key: "reportScheme", value: true})
     ReportService.getConceptSchemeReport()
     .then(res => {
@@ -162,6 +140,7 @@ export default class Dashboard extends Vue {
       console.log(err);
     })
 
+    // chart status
     store.commit("updateLoading", {key: "reportStatus", value: true})
     ReportService.getConceptStatusReport()
     .then(res => {
@@ -190,17 +169,6 @@ export default class Dashboard extends Vue {
     .catch(err => {
       store.commit("updateLoading", {key: "reportStatus", value: false})
       console.log(err);
-    })
-
-    store.commit("updateLoading", {key: "reportCategory", value: true})
-    ReportService.getConceptCategoryReport()
-    .then(res => {
-      this.tableData = res.data
-      store.commit("updateLoading", {key: "reportCategory", value: false})
-    })
-    .catch(err => {
-      console.log(err);
-      store.commit("updateLoading", {key: "reportCategory", value: false})
     })
 
     this.$nextTick(() => {
@@ -301,18 +269,6 @@ export default class Dashboard extends Vue {
 <style scoped>
 
 .dashboard-container {
-  height: 100%;
-}
-
-.dashcard {
-  height: 100%;
-}
-
-.p-chart {
-  height: fit-content;
-}
-
-.loading-container {
   height: 100%;
 }
 
