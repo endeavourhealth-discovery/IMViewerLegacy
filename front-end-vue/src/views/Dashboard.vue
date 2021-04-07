@@ -14,9 +14,6 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import ReportService from "@/services/ReportService";
-import store from "@/store/index";
-const palette = require("../../node_modules/google-palette");
 import MappingModule from "@/components/dashboard/MappingModule.vue";
 import WorkflowManager from "@/components/dashboard/WorkflowManager.vue";
 import OntologyOverview from "@/components/dashboard/OntologyOverview.vue";
