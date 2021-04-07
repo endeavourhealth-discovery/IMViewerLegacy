@@ -1,0 +1,43 @@
+<template>
+  <div class="p-col-6 modulecard-container" id="module-card">
+  <Card class="modulecard">
+    <template #header>
+      <font-awesome-icon
+        :icon="['fas', 'map']"
+        size="6x"
+        style="color: orange; padding: 5px"
+      />
+    </template>
+    <template #title> Mapping Module </template>
+    <template #subtitle> Data model maps </template>
+    <template #content>
+      Data model maps specify how data is transformed from a data model to a
+      particular database.
+    </template>
+    <template #footer>
+      <Button label="Open Mapping Module" :disabled="true" />
+  </template>
+  </Card>
+</div>
+</template>
+
+<script lang="ts">
+import { Options, Vue } from "vue-class-component";
+
+@Options({
+  name:"mappingModule",
+  props: []
+})
+
+export default class MappingModule extends Vue{
+
+}
+</script>
+
+<style scoped>
+
+.modulecard {
+  height: 100%;
+}
+
+</style>
