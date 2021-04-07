@@ -24,13 +24,29 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
+import ReportService from "@/services/ReportService";
 
 @Options({
   name: "OntologyOverview",
-  props: ["tableData"]
+  props: []
 })
 
 export default class OntologyOverview extends Vue {
+  tableData: any = [];
+
+  mounted() {
+      // table data
+    store.commit("updateLoading", {key: "reportCategory", value: true})
+    ReportService.getConceptCategoryReport()
+    .then(res => {
+      this.tableData = res.data
+      store.commit("updateLoading", {key: "reportCategory", value: false})
+    })
+    .catch(err => {
+      console.log(err);
+      store.commit("updateLoading", {key: "reportCategory", value: false})
+    })
+  }
 
 }
 </script>
