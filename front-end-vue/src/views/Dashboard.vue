@@ -117,12 +117,6 @@ const palette = require("../../node_modules/google-palette");
 @Options({
   name: "Dashboard",
   watch: {
-    windowHeight: {
-      immediate: true,
-      handler(newValue, oldValue){
-        this.setGraphHeight(newValue);
-      }
-    },
     windowWidth: {
       immediate: true,
       handler(newValue, oldValue){
@@ -260,28 +254,6 @@ export default class Dashboard extends Vue {
     this.windowWidth = window.innerWidth;
   }
 
-  setGraphHeight(windowHeight: number){
-    // const header = document.getElementById('header-home');
-    // const card = document.getElementById('module-card');
-    // if (header && card){
-    //   this.graphHeight = Math.floor((windowHeight - header.clientHeight - card.clientHeight)/16)
-    //   if (this.graphHeight < 38){
-    //     this.graphHeight = 38 //minimum height for graph to render
-    //   }
-    // } else {
-    //   this.graphHeight = 100;
-    // }
-    if (this.windowHeight > 1000) {
-      this.graphHeight = 200;
-    } else if (this.windowHeight > 900) {
-      this.graphHeight = 100;
-    } else if (this.windowHeight > 800) {
-      this.graphHeight = 750;
-    } else {
-      this.graphHeight = 50;
-    }
-  }
-
   colorLighter(color: string){
     const rgbColor = this.hexToRgb(color);
     if (rgbColor){
@@ -312,7 +284,17 @@ export default class Dashboard extends Vue {
   }
 
   setLegendOptions(width: number){
-    if (width < 2041){
+    if (width > 1588){
+      this.chartOptions = {
+        legend: {
+          position: 'right',
+          labels: {
+            boxWidth: 40,
+            fontSize: 12
+          }
+        }
+      }
+    } else if (width > 954){
       this.chartOptions = {
         legend: {
           position: 'bottom',
@@ -322,14 +304,20 @@ export default class Dashboard extends Vue {
           }
         }
       }
-    } else {
+    } else if (width > 742){
       this.chartOptions = {
         legend: {
           position: 'right',
           labels: {
-            boxWidth: 40,
-            fontSize: 12
+            boxWidth: 10,
+            fontSize: 8
           }
+        }
+      }
+    } else {
+      this.chartOptions = {
+        legend: {
+          display: false
         }
       }
     }
