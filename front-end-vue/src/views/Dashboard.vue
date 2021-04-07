@@ -1,63 +1,10 @@
 <template>
   <div class="p-col-9" style="height: calc(100vh - 123px); overflow: auto;">
     <div class="p-grid dashboard-container">
-      <div class="p-col-6 modulecard-container" id="module-card">
-        <Card class="modulecard">
-          <template #header>
-            <font-awesome-icon
-              :icon="['fas', 'map']"
-              size="6x"
-              style="color: orange; padding: 5px"
-            />
-          </template>
-          <template #title> Mapping Module </template>
-          <template #subtitle> Data model maps </template>
-          <template #content>
-            Data model maps specify how data is transformed from a data model to a
-            particular database.
-          </template>
-          <template #footer>
-            <Button label="Open Mapping Module" :disabled="true" />
-        </template>
-        </Card>
-      </div>
-      <div class="p-col-6 modulecard-container">
-        <Card class="modulecard">
-          <template #header>
-            <font-awesome-icon
-              :icon="['fas', 'tasks']"
-              size="6x"
-              style="color: brown; padding: 5px"
-            />
-          </template>
-          <template #title> Workflow Manager </template>
-          <template #subtitle> Helps to manage the workflow </template>
-          <template #content>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          </template>
-          <template #footer>
-            <Button label="Open Workflow Manager Module" :disabled="true" />
-        </template>
-        </Card>
-      </div>
+      <mapping-module />
+      <workflow-manager />
+      <ontology-overview :tableData="tableData" />
 
-      <div class="p-col-6 dashcard-container">
-        <Card class="dashcard dash-table">
-          <template #title> Ontology Overview </template>
-          <template #subtitle>
-            A brief overview of the concepts stored in the Ontology
-          </template>
-          <template #content>
-            <DataTable :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="250px">
-              <template #header>
-                  Ontology Data
-              </template>
-              <Column field="label" header="Label"></Column>
-              <Column field="count" header="Total"></Column>
-          </DataTable>
-          </template>
-        </Card>
-      </div>
 
       <div class="p-col-6 dashcard-container">
         <Card class="dashcard dash-pie">
@@ -113,9 +60,17 @@ import { Options, Vue } from "vue-class-component";
 import ReportService from "@/services/ReportService";
 import store from "@/store/index";
 const palette = require("../../node_modules/google-palette");
+import MappingModule from "@/components/dashboard/MappingModule.vue";
+import WorkflowManager from "@/components/dashboard/WorkflowManager.vue";
+import OntologyOverview from "@/components/dashboard/OntologyOverview.vue";
 
 @Options({
   name: "Dashboard",
+  components: {
+    "mapping-module": MappingModule,
+    "workflow-manager": WorkflowManager,
+    "ontology-overview": OntologyOverview
+  },
   watch: {
     windowHeight: {
       immediate: true,
@@ -237,9 +192,15 @@ export default class Dashboard extends Vue {
       console.log(err);
     })
 
+    store.commit("updateLoading", {key: "reportCategory", value: true})
     ReportService.getConceptCategoryReport()
     .then(res => {
       this.tableData = res.data
+      store.commit("updateLoading", {key: "reportCategory", value: false})
+    })
+    .catch(err => {
+      console.log(err);
+      store.commit("updateLoading", {key: "reportCategory", value: false})
     })
 
     this.$nextTick(() => {
@@ -344,10 +305,6 @@ export default class Dashboard extends Vue {
 }
 
 .dashcard {
-  height: 100%;
-}
-
-.modulecard {
   height: 100%;
 }
 
