@@ -40,17 +40,30 @@ export default class Graph extends Vue {
   width = 660;
   height = 500;
 
-  monuted() {
+  mounted() {
     this.margin = { top: 20, right: 90, bottom: 30, left: 90 };
     this.width = 660 - this.margin.left - this.margin.right;
     this.height = 500 - this.margin.top - this.margin.bottom;
+
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.onResize);
+    })
+
+  } // mounted end
+
+  beforeDestroy(){
+    window.removeEventListener('resize', this.onResize)
+  }
+
+  onResize(){
+    location.reload();
   }
 
   initSvgPanZoom() {
     svgPanZoom("#svg", {
       zoomEnabled: true,
       controlIconsEnabled: true,
-      fit: false,
+      fit: true,
       center: true,
       dblClickZoomEnabled: false,
       mouseWheelZoomEnabled: false,
@@ -220,5 +233,10 @@ export default class Graph extends Vue {
   fill: none;
   stroke: #ccc;
   stroke-width: 2px;
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
 }
 </style>
