@@ -178,7 +178,7 @@ export default class Dashboard extends Vue {
     this.windowHeight = window.innerHeight;
     this.windowWidth = window.innerWidth;
 
-  }
+  } // mounted end
 
   beforeDestroy(){
     window.removeEventListener('resize', this.onResize);
@@ -211,6 +211,7 @@ export default class Dashboard extends Vue {
     }
   }
 
+  // generates lighter graph segment colours for mouse hover
   colorLighter(color: string){
     const rgbColor = this.hexToRgb(color);
     if (rgbColor){
