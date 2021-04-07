@@ -91,9 +91,9 @@ export default class Dashboard extends Vue {
     if (this.windowHeight > 1000) {
       this.graphHeight = 200;
     } else if (this.windowHeight > 900) {
-      this.graphHeight = 100;
+      this.graphHeight = 150;
     } else if (this.windowHeight > 800) {
-      this.graphHeight = 750;
+      this.graphHeight = 100;
     } else {
       this.graphHeight = 50;
     }
