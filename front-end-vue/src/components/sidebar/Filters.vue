@@ -56,47 +56,47 @@ export default class Filters extends Vue {
   statusOptions = ["Active", "Draft", "Inactive"];
   schemeOptions = [
     {
-      iri: ":891081000252108",
+      iri: "http://endhealth.info/im#891081000252108",
       name: "Barts Cerner code"
     },
     {
-      iri: ":891051000252101",
+      iri: "http://endhealth.info/im#891051000252101",
       name: "CTV3 Code"
     },
     {
-      iri: ":891071000252105",
+      iri: "http://endhealth.info/im#891071000252105",
       name: "Discovery code"
     },
     {
-      iri: ":891031000252107",
+      iri: "http://endhealth.info/im#891031000252107",
       name: "EMIS local code"
     },
     {
-      iri: ":581000252100",
+      iri: "http://endhealth.info/im#581000252100",
       name: "Homerton Cerner code"
     },
     {
-      iri: ":891021000252109",
+      iri: "http://endhealth.info/im#891021000252109",
       name: "ICD10 code"
     },
     {
-      iri: ":891041000252103",
+      iri: "http://endhealth.info/im#891041000252103",
       name: "OPCS4 code"
     },
     {
-      iri: ":891141000252104",
+      iri: "http://endhealth.info/im#891141000252104",
       name: "Read 2 code"
     },
     {
-      iri: ":891101000252101",
+      iri: "http://endhealth.info/im#891101000252101",
       name: "Snomed-CT code"
     },
     {
-      iri: ":631000252102",
+      iri: "http://endhealth.info/im#631000252102",
       name: "TPP local codes"
     },
     {
-      iri: ":891111000252103",
+      iri: "http://endhealth.info/im#891111000252103",
       name: "Term based code"
     }
   ];

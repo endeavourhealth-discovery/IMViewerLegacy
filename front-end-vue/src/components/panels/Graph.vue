@@ -52,7 +52,8 @@ export default class Graph extends Vue {
       controlIconsEnabled: true,
       fit: false,
       center: true,
-      dblClickZoomEnabled: false
+      dblClickZoomEnabled: false,
+      mouseWheelZoomEnabled: false,
     });
   }
 

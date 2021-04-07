@@ -60,9 +60,11 @@ export default class Hierarchy extends Vue {
     index++;
 
     children.forEach((child: any) => {
-      selectedConcept.children.push(
-        this.createTreeNode(child.name, child.iri, index, child.hasChildren)
-      );
+      if (child.name){ //remove this to return all OWL children
+        selectedConcept.children.push(
+          this.createTreeNode(child.name, child.iri, index, child.hasChildren)
+        );
+      }
       index++;
     });
     this.root = [];
