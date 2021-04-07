@@ -14,10 +14,6 @@ export default class ConceptService {
     return axios.get(this.api + "api/concept", { params: { iri: iri }});
   }
 
-  public static async getConceptParentHierarchy(iri: string) {
-    return axios.get(this.api + "api/concept/parentHierarchy", { params: { iri: iri }});
-  }
-
   public static async getConceptParents(iri: string) {
     return axios.get(this.api + "api/concept/parents", { params: { iri: iri }});
   }

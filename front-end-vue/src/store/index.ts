@@ -92,7 +92,7 @@ export default createStore({
   actions: {
     async fetchConceptAggregate({ commit }, iri) {
       const concept = (await ConceptService.getConcept(iri)).data;
-      const parents = (await ConceptService.getConceptParentHierarchy(iri))
+      const parents = (await ConceptService.getConceptParents(iri))
         .data;
       const children = (await ConceptService.getConceptChildren(iri)).data;
       const properties = (await ConceptService.getConceptProperties(iri)).data;
