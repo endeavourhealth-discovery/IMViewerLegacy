@@ -1,6 +1,5 @@
 import axios from "axios";
 import { SimpleCount } from "@/models/reports/SimpleCount";
-import { ClassAxiomContext } from "@/discovery-syntax/DiscoverySyntaxParser";
 
 export default class ReportService {
   static api = process.env.VUE_APP_API;

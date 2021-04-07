@@ -1,104 +1,74 @@
 grammar DiscoverySyntax;
 
-concept : identifierIri
-        annotations ';'
-        type '.'
-         EOF;
+concept : (directive)*? iri conceptPredicateObjectList
+    '.'
+      EOF
+       ;
+directive
+   : prefixID
+   ;
 
-annotations:
-    (';' label (';' label?)*)?
+prefixID
+   : '@prefix' PNAME_NS IRIREF '.'
+   ;
+conceptPredicateObjectList
+   : (annotation|predicateIri|axiom|properties|membership|predicateList)
+     (';' (annotation|predicateIri|axiom|properties|membership|predicateList)?)*
+   ;
+
+
+annotation:
+    (name|description|code|version|propertyIri)  QUOTED_STRING
     ;
-
-classAxiom  :
-          subclassOf
-        | equivalentTo
-        | disjointWith
-        ;
-
-propertyAxiom   :
-        subpropertyOf
-        |inverseOf
-
-        ;
-
+predicateIri    :
+    (scheme|type|status|target) iri
+    ;
+ scheme :
+    SCHEME
+    ;
 type :
      TYPE
-     (classType
-     |dataType
-     |recordType
-     |objectProperty
-     |annotationProperty
-     |dataProperty
-     )
      ;
-
-classType :
-    CLASS
-     (';' classAxiom (';' classAxiom?)*)?
+version :
+    VERSION
     ;
 
-dataType :
-    DATATYPE
+axiom  :
+        subclassOf
+        | equivalentTo
+        |subpropertyOf
+        |inverseOf
+        |domain
+        |range
+        ;
+     
+properties :
+     PROPERTIES '['
+    propertyRestriction? (';' propertyRestriction)*?
+    ']'
+    ;
+membership :
+    members (';'notmembers)*?
     ;
 
-recordType :
-    RECORD
-     (';' classAxiom (';' classAxiom?)*)?
-    (';' role (';' role)*)?
-     ;
-objectProperty :
-    OBJECTPROPERTY
-    (';' propertyAxiom (';' propertyAxiom)*)?
-
-    ;
-dataProperty :
-    DATAPROPERTY
-     (';' propertyAxiom (';' propertyAxiom)*)?
-    ;
-annotationProperty :
-    ANNOTATION
-    (';' propertyAxiom (';' propertyAxiom)*)?
-    ;
 members :
-    MEMBER
-    classExpression
+    MEMBERS '['
+    classExpression? (',' classExpression)*?
+    ']'
     ;
-expansion   :
-    EXPANSION
-    '(' iri (',' iri)+? ')'
-    ;
-
-valueSet :
-    VALUESET
-    (';' subclassOf)?
-    (';' members)?
-    (';' expansion)?
+notmembers  :
+    NOTMEMBERS '['
+        iri (',' iri)*?
+     ']'
+     ;
+target  :
+    TARGETCLASS
     ;
 
-shapeOf:
-    (TARGETCLASS)
-    iri
+predicateList :
+    propertyIri '[' propertyRestriction (';' propertyRestriction)*? ']'
     ;
 
-
-propertyConstraint :
-   PROPERTYCONSTRAINT '[' PATH iri (';' constraintParameter (';' constraintParameter)*)? ']'
-
-    ;
-
-constraintParameter :
-    minCount
-    |maxCount
-    |minInclusive
-    |maxInclusive
-    |classValue
-    |dataRange
-    ;
-minCount :
-    MINCOUNT INTEGER;
-
-maxCount :
-    MAXCOUNT INTEGER;
 minInclusive    :MININCLUSIVE DOUBLE
     ;
 maxInclusive    :MAXINCLUSIVE DOUBLE
@@ -107,94 +77,96 @@ minExclusive    :MINEXCLUSIVE DOUBLE
     ;
 maxExclusive :MAXEXCLUSIVE DOUBLE
     ;
-classValue :
-    CLASS (iri| '[' propertyConstraint ']')
-    ;
-label:
-        (name
-        |description
-        |code
-        |scheme
-        |status
-        |version)
-        ;
+
 status  :
-    STATUS (ACTIVE|INACTIVE|DRAFT)
+    STATUS   ;
 
-    ;
-version :
-    VERSION QUOTED_STRING
-    ;
-identifierIri :
-    (IRI_LABEL? iri)
-    ;
-name :
-    NAME
-    QUOTED_STRING
-    ;
-description :
-    DESCRIPTION
-    QUOTED_STRING
-    ;
-code    :
-    CODE
-    QUOTED_STRING
-    ;
-scheme :
-    SCHEME
-    QUOTED_STRING
-    ;
-
-
-subclassOf: SUBCLASS classExpression;
-equivalentTo: EQUIVALENTTO classExpression ;
-disjointWith : DISJOINT classExpression ;
+subclassOf : SUBCLASS classExpression;
+equivalentTo : EQUIVALENTTO classExpression ;
 subpropertyOf : SUBPROPERTY iri;
 inverseOf : INVERSE iri;
+domain : DOMAIN classExpression;
+range : RANGE classExpression;
 
 classExpression :
-    iri (',' classExpression)*
-    |roleGroup
+    iri
+   |(intersection)
+   |(union)
     ;
 
 
-iri
-   :IRIREF
-   |PREFIXIRI
-   |QUOTED_STRING
+intersection    :
+   iri (AND (iri|propertyRestriction|union|complement|subExpression))+
    ;
+subExpression:
+  '(' (union|intersection|complement|propertyRestriction) ')'
+  ;
 
-
-roleGroup :
-    ('['|'{') role  (';' role)*
-     (']'|'}')
+ union    :
+    iri (OR (iri|propertyRestriction))+
     ;
-role :
-    iri '='? (classExpression|dataRange)
-    |minCount
-    |maxCount
+ complement :
+    NOT
+    (iri|intersection|union)
+    ;
+
+iri : IRIREF
+    | (PNAME_LN PIPED_STRING?)
+    ;
+literal
+    : QUOTED_STRING
+    ;
+
+propertyRestriction :
+    propertyIri
+    (exactCardinality
+    |rangeCardinality
+    |minCardinality
+    |maxCardinality
+    |some
+    |only)?
+    classOrDataType
+
+
      ;
-
-dataRange   :
-    valueCollection
-    |typedString
-    |QUOTED_STRING
-    |rangeValue
-    ;
-rangeValue :
-    ((MININCLUSIVE|MINEXCLUSIVE) (typedString|DOUBLE))
-    |((MAXINCLUSIVE|MAXEXCLUSIVE) (typedString|DOUBLE))
-    ;
-typedString :
-    QUOTED_STRING '^^' iri
+some : SOME
     ;
 
-valueCollection   :
-    '(' (QUOTED_STRING|typedString) (',' (QUOTED_STRING|typedString))+? ')'
+only : ONLY
     ;
-dataRangeCollection :
-    '(' dataRange (',' dataRange)+ ')'
+
+ propertyIri:
+    iri
     ;
+ exactCardinality   :
+    EXACTLY INTEGER
+    ;
+ rangeCardinality :
+   minCardinality maxCardinality
+    ;
+
+minCardinality :
+  MIN INTEGER
+  ;
+maxCardinality :
+  MAX INTEGER
+  ;
+
+
+classOrDataType :
+    iri
+    ;
+ name : NAME
+    ;
+ description : DESCRIPTION
+    ;
+ code : CODE
+    ;
+
+WS
+   : ([\t\r\n\u000C] | ' ') + -> skip
+   ;
+// lexer
 
 fragment A:('a'|'A');
 fragment B:('b'|'B');
@@ -223,63 +195,32 @@ fragment X:('x'|'X');
 fragment Y:('y'|'Y');
 fragment Z:('z'|'Z');
 
+
 EQ  : '='
     ;
-MEMBER :M E M B E R
+MEMBERS :M E M B E R S
     ;
-EXPANSION   : E X P A N S I O N
+NOTMEMBERS  :N O T M E M B E R S
     ;
+
 STATUS  : S T A T U S
-    ;
-ACTIVE  : A C T I V E
-    ;
-INACTIVE : I N A C T I V E
-    ;
-DRAFT   : D R A F T
     ;
 VERSION : V E R S I O N
     ;
-IRI_LABEL : I R I
+PROPERTIES: P R O P E R T I E S
     ;
 
-TYPE : ('a '|'A '|'Type '| 'type ');
+TYPE : T Y P E;
 
-TERM    : T E R M
-    ;
-RECORD  : R E C O R D
-    ;
+MIN : M I N ;
 
-TARGETCLASS : T A R G E T C L A S S
-    ;
-CLASS : C L A S S
-    ;
-OBJECTPROPERTY : O B J E C T P R O P E R T Y
-    ;
-DATAPROPERTY : D A T A P R O P E R T Y
-    ;
-ANNOTATION : A N N O T A T I O N
-    ;
-PROPERTYCONSTRAINT : P R O P E R T Y
+MAX : M A X;
+
+SOME : S O M E ;
+
+ONLY : O N L Y
     ;
 
-DATATYPE : D A T A T Y P E
-    ;
-VALUESET    : V A L U E S E T
-    ;
-PATH    :P A T H
-    ;
-MINCOUNT : (M I N C O U N T)|(M I N)
-    ;
-MAXCOUNT : (M A X C O U N T)|(M A X)
-    ;
-NAME    : N A M E ' '
-    ;
-DESCRIPTION : D E S C R I P T I O N ' '
-    ;
-CODE : C O D E
-    ;
-SCHEME  : S C H E M E
-    ;
 MININCLUSIVE : (M I N I N C L U S I V E)| ('>=')
     ;
 MAXINCLUSIVE : (M A X I N C L U S I V E)| ('<=')
@@ -288,15 +229,27 @@ MINEXCLUSIVE : (M I N E X C L U S I V E)| ('>')
     ;
 MAXEXCLUSIVE : (M A X E X C L U S I V E)| ('<')
     ;
-SUBCLASS : (S U B C L A S S O F)|('<<<')
+SUBCLASS : S U B C L A S S O F
     ;
-EQUIVALENTTO    : (E Q U I V A L E N T T O)|(EQ EQ EQ)
+EQUIVALENTTO    :E Q U I V A L E N T T O
     ;
 DISJOINT    : D I S J O I N T W I T H
     ;
 SUBPROPERTY : S U B P R O P E R T Y O F
     ;
 INVERSE : I N V E R S E O F
+    ;
+DOMAIN  : D O M A I N
+    ;
+RANGE : R A N G E
+    ;
+
+TARGETCLASS :
+    T A R G E T C L A S S
+    ;
+EXACTLY : E X A C T L Y ;
+
+AND : A N D
     ;
 
 INTEGER : DIGIT+
@@ -305,38 +258,60 @@ DOUBLE : DIGIT+ ('.' DIGIT+)?
     ;
 
 DIGIT : [0-9];
-EXACT : 'exactly ' DIGIT+;
-AND :
-    'and'
-    | ','
-    | '&'
-    ;
+
 OR :
-    'or'
+    O R
+    ;
+NOT :
+   N O T
+   ;
+
+
+
+NAME : N A M E
+    ;
+DESCRIPTION : D E S C R I P T I O N
+    ;
+CODE : C O D E
     ;
 
+SCHEME  : S C H E M E
+    ;
 
+PNAME_NS
+   : PN_PREFIX? ':'
+   ;
+PN_PREFIX
+   : PN_CHARS_BASE ((PN_CHARS | '.')* PN_CHARS)?
+   ;
 
-PREFIXIRI
-  : LOWERCASE+ ':' ((LOWERCASE|UPPERCASE|INTEGER|'_'|'-')+)
-  | ':' ((LOWERCASE|UPPERCASE|INTEGER|'_'|'-')+)
-  |((LOWERCASE|UPPERCASE|INTEGER|'_'|'-')+)
-  ;
-
-
+PN_CHARS_BASE
+   : 'A' .. 'Z' | 'a' .. 'z' | '\u00C0' .. '\u00D6' | '\u00D8' .. '\u00F6' | '\u00F8' .. '\u02FF' | '\u0370' .. '\u037D' | '\u037F' .. '\u1FFF' | '\u200C' .. '\u200D' | '\u2070' .. '\u218F' | '\u2C00' .. '\u2FEF' | '\u3001' .. '\uD7FF' | '\uF900' .. '\uFDCF' | '\uFDF0' .. '\uFFFD'
+   ;
+PN_CHARS_U
+   : PN_CHARS_BASE | '_'
+   ;
+PN_CHARS
+   : PN_CHARS_U | '-' | [0-9] | '\u00B7' | [\u0300-\u036F] | [\u203F-\u2040]
+   ;
 
 
 
 IRIREF
-   : '<' (UPPERCASE | LOWERCASE| INTEGER| '.' | ':' | '/' | '\\' | '#' | '@' | '%' | '&'|'_')* '>'
-    ;
+   : '<' (PN_CHARS | '.' | ':' | '/' | '\\' | '#' | '@' | '%' | '&' | UCHAR)* '>'
+   ;
+
+UCHAR
+   : '\\u' HEX HEX HEX HEX | '\\U' HEX HEX HEX HEX HEX HEX HEX HEX
+   ;
 
 
-
-
-
-LOWERCASE : [a-z];
-UPPERCASE : [A-Z];
+PNAME_LN
+   : PNAME_NS PN_LOCAL
+   ;
+PN_LOCAL
+   : (PN_CHARS_U | ':' | [0-9] | PLX) ((PN_CHARS | '.' | ':' | PLX)* (PN_CHARS | ':' | PLX))?
+   ;
 PLX
    : PERCENT | PN_LOCAL_ESC
    ;
@@ -344,22 +319,28 @@ PERCENT
    : '%' HEX HEX
    ;
 
+
+ECHAR
+   : '\\' [tbnrf"'\\]
+   ;
 QUOTED_STRING :
-    ('"'|'\'') ~["']* ('"'|'\'')
+   STRING_LITERAL_QUOTE|STRING_LITERAL_SINGLE_QUOTE
+   ;
+STRING_LITERAL_QUOTE
+   : '"' (~ ["\\\r\n] | '\'' | '\\"')* '"'
+   ;
+STRING_LITERAL_SINGLE_QUOTE
+   : '\'' (~ [\u0027\u005C\u000A\u000D] | ECHAR | UCHAR | '"')* '\''
+   ;
+
+PIPED_STRING :
+    '|' (~ [\u0027\u005C\u000A\u000D] | ECHAR | UCHAR | '"')+ '|'
+    ;
+
+
+ PN_LOCAL_ESC
+    : '\\' ('_' | '~' | '.' | '-' | '!' | '$' | '&' | '\'' | '(' | ')' | '*' | '+' | ',' | ';' | '=' | '/' | '?' | '#' | '@' | '%')
     ;
 HEX
    : [0-9] | [A-F] | [a-f]
    ;
- PN_LOCAL_ESC
-    : '\\' ('_' | '~' | '.' | '-' | '!' | '$' | '&' | '\'' | '(' | ')' | '*' | '+' | ',' | ';' | '=' | '/' | '?' | '#' | '@' | '%')
-    ;
-
-WS
-    : (' '
-    | '\t'
-    | '\n'
-    | '\r')+->skip
-    ;
-SC  :
-    ';'
-    ;
