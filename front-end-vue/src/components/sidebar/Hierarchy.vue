@@ -35,7 +35,6 @@ interface TreeNode {
   computed: mapState(["conceptAggregate"]),
   watch: {
     conceptAggregate(newValue, oldValue) {
-      console.log(newValue)
       this.createTree(newValue.concept, newValue.parents, newValue.children);
       this.$store.commit("updateHistory", {
         url: this.$route.fullPath,
@@ -61,7 +60,7 @@ export default class Hierarchy extends Vue {
     index++;
 
     children.forEach((child: any) => {
-      if (child.name){
+      if (child.name){ //remove this to return all OWL children
         selectedConcept.children.push(
           this.createTreeNode(child.name, child.iri, index, child.hasChildren)
         );
