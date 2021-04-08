@@ -224,11 +224,22 @@ export default class Graph extends Vue {
 </script>
 
 <style>
+
+#svg {
+  cursor: move;
+  cursor: grab;
+}
+
+#svg:active {
+  cursor: grabbing;
+}
+
 .circle {
   fill: #fff;
   stroke: steelblue;
   stroke-width: 3px;
 }
+
 .text {
   font: 12px sans-serif;
 }
