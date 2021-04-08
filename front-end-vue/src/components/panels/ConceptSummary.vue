@@ -46,12 +46,14 @@
             <strong>Code:</strong>
             {{ concept["http://endhealth.info/im#code"] }}
           </p>
-          <p><strong>Description:</strong></p>
-          <ScrollPanel style="width: 100%; height: 100px" class="custom">
-            <div>
-              {{ concept["http://www.w3.org/2000/01/rdf-schema#comment"] }}
-            </div>
-          </ScrollPanel>
+          <div v-if="concept['http://www.w3.org/2000/01/rdf-schema#comment']">
+            <p><strong>Description:</strong></p>
+            <ScrollPanel style="width: 100%; height: 100px" class="custom">
+              <div>
+                {{ concept["http://www.w3.org/2000/01/rdf-schema#comment"] }}
+              </div>
+            </ScrollPanel>
+          </div>
         </div>
         <div
           class="p-col-6"
