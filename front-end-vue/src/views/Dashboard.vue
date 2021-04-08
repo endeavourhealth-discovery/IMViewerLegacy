@@ -1,8 +1,8 @@
 <template>
   <div class="p-col-9" style="height: calc(100vh - 123px); overflow: auto;">
     <div class="p-grid dashboard-container">
-      <mapping-module />
-      <workflow-manager />
+      <!-- <mapping-module />
+      <workflow-manager /> -->
       <ontology-overview />
       <concept-types :chartOptions="chartOptions" :graphHeight="graphHeight" />
       <concept-schemes

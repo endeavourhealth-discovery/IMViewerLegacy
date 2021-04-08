@@ -6,9 +6,9 @@
         class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center"
       >
         <div>
-          <p class="im-logo">IM</p>
+          <p class="im-logo" @click="$router.push({ name: 'Dashboard' }) ">IM</p>
         </div>
-        <div id="center-icons">
+        <!-- <div id="center-icons">
           <div v-bind:class="{ active: isActive('Home') }">
             <font-awesome-icon
               class="sidebutton"
@@ -34,7 +34,7 @@
               style="color: lightgrey; padding: 5px"
             />
           </div>
-        </div>
+        </div> -->
         <div class="footer user-settings ">
           <i
             v-if="!isLoggedIn"
