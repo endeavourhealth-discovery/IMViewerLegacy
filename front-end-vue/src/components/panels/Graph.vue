@@ -40,7 +40,7 @@ import { IM } from "@/vocabulary/IM";
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {
-    async conceptAggregate(newValue, oldValue) {
+    async conceptAggregate(newValue) {
       this.graphData = (
         await ConceptService.getConceptGraph(newValue.concept[IM.IRI])
       ).data;
@@ -70,6 +70,7 @@ export default class Graph extends Vue {
 
   zoomReset() {
     this.panZoom.resetZoom();
+    this.panZoom.resetPan();
   }
 
   zoomOut() {
@@ -169,9 +170,9 @@ export default class Graph extends Vue {
       .append("text")
       .attr("id", (d: any) => d.data.iri)
       .attr("dy", ".35em")
-      .attr("x", (d: any) => -10)
-      .attr("y", (d: any) => 0)
-      .style("text-anchor", (d: any) => "end")
+      .attr("x", () => -10)
+      .attr("y", () => 0)
+      .style("text-anchor", () => "end")
       .text((d: any) =>
         d.parent?.data.name === "Properties" ? d.data.name : ""
       );
