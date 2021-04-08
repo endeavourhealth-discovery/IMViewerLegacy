@@ -156,13 +156,11 @@ export default class ConceptSummary extends Vue {
   ];
 
   get conceptTypes() {
-    const types: string[] = [];
-    this.concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"].forEach(
-      (typeObject: any) => {
-        types.push(typeObject["name"]);
-      }
-    );
-    return types.join();
+    return this.concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]
+      .map(function(type: any) {
+        return type.name;
+      })
+      .join(", ");
   }
 
   get editorConcept() {
