@@ -14,6 +14,7 @@ export default class App extends Vue {}
 </script>
 
 <style>
+
 body {
   overflow: hidden;
 }
@@ -33,8 +34,4 @@ body {
   color: lightgray !important;
 }
 
-.p-button {
-  width: 90%;
-  text-align: center;
-}
 </style>
