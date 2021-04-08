@@ -17,9 +17,26 @@
               <strong>Name:</strong>
               {{ concept["http://www.w3.org/2000/01/rdf-schema#label"] }}
             </p>
-            <Button id="synonyms-button" class="p-button-rounded" icon="pi pi-book" iconPos="right" aria:haspopup="true" aria-controls="overlay_panel" @click="handleSynonymsClick($event)"></Button>
-            <OverlayPanel ref="op" id="overlay_panel" style="width: fit-content;" >
-              <DataTable :value="synonyms.length > 1? synonyms: [{'synonym': 'None'}]" :paginator="synonyms.length > 10 ? true: false" :rows="10" responsiveLayout="scroll">
+            <Button
+              id="synonyms-button"
+              class="p-button-rounded"
+              icon="pi pi-book"
+              iconPos="right"
+              aria:haspopup="true"
+              aria-controls="overlay_panel"
+              @click="handleSynonymsClick($event)"
+            ></Button>
+            <OverlayPanel
+              ref="op"
+              id="overlay_panel"
+              style="width: fit-content;"
+            >
+              <DataTable
+                :value="synonyms.length > 1 ? synonyms : [{ synonym: 'None' }]"
+                :paginator="synonyms.length > 10 ? true : false"
+                :rows="10"
+                responsiveLayout="scroll"
+              >
                 <Column field="synonym" header="Synonyms"></Column>
               </DataTable>
             </OverlayPanel>
@@ -84,18 +101,21 @@ import Definition from "./Definition.vue";
   watch: {
     async conceptAggregate(newValue, oldValue) {
       this.concept = newValue.concept;
-      this.definitionText = await (await ConceptService.getConceptImLang(newValue.concept["@id"])).data;
+      this.definitionText = await (
+        await ConceptService.getConceptImLang(newValue.concept["@id"])
+      ).data;
     },
     async conceptIri(newValue, oldValue) {
-      await ConceptService.getConceptSynonyms(newValue)
-      .then(res => {
+      await ConceptService.getConceptSynonyms(newValue).then(res => {
         this.synonyms = [];
-        for (const data of res.data){
-          if (data !== this.concept["http://www.w3.org/2000/01/rdf-schema#label"]){
-            this.synonyms.push({"synonym": data})
+        for (const data of res.data) {
+          if (
+            data !== this.concept["http://www.w3.org/2000/01/rdf-schema#label"]
+          ) {
+            this.synonyms.push({ synonym: data });
           }
         }
-      })
+      });
     }
   }
 })
@@ -108,13 +128,12 @@ export default class ConceptSummary extends Vue {
   conceptIri!: string;
 
   async mounted() {
-    await ConceptService.getConceptSynonyms(this.conceptIri)
-      .then(res => {
-        this.synonyms = [];
-        for (const data of res.data){
-          this.synonyms.push({"synonym": data})
-        }
-      })
+    await ConceptService.getConceptSynonyms(this.conceptIri).then(res => {
+      this.synonyms = [];
+      for (const data of res.data) {
+        this.synonyms.push({ synonym: data });
+      }
+    });
   }
 
   items = [

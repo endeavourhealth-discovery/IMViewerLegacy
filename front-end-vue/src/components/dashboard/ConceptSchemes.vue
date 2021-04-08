@@ -6,10 +6,19 @@
         A brief overview of the schemes of data stored in the Ontology
       </template>
       <template #content>
-        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportScheme')">
+        <div
+          class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container"
+          v-if="$store.state.loading.get('reportScheme')"
+        >
           <ProgressSpinner />
         </div>
-        <Chart v-if="!$store.state.loading.get('reportScheme')" type="pie" :data="chartConceptSchemes" :options="chartOptions" :height="graphHeight" />
+        <Chart
+          v-if="!$store.state.loading.get('reportScheme')"
+          type="pie"
+          :data="chartConceptSchemes"
+          :options="chartOptions"
+          :height="graphHeight"
+        />
       </template>
     </Card>
   </div>
@@ -26,48 +35,49 @@ const palette = require("../../../node_modules/google-palette");
   name: "ConceptSchemes",
   props: ["chartOptions", "graphHeight"]
 })
-
 export default class ConceptSchemes extends Vue {
   chartConceptSchemes: any = {};
 
   mounted() {
-        // chart scheme
-    store.commit("updateLoading", {key: "reportScheme", value: true})
+    // chart scheme
+    store.commit("updateLoading", { key: "reportScheme", value: true });
     ReportService.getConceptSchemeReport()
-    .then(res => {
-      this.chartConceptSchemes = {
-        labels: [],
-        datasets: [{
-          data:[],
-          backgroundColor: [],
-          hoverBackgroundColor: []
-        }]
-      }
-      for (const schema of res.data){
-        this.chartConceptSchemes.labels.push(schema.label);
-        this.chartConceptSchemes.datasets[0].data.push(schema.count);
-      }
-      const length = Object.keys(res.data).length;
-      const bgs = palette('tol-rainbow', length);
-      const bgsFixed = bgs.map((color:string) => '#' + color)
-      const hovers = palette('tol-rainbow', length);
-      const hoversFixed = hovers.map((color:string) => '#' + color);
-      const hoversLighter = hoversFixed.map((color: string) => colorLighter(color))
-      this.chartConceptSchemes.datasets[0].backgroundColor = bgsFixed;
-      this.chartConceptSchemes.datasets[0].hoverBackgroundColor = hoversLighter;
-      store.commit("updateLoading", {key: "reportScheme", value: false})
-    })
-    .catch(err => {
-      store.commit("updateLoading", {key: "reportScheme", value: false})
-      console.log(err);
-    })
+      .then(res => {
+        this.chartConceptSchemes = {
+          labels: [],
+          datasets: [
+            {
+              data: [],
+              backgroundColor: [],
+              hoverBackgroundColor: []
+            }
+          ]
+        };
+        for (const schema of res.data) {
+          this.chartConceptSchemes.labels.push(schema.label);
+          this.chartConceptSchemes.datasets[0].data.push(schema.count);
+        }
+        const length = Object.keys(res.data).length;
+        const bgs = palette("tol-rainbow", length);
+        const bgsFixed = bgs.map((color: string) => "#" + color);
+        const hovers = palette("tol-rainbow", length);
+        const hoversFixed = hovers.map((color: string) => "#" + color);
+        const hoversLighter = hoversFixed.map((color: string) =>
+          colorLighter(color)
+        );
+        this.chartConceptSchemes.datasets[0].backgroundColor = bgsFixed;
+        this.chartConceptSchemes.datasets[0].hoverBackgroundColor = hoversLighter;
+        store.commit("updateLoading", { key: "reportScheme", value: false });
+      })
+      .catch(err => {
+        store.commit("updateLoading", { key: "reportScheme", value: false });
+        console.log(err);
+      });
   }
-
 }
 </script>
 
 <style scoped>
-
 .dashcard {
   height: 100%;
 }
@@ -79,5 +89,4 @@ export default class ConceptSchemes extends Vue {
 .loading-container {
   height: 100%;
 }
-
 </style>

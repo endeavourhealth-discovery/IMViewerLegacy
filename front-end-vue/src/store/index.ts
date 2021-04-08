@@ -23,16 +23,16 @@ export default createStore({
       selectedSchemes: [
         {
           iri: "http://endhealth.info/im#891071000252105",
-          name: "Discovery code",
+          name: "Discovery code"
         },
         {
           iri: "http://endhealth.info/im#891101000252101",
-          name: "Snomed-CT code",
+          name: "Snomed-CT code"
         },
         {
           iri: "http://endhealth.info/im#891111000252103",
-          name: "Term based code",
-        },
+          name: "Term based code"
+        }
       ],
       selectedTypes: [
         "Class",
@@ -44,9 +44,9 @@ export default createStore({
         "Record",
         "ValueSet",
         "Folder",
-        "Legacy",
-      ],
-    },
+        "Legacy"
+      ]
+    }
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -79,28 +79,27 @@ export default createStore({
     updateLoading(state, loading) {
       state.loading.set(loading.key, loading.value);
     },
-    updateCurrentUser(state, user){
+    updateCurrentUser(state, user) {
       state.currentUser = user;
     },
-    updateRegisteredUsername(state, username){
+    updateRegisteredUsername(state, username) {
       state.registeredUsername = username;
     },
-    updateIsLoggedIn(state, status){
+    updateIsLoggedIn(state, status) {
       state.isLoggedIn = status;
-    },
+    }
   },
   actions: {
     async fetchConceptAggregate({ commit }, iri) {
       const concept = (await ConceptService.getConcept(iri)).data;
-      const parents = (await ConceptService.getConceptParents(iri))
-        .data;
+      const parents = (await ConceptService.getConceptParents(iri)).data;
       const children = (await ConceptService.getConceptChildren(iri)).data;
       const properties = (await ConceptService.getConceptProperties(iri)).data;
       commit("updateConceptAggregate", {
         concept: concept,
         parents: parents,
         children: children,
-        properties: properties,
+        properties: properties
       });
     },
     async fetchConceptMapped({ commit }, iri) {
@@ -124,41 +123,41 @@ export default createStore({
     },
     async fetchSearchResults({ commit }, searchRequest: SearchRequest) {
       commit("updateLoading", { key: "searchResults", value: true });
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       const searchResults = (await ConceptService.advancedSearch(searchRequest))
-          .data.concepts;
+        .data.concepts;
       commit("updateSearchResults", searchResults);
       commit("updateLoading", { key: "searchResults", value: false });
     },
-    async logoutCurrentUser({ commit }){
+    async logoutCurrentUser({ commit }) {
       try {
-        const res = await AuthService.signOut()
-        if (res.status === 200){
+        const res = await AuthService.signOut();
+        if (res.status === 200) {
           commit("updateCurrentUser", null);
-          commit("updateIsLoggedIn", false)
+          commit("updateIsLoggedIn", false);
           return res;
         } else {
           console.log(res.error);
-          return res
+          return res;
         }
       } catch (err) {
-        console.log(err)
-        return {status: 500, error: err, message: "Logout (store) failed"}
+        console.log(err);
+        return { status: 500, error: err, message: "Logout (store) failed" };
       }
     },
-    async authenticateCurrentUser({ commit, dispatch }){
+    async authenticateCurrentUser({ commit, dispatch }) {
       const res = await AuthService.getCurrentAuthenticatedUser();
-      if (res.status === 200){
+      if (res.status === 200) {
         commit("updateIsLoggedIn", true);
         commit("updateCurrentUser", res.user);
-        return {authenticated: true};
+        return { authenticated: true };
       } else {
         console.log(res.error);
         //refresh token call here?
         dispatch("logoutCurrentUser");
-        return {authenticated: false};
+        return { authenticated: false };
       }
     }
   },
-  modules: {},
+  modules: {}
 });

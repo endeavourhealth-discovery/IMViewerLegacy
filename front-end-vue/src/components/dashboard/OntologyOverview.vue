@@ -6,14 +6,23 @@
         A brief overview of the concepts stored in the Ontology
       </template>
       <template #content>
-        <DataTable v-if="!$store.state.loading.get('reportCategory')" :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="250px">
+        <DataTable
+          v-if="!$store.state.loading.get('reportCategory')"
+          :value="tableData"
+          class="p-datatable-sm"
+          :scrollable="true"
+          scrollHeight="250px"
+        >
           <template #header>
-              Ontology Data
+            Ontology Data
           </template>
           <Column field="label" header="Label"></Column>
           <Column field="count" header="Total"></Column>
         </DataTable>
-        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportCategory')">
+        <div
+          class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container"
+          v-if="$store.state.loading.get('reportCategory')"
+        >
           <ProgressSpinner />
         </div>
       </template>
@@ -30,31 +39,27 @@ import ReportService from "@/services/ReportService";
   name: "OntologyOverview",
   props: []
 })
-
 export default class OntologyOverview extends Vue {
   tableData: any = [];
 
   mounted() {
-      // table data
-    store.commit("updateLoading", {key: "reportCategory", value: true})
+    // table data
+    store.commit("updateLoading", { key: "reportCategory", value: true });
     ReportService.getConceptCategoryReport()
-    .then(res => {
-      this.tableData = res.data
-      store.commit("updateLoading", {key: "reportCategory", value: false})
-    })
-    .catch(err => {
-      console.log(err);
-      store.commit("updateLoading", {key: "reportCategory", value: false})
-    })
+      .then(res => {
+        this.tableData = res.data;
+        store.commit("updateLoading", { key: "reportCategory", value: false });
+      })
+      .catch(err => {
+        console.log(err);
+        store.commit("updateLoading", { key: "reportCategory", value: false });
+      });
   }
-
 }
 </script>
 
 <style scoped>
-
 .dashcard {
   height: 100%;
 }
-
 </style>

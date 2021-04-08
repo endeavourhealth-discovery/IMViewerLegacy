@@ -8,15 +8,12 @@
 import { Options, Vue } from "vue-class-component";
 
 @Options({
-  name: 'App'
+  name: "App"
 })
-export default class App extends Vue {
-
-}
+export default class App extends Vue {}
 </script>
 
 <style>
-
 body {
   overflow: hidden;
 }
@@ -40,5 +37,4 @@ body {
   width: 90%;
   text-align: center;
 }
-
 </style>

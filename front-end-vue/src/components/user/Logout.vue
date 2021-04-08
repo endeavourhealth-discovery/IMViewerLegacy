@@ -2,7 +2,10 @@
   <div class="p-d-flex p-flex-row p-ai-center">
     <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center logout-card">
       <template #header>
-        <i class="pi pi-fw pi-unlock" style="fontSize: 50px; margin-top: 1em;"/>
+        <i
+          class="pi pi-fw pi-unlock"
+          style="fontSize: 50px; margin-top: 1em;"
+        />
       </template>
       <template #title>
         Logout
@@ -14,12 +17,19 @@
           </div>
           <div class="p-field">
             <div v-if="isLoggedIn" class="p-text-left p-text-capitalize">
-              <p id="username-display">{{currentUser.username}}</p>
+              <p id="username-display">{{ currentUser.username }}</p>
             </div>
-            <div v-if="!isLoggedIn" class="p-text-left p-text-capitalize">Guest</div>
+            <div v-if="!isLoggedIn" class="p-text-left p-text-capitalize">
+              Guest
+            </div>
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
-            <Button class="user-submit" type="submit" label="Logout" v-on:click.prevent="handleSubmit" />
+            <Button
+              class="user-submit"
+              type="submit"
+              label="Logout"
+              v-on:click.prevent="handleSubmit"
+            />
           </div>
         </div>
       </template>
@@ -36,55 +46,48 @@ import AuthService from "@/services/AuthService";
 @Options({
   name: "Logout",
   computed: {
-    currentUser(){
+    currentUser() {
       return store.state.currentUser;
     },
-    isLoggedIn(){
+    isLoggedIn() {
       return store.state.isLoggedIn;
     }
   }
 })
-
 export default class Logout extends Vue {
-
-  handleSubmit(){
+  handleSubmit() {
     Swal.fire({
       icon: "warning",
       title: "Are you sure?",
       text: "Confirm logout request",
       showCancelButton: true,
       confirmButtonText: "Logout"
-    })
-    .then(result => {
-      if (result.isConfirmed){
-        store.dispatch("logoutCurrentUser")
-        .then((res) => {
-          if (res.status === 200){
+    }).then(result => {
+      if (result.isConfirmed) {
+        store.dispatch("logoutCurrentUser").then(res => {
+          if (res.status === 200) {
             Swal.fire({
               icon: "success",
               title: "Success",
-              text: res.message,
-            })
-            .then(result => {
-              this.$router.push({name: "Home"})
-            })
+              text: res.message
+            }).then(result => {
+              this.$router.push({ name: "Home" });
+            });
           } else {
             Swal.fire({
               icon: "error",
               title: "Error",
               text: res.message
-            })
+            });
           }
-        })
+        });
       }
-    })
+    });
   }
-
 }
 </script>
 
 <style scoped>
-
 .user-submit {
   width: fit-content !important;
 }
@@ -97,5 +100,4 @@ export default class Logout extends Vue {
 .logout-card {
   padding: 0 2em;
 }
-
 </style>

@@ -15,7 +15,7 @@
       </template>
       <template #footer>
         <Button label="Open Workflow Manager Module" :disabled="true" />
-    </template>
+      </template>
     </Card>
   </div>
 </template>
@@ -26,16 +26,11 @@ import { Options, Vue } from "vue-class-component";
 @Options({
   name: "WorkflowManager"
 })
-
-export default class WorkflowManager extends Vue{
-
-}
+export default class WorkflowManager extends Vue {}
 </script>
 
 <style scoped>
-
 .modulecard {
   height: 100%;
 }
-
 </style>

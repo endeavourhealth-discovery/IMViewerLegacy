@@ -1,7 +1,10 @@
 <template>
   <transition name="layout-sidebar">
     <div class="layout-sidebar layout-sidebar-dark">
-      <div id="sidebar" class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center">
+      <div
+        id="sidebar"
+        class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center"
+      >
         <div>
           <p class="im-logo">IM</p>
         </div>
@@ -33,9 +36,31 @@
           </div>
         </div>
         <div class="footer user-settings ">
-          <i v-if="!isLoggedIn" id="user-icon" class="pi pi-users user-icon" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"></i>
-          <Avatar v-if="isLoggedIn" id="user-icon" class="avatar-icon" icon="pi pi-user" size="large" shape="circle" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
-          <Menu ref="menu" :model="getItems()" :popup="true" class="popup-user" />
+          <i
+            v-if="!isLoggedIn"
+            id="user-icon"
+            class="pi pi-users user-icon"
+            @click="toggle"
+            aria-haspopup="true"
+            aria-controls="overlay_menu"
+          ></i>
+          <Avatar
+            v-if="isLoggedIn"
+            id="user-icon"
+            class="avatar-icon"
+            icon="pi pi-user"
+            size="large"
+            shape="circle"
+            @click="toggle"
+            aria-haspopup="true"
+            aria-controls="overlay_menu"
+          />
+          <Menu
+            ref="menu"
+            :model="getItems()"
+            :popup="true"
+            class="popup-user"
+          />
           <!-- <MegaMenu :model="items" orientation="vertical"/> -->
           <i class="pi pi-cog settings-icon"></i>
         </div>
@@ -52,22 +77,21 @@ import { User } from "@/models/User";
 @Options({
   name: "SideNav",
   computed: {
-    currentUser(){
+    currentUser() {
       return store.state.currentUser;
     },
-    isLoggedIn(){
+    isLoggedIn() {
       return store.state.isLoggedIn;
     }
-  },
+  }
 })
-
 export default class SideNav extends Vue {
   currentUser!: User;
   isLoggedIn!: boolean;
   $refs!: any;
 
-  popupClass(){
-    this.isLoggedIn? "user-popup": "user-popup"
+  popupClass() {
+    this.isLoggedIn ? "user-popup" : "user-popup";
   }
 
   isActive(item: string) {
@@ -78,36 +102,36 @@ export default class SideNav extends Vue {
     }
   }
 
-  getItems(){
-    if (this.isLoggedIn){
-      return this.accountItems
+  getItems() {
+    if (this.isLoggedIn) {
+      return this.accountItems;
     } else {
-      return this.loginItems
+      return this.loginItems;
     }
   }
 
-  loginItems: [{},{}] = [
+  loginItems: [{}, {}] = [
     {
-      label: 'Login',
-      icon: 'pi pi-fw pi-user',
-      to: '/user/login'
+      label: "Login",
+      icon: "pi pi-fw pi-user",
+      to: "/user/login"
     },
     {
-      label: 'Register',
-      icon: 'pi pi-fw pi-user-plus',
-      to: '/user/register'
-    },
-  ]
+      label: "Register",
+      icon: "pi pi-fw pi-user-plus",
+      to: "/user/register"
+    }
+  ];
 
-  accountItems: [{},{},{},{}] = [
+  accountItems: [{}, {}, {}, {}] = [
     {
-      label: 'My Account',
-      icon: 'pi pi-fw pi-user',
-      to: '/user/my-account' //+ this.user.id
+      label: "My Account",
+      icon: "pi pi-fw pi-user",
+      to: "/user/my-account" //+ this.user.id
     },
     {
       label: "Edit Account",
-      icon: 'pi pi-fw pi-user-edit',
+      icon: "pi pi-fw pi-user-edit",
       to: "/user/my-account/edit"
     },
     {
@@ -116,20 +140,19 @@ export default class SideNav extends Vue {
       to: "/user/my-account/password-edit"
     },
     {
-      label: 'Logout',
-      icon: 'pi pi-fw pi-lock-open',
-      to: '/user/logout' //+ this.user.id
-    },
-  ]
+      label: "Logout",
+      icon: "pi pi-fw pi-lock-open",
+      to: "/user/logout" //+ this.user.id
+    }
+  ];
 
-  toggle(event: any){
+  toggle(event: any) {
     this.$refs.menu.toggle(event);
   }
 }
 </script>
 
 <style scoped>
-
 .layout-menu-container {
   padding: 20px 0;
   height: 100%;
@@ -137,7 +160,7 @@ export default class SideNav extends Vue {
 
 .p-menu {
   background-color: hotpink;
-  left: calc((100vw/12)*3);
+  left: calc((100vw / 12) * 3);
 }
 
 .p-button {
@@ -157,7 +180,8 @@ export default class SideNav extends Vue {
   text-align: center;
 }
 
-.user-icon, .settings-icon {
+.user-icon,
+.settings-icon {
   width: 100%;
   font-size: 4em;
   color: lightgray;
@@ -179,5 +203,4 @@ export default class SideNav extends Vue {
   color: lightgray;
   font-weight: bold;
 }
-
 </style>

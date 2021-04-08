@@ -17,8 +17,8 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { Options, Vue } from "vue-class-component";
 import { mapState } from "vuex";
 import ConceptService from "@/services/ConceptService";
-import {RDFS} from '@/vocabulary/RDFS';
-import {IM} from '@/vocabulary/IM';
+import { RDFS } from "@/vocabulary/RDFS";
+import { IM } from "@/vocabulary/IM";
 
 interface TreeNode {
   key: string;
@@ -60,7 +60,8 @@ export default class Hierarchy extends Vue {
     index++;
 
     children.forEach((child: any) => {
-      if (child.name){ //remove this to return all OWL children
+      if (child.name) {
+        //remove this to return all OWL children
         selectedConcept.children.push(
           this.createTreeNode(child.name, child.iri, index, child.hasChildren)
         );

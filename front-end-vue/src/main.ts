@@ -41,31 +41,30 @@ import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup"; //optional for column grouping
 import OrganizationChart from "primevue/organizationchart";
 import Textarea from "primevue/textarea";
-import Dropdown from 'primevue/dropdown';
-import Tooltip from 'primevue/tooltip';
-import Dialog from 'primevue/dialog';
-import SplitButton from 'primevue/splitbutton';
-import MultiSelect from 'primevue/multiselect';
-import OverlayPanel from 'primevue/overlaypanel';
+import Dropdown from "primevue/dropdown";
+import Tooltip from "primevue/tooltip";
+import Dialog from "primevue/dialog";
+import SplitButton from "primevue/splitbutton";
+import MultiSelect from "primevue/multiselect";
+import OverlayPanel from "primevue/overlaypanel";
 import Chart from "primevue/chart";
 import Menu from "primevue/menu";
-import ProgressSpinner from 'primevue/progressspinner';
-import Menubar from 'primevue/menubar';
-import InlineMessage from 'primevue/inlinemessage';
-import Message from 'primevue/message';
-import ConfirmationService from 'primevue/confirmationservice';
-import ConfirmDialogue from 'primevue/confirmdialog';
-import Avatar from 'primevue/avatar';
-import MegaMenu from 'primevue/megamenu';
-import Timeline from 'primevue/timeline';
-import SelectButton from 'primevue/selectbutton';
+import ProgressSpinner from "primevue/progressspinner";
+import Menubar from "primevue/menubar";
+import InlineMessage from "primevue/inlinemessage";
+import Message from "primevue/message";
+import ConfirmationService from "primevue/confirmationservice";
+import ConfirmDialogue from "primevue/confirmdialog";
+import Avatar from "primevue/avatar";
+import MegaMenu from "primevue/megamenu";
+import Timeline from "primevue/timeline";
+import SelectButton from "primevue/selectbutton";
 
-import {Amplify, Auth} from 'aws-amplify';
+import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
 
-
-Amplify.configure(awsconfig)
-Auth.configure(awsconfig)
+Amplify.configure(awsconfig);
+Auth.configure(awsconfig);
 
 createApp(App)
   .use(store)

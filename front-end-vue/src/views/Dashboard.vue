@@ -5,11 +5,13 @@
       <workflow-manager />
       <ontology-overview />
       <concept-types :chartOptions="chartOptions" :graphHeight="graphHeight" />
-      <concept-schemes :chartOptions="chartOptions" :graphHeight="graphHeight" />
+      <concept-schemes
+        :chartOptions="chartOptions"
+        :graphHeight="graphHeight"
+      />
       <concept-status :chartOptions="chartOptions" :graphHeight="graphHeight" />
     </div>
   </div>
-
 </template>
 
 <script lang="ts">
@@ -34,7 +36,7 @@ import ConceptStatus from "@/components/dashboard/ConceptStatus.vue";
   watch: {
     windowWidth: {
       immediate: true,
-      handler(newValue, oldValue){
+      handler(newValue, oldValue) {
         this.setLegendOptions(newValue);
       }
     }
@@ -44,79 +46,75 @@ export default class Dashboard extends Vue {
   msg!: string;
   chartOptions: any = {
     legend: {
-      position: 'right'
+      position: "right"
     }
   };
   windowHeight = 0;
   windowWidth = 0;
   graphHeight = 200;
 
-  mounted(){
-
+  mounted() {
     this.$nextTick(() => {
-      window.addEventListener('resize', this.onResize)
-    })
+      window.addEventListener("resize", this.onResize);
+    });
 
     this.windowHeight = window.innerHeight;
     this.windowWidth = window.innerWidth;
-
   } // mounted end
 
-  beforeDestroy(){
-    window.removeEventListener('resize', this.onResize);
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResize);
   }
 
-  onResize(){
+  onResize() {
     this.windowHeight = window.innerHeight;
     this.windowWidth = window.innerWidth;
   }
 
-  setLegendOptions(width: number){
-    if (width > 1588){
+  setLegendOptions(width: number) {
+    if (width > 1588) {
       this.chartOptions = {
         legend: {
-          position: 'right',
+          position: "right",
           labels: {
             boxWidth: 40,
             fontSize: 12
           }
         }
-      }
-    } else if (width > 954){
+      };
+    } else if (width > 954) {
       this.chartOptions = {
         legend: {
-          position: 'bottom',
+          position: "bottom",
           labels: {
             boxWidth: 20,
             fontSize: 10
           }
         }
-      }
-    } else if (width > 742){
+      };
+    } else if (width > 742) {
       this.chartOptions = {
         legend: {
-          position: 'right',
+          position: "right",
           labels: {
             boxWidth: 10,
             fontSize: 8
           }
         }
-      }
+      };
     } else {
       this.chartOptions = {
         legend: {
           display: false
         }
-      }
+      };
     }
   }
 }
 </script>
 
 <style scoped>
-
 .dashboard-container {
   height: 100%;
 }
-
 </style>

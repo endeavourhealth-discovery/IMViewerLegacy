@@ -6,10 +6,19 @@
         A brief overview of the status of concepts stored in the Ontology
       </template>
       <template #content>
-        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportStatus')">
+        <div
+          class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container"
+          v-if="$store.state.loading.get('reportStatus')"
+        >
           <ProgressSpinner />
         </div>
-        <Chart v-if="!$store.state.loading.get('reportStatus')" type="pie" :data="chartConceptStatus" :options="chartOptions" :height="graphHeight"/>
+        <Chart
+          v-if="!$store.state.loading.get('reportStatus')"
+          type="pie"
+          :data="chartConceptStatus"
+          :options="chartOptions"
+          :height="graphHeight"
+        />
       </template>
     </Card>
   </div>
@@ -26,48 +35,49 @@ const palette = require("../../../node_modules/google-palette");
   name: "ConceptStatus",
   props: ["chartOptions", "graphHeight"]
 })
-
 export default class ConceptStatus extends Vue {
   chartConceptStatus: any = {};
 
-  mounted(){
-        // chart status
-    store.commit("updateLoading", {key: "reportStatus", value: true})
+  mounted() {
+    // chart status
+    store.commit("updateLoading", { key: "reportStatus", value: true });
     ReportService.getConceptStatusReport()
-    .then(res => {
-      this.chartConceptStatus = {
-        labels: [],
-        datasets: [{
-          data: [],
-          backgroundColor: [],
-          hoverBackgroundColor: []
-        }]
-      }
-      for (const status of res.data){
-        this.chartConceptStatus.labels.push(status.label);
-        this.chartConceptStatus.datasets[0].data.push(status.count)
-      }
-      const length = Object.keys(res.data).length;
-      const bgs = palette('tol-rainbow', length);
-      const bgsFixed = bgs.map((color:string) => '#' + color)
-      const hovers = palette('tol-rainbow', length);
-      const hoversFixed = hovers.map((color:string) => '#' + color);
-      const hoversLighter = hoversFixed.map((color: string) => colorLighter(color))
-      this.chartConceptStatus.datasets[0].backgroundColor = bgsFixed;
-      this.chartConceptStatus.datasets[0].hoverBackgroundColor = hoversLighter;
-      store.commit("updateLoading", {key: "reportStatus", value: false})
-    })
-    .catch(err => {
-      store.commit("updateLoading", {key: "reportStatus", value: false})
-      console.log(err);
-    })
+      .then(res => {
+        this.chartConceptStatus = {
+          labels: [],
+          datasets: [
+            {
+              data: [],
+              backgroundColor: [],
+              hoverBackgroundColor: []
+            }
+          ]
+        };
+        for (const status of res.data) {
+          this.chartConceptStatus.labels.push(status.label);
+          this.chartConceptStatus.datasets[0].data.push(status.count);
+        }
+        const length = Object.keys(res.data).length;
+        const bgs = palette("tol-rainbow", length);
+        const bgsFixed = bgs.map((color: string) => "#" + color);
+        const hovers = palette("tol-rainbow", length);
+        const hoversFixed = hovers.map((color: string) => "#" + color);
+        const hoversLighter = hoversFixed.map((color: string) =>
+          colorLighter(color)
+        );
+        this.chartConceptStatus.datasets[0].backgroundColor = bgsFixed;
+        this.chartConceptStatus.datasets[0].hoverBackgroundColor = hoversLighter;
+        store.commit("updateLoading", { key: "reportStatus", value: false });
+      })
+      .catch(err => {
+        store.commit("updateLoading", { key: "reportStatus", value: false });
+        console.log(err);
+      });
   }
-
 }
 </script>
 
 <style scoped>
-
 .dashcard {
   height: 100%;
 }
@@ -79,5 +89,4 @@ export default class ConceptStatus extends Vue {
 .loading-container {
   height: 100%;
 }
-
 </style>
