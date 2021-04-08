@@ -1,5 +1,7 @@
 <template>
-  <div class="p-col-9" style="height: calc(100vh - 123px); overflow: auto;"><PanelControl /></div>
+  <div class="p-col-9" style="height: calc(100vh - 123px); overflow: auto;">
+    <PanelControl />
+  </div>
 </template>
 
 <script lang="ts">
@@ -10,10 +12,8 @@ import store from "@/store/index";
 @Options({
   name: "Concept",
   components: {
-    PanelControl,
+    PanelControl
   }
 })
-export default class Concept extends Vue {
-
-}
+export default class Concept extends Vue {}
 </script>

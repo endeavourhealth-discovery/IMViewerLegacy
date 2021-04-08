@@ -77,9 +77,7 @@ export default class EditorDialog extends Vue {
 
   async submit() {
     this.conceptDto.definitionText = this.updatedText;
-    console.log(this.conceptDto);
     const response = await ConceptService.saveConcept(this.conceptDto);
-    console.log(response.data);
     this.closeDialog();
   }
 

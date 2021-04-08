@@ -1,4 +1,4 @@
 export class TTIriRef {
-    iri!: string;
-    name!: string;
+  iri!: string;
+  name!: string;
 }

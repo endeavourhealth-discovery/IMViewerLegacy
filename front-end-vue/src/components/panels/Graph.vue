@@ -4,6 +4,23 @@
       <g class="links"></g>
       <g class="nodes"></g>
     </svg>
+    <div id="controls" class="p-d-flex p-flex-column p-jc-center p-ai-center">
+      <Button
+        class="p-button-info p-button-rounded p-button-outlined zoom-button"
+        icon="pi pi-plus"
+        @click="zoomIn"
+      />
+      <Button
+        class="p-button-info p-button-rounded p-button-outlined zoom-button"
+        label="Reset"
+        @click="zoomReset"
+      />
+      <Button
+        class="p-button-info p-button-rounded p-button-outlined zoom-button"
+        icon="pi pi-minus"
+        @click="zoomOut"
+      />
+    </div>
   </div>
 </template>
 
@@ -39,21 +56,33 @@ export default class Graph extends Vue {
   margin: any = {};
   width = 660;
   height = 500;
+  panZoom!: any;
 
-  monuted() {
+  mounted() {
     this.margin = { top: 20, right: 90, bottom: 30, left: 90 };
     this.width = 660 - this.margin.left - this.margin.right;
     this.height = 500 - this.margin.top - this.margin.bottom;
+  } // mounted end
+
+  zoomIn() {
+    this.panZoom.zoomIn();
+  }
+
+  zoomReset() {
+    this.panZoom.resetZoom();
+  }
+
+  zoomOut() {
+    this.panZoom.zoomOut();
   }
 
   initSvgPanZoom() {
-    svgPanZoom("#svg", {
+    this.panZoom = svgPanZoom("#svg", {
       zoomEnabled: true,
-      controlIconsEnabled: true,
       fit: false,
       center: true,
       dblClickZoomEnabled: false,
-      mouseWheelZoomEnabled: false,
+      mouseWheelZoomEnabled: false
     });
   }
 
@@ -207,11 +236,21 @@ export default class Graph extends Vue {
 </script>
 
 <style>
+#svg {
+  cursor: move;
+  cursor: grab;
+}
+
+#svg:active {
+  cursor: grabbing;
+}
+
 .circle {
   fill: #fff;
   stroke: steelblue;
   stroke-width: 3px;
 }
+
 .text {
   font: 12px sans-serif;
 }
@@ -220,5 +259,20 @@ export default class Graph extends Vue {
   fill: none;
   stroke: #ccc;
   stroke-width: 2px;
+}
+
+#content {
+  position: relative;
+}
+
+#controls {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  width: fit-content;
+}
+
+.zoom-button {
+  width: fit-content;
 }
 </style>

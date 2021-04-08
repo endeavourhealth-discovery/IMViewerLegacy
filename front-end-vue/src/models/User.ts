@@ -11,8 +11,8 @@ export class User {
     firstName: string,
     lastName: string,
     email: string,
-    password: string,
-  ){
+    password: string
+  ) {
     this.username = username;
     this.firstName = firstName;
     this.lastName = lastName;
@@ -21,7 +21,7 @@ export class User {
     this.id = "";
   }
 
-  setId(id: string){
+  setId(id: string) {
     this.id = id;
   }
 }

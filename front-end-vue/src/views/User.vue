@@ -15,21 +15,16 @@ import store from "@/store/index";
 @Options({
   name: "User",
   components: {
-    "ButtonBar": ButtonBar
+    ButtonBar: ButtonBar
   }
 })
-
-export default class User extends Vue {
-
-}
+export default class User extends Vue {}
 </script>
 
 <style scoped>
-
 .user-container {
   height: 100vh;
   overflow-y: auto;
   margin-top: 10vh;
 }
-
 </style>

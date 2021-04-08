@@ -17,8 +17,8 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { Options, Vue } from "vue-class-component";
 import { mapState } from "vuex";
 import ConceptService from "@/services/ConceptService";
-import {RDFS} from '@/vocabulary/RDFS';
-import {IM} from '@/vocabulary/IM';
+import { RDFS } from "@/vocabulary/RDFS";
+import { IM } from "@/vocabulary/IM";
 
 interface TreeNode {
   key: string;
@@ -60,7 +60,8 @@ export default class Hierarchy extends Vue {
     index++;
 
     children.forEach((child: any) => {
-      if (child.name){ //remove this to return all OWL children
+      if (child.name) {
+        //remove this to return all OWL children
         selectedConcept.children.push(
           this.createTreeNode(child.name, child.iri, index, child.hasChildren)
         );
@@ -103,9 +104,6 @@ export default class Hierarchy extends Vue {
   }
 
   onNodeSelect(node: any) {
-
-    console.log("test");
-    console.log(node);
     this.$router.push({
       name: "Concept",
       params: { selectedIri: node.data }
@@ -113,10 +111,8 @@ export default class Hierarchy extends Vue {
   }
 
   async onNodeExpand(node: TreeNode) {
-    console.log(node);
     const children = await (await ConceptService.getConceptChildren(node.data))
       .data;
-
     let index = 0;
 
     node.children = [];

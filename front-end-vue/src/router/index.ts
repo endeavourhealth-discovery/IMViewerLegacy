@@ -81,7 +81,7 @@ const routes: Array<RouteRecordRaw> = [
         path: "password-recovery/submit",
         name: "ForgotPasswordSubmit",
         component: ForgotPasswordSubmit
-      },
+      }
       //this isn't currently possible with AWS Auth
       // {
       //   path: "account-recovery",
@@ -99,19 +99,19 @@ const routes: Array<RouteRecordRaw> = [
         path: "",
         name: "Dashboard",
         alias: ["/home", "/dashboard"],
-        component: Dashboard,
+        component: Dashboard
       },
       {
         path: "/concept/:selectedIri",
         name: "Concept",
-        component: Datamodel,
+        component: Datamodel
       }
     ]
   },
   {
     path: "/workflow",
     name: "Workflow",
-    component: Workflow,
+    component: Workflow
   }
 ];
 
@@ -121,8 +121,6 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  console.log("iri" + to.params.selectedIri);
-  console.log("route" + to.name?.toString());
   if (to.name?.toString() == "Concept") {
     store.commit("updateConceptIri", to.params.selectedIri as string);
     store.dispatch("fetchConceptAggregate", store.state.conceptIri);
@@ -130,19 +128,18 @@ router.beforeEach((to, from, next) => {
     store.dispatch("fetchConceptUsages", store.state.conceptIri);
     store.dispatch("fetchConceptMembers", store.state.conceptIri);
   }
-  if (to.matched.some(record => record.meta.requiresAuth)){
-    store.dispatch("authenticateCurrentUser")
-    .then(res => {
-      console.log("auth guard user authenticated:" + res.authenticated)
-      if (!res.authenticated){
-        console.log("redirecting to login")
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    store.dispatch("authenticateCurrentUser").then(res => {
+      console.log("auth guard user authenticated:" + res.authenticated);
+      if (!res.authenticated) {
+        console.log("redirecting to login");
         next({
           path: "/user/login"
-        })
+        });
       } else {
         next();
       }
-    })
+    });
   } else {
     next();
   }

@@ -1,12 +1,12 @@
 <template>
   <div class="p-d-flex p-flex-row p-ai-center">
-    <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center recovery-card">
+    <Card
+      class="p-d-flex p-flex-column p-jc-sm-around p-ai-center recovery-card"
+    >
       <template #header>
-        <i class="pi pi-fw pi-user" style="fontSize: 50px; margin-top: 1em;"/>
+        <i class="pi pi-fw pi-user" style="fontSize: 50px; margin-top: 1em;" />
       </template>
-      <template #title>
-        Account Recovery: <br><br>Password Reset
-      </template>
+      <template #title> Account Recovery: <br /><br />Password Reset </template>
       <template #content>
         <div class="p-fluid recovery-form">
           <div class="p-field">
@@ -14,7 +14,12 @@
             <InputText id="fieldUsername" type="text" v-model="username" />
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
-            <Button class="user-submit" type="submit" label="Request Reset Code" v-on:click.prevent="handleSubmit" />
+            <Button
+              class="user-submit"
+              type="submit"
+              label="Request Reset Code"
+              v-on:click.prevent="handleSubmit"
+            />
           </div>
         </div>
       </template>
@@ -22,29 +27,39 @@
         <!-- <small>Forgot your username? <a id="account-recovery-link" class="footer-link" @click="$router.push({name: 'RecoverByEmail'})">Recover Account</a></small>
         <br>
         <br> -->
-        <small>Already have a recovery code? <a id="password-submit-link" class="footer-link" @click="$router.push({name: 'ForgotPasswordSubmit'})">Submit Code</a></small>
-        <br>
-        <br>
-        <small>If you have forgotten your username,<br> please contact an admin</small>
+        <small
+          >Already have a recovery code?
+          <a
+            id="password-submit-link"
+            class="footer-link"
+            @click="$router.push({ name: 'ForgotPasswordSubmit' })"
+            >Submit Code</a
+          ></small
+        >
+        <br />
+        <br />
+        <small
+          >If you have forgotten your username,<br />
+          please contact an admin</small
+        >
       </template>
     </Card>
   </div>
 </template>
 
 <script lang="ts">
-import {Options, Vue} from "vue-class-component";
-import Swal from 'sweetalert2';
+import { Options, Vue } from "vue-class-component";
+import Swal from "sweetalert2";
 import AuthService from "@/services/AuthService";
 import store from "@/store/index";
 
 @Options({
   name: "ForgotPassword"
 })
-
 export default class ForgotPassword extends Vue {
   username = "";
 
-  handleSubmit(){
+  handleSubmit() {
     Swal.fire({
       icon: "warning",
       title: "Warning",
@@ -52,38 +67,36 @@ export default class ForgotPassword extends Vue {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       confirmButtonText: "Reset Password"
-    })
-    .then(result => {
-      if (result.isConfirmed){
-        AuthService.forgotPassword(this.username)
-        .then(res => {
-          if (res.status === 200){
+    }).then(result => {
+      if (result.isConfirmed) {
+        AuthService.forgotPassword(this.username).then(res => {
+          if (res.status === 200) {
             Swal.fire({
               icon: "success",
               title: "Password reset!",
-              text: "Password has been reset for account: " + this.username + ". An email has been sent with a recovery code."
-            })
-            .then(() => {
-              store.commit("updateRegisteredUsername", this.username)
-              this.$router.push({name: "ForgotPasswordSubmit"})
-            })
+              text:
+                "Password has been reset for account: " +
+                this.username +
+                ". An email has been sent with a recovery code."
+            }).then(() => {
+              store.commit("updateRegisteredUsername", this.username);
+              this.$router.push({ name: "ForgotPasswordSubmit" });
+            });
           } else {
             Swal.fire({
               icon: "error",
               title: "Error",
               text: res.message + ". Check username is correct."
-            })
+            });
           }
-        })
+        });
       }
-    })
+    });
   }
-
 }
 </script>
 
 <style scoped>
-
 .recovery-card {
   padding: 0 2em;
 }
@@ -99,5 +112,4 @@ export default class ForgotPassword extends Vue {
 .footer-link:hover {
   cursor: pointer;
 }
-
 </style>
