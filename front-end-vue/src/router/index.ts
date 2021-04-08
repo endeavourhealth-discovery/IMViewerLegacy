@@ -1,9 +1,4 @@
-import {
-  createRouter,
-  createWebHashHistory,
-  RouteRecordRaw,
-  viewDepthKey
-} from "vue-router";
+import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Datamodel from "../views/Concept.vue";
@@ -18,12 +13,11 @@ import ConfirmCode from "../components/user/ConfirmCode.vue";
 import Logout from "../components/user/Logout.vue";
 import ForgotPassword from "../components/user/ForgotPassword.vue";
 import ForgotPasswordSubmit from "../components/user/ForgotPasswordSubmit.vue";
-import RecoverByEmail from "../components/user/RecoverByEmail.vue";
-import { HistoryItem } from "../models/HistoryItem";
+// import RecoverByEmail from "../components/user/RecoverByEmail.vue";
 import store from "@/store/index";
-import {nextTick} from 'vue';
+import { nextTick } from "vue";
 
-const APP_TITLE = 'Information Model';
+const APP_TITLE = "Information Model";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -148,10 +142,10 @@ router.beforeEach((to, from, next) => {
   }
 });
 
-router.afterEach((to, from) => {
-    nextTick(() => {
-        document.title = (to.meta.title as string) || APP_TITLE;
-    });
+router.afterEach(to => {
+  nextTick(() => {
+    document.title = (to.meta.title as string) || APP_TITLE;
+  });
 });
 
 export default router;
