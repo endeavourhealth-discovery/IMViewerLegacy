@@ -1,5 +1,6 @@
 <template>
   <div class="layout-wrapper layout-static">
+    <Toast />
     <router-view />
   </div>
 </template>
