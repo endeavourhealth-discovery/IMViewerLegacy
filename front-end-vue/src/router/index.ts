@@ -21,6 +21,9 @@ import ForgotPasswordSubmit from "../components/user/ForgotPasswordSubmit.vue";
 import RecoverByEmail from "../components/user/RecoverByEmail.vue";
 import { HistoryItem } from "../models/HistoryItem";
 import store from "@/store/index";
+import {nextTick} from 'vue';
+
+const APP_TITLE = 'Information Model';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -143,6 +146,12 @@ router.beforeEach((to, from, next) => {
   } else {
     next();
   }
+});
+
+router.afterEach((to, from) => {
+    nextTick(() => {
+        document.title = (to.meta.title as string) || APP_TITLE;
+    });
 });
 
 export default router;
