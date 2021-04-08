@@ -24,17 +24,11 @@
     /> -->
 
     <ConceptDetails
-      v-if="
-        $store.state.conceptAggregate.concept &&
-          $store.state.conceptAggregate.concept.conceptType != 'ValueSet'
-      "
+      v-if="$store.state.conceptAggregate.concept && !isValueSet"
     />
 
     <ConceptMembers
-      v-if="
-        $store.state.conceptAggregate.concept &&
-          $store.state.conceptAggregate.concept.conceptType == 'ValueSet'
-      "
+      v-if="$store.state.conceptAggregate.concept && isValueSet"
     />
 
     <ConceptUsageAndMapping />
@@ -47,6 +41,7 @@ import ConceptSummary from "@/components/panels/ConceptSummary.vue";
 import ConceptUsageAndMapping from "@/components/panels/ConceptUsageAndMapping.vue";
 import ConceptMembers from "@/components/panels/ConceptMembers.vue";
 import ConceptDetails from "./ConceptDetails.vue";
+import store from "@/store";
 
 @Options({
   name: "PanelControl",
@@ -57,5 +52,11 @@ import ConceptDetails from "./ConceptDetails.vue";
     ConceptDetails
   }
 })
-export default class PanelControl extends Vue {}
+export default class PanelControl extends Vue {
+  get isValueSet() {
+    return !store.state.conceptAggregate.concept[
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    ].some((e: any) => e.name !== "Value set");
+  }
+}
 </script>
