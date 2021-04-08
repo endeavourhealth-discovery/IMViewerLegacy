@@ -67,7 +67,9 @@
         <div class="p-col-6" v-if="hoveredResult.name">
           <p>
             <strong>Status:</strong>
-            <span v-if="hoveredResult.status">{{ hoveredResult.status }}</span>
+            <span v-if="hoveredResult.status">{{
+              hoveredResult.status.name
+            }}</span>
           </p>
           <p>
             <strong>Scheme:</strong>
@@ -75,7 +77,7 @@
               hoveredResult.scheme.name
             }}</span>
           </p>
-          <p><strong>Type:</strong> {{ hoveredResult.conceptType }}</p>
+          <p><strong>Type:</strong> {{ hoveredResult.type }}</p>
         </div>
       </div>
     </OverlayPanel>
