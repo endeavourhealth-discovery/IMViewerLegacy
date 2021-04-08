@@ -14,6 +14,16 @@ export default class ConceptService {
     return axios.get(this.api + "api/concept", { params: { iri: iri }});
   }
 
+  public static async getConceptImLang(iri: string) {
+    return axios.get(this.api + "api/concept", {
+        params: { iri: iri },
+        headers: {
+          accept: "application/imlang"
+        },
+        responseType: "text"
+    });
+  }
+
   public static async getConceptParents(iri: string) {
     return axios.get(this.api + "api/concept/parents", { params: { iri: iri }});
   }
@@ -48,16 +58,6 @@ export default class ConceptService {
 
   public static async saveConcept(conceptDto: ConceptDto) {
     return axios.post(this.api + "api/concept", conceptDto);
-  }
-
-  public static async getConceptImLang(iri: string) {
-    return axios.get(this.api + "api/concept", {
-        params: { iri: iri },
-      headers: {
-        accept: "application/imlang"
-      },
-      responseType: "text"
-    });
   }
 
   public static getConceptProperties(iri: string) {

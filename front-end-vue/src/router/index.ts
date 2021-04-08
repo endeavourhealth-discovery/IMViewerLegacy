@@ -121,8 +121,6 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  console.log("iri" + to.params.selectedIri);
-  console.log("route" + to.name?.toString());
   if (to.name?.toString() == "Concept") {
     store.commit("updateConceptIri", to.params.selectedIri as string);
     store.dispatch("fetchConceptAggregate", store.state.conceptIri);

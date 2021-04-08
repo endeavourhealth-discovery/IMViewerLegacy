@@ -103,9 +103,6 @@ export default class Hierarchy extends Vue {
   }
 
   onNodeSelect(node: any) {
-
-    console.log("test");
-    console.log(node);
     this.$router.push({
       name: "Concept",
       params: { selectedIri: node.data }
@@ -113,10 +110,8 @@ export default class Hierarchy extends Vue {
   }
 
   async onNodeExpand(node: TreeNode) {
-    console.log(node);
     const children = await (await ConceptService.getConceptChildren(node.data))
       .data;
-
     let index = 0;
 
     node.children = [];

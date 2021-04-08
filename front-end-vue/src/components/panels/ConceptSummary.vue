@@ -53,10 +53,10 @@
             {{ conceptTypes }}
           </p>
           <p><strong>Definition:</strong></p>
-          <!-- <Definition
-            :definition="this.definitionText"
+          <Definition
+            :definition="definitionText"
             style="width: 95%; height: 100px;"
-          /> -->
+          />
         </div>
         <EditDialog
           @closeDialog="closeDialog"
@@ -84,9 +84,7 @@ import Definition from "./Definition.vue";
   watch: {
     async conceptAggregate(newValue, oldValue) {
       this.concept = newValue.concept;
-      this.definitionText = this.definitionText = (
-        await ConceptService.getConceptImLang(newValue.concept.iri)
-      ).data;
+      this.definitionText = await (await ConceptService.getConceptImLang(newValue.concept["@id"])).data;
     },
     async conceptIri(newValue, oldValue) {
       await ConceptService.getConceptSynonyms(newValue)
