@@ -72,7 +72,7 @@ export default class ConceptSchemes extends Vue {
       .catch(err => {
         store.commit("updateLoading", { key: "reportScheme", value: false });
         console.log(err);
-        this.$toast.add({severity:'error', summary: 'Error', detail: 'Concept Schemes failed to load', life: 3000})
+        this.$toast.add({severity:'error', summary: 'Error', detail: 'Concept Schemes chart data failed to load', life: 3000})
       });
   }
 }

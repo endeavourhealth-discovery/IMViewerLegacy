@@ -72,6 +72,7 @@ export default class ConceptStatus extends Vue {
       .catch(err => {
         store.commit("updateLoading", { key: "reportStatus", value: false });
         console.log(err);
+        this.$toast.add({severity:'error', summary: 'Error', detail: 'Concept Status chart data failed to load', life: 3000})
       });
   }
 }
