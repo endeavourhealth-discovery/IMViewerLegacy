@@ -56,7 +56,7 @@ export default class PanelControl extends Vue {
   get isValueSet() {
     return !store.state.conceptAggregate.concept[
       "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-    ].some((e: any) => e.name !== "Value set");
+    ].some((e: any) => e.name !== "Value set" && e.name !== "Set");
   }
 }
 </script>
