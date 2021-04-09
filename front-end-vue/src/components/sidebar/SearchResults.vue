@@ -106,17 +106,34 @@ export default class SearchResults extends Vue {
   selectedResult = {} as ConceptSummary;
   hoveredResult = {} as ConceptSummary | any;
 
-  getPerspectiveByConceptType(conceptType: ConceptType): any {
-    switch (conceptType) {
-      case ConceptType.ValueSet:
-        return { name: "Valueset", icon: "tasks" };
-      case ConceptType.Record:
-      case ConceptType.DataProperty:
-      case ConceptType.ObjectProperty:
-        return { name: "Datamodel", icon: "sitemap" };
-      default:
-        return { name: "Ontology", icon: "lightbulb" };
+  // Categories
+  // Set, Query Set, Value Set
+  // Class, Record Type
+  // Everything else
+
+  isValueSet(conceptType: any) {
+    return conceptType.elements.some(
+      (e: any) =>
+        e.name === "Set" || e.name === "Query set" || e.name === "Value set"
+    );
+  }
+
+  isClass(conceptType: any) {
+    return !!conceptType.elements.some((e: any) => {
+      return e.name === "Class" || e.name === "Record type";
+    });
+  }
+
+  getPerspectiveByConceptType(conceptType: any): any {
+    if (this.isValueSet(conceptType)) {
+      return { name: "Valueset", icon: "tasks" };
     }
+
+    if (this.isClass(conceptType)) {
+      return { name: "Datamodel", icon: "sitemap" };
+    }
+
+    return { name: "Ontology", icon: "lightbulb" };
   }
 
   onNodeSelect() {
