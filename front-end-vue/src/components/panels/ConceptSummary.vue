@@ -94,6 +94,7 @@ import ConceptService from "@/services/ConceptService";
 import EditDialog from "@/components/edit/EditDialog.vue";
 import { mapState } from "vuex";
 import Definition from "./Definition.vue";
+import LoggerService from "@/services/LoggerService";
 
 @Options({
   name: "ConceptSummary",
@@ -108,13 +109,9 @@ import Definition from "./Definition.vue";
           this.definitionText = res.data;
         })
         .catch(err => {
-          console.log(err);
-          this.$toast.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Concept IM Lang server request failed",
-            // life: 3000
-          });
+          this.$toast.add(
+            LoggerService.error("Concept IM Lang server request failed", err)
+          );
         });
     },
     conceptIri(newValue) {
@@ -130,12 +127,9 @@ import Definition from "./Definition.vue";
         })
         .catch(err => {
           console.log(err);
-          this.$toast.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Concept synonyms server request failed",
-            // life: 3000
-          });
+          this.$toast.add(
+            LoggerService.error("Concept synonyms server request failed", err)
+          );
         });
     }
   }
@@ -157,13 +151,12 @@ export default class ConceptSummary extends Vue {
         }
       })
       .catch(err => {
-        console.log(err);
-        this.$toast.add({
-          severity: "error",
-          summary: "Error",
-          detail: "Concept synonyms server request failed at component mount",
-          // life: 3000
-        });
+        this.$toast.add(
+          LoggerService.error(
+            "Concept synonyms server request failed at component mount",
+            err
+          )
+        );
       });
   }
 

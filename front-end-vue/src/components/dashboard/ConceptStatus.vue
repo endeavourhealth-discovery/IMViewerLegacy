@@ -30,6 +30,7 @@ import store from "@/store/index";
 import ReportService from "@/services/ReportService";
 import { colorLighter } from "@/helpers/ColorMethods";
 const palette = require("../../../node_modules/google-palette");
+import LoggerService from "@/services/LoggerService";
 
 @Options({
   name: "ConceptStatus",
@@ -71,13 +72,9 @@ export default class ConceptStatus extends Vue {
       })
       .catch(err => {
         store.commit("updateLoading", { key: "reportStatus", value: false });
-        console.log(err);
-        this.$toast.add({
-          severity: "error",
-          summary: "Error",
-          detail: "Concept status server request failed",
-          // life: 3000
-        });
+        this.$toast.add(
+          LoggerService.error("Concept status server request failed", err)
+        );
       });
   }
 }

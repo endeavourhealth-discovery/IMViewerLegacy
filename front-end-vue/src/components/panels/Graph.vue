@@ -34,6 +34,7 @@ import ConceptService from "@/services/ConceptService";
 import { HierarchyNode } from "d3";
 import GraphData from "../../models/GraphData";
 import { IM } from "@/vocabulary/IM";
+import LoggerService from "@/services/LoggerService";
 
 @Options({
   name: "Graph",
@@ -49,13 +50,9 @@ import { IM } from "@/vocabulary/IM";
           this.initSvgPanZoom();
         })
         .catch(err => {
-          console.log(err);
-          this.$toast.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Concept graph server request failed",
-            // life: 3000
-          });
+          this.$toast.add(
+            LoggerService.error("Concept graph server request failed", err)
+          );
         });
     }
   }

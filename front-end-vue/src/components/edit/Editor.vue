@@ -109,6 +109,7 @@ import ConceptService from "@/services/ConceptService";
 import { ConceptReference } from "@/models/ConceptReference";
 import Dropdown from "primevue/dropdown";
 import { ConceptStatus } from "@/models/ConceptStatus";
+import LoggerService from "@/services/LoggerService";
 
 @Options({
   name: "Editor",
@@ -134,12 +135,9 @@ export default class EditorDialog extends Vue {
       })
       .catch(err => {
         console.log(err);
-        this.$toast.add({
-          severity: "error",
-          summary: "Error",
-          detail: "Scheme options server request failed",
-          // life: 3000
-        });
+        this.$toast.add(
+          LoggerService.error("Scheme options server request failed", err)
+        );
       });
     this.conceptDto = new ConceptDto(
       this.concept.iri,

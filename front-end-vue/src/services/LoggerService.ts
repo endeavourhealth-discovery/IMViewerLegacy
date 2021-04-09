@@ -1,38 +1,65 @@
-export default class LoggerService {
-
-  constructor(){}
-
-  error(message: string, err: any) {
-    console.error(err);
-    return {severity: "error", summary: "Error", detail: message};
-  }
-
-  warn(message: string, data?: any) {
-    if (data){
-      console.log(data);
+export default {
+  error(toastMessage?: string, consoleData?: any) {
+    if (consoleData) {
+      console.error(consoleData);
     }
-    return {severity: "warn", summary: "Warning", detail: message};
-  }
-
-  info(message: string, data?: any) {
-    if (data) {
-      console.info(data);
+    if (toastMessage) {
+      return {
+        severity: "error",
+        summary: "Error",
+        detail: toastMessage,
+        life: 3000
+      };
     }
-    return {severity: "info", summary: "Info", detail: message};
-  }
+  },
 
-  success(message: string, data?: any) {
-    if (data) {
-      console.log(data)
+  warn(toastMessage?: string, consoleData?: any) {
+    if (consoleData) {
+      console.log(consoleData);
     }
-    return {severity: "success", summary: "Success", detail: message};
-  }
+    if (toastMessage) {
+      return {
+        severity: "warn",
+        summary: "Warning",
+        detail: toastMessage,
+        life: 3000
+      };
+    }
+  },
 
-  debug(data: any) {
-    console.debug(data)
-  }
+  info(toastMessage: string, consoleData?: any) {
+    if (consoleData) {
+      console.info(consoleData);
+    }
+    if (toastMessage) {
+      return {
+        severity: "info",
+        summary: "Info",
+        detail: toastMessage,
+        life: 3000
+      };
+    }
+  },
 
-  trace(data: any) {
-    console.trace(data)
+  success(toastMessage: string, consoleData?: any) {
+    if (consoleData) {
+      console.log(consoleData);
+    }
+    if (toastMessage) {
+      return {
+        severity: "success",
+        summary: "Success",
+        detail: toastMessage,
+        life: 3000
+      };
+    }
+  },
+
+  debug(consoleData: any) {
+    console.debug(consoleData);
+  },
+
+  trace(consoleData: any) {
+    console.trace(consoleData);
   }
-}
+};

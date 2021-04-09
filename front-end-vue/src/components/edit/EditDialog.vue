@@ -39,6 +39,7 @@ import { Options, Vue } from "vue-class-component";
 import ConceptService from "@/services/ConceptService";
 import Editor from "./Editor.vue";
 import { ConceptDto } from "@/models/ConceptDto";
+import LoggerService from "@/services/LoggerService";
 
 @Options({
   name: "EditDialog",
@@ -78,13 +79,9 @@ export default class EditorDialog extends Vue {
         this.closeDialog();
       })
       .catch(err => {
-        console.log(err);
-        this.$toast.add({
-          severity: "error",
-          summary: "Error",
-          detail: "Concept save failed with server",
-          // life: 3000
-        });
+        this.$toast.add(
+          LoggerService.error("Concept save request failed", err)
+        );
       });
   }
 
