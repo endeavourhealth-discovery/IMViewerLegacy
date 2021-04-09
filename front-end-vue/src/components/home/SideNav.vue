@@ -202,5 +202,6 @@ export default class SideNav extends Vue {
   font-size: 4em;
   color: lightgray;
   font-weight: bold;
+  cursor: pointer;
 }
 </style>

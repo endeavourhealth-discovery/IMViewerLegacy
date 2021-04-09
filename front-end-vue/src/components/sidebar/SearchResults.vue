@@ -86,10 +86,10 @@
 
 <script lang="ts">
 import { ConceptSummary } from "@/models/search/ConceptSummary";
-import { ConceptType } from "@/models/search/ConceptType";
 import { SearchResponse } from "@/models/search/SearchResponse";
 import { Options, Vue } from "vue-class-component";
 import { mapState } from "vuex";
+import { getConceptIcon } from "../../helpers/ConceptTypeMethods";
 
 @Options({
   name: "SearchResults",
@@ -106,17 +106,8 @@ export default class SearchResults extends Vue {
   selectedResult = {} as ConceptSummary;
   hoveredResult = {} as ConceptSummary | any;
 
-  getPerspectiveByConceptType(conceptType: ConceptType): any {
-    switch (conceptType) {
-      case ConceptType.ValueSet:
-        return { name: "Valueset", icon: "tasks" };
-      case ConceptType.Record:
-      case ConceptType.DataProperty:
-      case ConceptType.ObjectProperty:
-        return { name: "Datamodel", icon: "sitemap" };
-      default:
-        return { name: "Ontology", icon: "lightbulb" };
-    }
+  getPerspectiveByConceptType(conceptType: any): any {
+    return getConceptIcon(conceptType.elements);
   }
 
   onNodeSelect() {
