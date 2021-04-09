@@ -34,6 +34,7 @@
 import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
 import ReportService from "@/services/ReportService";
+import LoggerService from "@/services/LoggerService";
 
 @Options({
   name: "OntologyOverview",
@@ -51,14 +52,10 @@ export default class OntologyOverview extends Vue {
         store.commit("updateLoading", { key: "reportCategory", value: false });
       })
       .catch(err => {
-        console.log(err);
         store.commit("updateLoading", { key: "reportCategory", value: false });
-        this.$toast.add({
-          severity: "error",
-          summary: "Error",
-          detail: "Ontology Overview server request failed",
-          // life: 3000
-        });
+        this.$toast.add(
+          LoggerService.error("Ontology Overview server request failed", err)
+        );
       });
   }
 }

@@ -56,6 +56,7 @@ import { SortBy } from "@/models/search/SortBy";
 import { ConceptStatus } from "@/models/ConceptStatus";
 import store from "@/store/index";
 import { ConceptType } from "@/models/search/ConceptType";
+import LoggerService from "@/services/LoggerService";
 
 @Options({
   name: "SidebarControl",
@@ -126,17 +127,13 @@ export default class SidebarControl extends Vue {
       }
     });
 
-    store.dispatch("fetchSearchResults", searchRequest)
-      .then(res => {
-        if (!res) {
-          this.$toast.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Search results server request failed",
-            // life: 3000
-          });
-        }
-      })
+    store.dispatch("fetchSearchResults", searchRequest).then(res => {
+      if (!res) {
+        this.$toast.add(
+          LoggerService.error("Search results server request failed")
+        );
+      }
+    });
   }
 }
 </script>

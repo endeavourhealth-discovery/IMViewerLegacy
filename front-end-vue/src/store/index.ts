@@ -97,29 +97,37 @@ export default createStore({
       let properties: any;
       let success = true;
       await ConceptService.getConcept(iri)
-        .then(res => {concept = res.data})
+        .then(res => {
+          concept = res.data;
+        })
         .catch(err => {
           console.log(err);
           success = false;
-        })
+        });
       await ConceptService.getConceptParents(iri)
-        .then(res => {parents = res.data})
+        .then(res => {
+          parents = res.data;
+        })
         .catch(err => {
           console.log(err);
           success = false;
-        })
+        });
       await ConceptService.getConceptChildren(iri)
-        .then(res => {children = res.data})
+        .then(res => {
+          children = res.data;
+        })
         .catch(err => {
           console.log(err);
           success = false;
-        })
+        });
       await ConceptService.getConceptProperties(iri)
-        .then(res => {properties = res.data})
+        .then(res => {
+          properties = res.data;
+        })
         .catch(err => {
           console.log(err);
           success = false;
-        })
+        });
       commit("updateConceptAggregate", {
         concept: concept,
         parents: parents,
@@ -134,17 +142,21 @@ export default createStore({
       let mappedTo: any;
       let success = true;
       await ConceptService.getConceptMappedFrom(iri)
-        .then(res => {mappedFrom = res.data})
+        .then(res => {
+          mappedFrom = res.data;
+        })
         .catch(err => {
           console.log(err);
           success = false;
-        })
+        });
       await ConceptService.getConceptMappedTo(iri)
-        .then(res => {mappedTo = res.data})
+        .then(res => {
+          mappedTo = res.data;
+        })
         .catch(err => {
           console.log(err);
           success = false;
-        })
+        });
       commit("updateConceptMapped", mappedFrom.concat(mappedTo));
       commit("updateLoading", { key: "mapped", value: false });
       return success;
@@ -154,11 +166,13 @@ export default createStore({
       let usages: any;
       let success = true;
       await ConceptService.getConceptUsages(iri)
-        .then(res => {usages = res.data})
+        .then(res => {
+          usages = res.data;
+        })
         .catch(err => {
           console.log(err);
           success = false;
-        })
+        });
       commit("updateConceptUsages", usages);
       commit("updateLoading", { key: "usages", value: false });
       return success;
@@ -168,11 +182,13 @@ export default createStore({
       let members: any;
       let success = true;
       await ConceptService.getConceptMembers(iri, false)
-        .then(res => {members = res.data})
+        .then(res => {
+          members = res.data;
+        })
         .catch(err => {
           console.log(err);
           success = false;
-        })
+        });
       commit("updateConceptMembers", members);
       commit("updateLoading", { key: "members", value: false });
       return success;
@@ -183,11 +199,13 @@ export default createStore({
       let searchResults: any;
       let success = true;
       await ConceptService.advancedSearch(searchRequest)
-        .then(res => {searchRequest = res.data.concepts})
+        .then(res => {
+          searchRequest = res.data.concepts;
+        })
         .catch(err => {
           console.log(err);
           success = false;
-        })
+        });
       commit("updateSearchResults", searchResults);
       commit("updateLoading", { key: "searchResults", value: false });
       return success;

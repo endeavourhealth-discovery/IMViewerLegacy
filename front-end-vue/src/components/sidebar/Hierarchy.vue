@@ -18,6 +18,7 @@ import { mapState } from "vuex";
 import ConceptService from "@/services/ConceptService";
 import { RDFS } from "@/vocabulary/RDFS";
 import { IM } from "@/vocabulary/IM";
+import LoggerService from "@/services/LoggerService";
 
 interface TreeNode {
   key: string;
@@ -117,13 +118,10 @@ export default class Hierarchy extends Vue {
       })
       .catch(err => {
         console.log(err);
-        this.$toast.add({
-          severity: "error",
-          summary: "Error",
-          detail: "Concept children server request failed",
-          // life: 3000
-        });
-      })
+        this.$toast.add(
+          LoggerService.error("Concept children server request failed", err)
+        );
+      });
     let index = 0;
 
     node.children = [];

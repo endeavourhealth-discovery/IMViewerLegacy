@@ -59,6 +59,7 @@
 import { Options, Vue } from "vue-class-component";
 import ConceptService from "@/services/ConceptService";
 import store from "@/store";
+import LoggerService from "@/services/LoggerService";
 
 @Options({
   name: "ConceptMembers",
@@ -130,14 +131,10 @@ export default class ConceptMembers extends Vue {
         console.log(response.data);
         this.downloadFile(response.data, filename, type);
       })
-      .catch(error => {
-        console.log(error);
-        this.$toast.add({
-          severity: "error",
-          summary: "Error",
-          detail: "Concept members server request failed",
-          // life: 3000
-        });
+      .catch(err => {
+        this.$toast.add(
+          LoggerService.error("Concept member server request failed", err)
+        );
       });
   }
 

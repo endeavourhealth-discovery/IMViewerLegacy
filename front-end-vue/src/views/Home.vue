@@ -18,6 +18,7 @@ import Header from "@/components/home/Header.vue";
 import SidebarControl from "@/components/sidebar/SidebarControl.vue";
 import { User } from "../models/User";
 import store from "@/store/index";
+import LoggerService from "@/services/LoggerService";
 
 @Options({
   name: "Home",
@@ -61,39 +62,29 @@ export default class Home extends Vue {
         this.$route.params.selectedIri as string
       );
     }
-    store.dispatch("fetchConceptAggregate", store.state.conceptIri)
+    store
+      .dispatch("fetchConceptAggregate", store.state.conceptIri)
       .then(res => {
         if (!res) {
-          this.$toast.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Concept aggregate server request failed",
-            // life: 3000
-          });
+          this.$toast.add(
+            LoggerService.error("Concept aggregate server request failed")
+          );
         }
-      })
-    store.dispatch("fetchConceptMapped", store.state.conceptIri)
-      .then(res => {
-        if (!res) {
-          this.$toast.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Concept mapped server request failed",
-            // life: 3000
-          });
-        }
-      })
-    store.dispatch("fetchConceptUsages", store.state.conceptIri)
-      .then(res => {
-        if (!res) {
-          this.$toast.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Concept usages server request failed",
-            // life: 3000
-          });
-        }
-      })
+      });
+    store.dispatch("fetchConceptMapped", store.state.conceptIri).then(res => {
+      if (!res) {
+        this.$toast.add(
+          LoggerService.error("Concept mapped server request failed")
+        );
+      }
+    });
+    store.dispatch("fetchConceptUsages", store.state.conceptIri).then(res => {
+      if (!res) {
+        this.$toast.add(
+          LoggerService.error("Concept usages server request failed")
+        );
+      }
+    });
   }
 }
 </script>

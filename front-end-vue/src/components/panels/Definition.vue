@@ -5,6 +5,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import * as monaco from "monaco-editor";
+import LoggerService from "@/services/LoggerService";
 import {
   DiscoveryLanguage,
   DiscoveryLanguageId,
@@ -61,13 +62,9 @@ export default class Definition extends Vue {
         }
       );
     } catch (error) {
-      console.log(error);
-      this.$toast.add({
-        severity: "error",
-        summary: "Error",
-        detail: "Monaco editor initialisation failed",
-        // life: 3000
-      });
+      this.$toast.add(
+        LoggerService.error("Monaco editor initialisation failed", error)
+      );
     }
   }
 
