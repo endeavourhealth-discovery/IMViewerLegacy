@@ -6,7 +6,7 @@
         class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center"
       >
         <div>
-          <p class="im-logo" @click="$router.push({ name: 'Dashboard' }) ">IM</p>
+          <p class="im-logo" @click="$router.push({ name: 'Dashboard' })">IM</p>
         </div>
         <!-- <div id="center-icons">
           <div v-bind:class="{ active: isActive('Home') }">
@@ -202,5 +202,6 @@ export default class SideNav extends Vue {
   font-size: 4em;
   color: lightgray;
   font-weight: bold;
+  cursor: pointer;
 }
 </style>
