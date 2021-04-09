@@ -72,6 +72,12 @@ export default class ConceptStatus extends Vue {
       .catch(err => {
         store.commit("updateLoading", { key: "reportStatus", value: false });
         console.log(err);
+        this.$toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: "Concept status server request failed",
+          // life: 3000
+        });
       });
   }
 }

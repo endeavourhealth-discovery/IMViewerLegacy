@@ -109,6 +109,7 @@ import ConceptService from "@/services/ConceptService";
 import { ConceptReference } from "@/models/ConceptReference";
 import Dropdown from "primevue/dropdown";
 import { ConceptStatus } from "@/models/ConceptStatus";
+
 @Options({
   name: "Editor",
   components: { Dropdown },
@@ -127,7 +128,19 @@ export default class EditorDialog extends Vue {
   async mounted() {
     this.initMonaco();
     this.validate();
-    this.schemeOptions = (await ConceptService.getSchemeOptions()).data;
+    await ConceptService.getSchemeOptions()
+      .then(res => {
+        this.schemeOptions = res.data;
+      })
+      .catch(err => {
+        console.log(err);
+        this.$toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: "Scheme options server request failed",
+          // life: 3000
+        });
+      });
     this.conceptDto = new ConceptDto(
       this.concept.iri,
       this.concept.name,

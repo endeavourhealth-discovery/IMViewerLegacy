@@ -58,7 +58,7 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
   }
 })
 export default class ConceptTable extends Vue {
-  properties = {};
+  properties = [];
 
   navigate(iri: string) {
     const currentRoute = this.$route.name as RouteRecordName | undefined;

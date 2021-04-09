@@ -59,6 +59,8 @@ import Avatar from "primevue/avatar";
 import MegaMenu from "primevue/megamenu";
 import Timeline from "primevue/timeline";
 import SelectButton from "primevue/selectbutton";
+import ToastService from "primevue/toastservice";
+import Toast from "primevue/toast";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
@@ -71,6 +73,7 @@ createApp(App)
   .use(router)
   .use(PrimeVue, { ripple: true })
   .use(ConfirmationService)
+  .use(ToastService)
   .directive("tooltip", Tooltip)
   .component("Card", Card)
   .component("ProgressSpinner", ProgressSpinner)
@@ -108,4 +111,5 @@ createApp(App)
   .component("MegaMenu", MegaMenu)
   .component("Timeline", Timeline)
   .component("SelectButton", SelectButton)
+  .component("Toast", Toast)
   .mount("#app");

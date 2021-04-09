@@ -40,13 +40,23 @@ import { IM } from "@/vocabulary/IM";
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {
-    async conceptAggregate(newValue) {
-      this.graphData = (
-        await ConceptService.getConceptGraph(newValue.concept[IM.IRI])
-      ).data;
-      this.root = d3.hierarchy(this.graphData);
-      this.drawTree();
-      this.initSvgPanZoom();
+    conceptAggregate(newValue) {
+      ConceptService.getConceptGraph(newValue.concept[IM.IRI])
+        .then(res => {
+          this.graphData = res.data;
+          this.root = d3.hierarchy(this.graphData);
+          this.drawTree();
+          this.initSvgPanZoom();
+        })
+        .catch(err => {
+          console.log(err);
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Concept graph server request failed",
+            // life: 3000
+          });
+        });
     }
   }
 })

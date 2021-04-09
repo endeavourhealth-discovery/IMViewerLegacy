@@ -101,23 +101,42 @@ import Definition from "./Definition.vue";
   prop: {},
   computed: mapState(["conceptAggregate", "conceptIri"]),
   watch: {
-    async conceptAggregate(newValue) {
+    conceptAggregate(newValue) {
       this.concept = newValue.concept;
-      this.definitionText = await (
-        await ConceptService.getConceptImLang(newValue.concept["@id"])
-      ).data;
+      ConceptService.getConceptImLang(newValue.concept["@id"])
+        .then(res => {
+          this.definitionText = res.data;
+        })
+        .catch(err => {
+          console.log(err);
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Concept IM Lang server request failed",
+            // life: 3000
+          });
+        });
     },
-    async conceptIri(newValue) {
-      await ConceptService.getConceptSynonyms(newValue).then(res => {
-        this.synonyms = [];
-        for (const data of res.data) {
-          if (
-            data !== this.concept["http://www.w3.org/2000/01/rdf-schema#label"]
-          ) {
-            this.synonyms.push({ synonym: data });
+    conceptIri(newValue) {
+      ConceptService.getConceptSynonyms(newValue)
+        .then(res => {
+          this.synonyms = [];
+          const url = "http://www.w3.org/2000/01/rdf-schema#label";
+          for (const data of res.data) {
+            if (data !== this.concept[url]) {
+              this.synonyms.push({ synonym: data });
+            }
           }
-        }
-      });
+        })
+        .catch(err => {
+          console.log(err);
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Concept synonyms server request failed",
+            // life: 3000
+          });
+        });
     }
   }
 })
@@ -129,13 +148,23 @@ export default class ConceptSummary extends Vue {
   synonyms = [] as any;
   conceptIri!: string;
 
-  async mounted() {
-    await ConceptService.getConceptSynonyms(this.conceptIri).then(res => {
-      this.synonyms = [];
-      for (const data of res.data) {
-        this.synonyms.push({ synonym: data });
-      }
-    });
+  mounted() {
+    ConceptService.getConceptSynonyms(this.conceptIri)
+      .then(res => {
+        this.synonyms = [];
+        for (const data of res.data) {
+          this.synonyms.push({ synonym: data });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.$toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: "Concept synonyms server request failed at component mount",
+          // life: 3000
+        });
+      });
   }
 
   items = [
