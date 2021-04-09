@@ -54,7 +54,7 @@ import { IM } from "@/vocabulary/IM";
             severity: "error",
             summary: "Error",
             detail: "Concept graph server request failed",
-            life: 3000
+            // life: 3000
           });
         });
     }

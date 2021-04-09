@@ -121,7 +121,7 @@ export default class Hierarchy extends Vue {
           severity: "error",
           summary: "Error",
           detail: "Concept children server request failed",
-          life: 3000
+          // life: 3000
         });
       })
     let index = 0;

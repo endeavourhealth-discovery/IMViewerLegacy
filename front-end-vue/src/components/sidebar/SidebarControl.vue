@@ -133,7 +133,7 @@ export default class SidebarControl extends Vue {
             severity: "error",
             summary: "Error",
             detail: "Search results server request failed",
-            life: 3000
+            // life: 3000
           });
         }
       })

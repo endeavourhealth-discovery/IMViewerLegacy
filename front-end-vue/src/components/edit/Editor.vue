@@ -138,7 +138,7 @@ export default class EditorDialog extends Vue {
           severity: "error",
           summary: "Error",
           detail: "Scheme options server request failed",
-          life: 3000
+          // life: 3000
         });
       });
     this.conceptDto = new ConceptDto(

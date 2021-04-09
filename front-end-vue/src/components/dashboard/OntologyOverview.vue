@@ -57,7 +57,7 @@ export default class OntologyOverview extends Vue {
           severity: "error",
           summary: "Error",
           detail: "Ontology Overview server request failed",
-          life: 3000
+          // life: 3000
         });
       });
   }

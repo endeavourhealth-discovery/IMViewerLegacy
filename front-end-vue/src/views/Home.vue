@@ -68,7 +68,7 @@ export default class Home extends Vue {
             severity: "error",
             summary: "Error",
             detail: "Concept aggregate server request failed",
-            life: 3000
+            // life: 3000
           });
         }
       })
@@ -79,7 +79,7 @@ export default class Home extends Vue {
             severity: "error",
             summary: "Error",
             detail: "Concept mapped server request failed",
-            life: 3000
+            // life: 3000
           });
         }
       })
@@ -90,7 +90,7 @@ export default class Home extends Vue {
             severity: "error",
             summary: "Error",
             detail: "Concept usages server request failed",
-            life: 3000
+            // life: 3000
           });
         }
       })

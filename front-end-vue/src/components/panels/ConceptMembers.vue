@@ -136,7 +136,7 @@ export default class ConceptMembers extends Vue {
           severity: "error",
           summary: "Error",
           detail: "Concept members server request failed",
-          life: 3000
+          // life: 3000
         });
       });
   }

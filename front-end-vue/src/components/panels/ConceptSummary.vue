@@ -113,7 +113,7 @@ import Definition from "./Definition.vue";
             severity: "error",
             summary: "Error",
             detail: "Concept IM Lang server request failed",
-            life: 3000
+            // life: 3000
           });
         });
     },
@@ -134,7 +134,7 @@ import Definition from "./Definition.vue";
             severity: "error",
             summary: "Error",
             detail: "Concept synonyms server request failed",
-            life: 3000
+            // life: 3000
           });
         });
     }
@@ -162,7 +162,7 @@ export default class ConceptSummary extends Vue {
           severity: "error",
           summary: "Error",
           detail: "Concept synonyms server request failed at component mount",
-          life: 3000
+          // life: 3000
         });
       });
   }

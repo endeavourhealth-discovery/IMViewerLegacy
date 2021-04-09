@@ -76,7 +76,7 @@ export default class ConceptSchemes extends Vue {
           severity: "error",
           summary: "Error",
           detail: "Concept schemes server request failed",
-          life: 3000
+          // life: 3000
         });
       });
   }

@@ -83,7 +83,7 @@ export default class EditorDialog extends Vue {
           severity: "error",
           summary: "Error",
           detail: "Concept save failed with server",
-          life: 3000
+          // life: 3000
         });
       });
   }

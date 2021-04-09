@@ -66,7 +66,7 @@ export default class Definition extends Vue {
         severity: "error",
         summary: "Error",
         detail: "Monaco editor initialisation failed",
-        life: 3000
+        // life: 3000
       });
     }
   }

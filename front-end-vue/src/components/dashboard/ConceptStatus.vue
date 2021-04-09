@@ -76,7 +76,7 @@ export default class ConceptStatus extends Vue {
           severity: "error",
           summary: "Error",
           detail: "Concept status server request failed",
-          life: 3000
+          // life: 3000
         });
       });
   }
