@@ -9,14 +9,14 @@
             style="color: blue; padding: 5px"
           />
         </div>
-        <div v-else-if="isClaz">
+        <div v-else-if="$store.state.conceptAggregate.concept && isClaz">
           <font-awesome-icon
             :icon="['fas', 'sitemap']"
             size="6x"
             style="color: green; padding: 5px"
           />
         </div>
-        <div v-else-if="isSet">
+        <div v-else-if="$store.state.conceptAggregate.concept && isSet">
           <font-awesome-icon
             :icon="['fas', 'tasks']"
             size="6x"
