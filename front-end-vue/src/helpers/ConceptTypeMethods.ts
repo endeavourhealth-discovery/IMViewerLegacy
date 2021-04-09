@@ -10,7 +10,7 @@ export function isValueSet(conceptTypeElements: any) {
   );
 }
 
-function isClass(conceptTypeElements: any) {
+export function isClass(conceptTypeElements: any) {
   return conceptTypeElements.some((e: any) => {
     return e.name === "Class" || e.name === "Record type";
   });
