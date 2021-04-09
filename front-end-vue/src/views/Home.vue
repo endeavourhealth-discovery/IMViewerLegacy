@@ -61,9 +61,39 @@ export default class Home extends Vue {
         this.$route.params.selectedIri as string
       );
     }
-    store.dispatch("fetchConceptAggregate", store.state.conceptIri);
-    store.dispatch("fetchConceptMapped", store.state.conceptIri);
-    store.dispatch("fetchConceptUsages", store.state.conceptIri);
+    store.dispatch("fetchConceptAggregate", store.state.conceptIri)
+      .then(res => {
+        if (!res) {
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Concept aggregate server request failed",
+            life: 3000
+          });
+        }
+      })
+    store.dispatch("fetchConceptMapped", store.state.conceptIri)
+      .then(res => {
+        if (!res) {
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Concept mapped server request failed",
+            life: 3000
+          });
+        }
+      })
+    store.dispatch("fetchConceptUsages", store.state.conceptIri)
+      .then(res => {
+        if (!res) {
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Concept usages server request failed",
+            life: 3000
+          });
+        }
+      })
   }
 }
 </script>

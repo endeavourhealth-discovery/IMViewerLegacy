@@ -61,7 +61,13 @@ export default class Definition extends Vue {
         }
       );
     } catch (error) {
-      //
+      console.log(error);
+      this.$toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: "Monaco editor initialisation failed",
+        life: 3000
+      });
     }
   }
 

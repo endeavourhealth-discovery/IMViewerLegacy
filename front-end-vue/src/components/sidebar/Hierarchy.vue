@@ -110,8 +110,20 @@ export default class Hierarchy extends Vue {
   }
 
   async onNodeExpand(node: TreeNode) {
-    const children = await (await ConceptService.getConceptChildren(node.data))
-      .data;
+    let children: any[] = [];
+    await ConceptService.getConceptChildren(node.data)
+      .then(res => {
+        children = res.data;
+      })
+      .catch(err => {
+        console.log(err);
+        this.$toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: "Concept children server request failed",
+          life: 3000
+        });
+      })
     let index = 0;
 
     node.children = [];

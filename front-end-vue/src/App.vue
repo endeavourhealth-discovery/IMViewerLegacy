@@ -15,7 +15,6 @@ export default class App extends Vue {}
 </script>
 
 <style>
-
 body {
   overflow: hidden;
 }
@@ -34,5 +33,4 @@ body {
 .popup-user ul li a .p-menuitem-text {
   color: lightgray !important;
 }
-
 </style>

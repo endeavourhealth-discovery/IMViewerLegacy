@@ -72,7 +72,12 @@ export default class ConceptTypes extends Vue {
       .catch(err => {
         store.commit("updateLoading", { key: "reportType", value: false });
         console.log(err);
-        this.$toast.add({severity:'error', summary: 'Error', detail: 'Concept Types chart data failed to load', life: 3000})
+        this.$toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: "Concept types server request failed",
+          life: 3000
+        });
       });
   }
 }

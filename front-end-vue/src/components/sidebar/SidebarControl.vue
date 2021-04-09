@@ -126,7 +126,17 @@ export default class SidebarControl extends Vue {
       }
     });
 
-    store.dispatch("fetchSearchResults", searchRequest);
+    store.dispatch("fetchSearchResults", searchRequest)
+      .then(res => {
+        if (!res) {
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Search results server request failed",
+            life: 3000
+          });
+        }
+      })
   }
 }
 </script>

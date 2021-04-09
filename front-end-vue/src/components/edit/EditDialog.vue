@@ -36,7 +36,6 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import { Concept } from "@/models/Concept";
 import ConceptService from "@/services/ConceptService";
 import Editor from "./Editor.vue";
 import { ConceptDto } from "@/models/ConceptDto";
@@ -49,9 +48,6 @@ import { ConceptDto } from "@/models/ConceptDto";
   props: ["concept", "definitionText", "display"]
 })
 export default class EditorDialog extends Vue {
-  private display!: boolean;
-  private definitionText!: string;
-  private concept!: Concept;
   private updatedText = "";
   private isValidSyntax = true;
   private conceptDto = {} as ConceptDto;
@@ -75,10 +71,21 @@ export default class EditorDialog extends Vue {
     return "";
   }
 
-  async submit() {
+  submit() {
     this.conceptDto.definitionText = this.updatedText;
-    const response = await ConceptService.saveConcept(this.conceptDto);
-    this.closeDialog();
+    ConceptService.saveConcept(this.conceptDto)
+      .then(() => {
+        this.closeDialog();
+      })
+      .catch(err => {
+        console.log(err);
+        this.$toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: "Concept save failed with server",
+          life: 3000
+        });
+      });
   }
 
   closeDialog() {

@@ -53,7 +53,12 @@ export default class OntologyOverview extends Vue {
       .catch(err => {
         console.log(err);
         store.commit("updateLoading", { key: "reportCategory", value: false });
-        this.$toast.add({severity:'error', summary: 'Error', detail: 'Ontology Overview data failed to load', life: 3000})
+        this.$toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: "Ontology Overview server request failed",
+          life: 3000
+        });
       });
   }
 }

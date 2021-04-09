@@ -91,43 +91,106 @@ export default createStore({
   },
   actions: {
     async fetchConceptAggregate({ commit }, iri) {
-      const concept = (await ConceptService.getConcept(iri)).data;
-      const parents = (await ConceptService.getConceptParents(iri)).data;
-      const children = (await ConceptService.getConceptChildren(iri)).data;
-      const properties = (await ConceptService.getConceptProperties(iri)).data;
+      let concept: any;
+      let parents: any;
+      let children: any;
+      let properties: any;
+      let success = true;
+      await ConceptService.getConcept(iri)
+        .then(res => {concept = res.data})
+        .catch(err => {
+          console.log(err);
+          success = false;
+        })
+      await ConceptService.getConceptParents(iri)
+        .then(res => {parents = res.data})
+        .catch(err => {
+          console.log(err);
+          success = false;
+        })
+      await ConceptService.getConceptChildren(iri)
+        .then(res => {children = res.data})
+        .catch(err => {
+          console.log(err);
+          success = false;
+        })
+      await ConceptService.getConceptProperties(iri)
+        .then(res => {properties = res.data})
+        .catch(err => {
+          console.log(err);
+          success = false;
+        })
       commit("updateConceptAggregate", {
         concept: concept,
         parents: parents,
         children: children,
         properties: properties
       });
+      return success;
     },
     async fetchConceptMapped({ commit }, iri) {
       commit("updateLoading", { key: "mapped", value: true });
-      const mappedFrom = (await ConceptService.getConceptMappedFrom(iri)).data;
-      const mappedTo = (await ConceptService.getConceptMappedTo(iri)).data;
+      let mappedFrom: any;
+      let mappedTo: any;
+      let success = true;
+      await ConceptService.getConceptMappedFrom(iri)
+        .then(res => {mappedFrom = res.data})
+        .catch(err => {
+          console.log(err);
+          success = false;
+        })
+      await ConceptService.getConceptMappedTo(iri)
+        .then(res => {mappedTo = res.data})
+        .catch(err => {
+          console.log(err);
+          success = false;
+        })
       commit("updateConceptMapped", mappedFrom.concat(mappedTo));
       commit("updateLoading", { key: "mapped", value: false });
+      return success;
     },
     async fetchConceptUsages({ commit }, iri) {
       commit("updateLoading", { key: "usages", value: true });
-      const usages = (await ConceptService.getConceptUsages(iri)).data;
+      let usages: any;
+      let success = true;
+      await ConceptService.getConceptUsages(iri)
+        .then(res => {usages = res.data})
+        .catch(err => {
+          console.log(err);
+          success = false;
+        })
       commit("updateConceptUsages", usages);
       commit("updateLoading", { key: "usages", value: false });
+      return success;
     },
     async fetchConceptMembers({ commit }, iri) {
       commit("updateLoading", { key: "members", value: true });
-      const members = (await ConceptService.getConceptMembers(iri, false)).data;
+      let members: any;
+      let success = true;
+      await ConceptService.getConceptMembers(iri, false)
+        .then(res => {members = res.data})
+        .catch(err => {
+          console.log(err);
+          success = false;
+        })
       commit("updateConceptMembers", members);
       commit("updateLoading", { key: "members", value: false });
+      return success;
     },
     async fetchSearchResults({ commit }, searchRequest: SearchRequest) {
       commit("updateLoading", { key: "searchResults", value: true });
       await new Promise(resolve => setTimeout(resolve, 2000));
-      const searchResults = (await ConceptService.advancedSearch(searchRequest))
-        .data.concepts;
+      let searchResults: any;
+      let success = true;
+      await ConceptService.advancedSearch(searchRequest)
+        .then(res => {searchRequest = res.data.concepts})
+        .catch(err => {
+          console.log(err);
+          success = false;
+        })
       commit("updateSearchResults", searchResults);
       commit("updateLoading", { key: "searchResults", value: false });
+      return success;
     },
     async logoutCurrentUser({ commit }) {
       try {
@@ -146,14 +209,19 @@ export default createStore({
       }
     },
     async authenticateCurrentUser({ commit, dispatch }) {
-      const res = await AuthService.getCurrentAuthenticatedUser();
-      if (res.status === 200) {
-        commit("updateIsLoggedIn", true);
-        commit("updateCurrentUser", res.user);
-        return { authenticated: true };
-      } else {
-        console.log(res.error);
-        //refresh token call here?
+      try {
+        const res = await AuthService.getCurrentAuthenticatedUser();
+        if (res.status === 200) {
+          commit("updateIsLoggedIn", true);
+          commit("updateCurrentUser", res.user);
+          return { authenticated: true };
+        } else {
+          console.log(res.error);
+          dispatch("logoutCurrentUser");
+          return { authenticated: false };
+        }
+      } catch (err) {
+        console.log(err);
         dispatch("logoutCurrentUser");
         return { authenticated: false };
       }

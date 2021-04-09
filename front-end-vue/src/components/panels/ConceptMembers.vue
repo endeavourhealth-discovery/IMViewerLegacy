@@ -132,6 +132,12 @@ export default class ConceptMembers extends Vue {
       })
       .catch(error => {
         console.log(error);
+        this.$toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: "Concept members server request failed",
+          life: 3000
+        });
       });
   }
 
