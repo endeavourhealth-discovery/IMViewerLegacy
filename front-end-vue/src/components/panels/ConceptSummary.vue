@@ -101,9 +101,9 @@ import Definition from "./Definition.vue";
   prop: {},
   computed: mapState(["conceptAggregate", "conceptIri"]),
   watch: {
-    async conceptAggregate(newValue) {
+    conceptAggregate(newValue) {
       this.concept = newValue.concept;
-      await ConceptService.getConceptImLang(newValue.concept["@id"])
+      ConceptService.getConceptImLang(newValue.concept["@id"])
         .then(res => {
           this.definitionText = res.data;
         })
@@ -117,8 +117,8 @@ import Definition from "./Definition.vue";
           });
         });
     },
-    async conceptIri(newValue) {
-      await ConceptService.getConceptSynonyms(newValue)
+    conceptIri(newValue) {
+      ConceptService.getConceptSynonyms(newValue)
         .then(res => {
           this.synonyms = [];
           const url = "http://www.w3.org/2000/01/rdf-schema#label";
@@ -148,8 +148,8 @@ export default class ConceptSummary extends Vue {
   synonyms = [] as any;
   conceptIri!: string;
 
-  async mounted() {
-    await ConceptService.getConceptSynonyms(this.conceptIri)
+  mounted() {
+    ConceptService.getConceptSynonyms(this.conceptIri)
       .then(res => {
         this.synonyms = [];
         for (const data of res.data) {

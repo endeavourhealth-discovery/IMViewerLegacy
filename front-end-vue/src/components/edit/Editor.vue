@@ -125,10 +125,10 @@ export default class EditorDialog extends Vue {
     isNaN(Number(f))
   );
 
-  mounted() {
+  async mounted() {
     this.initMonaco();
     this.validate();
-    ConceptService.getSchemeOptions()
+    await ConceptService.getSchemeOptions()
       .then(res => {
         this.schemeOptions = res.data;
       })

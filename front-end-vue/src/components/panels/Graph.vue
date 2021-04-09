@@ -40,8 +40,8 @@ import { IM } from "@/vocabulary/IM";
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {
-    async conceptAggregate(newValue) {
-      await ConceptService.getConceptGraph(newValue.concept[IM.IRI])
+    conceptAggregate(newValue) {
+      ConceptService.getConceptGraph(newValue.concept[IM.IRI])
         .then(res => {
           this.graphData = res.data;
           this.root = d3.hierarchy(this.graphData);
