@@ -1,5 +1,5 @@
 <template>
-  <div id="container"></div>
+  <div id="container" class="definition"></div>
 </template>
 
 <script lang="ts">
@@ -74,4 +74,9 @@ export default class Definition extends Vue {
 }
 </script>
 
-<style></style>
+<style>
+.definition .monaco-editor .overflow-guard {
+  border: solid 1px #dee2e6;
+  border-radius: 3px;
+}
+</style>

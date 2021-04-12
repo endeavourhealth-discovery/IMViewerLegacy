@@ -5,6 +5,7 @@
     :expandedKeys="expandedKeys"
     @node-select="onNodeSelect"
     @node-expand="onNodeExpand"
+    :loading="loading"
     style="height:100%;overflow:auto"
   ></Tree>
 
@@ -48,6 +49,7 @@ export default class Hierarchy extends Vue {
   searchResult = "";
   root: Array<TreeNode> = [];
   expandedKeys: any = {};
+  loading = false;
 
   createTree(concept: any, parentHierarchy: any, children: any) {
     let index = 1;
@@ -112,6 +114,8 @@ export default class Hierarchy extends Vue {
 
   async onNodeExpand(node: TreeNode) {
     let children: any[] = [];
+    this.loading = true;
+    
     await ConceptService.getConceptChildren(node.data)
       .then(res => {
         children = res.data;
@@ -137,6 +141,7 @@ export default class Hierarchy extends Vue {
       );
       index++;
     });
+    this.loading = false;
   }
 }
 </script>
