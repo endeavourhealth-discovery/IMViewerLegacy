@@ -4,7 +4,13 @@
       class="p-d-flex p-flex-column p-jc-sm-around p-ai-center register-card"
     >
       <template #header>
-        <i class="pi pi-fw pi-user-plus" style="fontSize: 50px; margin: 1em;" />
+        <div class="avatar-container">
+          <i class="pi pi-fw pi-user-plus avatar-image" style="fontSize: 50px;" />
+          <Button icon="pi pi-angle-down" class="p-button-rounded p-button-primary avatar-button" @click="toggleAvatarSelect" />
+          <OverlayPanel ref="avatar">
+            <p>here</p>
+          </OverlayPanel>
+        </div>
       </template>
       <template #title>
         Register
@@ -376,6 +382,11 @@ export default class Register extends Vue {
       return false;
     }
   }
+
+  toggleAvatarSelect(event: any) {
+    const x = this.$refs.avatar as any;
+    x.toggle(event);
+  }
 }
 </script>
 
@@ -399,5 +410,17 @@ export default class Register extends Vue {
 
 .footer-link:hover {
   cursor: pointer;
+}
+
+.avatar-container {
+  position: relative;
+  padding: 1.5em;
+  margin: 1em;
+}
+
+.avatar-button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
 </style>
