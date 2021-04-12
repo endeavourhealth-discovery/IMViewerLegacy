@@ -2,7 +2,7 @@
   <DataTable
     :value="properties"
     :rowsPerPageOptions="[10, 25, 50]"
-    :paginator="true"
+    :paginator="properties.length > 10 ? true : false"
     :rows="10"
     style="height:604px;"
   >
@@ -11,7 +11,10 @@
     </template>
     <Column field="property.name" header="Name">
       <template #body="slotProps">
-        <div class="link" @click="navigate(slotProps.data.property.iri)">
+        <div
+          class="link capitalize-text"
+          @click="navigate(slotProps.data.property.iri)"
+        >
           {{ slotProps.data.property.name }}
         </div>
       </template>
@@ -74,5 +77,13 @@ export default class ConceptTable extends Vue {
 <style scoped>
 div.link {
   cursor: pointer;
+}
+
+.capitalize-text {
+  text-transform: lowercase;
+}
+
+.capitalize-text:first-letter {
+  text-transform: capitalize;
 }
 </style>
