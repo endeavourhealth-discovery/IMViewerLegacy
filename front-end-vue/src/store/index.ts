@@ -101,7 +101,7 @@ export default createStore({
           concept = res.data;
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
           success = false;
         });
       await ConceptService.getConceptParents(iri)
@@ -109,7 +109,7 @@ export default createStore({
           parents = res.data;
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
           success = false;
         });
       await ConceptService.getConceptChildren(iri)
@@ -117,7 +117,7 @@ export default createStore({
           children = res.data;
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
           success = false;
         });
       await ConceptService.getConceptProperties(iri)
@@ -125,7 +125,7 @@ export default createStore({
           properties = res.data;
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
           success = false;
         });
       commit("updateConceptAggregate", {
@@ -146,7 +146,7 @@ export default createStore({
           mappedFrom = res.data;
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
           success = false;
         });
       await ConceptService.getConceptMappedTo(iri)
@@ -154,7 +154,7 @@ export default createStore({
           mappedTo = res.data;
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
           success = false;
         });
       commit("updateConceptMapped", mappedFrom.concat(mappedTo));
@@ -170,7 +170,7 @@ export default createStore({
           usages = res.data;
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
           success = false;
         });
       commit("updateConceptUsages", usages);
@@ -186,7 +186,7 @@ export default createStore({
           members = res.data;
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
           success = false;
         });
       commit("updateConceptMembers", members);
@@ -203,7 +203,7 @@ export default createStore({
           searchResults = res.data.concepts;
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
           success = false;
         });
       commit("updateSearchResults", searchResults);
@@ -218,11 +218,11 @@ export default createStore({
           commit("updateIsLoggedIn", false);
           return res;
         } else {
-          console.log(res.error);
+          console.error(res.error);
           return res;
         }
       } catch (err) {
-        console.log(err);
+        console.error(err);
         return { status: 500, error: err, message: "Logout (store) failed" };
       }
     },
@@ -234,12 +234,12 @@ export default createStore({
           commit("updateCurrentUser", res.user);
           return { authenticated: true };
         } else {
-          console.log(res.error);
+          console.error(res.error);
           dispatch("logoutCurrentUser");
           return { authenticated: false };
         }
       } catch (err) {
-        console.log(err);
+        console.error(err);
         dispatch("logoutCurrentUser");
         return { authenticated: false };
       }

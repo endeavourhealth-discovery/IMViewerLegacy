@@ -120,7 +120,6 @@ import LoggerService from "@/services/LoggerService";
           }
         })
         .catch(err => {
-          console.log(err);
           this.$toast.add(
             LoggerService.error("Concept synonyms server request failed", err)
           );

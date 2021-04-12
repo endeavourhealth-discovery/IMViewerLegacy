@@ -123,7 +123,7 @@ export default class ConfirmCode extends Vue {
           }
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
           Swal.fire({
             icon: "error",
             title: "Error",
@@ -157,7 +157,7 @@ export default class ConfirmCode extends Vue {
         }
       })
       .catch(err => {
-        console.log(err);
+        console.error(err);
         Swal.fire({
           icon: "error",
           title: "Error",

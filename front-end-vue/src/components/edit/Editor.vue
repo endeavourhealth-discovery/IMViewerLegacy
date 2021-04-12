@@ -134,7 +134,6 @@ export default class EditorDialog extends Vue {
         this.schemeOptions = res.data;
       })
       .catch(err => {
-        console.log(err);
         this.$toast.add(
           LoggerService.error("Scheme options server request failed", err)
         );

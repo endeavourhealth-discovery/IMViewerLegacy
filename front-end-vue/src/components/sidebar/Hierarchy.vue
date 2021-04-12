@@ -130,7 +130,6 @@ export default class Hierarchy extends Vue {
         children = res.data;
       })
       .catch(err => {
-        console.log(err);
         this.$toast.add(
           LoggerService.error("Concept children server request failed", err)
         );

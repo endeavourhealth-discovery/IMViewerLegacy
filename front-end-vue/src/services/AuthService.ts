@@ -15,7 +15,7 @@ export default {
       });
       return { status: 201, message: "User registered successfully" };
     } catch (err) {
-      console.log(err);
+      console.error(err);
       if (err.code === "UsernameExistsException") {
         return { status: 409, error: err, message: "Username already exists" };
       } else {
@@ -29,7 +29,7 @@ export default {
       await Auth.confirmSignUp(username, code);
       return { status: 200, message: "register confirmation successful" };
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return {
         status: 403,
         error: err,
@@ -51,7 +51,7 @@ export default {
       signedInUser.setId(user.attributes.sub);
       return { status: 200, user: signedInUser, message: "signIn successful" };
     } catch (err) {
-      console.log(err);
+      console.error(err);
       if (err.code === "UserNotConfirmedException") {
         return { status: 401, error: err, message: err.message }; //message: "User is not confirmed."
       }
@@ -68,7 +68,7 @@ export default {
       await Auth.resendSignUp(username);
       return { status: 200, message: "code resent successfully" };
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return { status: 400, error: err, message: "error resending code" };
     }
   },
@@ -113,7 +113,7 @@ export default {
         return { status: 403, message: "Authentication error with server" };
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return {
         status: 500,
         error: err,
@@ -128,7 +128,7 @@ export default {
       await Auth.changePassword(user, oldPassword, newPassword);
       return { status: 200, message: "Password successfully changed" };
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return {
         status: 400,
         error: err,
@@ -142,7 +142,7 @@ export default {
       await Auth.forgotPassword(username);
       return { status: 200, message: "Password reset request sent to server" };
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return {
         status: 400,
         error: err,
@@ -160,7 +160,7 @@ export default {
       await Auth.forgotPasswordSubmit(username, code, newPassword);
       return { status: 200, message: "Password reset successfully" };
     } catch (err) {
-      console.log(err);
+      console.error(err);
       if (err.code === "ExpiredCodeException") {
         return { status: 403, error: err, message: "Code has expired" };
       }
@@ -177,7 +177,7 @@ export default {
       await Auth.verifyCurrentUserAttribute(email);
       return { status: 200, message: "Account recovery code sent" };
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return { status: 400, error: err, message: "Error submitting email" };
     }
   },
@@ -199,7 +199,7 @@ export default {
         message: "User authenticated successfully"
       };
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return {
         status: 403,
         error: err,
@@ -214,7 +214,7 @@ export default {
   //     await Auth.(email, code); // finish this if ever becomes a feature
   //     return {status:200, message: "Account recovered successfully"};
   //   } catch (err) {
-  //     console.log(err);
+  //     console.error(err);
   //     if (err.code === "ExpiredCodeException"){
   //       return {status: 403, error: err, message: "Code has expired"}
   //     }

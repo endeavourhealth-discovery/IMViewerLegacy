@@ -128,7 +128,6 @@ export default class ConceptMembers extends Vue {
     const filename = concept.name + ("text/csv" === type ? ".csv" : ".json");
     ConceptService.getConceptMembers(concept.iri, false)
       .then(response => {
-        console.log(response.data);
         this.downloadFile(response.data, filename, type);
       })
       .catch(err => {
