@@ -4,7 +4,7 @@
       class="p-grid p-jc-center"
       v-if="$store.state.loading.get('searchResults')"
     >
-      <div class="p-col-6">
+      <div class="p-col-6 p-text-center">
         <ProgressSpinner />
       </div>
     </div>
