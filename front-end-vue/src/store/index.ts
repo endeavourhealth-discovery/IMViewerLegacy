@@ -200,7 +200,7 @@ export default createStore({
       let success = true;
       await ConceptService.advancedSearch(searchRequest)
         .then(res => {
-          searchRequest = res.data.concepts;
+          searchResults = res.data.concepts;
         })
         .catch(err => {
           console.log(err);
