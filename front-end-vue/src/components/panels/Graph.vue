@@ -212,6 +212,7 @@ export default class Graph extends Vue {
   }
 
   onCircleClick(event: any) {
+    console.log("here");
     if (
       event.srcElement.id === "Parents" ||
       event.srcElement.id === "Children" ||
@@ -220,7 +221,7 @@ export default class Graph extends Vue {
       const currentParent = (this.graphData as any).children.filter(
         (child: any) => child.name === event.srcElement.id
       );
-      if (currentParent[0].children.length) {
+      if (currentParent[0].children && currentParent[0].children.length) {
         (currentParent[0] as any)._children = currentParent[0].children;
         currentParent[0].children = [];
       } else {
