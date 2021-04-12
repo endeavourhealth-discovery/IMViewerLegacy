@@ -115,7 +115,6 @@ export default class Hierarchy extends Vue {
   async onNodeExpand(node: TreeNode) {
     let children: any[] = [];
     this.loading = true;
-    
     await ConceptService.getConceptChildren(node.data)
       .then(res => {
         children = res.data;
