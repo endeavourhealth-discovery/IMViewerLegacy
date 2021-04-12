@@ -20,6 +20,7 @@ import ConceptService from "@/services/ConceptService";
 import { RDFS } from "@/vocabulary/RDFS";
 import { IM } from "@/vocabulary/IM";
 import LoggerService from "@/services/LoggerService";
+import { getNodeIcon } from "@/helpers/ConceptTypeMethods";
 
 interface TreeNode {
   key: string;
@@ -56,6 +57,7 @@ export default class Hierarchy extends Vue {
     const selectedConcept = this.createTreeNode(
       concept[RDFS.LABEL],
       concept[IM.IRI],
+      concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"],
       index,
       concept.hasChildren
     );
@@ -65,7 +67,13 @@ export default class Hierarchy extends Vue {
       if (child.name) {
         //remove this to return all OWL children
         selectedConcept.children.push(
-          this.createTreeNode(child.name, child.iri, index, child.hasChildren)
+          this.createTreeNode(
+            child.name,
+            child.iri,
+            child.type,
+            index,
+            child.hasChildren
+          )
         );
       }
       index++;
@@ -76,6 +84,7 @@ export default class Hierarchy extends Vue {
       const parent = this.createTreeNode(
         parentHierarchy[0].name,
         parentHierarchy[0].iri,
+        parentHierarchy[0].conceptType,
         "0",
         parentHierarchy[0].hasChildren
       );
@@ -91,13 +100,14 @@ export default class Hierarchy extends Vue {
   createTreeNode(
     conceptName: any,
     conceptIri: any,
+    conceptTypes: any,
     level: any,
     hasChildren: boolean
   ) {
     const node: TreeNode = {
       key: level,
       label: conceptName,
-      icon: "pi pi-fw pi-inbox",
+      icon: getNodeIcon(conceptTypes),
       data: conceptIri,
       leaf: !hasChildren,
       children: []
@@ -115,7 +125,7 @@ export default class Hierarchy extends Vue {
   async onNodeExpand(node: TreeNode) {
     let children: any[] = [];
     this.loading = true;
-    
+
     await ConceptService.getConceptChildren(node.data)
       .then(res => {
         children = res.data;
@@ -135,6 +145,7 @@ export default class Hierarchy extends Vue {
         this.createTreeNode(
           child.name,
           child.iri,
+          child.conceptType,
           node.key + "-" + index,
           child.hasChildren
         )

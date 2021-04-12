@@ -4,22 +4,39 @@
 // Everything else
 
 export function isValueSet(conceptTypeElements: any) {
-  return conceptTypeElements.some(
+  return conceptTypeElements?.some(
     (e: any) =>
       e.name === "Set" || e.name === "Query set" || e.name === "Value set"
   );
 }
 
 export function isClass(conceptTypeElements: any) {
-  return conceptTypeElements.some((e: any) => {
+  return conceptTypeElements?.some((e: any) => {
     return e.name === "Class" || e.name === "Record type";
   });
 }
 
-function isFolder(conceptTypeElements: any) {
-  return conceptTypeElements.some((e: any) => {
+export function isFolder(conceptTypeElements: any) {
+  return conceptTypeElements?.some((e: any) => {
     return e.name === "Folder";
   });
+}
+
+export function getNodeIcon(conceptTypes: any) {
+  console.log(conceptTypes?.elements || conceptTypes);
+  if (isClass(conceptTypes?.elements || conceptTypes)) {
+    return "pi pi-fw pi-sitemap";
+  }
+
+  if (isValueSet(conceptTypes?.elements || conceptTypes)) {
+    return "pi pi-fw pi-list";
+  }
+
+  if (isFolder(conceptTypes?.elements || conceptTypes)) {
+    return "pi pi-fw pi-inbox";
+  }
+
+  return "";
 }
 
 export function getConceptIcon(conceptTypeElements: any) {
