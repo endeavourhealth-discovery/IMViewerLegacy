@@ -65,7 +65,7 @@
           </p>
           <p>
             <strong>Scheme:</strong>
-            {{ concept["http://endhealth.info/im#scheme"]["name"] }}
+            <span v-if="concept['http://endhealth.info/im#scheme']">{{ concept["http://endhealth.info/im#scheme"]["name"] }}</span>
           </p>
           <p>
             <strong>Types:</strong>
