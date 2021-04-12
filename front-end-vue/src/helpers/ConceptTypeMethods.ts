@@ -23,7 +23,6 @@ export function isFolder(conceptTypeElements: any) {
 }
 
 export function getNodeIcon(conceptTypes: any) {
-  console.log(conceptTypes?.elements || conceptTypes);
   if (isClass(conceptTypes?.elements || conceptTypes)) {
     return "pi pi-fw pi-sitemap";
   }

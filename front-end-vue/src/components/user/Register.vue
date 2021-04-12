@@ -315,7 +315,7 @@ export default class Register extends Vue {
           }
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
         });
       // this.$confirm.require({
       //   message: "User created successfully!",
