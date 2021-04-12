@@ -2,7 +2,7 @@
   <div class="p-grid">
     <div class="p-col-fixed" style="width:100px">
       <div class="box">
-        <div v-if="$route.name == 'Dashboard'">
+        <div v-if="$route.name == 'Home' || 'Dashboard'">
           <font-awesome-icon
             :icon="['fas', 'home']"
             size="6x"
@@ -35,11 +35,11 @@
     <div class="p-col">
       <div class="box">
         <div class="p-col">
-          <span v-if="$route.name == 'Dashboard'">Home</span>
+          <span v-if="$route.name == 'Home' || 'Dashboard'">Home</span>
           <span v-if="$route.name == 'Concept'">Concepts</span>
         </div>
         <div class="p-col">
-          <span v-if="$route.name == 'Dashboard'"
+          <span v-if="$route.name == 'Home' || 'Dashboard'"
             >Business purpose specific collections of concepts from the ontology
             used in the data model or in query and contain concepts as defined
             in the ontology, using the ontology language, including advanced
