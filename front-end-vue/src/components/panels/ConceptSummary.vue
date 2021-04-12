@@ -52,7 +52,7 @@
             </ScrollPanel>
           </div>
         </div>
-        <div class="p-col-6">
+        <div class="p-col-6" v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']">
           <p>
             <strong>Status:</strong>
             <span v-if="concept['http://endhealth.info/im#status']">{{ concept["http://endhealth.info/im#status"]["name"] }}</span>
@@ -63,7 +63,7 @@
           </p>
           <p>
             <strong>Types:</strong>
-            {{ conceptTypes }}
+            <span v-if="concept['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']">{{ conceptTypes }}</span>
           </p>
           <p><strong>Definition:</strong></p>
           <Definition
