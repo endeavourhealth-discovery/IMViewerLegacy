@@ -5,7 +5,10 @@
         <Graph />
       </TabPanel>
       <TabPanel header="Properties">
-        <ConceptTable />
+        <PropertiesTable />
+      </TabPanel>
+      <TabPanel header="Roles">
+        <RolesTable />
       </TabPanel>
     </TabView>
   </Panel>
@@ -13,12 +16,13 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import ConceptTable from "./ConceptTable.vue";
+import PropertiesTable from "./PropertiesTable.vue";
+import RolesTable from "./RolesTable.vue";
 import Graph from "./Graph.vue";
 
 @Options({
   name: "ConceptDetails",
-  components: { ConceptTable, Graph }
+  components: { PropertiesTable, Graph, RolesTable }
 })
 export default class DetailsSummary extends Vue {}
 </script>

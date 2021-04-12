@@ -79,6 +79,12 @@ export default class ConceptService {
     });
   }
 
+  public static getConceptRoles(iri: string) {
+    return axios.get(this.api + "api/concept/roles", {
+      params: { iri: iri }
+    });
+  }
+
   public static getConceptGraph(iri: string) {
     return axios.get(this.api + "api/concept/graph", { params: { iri: iri } });
   }
