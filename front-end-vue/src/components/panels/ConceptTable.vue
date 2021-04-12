@@ -4,6 +4,8 @@
     :rowsPerPageOptions="[10, 25, 50]"
     :paginator="properties.length > 10 ? true : false"
     :rows="10"
+    :scrollable="true"
+    scrollHeight="flex"
     style="height:604px;"
   >
     <template #empty>
