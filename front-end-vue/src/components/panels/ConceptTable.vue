@@ -2,7 +2,7 @@
   <DataTable
     :value="properties"
     :rowsPerPageOptions="[10, 25, 50]"
-    :paginator="true"
+    :paginator="properties.length > 10 ? true : false"
     :rows="10"
     style="height:604px;"
   >
