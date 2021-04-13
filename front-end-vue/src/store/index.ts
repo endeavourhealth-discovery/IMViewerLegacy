@@ -18,6 +18,11 @@ export default createStore({
     currentUser: {} as User,
     registeredUsername: "" as string,
     isLoggedIn: false as boolean,
+    // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
+    ontologyOverview: [],
+    conceptTypes: {} as any,
+    conceptSchemes: {} as any,
+    conceptStatus: {} as any,
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
@@ -88,6 +93,19 @@ export default createStore({
     updateIsLoggedIn(state, status) {
       state.isLoggedIn = status;
     },
+    // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
+    updateOntologyOverview(state, tableData) {
+      state.ontologyOverview = tableData;
+    },
+    updateConceptTypes(state, chartConceptTypes) {
+      state.conceptTypes = chartConceptTypes;
+    },
+    updateConceptSchemes(state, chartConceptSchemes) {
+      state.conceptSchemes = chartConceptSchemes;
+    },
+    updateConceptStatus(state, chartConceptStatus) {
+      state.conceptStatus = chartConceptStatus;
+    }
   },
   actions: {
     async fetchConceptAggregate({ commit }, iri) {

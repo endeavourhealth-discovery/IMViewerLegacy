@@ -33,30 +33,40 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
+import { mapState } from "vuex";
 import ReportService from "@/services/ReportService";
 import LoggerService from "@/services/LoggerService";
 
 @Options({
   name: "OntologyOverview",
+  computed: mapState(["ontologyOverview"]),
   props: []
 })
 export default class OntologyOverview extends Vue {
   tableData: any = [];
+  ontologyOverview!: [];
 
   mounted() {
     // table data
+    // strip out if statement and commit "updateOntologyOverview" when server caching is implemented
     store.commit("updateLoading", { key: "reportCategory", value: true });
-    ReportService.getConceptCategoryReport()
-      .then(res => {
-        this.tableData = res.data;
-        store.commit("updateLoading", { key: "reportCategory", value: false });
-      })
-      .catch(err => {
-        store.commit("updateLoading", { key: "reportCategory", value: false });
-        this.$toast.add(
-          LoggerService.error("Ontology Overview server request failed", err)
-        );
-      });
+    if (this.ontologyOverview.length > 0) {
+      this.tableData = this.ontologyOverview;
+      store.commit("updateLoading", { key: "reportCategory", value: false });
+    } else {
+      ReportService.getConceptCategoryReport()
+        .then(res => {
+          this.tableData = res.data;
+          store.commit("updateOntologyOverview", this.tableData);
+          store.commit("updateLoading", { key: "reportCategory", value: false });
+        })
+        .catch(err => {
+          store.commit("updateLoading", { key: "reportCategory", value: false });
+          this.$toast.add(
+            LoggerService.error("Ontology Overview server request failed", err)
+          );
+        });
+    }
   }
 }
 </script>
