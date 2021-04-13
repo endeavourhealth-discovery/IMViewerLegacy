@@ -16,7 +16,6 @@ import { Options, Vue } from "vue-class-component";
 import SideNav from "@/components/home/SideNav.vue";
 import Header from "@/components/home/Header.vue";
 import SidebarControl from "@/components/sidebar/SidebarControl.vue";
-import { User } from "../models/User";
 import store from "@/store/index";
 import LoggerService from "@/services/LoggerService";
 
@@ -27,18 +26,8 @@ import LoggerService from "@/services/LoggerService";
     Header,
     SidebarControl
   },
-  computed: {
-    user() {
-      return store.state.currentUser;
-    },
-    isLoggedIn() {
-      return store.state.isLoggedIn;
-    }
-  }
 })
 export default class Home extends Vue {
-  user!: User;
-  isLoggedIn!: boolean;
 
   async mounted() {
     // check for user and log them in if found or logout if not
