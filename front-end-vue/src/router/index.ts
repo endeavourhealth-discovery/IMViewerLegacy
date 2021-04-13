@@ -156,6 +156,7 @@ router.beforeEach((to, from, next) => {
       }
     });
   } else if (to.matched.some(record => record.meta.requiresLicense)) {
+    console.log("checking for snomed license acceptance")
     if (store.state.snomedLicenseAccepted !== "true") {
       next({
         path: "/snomedLicense"
