@@ -13,6 +13,7 @@ import ConfirmCode from "../components/user/ConfirmCode.vue";
 import Logout from "../components/user/Logout.vue";
 import ForgotPassword from "../components/user/ForgotPassword.vue";
 import ForgotPasswordSubmit from "../components/user/ForgotPasswordSubmit.vue";
+import SnomedLicense from "../views/SnomedLicense.vue";
 // import RecoverByEmail from "../components/user/RecoverByEmail.vue";
 import store from "@/store/index";
 import { nextTick } from "vue";
@@ -92,24 +93,41 @@ const routes: Array<RouteRecordRaw> = [
     name: "Home",
     component: Home,
     redirect: { name: "Dashboard" },
+    meta: {
+      requiresLicense: true
+    },
     children: [
       {
         path: "",
         name: "Dashboard",
         alias: ["/home", "/dashboard"],
-        component: Dashboard
+        component: Dashboard,
+        meta: {
+          requiresLicense: true
+        },
       },
       {
         path: "/concept/:selectedIri",
         name: "Concept",
-        component: Datamodel
+        component: Datamodel,
+        meta: {
+          requiresLicense: true
+        },
       }
     ]
   },
   {
     path: "/workflow",
     name: "Workflow",
-    component: Workflow
+    component: Workflow,
+    meta: {
+      requiresLicense: true
+    },
+  },
+  {
+    path: "/snomedLicense",
+    name: "License",
+    component: SnomedLicense
   }
 ];
 
@@ -125,8 +143,7 @@ router.beforeEach((to, from, next) => {
     store.dispatch("fetchConceptMapped", store.state.conceptIri);
     store.dispatch("fetchConceptUsages", store.state.conceptIri);
     store.dispatch("fetchConceptMembers", store.state.conceptIri);
-  }
-  if (to.matched.some(record => record.meta.requiresAuth)) {
+  } else if (to.matched.some(record => record.meta.requiresAuth)) {
     store.dispatch("authenticateCurrentUser").then(res => {
       console.log("auth guard user authenticated:" + res.authenticated);
       if (!res.authenticated) {
@@ -138,6 +155,14 @@ router.beforeEach((to, from, next) => {
         next();
       }
     });
+  } else if (to.matched.some(record => record.meta.requiresLicense)) {
+    if (store.state.snomedLicenseAccepted !== "true") {
+      next({
+        path: "/snomedLicense"
+      })
+    } else {
+      next();
+    }
   } else {
     next();
   }

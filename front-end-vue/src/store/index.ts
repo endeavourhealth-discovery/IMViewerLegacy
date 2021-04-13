@@ -18,7 +18,7 @@ export default createStore({
     currentUser: {} as User,
     registeredUsername: "" as string,
     isLoggedIn: false as boolean,
-    snomendLicenseAccepted: localStorage.getItem("snomedLicenseAccepted") || "false" as string,
+    snomedLicenseAccepted: localStorage.getItem("snomedLicenseAccepted") as string,
     // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
     ontologyOverview: [],
     conceptTypes: {} as any,
