@@ -44,6 +44,7 @@ export default class ConceptSchemes extends Vue {
 
   mounted() {
     // chart scheme
+    // strip out if statement and commit "updateConceptScheme" when server caching is implemented
     store.commit("updateLoading", { key: "reportScheme", value: true });
     if ("datasets" in this.conceptSchemes) {
       this.chartConceptSchemes = this.conceptSchemes;

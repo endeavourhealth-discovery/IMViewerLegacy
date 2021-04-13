@@ -48,7 +48,7 @@ export default class OntologyOverview extends Vue {
 
   mounted() {
     // table data
-    // strip out if statement and updateOntologyOverview when server caching is implemented
+    // strip out if statement and commit "updateOntologyOverview" when server caching is implemented
     store.commit("updateLoading", { key: "reportCategory", value: true });
     if (this.ontologyOverview.length > 0) {
       this.tableData = this.ontologyOverview;
