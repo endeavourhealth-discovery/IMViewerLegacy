@@ -32,10 +32,10 @@ export function getNodeIcon(conceptTypes: any) {
   }
 
   if (isFolder(conceptTypes?.elements || conceptTypes)) {
-    return "pi pi-fw pi-inbox";
+    return "pi pi-fw pi-folder";
   }
 
-  return "";
+  return "pi pi-fw pi-book";
 }
 
 export function getConceptIcon(conceptTypeElements: any) {
