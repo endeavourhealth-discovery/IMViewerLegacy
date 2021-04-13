@@ -18,6 +18,7 @@ export default createStore({
     currentUser: {} as User,
     registeredUsername: "" as string,
     isLoggedIn: false as boolean,
+    snomendLicenseAccepted: localStorage.getItem("snomedLicenseAccepted") || "false" as string,
     // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
     ontologyOverview: [],
     conceptTypes: {} as any,
@@ -92,6 +93,9 @@ export default createStore({
     },
     updateIsLoggedIn(state, status) {
       state.isLoggedIn = status;
+    },
+    updateSnomedLicenseAccepted(state, status: string) {
+      localStorage.setItem("snomedLicenseAccepted", status);
     },
     // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
     updateOntologyOverview(state, tableData) {
