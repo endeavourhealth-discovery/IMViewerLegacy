@@ -19,6 +19,7 @@ export default createStore({
     registeredUsername: "" as string,
     isLoggedIn: false as boolean,
     ontologyOverview: [],
+    conceptTypes: {} as any,
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
@@ -91,6 +92,9 @@ export default createStore({
     },
     updateOntologyOverview(state, tableData) {
       state.ontologyOverview = tableData;
+    },
+    updateConceptTypes(state, chartConceptTypes) {
+      state.conceptTypes = chartConceptTypes;
     }
   },
   actions: {
