@@ -18,6 +18,7 @@ export default createStore({
     currentUser: {} as User,
     registeredUsername: "" as string,
     isLoggedIn: false as boolean,
+    ontologyOverview: [],
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
@@ -87,6 +88,9 @@ export default createStore({
     },
     updateIsLoggedIn(state, status) {
       state.isLoggedIn = status;
+    },
+    updateOntologyOverview(state, tableData) {
+      state.ontologyOverview = tableData;
     }
   },
   actions: {
