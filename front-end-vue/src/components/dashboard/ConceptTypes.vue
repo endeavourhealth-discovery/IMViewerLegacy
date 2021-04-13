@@ -44,6 +44,7 @@ export default class ConceptTypes extends Vue {
 
   mounted() {
     // chart type
+    // remove if statement and commit "updateConceptTypes" when server caching in place
     store.commit("updateLoading", { key: "reportType", value: true });
     if ("datasets" in this.conceptTypes) {
       this.chartConceptTypes = this.conceptTypes;
