@@ -34,14 +34,9 @@
             @mouseenter="toggle($event, slotProps.data)"
             @mouseleave="toggle($event, slotProps.data)"
           >
-            <font-awesome-icon
-              class="sidebutton"
-              :icon="[
-                'fas',
-                getPerspectiveByConceptType(slotProps.data.conceptType).icon
-              ]"
-              size="2x"
-              style="color: lightgrey; padding: 5px"
+            <i
+              :class="getPerspectiveByConceptType(slotProps.data.conceptType)"
+              style="fontSize: 2rem; color: lightgrey; padding: 5px;"
             />
             {{ slotProps.data.name }}
           </div>
@@ -89,7 +84,7 @@ import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { SearchResponse } from "@/models/search/SearchResponse";
 import { Options, Vue } from "vue-class-component";
 import { mapState } from "vuex";
-import { getConceptIcon } from "../../helpers/ConceptTypeMethods";
+import { getIconFromType } from "../../helpers/ConceptTypeMethods";
 
 @Options({
   name: "SearchResults",
@@ -107,7 +102,7 @@ export default class SearchResults extends Vue {
   hoveredResult = {} as ConceptSummary | any;
 
   getPerspectiveByConceptType(conceptType: any): any {
-    return getConceptIcon(conceptType.elements);
+    return getIconFromType(conceptType.elements);
   }
 
   onNodeSelect() {

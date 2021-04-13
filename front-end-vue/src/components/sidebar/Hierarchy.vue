@@ -20,7 +20,7 @@ import ConceptService from "@/services/ConceptService";
 import { RDFS } from "@/vocabulary/RDFS";
 import { IM } from "@/vocabulary/IM";
 import LoggerService from "@/services/LoggerService";
-import { getNodeIcon } from "@/helpers/ConceptTypeMethods";
+import { getIconFromType } from "@/helpers/ConceptTypeMethods";
 
 interface TreeNode {
   key: string;
@@ -107,7 +107,7 @@ export default class Hierarchy extends Vue {
     const node: TreeNode = {
       key: level,
       label: conceptName,
-      icon: getNodeIcon(conceptTypes),
+      icon: getIconFromType(conceptTypes),
       data: conceptIri,
       leaf: !hasChildren,
       children: []
