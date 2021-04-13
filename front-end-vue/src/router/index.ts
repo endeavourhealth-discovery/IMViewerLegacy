@@ -143,7 +143,8 @@ router.beforeEach((to, from, next) => {
     store.dispatch("fetchConceptMapped", store.state.conceptIri);
     store.dispatch("fetchConceptUsages", store.state.conceptIri);
     store.dispatch("fetchConceptMembers", store.state.conceptIri);
-  } else if (to.matched.some(record => record.meta.requiresAuth)) {
+  }
+  if (to.matched.some(record => record.meta.requiresAuth)) {
     store.dispatch("authenticateCurrentUser").then(res => {
       console.log("auth guard user authenticated:" + res.authenticated);
       if (!res.authenticated) {
