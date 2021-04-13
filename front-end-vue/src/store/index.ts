@@ -28,16 +28,16 @@ export default createStore({
       selectedSchemes: [
         {
           iri: "http://endhealth.info/im#891071000252105",
-          name: "Discovery code"
+          name: "Discovery code",
         },
         {
           iri: "http://endhealth.info/im#891101000252101",
-          name: "Snomed-CT code"
+          name: "Snomed-CT code",
         },
         {
           iri: "http://endhealth.info/im#891111000252103",
-          name: "Term based code"
-        }
+          name: "Term based code",
+        },
       ],
       selectedTypes: [
         "Class",
@@ -49,9 +49,9 @@ export default createStore({
         "Record",
         "ValueSet",
         "Folder",
-        "Legacy"
-      ]
-    }
+        "Legacy",
+      ],
+    },
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -113,36 +113,45 @@ export default createStore({
       let parents: any;
       let children: any;
       let properties: any;
+      let roles: any;
       let success = true;
       await ConceptService.getConcept(iri)
-        .then(res => {
+        .then((res) => {
           concept = res.data;
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
           success = false;
         });
       await ConceptService.getConceptParents(iri)
-        .then(res => {
+        .then((res) => {
           parents = res.data;
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
           success = false;
         });
       await ConceptService.getConceptChildren(iri)
-        .then(res => {
+        .then((res) => {
           children = res.data;
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
           success = false;
         });
       await ConceptService.getConceptProperties(iri)
-        .then(res => {
+        .then((res) => {
           properties = res.data;
         })
-        .catch(err => {
+        .catch((err) => {
+          console.error(err);
+          success = false;
+        });
+      await ConceptService.getConceptRoles(iri)
+        .then((res) => {
+          roles = res.data;
+        })
+        .catch((err) => {
           console.error(err);
           success = false;
         });
@@ -150,7 +159,8 @@ export default createStore({
         concept: concept,
         parents: parents,
         children: children,
-        properties: properties
+        properties: properties,
+        roles: roles,
       });
       return success;
     },
@@ -160,18 +170,18 @@ export default createStore({
       let mappedTo: any;
       let success = true;
       await ConceptService.getConceptMappedFrom(iri)
-        .then(res => {
+        .then((res) => {
           mappedFrom = res.data;
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
           success = false;
         });
       await ConceptService.getConceptMappedTo(iri)
-        .then(res => {
+        .then((res) => {
           mappedTo = res.data;
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
           success = false;
         });
@@ -184,10 +194,10 @@ export default createStore({
       let usages: any;
       let success = true;
       await ConceptService.getConceptUsages(iri)
-        .then(res => {
+        .then((res) => {
           usages = res.data;
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
           success = false;
         });
@@ -200,10 +210,10 @@ export default createStore({
       let members: any;
       let success = true;
       await ConceptService.getConceptMembers(iri, false)
-        .then(res => {
+        .then((res) => {
           members = res.data;
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
           success = false;
         });
@@ -213,14 +223,14 @@ export default createStore({
     },
     async fetchSearchResults({ commit }, searchRequest: SearchRequest) {
       commit("updateLoading", { key: "searchResults", value: true });
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       let searchResults: any;
       let success = true;
       await ConceptService.advancedSearch(searchRequest)
-        .then(res => {
+        .then((res) => {
           searchResults = res.data.concepts;
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
           success = false;
         });
@@ -261,7 +271,7 @@ export default createStore({
         dispatch("logoutCurrentUser");
         return { authenticated: false };
       }
-    }
+    },
   },
-  modules: {}
+  modules: {},
 });

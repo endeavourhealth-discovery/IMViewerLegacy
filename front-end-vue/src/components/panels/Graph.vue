@@ -42,6 +42,7 @@ import LoggerService from "@/services/LoggerService";
   computed: mapState(["conceptAggregate"]),
   watch: {
     conceptAggregate(newValue) {
+      this.eraseTree();
       ConceptService.getConceptGraph(newValue.concept[IM.IRI])
         .then(res => {
           this.graphData = res.data;
@@ -181,7 +182,9 @@ export default class Graph extends Vue {
       .attr("y", () => 0)
       .style("text-anchor", () => "end")
       .text((d: any) =>
-        d.parent?.data.name === "Properties" ? d.data.name : ""
+        d.parent?.data.name === "Properties" || d.parent?.data.name === "Roles"
+          ? d.data.name
+          : ""
       );
 
     // set event listeners
