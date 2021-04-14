@@ -5,8 +5,15 @@
     >
       <template #header>
         <div class="avatar-container">
-          <i class="pi pi-fw pi-user-plus avatar-image" style="fontSize: 50px;" />
-          <Button icon="pi pi-angle-down" class="p-button-rounded p-button-primary avatar-button" @click="toggleAvatarSelect" />
+          <i
+            class="pi pi-fw pi-user-plus avatar-image"
+            style="fontSize: 50px;"
+          />
+          <Button
+            icon="pi pi-angle-down"
+            class="p-button-rounded p-button-primary avatar-button"
+            @click="toggleAvatarSelect"
+          />
           <OverlayPanel ref="avatar">
             <p>here</p>
           </OverlayPanel>
