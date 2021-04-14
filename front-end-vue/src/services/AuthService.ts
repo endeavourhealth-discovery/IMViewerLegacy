@@ -48,7 +48,7 @@ export default {
         user.attributes["custom:surname"],
         user.attributes.email,
         "",
-        {"value": user.attributes["custom:avatar"]}
+        { value: user.attributes["custom:avatar"] }
       );
       signedInUser.setId(user.attributes.sub);
       return { status: 200, user: signedInUser, message: "signIn successful" };
@@ -106,7 +106,7 @@ export default {
           updateResults.attributes["custom:surname"],
           updateResults.attributes.email,
           "",
-          {"value": updateResults.attributes["custom:avatar"]}
+          { value: updateResults.attributes["custom:avatar"] }
         );
         return {
           status: 200,
@@ -195,7 +195,7 @@ export default {
         cognitoUser.attributes["custom:surname"],
         cognitoUser.attributes.email,
         "",
-        {"value": cognitoUser.attributes["custom:avatar"]}
+        { value: cognitoUser.attributes["custom:avatar"] }
       );
       user.setId(cognitoUser.attributes.sub);
       return {

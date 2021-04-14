@@ -12,9 +12,17 @@
             @click="toggleAvatarSelect"
           />
           <OverlayPanel ref="avatar" class="avatar-popup">
-            <SelectButton v-model="selectedAvatar" :options="avatarOptions" dataKey="value" >
+            <SelectButton
+              v-model="selectedAvatar"
+              :options="avatarOptions"
+              dataKey="value"
+            >
               <template #option="slotProps">
-                <img class="avatar-select" :src="require('@/assets/avatars/' + slotProps.option.value)" style="width: 3em;" />
+                <img
+                  class="avatar-select"
+                  :src="require('@/assets/avatars/' + slotProps.option.value)"
+                  style="width: 3em;"
+                />
               </template>
             </SelectButton>
           </OverlayPanel>
@@ -261,7 +269,7 @@ export default class Register extends Vue {
   showUsernameNotice = false;
   showFirstNameNotice = false;
   showLastNameNotice = false;
-  selectedAvatar = {value: "colour/001-man.png"};
+  selectedAvatar = { value: "colour/001-man.png" };
   avatarOptions = avatars;
 
   setShowUsernameNotice() {
@@ -376,7 +384,7 @@ export default class Register extends Vue {
     this.showPassword2Notice = false;
     this.showFirstNameNotice = false;
     this.showLastNameNotice = false;
-    this.selectedAvatar = {value: "colour/001-man.png"};
+    this.selectedAvatar = { value: "colour/001-man.png" };
   }
 
   allVerified() {
@@ -388,7 +396,8 @@ export default class Register extends Vue {
       verifyPasswordsMatch(this.password1, this.password2) &&
       this.passwordStrength !== PasswordStrength.fail &&
       verifyIsName(this.firstName) &&
-      verifyIsName(this.lastName) && "value" in this.selectedAvatar
+      verifyIsName(this.lastName) &&
+      "value" in this.selectedAvatar
     ) {
       return true;
     } else {

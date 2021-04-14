@@ -20,10 +20,10 @@ export class User {
     this.lastName = lastName;
     this.email = email;
     this.password = password;
-    if (avatar && "value" in avatar){
-      this.avatar = avatar
+    if (avatar && "value" in avatar) {
+      this.avatar = avatar;
     } else {
-      this.avatar = {value: "colour/001-man.png"}
+      this.avatar = { value: "colour/001-man.png" };
     }
     this.id = "";
   }
