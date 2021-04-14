@@ -1,10 +1,17 @@
 <template>
-  <div v-if="user" class="p-d-flex p-flex-row p-ai-center">
+  <div v-if="currentUser" class="p-d-flex p-flex-row p-ai-center">
     <Card
       class="p-d-flex p-flex-column p-jc-sm-around p-ai-center password-edit-card"
     >
       <template #header>
-        <i class="pi pi-lock" style="fontSize: 50px; margin: 1em;" />
+        <img
+          id="user-icon"
+          class="avatar-icon"
+          :src="getUrl(currentUser.avatar.value)"
+          @click="toggle"
+          aria-haspopup="true"
+          aria-controls="overlay_menu"
+        />
       </template>
       <template #title>
         Change Password
@@ -13,9 +20,15 @@
         <div
           class="p-fluid p-d-flex p-flex-column p-jc-start password-edit-form"
         >
-          <div v-if="user.firstName" class="p-field">
+          <div v-if="currentUser.firstName" class="p-field">
             <label for="userName">User: </label>
-            <p id="username">{{ user.username }}</p>
+            <InputText
+              class="p-text-capitalize"
+              id="username"
+              type="text"
+              :value="currentUser.username"
+              disabled
+            />
           </div>
           <div class="p-field">
             <label for="passwordOld">Current Password</label>
@@ -87,17 +100,14 @@ import {
 } from "@/helpers/UserMethods";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 import store from "@/store/index";
+import { mapState } from "vuex";
 import Swal from "sweetalert2";
 import AuthService from "@/services/AuthService";
 
 @Options({
   name: "PasswordEdit",
   components: {},
-  computed: {
-    user() {
-      return store.state.currentUser;
-    }
-  },
+  computed: mapState(["currentUser"]),
   watch: {
     passwordNew1: {
       immediate: true,
@@ -114,7 +124,7 @@ import AuthService from "@/services/AuthService";
   }
 })
 export default class PasswordEdit extends Vue {
-  user!: User;
+  currentUser!: User;
   passwordOld = "";
   passwordNew1 = "";
   passwordNew2 = "";
@@ -159,6 +169,10 @@ export default class PasswordEdit extends Vue {
       });
     }
   }
+
+  getUrl(item: string) {
+    return require("@/assets/avatars/" + item);
+  }
 }
 </script>
 
@@ -173,5 +187,12 @@ export default class PasswordEdit extends Vue {
 
 .password-edit-form {
   max-width: 25em;
+}
+
+.avatar-icon {
+  margin-block-start: 1em;
+  width: 150px;
+  border: 1px solid lightgray;
+  border-radius: 50%;
 }
 </style>
