@@ -5,6 +5,7 @@ import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import { User } from "@/models/user/User";
+import { avatars } from "@/models/user/Avatars";
 
 describe("userDetails.vue", () => {
   let wrapper: any;
@@ -16,7 +17,7 @@ describe("userDetails.vue", () => {
       "Doe",
       "john.doe@ergosoft.co.uk",
       "",
-      { value: "colour/001-man.png" }
+      avatars[0]
     );
     store.commit("updateCurrentUser", user);
     store.commit("updateIsLoggedIn", true);

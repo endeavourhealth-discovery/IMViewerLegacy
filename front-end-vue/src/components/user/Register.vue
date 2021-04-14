@@ -197,6 +197,7 @@ import {
 } from "@/helpers/UserMethods";
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
+import { a } from "@aws-amplify/ui";
 
 @Options({
   name: "Register",
@@ -267,7 +268,7 @@ export default class Register extends Vue {
   showUsernameNotice = false;
   showFirstNameNotice = false;
   showLastNameNotice = false;
-  selectedAvatar = { value: "colour/001-man.png" };
+  selectedAvatar = avatars[0];
   avatarOptions = avatars;
 
   setShowUsernameNotice() {
@@ -382,7 +383,7 @@ export default class Register extends Vue {
     this.showPassword2Notice = false;
     this.showFirstNameNotice = false;
     this.showLastNameNotice = false;
-    this.selectedAvatar = { value: "colour/001-man.png" };
+    this.selectedAvatar = avatars[0];
   }
 
   allVerified() {

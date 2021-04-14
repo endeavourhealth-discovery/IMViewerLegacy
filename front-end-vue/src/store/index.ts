@@ -272,10 +272,10 @@ export default createStore({
               avatar => avatar.value === loggedInUser.avatar.value
             );
             if (!result) {
-              loggedInUser.avatar = { value: "colour/001-man.png" };
+              loggedInUser.avatar = avatars[0];
             }
           } else {
-            loggedInUser.avatar = { value: "colour/001-man.png" };
+            loggedInUser.avatar = avatars[0];
           }
           commit("updateCurrentUser", loggedInUser);
           return { authenticated: true };

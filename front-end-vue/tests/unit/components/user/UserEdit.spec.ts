@@ -9,6 +9,7 @@ import SelectButton from "primevue/selectbutton";
 import OverlayPanel from "primevue/overlaypanel";
 import { User } from "@/models/user/User";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
+import { avatars } from "@/models/user/Avatars";
 
 describe("userEdit.vue no password edit", () => {
   let wrapper: any;
@@ -20,7 +21,7 @@ describe("userEdit.vue no password edit", () => {
       "Doe",
       "john.doe@ergosoft.co.uk",
       "",
-      { value: "colour/001-man.png" }
+      avatars[0]
     );
     store.commit("updateCurrentUser", user);
     store.commit("updateIsLoggedIn", true);

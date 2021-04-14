@@ -8,6 +8,7 @@ import Button from "primevue/button";
 import SelectButton from "primevue/selectbutton";
 import OverlayPanel from "primevue/overlaypanel";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
+import { avatars } from "@/models/user/Avatars";
 
 describe("register.vue empty", () => {
   let wrapper: any;
@@ -53,7 +54,7 @@ describe("register.vue prefilled", () => {
     wrapper.vm.password2 = "12345678";
     wrapper.vm.firstName = "John";
     wrapper.vm.lastName = "Doe";
-    wrapper.vm.selectedAvatar = { value: "colour/001-man.png" }
+    wrapper.vm.selectedAvatar = avatars[0]
   });
 
   it("should render data to form", async () => {

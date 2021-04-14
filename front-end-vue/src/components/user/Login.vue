@@ -105,10 +105,10 @@ export default class Login extends Vue {
               avatar => avatar.value === loggedInUser.avatar.value
             );
             if (!result) {
-              loggedInUser.avatar = { value: "colour/001-man.png" };
+              loggedInUser.avatar = avatars[0];
             }
           } else {
-            loggedInUser.avatar = { value: "colour/001-man.png" };
+            loggedInUser.avatar = avatars[0];
           }
           store.commit("updateCurrentUser", loggedInUser);
           store.commit("updateRegisteredUsername", null);

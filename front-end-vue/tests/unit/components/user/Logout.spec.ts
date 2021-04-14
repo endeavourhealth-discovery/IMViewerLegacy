@@ -5,6 +5,7 @@ import Button from "primevue/button";
 import { mount } from "@vue/test-utils";
 import Logout from "@/components/user/Logout.vue";
 import { User } from "@/models/user/User";
+import { avatars } from "@/models/user/Avatars";
 
 describe("Logout.vue", () => {
   let wrapper: any;
@@ -16,7 +17,7 @@ describe("Logout.vue", () => {
       "Doe",
       "john.doe@ergosoft.co.uk",
       "",
-      { value: "colour/001-man.png" }
+      avatars[0]
     );
     store.commit("updateCurrentUser", user);
     store.commit("updateIsLoggedIn", true);

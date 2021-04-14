@@ -272,7 +272,7 @@ export default class UserEdit extends Vue {
   showPassword2Notice = false;
   showFirstNameNotice = false;
   showLastNameNotice = false;
-  selectedAvatar = { value: 'colour/001-man.png' };
+  selectedAvatar = avatars[0];
   avatarOptions = avatars;
 
   mounted() {

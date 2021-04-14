@@ -7,6 +7,7 @@ import PasswordEdit from "@/components/user/PasswordEdit.vue";
 import InputText from "primevue/inputtext";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 import { User } from "@/models/user/User";
+import { avatars } from "@/models/user/Avatars";
 
 describe("ForgotPasswordSubmit.vue with registeredUser", () => {
   let wrapper: any;
@@ -18,7 +19,7 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
       "Doe",
       "john.doe@ergosoft.co.uk",
       "",
-      { value: "colour/001-man.png" }
+      avatars[0]
     );
     store.commit("updateCurrentUser", user);
     store.commit("updateIsLoggedIn", true);
