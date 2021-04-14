@@ -68,8 +68,7 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import store from "@/store/index";
-import { mapState } from "vuex"
+import { mapState } from "vuex";
 import { User } from "@/models/user/User";
 
 @Options({

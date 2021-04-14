@@ -1,7 +1,5 @@
 <template>
-  <Card
-    class="p-d-flex p-flex-column p-jc-sm-around p-ai-center register-card"
-  >
+  <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center register-card">
     <template #header>
       <div class="avatar-container">
         <img id="selected-avatar" :src="getUrl(selectedAvatar.value)" />
@@ -119,14 +117,10 @@
             aria-describedby="password-help"
             v-model="password1"
           />
-          <InlineMessage
-            v-if="passwordStrength === 'strong'"
-            severity="success"
+          <InlineMessage v-if="passwordStrength === 'strong'" severity="success"
             >Password Strength: Strong</InlineMessage
           >
-          <InlineMessage
-            v-if="passwordStrength === 'medium'"
-            severity="success"
+          <InlineMessage v-if="passwordStrength === 'medium'" severity="success"
             >Password Strength: Medium</InlineMessage
           >
           <InlineMessage v-if="passwordStrength === 'weak'" severity="warn"
@@ -138,8 +132,8 @@
             >Invalid Password</InlineMessage
           >
           <small id="password-help"
-            >Password min length 8 characters. Improve password strength with
-            a mixture of UPPERCASE, lowercase, numbers and special characters
+            >Password min length 8 characters. Improve password strength with a
+            mixture of UPPERCASE, lowercase, numbers and special characters
             [!@#$%^&*].</small
           >
         </div>
@@ -197,7 +191,6 @@ import {
 } from "@/helpers/UserMethods";
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
-import { a } from "@aws-amplify/ui";
 
 @Options({
   name: "Register",

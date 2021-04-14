@@ -99,7 +99,6 @@ import {
   checkPasswordStrength
 } from "@/helpers/UserMethods";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
-import store from "@/store/index";
 import { mapState } from "vuex";
 import Swal from "sweetalert2";
 import AuthService from "@/services/AuthService";

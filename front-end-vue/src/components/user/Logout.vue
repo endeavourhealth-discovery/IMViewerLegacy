@@ -16,7 +16,10 @@
             <div class="p-text-left">Current User:</div>
           </div>
           <div class="p-field">
-            <div v-if="isLoggedIn" class="p-d-flex p-flex-column p-ai-center p-text-capitalize">
+            <div
+              v-if="isLoggedIn"
+              class="p-d-flex p-flex-column p-ai-center p-text-capitalize"
+            >
               <img
                 v-if="isLoggedIn"
                 id="user-icon"
@@ -26,7 +29,7 @@
                 aria-haspopup="true"
                 aria-controls="overlay_menu"
               />
-              <br>
+              <br />
               <p id="username-display">{{ currentUser.username }}</p>
             </div>
             <div v-if="!isLoggedIn" class="p-text-left p-text-capitalize">
