@@ -16,7 +16,17 @@
             <div class="p-text-left">Current User:</div>
           </div>
           <div class="p-field">
-            <div v-if="isLoggedIn" class="p-text-left p-text-capitalize">
+            <div v-if="isLoggedIn" class="p-d-flex p-flex-column p-ai-center p-text-capitalize">
+              <img
+                v-if="isLoggedIn"
+                id="user-icon"
+                class="avatar-icon"
+                :src="getUrl(currentUser.avatar.value)"
+                @click="toggle"
+                aria-haspopup="true"
+                aria-controls="overlay_menu"
+              />
+              <br>
               <p id="username-display">{{ currentUser.username }}</p>
             </div>
             <div v-if="!isLoggedIn" class="p-text-left p-text-capitalize">
@@ -40,18 +50,12 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
+import { mapState } from "vuex";
 import Swal from "sweetalert2";
 
 @Options({
   name: "Logout",
-  computed: {
-    currentUser() {
-      return store.state.currentUser;
-    },
-    isLoggedIn() {
-      return store.state.isLoggedIn;
-    }
-  }
+  computed: mapState(["currentUser", "isLoggedIn"])
 })
 export default class Logout extends Vue {
   handleSubmit() {
@@ -83,6 +87,10 @@ export default class Logout extends Vue {
       }
     });
   }
+
+  getUrl(item: string) {
+    return require("@/assets/avatars/" + item);
+  }
 }
 </script>
 
@@ -98,5 +106,11 @@ export default class Logout extends Vue {
 
 .logout-card {
   padding: 0 2em;
+}
+
+.avatar-icon {
+  width: 60px;
+  border: 1px solid lightgray;
+  border-radius: 50%;
 }
 </style>

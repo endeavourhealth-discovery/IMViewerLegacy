@@ -52,7 +52,6 @@
             @click="toggle"
             aria-haspopup="true"
             aria-controls="overlay_menu"
-            style="border: 1px solid black"
           />
           <Menu
             ref="menu"
