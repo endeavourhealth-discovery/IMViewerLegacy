@@ -44,16 +44,15 @@
             aria-haspopup="true"
             aria-controls="overlay_menu"
           ></i>
-          <Avatar
+          <img
             v-if="isLoggedIn"
             id="user-icon"
             class="avatar-icon"
-            icon="pi pi-user"
-            size="large"
-            shape="circle"
+            :src="getUrl(currentUser.avatar.value)"
             @click="toggle"
             aria-haspopup="true"
             aria-controls="overlay_menu"
+            style="border: 1px solid black"
           />
           <Menu
             ref="menu"
@@ -138,6 +137,10 @@ export default class SideNav extends Vue {
   toggle(event: any) {
     this.$refs.menu.toggle(event);
   }
+
+  getUrl(item: string) {
+    return require("@/assets/avatars/" + item);
+  }
 }
 </script>
 
@@ -173,6 +176,9 @@ export default class SideNav extends Vue {
 }
 
 .avatar-icon {
+  width: 60px;
+  border: 1px solid lightgray;
+  border-radius: 50%;
   cursor: pointer;
 }
 
