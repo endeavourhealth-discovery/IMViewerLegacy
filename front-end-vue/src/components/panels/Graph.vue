@@ -49,6 +49,7 @@ import LoggerService from "@/services/LoggerService";
           this.root = d3.hierarchy(this.graphData);
           this.drawTree();
           this.initSvgPanZoom();
+          this.zoomReset();
         })
         .catch(err => {
           this.$toast.add(
@@ -77,6 +78,7 @@ export default class Graph extends Vue {
   }
 
   zoomReset() {
+    this.initView();
     this.panZoom.resetZoom();
     this.panZoom.resetPan();
   }
@@ -122,19 +124,19 @@ export default class Graph extends Vue {
       .attr("d", (d: any) => {
         return (
           "M" +
-          d.y +
+          (d.depth > 2 ? 1.5 * d.y : d.y) +
           "," +
           (isBig ? 4 * d.x : d.x) +
           "C" +
-          (d.y + d.parent.y) / 2 +
+          (d.depth > 2 ? (d.y + d.parent.y) / 1.5 : (d.y + d.parent.y) / 2) +
           "," +
           (isBig ? 4 * d.x : d.x) +
           " " +
-          (d.y + d.parent.y) / 2 +
+          (d.depth > 2 ? (d.y + d.parent.y) / 1.5 : (d.y + d.parent.y) / 2) +
           "," +
           (isBig ? 4 * d.parent.x : d.parent.x) +
           " " +
-          d.parent.y +
+          (d.parent.depth > 2 ? 1.5 * d.parent.y : d.parent.y) +
           "," +
           (isBig ? 4 * d.parent.x : d.parent.x)
         );
@@ -152,7 +154,12 @@ export default class Graph extends Vue {
       )
       .attr(
         "transform",
-        (d: any) => "translate(" + d.y + "," + (isBig ? 4 * d.x : d.x) + ")"
+        (d: any) =>
+          "translate(" +
+          (d.depth > 2 ? 1.5 * d.y : d.y) +
+          "," +
+          (isBig ? 4 * d.x : d.x) +
+          ")"
       )
       .attr("cursor", "pointer");
 
@@ -188,7 +195,9 @@ export default class Graph extends Vue {
       .attr("y", () => 0)
       .style("text-anchor", () => "end")
       .text((d: any) =>
-        d.parent?.data.name === "Properties" || d.parent?.data.name === "Roles"
+        d.parent?.data.name === "Direct" ||
+        d.parent?.data.name === "Inherited" ||
+        d.parent?.data.name === "Roles"
           ? d.data.name
           : ""
       );
@@ -220,6 +229,11 @@ export default class Graph extends Vue {
     }
   }
 
+  initView() {
+    this.onCircleClick({ srcElement: { id: "Parents" } });
+    this.onCircleClick({ srcElement: { id: "Children" } });
+  }
+
   onCircleClick(event: any) {
     if (
       event.srcElement.id === "Parents" ||
@@ -227,6 +241,25 @@ export default class Graph extends Vue {
       event.srcElement.id === "Properties"
     ) {
       const currentParent = (this.graphData as any).children.filter(
+        (child: any) => child.name === event.srcElement.id
+      );
+      if (currentParent[0].children && currentParent[0].children.length) {
+        (currentParent[0] as any)._children = currentParent[0].children;
+        currentParent[0].children = [];
+      } else {
+        currentParent[0].children = (currentParent[0] as any)._children;
+        (currentParent[0] as any)._children = [];
+      }
+
+      this.drawTree();
+    } else if (
+      event.srcElement.id === "Direct" ||
+      event.srcElement.id === "Inherited"
+    ) {
+      const currentGrandParent = (this.graphData as any).children.filter(
+        (child: any) => child.name === "Properties"
+      );
+      const currentParent = currentGrandParent[0].children.filter(
         (child: any) => child.name === event.srcElement.id
       );
       if (currentParent[0].children && currentParent[0].children.length) {
