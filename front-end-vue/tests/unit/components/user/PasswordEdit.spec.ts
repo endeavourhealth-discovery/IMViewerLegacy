@@ -17,7 +17,8 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
       "John",
       "Doe",
       "john.doe@ergosoft.co.uk",
-      ""
+      "",
+      { value: "colour/001-man.png" }
     );
     store.commit("updateCurrentUser", user);
     store.commit("updateIsLoggedIn", true);

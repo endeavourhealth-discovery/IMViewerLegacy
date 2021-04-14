@@ -5,6 +5,8 @@ import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import InlineMessage from "primevue/inlinemessage";
 import Button from "primevue/button";
+import SelectButton from "primevue/selectbutton";
+import OverlayPanel from "primevue/overlaypanel";
 import { User } from "@/models/user/User";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 
@@ -17,14 +19,15 @@ describe("userEdit.vue no password edit", () => {
       "John",
       "Doe",
       "john.doe@ergosoft.co.uk",
-      ""
+      "",
+      { value: "colour/001-man.png" }
     );
     store.commit("updateCurrentUser", user);
     store.commit("updateIsLoggedIn", true);
     wrapper = mount(UserEdit, {
       global: {
         plugins: [store],
-        components: { Card, Button, InputText, InlineMessage }
+        components: { Card, Button, InputText, InlineMessage, SelectButton, OverlayPanel }
       }
     });
   });
@@ -59,11 +62,11 @@ describe("userEdit.vue no password edit", () => {
   });
 
   it("transfers currentUser details into editable variables", () => {
-    expect(wrapper.vm.username).toBe(wrapper.vm.user.username);
-    expect(wrapper.vm.firstName).toBe(wrapper.vm.user.firstName);
-    expect(wrapper.vm.lastName).toBe(wrapper.vm.user.lastName);
-    expect(wrapper.vm.email1).toBe(wrapper.vm.user.email);
-    expect(wrapper.vm.email2).toBe(wrapper.vm.user.email);
+    expect(wrapper.vm.username).toBe(wrapper.vm.currentUser.username);
+    expect(wrapper.vm.firstName).toBe(wrapper.vm.currentUser.firstName);
+    expect(wrapper.vm.lastName).toBe(wrapper.vm.currentUser.lastName);
+    expect(wrapper.vm.email1).toBe(wrapper.vm.currentUser.email);
+    expect(wrapper.vm.email2).toBe(wrapper.vm.currentUser.email);
   });
 
   it("should start with all checks true and notices false", () => {
