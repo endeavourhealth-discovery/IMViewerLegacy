@@ -106,6 +106,9 @@ export default class Graph extends Vue {
 
     const treemap = d3.tree().size([this.height, this.width]);
     let nodes: any = d3.hierarchy(this.graphData, (d: any) => d.children);
+    const isBig = this.graphData.children.some((child: GraphData) => {
+      return child.children?.length > 50;
+    });
     nodes = treemap(nodes);
     const g = d3.selectAll("g");
 
@@ -121,19 +124,19 @@ export default class Graph extends Vue {
           "M" +
           d.y +
           "," +
-          d.x +
+          (isBig ? 4 * d.x : d.x) +
           "C" +
           (d.y + d.parent.y) / 2 +
           "," +
-          d.x +
+          (isBig ? 4 * d.x : d.x) +
           " " +
           (d.y + d.parent.y) / 2 +
           "," +
-          d.parent.x +
+          (isBig ? 4 * d.parent.x : d.parent.x) +
           " " +
           d.parent.y +
           "," +
-          d.parent.x
+          (isBig ? 4 * d.parent.x : d.parent.x)
         );
       });
 
@@ -147,7 +150,10 @@ export default class Graph extends Vue {
         "class",
         (d: any) => "node" + (d.children ? " node--internal" : " node--leaf")
       )
-      .attr("transform", (d: any) => "translate(" + d.y + "," + d.x + ")")
+      .attr(
+        "transform",
+        (d: any) => "translate(" + d.y + "," + (isBig ? 4 * d.x : d.x) + ")"
+      )
       .attr("cursor", "pointer");
 
     // add circles to nodes
@@ -215,7 +221,6 @@ export default class Graph extends Vue {
   }
 
   onCircleClick(event: any) {
-    console.log("here");
     if (
       event.srcElement.id === "Parents" ||
       event.srcElement.id === "Children" ||
