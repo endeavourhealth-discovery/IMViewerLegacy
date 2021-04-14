@@ -1,5 +1,5 @@
 import { Auth } from "aws-amplify";
-import { User } from "@/models/User";
+import { User } from "@/models/user/User";
 
 export default {
   async register(userToRegister: User) {

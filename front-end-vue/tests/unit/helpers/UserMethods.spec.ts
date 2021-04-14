@@ -5,7 +5,7 @@ import {
   verifyIsUsername,
   checkPasswordStrength
 } from "@/helpers/UserMethods";
-import { PasswordStrength } from "@/models/PasswordStrength";
+import { PasswordStrength } from "@/models/user/PasswordStrength";
 
 describe("verifyIsEmail", () => {
   it("should fail if empty", () => {

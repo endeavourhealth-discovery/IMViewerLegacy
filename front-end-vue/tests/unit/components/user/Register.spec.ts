@@ -5,7 +5,7 @@ import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import InlineMessage from "primevue/inlinemessage";
 import Button from "primevue/button";
-import { PasswordStrength } from "@/models/PasswordStrength";
+import { PasswordStrength } from "@/models/user/PasswordStrength";
 
 describe("register.vue empty", () => {
   let wrapper: any;

@@ -5,8 +5,8 @@ import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import InlineMessage from "primevue/inlinemessage";
 import Button from "primevue/button";
-import { User } from "@/models/User";
-import { PasswordStrength } from "@/models/PasswordStrength";
+import { User } from "@/models/user/User";
+import { PasswordStrength } from "@/models/user/PasswordStrength";
 
 describe("userEdit.vue no password edit", () => {
   let wrapper: any;

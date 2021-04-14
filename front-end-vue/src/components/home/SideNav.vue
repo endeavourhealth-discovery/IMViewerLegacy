@@ -72,7 +72,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
-import { User } from "@/models/User";
+import { User } from "@/models/user/User";
 
 @Options({
   name: "SideNav",

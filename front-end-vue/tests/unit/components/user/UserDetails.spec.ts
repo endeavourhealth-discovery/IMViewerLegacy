@@ -4,7 +4,7 @@ import UserDetails from "@/components/user/UserDetails.vue";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
-import { User } from "@/models/User";
+import { User } from "@/models/user/User";
 
 describe("userDetails.vue", () => {
   let wrapper: any;

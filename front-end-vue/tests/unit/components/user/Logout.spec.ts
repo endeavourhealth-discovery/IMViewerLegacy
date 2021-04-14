@@ -4,7 +4,7 @@ import Card from "primevue/card";
 import Button from "primevue/button";
 import { mount } from "@vue/test-utils";
 import Logout from "@/components/user/Logout.vue";
-import { User } from "@/models/User";
+import { User } from "@/models/user/User";
 
 describe("Logout.vue", () => {
   let wrapper: any;

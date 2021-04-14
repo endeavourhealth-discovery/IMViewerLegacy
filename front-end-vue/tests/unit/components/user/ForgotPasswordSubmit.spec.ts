@@ -6,7 +6,7 @@ import InlineMessage from "primevue/inlinemessage";
 import { mount } from "@vue/test-utils";
 import ForgotPasswordSubmit from "@/components/user/ForgotPasswordSubmit.vue";
 import InputText from "primevue/inputtext";
-import { PasswordStrength } from "@/models/PasswordStrength";
+import { PasswordStrength } from "@/models/user/PasswordStrength";
 
 describe("ForgotPasswordSubmit.vue no registeredUser", () => {
   let wrapper: any;

@@ -5,8 +5,8 @@ import InlineMessage from "primevue/inlinemessage";
 import { mount } from "@vue/test-utils";
 import PasswordEdit from "@/components/user/PasswordEdit.vue";
 import InputText from "primevue/inputtext";
-import { PasswordStrength } from "@/models/PasswordStrength";
-import { User } from "@/models/User";
+import { PasswordStrength } from "@/models/user/PasswordStrength";
+import { User } from "@/models/user/User";
 
 describe("ForgotPasswordSubmit.vue with registeredUser", () => {
   let wrapper: any;

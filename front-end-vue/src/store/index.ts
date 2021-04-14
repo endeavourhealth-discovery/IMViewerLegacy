@@ -2,7 +2,7 @@ import { SearchRequest } from "./../models/search/SearchRequest";
 import { createStore } from "vuex";
 import ConceptService from "../services/ConceptService";
 import { HistoryItem } from "../models/HistoryItem";
-import { User } from "../models/User";
+import { User } from "../models/user/User";
 import AuthService from "@/services/AuthService";
 
 export default createStore({
