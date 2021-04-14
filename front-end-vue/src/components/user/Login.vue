@@ -74,6 +74,7 @@ import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
 import Swal from "sweetalert2";
 import AuthService from "@/services/AuthService";
+import { avatars } from "@/models/user/Avatars";
 
 @Options({
   name: "Login",
@@ -97,8 +98,19 @@ export default class Login extends Vue {
   handleSubmit() {
     AuthService.signIn(this.username, this.password)
       .then(res => {
-        if (res.status === 200) {
-          store.commit("updateCurrentUser", res.user);
+        if (res.status === 200 && res.user) {
+          const loggedInUser = { ...res.user };
+          if ("value" in loggedInUser.avatar) {
+            const result = avatars.find(
+              avatar => avatar.value === loggedInUser.avatar.value
+            );
+            if (!result) {
+              loggedInUser.avatar = { value: "colour/001-man.png" };
+            }
+          } else {
+            loggedInUser.avatar = { value: "colour/001-man.png" };
+          }
+          store.commit("updateCurrentUser", loggedInUser);
           store.commit("updateRegisteredUsername", null);
           store.commit("updateIsLoggedIn", true);
           Swal.fire({

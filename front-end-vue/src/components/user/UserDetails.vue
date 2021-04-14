@@ -4,7 +4,7 @@
       class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-details-card"
     >
       <template #header>
-        <i class="pi pi-fw pi-user" style="fontSize: 50px; margin: 1em;" />
+        <img id="selected-avatar" :src="getUrl(currentUser.avatar.value)" />
       </template>
       <template #title>
         My Account Details
@@ -87,6 +87,10 @@ export default class UserDetails extends Vue {
 
   handleEditClicked() {
     this.$router.push({ name: "UserEdit" });
+  }
+
+  getUrl(item: string) {
+    return require("@/assets/avatars/" + item);
   }
 }
 </script>

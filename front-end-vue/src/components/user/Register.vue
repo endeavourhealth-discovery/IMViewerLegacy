@@ -5,7 +5,7 @@
     >
       <template #header>
         <div class="avatar-container">
-          <img id="selected-avatar" :src="getAvatar(selectedAvatar.value)" />
+          <img id="selected-avatar" :src="getUrl(selectedAvatar.value)" />
           <Button
             icon="pi pi-angle-down"
             class="p-button-rounded p-button-primary avatar-button"
@@ -410,7 +410,7 @@ export default class Register extends Vue {
     x.toggle(event);
   }
 
-  getAvatar(item: any) {
+  getUrl(item: string) {
     return require("@/assets/avatars/" + item);
   }
 }
