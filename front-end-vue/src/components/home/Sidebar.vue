@@ -14,24 +14,21 @@
   <TabView class="sidemenu">
     <TabPanel>
       <template #header>
-        <font-awesome-icon
-          :icon="['fas', 'project-diagram']"
-          style="padding:1px"
-        />
+        <i class="fas fa-project-diagram" style="padding: 1px;" />
         <span>Tree</span>
       </template>
       <Tree :value="root" :expandedKeys="expandedKeys"></Tree>
     </TabPanel>
     <TabPanel>
       <template #header>
-        <font-awesome-icon :icon="['fas', 'history']" style="padding: 1px" />
+        <i class="fas fa-history" style="padding: 1px;" />
         <span>History</span>
       </template>
       List
     </TabPanel>
     <TabPanel>
       <template #header>
-        <font-awesome-icon :icon="['fas', 'search']" style="padding: 1px" />
+        <i class="fas fa-search" style="padding: 1px;" />
         <span>Search results</span>
       </template>
       Search

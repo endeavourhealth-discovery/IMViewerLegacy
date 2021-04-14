@@ -24,10 +24,7 @@
           <TabView class="sidemenu" v-model:activeIndex="active">
             <TabPanel>
               <template #header>
-                <font-awesome-icon
-                  :icon="['fas', 'project-diagram']"
-                  style="padding: 1px"
-                />
+                <i class="fas fa-project-diagram" style="padding: 1px;" />
                 <span>Workflows</span>
               </template>
 

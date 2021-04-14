@@ -3,31 +3,27 @@
     <div class="p-col-fixed" style="width:100px">
       <div class="box">
         <div v-if="$route.name == 'Home' || 'Dashboard'">
-          <font-awesome-icon
-            :icon="['fas', 'home']"
-            size="6x"
-            style="color: blue; padding: 5px"
+          <i
+            class="fas fa-home"
+            style="fontSize: 6rem; color: blue; padding: 5px;"
           />
         </div>
         <div v-else-if="$store.state.conceptAggregate.concept && isClaz">
-          <font-awesome-icon
-            :icon="['fas', 'sitemap']"
-            size="6x"
-            style="color: green; padding: 5px"
+          <i
+            class="fas fa-sitemap"
+            style="fontSize: 6rem; color: green; padding: 5px;"
           />
         </div>
         <div v-else-if="$store.state.conceptAggregate.concept && isSet">
-          <font-awesome-icon
-            :icon="['fas', 'tasks']"
-            size="6x"
-            style="color: red; padding: 5px"
+          <i
+            class="fas fa-tasks"
+            style="fontSize: 6rem; color: red; padding: 5px;"
           />
         </div>
         <div v-else>
-          <font-awesome-icon
-            :icon="['fas', 'lightbulb']"
-            size="6x"
-            style="color: orange; padding: 5px"
+          <i
+            class="fas fa-lightbulb"
+            style="fontSize: 6rem; color: orange; padding: 5px;"
           />
         </div>
       </div>

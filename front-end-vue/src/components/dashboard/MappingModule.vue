@@ -2,10 +2,9 @@
   <div class="p-col-6 modulecard-container" id="module-card">
     <Card class="modulecard">
       <template #header>
-        <font-awesome-icon
-          :icon="['fas', 'map']"
-          size="6x"
-          style="color: orange; padding: 5px"
+        <i
+          class="fas fa-map"
+          style="fontSize: 6rem; color: orange; padding: 5px;"
         />
       </template>
       <template #title> Mapping Module </template>

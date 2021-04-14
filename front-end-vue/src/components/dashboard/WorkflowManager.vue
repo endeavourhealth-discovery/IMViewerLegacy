@@ -2,10 +2,9 @@
   <div class="p-col-6 modulecard-container">
     <Card class="modulecard">
       <template #header>
-        <font-awesome-icon
-          :icon="['fas', 'tasks']"
-          size="6x"
-          style="color: brown; padding: 5px"
+        <i
+          class="fas fa-tasks"
+          style="fontSize: 6rem; color: orange; padding: 5px;"
         />
       </template>
       <template #title> Workflow Manager </template>

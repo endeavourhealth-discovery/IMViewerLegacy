@@ -16,24 +16,21 @@
   <TabView class="sidemenu" v-model:activeIndex="active">
     <TabPanel>
       <template #header>
-        <font-awesome-icon
-          :icon="['fas', 'project-diagram']"
-          style="padding: 1px"
-        />
+        <i class="fas fa-project-diagram" style="padding: 1px;" />
         <span>Hierarchy</span>
       </template>
       <Hierarchy />
     </TabPanel>
     <TabPanel>
       <template #header>
-        <font-awesome-icon :icon="['fas', 'history']" style="padding: 1px" />
+        <i class="fas fa-history" style="padding: 1px;" />
         <span>History</span>
       </template>
       <History />
     </TabPanel>
     <TabPanel>
       <template #header>
-        <font-awesome-icon :icon="['fas', 'search']" style="padding: 1px" />
+        <i class="fas fa-search" style="padding: 1px;" />
         <span>Search results</span>
       </template>
 

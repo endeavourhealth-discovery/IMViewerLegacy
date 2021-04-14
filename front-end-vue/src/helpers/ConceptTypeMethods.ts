@@ -22,34 +22,18 @@ export function isFolder(conceptTypeElements: any) {
   });
 }
 
-export function getNodeIcon(conceptTypes: any) {
+export function getIconFromType(conceptTypes: any) {
   if (isClass(conceptTypes?.elements || conceptTypes)) {
-    return "pi pi-fw pi-sitemap";
+    return "fas fa-sitemap";
   }
 
   if (isValueSet(conceptTypes?.elements || conceptTypes)) {
-    return "pi pi-fw pi-list";
+    return "fas fa-tasks";
   }
 
   if (isFolder(conceptTypes?.elements || conceptTypes)) {
-    return "pi pi-fw pi-inbox";
+    return "fas fa-folder";
   }
 
-  return "";
-}
-
-export function getConceptIcon(conceptTypeElements: any) {
-  if (isValueSet(conceptTypeElements)) {
-    return { name: "Valueset", icon: "tasks" };
-  }
-
-  if (isClass(conceptTypeElements)) {
-    return { name: "Datamodel", icon: "sitemap" };
-  }
-
-  if (isFolder(conceptTypeElements)) {
-    return { name: "Folder", icon: "sitemap" };
-  }
-
-  return { name: "Ontology", icon: "lightbulb" };
+  return "fas fa-lightbulb";
 }
