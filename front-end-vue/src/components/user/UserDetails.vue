@@ -67,19 +67,13 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
+import { mapState } from "vuex";
 import { User } from "@/models/user/User";
 
 @Options({
   name: "UserDetails",
   components: {},
-  computed: {
-    currentUser() {
-      return store.state.currentUser;
-    },
-    isLoggedIn() {
-      return store.state.isLoggedIn;
-    }
-  }
+  computed: mapState(["currentUser", "isLoggedIn"])
 })
 export default class UserDetails extends Vue {
   currentUser!: User;
@@ -106,5 +100,12 @@ export default class UserDetails extends Vue {
 
 .user-details-card {
   padding: 0 2em;
+}
+
+#selected-avatar {
+  margin-block-start: 1em;
+  width: 150px;
+  border: 1px solid lightgray;
+  border-radius: 50%;
 }
 </style>

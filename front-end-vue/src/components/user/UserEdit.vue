@@ -4,7 +4,29 @@
       class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-edit-card"
     >
       <template #header>
-        <i class="pi pi-fw pi-user-edit" style="fontSize: 50px; margin: 1em;" />
+        <div class="avatar-container">
+          <img id="selected-avatar" :src="getUrl(selectedAvatar.value)" />
+          <Button
+            icon="pi pi-angle-down"
+            class="p-button-rounded p-button-primary avatar-button"
+            @click="toggleAvatarSelect"
+          />
+          <OverlayPanel ref="avatar" class="avatar-popup">
+            <SelectButton
+              v-model="selectedAvatar"
+              :options="avatarOptions"
+              dataKey="value"
+            >
+              <template #option="slotProps">
+                <img
+                  class="avatar-select"
+                  :src="require('@/assets/avatars/' + slotProps.option.value)"
+                  style="width: 3em;"
+                />
+              </template>
+            </SelectButton>
+          </OverlayPanel>
+        </div>
       </template>
       <template #title>
         Edit My Account
@@ -170,6 +192,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
+import { mapState } from "vuex";
 import { User } from "@/models/user/User";
 import Swal from "sweetalert2";
 import {
@@ -181,18 +204,12 @@ import {
 } from "@/helpers/UserMethods";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 import AuthService from "@/services/AuthService";
+import { avatars } from "@/models/user/Avatars";
 
 @Options({
   name: "UserEdit",
   components: {},
-  computed: {
-    user() {
-      return store.state.currentUser;
-    },
-    isLoggedIn() {
-      return store.state.isLoggedIn;
-    }
-  },
+  computed: mapState(["currentUser", "isLoggedIn"]),
   watch: {
     email1: {
       immediate: true,
@@ -233,7 +250,7 @@ import AuthService from "@/services/AuthService";
   }
 })
 export default class UserEdit extends Vue {
-  user!: User;
+  currentUser!: User;
   isLoggedIn!: boolean;
   username = "";
   firstName = "";
@@ -255,14 +272,17 @@ export default class UserEdit extends Vue {
   showPassword2Notice = false;
   showFirstNameNotice = false;
   showLastNameNotice = false;
+  selectedAvatar = { value: 'colour/001-man.png' };
+  avatarOptions = avatars;
 
   mounted() {
-    if (this.user && this.isLoggedIn) {
-      this.username = this.user.username;
-      this.firstName = this.user.firstName;
-      this.lastName = this.user.lastName;
-      this.email1 = this.user.email;
-      this.email2 = this.user.email;
+    if (this.currentUser && this.isLoggedIn) {
+      this.username = this.currentUser.username;
+      this.firstName = this.currentUser.firstName;
+      this.lastName = this.currentUser.lastName;
+      this.email1 = this.currentUser.email;
+      this.email2 = this.currentUser.email;
+      this.selectedAvatar = this.currentUser.avatar;
     }
   }
 
@@ -307,9 +327,10 @@ export default class UserEdit extends Vue {
         this.firstName,
         this.lastName,
         this.email1,
-        this.passwordNew1
+        this.passwordNew1,
+        this.selectedAvatar
       );
-      updatedUser.setId(this.user.id);
+      updatedUser.setId(this.currentUser.id);
       AuthService.updateUser(updatedUser).then(res => {
         if (res.status === 200) {
           AuthService.changePassword(this.passwordOld, this.passwordNew1).then(
@@ -349,9 +370,10 @@ export default class UserEdit extends Vue {
         text: "Error. Password error or updated details error."
       });
     } else if (
-      this.user.firstName === this.firstName &&
-      this.user.lastName === this.lastName &&
-      this.user.email === this.email1
+      this.currentUser.firstName === this.firstName &&
+      this.currentUser.lastName === this.lastName &&
+      this.currentUser.email === this.email1 &&
+      this.currentUser.avatar === this.selectedAvatar
     ) {
       Swal.fire({
         icon: "warning",
@@ -364,9 +386,10 @@ export default class UserEdit extends Vue {
         this.firstName,
         this.lastName,
         this.email1,
-        ""
+        "",
+        this.selectedAvatar
       );
-      updatedUser.setId(this.user.id);
+      updatedUser.setId(this.currentUser.id);
       AuthService.updateUser(updatedUser).then(res => {
         if (res.status === 200) {
           Swal.fire({
@@ -400,7 +423,8 @@ export default class UserEdit extends Vue {
       verifyIsEmail(this.email2) &&
       verifyEmailsMatch(this.email1, this.email2) &&
       verifyIsName(this.firstName) &&
-      verifyIsName(this.lastName)
+      verifyIsName(this.lastName) &&
+      "value" in this.selectedAvatar
     ) {
       return true;
     } else {
@@ -419,17 +443,27 @@ export default class UserEdit extends Vue {
       confirmButtonText: "Reset"
     }).then(result => {
       if (result.isConfirmed) {
-        this.username = this.user.username;
-        this.firstName = this.user.firstName;
-        this.lastName = this.user.lastName;
-        this.email1 = this.user.email;
-        this.email2 = this.user.email;
+        this.username = this.currentUser.username;
+        this.firstName = this.currentUser.firstName;
+        this.lastName = this.currentUser.lastName;
+        this.email1 = this.currentUser.email;
+        this.email2 = this.currentUser.email;
+        this.selectedAvatar = this.currentUser.avatar;
         this.showFirstNameNotice = false;
         this.showLastNameNotice = false;
         this.showEmail1Notice = false;
         this.showEmail2Notice = false;
       }
     });
+  }
+
+  toggleAvatarSelect(event: any) {
+    const x = this.$refs.avatar as any;
+    x.toggle(event);
+  }
+
+  getUrl(item: string) {
+    return require("@/assets/avatars/" + item);
   }
 }
 </script>
@@ -447,5 +481,24 @@ export default class UserEdit extends Vue {
 
 .user-edit-card {
   padding: 0 2em;
+}
+
+.avatar-container {
+  position: relative;
+  padding: 1.5em;
+  /* margin: 1em; */
+}
+
+.avatar-button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+#selected-avatar {
+  margin-block-start: 0.5em;
+  width: 150px;
+  border: 1px solid lightgray;
+  border-radius: 50%;
 }
 </style>

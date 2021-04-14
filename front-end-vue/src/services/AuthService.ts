@@ -11,7 +11,7 @@ export default {
           email: userToRegister.email,
           "custom:forename": userToRegister.firstName,
           "custom:surname": userToRegister.lastName,
-          "custom:avatar": userToRegister.avatar
+          "custom:avatar": userToRegister.avatar.value
         }
       });
       return { status: 201, message: "User registered successfully" };
@@ -96,7 +96,7 @@ export default {
           email: userToUpdate.email,
           "custom:forename": userToUpdate.firstName,
           "custom:surname": userToUpdate.lastName,
-          "custom:avatar": userToUpdate.avatar
+          "custom:avatar": userToUpdate.avatar.value
         };
         await Auth.updateUserAttributes(user, atts);
         const updateResults = await Auth.currentAuthenticatedUser();

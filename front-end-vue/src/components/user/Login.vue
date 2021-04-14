@@ -99,7 +99,6 @@ export default class Login extends Vue {
     AuthService.signIn(this.username, this.password)
       .then(res => {
         if (res.status === 200 && res.user) {
-          console.log(res.user);
           const loggedInUser = res.user;
           if ("value" in loggedInUser.avatar) {
             const result = avatars.find(
@@ -111,7 +110,6 @@ export default class Login extends Vue {
           } else {
             loggedInUser.avatar = { value: "colour/001-man.png" };
           }
-          console.log(loggedInUser);
           store.commit("updateCurrentUser", loggedInUser);
           store.commit("updateRegisteredUsername", null);
           store.commit("updateIsLoggedIn", true);

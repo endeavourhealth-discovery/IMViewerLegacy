@@ -13,18 +13,14 @@ export class User {
     lastName: string,
     email: string,
     password: string,
-    avatar?: {}
+    avatar: { value: string }
   ) {
     this.username = username;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.password = password;
-    if (avatar && "value" in avatar) {
-      this.avatar = avatar;
-    } else {
-      this.avatar = { value: "colour/001-man.png" };
-    }
+    this.avatar = avatar;
     this.id = "";
   }
 

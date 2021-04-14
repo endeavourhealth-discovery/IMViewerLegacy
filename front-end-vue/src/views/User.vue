@@ -22,8 +22,13 @@ export default class User extends Vue {}
 
 <style scoped>
 .user-container {
-  height: 100vh;
+  height: 90vh;
   overflow-y: auto;
   margin-top: 10vh;
+  /* margin-bottom: 10vh; */
+}
+
+.card-button-container {
+  height: 100%;
 }
 </style>
