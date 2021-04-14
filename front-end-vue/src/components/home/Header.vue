@@ -2,7 +2,7 @@
   <div class="p-grid">
     <div class="p-col-fixed" style="width:100px">
       <div class="box">
-        <div v-if="$route.name == 'Home' || 'Dashboard'">
+        <div v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
           <i
             class="fas fa-home"
             style="fontSize: 6rem; color: blue; padding: 5px;"
@@ -31,17 +31,19 @@
     <div class="p-col">
       <div class="box">
         <div class="p-col">
-          <span v-if="$route.name == 'Home' || 'Dashboard'">Home</span>
-          <span v-if="$route.name == 'Concept'">Concepts</span>
+          <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'"
+            >Home</span
+          >
+          <span v-else-if="$route.name === 'Concept'">Concepts</span>
         </div>
         <div class="p-col">
-          <span v-if="$route.name == 'Home' || 'Dashboard'"
+          <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'"
             >Business purpose specific collections of concepts from the ontology
             used in the data model or in query and contain concepts as defined
             in the ontology, using the ontology language, including advanced
             concept classes.
           </span>
-          <span v-if="$route.name == 'Concept'"
+          <span v-else-if="$route.name === 'Concept'"
             >The semantic ontology is the set of concepts used in all parts of
             the information model, from clinical concepts through to data
             structure concepts.
