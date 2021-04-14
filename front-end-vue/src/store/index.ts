@@ -4,6 +4,7 @@ import ConceptService from "../services/ConceptService";
 import { HistoryItem } from "../models/HistoryItem";
 import { User } from "../models/user/User";
 import AuthService from "@/services/AuthService";
+import { avatars } from "@/models/user/Avatars";
 
 export default createStore({
   state: {
@@ -263,9 +264,20 @@ export default createStore({
     async authenticateCurrentUser({ commit, dispatch }) {
       try {
         const res = await AuthService.getCurrentAuthenticatedUser();
-        if (res.status === 200) {
+        if (res.status === 200 && res.user) {
           commit("updateIsLoggedIn", true);
-          commit("updateCurrentUser", res.user);
+          const loggedInUser = res.user;
+          if ("value" in loggedInUser.avatar) {
+            const result = avatars.find(
+              avatar => avatar.value === loggedInUser.avatar.value
+            );
+            if (!result) {
+              loggedInUser.avatar = { value: "colour/001-man.png" };
+            }
+          } else {
+            loggedInUser.avatar = { value: "colour/001-man.png" };
+          }
+          commit("updateCurrentUser", loggedInUser);
           return { authenticated: true };
         } else {
           console.error(res.error);

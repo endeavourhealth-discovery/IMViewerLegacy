@@ -71,18 +71,12 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
+import { mapState } from "vuex"
 import { User } from "@/models/user/User";
 
 @Options({
   name: "SideNav",
-  computed: {
-    currentUser() {
-      return store.state.currentUser;
-    },
-    isLoggedIn() {
-      return store.state.isLoggedIn;
-    }
-  }
+  computed: mapState(["currentUser", "isLoggedIn"])
 })
 export default class SideNav extends Vue {
   currentUser!: User;
