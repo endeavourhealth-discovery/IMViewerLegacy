@@ -4,7 +4,7 @@
       class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-details-card"
     >
       <template #header>
-        <i class="pi pi-fw pi-user" style="fontSize: 50px; margin: 1em;" />
+        <img id="selected-avatar" :src="getUrl(currentUser.avatar.value)" />
       </template>
       <template #title>
         My Account Details
@@ -66,20 +66,13 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import store from "@/store/index";
-import { User } from "@/models/User";
+import { mapState } from "vuex";
+import { User } from "@/models/user/User";
 
 @Options({
   name: "UserDetails",
   components: {},
-  computed: {
-    currentUser() {
-      return store.state.currentUser;
-    },
-    isLoggedIn() {
-      return store.state.isLoggedIn;
-    }
-  }
+  computed: mapState(["currentUser", "isLoggedIn"])
 })
 export default class UserDetails extends Vue {
   currentUser!: User;
@@ -87,6 +80,10 @@ export default class UserDetails extends Vue {
 
   handleEditClicked() {
     this.$router.push({ name: "UserEdit" });
+  }
+
+  getUrl(item: string) {
+    return require("@/assets/avatars/" + item);
   }
 }
 </script>
@@ -102,5 +99,12 @@ export default class UserDetails extends Vue {
 
 .user-details-card {
   padding: 0 2em;
+}
+
+#selected-avatar {
+  margin-block-start: 1em;
+  width: 150px;
+  border: 1px solid lightgray;
+  border-radius: 50%;
 }
 </style>

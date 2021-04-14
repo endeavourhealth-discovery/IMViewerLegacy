@@ -44,13 +44,11 @@
             aria-haspopup="true"
             aria-controls="overlay_menu"
           ></i>
-          <Avatar
+          <img
             v-if="isLoggedIn"
             id="user-icon"
             class="avatar-icon"
-            icon="pi pi-user"
-            size="large"
-            shape="circle"
+            :src="getUrl(currentUser.avatar.value)"
             @click="toggle"
             aria-haspopup="true"
             aria-controls="overlay_menu"
@@ -61,7 +59,6 @@
             :popup="true"
             class="popup-user"
           />
-          <!-- <MegaMenu :model="items" orientation="vertical"/> -->
           <i class="pi pi-cog settings-icon"></i>
         </div>
       </div>
@@ -71,28 +68,17 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import store from "@/store/index";
-import { User } from "@/models/User";
+import { mapState } from "vuex";
+import { User } from "@/models/user/User";
 
 @Options({
   name: "SideNav",
-  computed: {
-    currentUser() {
-      return store.state.currentUser;
-    },
-    isLoggedIn() {
-      return store.state.isLoggedIn;
-    }
-  }
+  computed: mapState(["currentUser", "isLoggedIn"])
 })
 export default class SideNav extends Vue {
   currentUser!: User;
   isLoggedIn!: boolean;
   $refs!: any;
-
-  popupClass() {
-    this.isLoggedIn ? "user-popup" : "user-popup";
-  }
 
   isActive(item: string) {
     if (this.$route.name == item) {
@@ -149,6 +135,10 @@ export default class SideNav extends Vue {
   toggle(event: any) {
     this.$refs.menu.toggle(event);
   }
+
+  getUrl(item: string) {
+    return require("@/assets/avatars/" + item);
+  }
 }
 </script>
 
@@ -156,16 +146,6 @@ export default class SideNav extends Vue {
 .layout-menu-container {
   padding: 20px 0;
   height: 100%;
-}
-
-.p-menu {
-  background-color: hotpink;
-  left: calc((100vw / 12) * 3);
-}
-
-.p-button {
-  width: 90%;
-  text-align: center;
 }
 
 .sidebutton {
@@ -194,6 +174,9 @@ export default class SideNav extends Vue {
 }
 
 .avatar-icon {
+  width: 60px;
+  border: 1px solid lightgray;
+  border-radius: 50%;
   cursor: pointer;
 }
 

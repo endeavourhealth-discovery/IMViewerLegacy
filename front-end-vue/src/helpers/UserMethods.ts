@@ -1,4 +1,4 @@
-import { PasswordStrength } from "@/models/PasswordStrength";
+import { PasswordStrength } from "@/models/user/PasswordStrength";
 
 export function verifyIsEmail(email: any) {
   if (

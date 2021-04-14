@@ -5,7 +5,10 @@ import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import InlineMessage from "primevue/inlinemessage";
 import Button from "primevue/button";
-import { PasswordStrength } from "@/models/PasswordStrength";
+import SelectButton from "primevue/selectbutton";
+import OverlayPanel from "primevue/overlaypanel";
+import { PasswordStrength } from "@/models/user/PasswordStrength";
+import { avatars } from "@/models/user/Avatars";
 
 describe("register.vue empty", () => {
   let wrapper: any;
@@ -14,7 +17,7 @@ describe("register.vue empty", () => {
     wrapper = mount(Register, {
       global: {
         plugins: [store],
-        components: { Card, Button, InputText, InlineMessage }
+        components: { Card, Button, InputText, InlineMessage, SelectButton, OverlayPanel }
       }
     });
   });
@@ -41,7 +44,7 @@ describe("register.vue prefilled", () => {
     wrapper = mount(Register, {
       global: {
         plugins: [store],
-        components: { Card, Button, InputText, InlineMessage }
+        components: { Card, Button, InputText, InlineMessage, OverlayPanel, SelectButton }
       }
     });
     wrapper.vm.username = "DevTest";
@@ -51,6 +54,7 @@ describe("register.vue prefilled", () => {
     wrapper.vm.password2 = "12345678";
     wrapper.vm.firstName = "John";
     wrapper.vm.lastName = "Doe";
+    wrapper.vm.selectedAvatar = avatars[0]
   });
 
   it("should render data to form", async () => {

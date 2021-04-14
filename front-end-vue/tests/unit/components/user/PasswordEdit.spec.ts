@@ -5,8 +5,9 @@ import InlineMessage from "primevue/inlinemessage";
 import { mount } from "@vue/test-utils";
 import PasswordEdit from "@/components/user/PasswordEdit.vue";
 import InputText from "primevue/inputtext";
-import { PasswordStrength } from "@/models/PasswordStrength";
-import { User } from "@/models/User";
+import { PasswordStrength } from "@/models/user/PasswordStrength";
+import { User } from "@/models/user/User";
+import { avatars } from "@/models/user/Avatars";
 
 describe("ForgotPasswordSubmit.vue with registeredUser", () => {
   let wrapper: any;
@@ -17,7 +18,8 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
       "John",
       "Doe",
       "john.doe@ergosoft.co.uk",
-      ""
+      "",
+      avatars[0]
     );
     store.commit("updateCurrentUser", user);
     store.commit("updateIsLoggedIn", true);

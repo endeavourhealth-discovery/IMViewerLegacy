@@ -4,7 +4,8 @@ import UserDetails from "@/components/user/UserDetails.vue";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
-import { User } from "@/models/User";
+import { User } from "@/models/user/User";
+import { avatars } from "@/models/user/Avatars";
 
 describe("userDetails.vue", () => {
   let wrapper: any;
@@ -15,7 +16,8 @@ describe("userDetails.vue", () => {
       "John",
       "Doe",
       "john.doe@ergosoft.co.uk",
-      ""
+      "",
+      avatars[0]
     );
     store.commit("updateCurrentUser", user);
     store.commit("updateIsLoggedIn", true);

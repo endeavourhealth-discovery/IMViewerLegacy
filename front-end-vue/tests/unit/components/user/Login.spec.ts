@@ -4,7 +4,6 @@ import Login from "@/components/user/Login.vue";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
-import { PasswordStrength } from "@/models/PasswordStrength";
 
 describe("login.vue no registeredUser", () => {
   let wrapper: any;

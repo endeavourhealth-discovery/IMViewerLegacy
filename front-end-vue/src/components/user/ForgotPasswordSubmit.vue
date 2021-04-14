@@ -120,7 +120,7 @@
 import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
 import AuthService from "@/services/AuthService";
-import { PasswordStrength } from "@/models/PasswordStrength";
+import { PasswordStrength } from "@/models/user/PasswordStrength";
 import {
   verifyPasswordsMatch,
   checkPasswordStrength

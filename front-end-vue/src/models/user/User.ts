@@ -4,6 +4,7 @@ export class User {
   lastName: string;
   email: string;
   password: string;
+  avatar: { value: string };
   id: string;
 
   constructor(
@@ -11,13 +12,15 @@ export class User {
     firstName: string,
     lastName: string,
     email: string,
-    password: string
+    password: string,
+    avatar: { value: string }
   ) {
     this.username = username;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.password = password;
+    this.avatar = avatar;
     this.id = "";
   }
 

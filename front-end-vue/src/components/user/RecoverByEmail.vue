@@ -62,7 +62,6 @@
 import { Options, Vue } from "vue-class-component";
 import Swal from "sweetalert2";
 import AuthService from "@/services/AuthService";
-import store from "@/store/index";
 import { verifyIsEmail } from "@/helpers/UserMethods";
 
 @Options({
