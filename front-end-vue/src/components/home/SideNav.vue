@@ -61,7 +61,6 @@
             :popup="true"
             class="popup-user"
           />
-          <!-- <MegaMenu :model="items" orientation="vertical"/> -->
           <i class="pi pi-cog settings-icon"></i>
         </div>
       </div>
@@ -89,10 +88,6 @@ export default class SideNav extends Vue {
   currentUser!: User;
   isLoggedIn!: boolean;
   $refs!: any;
-
-  popupClass() {
-    this.isLoggedIn ? "user-popup" : "user-popup";
-  }
 
   isActive(item: string) {
     if (this.$route.name == item) {
@@ -156,16 +151,6 @@ export default class SideNav extends Vue {
 .layout-menu-container {
   padding: 20px 0;
   height: 100%;
-}
-
-.p-menu {
-  background-color: hotpink;
-  left: calc((100vw / 12) * 3);
-}
-
-.p-button {
-  width: 90%;
-  text-align: center;
 }
 
 .sidebutton {
