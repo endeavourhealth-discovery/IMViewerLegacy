@@ -38,11 +38,19 @@ interface TreeNode {
   watch: {
     conceptAggregate(newValue) {
       this.createTree(newValue.concept, newValue.parents, newValue.children);
-      this.$store.commit("updateHistory", {
-        url: this.$route.fullPath,
-        conceptName: newValue.concept[RDFS.LABEL],
-        view: this.$route.name
-      } as HistoryItem);
+      if (this.$route.fullPath === "/") {
+        this.$store.commit("updateHistory", {
+          url: this.$route.fullPath,
+          conceptName: "Home",
+          view: this.$route.name
+        } as HistoryItem);
+      } else {
+        this.$store.commit("updateHistory", {
+          url: this.$route.fullPath,
+          conceptName: newValue.concept[RDFS.LABEL],
+          view: this.$route.name
+        } as HistoryItem);
+      }
     }
   }
 })
