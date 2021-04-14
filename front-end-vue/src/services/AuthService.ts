@@ -10,7 +10,8 @@ export default {
         attributes: {
           email: userToRegister.email,
           "custom:forename": userToRegister.firstName,
-          "custom:surname": userToRegister.lastName
+          "custom:surname": userToRegister.lastName,
+          "custom:avatar": userToRegister.avatar
         }
       });
       return { status: 201, message: "User registered successfully" };
@@ -46,7 +47,8 @@ export default {
         user.attributes["custom:forename"],
         user.attributes["custom:surname"],
         user.attributes.email,
-        ""
+        "",
+        {"value": user.attributes["custom:avatar"]}
       );
       signedInUser.setId(user.attributes.sub);
       return { status: 200, user: signedInUser, message: "signIn successful" };
@@ -93,7 +95,8 @@ export default {
         const atts: object = {
           email: userToUpdate.email,
           "custom:forename": userToUpdate.firstName,
-          "custom:surname": userToUpdate.lastName
+          "custom:surname": userToUpdate.lastName,
+          "custom:avatar": userToUpdate.avatar
         };
         await Auth.updateUserAttributes(user, atts);
         const updateResults = await Auth.currentAuthenticatedUser();
@@ -102,7 +105,8 @@ export default {
           updateResults.attributes["custom:forename"],
           updateResults.attributes["custom:surname"],
           updateResults.attributes.email,
-          ""
+          "",
+          {"value": updateResults.attributes["custom:avatar"]}
         );
         return {
           status: 200,
@@ -190,7 +194,8 @@ export default {
         cognitoUser.attributes["custom:forename"],
         cognitoUser.attributes["custom:surname"],
         cognitoUser.attributes.email,
-        ""
+        "",
+        {"value": cognitoUser.attributes["custom:avatar"]}
       );
       user.setId(cognitoUser.attributes.sub);
       return {

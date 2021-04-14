@@ -295,7 +295,8 @@ export default class Register extends Vue {
         this.firstName,
         this.lastName,
         this.email1.toLowerCase(),
-        this.password1
+        this.password1,
+        this.selectedAvatar.value
       );
       AuthService.register(user)
         .then(res => {
@@ -375,6 +376,7 @@ export default class Register extends Vue {
     this.showPassword2Notice = false;
     this.showFirstNameNotice = false;
     this.showLastNameNotice = false;
+    this.selectedAvatar = {value: "colour/001-man.png"};
   }
 
   allVerified() {
@@ -386,7 +388,7 @@ export default class Register extends Vue {
       verifyPasswordsMatch(this.password1, this.password2) &&
       this.passwordStrength !== PasswordStrength.fail &&
       verifyIsName(this.firstName) &&
-      verifyIsName(this.lastName)
+      verifyIsName(this.lastName) && "value" in this.selectedAvatar
     ) {
       return true;
     } else {
