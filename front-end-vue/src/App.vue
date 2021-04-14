@@ -33,4 +33,15 @@ body {
 .popup-user ul li a .p-menuitem-text {
   color: lightgray !important;
 }
+
+.avatar-popup {
+  width: 25em;
+  height: 40vh;
+  overflow-y: auto;
+}
+
+.avatar-popup div div .p-button {
+  margin: 2px;
+  border-right: 1px solid #ced4da !important;
+}
 </style>

@@ -5,17 +5,18 @@
     >
       <template #header>
         <div class="avatar-container">
-          <i
-            class="pi pi-fw pi-user-plus avatar-image"
-            style="fontSize: 50px;"
-          />
+          <img id="selected-avatar" :src="getAvatar(selectedAvatar.value)" />
           <Button
             icon="pi pi-angle-down"
             class="p-button-rounded p-button-primary avatar-button"
             @click="toggleAvatarSelect"
           />
-          <OverlayPanel ref="avatar">
-            <p>here</p>
+          <OverlayPanel ref="avatar" class="avatar-popup">
+            <SelectButton v-model="selectedAvatar" :options="avatarOptions" dataKey="value" >
+              <template #option="slotProps">
+                <img class="avatar-select" :src="require('@/assets/avatars/' + slotProps.option.value)" style="width: 3em;" />
+              </template>
+            </SelectButton>
           </OverlayPanel>
         </div>
       </template>
@@ -189,6 +190,7 @@ import {
   checkPasswordStrength
 } from "@/helpers/UserMethods";
 import AuthService from "@/services/AuthService";
+import { avatars } from "@/models/user/Avatars";
 
 @Options({
   name: "Register",
@@ -259,6 +261,8 @@ export default class Register extends Vue {
   showUsernameNotice = false;
   showFirstNameNotice = false;
   showLastNameNotice = false;
+  selectedAvatar = {value: "colour/001-man.png"};
+  avatarOptions = avatars;
 
   setShowUsernameNotice() {
     this.showUsernameNotice = this.usernameVerified ? false : true;
@@ -394,6 +398,10 @@ export default class Register extends Vue {
     const x = this.$refs.avatar as any;
     x.toggle(event);
   }
+
+  getAvatar(item: any) {
+    return require("@/assets/avatars/" + item);
+  }
 }
 </script>
 
@@ -429,5 +437,9 @@ export default class Register extends Vue {
   position: absolute;
   bottom: 0;
   right: 0;
+}
+
+#selected-avatar {
+  width: 8em;
 }
 </style>
