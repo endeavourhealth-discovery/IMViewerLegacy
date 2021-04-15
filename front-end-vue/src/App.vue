@@ -34,6 +34,14 @@ body {
   color: lightgray !important;
 }
 
+.popup-user ul li:hover a .p-menuitem-icon {
+  color: #3b3e47 !important;
+}
+
+.popup-user ul li:hover a .p-menuitem-text {
+  color: #3b3e47 !important;
+}
+
 .avatar-popup {
   width: 25em;
   height: 40vh;
