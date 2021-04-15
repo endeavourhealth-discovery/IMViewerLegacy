@@ -4,8 +4,7 @@
     <InputText
       type="text"
       v-model="searchTerm"
-      @input="this.active = 2"
-      @change="search()"
+      @input="search"
       placeholder="Search"
       class="p-inputtext-lg"
       autoWidth="false"
@@ -63,6 +62,7 @@ export default class SidebarControl extends Vue {
   searchTerm = "";
   active = 0;
   async search() {
+    this.active = 2;
     const searchRequest = new SearchRequest();
     searchRequest.termFilter = this.searchTerm;
     searchRequest.sortBy = SortBy.Usage;
