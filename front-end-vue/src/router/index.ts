@@ -104,7 +104,7 @@ const routes: Array<RouteRecordRaw> = [
         component: Dashboard,
         meta: {
           requiresLicense: true
-        },
+        }
       },
       {
         path: "/concept/:selectedIri",
@@ -112,7 +112,7 @@ const routes: Array<RouteRecordRaw> = [
         component: Datamodel,
         meta: {
           requiresLicense: true
-        },
+        }
       }
     ]
   },
@@ -122,7 +122,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Workflow,
     meta: {
       requiresLicense: true
-    },
+    }
   },
   {
     path: "/snomedLicense",
@@ -162,7 +162,7 @@ router.beforeEach((to, from, next) => {
     if (store.state.snomedLicenseAccepted !== "true") {
       next({
         path: "/snomedLicense"
-      })
+      });
     } else {
       next();
     }
