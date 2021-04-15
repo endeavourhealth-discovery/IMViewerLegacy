@@ -51,7 +51,6 @@ import store from "@/store/index";
       handler(newValue) {
         if (newValue === "true") {
           this.showDialog = false;
-          this.$router.go(-1);
         } else {
           this.showDialog = true;
         }
@@ -69,7 +68,11 @@ export default class SnomedLicense extends Vue {
 
   submitAgree() {
     store.commit("updateSnomedLicenseAccepted", "true");
-    this.$router.go(-1);
+    if (store.state.historyCount === window.history.length){
+      this.$router.push({ name: "Dashboard" });
+    } else {
+      this.$router.go(-1);
+    }
   }
 }
 </script>

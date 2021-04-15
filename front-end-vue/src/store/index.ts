@@ -22,6 +22,7 @@ export default createStore({
     snomedLicenseAccepted: localStorage.getItem(
       "snomedLicenseAccepted"
     ) as string,
+    historyCount: 0 as number,
     // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
     ontologyOverview: [],
     conceptTypes: {} as any,
@@ -98,7 +99,11 @@ export default createStore({
       state.isLoggedIn = status;
     },
     updateSnomedLicenseAccepted(state, status: string) {
+      state.snomedLicenseAccepted = status;
       localStorage.setItem("snomedLicenseAccepted", status);
+    },
+    updateHistoryCount(state, count) {
+      state.historyCount = count;
     },
     // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
     updateOntologyOverview(state, tableData) {
