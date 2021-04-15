@@ -4,7 +4,11 @@
       class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-details-card"
     >
       <template #header>
-        <img id="selected-avatar" :src="getUrl(currentUser.avatar.value)" />
+        <img
+          id="selected-avatar"
+          :src="getUrl(currentUser.avatar.value)"
+          alt="avatar icon"
+        />
       </template>
       <template #title>
         My Account Details
