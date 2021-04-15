@@ -1,7 +1,10 @@
 <template>
   <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center register-card">
     <template #header>
-      <avatar-with-selector :selectedAvatar="selectedAvatar" @avatarSelected="updateAvatar" />
+      <avatar-with-selector
+        :selectedAvatar="selectedAvatar"
+        @avatarSelected="updateAvatar"
+      />
     </template>
     <template #title>
       Register

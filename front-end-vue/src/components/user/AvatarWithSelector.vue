@@ -58,7 +58,6 @@ import { avatars } from "@/models/user/Avatars";
     }
   }
 })
-
 export default class AvatarWithSelector extends Vue {
   avatarOptions = avatars;
   selectedAvatar!: { value: string };

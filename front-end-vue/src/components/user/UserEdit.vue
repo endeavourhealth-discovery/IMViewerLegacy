@@ -4,7 +4,10 @@
       class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-edit-card"
     >
       <template #header>
-        <avatar-with-selector :selectedAvatar="selectedAvatar" @avatarSelected="updateAvatar" />
+        <avatar-with-selector
+          :selectedAvatar="selectedAvatar"
+          @avatarSelected="updateAvatar"
+        />
       </template>
       <template #title>
         Edit My Account
