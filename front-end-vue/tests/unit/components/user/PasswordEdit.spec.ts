@@ -33,11 +33,11 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
 
   it("renders username from store currentUser", async () => {
     const userNameField = wrapper.find("#username");
-    const userNameInput = userNameField.element as HTMLParagraphElement;
+    const userNameInput = userNameField.element as HTMLInputElement;
     await wrapper.vm.$nextTick();
     expect(userNameField.exists()).toBe(true);
     expect(userNameField.element.id).toBe("username");
-    expect(userNameInput.textContent).toBe("testUser");
+    expect(userNameInput.value).toBe("testUser");
   });
 
   it("starts with all checks false", () => {
