@@ -2,7 +2,7 @@
   <div class="avatar-container">
     <img
       id="selected-avatar"
-      :src="getUrl(selectedAvatar.value)"
+      :src="getUrl(newAvatar.value)"
       alt="avatar icon"
     />
     <Button
@@ -24,7 +24,7 @@
         >
       </div>
       <SelectButton
-        v-model="selectedAvatar"
+        v-model="newAvatar"
         :options="avatarOptions"
         dataKey="value"
       >
@@ -43,15 +43,35 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
+import { avatars } from "@/models/user/Avatars";
 
 @Options({
   name: "AvatarWithSelector",
   props: ["selectedAvatar"],
-  emits: ["avatarSelected"]
+  emits: ["avatarSelected"],
+  watch: {
+    newAvatar: {
+      immediate: true,
+      handler(newValue) {
+        this.$emit("avatarSelected", newValue);
+      }
+    }
+  }
 })
 
 export default class AvatarWithSelector extends Vue {
+  avatarOptions = avatars;
+  selectedAvatar!: { value: string };
+  newAvatar = this.selectedAvatar;
 
+  toggleAvatarSelect(event: any) {
+    const x = this.$refs.avatar as any;
+    x.toggle(event);
+  }
+
+  getUrl(item: string) {
+    return require("@/assets/avatars/" + item);
+  }
 }
 </script>
 
