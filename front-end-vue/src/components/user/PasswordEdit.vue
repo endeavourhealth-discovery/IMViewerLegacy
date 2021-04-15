@@ -21,7 +21,7 @@
         <div
           class="p-fluid p-d-flex p-flex-column p-jc-start password-edit-form"
         >
-          <div v-if="currentUser.firstName" class="p-field">
+          <div v-if="currentUser.username" class="p-field">
             <label for="userName">User: </label>
             <InputText
               class="p-text-capitalize"
