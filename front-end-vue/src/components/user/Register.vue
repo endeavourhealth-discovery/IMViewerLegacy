@@ -2,14 +2,29 @@
   <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center register-card">
     <template #header>
       <div class="avatar-container">
-        <img id="selected-avatar" :src="getUrl(selectedAvatar.value)" />
+        <img
+          id="selected-avatar"
+          :src="getUrl(selectedAvatar.value)"
+          alt="avatar icon"
+        />
         <Button
           icon="pi pi-angle-down"
           class="p-button-rounded p-button-primary avatar-button"
           @click="toggleAvatarSelect"
         />
         <OverlayPanel ref="avatar" class="avatar-popup">
-          <div>Icons made by <a href="https://www.flaticon.com/authors/vitaly-gorbachev" title="Vitaly Gorbachev">Vitaly Gorbachev</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+          <div>
+            Icons made by
+            <a
+              href="https://www.flaticon.com/authors/vitaly-gorbachev"
+              title="Vitaly Gorbachev"
+              >Vitaly Gorbachev</a
+            >
+            from
+            <a href="https://www.flaticon.com/" title="Flaticon"
+              >www.flaticon.com</a
+            >
+          </div>
           <SelectButton
             v-model="selectedAvatar"
             :options="avatarOptions"
@@ -19,6 +34,7 @@
               <img
                 class="avatar-select"
                 :src="require('@/assets/avatars/' + slotProps.option.value)"
+                alt="avatar icon"
                 style="width: 3em;"
               />
             </template>

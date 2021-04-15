@@ -8,6 +8,7 @@
           id="user-icon"
           class="avatar-icon"
           :src="getUrl(currentUser.avatar.value)"
+          alt="avatar icon"
           @click="toggle"
           aria-haspopup="true"
           aria-controls="overlay_menu"
