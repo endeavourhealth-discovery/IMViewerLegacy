@@ -126,19 +126,19 @@ export default class Graph extends Vue {
           "M" +
           (d.depth > 2 ? 1.5 * d.y : d.y) +
           "," +
-          (isBig ? 4 * d.x : d.x) +
+          (isBig ? 6 * d.x : d.x) +
           "C" +
           (d.depth > 2 ? (d.y + d.parent.y) / 1.5 : (d.y + d.parent.y) / 2) +
           "," +
-          (isBig ? 4 * d.x : d.x) +
+          (isBig ? 6 * d.x : d.x) +
           " " +
           (d.depth > 2 ? (d.y + d.parent.y) / 1.5 : (d.y + d.parent.y) / 2) +
           "," +
-          (isBig ? 4 * d.parent.x : d.parent.x) +
+          (isBig ? 6 * d.parent.x : d.parent.x) +
           " " +
           (d.parent.depth > 2 ? 1.5 * d.parent.y : d.parent.y) +
           "," +
-          (isBig ? 4 * d.parent.x : d.parent.x)
+          (isBig ? 6 * d.parent.x : d.parent.x)
         );
       });
 
@@ -158,7 +158,7 @@ export default class Graph extends Vue {
           "translate(" +
           (d.depth > 2 ? 1.5 * d.y : d.y) +
           "," +
-          (isBig ? 4 * d.x : d.x) +
+          (isBig ? 6 * d.x : d.x) +
           ")"
       )
       .attr("cursor", "pointer");
@@ -166,7 +166,7 @@ export default class Graph extends Vue {
     // add circles to nodes
     node
       .append("circle")
-      .attr("r", 5)
+      .attr("r", 8)
       .attr("id", (d: any) => d.data.valueTypeIri || d.data.iri || d.data.name)
       .attr("class", "circle");
 
@@ -175,7 +175,7 @@ export default class Graph extends Vue {
       .append("text")
       .attr("id", (d: any) => d.data.valueTypeIri || d.data.iri)
       .attr("dy", ".35em")
-      .attr("x", (d: any) => (d.children || d.depth <= 1 ? -10 : 10))
+      .attr("x", (d: any) => (d.children || d.depth <= 1 ? -15 : 15))
       .attr("y", (d: any) => {
         d.children && d.depth !== 0 ? 0 : d;
       })
