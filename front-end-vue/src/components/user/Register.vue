@@ -408,23 +408,4 @@ export default class Register extends Vue {
 .footer-link:hover {
   cursor: pointer;
 }
-
-.avatar-container {
-  position: relative;
-  padding: 1.5em;
-  /* margin: 1em; */
-}
-
-.avatar-button {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
-
-#selected-avatar {
-  margin-block-start: 0.5em;
-  width: 150px;
-  border: 1px solid lightgray;
-  border-radius: 50%;
-}
 </style>
