@@ -437,6 +437,7 @@ export default class UserEdit extends Vue {
         this.showLastNameNotice = false;
         this.showEmail1Notice = false;
         this.showEmail2Notice = false;
+        this.selectedAvatar = this.currentUser.avatar;
       }
     });
   }

@@ -50,6 +50,12 @@ import { avatars } from "@/models/user/Avatars";
   props: ["selectedAvatar"],
   emits: ["avatarSelected"],
   watch: {
+    selectedAvatar: {
+      immediate: true,
+      handler(newValue) {
+        this.newAvatar = newValue;
+      }
+    },
     newAvatar: {
       immediate: true,
       handler(newValue) {
