@@ -7,11 +7,16 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
+import store from "@/store/index";
 
 @Options({
   name: "App"
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  mounted() {
+    store.commit("updateHistoryCount", window.history.length);
+  }
+}
 </script>
 
 <style>
