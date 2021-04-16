@@ -50,7 +50,7 @@ export default {
       signedInUser.setId(user.attributes.sub);
       return new CustomAlert(
         200,
-        "Sign-In siccessful",
+        "Login successful",
         undefined,
         signedInUser
       );
@@ -80,9 +80,9 @@ export default {
   async signOut() {
     try {
       await Auth.signOut({ global: true });
-      return new CustomAlert(200, "Logged-out successfully");
+      return new CustomAlert(200, "Logged out successfully");
     } catch (err) {
-      return new CustomAlert(400, "Error logging-out from auth server", err);
+      return new CustomAlert(400, "Error logging out from auth server", err);
     }
   },
 
