@@ -20,7 +20,12 @@
           </div>
           <div class="p-field">
             <label for="fieldPassword">Password</label>
-            <InputText id="fieldPassword" type="password" v-model="password" />
+            <InputText
+              id="fieldPassword"
+              type="password"
+              v-model="password"
+              @keyup="checkKey"
+            />
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
             <Button
@@ -156,6 +161,12 @@ export default class Login extends Vue {
           confirmButtonText: "Close"
         });
       });
+  }
+
+  checkKey(event: any) {
+    if (event.keyCode === 13) {
+      this.handleSubmit();
+    }
   }
 }
 </script>
