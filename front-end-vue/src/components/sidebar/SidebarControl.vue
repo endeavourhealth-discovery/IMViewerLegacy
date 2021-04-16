@@ -62,7 +62,7 @@ export default class SidebarControl extends Vue {
   searchTerm = "";
   active = 0;
   async search() {
-    if (this.searchTerm.length > 2){
+    if (this.searchTerm.length > 2) {
       this.active = 2;
       const searchRequest = new SearchRequest();
       searchRequest.termFilter = this.searchTerm;
