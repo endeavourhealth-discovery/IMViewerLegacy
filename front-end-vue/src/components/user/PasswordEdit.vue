@@ -73,6 +73,7 @@
               type="password"
               v-model="passwordNew2"
               v-on:blur="setShowPassword2Message"
+              @keyup="checkKey"
             />
             <InlineMessage v-if="showPassword2Message" severity="error"
               >New passwords do not match!</InlineMessage
@@ -172,6 +173,12 @@ export default class PasswordEdit extends Vue {
 
   getUrl(item: string) {
     return require("@/assets/avatars/" + item);
+  }
+
+  checkKey(event: any) {
+    if (event.keyCode === 13) {
+      this.handleEditSubmit();
+    }
   }
 }
 </script>

@@ -126,6 +126,7 @@
             maxlength="50"
             v-model="password2"
             v-on:blur="setShowPassword2Notice"
+            @keyup="checkKey"
           />
           <InlineMessage v-if="showPassword2Notice" severity="error"
             >Passwords do not match!</InlineMessage
@@ -383,6 +384,12 @@ export default class Register extends Vue {
 
   updateAvatar(newValue: { value: string }) {
     this.selectedAvatar = newValue;
+  }
+
+  checkKey(event: any) {
+    if (event.keyCode === 13) {
+      this.handleSubmit();
+    }
   }
 }
 </script>
