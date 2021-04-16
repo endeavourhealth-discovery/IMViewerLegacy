@@ -49,6 +49,7 @@ import LoggerService from "@/services/LoggerService";
           this.root = d3.hierarchy(this.graphData);
           this.drawTree();
           this.initSvgPanZoom();
+          this.initView();
           this.zoomReset();
         })
         .catch(err => {
@@ -78,7 +79,6 @@ export default class Graph extends Vue {
   }
 
   zoomReset() {
-    this.initView();
     this.panZoom.resetZoom();
     this.panZoom.resetPan();
   }
@@ -168,7 +168,9 @@ export default class Graph extends Vue {
       .append("circle")
       .attr("r", 8)
       .attr("id", (d: any) => d.data.valueTypeIri || d.data.iri || d.data.name)
-      .attr("class", "circle");
+      .attr("class", (d: any) =>
+        d.depth === 0 || this.getNumberOfChildren(d.data) ? "circle" : "empty"
+      );
 
     // add text nodes
     node
@@ -181,17 +183,22 @@ export default class Graph extends Vue {
       })
       .attr("name", (d: any) => d.data.valueTypeName || d.data.name)
       .attr("inheritedFrom", (d: any) => d.data.inheritedFromName)
+      .attr("inheritedFrom", (d: any) => d.data.inheritedFromName)
       .style("text-anchor", (d: any) =>
         d.children || d.depth <= 1 ? "end" : "start"
       )
-      .text((d: any) => d.data.valueTypeName || d.data.name);
+      .text(
+        (d: any) =>
+          d.data.valueTypeName ||
+          `${d.data.name} ${this.getNumberOfChildren(d.data)}`
+      );
 
     // add text property nodes
     node
       .append("text")
       .attr("id", (d: any) => d.data.iri)
       .attr("dy", ".35em")
-      .attr("x", () => -10)
+      .attr("x", () => -15)
       .attr("y", () => 0)
       .style("text-anchor", () => "end")
       .text((d: any) =>
@@ -214,6 +221,22 @@ export default class Graph extends Vue {
       .on("click", this.onTextClick);
   }
 
+  getNumberOfChildren(data: any) {
+    if (
+      data.name === "Parents" ||
+      data.name === "Children" ||
+      data.name === "Properties" ||
+      data.name === "Roles" ||
+      data.name === "Direct" ||
+      data.name === "Inherited"
+    ) {
+      if (data._children?.length) return `[${data._children.length}]`;
+      if (data.children?.length) return `[${data.children.length}]`;
+    }
+
+    return "";
+  }
+
   onMouseOver(event: any) {
     const inheritedFrom = event.srcElement.attributes.inheritedFrom?.nodeValue;
     if (inheritedFrom) {
@@ -223,9 +246,12 @@ export default class Graph extends Vue {
   }
 
   onMouseOut(event: any) {
-    const originalTitle = event.srcElement.attributes.name?.nodeValue;
-    if (originalTitle) {
-      event.srcElement.innerHTML = originalTitle;
+    const inheritedFrom = event.srcElement.attributes.inheritedFrom?.nodeValue;
+    if (inheritedFrom) {
+      const originalTitle = event.srcElement.attributes.name?.nodeValue;
+      if (originalTitle) {
+        event.srcElement.innerHTML = originalTitle;
+      }
     }
   }
 
@@ -293,6 +319,12 @@ export default class Graph extends Vue {
 
 #svg:active {
   cursor: grabbing;
+}
+
+.empty {
+  fill: #fff;
+  stroke: rgb(92, 95, 97);
+  stroke-width: 3px;
 }
 
 .circle {
