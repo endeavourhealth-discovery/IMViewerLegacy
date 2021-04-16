@@ -4,7 +4,7 @@
     <InputText
       type="text"
       v-model="searchTerm"
-      @input="search"
+      @input="debounceForSearch"
       placeholder="Search"
       class="p-inputtext-lg"
       autoWidth="false"
@@ -61,6 +61,7 @@ import LoggerService from "@/services/LoggerService";
 export default class SidebarControl extends Vue {
   searchTerm = "";
   active = 0;
+  debounce = 0;
   async search() {
     if (this.searchTerm.length > 2) {
       this.active = 2;
@@ -135,6 +136,13 @@ export default class SidebarControl extends Vue {
     } else {
       this.active = 0;
     }
+  }
+
+  debounceForSearch() {
+    clearTimeout(this.debounce);
+    this.debounce = window.setTimeout(() => {
+      this.search();
+    }, 600);
   }
 }
 </script>
