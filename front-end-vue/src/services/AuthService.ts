@@ -48,12 +48,7 @@ export default {
         { value: user.attributes["custom:avatar"] }
       );
       signedInUser.setId(user.attributes.sub);
-      return new CustomAlert(
-        200,
-        "Login successful",
-        undefined,
-        signedInUser
-      );
+      return new CustomAlert(200, "Login successful", undefined, signedInUser);
     } catch (err) {
       console.error(err);
       if (err.code === "UserNotConfirmedException") {
