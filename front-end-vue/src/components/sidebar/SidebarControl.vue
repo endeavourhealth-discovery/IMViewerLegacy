@@ -53,6 +53,7 @@ import { ConceptStatus } from "@/models/ConceptStatus";
 import store from "@/store/index";
 import { ConceptType } from "@/models/search/ConceptType";
 import LoggerService from "@/services/LoggerService";
+import axios from "axios";
 
 @Options({
   name: "SidebarControl",
@@ -62,6 +63,7 @@ export default class SidebarControl extends Vue {
   searchTerm = "";
   active = 0;
   debounce = 0;
+  request!: any;
   async search() {
     if (this.searchTerm.length > 2) {
       this.active = 2;
@@ -125,9 +127,13 @@ export default class SidebarControl extends Vue {
           searchRequest.typeFilter.push(ConceptType.Legacy);
         }
       });
-
-      store.dispatch("fetchSearchResults", searchRequest).then(res => {
-        if (!res) {
+      if (this.request){
+        await this.request.cancel();
+      }
+      const axiosSource = axios.CancelToken.source();
+      this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
+      store.dispatch("fetchSearchResults", { searchRequest: searchRequest, cancelToken: axiosSource.token}).then(res => {
+        if (res === "false") {
           this.$toast.add(
             LoggerService.error("Search results server request failed")
           );
