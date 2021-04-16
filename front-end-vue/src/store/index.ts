@@ -246,12 +246,13 @@ export default createStore({
           commit("updateSearchResults", searchResults);
         })
         .catch(err => {
-          if ("message" in err){
+          if (!err.message){
+            success = "cancelled";
+            console.log("axios request cancelled");
+          } else {
             success = "false";
             console.error(err);
           }
-          success = "cancelled";
-          console.log("axios request cancelled");
         });
       return success;
     },
