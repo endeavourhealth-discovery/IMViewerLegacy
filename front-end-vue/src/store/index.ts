@@ -233,21 +233,27 @@ export default createStore({
       commit("updateLoading", { key: "members", value: false });
       return success;
     },
-    async fetchSearchResults({ commit }, searchRequest: SearchRequest) {
-      commit("updateLoading", { key: "searchResults", value: true });
+    async fetchSearchResults(
+      { commit },
+      data: { searchRequest: SearchRequest; cancelToken: any }
+    ) {
       await new Promise(resolve => setTimeout(resolve, 2000));
       let searchResults: any;
-      let success = true;
-      await ConceptService.advancedSearch(searchRequest)
+      let success = "true";
+      await ConceptService.advancedSearch(data.searchRequest, data.cancelToken)
         .then(res => {
           searchResults = res.data.concepts;
+          commit("updateSearchResults", searchResults);
         })
         .catch(err => {
-          console.error(err);
-          success = false;
+          if (!err.message){
+            success = "cancelled";
+            console.log("axios request cancelled");
+          } else {
+            success = "false";
+            console.error(err);
+          }
         });
-      commit("updateSearchResults", searchResults);
-      commit("updateLoading", { key: "searchResults", value: false });
       return success;
     },
     async logoutCurrentUser({ commit }) {
