@@ -1,46 +1,10 @@
 <template>
   <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center register-card">
     <template #header>
-      <div class="avatar-container">
-        <img
-          id="selected-avatar"
-          :src="getUrl(selectedAvatar.value)"
-          alt="avatar icon"
-        />
-        <Button
-          icon="pi pi-angle-down"
-          class="p-button-rounded p-button-primary avatar-button"
-          @click="toggleAvatarSelect"
-        />
-        <OverlayPanel ref="avatar" class="avatar-popup">
-          <div>
-            Icons made by
-            <a
-              href="https://www.flaticon.com/authors/vitaly-gorbachev"
-              title="Vitaly Gorbachev"
-              >Vitaly Gorbachev</a
-            >
-            from
-            <a href="https://www.flaticon.com/" title="Flaticon"
-              >www.flaticon.com</a
-            >
-          </div>
-          <SelectButton
-            v-model="selectedAvatar"
-            :options="avatarOptions"
-            dataKey="value"
-          >
-            <template #option="slotProps">
-              <img
-                class="avatar-select"
-                :src="require('@/assets/avatars/' + slotProps.option.value)"
-                alt="avatar icon"
-                style="width: 3em;"
-              />
-            </template>
-          </SelectButton>
-        </OverlayPanel>
-      </div>
+      <avatar-with-selector
+        :selectedAvatar="selectedAvatar"
+        @avatarSelected="updateAvatar"
+      />
     </template>
     <template #title>
       Register
@@ -208,9 +172,13 @@ import {
 } from "@/helpers/UserMethods";
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
+import AvatarWithSelector from "./AvatarWithSelector.vue";
 
 @Options({
   name: "Register",
+  components: {
+    "avatar-with-selector": AvatarWithSelector
+  },
   emits: ["userCreated"],
   watch: {
     username: {
@@ -279,7 +247,6 @@ export default class Register extends Vue {
   showFirstNameNotice = false;
   showLastNameNotice = false;
   selectedAvatar = avatars[0];
-  avatarOptions = avatars;
 
   setShowUsernameNotice() {
     this.showUsernameNotice = this.usernameVerified ? false : true;
@@ -414,13 +381,8 @@ export default class Register extends Vue {
     }
   }
 
-  toggleAvatarSelect(event: any) {
-    const x = this.$refs.avatar as any;
-    x.toggle(event);
-  }
-
-  getUrl(item: string) {
-    return require("@/assets/avatars/" + item);
+  updateAvatar(newValue: { value: string }) {
+    this.selectedAvatar = newValue;
   }
 }
 </script>
@@ -445,24 +407,5 @@ export default class Register extends Vue {
 
 .footer-link:hover {
   cursor: pointer;
-}
-
-.avatar-container {
-  position: relative;
-  padding: 1.5em;
-  /* margin: 1em; */
-}
-
-.avatar-button {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
-
-#selected-avatar {
-  margin-block-start: 0.5em;
-  width: 150px;
-  border: 1px solid lightgray;
-  border-radius: 50%;
 }
 </style>

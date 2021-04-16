@@ -4,47 +4,10 @@
       class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-edit-card"
     >
       <template #header>
-        <div class="avatar-container">
-          <img
-            id="selected-avatar"
-            :src="getUrl(selectedAvatar.value)"
-            alt="avatar icon"
-          />
-          <Button
-            icon="pi pi-angle-down"
-            class="p-button-rounded p-button-primary avatar-button"
-            @click="toggleAvatarSelect"
-          />
-          <OverlayPanel ref="avatar" class="avatar-popup">
-            <div>
-              Icons made by
-              <a
-                href="https://www.flaticon.com/authors/vitaly-gorbachev"
-                title="Vitaly Gorbachev"
-              >
-                Vitaly Gorbachev
-              </a>
-              from
-              <a href="https://www.flaticon.com/" title="Flaticon">
-                www.flaticon.com
-              </a>
-            </div>
-            <SelectButton
-              v-model="selectedAvatar"
-              :options="avatarOptions"
-              dataKey="value"
-            >
-              <template #option="slotProps">
-                <img
-                  class="avatar-select"
-                  :src="require('@/assets/avatars/' + slotProps.option.value)"
-                  alt="avatar icon"
-                  style="width: 3em;"
-                />
-              </template>
-            </SelectButton>
-          </OverlayPanel>
-        </div>
+        <avatar-with-selector
+          :selectedAvatar="selectedAvatar"
+          @avatarSelected="updateAvatar"
+        />
       </template>
       <template #title>
         Edit My Account
@@ -116,17 +79,6 @@
               >Email addresses do not match!</InlineMessage
             >
           </div>
-          <div
-            v-if="!showPasswordEdit"
-            class="p-d-flex p-flex-row p-jc-center p-field"
-          >
-            <Button
-              class="password-edit p-button-secondary"
-              type="submit"
-              label="Change Password"
-              v-on:click.prevent="editPasswordClicked(true)"
-            />
-          </div>
           <div v-if="showPasswordEdit" class="p-field">
             <label for="passwordOld">Current Password</label>
             <InputText id="passwordOld" type="password" v-model="passwordOld" />
@@ -174,26 +126,27 @@
               >New passwords do not match!</InlineMessage
             >
           </div>
-          <div
-            v-if="showPasswordEdit"
-            class="p-d-flex p-flex-row p-jc-center p-field"
-          >
+          <div class="p-d-flex p-flex-row p-jc-evenly p-ai-center">
             <Button
+              v-if="!showPasswordEdit"
+              class="password-edit p-button-secondary"
+              type="submit"
+              label="Change Password"
+              v-on:click.prevent="editPasswordClicked(true)"
+            />
+            <Button
+              v-else
               class="password-edit p-button-secondary"
               type="submit"
               label="Cancel Password Edit"
               v-on:click.prevent="editPasswordClicked(false)"
             />
-          </div>
-          <div class="p-d-flex p-flex-row p-jc-center p-field">
             <Button
               class="form-reset p-button-warning"
               type="button"
               label="Reset"
               v-on:click.prevent="resetForm"
             />
-          </div>
-          <div class="p-d-flex p-flex-row p-jc-center">
             <Button
               class="user-edit"
               type="submit"
@@ -223,10 +176,13 @@ import {
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
+import AvatarWithSelector from "./AvatarWithSelector.vue";
 
 @Options({
   name: "UserEdit",
-  components: {},
+  components: {
+    "avatar-with-selector": AvatarWithSelector
+  },
   computed: mapState(["currentUser", "isLoggedIn"]),
   watch: {
     email1: {
@@ -471,17 +427,13 @@ export default class UserEdit extends Vue {
         this.showLastNameNotice = false;
         this.showEmail1Notice = false;
         this.showEmail2Notice = false;
+        this.selectedAvatar = this.currentUser.avatar;
       }
     });
   }
 
-  toggleAvatarSelect(event: any) {
-    const x = this.$refs.avatar as any;
-    x.toggle(event);
-  }
-
-  getUrl(item: string) {
-    return require("@/assets/avatars/" + item);
+  updateAvatar(newValue: { value: string }) {
+    this.selectedAvatar = newValue;
   }
 }
 </script>
@@ -499,24 +451,6 @@ export default class UserEdit extends Vue {
 
 .user-edit-card {
   padding: 0 2em;
-}
-
-.avatar-container {
-  position: relative;
-  padding: 1.5em;
-  /* margin: 1em; */
-}
-
-.avatar-button {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
-
-#selected-avatar {
-  margin-block-start: 0.5em;
-  width: 150px;
-  border: 1px solid lightgray;
-  border-radius: 50%;
+  margin-bottom: 2em;
 }
 </style>

@@ -25,10 +25,9 @@ import LoggerService from "@/services/LoggerService";
     SideNav,
     Header,
     SidebarControl
-  },
+  }
 })
 export default class Home extends Vue {
-
   async mounted() {
     // check for user and log them in if found or logout if not
     store.dispatch("authenticateCurrentUser");
