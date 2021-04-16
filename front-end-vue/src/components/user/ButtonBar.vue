@@ -5,7 +5,7 @@
       label="back"
       icon="pi pi-arrow-circle-left"
       iconPos="left"
-      v-on:click.prevent="$router.go(-1)"
+      v-on:click.prevent="clickedBack"
     />
     <Button
       class="home-button"
@@ -17,11 +17,22 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
+import { mapState } from "vuex";
+import store from "@/store/index";
 
 @Options({
-  name: "ButtonBar"
+  name: "ButtonBar",
+  computed: mapState(["snomedLicenseAccepted"])
 })
-export default class extends Vue {}
+export default class extends Vue {
+  clickedBack() {
+    if (store.state.historyCount === window.history.length) {
+      this.$router.push({ name: "Dashboard" });
+    } else {
+      this.$router.go(-1);
+    }
+  }
+}
 </script>
 
 <style scoped>
