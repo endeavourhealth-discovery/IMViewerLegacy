@@ -79,17 +79,6 @@
               >Email addresses do not match!</InlineMessage
             >
           </div>
-          <div
-            v-if="!showPasswordEdit"
-            class="p-d-flex p-flex-row p-jc-center p-field"
-          >
-            <Button
-              class="password-edit p-button-secondary"
-              type="submit"
-              label="Change Password"
-              v-on:click.prevent="editPasswordClicked(true)"
-            />
-          </div>
           <div v-if="showPasswordEdit" class="p-field">
             <label for="passwordOld">Current Password</label>
             <InputText id="passwordOld" type="password" v-model="passwordOld" />
@@ -137,26 +126,27 @@
               >New passwords do not match!</InlineMessage
             >
           </div>
-          <div
-            v-if="showPasswordEdit"
-            class="p-d-flex p-flex-row p-jc-center p-field"
-          >
+          <div class="p-d-flex p-flex-row p-jc-evenly p-ai-center">
             <Button
+              v-if="!showPasswordEdit"
+              class="password-edit p-button-secondary"
+              type="submit"
+              label="Change Password"
+              v-on:click.prevent="editPasswordClicked(true)"
+            />
+            <Button
+              v-else
               class="password-edit p-button-secondary"
               type="submit"
               label="Cancel Password Edit"
               v-on:click.prevent="editPasswordClicked(false)"
             />
-          </div>
-          <div class="p-d-flex p-flex-row p-jc-center p-field">
             <Button
               class="form-reset p-button-warning"
               type="button"
               label="Reset"
               v-on:click.prevent="resetForm"
             />
-          </div>
-          <div class="p-d-flex p-flex-row p-jc-center">
             <Button
               class="user-edit"
               type="submit"
@@ -461,5 +451,6 @@ export default class UserEdit extends Vue {
 
 .user-edit-card {
   padding: 0 2em;
+  margin-bottom: 2em;
 }
 </style>
