@@ -451,5 +451,6 @@ export default class UserEdit extends Vue {
 
 .user-edit-card {
   padding: 0 2em;
+  margin-bottom: 2em;
 }
 </style>
