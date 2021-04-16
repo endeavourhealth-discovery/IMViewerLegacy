@@ -1,5 +1,6 @@
 import { Auth } from "aws-amplify";
 import { User } from "@/models/user/User";
+import { CustomAlert } from "@/models/user/CustomAlert";
 
 export default {
   async register(userToRegister: User) {
@@ -14,13 +15,13 @@ export default {
           "custom:avatar": userToRegister.avatar.value
         }
       });
-      return { status: 201, message: "User registered successfully" };
+      return new CustomAlert(201, "User registered successfully");
     } catch (err) {
       console.error(err);
       if (err.code === "UsernameExistsException") {
-        return { status: 409, error: err, message: "Username already exists" };
+        return new CustomAlert(409, "Username already exists", err);
       } else {
-        return { status: 400, error: err, message: "User registration failed" };
+        return new CustomAlert(400, "User registration failed", err);
       }
     }
   },
@@ -28,14 +29,10 @@ export default {
   async confirmRegister(username: string, code: string) {
     try {
       await Auth.confirmSignUp(username, code);
-      return { status: 200, message: "register confirmation successful" };
+      return new CustomAlert(200, "Register confirmation successful");
     } catch (err) {
       console.error(err);
-      return {
-        status: 403,
-        error: err,
-        message: "failed register confirmation"
-      };
+      return new CustomAlert(403, "Failed  register confirmation", err);
     }
   },
 
@@ -51,40 +48,41 @@ export default {
         { value: user.attributes["custom:avatar"] }
       );
       signedInUser.setId(user.attributes.sub);
-      return { status: 200, user: signedInUser, message: "signIn successful" };
+      return new CustomAlert(
+        200,
+        "Sign-In siccessful",
+        undefined,
+        signedInUser
+      );
     } catch (err) {
       console.error(err);
       if (err.code === "UserNotConfirmedException") {
-        return { status: 401, error: err, message: err.message }; //message: "User is not confirmed."
+        return new CustomAlert(401, err.message, err); //message: "User is not confirmed."
       }
-      return {
-        status: 403,
-        error: err,
-        message: "Login failed. Check username and password are correct"
-      };
+      return new CustomAlert(
+        403,
+        "Login failed. Check username and password are correct",
+        err
+      );
     }
   },
 
   async resendConfirmationCode(username: string) {
     try {
       await Auth.resendSignUp(username);
-      return { status: 200, message: "code resent successfully" };
+      return new CustomAlert(200, "Code resent successfully");
     } catch (err) {
       console.error(err);
-      return { status: 400, error: err, message: "error resending code" };
+      return new CustomAlert(400, "Error resending code", err);
     }
   },
 
   async signOut() {
     try {
       await Auth.signOut({ global: true });
-      return { status: 200, message: "Logged out successfully" };
+      return new CustomAlert(200, "Logged-out successfully");
     } catch (err) {
-      return {
-        status: 400,
-        error: err,
-        message: "Error logging out from auth server"
-      };
+      return new CustomAlert(400, "Error logging-out from auth server", err);
     }
   },
 
@@ -108,21 +106,18 @@ export default {
           "",
           { value: updateResults.attributes["custom:avatar"] }
         );
-        return {
-          status: 200,
-          user: updatedUser,
-          message: "User updated successfully"
-        };
+        return new CustomAlert(
+          200,
+          "User updated successfully",
+          undefined,
+          updatedUser
+        );
       } else {
-        return { status: 403, message: "Authentication error with server" };
+        return new CustomAlert(403, "Authentication error with server");
       }
     } catch (err) {
       console.error(err);
-      return {
-        status: 500,
-        error: err,
-        message: "Error authenticating current user"
-      };
+      return new CustomAlert(500, "Error authenticating current user", err);
     }
   },
 
@@ -130,28 +125,20 @@ export default {
     try {
       const user = await Auth.currentAuthenticatedUser();
       await Auth.changePassword(user, oldPassword, newPassword);
-      return { status: 200, message: "Password successfully changed" };
+      return new CustomAlert(200, "Password successfully changed");
     } catch (err) {
       console.error(err);
-      return {
-        status: 400,
-        error: err,
-        message: "Error updating password with server"
-      };
+      return new CustomAlert(400, "Error updating password with server", err);
     }
   },
 
   async forgotPassword(username: string) {
     try {
       await Auth.forgotPassword(username);
-      return { status: 200, message: "Password reset request sent to server" };
+      return new CustomAlert(200, "Password reset request sent to server");
     } catch (err) {
       console.error(err);
-      return {
-        status: 400,
-        error: err,
-        message: "Error resetting password from server"
-      };
+      return new CustomAlert(400, "Error resetting password from server", err);
     }
   },
 
@@ -162,34 +149,34 @@ export default {
   ) {
     try {
       await Auth.forgotPasswordSubmit(username, code, newPassword);
-      return { status: 200, message: "Password reset successfully" };
+      return new CustomAlert(200, "Password reset successfully");
     } catch (err) {
       console.error(err);
       if (err.code === "ExpiredCodeException") {
-        return { status: 403, error: err, message: "Code has expired" };
+        return new CustomAlert(403, "Code has expired", err);
       }
-      return {
-        status: 400,
-        error: err,
-        message: "Error submitting password-reset credentials"
-      };
+      return new CustomAlert(
+        400,
+        "Error submitting password-reset credentials",
+        err
+      );
     }
   },
 
   async forgotUsername(email: string) {
     try {
       await Auth.verifyCurrentUserAttribute(email);
-      return { status: 200, message: "Account recovery code sent" };
+      return new CustomAlert(200, "Account recovery code sent");
     } catch (err) {
       console.error(err);
-      return { status: 400, error: err, message: "Error submitting email" };
+      return new CustomAlert(400, "Error submitting email", err);
     }
   },
 
   async getCurrentAuthenticatedUser() {
     try {
       const cognitoUser = await Auth.currentAuthenticatedUser();
-      const user = new User(
+      const authenticatedUser = new User(
         cognitoUser.username,
         cognitoUser.attributes["custom:forename"],
         cognitoUser.attributes["custom:surname"],
@@ -197,19 +184,16 @@ export default {
         "",
         { value: cognitoUser.attributes["custom:avatar"] }
       );
-      user.setId(cognitoUser.attributes.sub);
-      return {
-        status: 200,
-        user: user,
-        message: "User authenticated successfully"
-      };
+      authenticatedUser.setId(cognitoUser.attributes.sub);
+      return new CustomAlert(
+        200,
+        "User authenticated successfully",
+        undefined,
+        authenticatedUser
+      );
     } catch (err) {
       console.error(err);
-      return {
-        status: 403,
-        error: err,
-        message: "Error authenticating current user"
-      };
+      return new CustomAlert(403, "Error authenticating current user", err);
     }
   }
 
@@ -217,13 +201,13 @@ export default {
   // async forgotUsernameSubmit(email: string, code: string){
   //   try {
   //     await Auth.(email, code); // finish this if ever becomes a feature
-  //     return {status:200, message: "Account recovered successfully"};
+  //     return new CustomAlert(200, "Account recovered successfully");
   //   } catch (err) {
   //     console.error(err);
   //     if (err.code === "ExpiredCodeException"){
-  //       return {status: 403, error: err, message: "Code has expired"}
+  //       return new CustomAlert(403, "Code has expired", err);
   //     }
-  //     return {status: 400, error: err, message: "Error submitting account recovery credentials"}
+  //     return new CustomAlert(400, "Error submitting account recovery credentials", err);
   //   }
   // },
 };
