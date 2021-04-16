@@ -246,7 +246,7 @@ export default createStore({
           commit("updateSearchResults", searchResults);
         })
         .catch(err => {
-          if (!err.message){
+          if (!err.message) {
             success = "cancelled";
             console.log("axios request cancelled");
           } else {

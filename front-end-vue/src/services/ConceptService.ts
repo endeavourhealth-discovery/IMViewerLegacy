@@ -7,7 +7,9 @@ export default class ConceptService {
   static api = process.env.VUE_APP_API;
 
   public static async advancedSearch(request: SearchRequest, cancelToken: any) {
-    return axios.post(this.api + "api/concept/search", request, { cancelToken: cancelToken });
+    return axios.post(this.api + "api/concept/search", request, {
+      cancelToken: cancelToken
+    });
   }
 
   public static async getConcept(iri: string) {
