@@ -66,6 +66,7 @@ export default class SidebarControl extends Vue {
   request!: any;
   async search() {
     if (this.searchTerm.length > 2) {
+      store.commit("updateLoading", { key: "searchResults", value: true});
       this.active = 2;
       const searchRequest = new SearchRequest();
       searchRequest.termFilter = this.searchTerm;
@@ -134,9 +135,12 @@ export default class SidebarControl extends Vue {
       this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
       store.dispatch("fetchSearchResults", { searchRequest: searchRequest, cancelToken: axiosSource.token}).then(res => {
         if (res === "false") {
+          store.commit("updateLoading", { key: "searchResults", value: false })
           this.$toast.add(
             LoggerService.error("Search results server request failed")
           );
+        } else if (res === "true"){
+          store.commit("updateLoading", { key: "searchResults", value: false })
         }
       });
     } else {
