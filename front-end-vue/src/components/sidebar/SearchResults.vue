@@ -25,26 +25,25 @@
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
       :rows="15"
     >
-      <template #header> Results </template>
-      <!-- <Column field="name" header="Name"></Column> -->
-
-      <Column field="name" header="Name">
+      <Column field="name" header="Results">
         <template #body="slotProps">
           <div
             @mouseenter="toggle($event, slotProps.data)"
             @mouseleave="toggle($event, slotProps.data)"
-          >
+          style="display: flex">
+            <div style="left: 0; width: 3rem; height: 2rem;">
             <i
               :class="getPerspectiveByConceptType(slotProps.data.conceptType)"
               class="result-icon"
             />
-            {{ slotProps.data.name }}
+            </div>
+            <div style="right: 0; height: 2.5rem;">
+              {{ slotProps.data.match }}<br>
+              <small style="color:lightgrey">{{ slotProps.data.name }}</small>
+            </div>
           </div>
         </template>
       </Column>
-
-      <!-- <Column field="conceptType" header="Type" :sortable="true"></Column>
-            <Column field="scheme.name" header="Scheme" :sortable="true"></Column> -->
     </DataTable>
 
     <OverlayPanel
@@ -134,7 +133,7 @@ export default class SearchResults extends Vue {
   overflow-y: auto;
 }
 .result-icon {
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: lightgrey;
   padding: 5px;
 }
