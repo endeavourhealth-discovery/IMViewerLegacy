@@ -59,13 +59,13 @@
         }
 
         .layout-main, .layout-footer {
-            margin-left: 0;
+            margin-left: 100px;
         }
 
         .layout-sidebar {
             transition: left $transitionDuration;
-            left: -100px;
-            margin-top: 50px;
+            left: 0px;
+            margin-top: 0px;
         }
 
         .layout-mask {

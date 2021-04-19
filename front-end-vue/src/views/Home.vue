@@ -4,7 +4,7 @@
     <div class="home">
       <div class="p-grid">
         <div class="p-col-12" id="header-home"><Header /></div>
-        <div class="p-col-3"><SidebarControl /></div>
+        <div class="p-lg-3 p-md-6 p-sm-4" style="height: calc(100vh - 123px);"><SidebarControl /></div>
         <router-view />
       </div>
     </div>
