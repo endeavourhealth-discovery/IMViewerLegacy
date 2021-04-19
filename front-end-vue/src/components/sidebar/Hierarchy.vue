@@ -171,6 +171,6 @@ export default class Hierarchy extends Vue {
 <style>
 .p-tree .p-tree-container .p-treenode .p-treenode-content {
   padding: 0rem !important;
-  transition: box-shadow 3600s 3600s!important;
+  transition: box-shadow 3600s 3600s !important;
 }
 </style>

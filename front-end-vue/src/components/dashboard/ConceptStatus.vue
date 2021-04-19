@@ -46,7 +46,7 @@ export default class ConceptStatus extends Vue {
     // chart status
     // strip out if statement and commit "updateConceptStatus" when server caching is implemented
     store.commit("updateLoading", { key: "reportStatus", value: true });
-    if ("datasets" in this.conceptStatus){
+    if ("datasets" in this.conceptStatus) {
       this.chartConceptStatus = this.conceptStatus;
       store.commit("updateLoading", { key: "reportStatus", value: false });
     } else {

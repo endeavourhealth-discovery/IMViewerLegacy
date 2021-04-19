@@ -58,10 +58,16 @@ export default class OntologyOverview extends Vue {
         .then(res => {
           this.tableData = res.data;
           store.commit("updateOntologyOverview", this.tableData);
-          store.commit("updateLoading", { key: "reportCategory", value: false });
+          store.commit("updateLoading", {
+            key: "reportCategory",
+            value: false
+          });
         })
         .catch(err => {
-          store.commit("updateLoading", { key: "reportCategory", value: false });
+          store.commit("updateLoading", {
+            key: "reportCategory",
+            value: false
+          });
           this.$toast.add(
             LoggerService.error("Ontology Overview server request failed", err)
           );
