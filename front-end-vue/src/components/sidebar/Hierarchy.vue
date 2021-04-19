@@ -124,10 +124,14 @@ export default class Hierarchy extends Vue {
   }
 
   onNodeSelect(node: any) {
-    this.$router.push({
-      name: "Concept",
-      params: { selectedIri: node.data }
-    });
+    if (node.label === "Discovery ontology") {
+      this.$router.push({ name: "Dashboard" });
+    } else {
+      this.$router.push({
+        name: "Concept",
+        params: { selectedIri: node.data }
+      });
+    }
   }
 
   async onNodeExpand(node: TreeNode) {
