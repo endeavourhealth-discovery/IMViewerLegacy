@@ -2,10 +2,7 @@
   <div class="p-lg-6 p-md-12 modulecard-container" id="module-card">
     <Card class="modulecard">
       <template #header>
-        <i
-          class="fas fa-map"
-          style="fontSize: 6rem; color: orange; padding: 5px;"
-        />
+        <i class="fas fa-map icon-mapping" />
       </template>
       <template #title> Mapping Module </template>
       <template #subtitle> Data model maps </template>
@@ -33,5 +30,11 @@ export default class MappingModule extends Vue {}
 <style scoped>
 .modulecard {
   height: 100%;
+}
+
+.icon-mapping {
+  font-size: 6rem;
+  color: orange;
+  padding: 5px;
 }
 </style>

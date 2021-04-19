@@ -4,10 +4,7 @@
     <workflow-manager /> -->
     <ontology-overview />
     <concept-types :chartOptions="chartOptions" :graphHeight="graphHeight" />
-    <concept-schemes
-      :chartOptions="chartOptions"
-      :graphHeight="graphHeight"
-    />
+    <concept-schemes :chartOptions="chartOptions" :graphHeight="graphHeight" />
     <concept-status :chartOptions="chartOptions" :graphHeight="graphHeight" />
   </div>
 </template>
@@ -113,6 +110,7 @@ export default class Dashboard extends Vue {
 
 <style scoped>
 .dashboard-container {
-  height: calc(100vh - 123px); overflow: auto;
+  height: calc(100vh - 123px);
+  overflow: auto;
 }
 </style>

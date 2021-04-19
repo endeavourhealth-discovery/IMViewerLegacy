@@ -4,7 +4,7 @@
       class="p-d-flex p-flex-column p-jc-sm-around p-ai-center confirm-card"
     >
       <template #header>
-        <i class="pi pi-fw pi-key" style="fontSize: 50px; margin-top: 1em;" />
+        <i class="pi pi-fw pi-key icon-header" />
       </template>
       <template #title>
         Confirmation Code
@@ -26,13 +26,11 @@
               <InputText id="fieldCode" type="password" v-model="code" />
               <i
                 v-if="codeVerified"
-                class="pi pi-check-circle"
-                style="color: #439446; fontSize: 2em"
+                class="pi pi-check-circle password-check"
               />
               <i
                 v-if="!codeVerified && code !== ''"
-                class="pi pi-times-circle"
-                style="color: #e60017; fontSize: 2em"
+                class="pi pi-times-circle password-times"
               />
             </div>
             <small id="code-help"
@@ -179,5 +177,20 @@ export default class ConfirmCode extends Vue {
 
 .code-form {
   max-width: 25em;
+}
+
+.icon-header {
+  font-size: 50px;
+  margin-top: 1em;
+}
+
+.password-check {
+  color: #439446;
+  font-size: 2em;
+}
+
+.password-times {
+  color: #e60017;
+  font-size: 2em;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-field p-col-12 p-md-12" style="height: 60vh">
+  <div class="p-field p-col-12 p-md-12 results-container">
     <div
       class="p-grid p-jc-center"
       v-if="$store.state.loading.get('searchResults')"
@@ -36,7 +36,7 @@
           >
             <i
               :class="getPerspectiveByConceptType(slotProps.data.conceptType)"
-              style="fontSize: 2rem; color: lightgrey; padding: 5px;"
+              class="result-icon"
             />
             {{ slotProps.data.name }}
           </div>
@@ -128,4 +128,14 @@ export default class SearchResults extends Vue {
 }
 </script>
 
-<style></style>
+<style scoped>
+.results-container {
+  height: 60vh;
+  overflow-y: auto;
+}
+.result-icon {
+  font-size: 2rem;
+  color: lightgrey;
+  padding: 5px;
+}
+</style>
