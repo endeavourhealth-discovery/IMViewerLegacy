@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-6 dashcard-container">
+  <div class="p-lg-6 p-md-12 dashcard-container">
     <Card class="dashcard dash-pie">
       <template #title> Ontology Concept Schemes </template>
       <template #subtitle>

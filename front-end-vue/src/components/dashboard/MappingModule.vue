@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-6 modulecard-container" id="module-card">
+  <div class="p-lg-6 p-md-12 modulecard-container" id="module-card">
     <Card class="modulecard">
       <template #header>
         <i
