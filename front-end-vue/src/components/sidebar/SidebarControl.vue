@@ -177,7 +177,7 @@ export default class SidebarControl extends Vue {
 }
 @media all and (min-width: 1532px) {
   .p-tabview-panel {
-    height: calc(100vh - 265px);
+    height: calc(100vh - 252px);
     overflow-y: auto;
   }
 }

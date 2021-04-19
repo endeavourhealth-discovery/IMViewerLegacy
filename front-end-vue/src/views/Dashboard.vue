@@ -1,5 +1,5 @@
 <template>
-  <div class="p-lg-9 p-md-6 p-sm-8" style="height: calc(100vh - 123px); overflow: auto;">
+  <div class="p-col-9" style="height: calc(100vh - 123px); overflow: auto;">
     <div class="p-grid dashboard-container">
       <!-- <mapping-module />
       <workflow-manager /> -->
