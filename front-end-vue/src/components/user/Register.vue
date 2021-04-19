@@ -38,13 +38,11 @@
             />
             <i
               v-if="showEmail1Notice && email1Verified"
-              class="pi pi-check-circle"
-              style="color: #439446; fontSize: 2em"
+              class="pi pi-check-circle email-check"
             />
             <i
               v-if="showEmail1Notice && !email1Verified"
-              class="pi pi-times-circle"
-              style="color: #e60017; fontSize: 2em"
+              class="pi pi-times-circle email-times"
             />
           </div>
         </div>
@@ -414,5 +412,13 @@ export default class Register extends Vue {
 
 .footer-link:hover {
   cursor: pointer;
+}
+.email-check {
+  color: #439446;
+  font-size: 2em;
+}
+.email-times {
+  color: #e60017;
+  font-size: 2em;
 }
 </style>
