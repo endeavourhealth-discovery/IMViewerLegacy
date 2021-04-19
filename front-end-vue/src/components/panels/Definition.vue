@@ -56,6 +56,7 @@ export default class Definition extends Vue {
           readOnly: true,
           lineNumbers: "off",
           glyphMargin: false,
+          automaticLayout: true,
           minimap: {
             enabled: false
           }
