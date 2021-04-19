@@ -2,10 +2,7 @@
   <div class="p-d-flex p-flex-row p-ai-center">
     <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center logout-card">
       <template #header>
-        <i
-          class="pi pi-fw pi-unlock"
-          style="fontSize: 50px; margin-top: 1em;"
-        />
+        <i class="pi pi-fw pi-unlock icon-header" />
       </template>
       <template #title>
         Logout
@@ -116,5 +113,10 @@ export default class Logout extends Vue {
   width: 60px;
   border: 1px solid lightgray;
   border-radius: 50%;
+}
+
+.icon-header {
+  font-size: 50px;
+  margin-top: 1em;
 }
 </style>

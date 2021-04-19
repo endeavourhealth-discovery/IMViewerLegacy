@@ -2,10 +2,7 @@
   <div class="p-lg-6 p-md-12 modulecard-container">
     <Card class="modulecard">
       <template #header>
-        <i
-          class="fas fa-tasks"
-          style="fontSize: 6rem; color: orange; padding: 5px;"
-        />
+        <i class="fas fa-tasks icon-workflow" />
       </template>
       <template #title> Workflow Manager </template>
       <template #subtitle> Helps to manage the workflow </template>
@@ -31,5 +28,11 @@ export default class WorkflowManager extends Vue {}
 <style scoped>
 .modulecard {
   height: 100%;
+}
+
+.icon-workflow {
+  font-size: 6rem;
+  color: orange;
+  padding: 5px;
 }
 </style>

@@ -2,7 +2,7 @@
   <div class="p-d-flex p-flex-row p-ai-center">
     <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center login-card">
       <template #header>
-        <i class="pi pi-fw pi-user" style="fontSize: 50px; margin-top: 1em;" />
+        <i class="pi pi-fw pi-user icon-header" />
       </template>
       <template #title>
         Login
@@ -186,5 +186,10 @@ export default class Login extends Vue {
 
 .footer-link:hover {
   cursor: pointer;
+}
+
+.icon-header {
+  font-size: 50px;
+  margin-top: 1em;
 }
 </style>

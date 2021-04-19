@@ -4,7 +4,7 @@
     :options="history"
     optionLabel="conceptName"
     @click="navigate"
-    style="height:100%;overflow:auto"
+    class="history-listbox"
   >
     <template #option="slotProps">
       <div>
@@ -40,4 +40,9 @@ export default class History extends Vue {
 }
 </script>
 
-<style></style>
+<style scoped>
+.history-listbox {
+  height: 100%;
+  overflow: auto;
+}
+</style>

@@ -4,7 +4,7 @@
       class="p-d-flex p-flex-column p-jc-sm-around p-ai-center recovery-card"
     >
       <template #header>
-        <i class="pi pi-fw pi-user" style="fontSize: 50px; margin-top: 1em;" />
+        <i class="pi pi-fw pi-user icon-header" />
       </template>
       <template #title> Account Recovery: <br /><br />Password Reset </template>
       <template #content>
@@ -111,5 +111,10 @@ export default class ForgotPassword extends Vue {
 
 .footer-link:hover {
   cursor: pointer;
+}
+
+.icon-header {
+  font-size: 50px;
+  margin-top: 1em;
 }
 </style>

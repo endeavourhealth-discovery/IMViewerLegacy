@@ -30,10 +30,9 @@
       >
         <template #option="slotProps">
           <img
-            class="avatar-select"
+            class="avatar-select avatar-icon"
             :src="require('@/assets/avatars/' + slotProps.option.value)"
             alt="avatar icon"
-            style="width: 3em;"
           />
         </template>
       </SelectButton>
@@ -98,5 +97,9 @@ export default class AvatarWithSelector extends Vue {
   width: 150px;
   border: 1px solid lightgray;
   border-radius: 50%;
+}
+
+.avatar-icon {
+  width: 3em;
 }
 </style>

@@ -1,40 +1,39 @@
 <template>
-  <span class="p-input-icon-left" style="width: 100%">
+  <span class="p-input-icon-left search-bar">
     <i class="pi pi-search" />
     <InputText
       type="text"
       v-model="searchTerm"
       @input="debounceForSearch"
       placeholder="Search"
-      class="p-inputtext-lg"
+      class="p-inputtext-lg search-input"
       autoWidth="false"
-      style="width: 100%"
     />
   </span>
 
   <TabView class="sidemenu" v-model:activeIndex="active">
     <TabPanel>
       <template #header>
-        <i class="fas fa-project-diagram" style="padding: 1px;" />
+        <i class="fas fa-project-diagram icon-header" />
         <span>Hierarchy</span>
       </template>
       <Hierarchy />
     </TabPanel>
     <TabPanel>
       <template #header>
-        <i class="fas fa-history" style="padding: 1px;" />
+        <i class="fas fa-history icon-header" />
         <span>History</span>
       </template>
       <History />
     </TabPanel>
     <TabPanel>
       <template #header>
-        <i class="fas fa-search" style="padding: 1px;" />
+        <i class="fas fa-search icon-header" />
         <span>Search results</span>
       </template>
 
-      <div class="p-fluid p-grid">
-        <SearchResults style="height:100%;overflow:auto" />
+      <div class="p-fluid p-grid results-filter-container">
+        <SearchResults />
         <Filters :search="search" />
       </div>
     </TabPanel>
@@ -175,10 +174,27 @@ export default class SidebarControl extends Vue {
     overflow-y: auto;
   }
 }
+
 @media all and (min-width: 1532px) {
   .p-tabview-panel {
     height: calc(100vh - 252px);
     overflow-y: auto;
   }
+}
+
+.search-bar {
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+}
+
+.icon-header {
+  padding: 1px;
+}
+
+.p-tabview-panel {
+  overflow-x: hidden;
 }
 </style>

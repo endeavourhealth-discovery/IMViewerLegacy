@@ -7,7 +7,7 @@
     @node-select="onNodeSelect"
     @node-expand="onNodeExpand"
     :loading="loading"
-    style="height:100%;overflow:auto"
+    class="tree-root"
   ></Tree>
 </template>
 
@@ -175,5 +175,9 @@ export default class Hierarchy extends Vue {
 .p-tree .p-tree-container .p-treenode .p-treenode-content {
   padding: 0rem !important;
   transition: box-shadow 3600s 3600s !important;
+}
+.tree-root {
+  height: 100%;
+  overflow: auto;
 }
 </style>

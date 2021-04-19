@@ -6,7 +6,7 @@
     :rows="10"
     :scrollable="true"
     scrollHeight="flex"
-    style="height:604px;"
+    id="properties-table"
   >
     <template #empty>
       No records found
@@ -87,5 +87,9 @@ div.link {
 
 .capitalize-text:first-letter {
   text-transform: capitalize;
+}
+
+#properties-table {
+  height: 604px;
 }
 </style>

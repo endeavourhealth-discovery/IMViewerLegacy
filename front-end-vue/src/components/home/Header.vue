@@ -3,28 +3,16 @@
     <div class="p-col-fixed" style="width:100px">
       <div class="box">
         <div v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
-          <i
-            class="fas fa-home"
-            style="fontSize: 6rem; color: blue; padding: 5px;"
-          />
+          <i class="fas fa-home icon-home icon-header" />
         </div>
         <div v-else-if="$store.state.conceptAggregate.concept && isClaz">
-          <i
-            class="fas fa-sitemap"
-            style="fontSize: 6rem; color: green; padding: 5px;"
-          />
+          <i class="fas fa-sitemap icon-sitemap icon-header" />
         </div>
         <div v-else-if="$store.state.conceptAggregate.concept && isSet">
-          <i
-            class="fas fa-tasks"
-            style="fontSize: 6rem; color: red; padding: 5px;"
-          />
+          <i class="fas fa-tasks icon-tasks icon-header" />
         </div>
         <div v-else>
-          <i
-            class="fas fa-lightbulb"
-            style="fontSize: 6rem; color: orange; padding: 5px;"
-          />
+          <i class="fas fa-lightbulb icon-lightbulb icon-header" />
         </div>
       </div>
     </div>
@@ -81,7 +69,7 @@ export default class Header extends Vue {
 }
 </script>
 
-<style>
+<style scoped>
 .header .p-card-header {
   width: 5%;
   padding-top: 10px;
@@ -96,5 +84,26 @@ export default class Header extends Vue {
 .header .p-card-title,
 .header .p-card-subtitle {
   padding-left: 100px;
+}
+
+.icon-header {
+  font-size: 6rem;
+  padding: 5px;
+}
+
+.icon-home {
+  color: blue;
+}
+
+.icon-sitemap {
+  color: green;
+}
+
+.icon-tasks {
+  color: red;
+}
+
+.icon-lightbulb {
+  color: orange;
 }
 </style>
