@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-6 dashcard-container">
+  <div class="p-lg-6 p-md-12 dashcard-container">
     <Card class="dashcard dash-pie">
       <template #title> Ontology Concept Status </template>
       <template #subtitle>
@@ -46,7 +46,7 @@ export default class ConceptStatus extends Vue {
     // chart status
     // strip out if statement and commit "updateConceptStatus" when server caching is implemented
     store.commit("updateLoading", { key: "reportStatus", value: true });
-    if ("datasets" in this.conceptStatus){
+    if ("datasets" in this.conceptStatus) {
       this.chartConceptStatus = this.conceptStatus;
       store.commit("updateLoading", { key: "reportStatus", value: false });
     } else {

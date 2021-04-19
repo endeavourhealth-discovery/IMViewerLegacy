@@ -8,4 +8,5 @@ export class ConceptSummary {
   conceptType: any;
   isDescendentOf: ConceptReference[] = [];
   weighting = 0;
+  match = "";
 }
