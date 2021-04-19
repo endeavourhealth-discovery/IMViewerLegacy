@@ -22,7 +22,6 @@
           $store.state.conceptAggregate.concept.conceptType != 'ValueSet'
       "
     /> -->
-
     <ConceptDetails v-if="$store.state.conceptAggregate.concept && !isSet" />
 
     <ConceptMembers v-if="$store.state.conceptAggregate.concept && isSet" />

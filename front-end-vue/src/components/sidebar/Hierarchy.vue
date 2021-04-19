@@ -2,14 +2,13 @@
   <Tree
     :value="root"
     selectionMode="single"
+    v-model:selectionKeys="selectedKey"
     :expandedKeys="expandedKeys"
     @node-select="onNodeSelect"
     @node-expand="onNodeExpand"
     :loading="loading"
     style="height:100%;overflow:auto"
   ></Tree>
-
-  <!-- <Tree :value="nodes" selectionMode="single" v-model:selectionKeys="selectedKey2" :metaKeySelection="false" @node-select="onNodeSelect" @node-unselect="onNodeUnselect"></Tree> -->
 </template>
 
 <script lang="ts">
@@ -59,6 +58,7 @@ export default class Hierarchy extends Vue {
   root: Array<TreeNode> = [];
   expandedKeys: any = {};
   loading = false;
+  selectedKey = { 1: true };
 
   createTree(concept: any, parentHierarchy: any, children: any) {
     let index = 1;
@@ -103,6 +103,7 @@ export default class Hierarchy extends Vue {
     }
     this.expandedKeys[0] = true;
     this.expandedKeys[1] = true;
+    this.selectedKey = { 1: true };
   }
 
   createTreeNode(
@@ -124,10 +125,14 @@ export default class Hierarchy extends Vue {
   }
 
   onNodeSelect(node: any) {
-    this.$router.push({
-      name: "Concept",
-      params: { selectedIri: node.data }
-    });
+    if (node.label === "Discovery ontology") {
+      this.$router.push({ name: "Dashboard" });
+    } else {
+      this.$router.push({
+        name: "Concept",
+        params: { selectedIri: node.data }
+      });
+    }
   }
 
   async onNodeExpand(node: TreeNode) {
@@ -166,5 +171,6 @@ export default class Hierarchy extends Vue {
 <style>
 .p-tree .p-tree-container .p-treenode .p-treenode-content {
   padding: 0rem !important;
+  transition: box-shadow 3600s 3600s!important;
 }
 </style>

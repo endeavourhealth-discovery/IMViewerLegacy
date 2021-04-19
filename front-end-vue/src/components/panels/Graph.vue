@@ -35,6 +35,7 @@ import { HierarchyNode } from "d3";
 import GraphData from "../../models/GraphData";
 import { IM } from "@/vocabulary/IM";
 import LoggerService from "@/services/LoggerService";
+import { isValueSet } from "@/helpers/ConceptTypeMethods";
 
 @Options({
   name: "Graph",
@@ -43,20 +44,24 @@ import LoggerService from "@/services/LoggerService";
   watch: {
     conceptAggregate(newValue) {
       this.eraseTree();
-      ConceptService.getConceptGraph(newValue.concept[IM.IRI])
-        .then(res => {
-          this.graphData = res.data;
-          this.root = d3.hierarchy(this.graphData);
-          this.drawTree();
-          this.initSvgPanZoom();
-          this.initView();
-          this.zoomReset();
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Concept graph server request failed", err)
-          );
-        });
+      const conceptTypeElements =
+        newValue.concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"];
+      if (!isValueSet(conceptTypeElements)) {
+        ConceptService.getConceptGraph(newValue.concept[IM.IRI])
+          .then(res => {
+            this.graphData = res.data;
+            this.root = d3.hierarchy(this.graphData);
+            this.drawTree();
+            this.initSvgPanZoom();
+            this.initView();
+            this.zoomReset();
+          })
+          .catch(err => {
+            this.$toast.add(
+              LoggerService.error("Concept graph server request failed", err)
+            );
+          });
+      }
     }
   }
 })
