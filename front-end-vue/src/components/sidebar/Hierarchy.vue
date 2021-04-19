@@ -89,6 +89,9 @@ export default class Hierarchy extends Vue {
     this.root = [];
 
     if (parentHierarchy.length) {
+      parentHierarchy = parentHierarchy.filter(
+        (parent: any) => parent.name !== "OWL Thing"
+      );
       const parent = this.createTreeNode(
         parentHierarchy[0].name,
         parentHierarchy[0].iri,
@@ -171,6 +174,6 @@ export default class Hierarchy extends Vue {
 <style>
 .p-tree .p-tree-container .p-treenode .p-treenode-content {
   padding: 0rem !important;
-  transition: box-shadow 3600s 3600s!important;
+  transition: box-shadow 3600s 3600s !important;
 }
 </style>
