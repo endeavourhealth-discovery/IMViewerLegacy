@@ -72,6 +72,11 @@ export default class Definition extends Vue {
   mounted() {
     this.initEditor();
   }
+
+  beforeUnmount() {
+    const model = monaco.editor.getModels()[0];
+    model.dispose();
+  }
 }
 </script>
 
