@@ -4,7 +4,7 @@
       class="p-d-flex p-flex-column p-jc-sm-around p-ai-center recovery-card"
     >
       <template #header>
-        <i class="pi pi-fw pi-user" style="fontSize: 50px; margin-top: 1em;" />
+        <i class="pi pi-fw pi-user icon-user" />
       </template>
       <template #title>
         Account Recovery: <br /><br />Recover By Email
@@ -23,13 +23,11 @@
               />
               <i
                 v-if="showEmailNotice && emailVerified"
-                class="pi pi-check-circle"
-                style="color: #439446; fontSize: 2em"
+                class="pi pi-check-circle email-check"
               />
               <i
                 v-if="showEmailNotice && !emailVerified"
-                class="pi pi-times-circle"
-                style="color: #e60017; fontSize: 2em"
+                class="pi pi-times-circle email-times"
               />
             </div>
           </div>
@@ -145,5 +143,17 @@ export default class RecoverByEmail extends Vue {
 
 .footer-link:hover {
   cursor: pointer;
+}
+.icon-user {
+  font-size: 50px;
+  margin-top: 1em;
+}
+.email-check {
+  color: #439446;
+  font-size: 2em;
+}
+.email-times {
+  color: #e60017;
+  font-size: 2em;
 }
 </style>
