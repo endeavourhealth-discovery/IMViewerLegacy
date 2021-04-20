@@ -42,7 +42,10 @@
             </OverlayPanel>
           </div>
           <p><strong>Iri:</strong> {{ concept["@id"] }}</p>
-          <p><strong>Code:</strong> {{ concept["http://endhealth.info/im#code"] }}</p>
+          <p>
+            <strong>Code:</strong>
+            {{ concept["http://endhealth.info/im#code"] }}
+          </p>
           <div v-if="concept['http://www.w3.org/2000/01/rdf-schema#comment']">
             <p><strong>Description:</strong></p>
             <ScrollPanel style="width: 100%; height: 100px" class="custom">
@@ -52,18 +55,29 @@
             </ScrollPanel>
           </div>
         </div>
-        <div class="p-col-6" v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']">
+        <div
+          class="p-col-6"
+          v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']"
+        >
           <p>
             <strong>Status:</strong>
-            <span v-if="concept['http://endhealth.info/im#status']">{{ concept["http://endhealth.info/im#status"]["name"] }}</span>
+            <span v-if="concept['http://endhealth.info/im#status']">
+              {{ concept["http://endhealth.info/im#status"]["name"] }}
+            </span>
           </p>
           <p>
             <strong>Scheme:</strong>
-            <span v-if="concept['http://endhealth.info/im#scheme']">{{ concept["http://endhealth.info/im#scheme"]["name"] }}</span>
+            <span v-if="concept['http://endhealth.info/im#scheme']">
+              {{ concept["http://endhealth.info/im#scheme"]["name"] }}
+            </span>
           </p>
           <p>
             <strong>Types:</strong>
-            <span v-if="concept['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']">{{ conceptTypes }}</span>
+            <span
+              v-if="concept['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']"
+            >
+              {{ conceptTypes }}
+            </span>
           </p>
           <p><strong>Definition:</strong></p>
           <Definition

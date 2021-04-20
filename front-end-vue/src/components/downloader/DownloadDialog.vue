@@ -17,21 +17,43 @@
         datakey="value"
         optionLabel="name"
       />
-      <div class="options-container p-d-flex p-flex-row p-flex-wrap p-jc-around">
+      <div
+        class="options-container p-d-flex p-flex-row p-flex-wrap p-jc-around"
+      >
         <div class="checkbox-label">
-          <Checkbox id="children" :binary="true" value="Include children" v-model="children" />
+          <Checkbox
+            id="children"
+            :binary="true"
+            value="Include children"
+            v-model="children"
+          />
           <label class="label" for="children">Include Children</label>
         </div>
         <div class="checkbox-label">
-          <Checkbox id="properties" :binary="true" value="Include properties" v-model="properties" />
+          <Checkbox
+            id="properties"
+            :binary="true"
+            value="Include properties"
+            v-model="properties"
+          />
           <label class="label" for="properties">Include properties</label>
         </div>
         <div class="checkbox-label">
-          <Checkbox id="members" :binary="true" value="Include members" v-model="members" />
+          <Checkbox
+            id="members"
+            :binary="true"
+            value="Include members"
+            v-model="members"
+          />
           <label class="label" for="members">Include members</label>
         </div>
         <div class="checkbox-label">
-          <Checkbox id="parents" :binary="true" value="Include parents" v-model="parents" />
+          <Checkbox
+            id="parents"
+            :binary="true"
+            value="Include parents"
+            v-model="parents"
+          />
           <label class="label" for="parents">Include parents</label>
         </div>
       </div>
