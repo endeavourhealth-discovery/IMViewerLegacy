@@ -79,12 +79,14 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
+import ConceptService from "@/services/ConceptService";
 
 @Options({
   name: "DownloadDialog",
   props: ["concept", "showDialog"]
 })
 export default class DownloadDialog extends Vue {
+  concept!: any;
   children = true;
   properties = true;
   members = true;
@@ -100,7 +102,20 @@ export default class DownloadDialog extends Vue {
   }
 
   downloadConcept() {
-    return null;
+    ConceptService.getConceptDownload(
+      this.concept["@id"],
+      this.format.value,
+      this.children,
+      this.properties,
+      this.members,
+      this.parents
+    )
+    .then(res => {
+      console.log(res);
+    })
+    .catch(err => {
+      console.log(err);
+    });
   }
 }
 </script>
