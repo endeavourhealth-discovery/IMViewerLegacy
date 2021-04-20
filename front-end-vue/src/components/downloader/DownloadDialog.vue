@@ -131,6 +131,7 @@ export default class DownloadDialog extends Vue {
         const filename = this.concept.name + fileType;
         const type = this.format.mime;
         this.downloadFile(res.data, filename, type);
+        this.$emit("closeDownloadDialog");
       })
       .catch(err => {
         this.$toast.add(
