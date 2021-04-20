@@ -80,6 +80,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import ConceptService from "@/services/ConceptService";
+import LoggerService from "@/services/LoggerService";
 
 @Options({
   name: "DownloadDialog",
@@ -91,10 +92,14 @@ export default class DownloadDialog extends Vue {
   properties = true;
   members = true;
   parents = true;
-  format = { name: "JSON", value: "json" };
+  format = { name: "JSON", value: "json", mime: "application/json" };
   formatOptions = [
-    { name: "JSON", value: "json" },
-    { name: "Excel(.xlsx)", value: "excel" }
+    { name: "JSON", value: "json", mime: "application/json" },
+    {
+      name: "Excel(.xlsx)",
+      value: "excel",
+      mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    }
   ];
 
   closeDownloadDialog() {
@@ -110,12 +115,36 @@ export default class DownloadDialog extends Vue {
       this.members,
       this.parents
     )
-    .then(res => {
-      console.log(res);
-    })
-    .catch(err => {
-      console.log(err);
-    });
+      .then(res => {
+        let fileType;
+        switch (this.format.value) {
+          case "json":
+            fileType = ".json";
+            break;
+          case "excel":
+            fileType = ".xlsx";
+            break;
+        }
+        const filename = this.concept.name + fileType;
+        this.downloadFile(res.data, filename);
+      })
+      .catch(err => {
+        this.$toast.add(
+          LoggerService.error("Concept download server request failed", err)
+        );
+      });
+  }
+
+  downloadFile(data: any, filename: string) {
+    const a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style.display = "none";
+    const blob = new Blob([data], { type: this.format.mime });
+    const url = window.URL.createObjectURL(blob);
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 }
 </script>
