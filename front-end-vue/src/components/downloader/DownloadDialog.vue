@@ -7,9 +7,10 @@
     :style="{ width: '50vw' }"
   >
     <template #header>
-      <h3>Download Concept</h3>
+      <h3>Download Concept:</h3>
     </template>
     <div id="content" class="p-d-flex p-flex-column p-jc-center p-ai-center">
+      <h4 v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']">{{ concept['http://www.w3.org/2000/01/rdf-schema#label'] }}</h4>
       <SelectButton
         class="format-container"
         v-model="format"
@@ -168,5 +169,8 @@ export default class DownloadDialog extends Vue {
 }
 .format-container {
   margin-bottom: 1rem;
+}
+h4 {
+  margin-bottom: 1em;
 }
 </style>
