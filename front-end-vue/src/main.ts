@@ -63,6 +63,7 @@ import Timeline from "primevue/timeline";
 import SelectButton from "primevue/selectbutton";
 import ToastService from "primevue/toastservice";
 import Toast from "primevue/toast";
+import Checkbox from "primevue/checkbox";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
@@ -114,4 +115,5 @@ createApp(App)
   .component("Timeline", Timeline)
   .component("SelectButton", SelectButton)
   .component("Toast", Toast)
+  .component("Checkbox", Checkbox)
   .mount("#app");
