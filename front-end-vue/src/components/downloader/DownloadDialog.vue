@@ -141,6 +141,7 @@ export default class DownloadDialog extends Vue {
       // this.roles
     )
       .then(res => {
+        console.log(res.data);
         let fileType;
         switch (this.format.value) {
           case "json":
@@ -150,8 +151,10 @@ export default class DownloadDialog extends Vue {
             fileType = ".xlsx";
             break;
         }
-        const filename = this.concept.name + fileType;
+        const filename = this.concept['http://www.w3.org/2000/01/rdf-schema#label'] + fileType;
+        console.log(filename);
         const type = this.format.mime;
+        console.log(type);
         this.downloadFile(res.data, filename, type);
         this.$emit("closeDownloadDialog");
       })
