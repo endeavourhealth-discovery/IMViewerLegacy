@@ -10,7 +10,9 @@
       <h3>Download Concept:</h3>
     </template>
     <div id="content" class="p-d-flex p-flex-column p-jc-center p-ai-center">
-      <h4 v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']">{{ concept['http://www.w3.org/2000/01/rdf-schema#label'] }}</h4>
+      <h4 v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']">
+        {{ concept["http://www.w3.org/2000/01/rdf-schema#label"] }}
+      </h4>
       <SelectButton
         class="format-container"
         v-model="format"
@@ -127,7 +129,8 @@ export default class DownloadDialog extends Vue {
             break;
         }
         const filename = this.concept.name + fileType;
-        this.downloadFile(res.data, filename);
+        const type = this.format.mime;
+        this.downloadFile(res.data, filename, type);
       })
       .catch(err => {
         this.$toast.add(
@@ -136,11 +139,11 @@ export default class DownloadDialog extends Vue {
       });
   }
 
-  downloadFile(data: any, filename: string) {
+  downloadFile(data: any, filename: string, type: string) {
     const a = document.createElement("a");
     document.body.appendChild(a);
     a.style.display = "none";
-    const blob = new Blob([data], { type: this.format.mime });
+    const blob = new Blob([data], { type: type });
     const url = window.URL.createObjectURL(blob);
     a.href = url;
     a.download = filename;
