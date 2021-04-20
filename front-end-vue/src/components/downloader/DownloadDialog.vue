@@ -59,6 +59,24 @@
           />
           <label class="label" for="parents">Include parents</label>
         </div>
+        <div class="checkbox-label">
+          <Checkbox
+            id="inactive"
+            :binary="true"
+            value="Include inactive"
+            v-model="inactive"
+          />
+          <label class="label" for="inactive">Include inactive</label>
+        </div>
+        <div class="checkbox-label">
+          <Checkbox
+            id="roles"
+            :binary="true"
+            value="Include roles"
+            v-model="roles"
+          />
+          <label class="label" for="roles">Include roles</label>
+        </div>
       </div>
       <div class="download-button-container p-d-flex p-flex-row p-jc-around">
         <Button
@@ -95,6 +113,8 @@ export default class DownloadDialog extends Vue {
   properties = true;
   members = true;
   parents = true;
+  inactive = false;
+  roles = false;
   format = { name: "JSON", value: "json", mime: "application/json" };
   formatOptions = [
     { name: "JSON", value: "json", mime: "application/json" },
@@ -116,7 +136,9 @@ export default class DownloadDialog extends Vue {
       this.children,
       this.properties,
       this.members,
-      this.parents
+      this.parents,
+      // this.inactive,
+      // this.roles
     )
       .then(res => {
         let fileType;

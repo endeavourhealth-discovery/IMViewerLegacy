@@ -103,7 +103,9 @@ export default class ConceptService {
     children: boolean,
     properties: boolean,
     members: boolean,
-    parents: boolean
+    parents: boolean,
+    // inactive: boolean,
+    // roles: boolean
   ) {
     return axios.get(this.api + "api/concept/download", {
       params: {
@@ -112,7 +114,9 @@ export default class ConceptService {
         children: children,
         properties: properties,
         members: members,
-        parents: parents
+        parents: parents,
+        // inactive: inactive,
+        // roles: roles
       }
     });
   }
