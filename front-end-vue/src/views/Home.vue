@@ -4,7 +4,7 @@
     <div class="home">
       <div class="p-grid">
         <div class="p-col-12" id="header-home"><Header /></div>
-        <div class="p-col-3"><SidebarControl /></div>
+        <div class="p-col-3 p-d-flex p-flex-column p-jc-start" id="side-bar"><SidebarControl /></div>
         <router-view />
       </div>
     </div>
@@ -77,7 +77,7 @@ export default class Home extends Vue {
 }
 </script>
 
-<style>
+<style scoped>
 .header-grow {
   flex-grow: 1;
 }

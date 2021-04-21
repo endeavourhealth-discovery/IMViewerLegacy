@@ -33,13 +33,13 @@
             @mouseleave="toggle($event, slotProps.data)"
           >
             <div class="result-icon-container">
-            <i
-              :class="getPerspectiveByConceptType(slotProps.data.conceptType)"
-              class="result-icon"
-            />
+              <i
+                :class="getPerspectiveByConceptType(slotProps.data.conceptType)"
+                class="result-icon"
+              />
             </div>
             <div class="result-text-container">
-              {{ slotProps.data.match }}<br>
+              {{ slotProps.data.match }}<br />
               <small style="color:lightgrey">{{ slotProps.data.name }}</small>
             </div>
           </div>
@@ -130,7 +130,7 @@ export default class SearchResults extends Vue {
 
 <style scoped>
 .results-container {
-  height: 60vh;
+  flex-grow: 5;
   overflow-y: auto;
 }
 

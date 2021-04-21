@@ -11,7 +11,7 @@
     />
   </span>
 
-  <TabView class="sidemenu" v-model:activeIndex="active">
+  <TabView class="p-d-flex p-flex-column p-jc-start side-menu" v-model:activeIndex="active">
     <TabPanel>
       <template #header>
         <i class="fas fa-project-diagram icon-header" />
@@ -32,7 +32,7 @@
         <span>Search results</span>
       </template>
 
-      <div class="p-fluid p-grid results-filter-container">
+      <div class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container">
         <SearchResults />
         <Filters :search="search" />
       </div>
@@ -167,19 +167,23 @@ export default class SidebarControl extends Vue {
 }
 </script>
 
-<style>
-@media all and (max-width: 1532px) {
-  .p-tabview-panel {
-    height: calc(100vh - 298px);
-    overflow-y: auto;
-  }
+<style scoped>
+
+.side-menu {
+  flex-grow: 6;
 }
 
-@media all and (min-width: 1532px) {
-  .p-tabview-panel {
-    height: calc(100vh - 252px);
-    overflow-y: auto;
-  }
+.side-menu >>> .p-tabview-panels {
+  flex-grow: 6;
+}
+
+.side-menu >>> .p-tabview-panel {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.results-filter-container {
+  height: 100%;
 }
 
 .search-bar {
