@@ -28,16 +28,17 @@
       <Column field="name" header="Results">
         <template #body="slotProps">
           <div
+            class="result-container"
             @mouseenter="toggle($event, slotProps.data)"
             @mouseleave="toggle($event, slotProps.data)"
-          style="display: flex">
-            <div style="left: 0; width: 3rem; height: 2rem;">
+          >
+            <div class="result-icon-container">
             <i
               :class="getPerspectiveByConceptType(slotProps.data.conceptType)"
               class="result-icon"
             />
             </div>
-            <div style="right: 0; height: 2.5rem;">
+            <div class="result-text-container">
               {{ slotProps.data.match }}<br>
               <small style="color:lightgrey">{{ slotProps.data.name }}</small>
             </div>
@@ -132,6 +133,24 @@ export default class SearchResults extends Vue {
   height: 60vh;
   overflow-y: auto;
 }
+
+.result-container {
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.result-icon-container {
+  height: 100%;
+  margin-right: 1em;
+}
+
+.result-text-container {
+  height: fit-content;
+}
+
 .result-icon {
   font-size: 2.5rem;
   color: lightgrey;
