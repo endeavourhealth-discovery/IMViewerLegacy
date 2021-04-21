@@ -130,52 +130,75 @@ export default class DownloadDialog extends Vue {
   }
 
   downloadConcept() {
-    ConceptService.getConceptDownload(
-      this.concept["@id"],
-      this.format.value,
-      this.children,
-      this.properties,
-      this.members,
-      this.parents,
-      // this.inactive,
-      // this.roles
-    )
-      .then(res => {
-        console.log(res.data);
-        let fileType;
-        switch (this.format.value) {
-          case "json":
-            fileType = ".json";
-            break;
-          case "excel":
-            fileType = ".xlsx";
-            break;
-        }
-        const filename = this.concept['http://www.w3.org/2000/01/rdf-schema#label'] + fileType;
-        console.log(filename);
-        const type = this.format.mime;
-        console.log(type);
-        this.downloadFile(res.data, filename, type);
-        this.$emit("closeDownloadDialog");
-      })
-      .catch(err => {
-        this.$toast.add(
-          LoggerService.error("Concept download server request failed", err)
-        );
-      });
+    const modIri = this.concept["@id"]
+      .replace(/\//gi, "%2F")
+      .replace(/#/gi, "%23");
+    const url =
+      "http://localhost:8080/api/concept/download?iri=" +
+      modIri +
+      "&format=" +
+      this.format.value +
+      "&children=" +
+      this.children +
+      "&properties=" +
+      this.properties +
+      "&members=" +
+      this.members +
+      "&parents=" +
+      this.parents +
+      "&roles=" +
+      this.roles +
+      "&inactive=" +
+      this.inactive;
+    const popup = window.open(url);
+    this.closeDownloadDialog();
+    // ConceptService.getConceptDownload(
+    //   this.concept["@id"],
+    //   this.format.value,
+    //   this.children,
+    //   this.properties,
+    //   this.members,
+    //   this.parents,
+    //   this.inactive,
+    //   this.roles
+    // )
+    //   .then(res => {
+    //     console.log(res.data);
+    //     let fileType;
+    //     switch (this.format.value) {
+    //       case "json":
+    //         fileType = ".json";
+    //         break;
+    //       case "excel":
+    //         fileType = ".xlsx";
+    //         break;
+    //     }
+    //     const filename =
+    //       this.concept["http://www.w3.org/2000/01/rdf-schema#label"] + fileType;
+    //     console.log(filename);
+    //     const type = this.format.mime;
+    //     console.log(type);
+    //     this.downloadFile(res.data, filename, type);
+    //     this.$emit("closeDownloadDialog");
+    //   })
+    //   .catch(err => {
+    //     this.$toast.add(
+    //       LoggerService.error("Concept download server request failed", err)
+    //     );
+    //   });
   }
 
-  downloadFile(data: any, filename: string, type: string) {
-    const a = document.createElement("a");
-    document.body.appendChild(a);
-    a.style.display = "none";
-    const blob = new Blob([data], { type: type });
-    const url = window.URL.createObjectURL(blob);
-    a.href = url;
-    a.download = filename;
-    a.click();
-    window.URL.revokeObjectURL(url);
-  }
+  // downloadFile(data: any, filename: string, type: string) {
+  //   const a = document.createElement("a");
+  //   document.body.appendChild(a);
+  //   a.style.display = "none";
+  //   const blob = new Blob([data], { type: type });
+  //   const url = window.URL.createObjectURL(blob);
+  //   a.href = url;
+  //   a.download = filename;
+  //   a.click();
+  //   window.URL.revokeObjectURL(url);
+  // }
 }
 </script>
 
