@@ -96,28 +96,4 @@ export default class ConceptService {
       params: { iri: iri }
     });
   }
-
-  // public static getConceptDownload(
-  //   iri: string,
-  //   format: string,
-  //   children: boolean,
-  //   properties: boolean,
-  //   members: boolean,
-  //   parents: boolean,
-  //   inactive: boolean,
-  //   roles: boolean
-  // ) {
-  //   return axios.get(this.api + "api/concept/download", {
-  //     params: {
-  //       iri: iri,
-  //       format: format,
-  //       children: children,
-  //       properties: properties,
-  //       members: members,
-  //       parents: parents,
-  //       inactive: inactive,
-  //       roles: roles
-  //     }
-  //   });
-  // }
 }

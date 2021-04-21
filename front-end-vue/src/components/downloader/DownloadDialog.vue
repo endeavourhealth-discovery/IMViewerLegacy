@@ -100,7 +100,6 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import ConceptService from "@/services/ConceptService";
 import LoggerService from "@/services/LoggerService";
 
 @Options({
@@ -151,54 +150,13 @@ export default class DownloadDialog extends Vue {
       "&inactive=" +
       this.inactive;
     const popup = window.open(url);
+    if (!popup) {
+      this.$toast.add(LoggerService.error("Download failed from server"));
+    } else {
+      this.$toast.add(LoggerService.success("Download will begin shortly"));
+    }
     this.closeDownloadDialog();
-    // ConceptService.getConceptDownload(
-    //   this.concept["@id"],
-    //   this.format.value,
-    //   this.children,
-    //   this.properties,
-    //   this.members,
-    //   this.parents,
-    //   this.inactive,
-    //   this.roles
-    // )
-    //   .then(res => {
-    //     console.log(res.data);
-    //     let fileType;
-    //     switch (this.format.value) {
-    //       case "json":
-    //         fileType = ".json";
-    //         break;
-    //       case "excel":
-    //         fileType = ".xlsx";
-    //         break;
-    //     }
-    //     const filename =
-    //       this.concept["http://www.w3.org/2000/01/rdf-schema#label"] + fileType;
-    //     console.log(filename);
-    //     const type = this.format.mime;
-    //     console.log(type);
-    //     this.downloadFile(res.data, filename, type);
-    //     this.$emit("closeDownloadDialog");
-    //   })
-    //   .catch(err => {
-    //     this.$toast.add(
-    //       LoggerService.error("Concept download server request failed", err)
-    //     );
-    //   });
   }
-
-  // downloadFile(data: any, filename: string, type: string) {
-  //   const a = document.createElement("a");
-  //   document.body.appendChild(a);
-  //   a.style.display = "none";
-  //   const blob = new Blob([data], { type: type });
-  //   const url = window.URL.createObjectURL(blob);
-  //   a.href = url;
-  //   a.download = filename;
-  //   a.click();
-  //   window.URL.revokeObjectURL(url);
-  // }
 }
 </script>
 
