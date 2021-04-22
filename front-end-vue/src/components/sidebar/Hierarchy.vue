@@ -180,4 +180,7 @@ export default class Hierarchy extends Vue {
   height: 100%;
   overflow: auto;
 }
+.p-tree-toggler {
+  min-width: 22px;
+}
 </style>

@@ -237,7 +237,6 @@ export default createStore({
       { commit },
       data: { searchRequest: SearchRequest; cancelToken: any }
     ) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
       let searchResults: any;
       let success = "true";
       await ConceptService.advancedSearch(data.searchRequest, data.cancelToken)
