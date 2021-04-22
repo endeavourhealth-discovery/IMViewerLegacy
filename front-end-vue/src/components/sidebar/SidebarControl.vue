@@ -170,7 +170,7 @@ export default class SidebarControl extends Vue {
 <style scoped>
 
 .side-menu {
-  max-height: 100%;
+  max-height: calc(100% - 41px);
   flex-grow: 6;
 }
 

@@ -81,7 +81,7 @@ export default class OntologyOverview extends Vue {
 .dashcard-container {
   grid-area: overview;
   height: 100%;
-  width: 100%;
+  width: calc(35vw - 72px);
 }
 .dashcard {
   height: 100%;

@@ -94,7 +94,7 @@ export default class ConceptTypes extends Vue {
 .dashcard-container {
   grid-area: types;
   height: 100%;
-  height: 100%;
+  width: calc(35vw - 72px);
 }
 
 .dashcard {

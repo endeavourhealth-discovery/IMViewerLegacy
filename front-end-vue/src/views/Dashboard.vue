@@ -46,7 +46,7 @@ export default class Dashboard extends Vue {
   };
   windowHeight = 0;
   windowWidth = 0;
-  graphHeight = 100;
+  graphHeight = 200;
 
   mounted() {
     this.$nextTick(() => {
@@ -113,11 +113,12 @@ export default class Dashboard extends Vue {
   grid-area: content;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  /* grid-template-rows: 1fr 1fr; */
-  grid-template:
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
     "overview types"
     "schemes status";
-  /* height: calc(100vh - 123px); */
+  column-gap: 7px;
+  row-gap: 7px;
   width: 100%;
   height: 100%;
   overflow: auto;

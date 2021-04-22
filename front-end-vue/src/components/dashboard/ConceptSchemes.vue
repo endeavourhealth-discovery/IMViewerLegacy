@@ -94,7 +94,7 @@ export default class ConceptSchemes extends Vue {
 .dashcard-container {
   grid-area: schemes;
   height: 100%;
-  width: 100%;
+  width: calc(35vw - 72px);
 }
 
 .dashcard {

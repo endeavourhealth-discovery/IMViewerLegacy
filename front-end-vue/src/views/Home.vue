@@ -26,7 +26,26 @@ import LoggerService from "@/services/LoggerService";
   }
 })
 export default class Home extends Vue {
+  windowHeight = 0;
+  windowWidth = 0;
+  headerHeight = 0;
+
   async mounted() {
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.onResize);
+    });
+
+    this.windowHeight = window.innerHeight;
+    this.windowWidth = window.innerWidth;
+    const header = document.getElementById("header-home");
+    if (header) {
+      this.headerHeight = header.offsetHeight;
+    }
+    const sidebar = document.getElementById("side-bar");
+    if (sidebar) {
+      sidebar.style.maxHeight = (this.windowHeight - this.headerHeight - 14) + "px";
+    }
+
     // check for user and log them in if found or logout if not
     store.dispatch("authenticateCurrentUser");
     this.updateRoute();
@@ -72,6 +91,23 @@ export default class Home extends Vue {
       }
     });
   }
+
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResize);
+  }
+
+  onResize() {
+    this.windowHeight = window.innerHeight;
+    this.windowWidth = window.innerWidth;
+    const header = document.getElementById("header-home");
+    if (header) {
+      this.headerHeight = header.offsetHeight;
+    }
+    const sidebar = document.getElementById("side-bar");
+    if (sidebar) {
+      sidebar.style.maxHeight = (this.windowHeight - this.headerHeight - 28) + "px";
+    }
+  }
 }
 </script>
 
@@ -81,12 +117,13 @@ export default class Home extends Vue {
   max-height: calc(100vh - 2rem) !important; */
   /* width: 100%; */
   height: 100%;
+  width: 100%;
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr;
   grid-template-areas:
-    "header header header header"
-    "sidebar content content content";
+    "header header"
+    "sidebar content";
   column-gap: 7px;
   /* row-gap: 7px; */
   /* max-height: 50vh;
@@ -97,7 +134,7 @@ export default class Home extends Vue {
   /* padding: 7px; */
   grid-area: sidebar;
   height: 100%;
-  max-width: 40vw;
+  width: 30vw;
 }
 
 #header-home {
