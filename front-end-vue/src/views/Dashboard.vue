@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-9 p-grid dashboard-container">
+  <div class="p-grid dashboard-container">
     <!-- <mapping-module />
     <workflow-manager /> -->
     <ontology-overview />
@@ -110,7 +110,10 @@ export default class Dashboard extends Vue {
 
 <style scoped>
 .dashboard-container {
-  height: calc(100vh - 123px);
+  grid-area: content;
+  /* height: calc(100vh - 123px); */
+  width: 100%;
+  height: 100%;
   overflow: auto;
 }
 </style>

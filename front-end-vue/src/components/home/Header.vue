@@ -1,42 +1,38 @@
 <template>
-  <div class="p-grid">
-    <div class="p-col-fixed" style="width:100px">
-      <div class="box">
-        <div v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
-          <i class="fas fa-home icon-home icon-header" />
-        </div>
-        <div v-else-if="$store.state.conceptAggregate.concept && isClaz">
-          <i class="fas fa-sitemap icon-sitemap icon-header" />
-        </div>
-        <div v-else-if="$store.state.conceptAggregate.concept && isSet">
-          <i class="fas fa-tasks icon-tasks icon-header" />
-        </div>
-        <div v-else>
-          <i class="fas fa-lightbulb icon-lightbulb icon-header" />
-        </div>
+  <div class="p-d-flex p-flex-row p-jc-start header-container">
+    <div class="header-icon-container">
+      <div v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
+        <i class="fas fa-home icon-home icon-header" />
+      </div>
+      <div v-else-if="$store.state.conceptAggregate.concept && isClaz">
+        <i class="fas fa-sitemap icon-sitemap icon-header" />
+      </div>
+      <div v-else-if="$store.state.conceptAggregate.concept && isSet">
+        <i class="fas fa-tasks icon-tasks icon-header" />
+      </div>
+      <div v-else>
+        <i class="fas fa-lightbulb icon-lightbulb icon-header" />
       </div>
     </div>
-    <div class="p-col">
-      <div class="box">
-        <div class="p-col">
-          <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
-            Home
-          </span>
-          <span v-else-if="$route.name === 'Concept'">Concepts</span>
-        </div>
-        <div class="p-col">
-          <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
-            Business purpose specific collections of concepts from the ontology
-            used in the data model or in query and contain concepts as defined
-            in the ontology, using the ontology language, including advanced
-            concept classes.
-          </span>
-          <span v-else-if="$route.name === 'Concept'">
-            The semantic ontology is the set of concepts used in all parts of
-            the information model, from clinical concepts through to data
-            structure concepts.
-          </span>
-        </div>
+    <div class="p-d-flex p-flex-column p-jc-start text-container">
+      <div class="title-text">
+        <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
+          Home
+        </span>
+        <span v-else-if="$route.name === 'Concept'">Concepts</span>
+      </div>
+      <div class="body-text">
+        <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
+          Business purpose specific collections of concepts from the ontology
+          used in the data model or in query and contain concepts as defined
+          in the ontology, using the ontology language, including advanced
+          concept classes.
+        </span>
+        <span v-else-if="$route.name === 'Concept'">
+          The semantic ontology is the set of concepts used in all parts of
+          the information model, from clinical concepts through to data
+          structure concepts.
+        </span>
       </div>
     </div>
   </div>
@@ -70,6 +66,10 @@ export default class Header extends Vue {
 </script>
 
 <style scoped>
+.header-container {
+  height: 100% !important;
+}
+
 .header .p-card-header {
   width: 5%;
   padding-top: 10px;
@@ -86,7 +86,18 @@ export default class Header extends Vue {
   padding-left: 100px;
 }
 
+.text-container {
+  width: 100%;
+  height: 100%;
+  padding-left: 1em;
+}
+
+.title-text {
+  padding: 1em 0 1em 0;
+}
+
 .icon-header {
+  width:100px;
   font-size: 6rem;
   padding: 5px;
 }

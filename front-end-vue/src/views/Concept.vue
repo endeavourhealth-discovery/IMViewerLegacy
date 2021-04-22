@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-9 concept-container">
+  <div class="concept-container">
     <PanelControl />
   </div>
 </template>
@@ -18,7 +18,9 @@ export default class Concept extends Vue {}
 </script>
 <style scoped>
 .concept-container {
-  height: calc(100vh - 123px);
+  /* height: calc(100vh - 123px); */
+  grid-area: content;
+  height: 100%;
   overflow: auto;
 }
 </style>

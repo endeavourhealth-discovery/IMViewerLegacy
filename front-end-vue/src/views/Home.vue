@@ -1,12 +1,10 @@
 <template>
   <side-nav />
   <div class="layout-main">
-    <div class="home">
-      <div class="p-grid">
-        <div class="p-col-12" id="header-home"><Header /></div>
-        <div class="p-col-3 p-d-flex p-flex-column p-jc-start" id="side-bar"><SidebarControl /></div>
-        <router-view />
-      </div>
+    <div class="main-grid">
+      <div id="header-home"><Header /></div>
+      <div class="p-d-flex p-flex-column p-jc-start" id="side-bar"><SidebarControl /></div>
+      <router-view />
     </div>
   </div>
 </template>
@@ -78,6 +76,33 @@ export default class Home extends Vue {
 </script>
 
 <style scoped>
+.main-grid {
+  /* min-height: calc(100vh - 2rem) !important;
+  max-height: calc(100vh - 2rem) !important; */
+  /* width: 100%; */
+  height: 100%;
+  display: grid;
+  grid-template:
+    "header header header header"
+    "sidebar content content content";
+  column-gap: 7px;
+  /* row-gap: 7px; */
+  /* max-height: 50vh;
+  min-height: 50vh; */
+}
+
+#side-bar {
+  /* padding: 7px; */
+  grid-area: sidebar;
+  height: 100%;
+  max-width: 40vw;
+}
+
+#header-home {
+  grid-area: header;
+  height: fit-content;
+}
+
 .header-grow {
   flex-grow: 1;
 }

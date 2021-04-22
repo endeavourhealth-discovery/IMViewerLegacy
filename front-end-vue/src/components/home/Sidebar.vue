@@ -101,9 +101,9 @@ export default class Header extends Vue {
 </script>
 
 <style scoped>
-.sidemenu .p-tabview-panels {
+/* .sidemenu .p-tabview-panels {
   height: calc(100vh - 270px);
-}
+} */
 
 .p-tree .p-tree-container .p-treenode .p-treenode-content {
   padding: 0rem !important;

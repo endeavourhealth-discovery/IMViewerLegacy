@@ -170,11 +170,13 @@ export default class SidebarControl extends Vue {
 <style scoped>
 
 .side-menu {
+  max-height: 100%;
   flex-grow: 6;
 }
 
 .side-menu >>> .p-tabview-panels {
   flex-grow: 6;
+  overflow-y: auto;
 }
 
 .side-menu >>> .p-tabview-panel {
