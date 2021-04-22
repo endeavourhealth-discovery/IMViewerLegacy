@@ -25,6 +25,7 @@
       >
         <div class="checkbox-label">
           <Checkbox
+            :disabled="!$store.state.conceptAggregate.children?.length"
             id="children"
             :binary="true"
             value="Include children"
@@ -34,6 +35,7 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
+            :disabled="!$store.state.conceptAggregate.properties?.length"
             id="properties"
             :binary="true"
             value="Include properties"
@@ -43,6 +45,7 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
+            :disabled="!$store.state.members?.length"
             id="members"
             :binary="true"
             value="Include members"
@@ -52,6 +55,7 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
+            :disabled="!$store.state.conceptAggregate.parents?.length"
             id="parents"
             :binary="true"
             value="Include parents"
@@ -70,6 +74,7 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
+            :disabled="!$store.state.conceptAggregate.roles?.length"
             id="roles"
             :binary="true"
             value="Include roles"
@@ -101,6 +106,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import LoggerService from "@/services/LoggerService";
+import store from "../../store/index";
 
 @Options({
   name: "DownloadDialog",
@@ -114,7 +120,11 @@ export default class DownloadDialog extends Vue {
   parents = true;
   inactive = false;
   roles = false;
-  format = { name: "JSON", value: "json", mime: "application/json" };
+  format = {
+    name: "Excel(.xlsx)",
+    value: "excel",
+    mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  };
   formatOptions = [
     { name: "JSON", value: "json", mime: "application/json" },
     {
@@ -123,6 +133,14 @@ export default class DownloadDialog extends Vue {
       mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     }
   ];
+
+  updated() {
+    this.parents = !!store.state.conceptAggregate.parents?.length;
+    this.children = !!store.state.conceptAggregate.children?.length;
+    this.properties = !!store.state.conceptAggregate.properties?.length;
+    this.roles = !!store.state.conceptAggregate.roles?.length;
+    this.members = !!store.state.members?.length;
+  }
 
   closeDownloadDialog() {
     this.$emit("closeDownloadDialog");
