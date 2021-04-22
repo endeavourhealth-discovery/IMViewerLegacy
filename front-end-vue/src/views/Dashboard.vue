@@ -1,5 +1,5 @@
 <template>
-  <div class="p-grid dashboard-container">
+  <div class="dashboard-container">
     <!-- <mapping-module />
     <workflow-manager /> -->
     <ontology-overview />
@@ -46,7 +46,7 @@ export default class Dashboard extends Vue {
   };
   windowHeight = 0;
   windowWidth = 0;
-  graphHeight = 200;
+  graphHeight = 100;
 
   mounted() {
     this.$nextTick(() => {
@@ -111,6 +111,12 @@ export default class Dashboard extends Vue {
 <style scoped>
 .dashboard-container {
   grid-area: content;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* grid-template-rows: 1fr 1fr; */
+  grid-template:
+    "overview types"
+    "schemes status";
   /* height: calc(100vh - 123px); */
   width: 100%;
   height: 100%;

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-lg-6 p-md-12 dashcard-container">
+  <div class="dashcard-container">
     <Card class="dashcard dash-table">
       <template #title> Ontology Overview </template>
       <template #subtitle>
@@ -78,7 +78,13 @@ export default class OntologyOverview extends Vue {
 </script>
 
 <style scoped>
+.dashcard-container {
+  grid-area: overview;
+  height: 100%;
+  width: 100%;
+}
 .dashcard {
   height: 100%;
+  width: 100%;
 }
 </style>

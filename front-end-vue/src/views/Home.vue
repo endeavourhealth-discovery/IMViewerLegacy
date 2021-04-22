@@ -82,7 +82,9 @@ export default class Home extends Vue {
   /* width: 100%; */
   height: 100%;
   display: grid;
-  grid-template:
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
     "header header header header"
     "sidebar content content content";
   column-gap: 7px;
