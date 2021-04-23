@@ -3,22 +3,23 @@
     <div class="p-col-fixed" style="width:100px">
       <div class="box">
         <div v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
-          <i class="fas fa-home icon-home icon-header" />
+          <i class="fas fa-fw fa-home icon-home icon-header" />
         </div>
         <div v-else-if="$store.state.conceptAggregate.concept && isClaz">
-          <i class="fas fa-sitemap icon-sitemap icon-header" />
+          <i class="fas fa-fw fa-lightbulb icon-lightbulb icon-header" />
         </div>
         <div v-else-if="$store.state.conceptAggregate.concept && isSet">
-          <i class="fas fa-tasks icon-tasks icon-header" />
+          <i class="fas fa-fw fa-tasks icon-tasks icon-header" />
         </div>
         <div v-else>
-          <i class="fas fa-lightbulb icon-lightbulb icon-header" />
+          <i class="fas fa-fw fa-sitemap icon-sitemap icon-header" />
         </div>
       </div>
     </div>
     <div class="p-col">
       <div class="box">
         <div class="p-col">
+<<<<<<< HEAD
           <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
             Home
           </span>
@@ -27,6 +28,15 @@
         <div class="p-col">
           <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
             Business purpose specific collections of concepts from the ontology
+=======
+          <h3 v-if="$route.name === 'Home' || $route.name === 'Dashboard'">Home</h3
+          >
+          <h3 v-else-if="$route.name === 'Concept'">Concepts</h3>
+<!--        </div>-->
+<!--        <div class="p-col">-->
+          <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'"
+            >Business purpose specific collections of concepts from the ontology
+>>>>>>> 531f295fd48de2ebd246244ec7733d1fc450681c
             used in the data model or in query and contain concepts as defined
             in the ontology, using the ontology language, including advanced
             concept classes.
