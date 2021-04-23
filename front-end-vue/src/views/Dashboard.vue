@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container">
+  <div id="dashboard-container">
     <!-- <mapping-module />
     <workflow-manager /> -->
     <ontology-overview />
@@ -17,6 +17,7 @@ import OntologyOverview from "@/components/dashboard/OntologyOverview.vue";
 import ConceptTypes from "@/components/dashboard/ConceptTypes.vue";
 import ConceptSchemes from "@/components/dashboard/ConceptSchemes.vue";
 import ConceptStatus from "@/components/dashboard/ConceptStatus.vue";
+import { TempScrollBox } from "@/helpers/TempScrollBox";
 
 @Options({
   name: "Dashboard",
@@ -47,6 +48,7 @@ export default class Dashboard extends Vue {
   windowHeight = 0;
   windowWidth = 0;
   graphHeight = 200;
+  scrollBarWidth = 0;
 
   mounted() {
     this.$nextTick(() => {
@@ -55,6 +57,14 @@ export default class Dashboard extends Vue {
 
     this.windowHeight = window.innerHeight;
     this.windowWidth = window.innerWidth;
+    const scroll = new TempScrollBox();
+    this.scrollBarWidth = scroll.width;
+
+    const dashBoard = document.getElementById("dashboard-container");
+    if (dashBoard && dashBoard.clientWidth < dashBoard.scrollWidth) {
+      dashBoard.style.maxWidth =
+        dashBoard.clientWidth - this.scrollBarWidth + "px";
+    }
   } // mounted end
 
   beforeDestroy() {
@@ -64,6 +74,12 @@ export default class Dashboard extends Vue {
   onResize() {
     this.windowHeight = window.innerHeight;
     this.windowWidth = window.innerWidth;
+
+    const dashBoard = document.getElementById("dashboard-container");
+    if (dashBoard && dashBoard.clientWidth < dashBoard.scrollWidth) {
+      dashBoard.style.maxWidth =
+        dashBoard.clientWidth - this.scrollBarWidth + "px";
+    }
   }
 
   setLegendOptions(width: number) {
@@ -109,7 +125,7 @@ export default class Dashboard extends Vue {
 </script>
 
 <style scoped>
-.dashboard-container {
+#dashboard-container {
   grid-area: content;
   display: grid;
   grid-template-columns: 1fr 1fr;
