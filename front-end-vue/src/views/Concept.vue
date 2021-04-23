@@ -21,6 +21,7 @@ export default class Concept extends Vue {}
   /* height: calc(100vh - 123px); */
   grid-area: content;
   height: 100%;
-  overflow: auto;
+  width: 100%;
+  overflow-y: auto;
 }
 </style>
