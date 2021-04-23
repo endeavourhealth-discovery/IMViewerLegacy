@@ -1,5 +1,5 @@
 <template>
-  <div id="header-home" class="p-d-flex p-flex-row p-jc-center header-container">
+  <div id="header-home" class="p-d-flex p-flex-row p-jc-start header-container">
     <div class="p-d-flex p-flex-column p-jc-center header-icon-container">
       <div v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
         <i class="fas fa-home icon-home icon-header" />
