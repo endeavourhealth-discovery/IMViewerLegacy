@@ -19,16 +19,6 @@
     <div class="p-col">
       <div class="box">
         <div class="p-col">
-<<<<<<< HEAD
-          <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
-            Home
-          </span>
-          <span v-else-if="$route.name === 'Concept'">Concepts</span>
-        </div>
-        <div class="p-col">
-          <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
-            Business purpose specific collections of concepts from the ontology
-=======
           <h3 v-if="$route.name === 'Home' || $route.name === 'Dashboard'">Home</h3
           >
           <h3 v-else-if="$route.name === 'Concept'">Concepts</h3>
@@ -36,7 +26,6 @@
 <!--        <div class="p-col">-->
           <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'"
             >Business purpose specific collections of concepts from the ontology
->>>>>>> 531f295fd48de2ebd246244ec7733d1fc450681c
             used in the data model or in query and contain concepts as defined
             in the ontology, using the ontology language, including advanced
             concept classes.
