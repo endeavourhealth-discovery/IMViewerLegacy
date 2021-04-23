@@ -3,10 +3,10 @@
     <div class="mapping-container">
       <Panel header="Mapped" :toggleable="true">
         <div
-          class="p-grid p-jc-center"
+          class="p-d-flex p-flex-row p-jc-center"
           v-if="$store.state.loading.get('mapped')"
         >
-          <div class="p-col-6">
+          <div class="spinner">
             <ProgressSpinner />
           </div>
         </div>
@@ -42,10 +42,10 @@
     <div class="usage-container">
       <Panel header="Used In" :toggleable="true"
         ><div
-          class="p-grid p-jc-center"
+          class="p-d-flex p-flex-row p-jc-center"
           v-if="$store.state.loading.get('usages')"
         >
-          <div class="p-col-6">
+          <div class="spinner">
             <ProgressSpinner />
           </div>
         </div>
