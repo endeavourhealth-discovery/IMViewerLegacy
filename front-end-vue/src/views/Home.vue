@@ -26,27 +26,7 @@ import LoggerService from "@/services/LoggerService";
   }
 })
 export default class Home extends Vue {
-  windowHeight = 0;
-  windowWidth = 0;
-  headerHeight = 0;
-
   async mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.onResize);
-    });
-
-    this.windowHeight = window.innerHeight;
-    this.windowWidth = window.innerWidth;
-    const header = document.getElementById("header-home");
-    if (header) {
-      this.headerHeight = header.offsetHeight;
-    }
-    const sidebar = document.getElementById("side-bar");
-    if (sidebar) {
-      sidebar.style.maxHeight =
-        this.windowHeight - this.headerHeight - 14 + "px";
-    }
-
     // check for user and log them in if found or logout if not
     store.dispatch("authenticateCurrentUser");
     this.updateRoute();
@@ -91,24 +71,6 @@ export default class Home extends Vue {
         );
       }
     });
-  }
-
-  beforeDestroy() {
-    window.removeEventListener("resize", this.onResize);
-  }
-
-  onResize() {
-    this.windowHeight = window.innerHeight;
-    this.windowWidth = window.innerWidth;
-    const header = document.getElementById("header-home");
-    if (header) {
-      this.headerHeight = header.offsetHeight;
-    }
-    const sidebar = document.getElementById("side-bar");
-    if (sidebar) {
-      sidebar.style.maxHeight =
-        this.windowHeight - this.headerHeight - 28 + "px";
-    }
   }
 }
 </script>

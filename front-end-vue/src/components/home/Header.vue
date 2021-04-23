@@ -24,14 +24,14 @@
       <div class="body-text">
         <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
           Business purpose specific collections of concepts from the ontology
-          used in the data model or in query and contain concepts as defined
-          in the ontology, using the ontology language, including advanced
-          concept classes.
+          used in the data model or in query and contain concepts as defined in
+          the ontology, using the ontology language, including advanced concept
+          classes.
         </span>
         <span v-else-if="$route.name === 'Concept'">
-          The semantic ontology is the set of concepts used in all parts of
-          the information model, from clinical concepts through to data
-          structure concepts.
+          The semantic ontology is the set of concepts used in all parts of the
+          information model, from clinical concepts through to data structure
+          concepts.
         </span>
       </div>
     </div>
@@ -98,7 +98,7 @@ export default class Header extends Vue {
 }
 
 .icon-header {
-  width:100px;
+  width: 100px;
   font-size: 6rem;
   padding: 5px;
 }

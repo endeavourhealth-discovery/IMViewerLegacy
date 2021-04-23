@@ -12,7 +12,10 @@
       />
     </span>
 
-    <TabView class="p-d-flex p-flex-column p-jc-start side-menu" v-model:activeIndex="active">
+    <TabView
+      class="p-d-flex p-flex-column p-jc-start side-menu"
+      v-model:activeIndex="active"
+    >
       <TabPanel>
         <template #header>
           <i class="fas fa-project-diagram icon-header" />
@@ -33,7 +36,9 @@
           <span>Search results</span>
         </template>
 
-        <div class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container">
+        <div
+          class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container"
+        >
           <SearchResults />
           <Filters :search="search" />
         </div>
@@ -65,6 +70,46 @@ export default class SidebarControl extends Vue {
   active = 0;
   debounce = 0;
   request!: any;
+  windowHeight = 0;
+  windowWidth = 0;
+  headerHeight = 0;
+
+  mounted() {
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.onResize);
+    });
+
+    this.windowHeight = window.innerHeight;
+    this.windowWidth = window.innerWidth;
+    const header = document.getElementById("header-home");
+    if (header) {
+      this.headerHeight = header.offsetHeight;
+    }
+    const sidebar = document.getElementById("side-bar");
+    if (sidebar) {
+      sidebar.style.maxHeight =
+        this.windowHeight - this.headerHeight - 14 + "px";
+    }
+  }
+
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResize);
+  }
+
+  onResize() {
+    this.windowHeight = window.innerHeight;
+    this.windowWidth = window.innerWidth;
+    const header = document.getElementById("header-home");
+    if (header) {
+      this.headerHeight = header.offsetHeight;
+    }
+    const sidebar = document.getElementById("side-bar");
+    if (sidebar) {
+      sidebar.style.maxHeight =
+        this.windowHeight - this.headerHeight - 28 + "px";
+    }
+  }
+
   async search() {
     if (this.searchTerm.length > 2) {
       store.commit("updateLoading", { key: "searchResults", value: true });
