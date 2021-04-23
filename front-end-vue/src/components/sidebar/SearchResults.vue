@@ -1,10 +1,10 @@
 <template>
-  <div class="p-field p-col-12 p-md-12 results-container">
+  <div class="p-field results-container">
     <div
-      class="p-grid p-jc-center"
+      class="p-d-flex p-flex-row p-jc-center"
       v-if="$store.state.loading.get('searchResults')"
     >
-      <div class="p-col-6 p-text-center">
+      <div class="p-text-center">
         <ProgressSpinner />
       </div>
     </div>
@@ -17,7 +17,6 @@
       dataKey="iri"
       class="p-datatable-sm"
       :scrollable="true"
-      scrollHeight="40vh"
       removableSort
       :paginator="true"
       paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
@@ -33,13 +32,13 @@
             @mouseleave="toggle($event, slotProps.data)"
           >
             <div class="result-icon-container">
-            <i
-              :class="getPerspectiveByConceptType(slotProps.data.conceptType)"
-              class="result-icon"
-            />
+              <i
+                :class="getPerspectiveByConceptType(slotProps.data.conceptType)"
+                class="result-icon"
+              />
             </div>
             <div class="result-text-container">
-              {{ slotProps.data.match }}<br>
+              {{ slotProps.data.match }}<br />
               <small style="color:lightgrey">{{ slotProps.data.name }}</small>
             </div>
           </div>
@@ -53,13 +52,13 @@
       style="width: 700px"
       :breakpoints="{ '960px': '75vw' }"
     >
-      <div class="p-grid">
-        <div class="p-col-6" v-if="hoveredResult.name">
+      <div class="p-d-flex p-flex-row p-jc-start result-overlay" style="width: 100%; gap: 7px;">
+        <div class="left-side" style="width: 50%;" v-if="hoveredResult.name">
           <p><strong>Name:</strong> {{ hoveredResult.name }}</p>
           <p><strong>Iri:</strong> {{ hoveredResult.iri }}</p>
           <p><strong>Code:</strong> {{ hoveredResult.code }}</p>
         </div>
-        <div class="p-col-6" v-if="hoveredResult.name">
+        <div class="right-side" style="width: 50%;" v-if="hoveredResult.name">
           <p>
             <strong>Status:</strong>
             <span v-if="hoveredResult.status">{{
@@ -130,8 +129,19 @@ export default class SearchResults extends Vue {
 
 <style scoped>
 .results-container {
-  height: 60vh;
+  flex-grow: 5;
   overflow-y: auto;
+}
+
+.results-container ::v-deep(.p-datatable) {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+}
+
+.results-container ::v-deep(.p-datatable-wrapper) {
+  flex-grow: 6;
 }
 
 .result-container {

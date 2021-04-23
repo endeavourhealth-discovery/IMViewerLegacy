@@ -1,5 +1,5 @@
 <template>
-  <div class="p-lg-6 p-md-12 dashcard-container">
+  <div class="dashcard-container">
     <Card class="dashcard dash-pie">
       <template #title> Ontology Concept Status </template>
       <template #subtitle>
@@ -91,6 +91,12 @@ export default class ConceptStatus extends Vue {
 </script>
 
 <style scoped>
+.dashcard-container {
+  grid-area: status;
+  height: 100%;
+  width: calc(35vw - 72px);
+}
+
 .dashcard {
   height: 100%;
 }

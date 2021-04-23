@@ -1,5 +1,5 @@
 <template>
-  <div class="p-lg-6 p-md-12 dashcard-container">
+  <div class="dashcard-container">
     <Card class="dashcard dash-pie">
       <template #title> Ontology Concept Schemes </template>
       <template #subtitle>
@@ -91,13 +91,20 @@ export default class ConceptSchemes extends Vue {
 </script>
 
 <style scoped>
-.dashcard {
+.dashcard-container {
+  grid-area: schemes;
   height: 100%;
+  width: calc(35vw - 72px);
 }
 
-.p-chart {
-  height: fit-content;
+.dashcard {
+  height: 100%;
+  width: 100%;
 }
+
+/* .p-chart {
+  height: fit-content;
+} */
 
 .loading-container {
   height: 100%;

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="panel-control">
     <ConceptSummary />
 
     <!-- <Panel header="Defintion" :toggleable="true">
@@ -58,3 +58,9 @@ export default class PanelControl extends Vue {
   }
 }
 </script>
+<style scoped>
+#panel-control {
+  width: 100%;
+  height: 100%;
+}
+</style>

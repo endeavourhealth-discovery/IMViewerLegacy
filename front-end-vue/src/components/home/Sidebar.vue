@@ -14,21 +14,21 @@
   <TabView class="sidemenu">
     <TabPanel>
       <template #header>
-        <i class="fas fa-project-diagram" style="padding: 1px;" />
+        <i class="fas fa-project-diagram header-icon" />
         <span>Tree</span>
       </template>
       <Tree :value="root" :expandedKeys="expandedKeys"></Tree>
     </TabPanel>
     <TabPanel>
       <template #header>
-        <i class="fas fa-history" style="padding: 1px;" />
+        <i class="fas fa-history header-icon" />
         <span>History</span>
       </template>
       List
     </TabPanel>
     <TabPanel>
       <template #header>
-        <i class="fas fa-search" style="padding: 1px;" />
+        <i class="fas fa-search header-icon" />
         <span>Search results</span>
       </template>
       Search
@@ -100,12 +100,16 @@ export default class Header extends Vue {
 }
 </script>
 
-<style>
-.sidemenu .p-tabview-panels {
+<style scoped>
+/* .sidemenu .p-tabview-panels {
   height: calc(100vh - 270px);
-}
+} */
 
 .p-tree .p-tree-container .p-treenode .p-treenode-content {
   padding: 0rem !important;
+}
+
+.header-icon {
+  padding: 1px;;
 }
 </style>
