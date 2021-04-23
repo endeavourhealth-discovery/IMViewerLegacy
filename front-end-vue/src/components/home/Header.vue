@@ -16,10 +16,10 @@
     </div>
     <div class="p-d-flex p-flex-column p-jc-center text-container">
       <div class="title-text">
-        <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
+        <h3 v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
           Home
-        </span>
-        <span v-else-if="$route.name === 'Concept'">Concepts</span>
+        </h3>
+        <h3 v-else-if="$route.name === 'Concept'">Concepts</h3>
       </div>
       <div class="body-text">
         <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
@@ -90,10 +90,6 @@ export default class Header extends Vue {
 .text-container {
   width: 100%;
   height: 100%;
-}
-
-.title-text {
-  padding: 0.5rem 0 0.5rem 0;
 }
 
 .icon-header {
