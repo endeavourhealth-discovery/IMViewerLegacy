@@ -1,10 +1,10 @@
 <template>
-  <div class="p-field p-col-12 p-md-12 results-container">
+  <div class="p-field results-container">
     <div
-      class="p-grid p-jc-center"
+      class="p-d-flex p-flex-row p-jc-center"
       v-if="$store.state.loading.get('searchResults')"
     >
-      <div class="p-col-6 p-text-center">
+      <div class="p-text-center">
         <ProgressSpinner />
       </div>
     </div>
@@ -17,7 +17,6 @@
       dataKey="iri"
       class="p-datatable-sm"
       :scrollable="true"
-      scrollHeight="40vh"
       removableSort
       :paginator="true"
       paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
@@ -132,6 +131,17 @@ export default class SearchResults extends Vue {
 .results-container {
   flex-grow: 5;
   overflow-y: auto;
+}
+
+.results-container >>> .p-datatable {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+}
+
+.results-container >>> .p-datatable-wrapper {
+  flex-grow: 6;
 }
 
 .result-container {
