@@ -7,9 +7,9 @@
         </button>
         <Menu id="config_menu" ref="menu" :model="items" :popup="true" />
       </template>
-      <div class="p-grid">
+      <div class="p-d-flex p-flex-row p-jc-start summary-container">
         <div
-          class="p-col-6"
+          class="left-side"
           v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']"
         >
           <div class="p-d-flex p-flex-row p-jc-start p-ai-center">
@@ -41,7 +41,7 @@
               </DataTable>
             </OverlayPanel>
           </div>
-          <p>
+          <p class="break-text">
             <strong>Iri:</strong>
             {{ concept["@id"] }}
           </p>
@@ -61,7 +61,7 @@
           </div>
         </div>
         <div
-          class="p-col-6"
+          class="right-side"
           v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']"
         >
           <p>
@@ -234,6 +234,19 @@ export default class ConceptSummary extends Vue {
 </script>
 
 <style scoped>
+.summary-container {
+  width: 100%;
+  gap: 7px;
+}
+
+.left-side {
+  width: 50%;
+}
+
+.right-side {
+  width: 50%;
+}
+
 .custom .p-scrollpanel-wrapper {
   border-right: 9px solid #f4f4f4;
 }
@@ -254,5 +267,9 @@ p {
 
 #synonyms-button {
   margin-left: 0.5em;
+}
+
+.break-text {
+  word-break: break-all;
 }
 </style>
