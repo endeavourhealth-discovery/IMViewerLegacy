@@ -121,6 +121,6 @@ export default class Dashboard extends Vue {
   row-gap: 7px;
   width: 100%;
   height: 100%;
-  overflow: auto;
+  overflow-y: auto;
 }
 </style>
