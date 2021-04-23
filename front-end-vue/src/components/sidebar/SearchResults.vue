@@ -52,13 +52,13 @@
       style="width: 700px"
       :breakpoints="{ '960px': '75vw' }"
     >
-      <div class="p-grid">
-        <div class="p-col-6" v-if="hoveredResult.name">
+      <div class="p-d-flex p-flex-row p-jc-start result-overlay" style="width: 100%; gap: 7px;">
+        <div class="left-side" style="width: 50%;" v-if="hoveredResult.name">
           <p><strong>Name:</strong> {{ hoveredResult.name }}</p>
           <p><strong>Iri:</strong> {{ hoveredResult.iri }}</p>
           <p><strong>Code:</strong> {{ hoveredResult.code }}</p>
         </div>
-        <div class="p-col-6" v-if="hoveredResult.name">
+        <div class="right-side" style="width: 50%;" v-if="hoveredResult.name">
           <p>
             <strong>Status:</strong>
             <span v-if="hoveredResult.status">{{
