@@ -1,6 +1,6 @@
 <template>
-  <div id="header-home" class="p-d-flex p-flex-row p-jc-start header-container">
-    <div class="header-icon-container">
+  <div id="header-home" class="p-d-flex p-flex-row p-jc-center header-container">
+    <div class="p-d-flex p-flex-column p-jc-center header-icon-container">
       <div v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
         <i class="fas fa-home icon-home icon-header" />
       </div>
@@ -14,7 +14,7 @@
         <i class="fas fa-lightbulb icon-lightbulb icon-header" />
       </div>
     </div>
-    <div class="p-d-flex p-flex-column p-jc-start text-container">
+    <div class="p-d-flex p-flex-column p-jc-center text-container">
       <div class="title-text">
         <span v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
           Home
@@ -90,11 +90,10 @@ export default class Header extends Vue {
 .text-container {
   width: 100%;
   height: 100%;
-  padding-left: 1em;
 }
 
 .title-text {
-  padding: 1em 0 1em 0;
+  padding: 0.5rem 0 0.5rem 0;
 }
 
 .icon-header {

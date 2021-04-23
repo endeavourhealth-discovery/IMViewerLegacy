@@ -89,6 +89,7 @@ export default class Home extends Vue {
     "header header"
     "sidebar content";
   column-gap: 7px;
+  row-gap: 7px;
   /* row-gap: 7px; */
   /* max-height: 50vh;
   min-height: 50vh; */
