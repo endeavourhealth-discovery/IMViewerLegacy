@@ -41,7 +41,7 @@
 <script lang="ts">
 import store from "@/store";
 import { Options, Vue } from "vue-class-component";
-import { isValueSet, isClass } from "../../helpers/ConceptTypeMethods";
+import { isValueSet, isRecordModel } from "../../helpers/ConceptTypeMethods";
 
 @Options({
   name: "Header",
@@ -60,7 +60,7 @@ export default class Header extends Vue {
       store.state.conceptAggregate.concept[
         "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
       ];
-    return isClass(conceptTypeElements);
+    return isRecordModel(conceptTypeElements);
   }
 }
 </script>
