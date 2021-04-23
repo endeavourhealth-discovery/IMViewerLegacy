@@ -133,14 +133,14 @@ export default class SearchResults extends Vue {
   overflow-y: auto;
 }
 
-.results-container >>> .p-datatable {
+.results-container ::v-deep(.p-datatable) {
   height: 100%;
   display: flex;
   flex-flow: column;
   justify-content: space-between;
 }
 
-.results-container >>> .p-datatable-wrapper {
+.results-container ::v-deep(.p-datatable-wrapper) {
   flex-grow: 6;
 }
 
