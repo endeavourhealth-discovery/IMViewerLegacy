@@ -2,8 +2,8 @@
   <side-nav />
   <div class="layout-main">
     <div class="main-grid">
-      <div id="header-home"><Header /></div>
-      <div class="p-d-flex p-flex-column p-jc-start" id="side-bar"><SidebarControl /></div>
+      <Header />
+      <SidebarControl />
       <router-view />
     </div>
   </div>
@@ -43,7 +43,8 @@ export default class Home extends Vue {
     }
     const sidebar = document.getElementById("side-bar");
     if (sidebar) {
-      sidebar.style.maxHeight = (this.windowHeight - this.headerHeight - 14) + "px";
+      sidebar.style.maxHeight =
+        this.windowHeight - this.headerHeight - 14 + "px";
     }
 
     // check for user and log them in if found or logout if not
@@ -105,7 +106,8 @@ export default class Home extends Vue {
     }
     const sidebar = document.getElementById("side-bar");
     if (sidebar) {
-      sidebar.style.maxHeight = (this.windowHeight - this.headerHeight - 28) + "px";
+      sidebar.style.maxHeight =
+        this.windowHeight - this.headerHeight - 28 + "px";
     }
   }
 }
@@ -128,18 +130,6 @@ export default class Home extends Vue {
   /* row-gap: 7px; */
   /* max-height: 50vh;
   min-height: 50vh; */
-}
-
-#side-bar {
-  /* padding: 7px; */
-  grid-area: sidebar;
-  height: 100%;
-  width: 30vw;
-}
-
-#header-home {
-  grid-area: header;
-  height: fit-content;
 }
 
 .header-grow {

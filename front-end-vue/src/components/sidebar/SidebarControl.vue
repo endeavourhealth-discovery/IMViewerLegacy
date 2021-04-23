@@ -1,43 +1,45 @@
 <template>
-  <span class="p-input-icon-left search-bar">
-    <i class="pi pi-search" />
-    <InputText
-      type="text"
-      v-model="searchTerm"
-      @input="debounceForSearch"
-      placeholder="Search"
-      class="p-inputtext-lg search-input"
-      autoWidth="false"
-    />
-  </span>
+  <div class="p-d-flex p-flex-column p-jc-start" id="side-bar">
+    <span class="p-input-icon-left search-bar">
+      <i class="pi pi-search" />
+      <InputText
+        type="text"
+        v-model="searchTerm"
+        @input="debounceForSearch"
+        placeholder="Search"
+        class="p-inputtext-lg search-input"
+        autoWidth="false"
+      />
+    </span>
 
-  <TabView class="p-d-flex p-flex-column p-jc-start side-menu" v-model:activeIndex="active">
-    <TabPanel>
-      <template #header>
-        <i class="fas fa-project-diagram icon-header" />
-        <span>Hierarchy</span>
-      </template>
-      <Hierarchy />
-    </TabPanel>
-    <TabPanel>
-      <template #header>
-        <i class="fas fa-history icon-header" />
-        <span>History</span>
-      </template>
-      <History />
-    </TabPanel>
-    <TabPanel>
-      <template #header>
-        <i class="fas fa-search icon-header" />
-        <span>Search results</span>
-      </template>
+    <TabView class="p-d-flex p-flex-column p-jc-start side-menu" v-model:activeIndex="active">
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-project-diagram icon-header" />
+          <span>Hierarchy</span>
+        </template>
+        <Hierarchy />
+      </TabPanel>
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-history icon-header" />
+          <span>History</span>
+        </template>
+        <History />
+      </TabPanel>
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-search icon-header" />
+          <span>Search results</span>
+        </template>
 
-      <div class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container">
-        <SearchResults />
-        <Filters :search="search" />
-      </div>
-    </TabPanel>
-  </TabView>
+        <div class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container">
+          <SearchResults />
+          <Filters :search="search" />
+        </div>
+      </TabPanel>
+    </TabView>
+  </div>
 </template>
 
 <script lang="ts">
@@ -168,6 +170,12 @@ export default class SidebarControl extends Vue {
 </script>
 
 <style scoped>
+#side-bar {
+  /* padding: 7px; */
+  grid-area: sidebar;
+  height: 100%;
+  width: 30vw;
+}
 
 .side-menu {
   max-height: calc(100% - 41px);

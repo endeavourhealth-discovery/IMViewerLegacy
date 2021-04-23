@@ -67,6 +67,7 @@ export default class Header extends Vue {
 
 <style scoped>
 .header-container {
+  grid-area: header;
   height: 100% !important;
 }
 
