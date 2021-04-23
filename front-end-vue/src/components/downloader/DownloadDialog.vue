@@ -45,7 +45,10 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!$store.state.members?.length"
+            :disabled="
+              !$store.state.members?.included?.length &&
+                !$store.state.members?.excluded?.length
+            "
             id="members"
             :binary="true"
             value="Include members"
@@ -139,7 +142,9 @@ export default class DownloadDialog extends Vue {
     this.children = !!store.state.conceptAggregate.children?.length;
     this.properties = !!store.state.conceptAggregate.properties?.length;
     this.roles = !!store.state.conceptAggregate.roles?.length;
-    this.members = !!store.state.members?.length;
+    this.members =
+      !!store.state.members?.included?.length ||
+      !!store.state.members?.excluded?.length;
   }
 
   closeDownloadDialog() {
