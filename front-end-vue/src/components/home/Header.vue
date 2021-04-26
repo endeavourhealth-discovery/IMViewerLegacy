@@ -4,10 +4,10 @@
       <div v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
         <i class="fas fa-home icon-home icon-header" />
       </div>
-      <div v-else-if="$store.state.conceptAggregate.concept && isClaz">
+      <div v-else-if="concept && isClaz">
         <i class="fas fa-sitemap icon-sitemap icon-header" />
       </div>
-      <div v-else-if="$store.state.conceptAggregate.concept && isSet">
+      <div v-else-if="concept && isSet">
         <i class="fas fa-tasks icon-tasks icon-header" />
       </div>
       <div v-else>
@@ -39,27 +39,33 @@
 </template>
 
 <script lang="ts">
-import store from "@/store";
 import { Options, Vue } from "vue-class-component";
 import { isValueSet, isRecordModel } from "../../helpers/ConceptTypeMethods";
+import { mapState } from "vuex";
 
 @Options({
   name: "Header",
-  components: {}
+  components: {},
+  computed: mapState(["conceptAggregate"]),
+  watch: {
+    conceptAggregate(newValue) {
+      this.concept = newValue.concept;
+    }
+  }
 })
 export default class Header extends Vue {
+  concept = {} as any;
+
   get isSet() {
-    const conceptTypeElements =
-      store.state.conceptAggregate.concept[
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-      ];
+    const conceptTypeElements = this.concept[
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    ];
     return isValueSet(conceptTypeElements);
   }
   get isClaz() {
-    const conceptTypeElements =
-      store.state.conceptAggregate.concept[
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-      ];
+    const conceptTypeElements = this.concept[
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    ];
     return isRecordModel(conceptTypeElements);
   }
 }
