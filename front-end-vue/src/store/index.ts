@@ -11,7 +11,7 @@ export default createStore({
   state: {
     loading: new Map<string, boolean>(),
     conceptIri: "http://www.w3.org/2002/07/owl#Thing",
-    conceptAggregate: ConceptAggregate,
+    conceptAggregate: {} as ConceptAggregate,
     mapped: [],
     usages: [],
     members: {} as any,
@@ -168,7 +168,8 @@ export default createStore({
           console.error(err);
           success = false;
         });
-      commit("updateConceptAggregate", new ConceptAggregate(concept, children, parents, properties, roles));
+      const updated = new ConceptAggregate(concept, children, parents, properties, roles);
+      commit("updateConceptAggregate", updated);
       return success;
     },
     async fetchConceptMapped({ commit }, iri) {
