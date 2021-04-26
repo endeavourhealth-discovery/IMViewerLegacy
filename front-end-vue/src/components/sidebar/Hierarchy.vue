@@ -1,14 +1,35 @@
 <template>
+  <span class="p-buttonset">
+    <Button
+      :label="parentLabel"
+      :disabled="parentLabel === ''"
+      icon="pi pi-chevron-up"
+      @click="expandParents"
+      class="p-button-text p-button-plain"
+    />
+    <Button
+      icon="pi pi-refresh"
+      @click="
+        refreshTree(
+          conceptAggregate.concept,
+          conceptAggregate.parents,
+          conceptAggregate.children
+        )
+      "
+      class="p-button-rounded p-button-text p-button-plain"
+    />
+  </span>
+
   <Tree
     :value="root"
     selectionMode="single"
     v-model:selectionKeys="selectedKey"
     :expandedKeys="expandedKeys"
     @node-select="onNodeSelect"
-    @node-expand="onNodeExpand"
-    :loading="loading"
+    @node-expand="expandChildren"
     class="tree-root"
-  ></Tree>
+  >
+  </Tree>
 </template>
 
 <script lang="ts">
@@ -58,15 +79,22 @@ export default class Hierarchy extends Vue {
   searchResult = "";
   root: Array<TreeNode> = [];
   expandedKeys: any = {};
-  loading = false;
   selectedKey = { 1: true };
+  parentLabel = "";
 
   createTree(concept: any, parentHierarchy: any, children: any) {
+    if (this.root.length == 0) {
+      this.refreshTree(concept, parentHierarchy, children);
+    }
+  }
+
+  refreshTree(concept: any, parentHierarchy: any, children: any) {
+    this.expandedKeys = {};
     let index = 1;
     const selectedConcept = this.createTreeNode(
       concept[RDFS.LABEL],
       concept[IM.IRI],
-      concept[RDF.TYPE],
+      concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"],
       index,
       concept.hasChildren
     );
@@ -90,21 +118,10 @@ export default class Hierarchy extends Vue {
     this.root = [];
 
     if (parentHierarchy.length) {
-      parentHierarchy = parentHierarchy.filter(
-        (parent: any) => parent.name !== "OWL Thing"
-      );
-      const parent = this.createTreeNode(
-        parentHierarchy[0].name,
-        parentHierarchy[0].iri,
-        parentHierarchy[0].type,
-        "0",
-        parentHierarchy[0].hasChildren
-      );
-      parent.children.push(selectedConcept);
-      this.root.push(parent);
-    } else {
-      this.root.push(selectedConcept);
+      this.parentLabel = parentHierarchy[0].name;
     }
+
+    this.root.push(selectedConcept);
     this.expandedKeys[0] = true;
     this.expandedKeys[1] = true;
     this.selectedKey = { 1: true };
@@ -139,9 +156,9 @@ export default class Hierarchy extends Vue {
     }
   }
 
-  async onNodeExpand(node: TreeNode) {
+  async expandChildren(node: TreeNode) {
+    this.expandedKeys[node.key] = true;
     let children: any[] = [];
-    this.loading = true;
     await ConceptService.getConceptChildren(node.data)
       .then(res => {
         children = res.data;
@@ -167,7 +184,50 @@ export default class Hierarchy extends Vue {
       );
       index++;
     });
-    this.loading = false;
+  }
+
+  async expandParents() {
+    this.expandedKeys[this.root[0].key] = true;
+
+    let parents: any[] = [];
+    const parentsNodes: any[] = [];
+    await ConceptService.getConceptParents(this.root[0].data)
+      .then(res => {
+        parents = res.data;
+      })
+      .catch(err => {
+        this.$toast.add(
+          LoggerService.error("Concept children server request failed", err)
+        );
+      });
+
+    parents.forEach((parent: any) => {
+      parentsNodes.push(
+        this.createTreeNode(parent.name, parent.iri, parent.type, 0, true)
+      );
+    });
+
+    parentsNodes.forEach((parentNode: TreeNode) => {
+      parentNode.children.push(this.root[0]);
+    });
+
+    this.root = parentsNodes;
+    this.expandedKeys[0] = true;
+    this.expandedKeys[1] = true;
+
+    await ConceptService.getConceptParents(this.root[0].data)
+      .then(res => {
+        if (res.data[0]) {
+          this.parentLabel = res.data[0].name;
+        } else {
+          this.parentLabel = "";
+        }
+      })
+      .catch(err => {
+        this.$toast.add(
+          LoggerService.error("Concept children server request failed", err)
+        );
+      });
   }
 }
 </script>
