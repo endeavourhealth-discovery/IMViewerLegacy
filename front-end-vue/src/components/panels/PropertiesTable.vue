@@ -53,7 +53,7 @@ import { Options, Vue } from "vue-class-component";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 
 @Options({
-  name: "ConceptTable",
+  name: "PropertiesTable",
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {
@@ -62,7 +62,7 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
     }
   }
 })
-export default class ConceptTable extends Vue {
+export default class PropertiesTable extends Vue {
   properties = [];
 
   navigate(iri: string) {
