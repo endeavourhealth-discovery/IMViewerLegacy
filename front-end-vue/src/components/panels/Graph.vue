@@ -72,12 +72,33 @@ export default class Graph extends Vue {
   width = 660;
   height = 500;
   panZoom!: any;
+  windowHeight = window.innerHeight;
+  windowWidth = window.innerWidth;
 
   mounted() {
     this.margin = { top: 20, right: 90, bottom: 30, left: 90 };
     this.width = 660 - this.margin.left - this.margin.right;
     this.height = 500 - this.margin.top - this.margin.bottom;
+
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.onResize);
+    });
   } // mounted end
+
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResize);
+  }
+
+  onResize() {
+    this.windowHeight = window.innerHeight;
+    this.windowWidth = window.innerWidth;
+    if (this.panZoom) {
+      this.panZoom.destroy();
+    }
+    this.initSvgPanZoom();
+    this.initView();
+    this.zoomReset();
+  }
 
   zoomIn() {
     this.panZoom.zoomIn();
@@ -95,7 +116,7 @@ export default class Graph extends Vue {
   initSvgPanZoom() {
     this.panZoom = svgPanZoom("#svg", {
       zoomEnabled: true,
-      fit: false,
+      fit: true,
       center: true,
       dblClickZoomEnabled: false,
       mouseWheelZoomEnabled: false
