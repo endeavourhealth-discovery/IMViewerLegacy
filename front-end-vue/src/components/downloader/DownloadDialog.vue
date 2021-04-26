@@ -155,8 +155,10 @@ export default class DownloadDialog extends Vue {
     const modIri = this.concept["@id"]
       .replace(/\//gi, "%2F")
       .replace(/#/gi, "%23");
+
     const url =
-      "http://localhost:8080/api/concept/download?iri=" +
+      process.env.VUE_APP_API +
+      "api/concept/download?iri=" +
       modIri +
       "&format=" +
       this.format.value +
