@@ -1,5 +1,5 @@
 <template>
-  <div class="p-lg-6 p-md-12 modulecard-container">
+  <div class="modulecard-container">
     <Card class="modulecard">
       <template #header>
         <i class="fas fa-tasks icon-workflow" />
@@ -26,6 +26,10 @@ export default class WorkflowManager extends Vue {}
 </script>
 
 <style scoped>
+.modulecard-container {
+  grid-area: workflow;
+}
+
 .modulecard {
   height: 100%;
 }

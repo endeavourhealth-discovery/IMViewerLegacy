@@ -144,9 +144,14 @@ export default class SideNav extends Vue {
 </script>
 
 <style scoped>
+.layout-sidebar {
+  height: 100%;
+}
+
 .layout-menu-container {
   padding: 20px 0;
   height: 100%;
+  width: 100px;
 }
 
 .sidebutton {

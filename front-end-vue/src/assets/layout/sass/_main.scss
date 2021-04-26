@@ -27,8 +27,9 @@ a {
 .layout-wrapper {
     padding: 0;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 100vh;
+    flex-direction: row;
+    justify-content: flex-start;
+    height: 100vh;
+    width: 100vw;
 }
 

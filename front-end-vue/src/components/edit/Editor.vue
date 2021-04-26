@@ -1,6 +1,6 @@
 <template>
-  <div class="p-fluid p-formgrid p-grid">
-    <div class="p-field p-col-12 p-md-4">
+  <div class="p-fluid editor-grid">
+    <div class="p-field float-label-container iri">
       <span class="p-float-label">
         <InputText
           class="p-inputtext-sm"
@@ -11,7 +11,7 @@
         <label for="Iri">Iri</label>
       </span>
     </div>
-    <div class="p-field p-col-12 p-md-4">
+    <div class="p-field float-label-container name">
       <span class="p-float-label">
         <InputText
           class="p-inputtext-sm"
@@ -21,7 +21,7 @@
         <label for="Name">Name</label>
       </span>
     </div>
-    <div class="p-field p-col-12 p-md-4">
+    <div class="p-field float-label-container code">
       <span class="p-float-label">
         <InputText
           class="p-inputtext-sm"
@@ -31,7 +31,7 @@
         <label for="Name">Code</label>
       </span>
     </div>
-    <div class="p-field p-col-12">
+    <div class="p-field float-label-container description">
       <span class="p-float-label">
         <Textarea
           class="p-inputtext-sm"
@@ -41,7 +41,7 @@
         <label for="address">Description</label>
       </span>
     </div>
-    <div class="p-field p-col-12 p-md-2">
+    <div class="p-field float-label-container version">
       <span class="p-float-label">
         <InputText
           class="p-inputtext-sm"
@@ -51,7 +51,7 @@
         <label for="Version">Version</label>
       </span>
     </div>
-    <div class="p-field p-col-12 p-md-5">
+    <div class="p-field float-label-container status">
       <span class="p-float-label">
         <Dropdown
           class="p-inputtext-sm"
@@ -61,7 +61,7 @@
         <label>Status</label>
       </span>
     </div>
-    <div class="p-field p-col-12 p-md-5">
+    <div class="p-field float-label-container scheme">
       <span class="p-float-label">
         <Dropdown
           class="p-inputtext-sm"
@@ -72,7 +72,7 @@
         <label>Scheme</label>
       </span>
     </div>
-    <div class="p-field p-col-12">
+    <div class="p-field imlang-container">
       <Card>
         <template #title>
           IMLang
@@ -260,13 +260,61 @@ export default class EditorDialog extends Vue {
 </script>
 
 <style scoped>
+.editor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: auto;
+  grid-template-areas:
+    "iri name code"
+    "description description description"
+    "version status scheme"
+    "imlang imlang imlang";
+  column-gap: 7px;
+}
+
+.iri {
+  grid-area: iri;
+}
+
+.name {
+  grid-area: name;
+}
+
+.code {
+  grid-area: code;
+}
+
+.description {
+  grid-area: description;
+}
+
+.version {
+  grid-area: version;
+}
+
+.status {
+  grid-area: status;
+}
+
+.scheme {
+  grid-area: scheme;
+}
+
+.imlang-container {
+  grid-area: imlang;
+}
+
+.p-field {
+  height: fit-content;
+}
+
 #container {
   /* height: calc(100vh - 500px); */
   height: 100%;
   width: 100%;
 }
 
-.p-field {
-  margin-top: 5px;
+.float-label-container {
+  margin-top: 1.5rem;
 }
 </style>

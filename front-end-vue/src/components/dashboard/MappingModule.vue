@@ -1,5 +1,5 @@
 <template>
-  <div class="p-lg-6 p-md-12 modulecard-container" id="module-card">
+  <div class="modulecard-container" id="module-card">
     <Card class="modulecard">
       <template #header>
         <i class="fas fa-map icon-mapping" />
@@ -28,6 +28,10 @@ export default class MappingModule extends Vue {}
 </script>
 
 <style scoped>
+.modulecard-container {
+  grid-area: mapping;
+}
+
 .modulecard {
   height: 100%;
 }

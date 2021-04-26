@@ -1,43 +1,50 @@
 <template>
-  <span class="p-input-icon-left search-bar">
-    <i class="pi pi-search" />
-    <InputText
-      type="text"
-      v-model="searchTerm"
-      @input="debounceForSearch"
-      placeholder="Search"
-      class="p-inputtext-lg search-input"
-      autoWidth="false"
-    />
-  </span>
+  <div class="p-d-flex p-flex-column p-jc-start" id="side-bar">
+    <span class="p-input-icon-left search-bar">
+      <i class="pi pi-search" />
+      <InputText
+        type="text"
+        v-model="searchTerm"
+        @input="debounceForSearch"
+        placeholder="Search"
+        class="p-inputtext-lg search-input"
+        autoWidth="false"
+      />
+    </span>
 
-  <TabView class="sidemenu" v-model:activeIndex="active">
-    <TabPanel>
-      <template #header>
-        <i class="fas fa-project-diagram icon-header" />
-        <span>Hierarchy</span>
-      </template>
-      <Hierarchy />
-    </TabPanel>
-    <TabPanel>
-      <template #header>
-        <i class="fas fa-history icon-header" />
-        <span>History</span>
-      </template>
-      <History />
-    </TabPanel>
-    <TabPanel>
-      <template #header>
-        <i class="fas fa-search icon-header" />
-        <span>Search results</span>
-      </template>
+    <TabView
+      class="p-d-flex p-flex-column p-jc-start side-menu"
+      v-model:activeIndex="active"
+    >
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-project-diagram icon-header" />
+          <span>Hierarchy</span>
+        </template>
+        <Hierarchy />
+      </TabPanel>
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-history icon-header" />
+          <span>History</span>
+        </template>
+        <History />
+      </TabPanel>
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-search icon-header" />
+          <span>Search results</span>
+        </template>
 
-      <div class="p-fluid p-grid results-filter-container">
-        <SearchResults />
-        <Filters :search="search" />
-      </div>
-    </TabPanel>
-  </TabView>
+        <div
+          class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container"
+        >
+          <SearchResults />
+          <Filters :search="search" />
+        </div>
+      </TabPanel>
+    </TabView>
+  </div>
 </template>
 
 <script lang="ts">
@@ -63,6 +70,46 @@ export default class SidebarControl extends Vue {
   active = 0;
   debounce = 0;
   request!: any;
+  windowHeight = 0;
+  windowWidth = 0;
+  headerHeight = 0;
+
+  mounted() {
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.onResize);
+    });
+
+    this.windowHeight = window.innerHeight;
+    this.windowWidth = window.innerWidth;
+    const header = document.getElementById("header-home");
+    if (header) {
+      this.headerHeight = header.offsetHeight;
+    }
+    const sidebar = document.getElementById("side-bar");
+    if (sidebar) {
+      sidebar.style.maxHeight =
+        this.windowHeight - this.headerHeight - 14 + "px";
+    }
+  }
+
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResize);
+  }
+
+  onResize() {
+    this.windowHeight = window.innerHeight;
+    this.windowWidth = window.innerWidth;
+    const header = document.getElementById("header-home");
+    if (header) {
+      this.headerHeight = header.offsetHeight;
+    }
+    const sidebar = document.getElementById("side-bar");
+    if (sidebar) {
+      sidebar.style.maxHeight =
+        this.windowHeight - this.headerHeight - 28 + "px";
+    }
+  }
+
   async search() {
     if (this.searchTerm.length > 2) {
       store.commit("updateLoading", { key: "searchResults", value: true });
@@ -167,19 +214,31 @@ export default class SidebarControl extends Vue {
 }
 </script>
 
-<style>
-@media all and (max-width: 1532px) {
-  .p-tabview-panel {
-    height: calc(100vh - 298px);
-    overflow-y: auto;
-  }
+<style scoped>
+#side-bar {
+  /* padding: 7px; */
+  grid-area: sidebar;
+  height: 100%;
+  width: 30vw;
 }
 
-@media all and (min-width: 1532px) {
-  .p-tabview-panel {
-    height: calc(100vh - 252px);
-    overflow-y: auto;
-  }
+.side-menu {
+  max-height: calc(100% - 41px);
+  flex-grow: 6;
+}
+
+.side-menu ::v-deep(.p-tabview-panels) {
+  flex-grow: 6;
+  overflow-y: auto;
+}
+
+.side-menu ::v-deep(.p-tabview-panel) {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.results-filter-container {
+  height: 100%;
 }
 
 .search-bar {

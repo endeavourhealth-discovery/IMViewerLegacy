@@ -1,6 +1,6 @@
 <template>
-  <div class="p-grid">
-    <div class="p-col-6">
+  <div class="p-d-flex p-flex-row members-container">
+    <div class="included-container">
       <Panel header="Included Members" :toggleable="true">
         <template #icons>
           <button class="p-panel-header-icon p-link p-mr-2" @click="toggle">
@@ -9,10 +9,10 @@
           <Menu id="config_menu" ref="menu" :model="items" :popup="true" />
         </template>
         <div
-          class="p-grid p-jc-center"
+          class="p-d-flex p-flex-row p-jc-center"
           v-if="$store.state.loading.get('members')"
         >
-          <div class="p-col-6">
+          <div class="spinner">
             <ProgressSpinner />
           </div>
         </div>
@@ -29,13 +29,13 @@
         ></Listbox
       ></Panel>
     </div>
-    <div class="p-col-6">
+    <div class="excluded-container">
       <Panel header="Excluded Members" :toggleable="true">
         <div
-          class="p-grid p-jc-center"
+          class="p-d-flex p-flex-row p-jc-center"
           v-if="$store.state.loading.get('members')"
         >
-          <div class="p-col-6">
+          <div class="spinner">
             <ProgressSpinner />
           </div>
         </div>
@@ -152,4 +152,14 @@ export default class ConceptMembers extends Vue {
 }
 </script>
 
-<style></style>
+<style scoped>
+.members-container {
+  width: 100%;
+}
+.included-container {
+  width: 50%;
+}
+.excluded-container {
+  width: 50%;
+}
+</style>

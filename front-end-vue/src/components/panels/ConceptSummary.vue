@@ -7,9 +7,9 @@
         </button>
         <Menu id="config_menu" ref="menu" :model="items" :popup="true" />
       </template>
-      <div class="p-grid">
+      <div class="p-d-flex p-flex-row p-jc-start summary-container">
         <div
-          class="p-col-6"
+          class="left-side"
           v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']"
         >
           <div class="p-d-flex p-flex-row p-jc-start p-ai-center">
@@ -41,13 +41,22 @@
               </DataTable>
             </OverlayPanel>
           </div>
+<<<<<<< HEAD
           <p><strong>Iri:</strong> {{ concept["@id"] }}</p>
+=======
+          <p class="break-text">
+            <strong>Iri:</strong>
+            {{ concept["@id"] }}
+          </p>
+>>>>>>> develop
           <p>
             <strong>Code:</strong>
             {{ concept["http://endhealth.info/im#code"] }}
           </p>
           <div v-if="concept['http://www.w3.org/2000/01/rdf-schema#comment']">
-            <p><strong>Description:</strong></p>
+            <p>
+              <strong>Description:</strong>
+            </p>
             <ScrollPanel style="width: 100%; height: 100px" class="custom">
               <div>
                 {{ concept["http://www.w3.org/2000/01/rdf-schema#comment"] }}
@@ -56,7 +65,11 @@
           </div>
         </div>
         <div
+<<<<<<< HEAD
           class="p-col-6"
+=======
+          class="right-side"
+>>>>>>> develop
           v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']"
         >
           <p>
@@ -78,8 +91,13 @@
             >
               {{ conceptTypes }}
             </span>
+<<<<<<< HEAD
+=======
           </p>
-          <p><strong>Definition:</strong></p>
+          <p>
+            <strong>Definition:</strong>
+>>>>>>> develop
+          </p>
           <Definition
             :definition="definitionText"
             style="width: 95%; height: 100px;"
@@ -249,6 +267,19 @@ export default class ConceptSummary extends Vue {
 </script>
 
 <style scoped>
+.summary-container {
+  width: 100%;
+  gap: 7px;
+}
+
+.left-side {
+  width: 50%;
+}
+
+.right-side {
+  width: 50%;
+}
+
 .custom .p-scrollpanel-wrapper {
   border-right: 9px solid #f4f4f4;
 }
@@ -269,5 +300,9 @@ p {
 
 #synonyms-button {
   margin-left: 0.5em;
+}
+
+.break-text {
+  word-break: break-all;
 }
 </style>

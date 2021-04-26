@@ -17,6 +17,7 @@ import { Options, Vue } from "vue-class-component";
 import { mapState } from "vuex";
 import ConceptService from "@/services/ConceptService";
 import { RDFS } from "@/vocabulary/RDFS";
+import { RDF } from "@/vocabulary/RDF";
 import { IM } from "@/vocabulary/IM";
 import LoggerService from "@/services/LoggerService";
 import { getIconFromType } from "@/helpers/ConceptTypeMethods";
@@ -65,7 +66,7 @@ export default class Hierarchy extends Vue {
     const selectedConcept = this.createTreeNode(
       concept[RDFS.LABEL],
       concept[IM.IRI],
-      concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"],
+      concept[RDF.TYPE],
       index,
       concept.hasChildren
     );
@@ -179,5 +180,8 @@ export default class Hierarchy extends Vue {
 .tree-root {
   height: 100%;
   overflow: auto;
+}
+.p-tree-toggler {
+  min-width: 22px;
 }
 </style>

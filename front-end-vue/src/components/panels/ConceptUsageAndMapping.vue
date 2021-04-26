@@ -1,12 +1,12 @@
 <template>
-  <div class="p-grid">
-    <div class="p-col-6">
+  <div class="p-d-flex p-flex-row usage-mapping-container">
+    <div class="mapping-container">
       <Panel header="Mapped" :toggleable="true">
         <div
-          class="p-grid p-jc-center"
+          class="p-d-flex p-flex-row p-jc-center"
           v-if="$store.state.loading.get('mapped')"
         >
-          <div class="p-col-6">
+          <div class="spinner">
             <ProgressSpinner />
           </div>
         </div>
@@ -39,13 +39,13 @@
         ></Listbox
       ></Panel>
     </div> -->
-    <div class="p-col-6">
+    <div class="usage-container">
       <Panel header="Used In" :toggleable="true"
         ><div
-          class="p-grid p-jc-center"
+          class="p-d-flex p-flex-row p-jc-center"
           v-if="$store.state.loading.get('usages')"
         >
-          <div class="p-col-6">
+          <div class="spinner">
             <ProgressSpinner />
           </div>
         </div>
@@ -87,4 +87,16 @@ export default class ConceptUsageAndMapping extends Vue {
 }
 </script>
 
-<style></style>
+<style scoped>
+.usage-mapping-container {
+  width: 100%;
+}
+
+.mapping-container {
+  width: 50%;
+}
+
+.usage-container {
+  width: 50%;
+}
+</style>
