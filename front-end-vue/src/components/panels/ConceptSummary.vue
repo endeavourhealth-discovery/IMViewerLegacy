@@ -65,19 +65,19 @@
           v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']"
         >
           <p>
-            <strong>Status:</strong>
+            <strong>Status: </strong>
             <span v-if="concept['http://endhealth.info/im#status']">
               {{ concept["http://endhealth.info/im#status"]["name"] }}
             </span>
           </p>
           <p>
-            <strong>Scheme:</strong>
+            <strong>Scheme: </strong>
             <span v-if="concept['http://endhealth.info/im#scheme']">
               {{ concept["http://endhealth.info/im#scheme"]["name"] }}
             </span>
           </p>
           <p>
-            <strong>Types:</strong>
+            <strong>Types: </strong>
             <span
               v-if="concept['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']"
             >
