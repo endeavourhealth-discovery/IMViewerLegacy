@@ -3,8 +3,8 @@
 // Class, Record Type
 // Everything else
 
-import {IM} from '@/vocabulary/IM';
-import {OWL} from '@/vocabulary/OWL';
+import { IM } from "@/vocabulary/IM";
+import { OWL } from "@/vocabulary/OWL";
 
 export function isValueSet(conceptTypeElements: any) {
   return conceptTypeElements?.some(
@@ -15,7 +15,11 @@ export function isValueSet(conceptTypeElements: any) {
 
 export function isRecordModel(conceptTypeElements: any) {
   return conceptTypeElements?.some((e: any) => {
-    return e.iri === OWL.OBJECT_PROPERTY || e.iri === IM.DATA_PROPERTY || e.iri === IM.RECORD_TYPE;
+    return (
+      e.iri === OWL.OBJECT_PROPERTY ||
+      e.iri === IM.DATA_PROPERTY ||
+      e.iri === IM.RECORD_TYPE
+    );
   });
 }
 

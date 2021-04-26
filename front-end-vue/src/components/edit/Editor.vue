@@ -268,8 +268,7 @@ export default class EditorDialog extends Vue {
     "iri name code"
     "description description description"
     "version status scheme"
-    "imlang imlang imlang"
-  ;
+    "imlang imlang imlang";
   column-gap: 7px;
 }
 
