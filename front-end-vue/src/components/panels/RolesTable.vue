@@ -26,6 +26,9 @@
         <div v-if="slotProps.data.valueType" class="link" @click="navigate(slotProps.data.valueType.iri)">
           {{ slotProps.data.valueType.name || slotProps.data.valueType.iri }}
         </div>
+        <div v-else>
+          -
+        </div>
       </template>
     </Column>
   </DataTable>
