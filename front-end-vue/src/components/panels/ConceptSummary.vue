@@ -41,14 +41,10 @@
               </DataTable>
             </OverlayPanel>
           </div>
-<<<<<<< HEAD
-          <p><strong>Iri:</strong> {{ concept["@id"] }}</p>
-=======
           <p class="break-text">
             <strong>Iri:</strong>
             {{ concept["@id"] }}
           </p>
->>>>>>> develop
           <p>
             <strong>Code:</strong>
             {{ concept["http://endhealth.info/im#code"] }}
@@ -65,11 +61,7 @@
           </div>
         </div>
         <div
-<<<<<<< HEAD
-          class="p-col-6"
-=======
           class="right-side"
->>>>>>> develop
           v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']"
         >
           <p>
@@ -91,12 +83,9 @@
             >
               {{ conceptTypes }}
             </span>
-<<<<<<< HEAD
-=======
           </p>
           <p>
             <strong>Definition:</strong>
->>>>>>> develop
           </p>
           <Definition
             :definition="definitionText"
