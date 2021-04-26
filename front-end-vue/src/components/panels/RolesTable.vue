@@ -23,7 +23,7 @@
     </Column>
     <Column field="valueType.name" header="Type">
       <template #body="slotProps">
-        <div class="link" @click="navigate(slotProps.data.valueType.iri)">
+        <div v-if="slotProps.data.valueType" class="link" @click="navigate(slotProps.data.valueType.iri)">
           {{ slotProps.data.valueType.name || slotProps.data.valueType.iri }}
         </div>
       </template>
