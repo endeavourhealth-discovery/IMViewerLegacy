@@ -98,6 +98,11 @@
           :concept="editorConcept"
           :definitionText="editorDefinitionText"
         />
+        <DownloadDialog
+          @closeDownloadDialog="closeDownloadDialog"
+          :showDialog="showDownloadDialog"
+          :concept="concept"
+        />
       </div>
     </Panel>
   </div>
@@ -110,10 +115,11 @@ import EditDialog from "@/components/edit/EditDialog.vue";
 import { mapState } from "vuex";
 import Definition from "./Definition.vue";
 import LoggerService from "@/services/LoggerService";
+import DownloadDialog from "@/components/downloader/DownloadDialog.vue";
 
 @Options({
   name: "ConceptSummary",
-  components: { EditDialog, Definition },
+  components: { EditDialog, Definition, DownloadDialog },
   prop: {},
   computed: mapState(["conceptAggregate", "conceptIri"]),
   watch: {
@@ -150,6 +156,7 @@ import LoggerService from "@/services/LoggerService";
 })
 export default class ConceptSummary extends Vue {
   editDialogView = true;
+  showDownloadDialog = false;
   concept = {} as any;
   definitionText = "";
   display = false;
@@ -180,6 +187,13 @@ export default class ConceptSummary extends Vue {
       icon: "pi pi-pencil",
       command: () => {
         this.openEditDialog();
+      }
+    },
+    {
+      label: "Download Concept",
+      icon: "pi pi-download",
+      command: () => {
+        this.openDownloadDialog();
       }
     },
     {
@@ -219,6 +233,14 @@ export default class ConceptSummary extends Vue {
   openEditDialog() {
     this.editDialogView = true;
     this.display = true;
+  }
+
+  openDownloadDialog() {
+    this.showDownloadDialog = true;
+  }
+
+  closeDownloadDialog() {
+    this.showDownloadDialog = false;
   }
 
   toggle(event: any) {

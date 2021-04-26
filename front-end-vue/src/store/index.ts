@@ -13,7 +13,7 @@ export default createStore({
     conceptAggregate: {} as any,
     mapped: [],
     usages: [],
-    members: [],
+    members: {} as any,
     history: [] as HistoryItem[],
     searchResults: [],
     currentUser: {} as User,
