@@ -5,12 +5,13 @@ import { HistoryItem } from "../models/HistoryItem";
 import { User } from "../models/user/User";
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
+import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 
 export default createStore({
   state: {
     loading: new Map<string, boolean>(),
     conceptIri: "http://www.w3.org/2002/07/owl#Thing",
-    conceptAggregate: {} as any,
+    conceptAggregate: ConceptAggregate,
     mapped: [],
     usages: [],
     members: {} as any,
@@ -167,13 +168,7 @@ export default createStore({
           console.error(err);
           success = false;
         });
-      commit("updateConceptAggregate", {
-        concept: concept,
-        parents: parents,
-        children: children,
-        properties: properties,
-        roles: roles
-      });
+      commit("updateConceptAggregate", new ConceptAggregate(concept, children, parents, properties, roles));
       return success;
     },
     async fetchConceptMapped({ commit }, iri) {
