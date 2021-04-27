@@ -32,7 +32,7 @@ export default {
     }
   },
 
-  info(toastMessage: string, consoleData?: any) {
+  info(toastMessage?: string, consoleData?: any) {
     if (consoleData) {
       console.info(consoleData);
     }
@@ -46,7 +46,7 @@ export default {
     }
   },
 
-  success(toastMessage: string, consoleData?: any) {
+  success(toastMessage?: string, consoleData?: any) {
     if (consoleData) {
       console.log(consoleData);
     }

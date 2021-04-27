@@ -72,6 +72,11 @@ export default class ConceptMembers extends Vue {
   conceptAggregate!: ConceptAggregate;
   selectedIncludedMember: {} = {};
   selectedExcludedMember: {} = {};
+  members!: any;
+
+  mounted() {
+    console.log(this.members);
+  }
 
   items = [
     {

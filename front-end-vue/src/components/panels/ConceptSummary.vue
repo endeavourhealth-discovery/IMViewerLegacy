@@ -125,7 +125,6 @@ import { Concept } from "@/models/TTConcept/Concept";
   computed: mapState(["conceptAggregate", "conceptIri"]),
   watch: {
     conceptAggregate(newValue) {
-      console.log(newValue);
       this.concept = newValue.concept;
       ConceptService.getConceptImLang(newValue.concept["@id"])
         .then(res => {

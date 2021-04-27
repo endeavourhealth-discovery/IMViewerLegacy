@@ -11,6 +11,7 @@ import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
 import { ConceptRole } from "@/models/TTConcept/ConceptRole";
+import { Member } from "@/models/members/Member";
 
 export default createStore({
   state: {
@@ -19,7 +20,7 @@ export default createStore({
     conceptAggregate: {} as ConceptAggregate,
     mapped: [],
     usages: [],
-    members: {} as any,
+    members: {} as Member,
     history: [] as HistoryItem[],
     searchResults: [],
     currentUser: {} as User,
@@ -177,7 +178,10 @@ export default createStore({
           commit("updateConceptMapped", mappedFrom.concat(mappedTo));
           commit("updateLoading", { key: "mapped", value: false });
         })
-        .catch(err => LoggerService.error(undefined, err));
+        .catch(err => {
+          LoggerService.error(undefined, err);
+          commit("updateLoading", { key: "mapped", value: false });
+        });
     },
     async fetchConceptUsages({ commit }, iri) {
       commit("updateLoading", { key: "usages", value: true });
@@ -190,23 +194,22 @@ export default createStore({
         })
         .catch(err => {
           LoggerService.error(undefined, err);
+          commit("updateLoading", { key: "usages", value: false });
         });
     },
     async fetchConceptMembers({ commit }, iri) {
       commit("updateLoading", { key: "members", value: true });
-      let members: any;
-      let success = true;
+      let members: Member;
       await ConceptService.getConceptMembers(iri, false)
         .then(res => {
           members = res.data;
+          commit("updateConceptMembers", members);
+          commit("updateLoading", { key: "members", value: false });
         })
         .catch(err => {
-          console.error(err);
-          success = false;
+          LoggerService.error(undefined, err);
+          commit("updateLoading", { key: "members", value: false });
         });
-      commit("updateConceptMembers", members);
-      commit("updateLoading", { key: "members", value: false });
-      return success;
     },
     async fetchSearchResults(
       { commit },
@@ -222,10 +225,10 @@ export default createStore({
         .catch(err => {
           if (!err.message) {
             success = "cancelled";
-            console.log("axios request cancelled");
+            LoggerService.info(undefined, "axios request cancelled");
           } else {
             success = "false";
-            console.error(err);
+            LoggerService.error(undefined, err);
           }
         });
       return success;
@@ -238,11 +241,11 @@ export default createStore({
           commit("updateIsLoggedIn", false);
           return res;
         } else {
-          console.error(res.error);
+          LoggerService.error(undefined, res.error);
           return res;
         }
       } catch (err) {
-        console.error(err);
+        LoggerService.error(undefined, err);
         return { status: 500, error: err, message: "Logout (store) failed" };
       }
     },
@@ -265,12 +268,12 @@ export default createStore({
           commit("updateCurrentUser", loggedInUser);
           return { authenticated: true };
         } else {
-          console.error(res.error);
+          LoggerService.error(undefined, res.error);
           dispatch("logoutCurrentUser");
           return { authenticated: false };
         }
       } catch (err) {
-        console.error(err);
+        LoggerService.error(undefined, err);
         dispatch("logoutCurrentUser");
         return { authenticated: false };
       }
