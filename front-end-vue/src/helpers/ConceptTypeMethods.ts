@@ -9,23 +9,25 @@ import { OWL } from "@/vocabulary/OWL";
 export function isValueSet(conceptTypeElements: any) {
   return conceptTypeElements?.some(
     (e: any) =>
-      e.iri === IM.SET || e.iri === IM.QUERY_SET || e.iri === IM.VALUE_SET
+      e["@id"] === IM.SET ||
+      e["@id"] === IM.QUERY_SET ||
+      e["@id"] === IM.VALUE_SET
   );
 }
 
 export function isRecordModel(conceptTypeElements: any) {
   return conceptTypeElements?.some((e: any) => {
     return (
-      e.iri === OWL.OBJECT_PROPERTY ||
-      e.iri === IM.DATA_PROPERTY ||
-      e.iri === IM.RECORD_TYPE
+      e["@id"] === OWL.OBJECT_PROPERTY ||
+      e["@id"] === IM.DATA_PROPERTY ||
+      e["@id"] === IM.RECORD_TYPE
     );
   });
 }
 
 export function isFolder(conceptTypeElements: any) {
   return conceptTypeElements?.some((e: any) => {
-    return e.iri === IM.FOLDER;
+    return e["@id"] === IM.FOLDER;
   });
 }
 

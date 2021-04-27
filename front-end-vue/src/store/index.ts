@@ -5,15 +5,22 @@ import { HistoryItem } from "../models/HistoryItem";
 import { User } from "../models/user/User";
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
+import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
+import { Concept } from "@/models/TTConcept/Concept";
+import { ConceptNode } from "@/models/TTConcept/ConceptNode";
+import LoggerService from "@/services/LoggerService";
+import { PieChartData } from "@/models/charts/PieChartData";
+import { ConceptRole } from "@/models/TTConcept/ConceptRole";
+import { Member } from "@/models/members/Member";
 
 export default createStore({
   state: {
     loading: new Map<string, boolean>(),
     conceptIri: "http://www.w3.org/2002/07/owl#Thing",
-    conceptAggregate: {} as any,
+    conceptAggregate: {} as ConceptAggregate,
     mapped: [],
     usages: [],
-    members: {} as any,
+    members: {} as Member,
     history: [] as HistoryItem[],
     searchResults: [],
     currentUser: {} as User,
@@ -25,9 +32,9 @@ export default createStore({
     historyCount: 0 as number,
     // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
     ontologyOverview: [],
-    conceptTypes: {} as any,
-    conceptSchemes: {} as any,
-    conceptStatus: {} as any,
+    conceptTypes: {} as PieChartData,
+    conceptSchemes: {} as PieChartData,
+    conceptStatus: {} as PieChartData,
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
@@ -121,117 +128,88 @@ export default createStore({
   },
   actions: {
     async fetchConceptAggregate({ commit }, iri) {
-      let concept: any;
-      let parents: any;
-      let children: any;
+      let concept: Concept;
+      let parents: Array<ConceptNode>;
+      let children: Array<ConceptNode>;
       let properties: any;
-      let roles: any;
-      let success = true;
-      await ConceptService.getConcept(iri)
-        .then(res => {
+      let roles: Array<ConceptRole>;
+      Promise.all([
+        await ConceptService.getConcept(iri).then(res => {
           concept = res.data;
-        })
-        .catch(err => {
-          console.error(err);
-          success = false;
-        });
-      await ConceptService.getConceptParents(iri)
-        .then(res => {
+        }),
+        await ConceptService.getConceptParents(iri).then(res => {
           parents = res.data;
-        })
-        .catch(err => {
-          console.error(err);
-          success = false;
-        });
-      await ConceptService.getConceptChildren(iri)
-        .then(res => {
+        }),
+        await ConceptService.getConceptChildren(iri).then(res => {
           children = res.data;
-        })
-        .catch(err => {
-          console.error(err);
-          success = false;
-        });
-      await ConceptService.getConceptProperties(iri)
-        .then(res => {
+        }),
+        await ConceptService.getConceptProperties(iri).then(res => {
           properties = res.data;
-        })
-        .catch(err => {
-          console.error(err);
-          success = false;
-        });
-      await ConceptService.getConceptRoles(iri)
-        .then(res => {
+        }),
+        await ConceptService.getConceptRoles(iri).then(res => {
           roles = res.data;
         })
-        .catch(err => {
-          console.error(err);
-          success = false;
-        });
-      commit("updateConceptAggregate", {
-        concept: concept,
-        parents: parents,
-        children: children,
-        properties: properties,
-        roles: roles
-      });
-      return success;
+      ])
+        .then(() => {
+          const updated = new ConceptAggregate(
+            concept,
+            children,
+            parents,
+            properties,
+            roles
+          );
+          commit("updateConceptAggregate", updated);
+        })
+        .catch(err => LoggerService.error(undefined, err));
     },
     async fetchConceptMapped({ commit }, iri) {
       commit("updateLoading", { key: "mapped", value: true });
       let mappedFrom: any;
       let mappedTo: any;
-      let success = true;
-      await ConceptService.getConceptMappedFrom(iri)
-        .then(res => {
+      Promise.all([
+        await ConceptService.getConceptMappedFrom(iri).then(res => {
           mappedFrom = res.data;
-        })
-        .catch(err => {
-          console.error(err);
-          success = false;
-        });
-      await ConceptService.getConceptMappedTo(iri)
-        .then(res => {
+        }),
+        await ConceptService.getConceptMappedTo(iri).then(res => {
           mappedTo = res.data;
         })
+      ])
+        .then(() => {
+          commit("updateConceptMapped", mappedFrom.concat(mappedTo));
+          commit("updateLoading", { key: "mapped", value: false });
+        })
         .catch(err => {
-          console.error(err);
-          success = false;
+          LoggerService.error(undefined, err);
+          commit("updateLoading", { key: "mapped", value: false });
         });
-      commit("updateConceptMapped", mappedFrom.concat(mappedTo));
-      commit("updateLoading", { key: "mapped", value: false });
-      return success;
     },
     async fetchConceptUsages({ commit }, iri) {
       commit("updateLoading", { key: "usages", value: true });
       let usages: any;
-      let success = true;
       await ConceptService.getConceptUsages(iri)
         .then(res => {
           usages = res.data;
+          commit("updateConceptUsages", usages);
+          commit("updateLoading", { key: "usages", value: false });
         })
         .catch(err => {
-          console.error(err);
-          success = false;
+          LoggerService.error(undefined, err);
+          commit("updateLoading", { key: "usages", value: false });
         });
-      commit("updateConceptUsages", usages);
-      commit("updateLoading", { key: "usages", value: false });
-      return success;
     },
     async fetchConceptMembers({ commit }, iri) {
       commit("updateLoading", { key: "members", value: true });
-      let members: any;
-      let success = true;
+      let members: Member;
       await ConceptService.getConceptMembers(iri, false)
         .then(res => {
           members = res.data;
+          commit("updateConceptMembers", members);
+          commit("updateLoading", { key: "members", value: false });
         })
         .catch(err => {
-          console.error(err);
-          success = false;
+          LoggerService.error(undefined, err);
+          commit("updateLoading", { key: "members", value: false });
         });
-      commit("updateConceptMembers", members);
-      commit("updateLoading", { key: "members", value: false });
-      return success;
     },
     async fetchSearchResults(
       { commit },
@@ -247,10 +225,10 @@ export default createStore({
         .catch(err => {
           if (!err.message) {
             success = "cancelled";
-            console.log("axios request cancelled");
+            LoggerService.info(undefined, "axios request cancelled");
           } else {
             success = "false";
-            console.error(err);
+            LoggerService.error(undefined, err);
           }
         });
       return success;
@@ -263,11 +241,11 @@ export default createStore({
           commit("updateIsLoggedIn", false);
           return res;
         } else {
-          console.error(res.error);
+          LoggerService.error(undefined, res.error);
           return res;
         }
       } catch (err) {
-        console.error(err);
+        LoggerService.error(undefined, err);
         return { status: 500, error: err, message: "Logout (store) failed" };
       }
     },
@@ -290,12 +268,12 @@ export default createStore({
           commit("updateCurrentUser", loggedInUser);
           return { authenticated: true };
         } else {
-          console.error(res.error);
+          LoggerService.error(undefined, res.error);
           dispatch("logoutCurrentUser");
           return { authenticated: false };
         }
       } catch (err) {
-        console.error(err);
+        LoggerService.error(undefined, err);
         dispatch("logoutCurrentUser");
         return { authenticated: false };
       }
