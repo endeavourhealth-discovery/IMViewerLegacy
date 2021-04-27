@@ -9,6 +9,7 @@ import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 import { Concept } from "@/models/TTConcept/Concept";
 import { ConceptChild } from "@/models/TTConcept/ConceptChild";
 import { ConceptReference } from "@/models/TTConcept/ConceptReference";
+import LoggerService from "@/services/LoggerService";
 
 export default createStore({
   state: {
@@ -156,47 +157,40 @@ export default createStore({
         const updated = new ConceptAggregate(concept, children, parents, properties, roles);
         commit("updateConceptAggregate", updated);
       })
+      .catch(err => LoggerService.error(undefined, err));
     },
     async fetchConceptMapped({ commit }, iri) {
       commit("updateLoading", { key: "mapped", value: true });
       let mappedFrom: any;
       let mappedTo: any;
-      let success = true;
-      await ConceptService.getConceptMappedFrom(iri)
+      Promise.all([
+        await ConceptService.getConceptMappedFrom(iri)
         .then(res => {
           mappedFrom = res.data;
-        })
-        .catch(err => {
-          console.error(err);
-          success = false;
-        });
-      await ConceptService.getConceptMappedTo(iri)
-        .then(res => {
-          mappedTo = res.data;
-        })
-        .catch(err => {
-          console.error(err);
-          success = false;
-        });
-      commit("updateConceptMapped", mappedFrom.concat(mappedTo));
-      commit("updateLoading", { key: "mapped", value: false });
-      return success;
+        }),
+        await ConceptService.getConceptMappedTo(iri)
+          .then(res => {
+            mappedTo = res.data;
+          })
+      ])
+      .then(() => {
+        commit("updateConceptMapped", mappedFrom.concat(mappedTo));
+        commit("updateLoading", { key: "mapped", value: false });
+      })
+      .catch(err => LoggerService.error(undefined, err));
     },
     async fetchConceptUsages({ commit }, iri) {
       commit("updateLoading", { key: "usages", value: true });
       let usages: any;
-      let success = true;
       await ConceptService.getConceptUsages(iri)
         .then(res => {
           usages = res.data;
+          commit("updateConceptUsages", usages);
+          commit("updateLoading", { key: "usages", value: false });
         })
         .catch(err => {
-          console.error(err);
-          success = false;
+          LoggerService.error(undefined, err);
         });
-      commit("updateConceptUsages", usages);
-      commit("updateLoading", { key: "usages", value: false });
-      return success;
     },
     async fetchConceptMembers({ commit }, iri) {
       commit("updateLoading", { key: "members", value: true });
