@@ -9,7 +9,9 @@ import { OWL } from "@/vocabulary/OWL";
 export function isValueSet(conceptTypeElements: any) {
   return conceptTypeElements?.some(
     (e: any) =>
-      e["@id"] === IM.SET || e["@id"] === IM.QUERY_SET || e["@id"] === IM.VALUE_SET
+      e["@id"] === IM.SET ||
+      e["@id"] === IM.QUERY_SET ||
+      e["@id"] === IM.VALUE_SET
   );
 }
 

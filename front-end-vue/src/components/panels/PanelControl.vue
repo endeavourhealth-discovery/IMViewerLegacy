@@ -53,10 +53,9 @@ import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 export default class PanelControl extends Vue {
   conceptAggregate!: ConceptAggregate;
   get isSet() {
-    const conceptTypeElements =
-      this.conceptAggregate.concept[
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-      ];
+    const conceptTypeElements = this.conceptAggregate.concept[
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    ];
     return isValueSet(conceptTypeElements);
   }
 }
