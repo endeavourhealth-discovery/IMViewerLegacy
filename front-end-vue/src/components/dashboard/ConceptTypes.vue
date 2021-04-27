@@ -32,6 +32,7 @@ import ReportService from "@/services/ReportService";
 import { colorLighter } from "@/helpers/ColorMethods";
 const palette = require("../../../node_modules/google-palette");
 import LoggerService from "@/services/LoggerService";
+import { PieChartData } from "@/models/charts/PieChartData";
 
 @Options({
   name: "ConceptTypes",
@@ -39,8 +40,11 @@ import LoggerService from "@/services/LoggerService";
   props: ["chartOptions", "graphHeight"]
 })
 export default class ConceptTypes extends Vue {
-  chartConceptTypes: any = {};
-  conceptTypes!: {};
+  chartConceptTypes: PieChartData = new PieChartData(
+    [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }],
+    []
+  );
+  conceptTypes!: PieChartData;
 
   mounted() {
     // chart type
@@ -52,16 +56,6 @@ export default class ConceptTypes extends Vue {
     } else {
       ReportService.getConceptTypeReport()
         .then(res => {
-          this.chartConceptTypes = {
-            labels: [],
-            datasets: [
-              {
-                data: [],
-                backgroundColor: [],
-                hoverBackgroundColor: []
-              }
-            ]
-          };
           for (const type of res.data) {
             this.chartConceptTypes.labels.push(type.label);
             this.chartConceptTypes.datasets[0].data.push(type.count);

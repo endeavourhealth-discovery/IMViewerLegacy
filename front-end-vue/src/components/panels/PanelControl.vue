@@ -22,9 +22,9 @@
           $store.state.conceptAggregate.concept.conceptType != 'ValueSet'
       "
     /> -->
-    <ConceptDetails v-if="$store.state.conceptAggregate.concept && !isSet" />
+    <ConceptDetails v-if="conceptAggregate.concept && !isSet" />
 
-    <ConceptMembers v-if="$store.state.conceptAggregate.concept && isSet" />
+    <ConceptMembers v-if="conceptAggregate.concept && isSet" />
 
     <ConceptUsageAndMapping />
   </div>
@@ -36,8 +36,9 @@ import ConceptSummary from "@/components/panels/ConceptSummary.vue";
 import ConceptUsageAndMapping from "@/components/panels/ConceptUsageAndMapping.vue";
 import ConceptMembers from "@/components/panels/ConceptMembers.vue";
 import ConceptDetails from "./ConceptDetails.vue";
-import store from "@/store";
 import { isValueSet } from "../../helpers/ConceptTypeMethods";
+import { mapState } from "vuex";
+import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 
 @Options({
   name: "PanelControl",
@@ -46,14 +47,15 @@ import { isValueSet } from "../../helpers/ConceptTypeMethods";
     ConceptUsageAndMapping,
     ConceptMembers,
     ConceptDetails
-  }
+  },
+  computed: mapState(["conceptAggregate"])
 })
 export default class PanelControl extends Vue {
+  conceptAggregate!: ConceptAggregate;
   get isSet() {
-    const conceptTypeElements =
-      store.state.conceptAggregate.concept[
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-      ];
+    const conceptTypeElements = this.conceptAggregate.concept[
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    ];
     return isValueSet(conceptTypeElements);
   }
 }

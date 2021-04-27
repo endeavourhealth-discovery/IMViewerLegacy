@@ -25,44 +25,41 @@
       >
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!$store.state.conceptAggregate.children?.length"
+            :disabled="!conceptAggregate.children?.length"
             id="children"
             :binary="true"
             value="Include children"
-            v-model="children"
+            v-model="includeChildren"
           />
           <label class="label" for="children">Include Children</label>
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!$store.state.conceptAggregate.properties?.length"
+            :disabled="!conceptAggregate.properties?.length"
             id="properties"
             :binary="true"
             value="Include properties"
-            v-model="properties"
+            v-model="includeProperties"
           />
           <label class="label" for="properties">Include properties</label>
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="
-              !$store.state.members?.included?.length &&
-                !$store.state.members?.excluded?.length
-            "
+            :disabled="!members?.included?.length && !members?.excluded?.length"
             id="members"
             :binary="true"
             value="Include members"
-            v-model="members"
+            v-model="includeMembers"
           />
           <label class="label" for="members">Include members</label>
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!$store.state.conceptAggregate.parents?.length"
+            :disabled="!conceptAggregate.parents?.length"
             id="parents"
             :binary="true"
             value="Include parents"
-            v-model="parents"
+            v-model="includeParents"
           />
           <label class="label" for="parents">Include parents</label>
         </div>
@@ -71,17 +68,17 @@
             id="inactive"
             :binary="true"
             value="Include inactive"
-            v-model="inactive"
+            v-model="includeInactive"
           />
           <label class="label" for="inactive">Include inactive</label>
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!$store.state.conceptAggregate.roles?.length"
+            :disabled="!conceptAggregate.roles?.length"
             id="roles"
             :binary="true"
             value="Include roles"
-            v-model="roles"
+            v-model="includeRoles"
           />
           <label class="label" for="roles">Include roles</label>
         </div>
@@ -109,20 +106,26 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import LoggerService from "@/services/LoggerService";
-import store from "../../store/index";
+import { mapState } from "vuex";
+import { Concept } from "@/models/TTConcept/Concept";
+import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
+import { Member } from "@/models/members/Member";
 
 @Options({
   name: "DownloadDialog",
-  props: ["concept", "showDialog"]
+  props: ["concept", "showDialog"],
+  computed: mapState(["conceptAggregate", "members"])
 })
 export default class DownloadDialog extends Vue {
-  concept!: any;
-  children = true;
-  properties = true;
-  members = true;
-  parents = true;
-  inactive = false;
-  roles = false;
+  conceptAggregate!: ConceptAggregate;
+  members!: Member;
+  concept!: Concept;
+  includeChildren = true;
+  includeProperties = true;
+  includeMembers = true;
+  includeParents = true;
+  includeInactive = false;
+  includeRoles = false;
   format = {
     name: "Excel(.xlsx)",
     value: "excel",
@@ -138,13 +141,12 @@ export default class DownloadDialog extends Vue {
   ];
 
   updated() {
-    this.parents = !!store.state.conceptAggregate.parents?.length;
-    this.children = !!store.state.conceptAggregate.children?.length;
-    this.properties = !!store.state.conceptAggregate.properties?.length;
-    this.roles = !!store.state.conceptAggregate.roles?.length;
-    this.members =
-      !!store.state.members?.included?.length ||
-      !!store.state.members?.excluded?.length;
+    this.includeParents = !!this.conceptAggregate.parents?.length;
+    this.includeChildren = !!this.conceptAggregate.children?.length;
+    this.includeProperties = !!this.conceptAggregate.properties?.length;
+    this.includeRoles = !!this.conceptAggregate.roles?.length;
+    this.includeMembers =
+      !!this.members?.included?.length || !!this.members?.excluded?.length;
   }
 
   closeDownloadDialog() {
@@ -163,17 +165,17 @@ export default class DownloadDialog extends Vue {
       "&format=" +
       this.format.value +
       "&children=" +
-      this.children +
+      this.includeChildren +
       "&properties=" +
-      this.properties +
+      this.includeProperties +
       "&members=" +
-      this.members +
+      this.includeMembers +
       "&parents=" +
-      this.parents +
+      this.includeParents +
       "&roles=" +
-      this.roles +
+      this.includeRoles +
       "&inactive=" +
-      this.inactive;
+      this.includeInactive;
     const popup = window.open(url);
     if (!popup) {
       this.$toast.add(LoggerService.error("Download failed from server"));
