@@ -132,52 +132,51 @@ export default createStore({
       let properties: any;
       let roles: any;
       Promise.all([
-        await ConceptService.getConcept(iri)
-        .then(res => {
+        await ConceptService.getConcept(iri).then(res => {
           concept = res.data;
         }),
-        await ConceptService.getConceptParents(iri)
-          .then(res => {
-            parents = res.data;
-          }),
-        await ConceptService.getConceptChildren(iri)
-          .then(res => {
-            children = res.data;
-          }),
-        await ConceptService.getConceptProperties(iri)
-          .then(res => {
-            properties = res.data;
-          }),
-        await ConceptService.getConceptRoles(iri)
-          .then(res => {
-            roles = res.data;
-          }),
+        await ConceptService.getConceptParents(iri).then(res => {
+          parents = res.data;
+        }),
+        await ConceptService.getConceptChildren(iri).then(res => {
+          children = res.data;
+        }),
+        await ConceptService.getConceptProperties(iri).then(res => {
+          properties = res.data;
+        }),
+        await ConceptService.getConceptRoles(iri).then(res => {
+          roles = res.data;
+        })
       ])
-      .then(() => {
-        const updated = new ConceptAggregate(concept, children, parents, properties, roles);
-        commit("updateConceptAggregate", updated);
-      })
-      .catch(err => LoggerService.error(undefined, err));
+        .then(() => {
+          const updated = new ConceptAggregate(
+            concept,
+            children,
+            parents,
+            properties,
+            roles
+          );
+          commit("updateConceptAggregate", updated);
+        })
+        .catch(err => LoggerService.error(undefined, err));
     },
     async fetchConceptMapped({ commit }, iri) {
       commit("updateLoading", { key: "mapped", value: true });
       let mappedFrom: any;
       let mappedTo: any;
       Promise.all([
-        await ConceptService.getConceptMappedFrom(iri)
-        .then(res => {
+        await ConceptService.getConceptMappedFrom(iri).then(res => {
           mappedFrom = res.data;
         }),
-        await ConceptService.getConceptMappedTo(iri)
-          .then(res => {
-            mappedTo = res.data;
-          })
+        await ConceptService.getConceptMappedTo(iri).then(res => {
+          mappedTo = res.data;
+        })
       ])
-      .then(() => {
-        commit("updateConceptMapped", mappedFrom.concat(mappedTo));
-        commit("updateLoading", { key: "mapped", value: false });
-      })
-      .catch(err => LoggerService.error(undefined, err));
+        .then(() => {
+          commit("updateConceptMapped", mappedFrom.concat(mappedTo));
+          commit("updateLoading", { key: "mapped", value: false });
+        })
+        .catch(err => LoggerService.error(undefined, err));
     },
     async fetchConceptUsages({ commit }, iri) {
       commit("updateLoading", { key: "usages", value: true });
