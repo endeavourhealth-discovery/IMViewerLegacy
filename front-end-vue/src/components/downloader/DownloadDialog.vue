@@ -109,6 +109,7 @@ import LoggerService from "@/services/LoggerService";
 import { mapState } from "vuex";
 import { Concept } from "@/models/TTConcept/Concept";
 import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
+import { Member } from "@/models/members/Member";
 
 @Options({
   name: "DownloadDialog",
@@ -117,7 +118,7 @@ import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 })
 export default class DownloadDialog extends Vue {
   conceptAggregate!: ConceptAggregate;
-  members: any;
+  members!: Member;
   concept!: Concept;
   includeChildren = true;
   includeProperties = true;

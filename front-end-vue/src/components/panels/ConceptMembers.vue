@@ -61,6 +61,7 @@ import ConceptService from "@/services/ConceptService";
 import LoggerService from "@/services/LoggerService";
 import { mapState } from "vuex";
 import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
+import { Member } from "@/models/members/Member";
 
 @Options({
   name: "ConceptMembers",
@@ -72,7 +73,7 @@ export default class ConceptMembers extends Vue {
   conceptAggregate!: ConceptAggregate;
   selectedIncludedMember: {} = {};
   selectedExcludedMember: {} = {};
-  members!: any;
+  members!: Member;
 
   mounted() {
     console.log(this.members);
