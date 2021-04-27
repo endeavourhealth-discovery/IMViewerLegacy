@@ -8,8 +8,8 @@ import { avatars } from "@/models/user/Avatars";
 import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 import { Concept } from "@/models/TTConcept/Concept";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
-import { ConceptReference } from "@/models/TTConcept/ConceptReference";
 import LoggerService from "@/services/LoggerService";
+import { PieChartData } from "@/models/charts/PieChartData";
 
 export default createStore({
   state: {
@@ -30,9 +30,9 @@ export default createStore({
     historyCount: 0 as number,
     // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
     ontologyOverview: [],
-    conceptTypes: {} as any,
-    conceptSchemes: {} as any,
-    conceptStatus: {} as any,
+    conceptTypes: {} as PieChartData,
+    conceptSchemes: {} as PieChartData,
+    conceptStatus: {} as PieChartData,
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [

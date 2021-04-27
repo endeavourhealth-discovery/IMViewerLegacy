@@ -125,7 +125,9 @@ export default class ConceptMembers extends Vue {
 
   downloadMembers(type: string, expanded: boolean) {
     const concept = store.state.conceptAggregate.concept;
-    const filename = concept["http://www.w3.org/2000/01/rdf-schema#label"] + ("text/csv" === type ? ".csv" : ".json");
+    const filename =
+      concept["http://www.w3.org/2000/01/rdf-schema#label"] +
+      ("text/csv" === type ? ".csv" : ".json");
     ConceptService.getConceptMembers(concept["@id"], false)
       .then(response => {
         this.downloadFile(response.data, filename, type);

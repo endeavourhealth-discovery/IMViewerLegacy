@@ -1,7 +1,6 @@
 import { SearchRequest } from "@/models/search/SearchRequest";
 import { ConceptDto } from "@/models/ConceptDto";
 import axios from "axios";
-import { ConceptReferenceNode } from "@/models/ConceptReferenceNode";
 import { Concept } from "@/models/TTConcept/Concept";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 
@@ -15,7 +14,9 @@ export default class ConceptService {
   }
 
   public static async getConcept(iri: string) {
-    return axios.get<Concept>(this.api + "api/concept", { params: { iri: iri } });
+    return axios.get<Concept>(this.api + "api/concept", {
+      params: { iri: iri }
+    });
   }
 
   public static async getConceptImLang(iri: string) {
@@ -35,10 +36,9 @@ export default class ConceptService {
   }
 
   public static async getConceptChildren(iri: string) {
-    return axios.get<ConceptNode[]>(
-      this.api + "api/concept/children",
-      { params: { iri: iri } }
-    );
+    return axios.get<ConceptNode[]>(this.api + "api/concept/children", {
+      params: { iri: iri }
+    });
   }
 
   public static async getConceptUsages(iri: string) {
