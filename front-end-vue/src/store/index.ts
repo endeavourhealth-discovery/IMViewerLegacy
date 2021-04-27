@@ -6,6 +6,9 @@ import { User } from "../models/user/User";
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
 import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
+import { Concept } from "@/models/TTConcept/Concept";
+import { ConceptChild } from "@/models/TTConcept/ConceptChild";
+import { ConceptReference } from "@/models/TTConcept/ConceptReference";
 
 export default createStore({
   state: {
@@ -122,55 +125,37 @@ export default createStore({
   },
   actions: {
     async fetchConceptAggregate({ commit }, iri) {
-      let concept: any;
+      let concept: Concept;
       let parents: any;
       let children: any;
       let properties: any;
       let roles: any;
-      let success = true;
-      await ConceptService.getConcept(iri)
+      Promise.all([
+        await ConceptService.getConcept(iri)
         .then(res => {
           concept = res.data;
-        })
-        .catch(err => {
-          console.error(err);
-          success = false;
-        });
-      await ConceptService.getConceptParents(iri)
-        .then(res => {
-          parents = res.data;
-        })
-        .catch(err => {
-          console.error(err);
-          success = false;
-        });
-      await ConceptService.getConceptChildren(iri)
-        .then(res => {
-          children = res.data;
-        })
-        .catch(err => {
-          console.error(err);
-          success = false;
-        });
-      await ConceptService.getConceptProperties(iri)
-        .then(res => {
-          properties = res.data;
-        })
-        .catch(err => {
-          console.error(err);
-          success = false;
-        });
-      await ConceptService.getConceptRoles(iri)
-        .then(res => {
-          roles = res.data;
-        })
-        .catch(err => {
-          console.error(err);
-          success = false;
-        });
-      const updated = new ConceptAggregate(concept, children, parents, properties, roles);
-      commit("updateConceptAggregate", updated);
-      return success;
+        }),
+        await ConceptService.getConceptParents(iri)
+          .then(res => {
+            parents = res.data;
+          }),
+        await ConceptService.getConceptChildren(iri)
+          .then(res => {
+            children = res.data;
+          }),
+        await ConceptService.getConceptProperties(iri)
+          .then(res => {
+            properties = res.data;
+          }),
+        await ConceptService.getConceptRoles(iri)
+          .then(res => {
+            roles = res.data;
+          }),
+      ])
+      .then(() => {
+        const updated = new ConceptAggregate(concept, children, parents, properties, roles);
+        commit("updateConceptAggregate", updated);
+      })
     },
     async fetchConceptMapped({ commit }, iri) {
       commit("updateLoading", { key: "mapped", value: true });

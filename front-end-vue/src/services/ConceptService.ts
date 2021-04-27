@@ -2,6 +2,7 @@ import { SearchRequest } from "@/models/search/SearchRequest";
 import { ConceptDto } from "@/models/ConceptDto";
 import axios from "axios";
 import { ConceptReferenceNode } from "@/models/ConceptReferenceNode";
+import { Concept } from "@/models/TTConcept/Concept";
 
 export default class ConceptService {
   static api = process.env.VUE_APP_API;
@@ -13,7 +14,7 @@ export default class ConceptService {
   }
 
   public static async getConcept(iri: string) {
-    return axios.get(this.api + "api/concept", { params: { iri: iri } });
+    return axios.get<Concept>(this.api + "api/concept", { params: { iri: iri } });
   }
 
   public static async getConceptImLang(iri: string) {

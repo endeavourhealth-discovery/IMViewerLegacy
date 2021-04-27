@@ -3,14 +3,14 @@ import { Concept } from "./Concept";
 
 export class ConceptAggregate {
   concept: Concept;
-  children: Set<ConceptChild>;
+  children: Array<ConceptChild>;
   parents: [];
   properties: [];
   roles: [];
 
   constructor(
     concept: Concept,
-    children: Set<ConceptChild>,
+    children: Array<ConceptChild>,
     parents: [],
     properties: [],
     roles: []

@@ -50,12 +50,10 @@ export default class Home extends Vue {
     }
     store
       .dispatch("fetchConceptAggregate", store.state.conceptIri)
-      .then(res => {
-        if (!res) {
-          this.$toast.add(
-            LoggerService.error("Concept aggregate server request failed")
-          );
-        }
+      .catch(() => {
+        this.$toast.add(
+          LoggerService.error("Concept aggregate server request failed")
+        );
       });
     store.dispatch("fetchConceptMapped", store.state.conceptIri).then(res => {
       if (!res) {
