@@ -10,7 +10,7 @@
         </template>
         <div
           class="p-d-flex p-flex-row p-jc-center"
-          v-if="$store.state.loading.get('members')"
+          v-if="loading.get('members')"
         >
           <div class="spinner">
             <ProgressSpinner />
@@ -24,7 +24,7 @@
           emptyFilterMessage="No results found"
           v-model="selectedIncludedMember"
           @change="onNodeSelect(selectedIncludedMember)"
-          :options="$store.state.members.included"
+          :options="members.included"
           optionLabel="concept.name"
         ></Listbox
       ></Panel>
@@ -33,7 +33,7 @@
       <Panel header="Excluded Members" :toggleable="true">
         <div
           class="p-d-flex p-flex-row p-jc-center"
-          v-if="$store.state.loading.get('members')"
+          v-if="loading.get('members')"
         >
           <div class="spinner">
             <ProgressSpinner />
@@ -47,7 +47,7 @@
           emptyFilterMessage="No results found"
           v-model="selectedExcludedMember"
           @change="onNodeSelect(selectedExcludedMember)"
-          :options="$store.state.members.excluded"
+          :options="members.excluded"
           optionLabel="concept.name"
         ></Listbox
       ></Panel>
@@ -58,15 +58,18 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import ConceptService from "@/services/ConceptService";
-import store from "@/store";
 import LoggerService from "@/services/LoggerService";
+import { mapState } from "vuex";
+import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 
 @Options({
   name: "ConceptMembers",
   components: {},
-  prop: {}
+  prop: {},
+  computed: mapState(["members", "loading", "conceptAggregate"])
 })
 export default class ConceptMembers extends Vue {
+  conceptAggregate!: ConceptAggregate;
   selectedIncludedMember: {} = {};
   selectedExcludedMember: {} = {};
 
@@ -124,7 +127,7 @@ export default class ConceptMembers extends Vue {
   }
 
   downloadMembers(type: string, expanded: boolean) {
-    const concept = store.state.conceptAggregate.concept;
+    const concept = this.conceptAggregate.concept;
     const filename =
       concept["http://www.w3.org/2000/01/rdf-schema#label"] +
       ("text/csv" === type ? ".csv" : ".json");
