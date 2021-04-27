@@ -10,6 +10,7 @@ import { Concept } from "@/models/TTConcept/Concept";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
+import { ConceptRole } from "@/models/TTConcept/ConceptRole";
 
 export default createStore({
   state: {
@@ -130,7 +131,7 @@ export default createStore({
       let parents: Array<ConceptNode>;
       let children: Array<ConceptNode>;
       let properties: any;
-      let roles: any;
+      let roles: Array<ConceptRole>;
       Promise.all([
         await ConceptService.getConcept(iri).then(res => {
           concept = res.data;
