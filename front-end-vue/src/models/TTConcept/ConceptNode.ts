@@ -1,8 +1,8 @@
 import { ConceptReference } from "./ConceptReference";
 
-export interface ConceptChild {
+export interface ConceptNode {
   hasChildren: boolean;
   iri: string;
   name: string;
-  type: Array<ConceptReference>;
+  type: { elements: Array<ConceptReference> };
 }

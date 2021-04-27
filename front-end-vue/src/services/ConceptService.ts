@@ -3,6 +3,7 @@ import { ConceptDto } from "@/models/ConceptDto";
 import axios from "axios";
 import { ConceptReferenceNode } from "@/models/ConceptReferenceNode";
 import { Concept } from "@/models/TTConcept/Concept";
+import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 
 export default class ConceptService {
   static api = process.env.VUE_APP_API;
@@ -28,13 +29,13 @@ export default class ConceptService {
   }
 
   public static async getConceptParents(iri: string) {
-    return axios.get(this.api + "api/concept/parents", {
+    return axios.get<ConceptNode[]>(this.api + "api/concept/parents", {
       params: { iri: iri }
     });
   }
 
   public static async getConceptChildren(iri: string) {
-    return axios.get<ConceptReferenceNode[]>(
+    return axios.get<ConceptNode[]>(
       this.api + "api/concept/children",
       { params: { iri: iri } }
     );

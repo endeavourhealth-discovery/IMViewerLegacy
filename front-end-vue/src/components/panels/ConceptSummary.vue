@@ -124,7 +124,7 @@ import DownloadDialog from "@/components/downloader/DownloadDialog.vue";
   computed: mapState(["conceptAggregate", "conceptIri"]),
   watch: {
     conceptAggregate(newValue) {
-      // console.log(newValue);
+      console.log(newValue);
       this.concept = newValue.concept;
       ConceptService.getConceptImLang(newValue.concept["@id"])
         .then(res => {

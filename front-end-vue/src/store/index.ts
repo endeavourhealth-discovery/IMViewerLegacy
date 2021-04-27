@@ -7,7 +7,7 @@ import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
 import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 import { Concept } from "@/models/TTConcept/Concept";
-import { ConceptChild } from "@/models/TTConcept/ConceptChild";
+import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 import { ConceptReference } from "@/models/TTConcept/ConceptReference";
 import LoggerService from "@/services/LoggerService";
 
@@ -127,8 +127,8 @@ export default createStore({
   actions: {
     async fetchConceptAggregate({ commit }, iri) {
       let concept: Concept;
-      let parents: any;
-      let children: any;
+      let parents: Array<ConceptNode>;
+      let children: Array<ConceptNode>;
       let properties: any;
       let roles: any;
       Promise.all([
