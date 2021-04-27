@@ -13,7 +13,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2020
   },
-  ignorePatterns: ["src/discovery-syntax/*"],
+  ignorePatterns: ["src/discovery-syntax/*", "tests/*"],
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-unused-vars": process.env.NODE_ENV === "production" ? "warn" : "off",
