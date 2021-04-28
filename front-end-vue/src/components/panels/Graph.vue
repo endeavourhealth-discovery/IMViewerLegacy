@@ -48,7 +48,7 @@ import { isValueSet } from "@/helpers/ConceptTypeMethods";
         newValue.concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"];
       if (!isValueSet(conceptTypeElements)) {
         ConceptService.getConceptGraph(newValue.concept[IM.IRI])
-          .then(res => {
+          .then((res) => {
             this.graphData = res.data;
             this.root = d3.hierarchy(this.graphData);
             this.drawTree();
@@ -56,14 +56,14 @@ import { isValueSet } from "@/helpers/ConceptTypeMethods";
             this.initView();
             this.zoomReset();
           })
-          .catch(err => {
+          .catch((err) => {
             this.$toast.add(
               LoggerService.error("Concept graph server request failed", err)
             );
           });
       }
-    }
-  }
+    },
+  },
 })
 export default class Graph extends Vue {
   graphData: GraphData = {} as GraphData;
@@ -119,7 +119,7 @@ export default class Graph extends Vue {
       fit: true,
       center: true,
       dblClickZoomEnabled: false,
-      mouseWheelZoomEnabled: false
+      mouseWheelZoomEnabled: false,
     });
   }
 
@@ -248,10 +248,23 @@ export default class Graph extends Vue {
   }
 
   getNumberOfChildren(data: any) {
+    if (data.name === "Properties") {
+      let num = 0;
+      if (data.children?.length) {
+        data.children?.forEach((child: any) => {
+          num += child.children?.length || child._children?.length;
+        });
+      }
+      if (data._children?.length) {
+        data._children?.forEach((child: any) => {
+          num += child.children?.length || child._children?.length;
+        });
+      }
+      return num ? `[${num}]` : "";
+    }
     if (
       data.name === "Parents" ||
       data.name === "Children" ||
-      data.name === "Properties" ||
       data.name === "Roles" ||
       data.name === "Direct" ||
       data.name === "Inherited"
@@ -331,7 +344,7 @@ export default class Graph extends Vue {
     if (event.srcElement.id)
       this.$router.push({
         name: currentRoute,
-        params: { selectedIri: event.srcElement.id }
+        params: { selectedIri: event.srcElement.id },
       });
   }
 }
