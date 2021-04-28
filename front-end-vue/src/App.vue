@@ -57,4 +57,50 @@ body {
   margin: 2px;
   border-right: 1px solid #ced4da !important;
 }
+
+
+/* Settings specifically for dealing with 300% scaling */
+@media (-webkit-device-pixel-ratio: 3.0) {
+  .p-component {
+    font-size: 0.7rem!important;
+  }
+  .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler {
+    width: 1rem!important;
+    height: 1rem!important;
+  }
+
+  .p-button {
+    font-size: 0.7rem!important;
+  }
+
+  .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+    padding: 0.5rem!important;
+  }
+
+  .p-panel.p-panel-toggleable .p-panel-header {
+    padding: 0rem 1rem!important;
+}
+
+  .monaco-editor {
+    font-size: 0.7rem!important;
+  }
+
+  .im-logo {
+    font-size: 2em!important;
+  }
+
+  .user-icon {
+    font-size: 2em!important;
+  }
+
+  .settings-icon {
+    font-size: 2em!important;
+  }
+
+  .layout-menu-container {
+    width: 60px!important;
+  }
+
+
+}
 </style>
