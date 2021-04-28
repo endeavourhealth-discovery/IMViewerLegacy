@@ -6,9 +6,9 @@
     "serve": "vue-cli-service serve --port 8081",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
+    "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
-    "antlr4ts": "antlr4ts ./src/discovery-syntax/DiscoverySyntax.g4 -o ./src/discovery-syntax",
-    "cypress:open": "cypress open"
+    "antlr4ts": "antlr4ts ./src/discovery-syntax/DiscoverySyntax.g4 -o ./src/discovery-syntax"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
@@ -21,7 +21,6 @@
     "axios": "^0.21.1",
     "chart.js": "^2.9.4",
     "core-js": "^3.10.1",
-    "cypress": "^7.1.0",
     "d3": "^6.6.2",
     "google-palette": "^1.1.0",
     "monaco-editor": "^0.22.3",
@@ -44,6 +43,7 @@
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "@vue/cli-plugin-babel": "^4.5.12",
+    "@vue/cli-plugin-e2e-cypress": "~4.5.0",
     "@vue/cli-plugin-eslint": "^4.5.12",
     "@vue/cli-plugin-router": "^4.5.12",
     "@vue/cli-plugin-typescript": "^4.5.12",
@@ -54,6 +54,7 @@
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^5.0.2",
     "@vue/test-utils": "^2.0.0-0",
+    "cypress": "^7.2.0",
     "eslint": "^6.7.2",
     "eslint-plugin-cypress": "^2.11.2",
     "eslint-plugin-prettier": "^3.1.3",
