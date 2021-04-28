@@ -1,6 +1,6 @@
 describe("The Sidenav", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:8081/#/");
+    cy.visit('/');
     cy.get(".p-button-label")
       .contains("Agree")
       .click();
