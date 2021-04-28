@@ -2,7 +2,7 @@ export default {
   // for toast functionality, LoggerService should be called within Vue toast operation
   // e.g.
   // this.$toast.add(
-    // LoggerService.error("Concept schemes server request failed", err)
+  // LoggerService.error("Concept schemes server request failed", err)
   // );
   error(toastMessage?: string, consoleData?: any) {
     if (consoleData) {
@@ -32,7 +32,7 @@ export default {
     }
   },
 
-  info(toastMessage: string, consoleData?: any) {
+  info(toastMessage?: string, consoleData?: any) {
     if (consoleData) {
       console.info(consoleData);
     }
@@ -46,7 +46,7 @@ export default {
     }
   },
 
-  success(toastMessage: string, consoleData?: any) {
+  success(toastMessage?: string, consoleData?: any) {
     if (consoleData) {
       console.log(consoleData);
     }

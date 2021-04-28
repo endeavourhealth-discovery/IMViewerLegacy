@@ -42,6 +42,7 @@
 import { Options, Vue } from "vue-class-component";
 import { isValueSet, isRecordModel } from "../../helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
+import { Concept } from "@/models/TTConcept/Concept";
 
 @Options({
   name: "Header",
@@ -54,7 +55,7 @@ import { mapState } from "vuex";
   }
 })
 export default class Header extends Vue {
-  concept = {} as any;
+  concept = {} as Concept;
 
   get isSet() {
     const conceptTypeElements = this.concept[

@@ -116,6 +116,7 @@ import { mapState } from "vuex";
 import Definition from "./Definition.vue";
 import LoggerService from "@/services/LoggerService";
 import DownloadDialog from "@/components/downloader/DownloadDialog.vue";
+import { Concept } from "@/models/TTConcept/Concept";
 
 @Options({
   name: "ConceptSummary",
@@ -157,10 +158,10 @@ import DownloadDialog from "@/components/downloader/DownloadDialog.vue";
 export default class ConceptSummary extends Vue {
   editDialogView = true;
   showDownloadDialog = false;
-  concept = {} as any;
+  concept = {} as Concept;
   definitionText = "";
   display = false;
-  synonyms = [] as any;
+  synonyms: { synonym: string }[] = [];
   conceptIri!: string;
 
   mounted() {
@@ -206,11 +207,15 @@ export default class ConceptSummary extends Vue {
   ];
 
   get conceptTypes() {
-    return this.concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]
-      .map(function(type: any) {
-        return type.name;
-      })
-      .join(", ");
+    if (this.concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]) {
+      return this.concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]
+        .map(function(type: any) {
+          return type.name;
+        })
+        .join(", ");
+    } else {
+      return null;
+    }
   }
 
   get editorConcept() {
