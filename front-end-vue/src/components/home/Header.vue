@@ -42,7 +42,7 @@
 import { Options, Vue } from "vue-class-component";
 import { isValueSet, isRecordModel } from "../../helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
-import { Concept } from "@/models/TTConcept/Concept";
+import { RDF } from "@/vocabulary/RDF";
 
 @Options({
   name: "Header",
@@ -55,18 +55,14 @@ import { Concept } from "@/models/TTConcept/Concept";
   }
 })
 export default class Header extends Vue {
-  concept = {} as Concept;
+  concept = {} as any;
 
   get isSet() {
-    const conceptTypeElements = this.concept[
-      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-    ];
+    const conceptTypeElements = this.concept[RDF.TYPE];
     return isValueSet(conceptTypeElements);
   }
   get isClaz() {
-    const conceptTypeElements = this.concept[
-      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-    ];
+    const conceptTypeElements = this.concept[RDF.TYPE];
     return isRecordModel(conceptTypeElements);
   }
 }

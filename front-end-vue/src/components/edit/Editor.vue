@@ -104,7 +104,6 @@ import { Options, Vue } from "vue-class-component";
 import * as monaco from "monaco-editor";
 import { getDiscoveryCompletionProvider } from "@/services/MonacoService";
 import { ConceptDto } from "@/models/ConceptDto";
-import { Concept } from "@/models/Concept";
 import ConceptService from "@/services/ConceptService";
 import { ConceptReference } from "@/models/ConceptReference";
 import Dropdown from "primevue/dropdown";
@@ -118,7 +117,7 @@ import LoggerService from "@/services/LoggerService";
 })
 export default class EditorDialog extends Vue {
   private definitionText!: string;
-  private concept!: Concept;
+  private concept!: any;
   private editorText = this.definitionText;
   private conceptDto = {} as ConceptDto;
   private schemeOptions: ConceptReference[] = [];

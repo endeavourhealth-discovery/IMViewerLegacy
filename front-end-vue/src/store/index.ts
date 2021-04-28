@@ -6,7 +6,6 @@ import { User } from "../models/user/User";
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
 import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
-import { Concept } from "@/models/TTConcept/Concept";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
@@ -128,7 +127,7 @@ export default createStore({
   },
   actions: {
     async fetchConceptAggregate({ commit }, iri) {
-      let concept: Concept;
+      let concept: any;
       let parents: Array<ConceptNode>;
       let children: Array<ConceptNode>;
       let properties: any;

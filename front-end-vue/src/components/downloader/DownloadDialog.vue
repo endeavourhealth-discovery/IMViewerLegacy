@@ -107,9 +107,10 @@
 import { Options, Vue } from "vue-class-component";
 import LoggerService from "@/services/LoggerService";
 import { mapState } from "vuex";
-import { Concept } from "@/models/TTConcept/Concept";
 import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 import { Member } from "@/models/members/Member";
+import { IM } from "@/vocabulary/IM";
+import { RDFS } from "@/vocabulary/RDFS";
 
 @Options({
   name: "DownloadDialog",
@@ -119,7 +120,7 @@ import { Member } from "@/models/members/Member";
 export default class DownloadDialog extends Vue {
   conceptAggregate!: ConceptAggregate;
   members!: Member;
-  concept!: Concept;
+  concept!: any;
   includeChildren = true;
   includeProperties = true;
   includeMembers = true;
@@ -154,7 +155,7 @@ export default class DownloadDialog extends Vue {
   }
 
   downloadConcept() {
-    const modIri = this.concept["@id"]
+    const modIri = this.concept[IM.IRI]
       .replace(/\//gi, "%2F")
       .replace(/#/gi, "%23");
 

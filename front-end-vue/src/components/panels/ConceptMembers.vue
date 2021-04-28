@@ -61,6 +61,8 @@ import ConceptService from "@/services/ConceptService";
 import LoggerService from "@/services/LoggerService";
 import { mapState } from "vuex";
 import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
+import { RDFS } from "@/vocabulary/RDFS";
+import { IM } from "@/vocabulary/IM";
 
 @Options({
   name: "ConceptMembers",
@@ -129,9 +131,9 @@ export default class ConceptMembers extends Vue {
   downloadMembers(type: string, expanded: boolean) {
     const concept = this.conceptAggregate.concept;
     const filename =
-      concept["http://www.w3.org/2000/01/rdf-schema#label"] +
+      concept[RDFS.LABEL] +
       ("text/csv" === type ? ".csv" : ".json");
-    ConceptService.getConceptMembers(concept["@id"], false)
+    ConceptService.getConceptMembers(concept[IM.IRI], false)
       .then(response => {
         this.downloadFile(response.data, filename, type);
       })

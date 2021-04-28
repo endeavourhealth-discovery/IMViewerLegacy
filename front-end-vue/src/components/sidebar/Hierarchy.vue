@@ -94,7 +94,7 @@ export default class Hierarchy extends Vue {
     const selectedConcept = this.createTreeNode(
       concept[RDFS.LABEL],
       concept[IM.IRI],
-      concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"],
+      concept[RDF.TYPE],
       index,
       concept.hasChildren
     );
