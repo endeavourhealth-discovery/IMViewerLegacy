@@ -8,7 +8,8 @@ module.exports = {
     "eslint:recommended",
     "@vue/typescript/recommended",
     "@vue/prettier",
-    "@vue/prettier/@typescript-eslint"
+    "@vue/prettier/@typescript-eslint",
+    "plugin:cypress/recommended"
   ],
   parserOptions: {
     ecmaVersion: 2020
@@ -23,7 +24,4 @@ module.exports = {
     "@typescript-eslint/no-var-requires": 0,
     "@typescript-eslint/no-explicit-any": "off"
   },
-  "extends": [
-    "plugin:cypress/recommended"
-  ]
 };
