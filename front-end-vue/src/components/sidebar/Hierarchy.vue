@@ -85,6 +85,8 @@ export default class Hierarchy extends Vue {
   createTree(concept: any, parentHierarchy: any, children: any) {
     if (this.root.length == 0) {
       this.refreshTree(concept, parentHierarchy, children);
+    } else if (concept[IM.IRI] === IM.NAMESPACE + "DiscoveryOntology") {
+      this.refreshTree(concept, parentHierarchy, children);
     }
   }
 
