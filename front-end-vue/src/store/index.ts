@@ -133,20 +133,21 @@ export default createStore({
       let children: Array<ConceptNode>;
       let properties: any;
       let roles: Array<ConceptRole>;
-      Promise.all([
-        await ConceptService.getConcept(iri).then(res => {
+      let success = true;
+      await Promise.all([
+        ConceptService.getConcept(iri).then(res => {
           concept = res.data;
         }),
-        await ConceptService.getConceptParents(iri).then(res => {
+        ConceptService.getConceptParents(iri).then(res => {
           parents = res.data;
         }),
-        await ConceptService.getConceptChildren(iri).then(res => {
+        ConceptService.getConceptChildren(iri).then(res => {
           children = res.data;
         }),
-        await ConceptService.getConceptProperties(iri).then(res => {
+        ConceptService.getConceptProperties(iri).then(res => {
           properties = res.data;
         }),
-        await ConceptService.getConceptRoles(iri).then(res => {
+        ConceptService.getConceptRoles(iri).then(res => {
           roles = res.data;
         })
       ])
@@ -160,17 +161,22 @@ export default createStore({
           );
           commit("updateConceptAggregate", updated);
         })
-        .catch(err => LoggerService.error(undefined, err));
+        .catch(err => {
+          LoggerService.error(undefined, err);
+          success = false;
+        });
+      return success;
     },
     async fetchConceptMapped({ commit }, iri) {
       commit("updateLoading", { key: "mapped", value: true });
       let mappedFrom: any;
       let mappedTo: any;
-      Promise.all([
-        await ConceptService.getConceptMappedFrom(iri).then(res => {
+      let success = true;
+      await Promise.all([
+        ConceptService.getConceptMappedFrom(iri).then(res => {
           mappedFrom = res.data;
         }),
-        await ConceptService.getConceptMappedTo(iri).then(res => {
+        ConceptService.getConceptMappedTo(iri).then(res => {
           mappedTo = res.data;
         })
       ])
@@ -179,13 +185,16 @@ export default createStore({
           commit("updateLoading", { key: "mapped", value: false });
         })
         .catch(err => {
+          success = false;
           LoggerService.error(undefined, err);
           commit("updateLoading", { key: "mapped", value: false });
         });
+      return success;
     },
     async fetchConceptUsages({ commit }, iri) {
       commit("updateLoading", { key: "usages", value: true });
       let usages: any;
+      let success = true;
       await ConceptService.getConceptUsages(iri)
         .then(res => {
           usages = res.data;
@@ -194,8 +203,10 @@ export default createStore({
         })
         .catch(err => {
           LoggerService.error(undefined, err);
+          success = false;
           commit("updateLoading", { key: "usages", value: false });
         });
+      return success;
     },
     async fetchConceptMembers({ commit }, iri) {
       commit("updateLoading", { key: "members", value: true });

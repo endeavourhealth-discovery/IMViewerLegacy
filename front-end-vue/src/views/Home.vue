@@ -50,20 +50,26 @@ export default class Home extends Vue {
     }
     store
       .dispatch("fetchConceptAggregate", store.state.conceptIri)
-      .catch(err => {
+      .then(res => {
+        if (!res) {
         this.$toast.add(
-          LoggerService.error("Concept aggregate server request failed", err)
-        );
+            LoggerService.error("Concept aggregate server request failed")
+          );
+        }
       });
-    store.dispatch("fetchConceptMapped", store.state.conceptIri).catch(err => {
-      this.$toast.add(
-        LoggerService.error("Concept mapped server request failed", err)
-      );
+    store.dispatch("fetchConceptMapped", store.state.conceptIri).then(res => {
+      if (!res) {
+        this.$toast.add(
+          LoggerService.error("Concept mapped server request failed")
+        );
+      }
     });
-    store.dispatch("fetchConceptUsages", store.state.conceptIri).catch(err => {
-      this.$toast.add(
-        LoggerService.error("Concept usages server request failed", err)
-      );
+    store.dispatch("fetchConceptUsages", store.state.conceptIri).catch(res => {
+      if (!res) {
+        this.$toast.add(
+          LoggerService.error("Concept usages server request failed")
+        );
+      }
     });
   }
 }
