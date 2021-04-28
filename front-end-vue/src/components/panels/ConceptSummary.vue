@@ -116,7 +116,9 @@ import { mapState } from "vuex";
 import Definition from "./Definition.vue";
 import LoggerService from "@/services/LoggerService";
 import DownloadDialog from "@/components/downloader/DownloadDialog.vue";
-import { Concept } from "@/models/TTConcept/Concept";
+import { RDF } from "@/vocabulary/RDF";
+import { RDFS } from "@/vocabulary/RDFS";
+import { IM } from "@/vocabulary/IM";
 
 @Options({
   name: "ConceptSummary",
@@ -126,7 +128,7 @@ import { Concept } from "@/models/TTConcept/Concept";
   watch: {
     conceptAggregate(newValue) {
       this.concept = newValue.concept;
-      ConceptService.getConceptImLang(newValue.concept["@id"])
+      ConceptService.getConceptImLang(newValue.concept[IM.IRI])
         .then(res => {
           this.definitionText = res.data;
         })
@@ -140,9 +142,8 @@ import { Concept } from "@/models/TTConcept/Concept";
       ConceptService.getConceptSynonyms(newValue)
         .then(res => {
           this.synonyms = [];
-          const url = "http://www.w3.org/2000/01/rdf-schema#label";
           for (const data of res.data) {
-            if (data !== this.concept[url]) {
+            if (data !== this.concept[RDFS.LABEL]) {
               this.synonyms.push({ synonym: data });
             }
           }
@@ -158,7 +159,7 @@ import { Concept } from "@/models/TTConcept/Concept";
 export default class ConceptSummary extends Vue {
   editDialogView = true;
   showDownloadDialog = false;
-  concept = {} as Concept;
+  concept = {} as any;
   definitionText = "";
   display = false;
   synonyms: { synonym: string }[] = [];
@@ -207,8 +208,8 @@ export default class ConceptSummary extends Vue {
   ];
 
   get conceptTypes() {
-    if (this.concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]) {
-      return this.concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]
+    if (this.concept[RDF.TYPE]) {
+      return this.concept[RDF.TYPE]
         .map(function(type: any) {
           return type.name;
         })

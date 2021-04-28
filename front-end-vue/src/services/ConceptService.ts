@@ -1,7 +1,6 @@
 import { SearchRequest } from "@/models/search/SearchRequest";
 import { ConceptDto } from "@/models/ConceptDto";
 import axios from "axios";
-import { Concept } from "@/models/TTConcept/Concept";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 
 export default class ConceptService {
@@ -14,7 +13,7 @@ export default class ConceptService {
   }
 
   public static async getConcept(iri: string) {
-    return axios.get<Concept>(this.api + "api/concept", {
+    return axios.get(this.api + "api/concept", {
       params: { iri: iri }
     });
   }

@@ -1,16 +1,15 @@
 import { ConceptNode } from "./ConceptNode";
-import { Concept } from "./Concept";
 import { ConceptRole } from "./ConceptRole";
 
 export class ConceptAggregate {
-  concept: Concept;
+  concept: any;
   children: Array<ConceptNode>;
   parents: Array<ConceptNode>;
   properties: [];
   roles: Array<ConceptRole>;
 
   constructor(
-    concept: Concept,
+    concept: any,
     children: Array<ConceptNode>,
     parents: Array<ConceptNode>,
     properties: [],
