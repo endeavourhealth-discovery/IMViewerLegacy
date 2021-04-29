@@ -79,7 +79,7 @@
           IMLang
         </template>
         <template #content>
-          <div style="height:500px;" id="container"></div>
+          <div style="height:500px;" id="editor-container"></div>
         </template>
       </Card>
     </div>
@@ -173,7 +173,7 @@ export default class EditorDialog extends Vue {
       );
     });
 
-    const editor = document.getElementById("container");
+    const editor = document.getElementById("editor-container");
 
     if (editor) {
       monaco.editor.create(editor, {
