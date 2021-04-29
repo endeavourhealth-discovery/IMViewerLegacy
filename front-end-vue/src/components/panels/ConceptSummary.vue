@@ -54,9 +54,8 @@
               <strong>Description:</strong>
             </p>
             <ScrollPanel style="width: 100%; height: 100px" class="custom">
-              <div>
-                {{ concept["http://www.w3.org/2000/01/rdf-schema#comment"] }}
-              </div>
+              <!-- div content injected by javascript -->
+              <div id="description"></div>
             </ScrollPanel>
           </div>
         </div>
@@ -128,6 +127,14 @@ import { IM } from "@/vocabulary/IM";
   watch: {
     conceptAggregate(newValue) {
       this.concept = newValue.concept;
+      this.descriptionHTML =
+        "<p class='description-p'>" +
+        this.convertTextToHTML(this.concept[RDFS.COMMENT]) +
+        "</p>";
+      const descContainer = document.getElementById("description");
+      if (descContainer) {
+        descContainer.innerHTML = this.descriptionHTML;
+      }
       ConceptService.getConceptImLang(newValue.concept[IM.IRI])
         .then(res => {
           this.definitionText = res.data;
@@ -161,6 +168,7 @@ export default class ConceptSummary extends Vue {
   showDownloadDialog = false;
   concept = {} as any;
   definitionText = "";
+  descriptionHTML = {} as any;
   display = false;
   synonyms: { synonym: string }[] = [];
   conceptIri!: string;
@@ -258,6 +266,10 @@ export default class ConceptSummary extends Vue {
     const y = this.$refs.op as any;
     y.toggle(event);
   }
+
+  convertTextToHTML(text: string) {
+    return text.replaceAll("<p>", "</p>\n<p class='description-p'>");
+  }
 }
 </script>
 
@@ -299,5 +311,10 @@ p {
 
 .break-text {
   word-break: break-all;
+}
+
+.description {
+  height: 100%;
+  width: 100%;
 }
 </style>
