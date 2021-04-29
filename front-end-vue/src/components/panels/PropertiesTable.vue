@@ -15,7 +15,7 @@
       <template #body="slotProps">
         <div
           class="link capitalize-text"
-          @click="navigate(slotProps.data.property.iri)"
+          @click="navigate(slotProps.data.property)"
         >
           {{ slotProps.data.property.name }}
         </div>
@@ -23,8 +23,8 @@
     </Column>
     <Column field="valueType.name" header="Type">
       <template #body="slotProps">
-        <div class="link" @click="navigate(slotProps.data.valueType.iri)">
-          {{ slotProps.data.valueType.name || slotProps.data.valueType.iri }}
+        <div class="link" @click="navigate(slotProps.data.valueType)">
+          {{ slotProps.data.valueType.name || slotProps.data.valueType["@id"] }}
         </div>
       </template>
     </Column>
@@ -33,7 +33,7 @@
         <div
           v-if="slotProps.data.inheritedFrom"
           class="link"
-          @click="navigate(slotProps.data.inheritedFrom?.iri)"
+          @click="navigate(slotProps.data.inheritedFrom)"
         >
           {{ slotProps.data.inheritedFrom.name }}
         </div>
@@ -65,12 +65,13 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 export default class PropertiesTable extends Vue {
   properties = [];
 
-  navigate(iri: string) {
+  navigate(valueType: any) {
+    console.log(valueType);
     const currentRoute = this.$route.name as RouteRecordName | undefined;
-    if (iri)
+    if (valueType["@id"])
       this.$router.push({
         name: currentRoute,
-        params: { selectedIri: iri }
+        params: { selectedIri: valueType["@id"] }
       });
   }
 }
