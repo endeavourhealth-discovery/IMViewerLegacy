@@ -11,31 +11,28 @@
     <template #empty>
       No records found
     </template>
-    <Column field="property.name" header="Name">
+    <Column field="name" header="Name">
       <template #body="slotProps">
-        <div
-          class="link capitalize-text"
-          @click="navigate(slotProps.data.property)"
-        >
-          {{ slotProps.data.property.name }}
+        <div class="link capitalize-text" @click="navigate(slotProps.data.iri)">
+          {{ slotProps.data.name }}
         </div>
       </template>
     </Column>
-    <Column field="valueType.name" header="Type">
+    <Column field="valueTypeName" header="Type">
       <template #body="slotProps">
-        <div class="link" @click="navigate(slotProps.data.valueType)">
-          {{ slotProps.data.valueType.name || slotProps.data.valueType["@id"] }}
+        <div class="link" @click="navigate(slotProps.data.valueTypeIri)">
+          {{ slotProps.data.valueTypeName || slotProps.data.valueTypeIri }}
         </div>
       </template>
     </Column>
-    <Column field="inheritedFrom.name" header="Inherited From">
+    <Column field="inheritedFromName" header="Inherited From">
       <template #body="slotProps">
         <div
-          v-if="slotProps.data.inheritedFrom"
+          v-if="slotProps.data.inheritedFromName"
           class="link"
-          @click="navigate(slotProps.data.inheritedFrom)"
+          @click="navigate(slotProps.data.inheritedFromIri)"
         >
-          {{ slotProps.data.inheritedFrom.name }}
+          {{ slotProps.data.inheritedFromName }}
         </div>
         <div v-else>-</div>
       </template>
@@ -51,6 +48,7 @@
 import { mapState } from "vuex";
 import { Options, Vue } from "vue-class-component";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
+import GraphData from "@/models/GraphData";
 
 @Options({
   name: "PropertiesTable",
@@ -58,21 +56,31 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
   computed: mapState(["conceptAggregate"]),
   watch: {
     async conceptAggregate(newValue) {
-      this.properties = newValue.properties;
+      this.properties = this.getProperties(newValue.graph);
     }
   }
 })
 export default class PropertiesTable extends Vue {
   properties = [];
 
-  navigate(valueType: any) {
-    console.log(valueType);
+  navigate(iri: any) {
     const currentRoute = this.$route.name as RouteRecordName | undefined;
-    if (valueType["@id"])
+    if (iri)
       this.$router.push({
         name: currentRoute,
-        params: { selectedIri: valueType["@id"] }
+        params: { selectedIri: iri }
       });
+  }
+
+  getProperties(graph: GraphData) {
+    const allProperties: any[] = [];
+    const properties = graph.children.filter(
+      (child: any) => child.name === "Properties"
+    );
+    properties[0].children.forEach((prop: any) => {
+      allProperties.push(...prop.children);
+    });
+    return allProperties;
   }
 }
 </script>

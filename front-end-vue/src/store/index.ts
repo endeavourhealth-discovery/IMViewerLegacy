@@ -130,8 +130,7 @@ export default createStore({
       let concept: any;
       let parents: Array<ConceptNode>;
       let children: Array<ConceptNode>;
-      let properties: any;
-      let roles: Array<ConceptRole>;
+      let graph: any;
       let success = true;
       await Promise.all([
         ConceptService.getConcept(iri).then(res => {
@@ -143,20 +142,16 @@ export default createStore({
         ConceptService.getConceptChildren(iri).then(res => {
           children = res.data;
         }),
-        ConceptService.getConceptProperties(iri).then(res => {
-          properties = res.data;
+        ConceptService.getConceptGraph(iri).then(res => {
+          graph = res.data;
         }),
-        ConceptService.getConceptRoles(iri).then(res => {
-          roles = res.data;
-        })
       ])
         .then(() => {
           const updated = new ConceptAggregate(
             concept,
             children,
             parents,
-            properties,
-            roles
+            graph
           );
           commit("updateConceptAggregate", updated);
         })

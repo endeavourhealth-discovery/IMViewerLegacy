@@ -35,7 +35,7 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!conceptAggregate.properties?.length"
+            :disabled="!hasProperties()"
             id="properties"
             :binary="true"
             value="Include properties"
@@ -74,7 +74,7 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!conceptAggregate.roles?.length"
+            :disabled="!hasRoles()"
             id="roles"
             :binary="true"
             value="Include roles"
@@ -143,10 +143,34 @@ export default class DownloadDialog extends Vue {
   updated() {
     this.includeParents = !!this.conceptAggregate.parents?.length;
     this.includeChildren = !!this.conceptAggregate.children?.length;
-    this.includeProperties = !!this.conceptAggregate.properties?.length;
-    this.includeRoles = !!this.conceptAggregate.roles?.length;
+    this.includeProperties = this.hasProperties();
+    this.includeRoles = this.hasRoles();
     this.includeMembers =
       !!this.members?.included?.length || !!this.members?.excluded?.length;
+  }
+
+  hasRoles() {
+    try {
+      const roles = this.conceptAggregate.graph.children.filter(
+        (child: any) => child.name === "Roles"
+      );
+      return !!roles[0].children.length;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  hasProperties() {
+    try {
+      const properties = this.conceptAggregate.graph.children.filter(
+        (child: any) => child.name === "Properties"
+      );
+      const direct = properties[0].children[0].children;
+      const inherited = properties[0].children[1].children;
+      return !!direct.length || !!inherited.length;
+    } catch (error) {
+      return false;
+    }
   }
 
   closeDownloadDialog() {

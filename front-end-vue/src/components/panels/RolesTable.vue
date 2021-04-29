@@ -11,24 +11,21 @@
     <template #empty>
       No records found
     </template>
-    <Column field="property.name" header="Name">
+    <Column field="name" header="Name">
       <template #body="slotProps">
-        <div
-          class="link capitalize-text"
-          @click="navigate(slotProps.data.property)"
-        >
-          {{ slotProps.data.property.name }}
+        <div class="link capitalize-text" @click="navigate(slotProps.data.iri)">
+          {{ slotProps.data.name }}
         </div>
       </template>
     </Column>
-    <Column field="valueType.name" header="Type">
+    <Column field="valueTypeName" header="Type">
       <template #body="slotProps">
         <div
-          v-if="slotProps.data.valueType"
+          v-if="slotProps.data.valueTypeName"
           class="link"
-          @click="navigate(slotProps.data.valueType)"
+          @click="navigate(slotProps.data.valueTypeIri)"
         >
-          {{ slotProps.data.valueType.name || slotProps.data.valueType["@id"] }}
+          {{ slotProps.data.valueTypeName || slotProps.data.valueTypeIri }}
         </div>
         <div v-else>
           -
@@ -41,6 +38,7 @@
 import { mapState } from "vuex";
 import { Options, Vue } from "vue-class-component";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
+import GraphData from "@/models/GraphData";
 
 @Options({
   name: "RolesTable",
@@ -48,20 +46,27 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
   computed: mapState(["conceptAggregate"]),
   watch: {
     async conceptAggregate(newValue) {
-      this.roles = newValue.roles;
+      this.roles = this.getRoles(newValue.graph);
     }
   }
 })
 export default class RolesTable extends Vue {
   roles = [];
 
-  navigate(valueType: any) {
+  navigate(iri: any) {
     const currentRoute = this.$route.name as RouteRecordName | undefined;
-    if (valueType["@id"])
+    if (iri)
       this.$router.push({
         name: currentRoute,
-        params: { selectedIri: valueType["@id"] }
+        params: { selectedIri: iri }
       });
+  }
+
+  getRoles(graph: GraphData) {
+    const properties = graph.children.filter(
+      (child: any) => child.name === "Roles"
+    );
+    return properties[0].children;
   }
 }
 </script>

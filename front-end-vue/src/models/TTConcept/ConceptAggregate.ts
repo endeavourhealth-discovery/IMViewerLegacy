@@ -5,20 +5,17 @@ export class ConceptAggregate {
   concept: any;
   children: Array<ConceptNode>;
   parents: Array<ConceptNode>;
-  properties: [];
-  roles: Array<ConceptRole>;
+  graph: any;
 
   constructor(
     concept: any,
     children: Array<ConceptNode>,
     parents: Array<ConceptNode>,
-    properties: [],
-    roles: Array<ConceptRole>
+    graph: any
   ) {
     this.concept = concept;
     this.children = children;
     this.parents = parents;
-    this.properties = properties;
-    this.roles = roles;
+    this.graph = graph;
   }
 }

@@ -30,11 +30,8 @@ import * as d3 from "d3";
 import svgPanZoom from "svg-pan-zoom";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { mapState } from "vuex";
-import ConceptService from "@/services/ConceptService";
 import { HierarchyNode } from "d3";
 import GraphData from "../../models/GraphData";
-import { IM } from "@/vocabulary/IM";
-import LoggerService from "@/services/LoggerService";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import { RDF } from "@/vocabulary/RDF";
 
@@ -47,20 +44,12 @@ import { RDF } from "@/vocabulary/RDF";
       this.eraseTree();
       const conceptTypeElements = newValue.concept[RDF.TYPE];
       if (!isValueSet(conceptTypeElements)) {
-        ConceptService.getConceptGraph(newValue.concept[IM.IRI])
-          .then(res => {
-            this.graphData = res.data;
-            this.root = d3.hierarchy(this.graphData);
-            this.drawTree();
-            this.initSvgPanZoom();
-            this.initView();
-            this.zoomReset();
-          })
-          .catch(err => {
-            this.$toast.add(
-              LoggerService.error("Concept graph server request failed", err)
-            );
-          });
+        this.graphData = newValue.graph;
+        this.root = d3.hierarchy(this.graphData);
+        this.drawTree();
+        this.initSvgPanZoom();
+        this.initView();
+        this.zoomReset();
       }
     }
   }
