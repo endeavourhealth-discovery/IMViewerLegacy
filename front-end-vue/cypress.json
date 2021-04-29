@@ -1,7 +1,4 @@
 {
   "pluginsFile": "tests/e2e/plugins/index.js",
-  "chromeWebSecurity": false,
-  "env": {
-    "VUE_APP_API": "https://dev.endhealth.co.uk/imapi/"
-  }
+  "chromeWebSecurity": false
 }
