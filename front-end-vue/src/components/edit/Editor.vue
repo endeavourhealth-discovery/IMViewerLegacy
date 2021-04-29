@@ -66,6 +66,7 @@
         <Dropdown
           class="p-inputtext-sm"
           v-model="conceptDto.scheme"
+          optionValue="name"
           :options="schemeOptions"
           optionLabel="name"
         />
@@ -109,6 +110,8 @@ import { ConceptReference } from "@/models/ConceptReference";
 import Dropdown from "primevue/dropdown";
 import { ConceptStatus } from "@/models/ConceptStatus";
 import LoggerService from "@/services/LoggerService";
+import { IM } from "@/vocabulary/IM";
+import { RDFS } from "@/vocabulary/RDFS";
 
 @Options({
   name: "Editor",
@@ -138,13 +141,13 @@ export default class EditorDialog extends Vue {
         );
       });
     this.conceptDto = new ConceptDto(
-      this.concept.iri,
-      this.concept.name,
-      this.concept.description,
-      this.concept.code,
-      this.concept.scheme,
-      this.concept.status,
-      this.concept.version,
+      this.concept[IM.IRI],
+      this.concept[RDFS.LABEL],
+      this.concept[RDFS.COMMENT],
+      this.concept[IM.CODE],
+      this.concept[IM.SCHEME].name,
+      this.concept[IM.STATUS].name,
+      undefined,
       this.definitionText
     );
   }
