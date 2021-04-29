@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgEventBus } from 'ng-event-bus';
 import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs/operators';
+import { EditConceptComponent } from '../components/edit-concept/edit-concept.component';
 import { FindConceptUsagesDialogComponent } from '../components/find-concept-usages-dialog/find-concept-usages-dialog.component';
 import { UserProfileDialog } from '../components/user-profile-dialog/user-profile-dialog.component';
 import { ConceptReference } from '../models/objectmodel/ConceptReference';
@@ -85,6 +86,14 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   goto(iri: string) {
     this.router.navigate([this.perspectives.current.primary.state, iri]);
+  }
+
+  openEditor() {
+    try {
+      document.getElementById('mat-tab-label-1-0').click();
+    } finally {
+      this.dialog.open(EditConceptComponent, { width: '55%' });
+    }
   }
 
   getHelp() {

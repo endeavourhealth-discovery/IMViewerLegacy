@@ -2,7 +2,7 @@ import { DiscoveryLanguageId } from './../../../discovery-syntax/DiscoveryLangua
 import { DiscoverySyntaxLexer } from './../../../discovery-syntax/DiscoverySyntaxLexer';
 import { ANTLRInputStream, CommonTokenStream } from 'antlr4ts';
 import TodoLangErrorListener, { ITodoLangError } from './../../../discovery-syntax/DiscoveryErrorListener';
-import { DefinitionContext, DiscoverySyntaxParser } from './../../../discovery-syntax/DiscoverySyntaxParser';
+import { ConceptContext, DiscoverySyntaxParser } from './../../../discovery-syntax/DiscoverySyntaxParser';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ConceptReferenceNode } from '../../../models/objectmodel/ConceptReferenceNode';
 import { Component, OnInit, ViewChild } from '@angular/core';

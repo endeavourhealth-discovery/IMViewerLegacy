@@ -13,11 +13,12 @@ import {MatDividerModule} from '@angular/material/divider';
 import {RouterModule} from '@angular/router';
 import {MatInputModule} from '@angular/material/input';
 import {MatTooltipModule} from '@angular/material/tooltip';
-
+import { EditConceptComponentModule } from '../components/edit-concept/edit-concept.module';
 
 
 @NgModule({
   imports: [
+    EditConceptComponentModule,
     CommonModule,
     MatToolbarModule,
     MatIconModule,
