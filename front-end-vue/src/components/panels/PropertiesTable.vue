@@ -39,7 +39,7 @@
     </Column>
     <Column field="quantificationType" header="Cardinality">
       <template #body="slotProps">
-        {{ slotProps.data.quantificationType === "only" ? "0 : *" : "1 : 1" }}
+        {{ `${slotProps.data.min || 0} : ${slotProps.data.max || "*"}` }}
       </template>
     </Column>
   </DataTable>
