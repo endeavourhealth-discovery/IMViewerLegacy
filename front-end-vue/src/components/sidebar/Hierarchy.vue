@@ -79,7 +79,7 @@ export default class Hierarchy extends Vue {
   searchResult = "";
   root: Array<TreeNode> = [];
   expandedKeys: any = {};
-  selectedKey = { 1: true };
+  selectedKey: any = {};
   parentLabel = "";
 
   createTree(concept: any, parentHierarchy: any, children: any) {
@@ -92,15 +92,13 @@ export default class Hierarchy extends Vue {
 
   refreshTree(concept: any, parentHierarchy: any, children: any) {
     this.expandedKeys = {};
-    let index = 1;
     const selectedConcept = this.createTreeNode(
       concept[RDFS.LABEL],
       concept[IM.IRI],
       concept[RDF.TYPE],
-      index,
+      concept[RDFS.LABEL],
       concept.hasChildren
     );
-    index++;
 
     children.forEach((child: any) => {
       if (child.name) {
@@ -110,12 +108,11 @@ export default class Hierarchy extends Vue {
             child.name,
             child["@id"],
             child.type,
-            index,
+            child.name,
             child.hasChildren
           )
         );
       }
-      index++;
     });
     this.root = [];
 
@@ -124,9 +121,8 @@ export default class Hierarchy extends Vue {
     }
 
     this.root.push(selectedConcept);
-    this.expandedKeys[0] = true;
-    this.expandedKeys[1] = true;
-    this.selectedKey = { 1: true };
+    this.expandedKeys[selectedConcept.key] = true;
+    this.selectedKey[selectedConcept.key] = true;
   }
 
   createTreeNode(
@@ -205,17 +201,16 @@ export default class Hierarchy extends Vue {
 
     parents.forEach((parent: any) => {
       parentsNodes.push(
-        this.createTreeNode(parent.name, parent["@id"], parent.type, 0, true)
+        this.createTreeNode(parent.name, parent["@id"], parent.type, parent.name, true)
       );
     });
 
     parentsNodes.forEach((parentNode: TreeNode) => {
       parentNode.children.push(this.root[0]);
+      this.expandedKeys[parentNode.key] = true;
     });
 
     this.root = parentsNodes;
-    this.expandedKeys[0] = true;
-    this.expandedKeys[1] = true;
 
     await ConceptService.getConceptParents(this.root[0].data)
       .then(res => {
