@@ -15,7 +15,7 @@
       <template #body="slotProps">
         <div
           class="link capitalize-text"
-          @click="navigate(slotProps.data.property.iri)"
+          @click="navigate(slotProps.data.property)"
         >
           {{ slotProps.data.property.name }}
         </div>
@@ -26,9 +26,9 @@
         <div
           v-if="slotProps.data.valueType"
           class="link"
-          @click="navigate(slotProps.data.valueType.iri)"
+          @click="navigate(slotProps.data.valueType)"
         >
-          {{ slotProps.data.valueType.name || slotProps.data.valueType.iri }}
+          {{ slotProps.data.valueType.name || slotProps.data.valueType["@id"] }}
         </div>
         <div v-else>
           -
@@ -55,12 +55,12 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 export default class RolesTable extends Vue {
   roles = [];
 
-  navigate(iri: string) {
+  navigate(valueType: any) {
     const currentRoute = this.$route.name as RouteRecordName | undefined;
-    if (iri)
+    if (valueType["@id"])
       this.$router.push({
         name: currentRoute,
-        params: { selectedIri: iri }
+        params: { selectedIri: valueType["@id"] }
       });
   }
 }
