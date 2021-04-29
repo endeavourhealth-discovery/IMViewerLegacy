@@ -110,7 +110,6 @@ import { mapState } from "vuex";
 import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 import { Member } from "@/models/members/Member";
 import { IM } from "@/vocabulary/IM";
-import { RDFS } from "@/vocabulary/RDFS";
 
 @Options({
   name: "DownloadDialog",

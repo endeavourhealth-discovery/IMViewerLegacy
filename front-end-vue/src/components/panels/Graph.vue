@@ -36,6 +36,7 @@ import GraphData from "../../models/GraphData";
 import { IM } from "@/vocabulary/IM";
 import LoggerService from "@/services/LoggerService";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
+import { RDF } from "@/vocabulary/RDF";
 
 @Options({
   name: "Graph",
@@ -44,11 +45,10 @@ import { isValueSet } from "@/helpers/ConceptTypeMethods";
   watch: {
     conceptAggregate(newValue) {
       this.eraseTree();
-      const conceptTypeElements =
-        newValue.concept["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"];
+      const conceptTypeElements = newValue.concept[RDF.TYPE];
       if (!isValueSet(conceptTypeElements)) {
         ConceptService.getConceptGraph(newValue.concept[IM.IRI])
-          .then((res) => {
+          .then(res => {
             this.graphData = res.data;
             this.root = d3.hierarchy(this.graphData);
             this.drawTree();
@@ -56,14 +56,14 @@ import { isValueSet } from "@/helpers/ConceptTypeMethods";
             this.initView();
             this.zoomReset();
           })
-          .catch((err) => {
+          .catch(err => {
             this.$toast.add(
               LoggerService.error("Concept graph server request failed", err)
             );
           });
       }
-    },
-  },
+    }
+  }
 })
 export default class Graph extends Vue {
   graphData: GraphData = {} as GraphData;
@@ -119,7 +119,7 @@ export default class Graph extends Vue {
       fit: true,
       center: true,
       dblClickZoomEnabled: false,
-      mouseWheelZoomEnabled: false,
+      mouseWheelZoomEnabled: false
     });
   }
 
@@ -344,7 +344,7 @@ export default class Graph extends Vue {
     if (event.srcElement.id)
       this.$router.push({
         name: currentRoute,
-        params: { selectedIri: event.srcElement.id },
+        params: { selectedIri: event.srcElement.id }
       });
   }
 }

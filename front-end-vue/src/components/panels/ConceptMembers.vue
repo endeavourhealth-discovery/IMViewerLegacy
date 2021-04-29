@@ -131,8 +131,7 @@ export default class ConceptMembers extends Vue {
   downloadMembers(type: string, expanded: boolean) {
     const concept = this.conceptAggregate.concept;
     const filename =
-      concept[RDFS.LABEL] +
-      ("text/csv" === type ? ".csv" : ".json");
+      concept[RDFS.LABEL] + ("text/csv" === type ? ".csv" : ".json");
     ConceptService.getConceptMembers(concept[IM.IRI], false)
       .then(response => {
         this.downloadFile(response.data, filename, type);
