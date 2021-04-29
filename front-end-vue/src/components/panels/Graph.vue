@@ -292,7 +292,8 @@ export default class Graph extends Vue {
     if (
       event.srcElement.id === "Parents" ||
       event.srcElement.id === "Children" ||
-      event.srcElement.id === "Properties"
+      event.srcElement.id === "Properties" ||
+      event.srcElement.id === "Roles"
     ) {
       const currentParent = (this.graphData as any).children.filter(
         (child: any) => child.name === event.srcElement.id
