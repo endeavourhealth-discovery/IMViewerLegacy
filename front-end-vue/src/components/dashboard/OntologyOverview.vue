@@ -56,6 +56,7 @@ export default class OntologyOverview extends Vue {
     } else {
       ReportService.getConceptCategoryReport()
         .then(res => {
+          console.log(res.data)
           this.tableData = res.data;
           store.commit("updateOntologyOverview", this.tableData);
           store.commit("updateLoading", {
