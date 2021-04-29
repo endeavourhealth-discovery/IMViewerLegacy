@@ -69,7 +69,7 @@ export default class ConceptService {
   }
 
   public static async getSchemeOptions() {
-    return this.getConceptChildren(":551000252107");
+    return this.getConceptChildren("http://endhealth.info/im#551000252107");
   }
 
   public static async saveConcept(conceptDto: ConceptDto) {
