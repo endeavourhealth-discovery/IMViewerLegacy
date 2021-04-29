@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve --port 8081",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e",
+    "test:e2e:ci": "vue-cli-service test:e2e",
+    "test:e2e": "cross-env VUE_APP_API=http://localhost:8080/ vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
     "antlr4ts": "antlr4ts ./src/discovery-syntax/DiscoverySyntax.g4 -o ./src/discovery-syntax"
   },
@@ -54,6 +55,7 @@
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^5.0.2",
     "@vue/test-utils": "^2.0.0-0",
+    "cross-env": "^7.0.3",
     "cypress": "^7.2.0",
     "eslint": "^6.7.2",
     "eslint-plugin-cypress": "^2.11.2",
