@@ -201,7 +201,13 @@ export default class Hierarchy extends Vue {
 
     parents.forEach((parent: any) => {
       parentsNodes.push(
-        this.createTreeNode(parent.name, parent["@id"], parent.type, parent.name, true)
+        this.createTreeNode(
+          parent.name,
+          parent["@id"],
+          parent.type,
+          parent.name,
+          true
+        )
       );
     });
 

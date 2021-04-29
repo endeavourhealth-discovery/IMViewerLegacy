@@ -111,7 +111,6 @@ import Dropdown from "primevue/dropdown";
 import { ConceptStatus } from "@/models/ConceptStatus";
 import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
-import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
 
 @Options({
