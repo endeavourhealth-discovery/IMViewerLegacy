@@ -41,7 +41,15 @@ export default class Dashboard extends Vue {
   msg!: string;
   chartOptions: any = {
     legend: {
-      position: "right"
+      position: "right",
+      onHover: function(e: any) {
+        e.target.style.cursor = "pointer";
+      }
+    },
+    hover: {
+      onHover: function(e: any) {
+        e.target.style.cursor = "default";
+      }
     }
   };
   windowHeight = 0;
@@ -74,6 +82,14 @@ export default class Dashboard extends Vue {
           labels: {
             boxWidth: 40,
             fontSize: 12
+          },
+          onHover: function(e: any) {
+            e.target.style.cursor = "pointer";
+          }
+        },
+        hover: {
+          onHover: function(e: any) {
+            e.target.style.cursor = "default";
           }
         }
       };
@@ -84,8 +100,17 @@ export default class Dashboard extends Vue {
           labels: {
             boxWidth: 20,
             fontSize: 10
+          },
+          onHover: function(e: any) {
+            e.target.style.cursor = "pointer";
+          }
+        },
+        hover: {
+          onHover: function(e: any) {
+            e.target.style.cursor = "default";
           }
         }
+
       };
     } else if (width > 742) {
       this.chartOptions = {
@@ -94,6 +119,14 @@ export default class Dashboard extends Vue {
           labels: {
             boxWidth: 10,
             fontSize: 8
+          },
+          onHover: function(e: any) {
+            e.target.style.cursor = "pointer";
+          }
+        },
+        hover: {
+          onHover: function(e: any) {
+            e.target.style.cursor = "default";
           }
         }
       };
