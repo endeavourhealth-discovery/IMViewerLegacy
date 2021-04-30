@@ -5,7 +5,7 @@ export function setTooltips(counts: number[]) {
         const realData = counts;
         const label = d.labels[t.index];
         const value = realData[t.index];
-        return label + "test:" + value;
+        return label + ":" + value;
       }
     }
   }

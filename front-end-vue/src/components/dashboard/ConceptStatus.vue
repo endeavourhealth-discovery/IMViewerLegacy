@@ -16,7 +16,7 @@
           v-if="!$store.state.loading.get('reportStatus')"
           type="pie"
           :data="chartConceptStatus"
-          :options="chartOptions"
+          :options="updatedChartOptions"
           :height="graphHeight"
         />
       </template>
@@ -38,11 +38,19 @@ import { setTooltips, rescaleData } from "@/helpers/GraphRescale";
 @Options({
   name: "ConceptStatus",
   computed: mapState(["conceptStatus"]),
-  props: ["chartOptions", "graphHeight"]
+  props: ["chartOptions", "graphHeight"],
+  watch: {
+    chartOptions(newValue) {
+      this.updatedChartOptions = {...newValue};
+      // set tooltip to use real data
+      this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
+    }
+  }
 })
 export default class ConceptStatus extends Vue {
   chartOptions!: any;
   updatedChartOptions: any = {};
+  realData: any = {};
   chartConceptStatus: PieChartData = new PieChartData(
     [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }],
     []
@@ -64,8 +72,9 @@ export default class ConceptStatus extends Vue {
             this.chartConceptStatus.labels.push(status.label);
             this.chartConceptStatus.datasets[0].data.push(status.count);
           }
+          this.realData = {...this.chartConceptStatus.datasets[0].data};
           // set tooltip to use real data
-          this.updatedChartOptions["tooltips"] = setTooltips(this.chartConceptStatus.datasets[0].data);
+          this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
           // refactor data to a minimum graph size (1%) if less than min
           this.chartConceptStatus.datasets[0].data = rescaleData(this.chartConceptStatus.datasets[0].data);
           store.commit("updateConceptStatus", this.chartConceptStatus);

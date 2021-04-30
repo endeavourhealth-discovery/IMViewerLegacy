@@ -75,7 +75,7 @@ export default class Dashboard extends Vue {
   }
 
   setLegendOptions(width: number) {
-    if (width > 1588) {
+    if (width > 1750) {
       this.chartOptions = {
         legend: {
           position: "right",

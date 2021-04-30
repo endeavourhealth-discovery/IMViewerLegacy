@@ -38,11 +38,19 @@ import { setTooltips, rescaleData } from "@/helpers/GraphRescale";
 @Options({
   name: "ConceptSchemes",
   computed: mapState(["conceptSchemes"]),
-  props: ["chartOptions", "graphHeight"]
+  props: ["chartOptions", "graphHeight"],
+  watch: {
+    chartOptions(newValue) {
+      this.updatedChartOptions = {...newValue};
+      // set tooltip to use real data
+      this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
+    }
+  }
 })
 export default class ConceptSchemes extends Vue {
   chartOptions!: any;
   updatedChartOptions: any = {};
+  realData: any = {};
   chartConceptSchemes: PieChartData = new PieChartData(
     [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }],
     []
@@ -64,8 +72,9 @@ export default class ConceptSchemes extends Vue {
             this.chartConceptSchemes.labels.push(schema.label);
             this.chartConceptSchemes.datasets[0].data.push(schema.count);
           }
+          this.realData = {...this.chartConceptSchemes.datasets[0].data};
           // set tooltip to use real data
-          this.updatedChartOptions["tooltips"] = setTooltips(this.chartConceptSchemes.datasets[0].data);
+          this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
           // refactor data to a minimum graph size (1%) if less than min
           this.chartConceptSchemes.datasets[0].data = rescaleData(this.chartConceptSchemes.datasets[0].data);
           store.commit("updateConceptSchemes", this.chartConceptSchemes);
