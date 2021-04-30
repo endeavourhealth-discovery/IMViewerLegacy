@@ -192,27 +192,27 @@ export default class ConceptSummary extends Vue {
   }
 
   items = [
-    {
-      label: "Edit Concept",
-      icon: "pi pi-pencil",
-      command: () => {
-        this.openEditDialog();
-      }
-    },
+    // {
+    //   label: "Edit Concept",
+    //   icon: "pi pi-pencil",
+    //   command: () => {
+    //     this.openEditDialog();
+    //   }
+    // },
     {
       label: "Download Concept",
       icon: "pi pi-download",
       command: () => {
         this.openDownloadDialog();
       }
-    },
-    {
-      label: "Create New Concept",
-      icon: "pi pi-plus",
-      command: () => {
-        this.openAddDialog();
-      }
     }
+    // {
+    //   label: "Create New Concept",
+    //   icon: "pi pi-plus",
+    //   command: () => {
+    //     this.openAddDialog();
+    //   }
+    // }
   ];
 
   get conceptTypes() {
@@ -268,7 +268,7 @@ export default class ConceptSummary extends Vue {
   }
 
   convertTextToHTML(text: string) {
-    return text.replaceAll("<p>", "</p>\n<p class='description-p'>");
+    return text?.replaceAll("<p>", "</p>\n<p class='description-p'>");
   }
 }
 </script>
