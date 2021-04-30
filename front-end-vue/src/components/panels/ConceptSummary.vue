@@ -268,7 +268,7 @@ export default class ConceptSummary extends Vue {
   }
 
   convertTextToHTML(text: string) {
-    return text.replaceAll("<p>", "</p>\n<p class='description-p'>");
+    return text?.replaceAll("<p>", "</p>\n<p class='description-p'>");
   }
 }
 </script>
