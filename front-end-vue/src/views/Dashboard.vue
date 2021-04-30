@@ -93,7 +93,7 @@ export default class Dashboard extends Vue {
           }
         }
       };
-    } else if (width > 954) {
+    } else if (width > 1300) {
       this.chartOptions = {
         legend: {
           position: "bottom",
@@ -111,10 +111,10 @@ export default class Dashboard extends Vue {
           }
         }
       };
-    } else if (width > 742) {
+    } else if (width >= 1024) {
       this.chartOptions = {
         legend: {
-          position: "right",
+          position: "bottom",
           labels: {
             boxWidth: 10,
             fontSize: 8
