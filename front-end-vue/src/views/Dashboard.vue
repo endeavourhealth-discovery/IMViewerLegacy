@@ -75,7 +75,7 @@ export default class Dashboard extends Vue {
   }
 
   setLegendOptions(width: number) {
-    if (width > 1588) {
+    if (width > 1750) {
       this.chartOptions = {
         legend: {
           position: "right",
@@ -93,7 +93,7 @@ export default class Dashboard extends Vue {
           }
         }
       };
-    } else if (width > 954) {
+    } else if (width > 1300) {
       this.chartOptions = {
         legend: {
           position: "bottom",
@@ -110,12 +110,11 @@ export default class Dashboard extends Vue {
             e.target.style.cursor = "default";
           }
         }
-
       };
-    } else if (width > 742) {
+    } else if (width >= 1024) {
       this.chartOptions = {
         legend: {
-          position: "right",
+          position: "bottom",
           labels: {
             boxWidth: 10,
             fontSize: 8

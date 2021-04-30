@@ -16,7 +16,7 @@
           v-if="!$store.state.loading.get('reportScheme')"
           type="pie"
           :data="chartConceptSchemes"
-          :options="chartOptions"
+          :options="updatedChartOptions"
           :height="graphHeight"
         />
       </template>
@@ -33,20 +33,39 @@ import { colorLighter } from "@/helpers/ColorMethods";
 const palette = require("../../../node_modules/google-palette");
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
+import { setTooltips, rescaleData } from "@/helpers/GraphRescale";
 
 @Options({
   name: "ConceptSchemes",
   computed: mapState(["conceptSchemes"]),
-  props: ["chartOptions", "graphHeight"]
+  props: ["chartOptions", "graphHeight"],
+  watch: {
+    chartOptions(newValue) {
+      this.updatedChartOptions = { ...newValue };
+      // set tooltip to use real data
+      this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
+    }
+  }
 })
 export default class ConceptSchemes extends Vue {
+  chartOptions!: any;
+  updatedChartOptions: any = {};
+  realData: any = {};
   chartConceptSchemes: PieChartData = new PieChartData(
-    [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }],
+    [
+      {
+        data: [],
+        backgroundColor: [],
+        hoverBackgroundColor: [],
+        borderRadius: 1
+      }
+    ],
     []
   );
   conceptSchemes!: PieChartData;
 
   mounted() {
+    this.updatedChartOptions = { ...this.chartOptions };
     // chart scheme
     // strip out if statement and commit "updateConceptScheme" when server caching is implemented
     store.commit("updateLoading", { key: "reportScheme", value: true });
@@ -60,6 +79,13 @@ export default class ConceptSchemes extends Vue {
             this.chartConceptSchemes.labels.push(schema.label);
             this.chartConceptSchemes.datasets[0].data.push(schema.count);
           }
+          this.realData = { ...this.chartConceptSchemes.datasets[0].data };
+          // set tooltip to use real data
+          this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
+          // refactor data to a minimum graph size (1%) if less than min
+          this.chartConceptSchemes.datasets[0].data = rescaleData(
+            this.chartConceptSchemes.datasets[0].data
+          );
           store.commit("updateConceptSchemes", this.chartConceptSchemes);
           const length = Object.keys(res.data).length;
           const bgs = palette("tol-rainbow", length);
@@ -80,7 +106,7 @@ export default class ConceptSchemes extends Vue {
           );
         });
     }
-  }
+  } // mounted end
 }
 </script>
 
