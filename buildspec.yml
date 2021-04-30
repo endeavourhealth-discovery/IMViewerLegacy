@@ -13,8 +13,8 @@ phases:
     commands:
       - cd $CODEBUILD_SRC_DIR/front-end-vue
       - npm install
-      - npm run build || true
-      - aws_scripts/build.sh npm run build
+#      - npm run build || true
+      - $CODEBUILD_SRC_DIR/aws_scripts/build.sh npm run build
   post_build:
     commands:
       - IP=$(curl http://checkip.amazonaws.com)/32
