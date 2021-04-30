@@ -26,13 +26,7 @@ export function rescaleData(data: number[]) {
       return num;
     };
   });
-  modPercents[0] = modPercents[0] - countZero;
+  modPercents[0] = modPercents[0] - (countZero * minPercent);
   const corrected = modPercents.map(num => num * min);
-  console.log(data);
-  console.log(sum);
-  console.log(min);
-  console.log(percents);
-  console.log(modPercents);
-  console.log(corrected);
   return corrected;
 }
