@@ -52,7 +52,7 @@ export default class ConceptStatus extends Vue {
   updatedChartOptions: any = {};
   realData: any = {};
   chartConceptStatus: PieChartData = new PieChartData(
-    [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }],
+    [{ data: [], backgroundColor: [], hoverBackgroundColor: [], borderRadius: 1 }],
     []
   );
   conceptStatus!: PieChartData;

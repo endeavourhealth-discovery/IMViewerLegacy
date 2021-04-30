@@ -52,7 +52,7 @@ export default class ConceptSchemes extends Vue {
   updatedChartOptions: any = {};
   realData: any = {};
   chartConceptSchemes: PieChartData = new PieChartData(
-    [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }],
+    [{ data: [], backgroundColor: [], hoverBackgroundColor: [], borderRadius: 1 }],
     []
   );
   conceptSchemes!: PieChartData;

@@ -14,7 +14,7 @@ export function setTooltips(counts: number[]) {
 
 export function rescaleData(data: number[]) {
   const sum = data.reduce((a, b) => a + b, 0);
-  const minPercent = 0.5;
+  const minPercent = 0.75;
   const min = sum * (minPercent / 100);
   const percents = data.map(d => (Math.round((d / sum) * 100)));
   let countZero = 0;

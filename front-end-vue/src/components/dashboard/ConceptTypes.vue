@@ -52,7 +52,7 @@ export default class ConceptTypes extends Vue {
   updatedChartOptions: any = {};
   realData: any = {};
   chartConceptTypes: PieChartData = new PieChartData(
-    [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }],
+    [{ data: [], backgroundColor: [], hoverBackgroundColor: [], borderRadius: 1 }],
     []
   );
   conceptTypes!: PieChartData;
