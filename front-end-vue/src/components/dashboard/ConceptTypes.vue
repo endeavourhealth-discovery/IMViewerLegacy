@@ -16,7 +16,7 @@
           v-if="!$store.state.loading.get('reportType')"
           type="pie"
           :data="chartConceptTypes"
-          :options="chartOptions"
+          :options="updatedChartOptions"
           :height="graphHeight"
         />
       </template>
@@ -33,20 +33,39 @@ import { colorLighter } from "@/helpers/ColorMethods";
 const palette = require("../../../node_modules/google-palette");
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
+import { setTooltips, rescaleData } from "@/helpers/GraphRescale";
 
 @Options({
   name: "ConceptTypes",
   computed: mapState(["conceptTypes"]),
-  props: ["chartOptions", "graphHeight"]
+  props: ["chartOptions", "graphHeight"],
+  watch: {
+    chartOptions(newValue) {
+      this.updatedChartOptions = { ...newValue };
+      // set tooltip to use real data
+      this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
+    }
+  }
 })
 export default class ConceptTypes extends Vue {
+  chartOptions!: any;
+  updatedChartOptions: any = {};
+  realData: any = {};
   chartConceptTypes: PieChartData = new PieChartData(
-    [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }],
+    [
+      {
+        data: [],
+        backgroundColor: [],
+        hoverBackgroundColor: [],
+        borderRadius: 1
+      }
+    ],
     []
   );
   conceptTypes!: PieChartData;
 
   mounted() {
+    this.updatedChartOptions = { ...this.chartOptions };
     // chart type
     // remove if statement and commit "updateConceptTypes" when server caching in place
     store.commit("updateLoading", { key: "reportType", value: true });
@@ -60,6 +79,13 @@ export default class ConceptTypes extends Vue {
             this.chartConceptTypes.labels.push(type.label);
             this.chartConceptTypes.datasets[0].data.push(type.count);
           }
+          this.realData = { ...this.chartConceptTypes.datasets[0].data };
+          // set tooltip to use real data
+          this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
+          // refactor data to a minimum graph size (1%) if less than min
+          this.chartConceptTypes.datasets[0].data = rescaleData(
+            this.chartConceptTypes.datasets[0].data
+          );
           store.commit("updateConceptTypes", this.chartConceptTypes);
           const length = Object.keys(res.data).length;
           const bgs = palette("tol-rainbow", length);
