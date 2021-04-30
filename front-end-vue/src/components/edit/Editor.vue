@@ -79,7 +79,7 @@
           IMLang
         </template>
         <template #content>
-          <div style="height:500px;" id="container"></div>
+          <div style="height:500px;" id="editor-container"></div>
         </template>
       </Card>
     </div>
@@ -173,7 +173,7 @@ export default class EditorDialog extends Vue {
       );
     });
 
-    const editor = document.getElementById("container");
+    const editor = document.getElementById("editor-container");
 
     if (editor) {
       monaco.editor.create(editor, {
@@ -186,7 +186,7 @@ export default class EditorDialog extends Vue {
 
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const that = this;
-      const model = monaco.editor.getModels()[0];
+      const model = monaco.editor.getModels()[1];
       model.onDidChangeContent(() => {
         this.$emit("updateText", model.getValue());
         that.editorText = model.getValue();
@@ -240,8 +240,8 @@ export default class EditorDialog extends Vue {
   }
 
   beforeUnmount() {
-    const editor = document.getElementById("container");
-    const model = monaco.editor.getModels()[0];
+    const editor = document.getElementById("editor-container");
+    const model = monaco.editor.getModels()[1];
     model.dispose();
     while (editor?.firstChild) {
       const childNode = editor?.lastChild;
@@ -252,7 +252,7 @@ export default class EditorDialog extends Vue {
 
   get wordWrapColumn() {
     const width =
-      document.getElementById("container")?.clientWidth ||
+      document.getElementById("editor-container")?.clientWidth ||
       window.innerWidth ||
       document.documentElement.clientWidth ||
       document.body.clientWidth;
