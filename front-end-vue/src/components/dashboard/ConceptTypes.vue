@@ -33,6 +33,7 @@ import { colorLighter } from "@/helpers/ColorMethods";
 const palette = require("../../../node_modules/google-palette");
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
+import { setTooltips, rescaleData } from "@/helpers/GraphRescale";
 
 @Options({
   name: "ConceptTypes",
@@ -40,6 +41,8 @@ import { PieChartData } from "@/models/charts/PieChartData";
   props: ["chartOptions", "graphHeight"]
 })
 export default class ConceptTypes extends Vue {
+  chartOptions!: any;
+  updatedChartOptions: any = {};
   chartConceptTypes: PieChartData = new PieChartData(
     [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }],
     []
@@ -47,6 +50,7 @@ export default class ConceptTypes extends Vue {
   conceptTypes!: PieChartData;
 
   mounted() {
+    this.updatedChartOptions = {...this.chartOptions};
     // chart type
     // remove if statement and commit "updateConceptTypes" when server caching in place
     store.commit("updateLoading", { key: "reportType", value: true });
@@ -60,6 +64,10 @@ export default class ConceptTypes extends Vue {
             this.chartConceptTypes.labels.push(type.label);
             this.chartConceptTypes.datasets[0].data.push(type.count);
           }
+          // set tooltip to use real data
+          this.updatedChartOptions["tooltips"] = setTooltips(this.chartConceptTypes.datasets[0].data);
+          // refactor data to a minimum graph size (1%) if less than min
+          this.chartConceptTypes.datasets[0].data = rescaleData(this.chartConceptTypes.datasets[0].data);
           store.commit("updateConceptTypes", this.chartConceptTypes);
           const length = Object.keys(res.data).length;
           const bgs = palette("tol-rainbow", length);

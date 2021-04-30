@@ -110,7 +110,6 @@ export default class Dashboard extends Vue {
             e.target.style.cursor = "default";
           }
         }
-
       };
     } else if (width > 742) {
       this.chartOptions = {
