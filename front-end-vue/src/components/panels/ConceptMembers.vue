@@ -119,7 +119,7 @@ export default class ConceptMembers extends Vue {
   onNodeSelect(member: any) {
     this.$router.push({
       name: "Concept",
-      params: { selectedIri: member.concept.iri }
+      params: { selectedIri: member.concept["@id"] }
     });
   }
 
