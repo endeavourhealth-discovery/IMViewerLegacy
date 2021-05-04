@@ -110,6 +110,6 @@ export default class Header extends Vue {
 }
 
 .header-icon {
-  padding: 1px;;
+  padding: 1px;
 }
 </style>

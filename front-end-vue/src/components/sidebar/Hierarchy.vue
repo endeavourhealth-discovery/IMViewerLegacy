@@ -241,7 +241,7 @@ export default class Hierarchy extends Vue {
   transition: box-shadow 3600s 3600s !important;
 }
 .tree-root {
-  height: 100%;
+  height: 95%;
   overflow: auto;
 }
 .p-tree-toggler {
