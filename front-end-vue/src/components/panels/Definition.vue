@@ -24,7 +24,6 @@ import {
 })
 export default class Definition extends Vue {
   definition!: string;
-  currentFontSize = 0;
 
   get filteredDefinition() {
     const lines = this.definition.split(";");
@@ -49,6 +48,9 @@ export default class Definition extends Vue {
           richLanguageConfiguration
         );
       });
+      const html = document.documentElement;
+      const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
+
       this.editor = monaco.editor.create(
         document.getElementById("container")!,
         {
@@ -61,7 +63,7 @@ export default class Definition extends Vue {
           minimap: {
             enabled: false
           },
-          fontSize: this.currentFontSize
+          fontSize: currentFontSize
         }
       );
     } catch (error) {
@@ -72,8 +74,6 @@ export default class Definition extends Vue {
   }
 
   mounted() {
-    const html = document.documentElement;
-    this.currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"))
     this.initEditor();
   }
 

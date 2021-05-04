@@ -1,6 +1,6 @@
 <template>
   <div class="p-d-flex p-flex-column p-jc-start" id="side-bar">
-    <span class="p-input-icon-left search-bar">
+    <span class="p-input-icon-left" id="search-bar">
       <i class="pi pi-search" />
       <InputText
         type="text"
@@ -13,7 +13,8 @@
     </span>
 
     <TabView
-      class="p-d-flex p-flex-column p-jc-start side-menu"
+      class="p-d-flex p-flex-column p-jc-start"
+      id="side-menu"
       v-model:activeIndex="active"
     >
       <TabPanel>
@@ -81,6 +82,8 @@ export default class SidebarControl extends Vue {
 
     this.windowHeight = window.innerHeight;
     this.windowWidth = window.innerWidth;
+    const html = document.documentElement;
+    const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
     const header = document.getElementById("header-home");
     if (header) {
       this.headerHeight = header.offsetHeight;
@@ -88,7 +91,13 @@ export default class SidebarControl extends Vue {
     const sidebar = document.getElementById("side-bar");
     if (sidebar) {
       sidebar.style.maxHeight =
-        this.windowHeight - this.headerHeight - 14 + "px";
+        this.windowHeight - this.headerHeight - currentFontSize * 2 + "px";
+    }
+    const fixedSidebar = document.getElementById("side-bar");
+    const searchBar = document.getElementById("search-bar");
+    const sideMenu = document.getElementById("side-menu")
+    if (searchBar && fixedSidebar && sideMenu) {
+      sideMenu.style.maxHeight = fixedSidebar.offsetHeight - searchBar.offsetHeight + "px";
     }
   }
 
@@ -99,6 +108,8 @@ export default class SidebarControl extends Vue {
   onResize() {
     this.windowHeight = window.innerHeight;
     this.windowWidth = window.innerWidth;
+    const html = document.documentElement;
+    const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
     const header = document.getElementById("header-home");
     if (header) {
       this.headerHeight = header.offsetHeight;
@@ -106,7 +117,13 @@ export default class SidebarControl extends Vue {
     const sidebar = document.getElementById("side-bar");
     if (sidebar) {
       sidebar.style.maxHeight =
-        this.windowHeight - this.headerHeight - 28 + "px";
+        this.windowHeight - this.headerHeight - currentFontSize * 2 + "px";
+    }
+    const fixedSidebar = document.getElementById("side-bar");
+    const searchBar = document.getElementById("search-bar");
+    const sideMenu = document.getElementById("side-menu")
+    if (searchBar && fixedSidebar && sideMenu) {
+      sideMenu.style.maxHeight = fixedSidebar.offsetHeight - searchBar.offsetHeight + "px";
     }
   }
 
@@ -222,26 +239,26 @@ export default class SidebarControl extends Vue {
   width: 30vw;
 }
 
-.side-menu {
+#side-menu {
   /* max-height: calc(100% - 41px); */
   flex-grow: 100;
 }
 
-.side-menu ::v-deep(.p-tabview-panels) {
+#side-menu ::v-deep(.p-tabview-panels) {
   flex-grow: 6;
   overflow-y: auto;
 }
 
-.side-menu ::v-deep(.p-tabview-panel) {
-  height: 100%;
-  overflow-y: auto;
+#side-menu ::v-deep(.p-tabview-panel) {
+  height:100%;
+  /* overflow-y: auto; */
 }
 
 .results-filter-container {
   height: 100%;
 }
 
-.search-bar {
+#search-bar {
   width: 100%;
 }
 

@@ -1,35 +1,38 @@
 <template>
-  <span class="p-buttonset">
-    <Button
-      :label="parentLabel"
-      :disabled="parentLabel === ''"
-      icon="pi pi-chevron-up"
-      @click="expandParents"
-      class="p-button-text p-button-plain"
-    />
-    <Button
-      icon="pi pi-refresh"
-      @click="
-        refreshTree(
-          conceptAggregate.concept,
-          conceptAggregate.parents,
-          conceptAggregate.children
-        )
-      "
-      class="p-button-rounded p-button-text p-button-plain"
-    />
-  </span>
+  <div class="p-d-flex p-flex-column p-jc-start" id="hierarchy-tree-bar-container">
+    <span class="p-buttonset" id="hierarchy-selected-bar">
+      <Button
+        :label="parentLabel"
+        :disabled="parentLabel === ''"
+        icon="pi pi-chevron-up"
+        @click="expandParents"
+        class="p-button-text p-button-plain"
+      />
+      <Button
+        icon="pi pi-refresh"
+        @click="
+          refreshTree(
+            conceptAggregate.concept,
+            conceptAggregate.parents,
+            conceptAggregate.children
+          )
+        "
+        class="p-button-rounded p-button-text p-button-plain"
+      />
+    </span>
 
-  <Tree
-    :value="root"
-    selectionMode="single"
-    v-model:selectionKeys="selectedKey"
-    :expandedKeys="expandedKeys"
-    @node-select="onNodeSelect"
-    @node-expand="expandChildren"
-    class="tree-root"
-  >
-  </Tree>
+    <Tree
+      :value="root"
+      selectionMode="single"
+      v-model:selectionKeys="selectedKey"
+      :expandedKeys="expandedKeys"
+      @node-select="onNodeSelect"
+      @node-expand="expandChildren"
+      class="tree-root"
+    >
+    </Tree>
+  </div>
+
 </template>
 
 <script lang="ts">
@@ -236,6 +239,10 @@ export default class Hierarchy extends Vue {
 </script>
 
 <style>
+#hierarchy-tree-bar-container {
+  height: 100%;
+}
+
 .p-tree .p-tree-container .p-treenode .p-treenode-content {
   padding: 0rem !important;
   transition: box-shadow 3600s 3600s !important;
