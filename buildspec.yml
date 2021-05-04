@@ -9,11 +9,8 @@ phases:
   build:
     commands:
       - chmod +x aws_scripts/build.sh
-      - aws_scripts/build.sh mvn package
-      # - cd $CODEBUILD_SRC_DIR/front-end-vue
-      # - npm install
-      # - npm run test:unit
-      # - $CODEBUILD_SRC_DIR/aws_scripts/build.sh npm run build
+      - aws_scripts/build.sh mvn -B package
+      - mvn sonar:sonar
   post_build:
     commands:
       - IP=$(curl http://checkip.amazonaws.com)/32
