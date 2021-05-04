@@ -48,9 +48,9 @@ export default class Definition extends Vue {
           richLanguageConfiguration
         );
       });
-      this.editor = monaco.editor.create(
-        document.getElementById("container")!,
-        {
+      const container = document.getElementById("container");
+      if (container) {
+        this.editor = monaco.editor.create(container, {
           value: this.filteredDefinition,
           language: "DiscoverySyntax",
           readOnly: true,
@@ -60,8 +60,8 @@ export default class Definition extends Vue {
           minimap: {
             enabled: false
           }
-        }
-      );
+        });
+      }
     } catch (error) {
       this.$toast.add(
         LoggerService.error("Monaco editor initialisation failed", error)
