@@ -80,25 +80,7 @@ export default class SidebarControl extends Vue {
       window.addEventListener("resize", this.onResize);
     });
 
-    this.windowHeight = window.innerHeight;
-    this.windowWidth = window.innerWidth;
-    const html = document.documentElement;
-    const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
-    const header = document.getElementById("header-home");
-    if (header) {
-      this.headerHeight = header.offsetHeight;
-    }
-    const sidebar = document.getElementById("side-bar");
-    if (sidebar) {
-      sidebar.style.maxHeight =
-        this.windowHeight - this.headerHeight - currentFontSize * 2 + "px";
-    }
-    const fixedSidebar = document.getElementById("side-bar");
-    const searchBar = document.getElementById("search-bar");
-    const sideMenu = document.getElementById("side-menu")
-    if (searchBar && fixedSidebar && sideMenu) {
-      sideMenu.style.maxHeight = fixedSidebar.offsetHeight - searchBar.offsetHeight + "px";
-    }
+    this.setContainerHeights();
   }
 
   beforeDestroy() {
@@ -106,25 +88,7 @@ export default class SidebarControl extends Vue {
   }
 
   onResize() {
-    this.windowHeight = window.innerHeight;
-    this.windowWidth = window.innerWidth;
-    const html = document.documentElement;
-    const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
-    const header = document.getElementById("header-home");
-    if (header) {
-      this.headerHeight = header.offsetHeight;
-    }
-    const sidebar = document.getElementById("side-bar");
-    if (sidebar) {
-      sidebar.style.maxHeight =
-        this.windowHeight - this.headerHeight - currentFontSize * 2 + "px";
-    }
-    const fixedSidebar = document.getElementById("side-bar");
-    const searchBar = document.getElementById("search-bar");
-    const sideMenu = document.getElementById("side-menu")
-    if (searchBar && fixedSidebar && sideMenu) {
-      sideMenu.style.maxHeight = fixedSidebar.offsetHeight - searchBar.offsetHeight + "px";
-    }
+    this.setContainerHeights();
   }
 
   async search() {
@@ -227,6 +191,28 @@ export default class SidebarControl extends Vue {
     this.debounce = window.setTimeout(() => {
       this.search();
     }, 600);
+  }
+
+  setContainerHeights() {
+    this.windowHeight = window.innerHeight;
+    this.windowWidth = window.innerWidth;
+    const html = document.documentElement;
+    const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
+    const header = document.getElementById("header-home");
+    if (header) {
+      this.headerHeight = header.offsetHeight;
+    }
+    const sidebar = document.getElementById("side-bar");
+    if (sidebar) {
+      sidebar.style.maxHeight =
+        this.windowHeight - this.headerHeight - currentFontSize * 2 + "px";
+    }
+    const fixedSidebar = document.getElementById("side-bar");
+    const searchBar = document.getElementById("search-bar");
+    const sideMenu = document.getElementById("side-menu")
+    if (searchBar && fixedSidebar && sideMenu) {
+      sideMenu.style.maxHeight = fixedSidebar.offsetHeight - searchBar.offsetHeight + "px";
+    }
   }
 }
 </script>
