@@ -2,9 +2,6 @@ version: 0.2
 run-as: root
 
 phases:
-#  install:
-#    runtime-versions:
-#      java: corretto8
   pre_build:
     commands:
       - IP=$(curl http://checkip.amazonaws.com)/32
@@ -14,7 +11,7 @@ phases:
       - chmod +x aws_scripts/build.sh
       - cd $CODEBUILD_SRC_DIR/front-end-vue
       - npm install
-#      - npm run build || true
+      - npm run test:unit
       - $CODEBUILD_SRC_DIR/aws_scripts/build.sh npm run build
   post_build:
     commands:

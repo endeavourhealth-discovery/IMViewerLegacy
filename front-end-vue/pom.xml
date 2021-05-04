@@ -10,6 +10,7 @@
   </parent>
 
   <artifactId>front-end-vue</artifactId>
+  <version>1.0-SNAPSHOT</version>
 
   <properties>
     <sonar.projectKey>endeavourhealth-discovery_IMViewer::frontend</sonar.projectKey>
@@ -19,7 +20,7 @@
     <sonar.tests>.</sonar.tests>
     <sonar.test.inclusions>**/*.spec.ts,*/*.ts</sonar.test.inclusions>
     <sonar.exclusions>**/node_modules/**, **/environments/**/*, **/*.service.ts</sonar.exclusions>
-    <sonar.javascript.lcov.reportPaths>coverage/front-end-vue/lcov.info</sonar.javascript.lcov.reportPaths>
+    <sonar.javascript.lcov.reportPaths>/front-end-vue/coverage/lcov.info</sonar.javascript.lcov.reportPaths>
   </properties>
 
   <build>

@@ -26,11 +26,9 @@
 
     <sonar.projectKey>endeavourhealth-discovery_IMViewer</sonar.projectKey>
     <sonar.organization>endeavourhealth-discovery</sonar.organization>
-    <sonar.java.source>1.8</sonar.java.source>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.login>8ddba9bbb23a08a7cff43ecc620be3738a152b65</sonar.login>
-    <sonar.coverage.exclusions>**/api/**/*, **/dal/**/*, **/models/**/*</sonar.coverage.exclusions>
-    <sonar.junit.reportPaths>target/surefire-reports</sonar.junit.reportPaths>
+    <sonar.typescript.node>front-end-vue/node/node</sonar.typescript.node>
   </properties>
 
   <dependencyManagement>
@@ -51,6 +49,11 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>${maven-dependency-plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.sonarsource.scanner.maven</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>${maven-sonar-plugin.version}</version>
       </plugin>
     </plugins>
   </build>
