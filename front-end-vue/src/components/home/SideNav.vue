@@ -180,7 +180,7 @@ export default class SideNav extends Vue {
 }
 
 .avatar-icon {
-  width: 60px;
+  width: 4em;
   border: 1px solid lightgray;
   border-radius: 50%;
   cursor: pointer;

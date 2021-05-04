@@ -111,10 +111,20 @@ export default class ConceptSchemes extends Vue {
 </script>
 
 <style scoped>
-.dashcard-container {
-  grid-area: schemes;
-  height: 100%;
-  width: calc(35vw - 72px);
+@media screen and (min-width: 768px) {
+  .dashcard-container {
+    grid-area: schemes;
+    height: 100%;
+    width: calc(35vw - 72px);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .dashcard-container {
+    grid-area: schemes;
+    height: 100%;
+    width: 100%;
+  }
 }
 
 .dashcard {

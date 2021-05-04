@@ -111,10 +111,20 @@ export default class ConceptTypes extends Vue {
 </script>
 
 <style scoped>
-.dashcard-container {
-  grid-area: types;
-  height: 100%;
-  width: calc(35vw - 72px);
+@media screen and (min-width: 768) {
+  .dashcard-container {
+    grid-area: types;
+    height: 100%;
+    width: calc(35vw - 72px);
+  }
+}
+
+@media screen and (max-width: 767) {
+  .dashcard-container {
+    grid-area: types;
+    height: 100%;
+    width: 100%;
+  }
 }
 
 .dashcard {

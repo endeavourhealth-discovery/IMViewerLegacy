@@ -72,6 +72,7 @@ export default class Header extends Vue {
 .header-container {
   grid-area: header;
   height: 100% !important;
+  gap: 7px;
 }
 
 .header .p-card-header {
@@ -96,7 +97,7 @@ export default class Header extends Vue {
 }
 
 .icon-header {
-  width: 100px;
+  /* width: 100px; */
   font-size: 6rem;
   padding: 5px;
 }

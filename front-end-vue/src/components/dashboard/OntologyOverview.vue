@@ -78,10 +78,20 @@ export default class OntologyOverview extends Vue {
 </script>
 
 <style scoped>
-.dashcard-container {
-  grid-area: overview;
-  height: 100%;
-  width: calc(35vw - 72px);
+@media screen and (min-width: 768px) {
+  .dashcard-container {
+    grid-area: overview;
+    height: 100%;
+    width: calc(35vw - 72px);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .dashcard-container {
+    grid-area: overview;
+    height: 100%;
+    width: 100%;
+  }
 }
 .dashcard {
   height: 100%;

@@ -141,19 +141,41 @@ export default class Dashboard extends Vue {
 </script>
 
 <style scoped>
-.dashboard-container {
-  grid-area: content;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  grid-template-areas:
-    "overview types"
-    "schemes status";
-  column-gap: 7px;
-  row-gap: 7px;
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
+@media screen and (min-width: 768px) {
+  .dashboard-container {
+    grid-area: content;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+      "overview types"
+      "schemes status";
+    column-gap: 7px;
+    row-gap: 7px;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .dashboard-container {
+    grid-area: content;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+    grid-template-areas:
+      "overview"
+      "types"
+      "schemes"
+      "status";
+    column-gap: 7px;
+    row-gap: 7px;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 }
 </style>
