@@ -116,4 +116,8 @@ export default class Filters extends Vue {
 }
 </script>
 
-<style></style>
+<style scoped>
+label {
+  font-size: 1.25rem !important;
+}
+</style>

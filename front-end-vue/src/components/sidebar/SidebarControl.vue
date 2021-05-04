@@ -223,8 +223,8 @@ export default class SidebarControl extends Vue {
 }
 
 .side-menu {
-  max-height: calc(100% - 41px);
-  flex-grow: 6;
+  /* max-height: calc(100% - 41px); */
+  flex-grow: 100;
 }
 
 .side-menu ::v-deep(.p-tabview-panels) {

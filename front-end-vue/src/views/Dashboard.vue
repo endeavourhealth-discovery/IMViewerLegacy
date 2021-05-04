@@ -129,6 +129,60 @@ export default class Dashboard extends Vue {
           }
         }
       };
+    } else if (width >= 892) {
+      this.chartOptions = {
+        legend: {
+          position: "right",
+          labels: {
+            boxWidth: 40,
+            fontSize: 8
+          },
+          onHover: function(e: any) {
+            e.target.style.cursor = "pointer";
+          }
+        },
+        hover: {
+          onHover: function(e: any) {
+            e.target.style.cursor = "default";
+          }
+        }
+      };
+    } else if (width >= 557) {
+      this.chartOptions = {
+        legend: {
+          position: "bottom",
+          labels: {
+            boxWidth: 20,
+            fontSize: 6
+          },
+          onHover: function(e: any) {
+            e.target.style.cursor = "pointer";
+          }
+        },
+        hover: {
+          onHover: function(e: any) {
+            e.target.style.cursor = "default";
+          }
+        }
+      };
+    } else if (width >= 0) {
+      this.chartOptions = {
+        legend: {
+          position: "bottom",
+          labels: {
+            boxWidth: 10,
+            fontSize: 4
+          },
+          onHover: function(e: any) {
+            e.target.style.cursor = "pointer";
+          }
+        },
+        hover: {
+          onHover: function(e: any) {
+            e.target.style.cursor = "default";
+          }
+        }
+      };
     } else {
       this.chartOptions = {
         legend: {
@@ -141,7 +195,7 @@ export default class Dashboard extends Vue {
 </script>
 
 <style scoped>
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 1024px) {
   .dashboard-container {
     grid-area: content;
     display: grid;
@@ -159,7 +213,7 @@ export default class Dashboard extends Vue {
   }
 }
 
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 1023px) {
   .dashboard-container {
     grid-area: content;
     display: grid;
