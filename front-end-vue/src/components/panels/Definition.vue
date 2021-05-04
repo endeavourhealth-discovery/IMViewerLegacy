@@ -24,6 +24,7 @@ import {
 })
 export default class Definition extends Vue {
   definition!: string;
+  currentFontSize = 0;
 
   get filteredDefinition() {
     const lines = this.definition.split(";");
@@ -59,7 +60,8 @@ export default class Definition extends Vue {
           automaticLayout: true,
           minimap: {
             enabled: false
-          }
+          },
+          fontSize: this.currentFontSize
         }
       );
     } catch (error) {
@@ -70,6 +72,8 @@ export default class Definition extends Vue {
   }
 
   mounted() {
+    const html = document.documentElement;
+    this.currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"))
     this.initEditor();
   }
 

@@ -2,9 +2,18 @@
     box-sizing: border-box;
 }
 
-html {
-    height: 100%;
-    font-size: $fontSize;
+@media screen and (max-width: 1440px) {
+    html {
+        height: 100%;
+        font-size: $fontSize;
+    }
+}
+
+@media screen and (min-width: 1441px) {
+    html {
+        height: 100%;
+        font-size: 14.4px;;
+    }
 }
 
 body {

@@ -117,4 +117,8 @@ export default class Header extends Vue {
 .icon-lightbulb {
   color: orange;
 }
+
+span {
+  font-size: 1rem;
+}
 </style>

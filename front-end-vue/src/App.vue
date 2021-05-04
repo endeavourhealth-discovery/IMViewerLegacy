@@ -8,6 +8,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
+import { a } from "@aws-amplify/ui";
 
 @Options({
   name: "App"
@@ -20,30 +21,36 @@ export default class App extends Vue {
 </script>
 
 <style>
+/* @media screen and (min-width:  1440px) {
+  html {
+    font-size: 14px !important;
+  }
+} */
+
 body {
   overflow: hidden;
 }
 
-.popup-user {
+#popup-user {
   background-color: #3b3e47 !important;
-  left: 100px !important;
-  bottom: 95px !important;
+  left: 8vw !important;
+  bottom: calc(4rem + 45px ) !important;
   top: unset !important;
 }
 
-.popup-user ul li a .p-menuitem-icon {
+#popup-user ul li a .p-menuitem-icon {
   color: lightgray !important;
 }
 
-.popup-user ul li a .p-menuitem-text {
+#popup-user ul li a .p-menuitem-text {
   color: lightgray !important;
 }
 
-.popup-user ul li:hover a .p-menuitem-icon {
+#popup-user ul li:hover a .p-menuitem-icon {
   color: #3b3e47 !important;
 }
 
-.popup-user ul li:hover a .p-menuitem-text {
+#popup-user ul li:hover a .p-menuitem-text {
   color: #3b3e47 !important;
 }
 

@@ -58,7 +58,7 @@
             ref="menu"
             :model="getItems()"
             :popup="true"
-            class="popup-user"
+            id="popup-user"
           />
           <i class="pi pi-cog settings-icon"></i>
         </div>
@@ -80,6 +80,7 @@ export default class SideNav extends Vue {
   currentUser!: User;
   isLoggedIn!: boolean;
   $refs!: any;
+  userPopupBottom = 0;
 
   isActive(item: string) {
     if (this.$route.name == item) {
@@ -169,7 +170,7 @@ export default class SideNav extends Vue {
 .user-icon,
 .settings-icon {
   width: 100%;
-  font-size: 4em;
+  font-size: 4rem;
   color: lightgray;
   padding: 5px;
   cursor: pointer;
@@ -180,7 +181,7 @@ export default class SideNav extends Vue {
 }
 
 .avatar-icon {
-  width: 4em;
+  width: 4rem;
   border: 1px solid lightgray;
   border-radius: 50%;
   cursor: pointer;
@@ -188,7 +189,7 @@ export default class SideNav extends Vue {
 
 .im-logo {
   text-align: center;
-  font-size: 4em;
+  font-size: 4rem;
   color: lightgray;
   font-weight: bold;
   cursor: pointer;
