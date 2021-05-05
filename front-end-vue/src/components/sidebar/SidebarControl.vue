@@ -1,7 +1,7 @@
 <template>
   <div class="p-d-flex p-flex-column p-jc-start" id="side-bar">
-    <span class="p-input-icon-left search-bar">
-      <i class="pi pi-search" />
+    <span class="p-input-icon-left" id="search-bar">
+      <i class="pi pi-search" aria-hidden="true" />
       <InputText
         type="text"
         v-model="searchTerm"
@@ -13,26 +13,27 @@
     </span>
 
     <TabView
-      class="p-d-flex p-flex-column p-jc-start side-menu"
+      class="p-d-flex p-flex-column p-jc-start"
+      id="side-menu"
       v-model:activeIndex="active"
     >
       <TabPanel>
         <template #header>
-          <i class="fas fa-project-diagram icon-header" />
+          <i class="fas fa-project-diagram icon-header" aria-hidden="true" />
           <span>Hierarchy</span>
         </template>
         <Hierarchy />
       </TabPanel>
       <TabPanel>
         <template #header>
-          <i class="fas fa-history icon-header" />
+          <i class="fas fa-history icon-header" aria-hidden="true" />
           <span>History</span>
         </template>
         <History />
       </TabPanel>
       <TabPanel>
         <template #header>
-          <i class="fas fa-search icon-header" />
+          <i class="fas fa-search icon-header" aria-hidden="true" />
           <span>Search results</span>
         </template>
 
@@ -79,17 +80,7 @@ export default class SidebarControl extends Vue {
       window.addEventListener("resize", this.onResize);
     });
 
-    this.windowHeight = window.innerHeight;
-    this.windowWidth = window.innerWidth;
-    const header = document.getElementById("header-home");
-    if (header) {
-      this.headerHeight = header.offsetHeight;
-    }
-    const sidebar = document.getElementById("side-bar");
-    if (sidebar) {
-      sidebar.style.maxHeight =
-        this.windowHeight - this.headerHeight - 14 + "px";
-    }
+    this.setContainerHeights();
   }
 
   beforeDestroy() {
@@ -97,17 +88,7 @@ export default class SidebarControl extends Vue {
   }
 
   onResize() {
-    this.windowHeight = window.innerHeight;
-    this.windowWidth = window.innerWidth;
-    const header = document.getElementById("header-home");
-    if (header) {
-      this.headerHeight = header.offsetHeight;
-    }
-    const sidebar = document.getElementById("side-bar");
-    if (sidebar) {
-      sidebar.style.maxHeight =
-        this.windowHeight - this.headerHeight - 28 + "px";
-    }
+    this.setContainerHeights();
   }
 
   async search() {
@@ -211,6 +192,31 @@ export default class SidebarControl extends Vue {
       this.search();
     }, 600);
   }
+
+  setContainerHeights() {
+    this.windowHeight = window.innerHeight;
+    this.windowWidth = window.innerWidth;
+    const html = document.documentElement;
+    const currentFontSize = parseFloat(
+      window.getComputedStyle(html, null).getPropertyValue("font-size")
+    );
+    const header = document.getElementById("header-home");
+    if (header) {
+      this.headerHeight = header.offsetHeight;
+    }
+    const sidebar = document.getElementById("side-bar");
+    if (sidebar) {
+      sidebar.style.maxHeight =
+        this.windowHeight - this.headerHeight - currentFontSize * 2 + "px";
+    }
+    const fixedSidebar = document.getElementById("side-bar");
+    const searchBar = document.getElementById("search-bar");
+    const sideMenu = document.getElementById("side-menu");
+    if (searchBar && fixedSidebar && sideMenu) {
+      sideMenu.style.maxHeight =
+        fixedSidebar.offsetHeight - searchBar.offsetHeight + "px";
+    }
+  }
 }
 </script>
 
@@ -222,26 +228,26 @@ export default class SidebarControl extends Vue {
   width: 30vw;
 }
 
-.side-menu {
-  max-height: calc(100% - 41px);
-  flex-grow: 6;
+#side-menu {
+  /* max-height: calc(100% - 41px); */
+  flex-grow: 100;
 }
 
-.side-menu ::v-deep(.p-tabview-panels) {
+#side-menu ::v-deep(.p-tabview-panels) {
   flex-grow: 6;
   overflow-y: auto;
 }
 
-.side-menu ::v-deep(.p-tabview-panel) {
+#side-menu ::v-deep(.p-tabview-panel) {
   height: 100%;
-  overflow-y: auto;
+  /* overflow-y: auto; */
 }
 
 .results-filter-container {
   height: 100%;
 }
 
-.search-bar {
+#search-bar {
   width: 100%;
 }
 

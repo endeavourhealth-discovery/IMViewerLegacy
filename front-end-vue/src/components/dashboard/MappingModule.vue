@@ -2,7 +2,7 @@
   <div class="modulecard-container" id="module-card">
     <Card class="modulecard">
       <template #header>
-        <i class="fas fa-map icon-mapping" />
+        <i class="fas fa-map icon-mapping" aria-hidden="true" />
       </template>
       <template #title> Mapping Module </template>
       <template #subtitle> Data model maps </template>

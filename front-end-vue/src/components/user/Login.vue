@@ -2,7 +2,7 @@
   <div class="p-d-flex p-flex-row p-ai-center">
     <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center login-card">
       <template #header>
-        <i class="pi pi-fw pi-user icon-header" />
+        <i class="pi pi-fw pi-user icon-header" aria-hidden="true" />
       </template>
       <template #title>
         Login

@@ -48,6 +48,10 @@ export default class Definition extends Vue {
           richLanguageConfiguration
         );
       });
+      const html = document.documentElement;
+      const currentFontSize = parseFloat(
+        window.getComputedStyle(html, null).getPropertyValue("font-size")
+      );
       const container = document.getElementById("container");
       if (container) {
         this.editor = monaco.editor.create(container, {
@@ -59,8 +63,11 @@ export default class Definition extends Vue {
           automaticLayout: true,
           minimap: {
             enabled: false
-          }
+          },
+          fontSize: currentFontSize
         });
+      } else {
+        LoggerService.error(undefined, "monaco container not found");
       }
     } catch (error) {
       this.$toast.add(

@@ -23,7 +23,8 @@ import LoggerService from "@/services/LoggerService";
     SideNav,
     Header,
     SidebarControl
-  }
+  },
+  emits: ["userPopupToggled"]
 })
 export default class Home extends Vue {
   async mounted() {
