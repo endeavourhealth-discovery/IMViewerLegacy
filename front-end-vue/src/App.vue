@@ -70,7 +70,7 @@ body {
 }
 
 /* Settings specifically for dealing with 300% scaling */
-@media (-webkit-device-pixel-ratio: 3.0) {
+@media (-webkit-device-pixel-ratio: 3) {
   .p-component {
     font-size: 0.7rem !important;
   }

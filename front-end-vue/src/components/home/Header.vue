@@ -11,7 +11,10 @@
         <i class="fas fa-tasks icon-tasks icon-header" aria-hidden="true" />
       </div>
       <div v-else>
-        <i class="fas fa-lightbulb icon-lightbulb icon-header" aria-hidden="true" />
+        <i
+          class="fas fa-lightbulb icon-lightbulb icon-header"
+          aria-hidden="true"
+        />
       </div>
     </div>
     <div class="p-d-flex p-flex-column p-jc-center text-container">
