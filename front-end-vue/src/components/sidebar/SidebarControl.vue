@@ -197,7 +197,9 @@ export default class SidebarControl extends Vue {
     this.windowHeight = window.innerHeight;
     this.windowWidth = window.innerWidth;
     const html = document.documentElement;
-    const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
+    const currentFontSize = parseFloat(
+      window.getComputedStyle(html, null).getPropertyValue("font-size")
+    );
     const header = document.getElementById("header-home");
     if (header) {
       this.headerHeight = header.offsetHeight;
@@ -209,9 +211,10 @@ export default class SidebarControl extends Vue {
     }
     const fixedSidebar = document.getElementById("side-bar");
     const searchBar = document.getElementById("search-bar");
-    const sideMenu = document.getElementById("side-menu")
+    const sideMenu = document.getElementById("side-menu");
     if (searchBar && fixedSidebar && sideMenu) {
-      sideMenu.style.maxHeight = fixedSidebar.offsetHeight - searchBar.offsetHeight + "px";
+      sideMenu.style.maxHeight =
+        fixedSidebar.offsetHeight - searchBar.offsetHeight + "px";
     }
   }
 }
@@ -236,7 +239,7 @@ export default class SidebarControl extends Vue {
 }
 
 #side-menu ::v-deep(.p-tabview-panel) {
-  height:100%;
+  height: 100%;
   /* overflow-y: auto; */
 }
 

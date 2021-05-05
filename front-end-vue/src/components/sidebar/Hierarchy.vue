@@ -1,5 +1,8 @@
 <template>
-  <div class="p-d-flex p-flex-column p-jc-start" id="hierarchy-tree-bar-container">
+  <div
+    class="p-d-flex p-flex-column p-jc-start"
+    id="hierarchy-tree-bar-container"
+  >
     <span class="p-buttonset" id="hierarchy-selected-bar">
       <Button
         :label="parentLabel"
@@ -32,7 +35,6 @@
     >
     </Tree>
   </div>
-
 </template>
 
 <script lang="ts">

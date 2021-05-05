@@ -54,12 +54,7 @@
             aria-haspopup="true"
             aria-controls="overlay_menu"
           />
-          <Menu
-            ref="menu"
-            :model="getItems()"
-            :popup="true"
-            id="popup-user"
-          />
+          <Menu ref="menu" :model="getItems()" :popup="true" id="popup-user" />
           <i class="pi pi-cog settings-icon"></i>
         </div>
       </div>

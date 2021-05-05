@@ -49,7 +49,9 @@ export default class Definition extends Vue {
         );
       });
       const html = document.documentElement;
-      const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
+      const currentFontSize = parseFloat(
+        window.getComputedStyle(html, null).getPropertyValue("font-size")
+      );
 
       this.editor = monaco.editor.create(
         document.getElementById("container")!,

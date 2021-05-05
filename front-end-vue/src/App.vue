@@ -8,7 +8,6 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import store from "@/store/index";
-import { a } from "@aws-amplify/ui";
 
 @Options({
   name: "App"
@@ -27,7 +26,7 @@ body {
 
 #popup-user {
   background-color: #3b3e47 !important;
-  bottom: calc(4rem + 45px ) !important;
+  bottom: calc(4rem + 45px) !important;
   top: unset !important;
 }
 
