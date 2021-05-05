@@ -21,12 +21,6 @@ export default class App extends Vue {
 </script>
 
 <style>
-/* @media screen and (min-width:  1440px) {
-  html {
-    font-size: 14px !important;
-  }
-} */
-
 body {
   overflow: hidden;
 }
@@ -36,6 +30,12 @@ body {
   left: 8vw !important;
   bottom: calc(4rem + 45px ) !important;
   top: unset !important;
+}
+
+@media screen and (min-width: 1440px) {
+  #popup-user {
+    left: 115px !important;
+  }
 }
 
 #popup-user ul li a .p-menuitem-icon {
