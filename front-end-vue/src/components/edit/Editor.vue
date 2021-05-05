@@ -96,10 +96,7 @@ import {
   richLanguageConfiguration
 } from "@/discovery-syntax/DiscoveryLanguage";
 import { DiscoverySyntaxLexer } from "@/discovery-syntax/DiscoverySyntaxLexer";
-import {
-  ConceptContext,
-  DiscoverySyntaxParser
-} from "@/discovery-syntax/DiscoverySyntaxParser";
+import { DiscoverySyntaxParser } from "@/discovery-syntax/DiscoverySyntaxParser";
 import { ANTLRInputStream, CommonTokenStream } from "antlr4ts";
 import { Options, Vue } from "vue-class-component";
 import * as monaco from "monaco-editor";
@@ -217,7 +214,7 @@ export default class EditorDialog extends Vue {
     );
   }
 
-  parse(code: string): { ast: ConceptContext; errors: Error[] } {
+  parse(code: string): { errors: Error[] } {
     const inputStream = new ANTLRInputStream(code);
     const lexer = new DiscoverySyntaxLexer(inputStream);
     lexer.removeErrorListeners();
@@ -227,9 +224,8 @@ export default class EditorDialog extends Vue {
     const parser = new DiscoverySyntaxParser(tokenStream);
     parser.removeErrorListeners();
     parser.addErrorListener(todoLangErrorListener);
-    const ast = parser.concept();
     const errors: Error[] = todoLangErrorListener.getErrors();
-    return { ast, errors };
+    return { errors };
   }
 
   toDiagnostics(error: Error): monaco.editor.IMarkerData {
