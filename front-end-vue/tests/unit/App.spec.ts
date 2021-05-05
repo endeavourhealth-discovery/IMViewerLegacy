@@ -1,5 +1,5 @@
 import store from "@/store/index";
-import { mount } from "@vue/test-utils";
+import { shallowMount } from "@vue/test-utils";
 import App from "@/App.vue";
 import Toast from "primevue/toast";
 
@@ -7,7 +7,7 @@ describe("App.vue", () => {
   let wrapper: any;
 
   beforeEach(() => {
-    wrapper = mount(App, {
+    wrapper = shallowMount(App, {
       global: {
         plugins: [store],
         components: { Toast },

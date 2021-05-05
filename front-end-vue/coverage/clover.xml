@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1620226507415" clover="3.2.0">
-  <project timestamp="1620226507415" name="All files">
-    <metrics statements="1477" coveredstatements="247" conditionals="625" coveredconditionals="48" methods="379" coveredmethods="50" elements="2481" coveredelements="345" complexity="0" loc="1477" ncloc="1477" packages="9" files="46" classes="46"/>
+<coverage generated="1620231427564" clover="3.2.0">
+  <project timestamp="1620231427564" name="All files">
+    <metrics statements="1477" coveredstatements="256" conditionals="625" coveredconditionals="49" methods="379" coveredmethods="51" elements="2481" coveredelements="356" complexity="0" loc="1477" ncloc="1477" packages="9" files="46" classes="46"/>
     <package name="src">
       <metrics statements="7" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <file name="App.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/App.vue">
@@ -1012,7 +1012,7 @@
       </file>
     </package>
     <package name="src.components.user">
-      <metrics statements="433" coveredstatements="241" conditionals="178" coveredconditionals="48" methods="117" coveredmethods="48"/>
+      <metrics statements="433" coveredstatements="247" conditionals="178" coveredconditionals="48" methods="117" coveredmethods="49"/>
       <file name="AvatarWithSelector.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/components/user/AvatarWithSelector.vue">
         <metrics statements="13" coveredstatements="11" conditionals="3" coveredconditionals="3" methods="5" coveredmethods="4"/>
         <line num="44" count="2" type="stmt"/>
@@ -1030,16 +1030,16 @@
         <line num="79" count="2" type="stmt"/>
       </file>
       <file name="ButtonBar.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/components/user/ButtonBar.vue">
-        <metrics statements="9" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <line num="19" count="0" type="stmt"/>
-        <line num="20" count="0" type="stmt"/>
-        <line num="21" count="0" type="stmt"/>
-        <line num="27" count="0" type="stmt"/>
-        <line num="28" count="0" type="stmt"/>
+        <metrics statements="9" coveredstatements="6" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="1"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="27" count="2" type="stmt"/>
+        <line num="28" count="1" type="stmt"/>
         <line num="29" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="30" count="0" type="stmt"/>
         <line num="32" count="0" type="stmt"/>
-        <line num="35" count="0" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
       </file>
       <file name="ConfirmCode.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/components/user/ConfirmCode.vue">
         <metrics statements="34" coveredstatements="18" conditionals="15" coveredconditionals="7" methods="12" coveredmethods="5"/>
@@ -1484,7 +1484,7 @@
       </file>
     </package>
     <package name="src.views">
-      <metrics statements="140" coveredstatements="0" conditionals="45" coveredconditionals="0" methods="39" coveredmethods="0"/>
+      <metrics statements="140" coveredstatements="3" conditionals="45" coveredconditionals="1" methods="39" coveredmethods="0"/>
       <file name="Concept.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/views/Concept.vue">
         <metrics statements="3" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
         <line num="8" count="0" type="stmt"/>
@@ -1596,10 +1596,10 @@
         <line num="148" count="0" type="stmt"/>
       </file>
       <file name="User.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/views/User.vue">
-        <metrics statements="3" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="13" count="0" type="stmt"/>
-        <line num="14" count="0" type="stmt"/>
-        <line num="22" count="0" type="stmt"/>
+        <metrics statements="3" coveredstatements="3" conditionals="2" coveredconditionals="1" methods="0" coveredmethods="0"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
       </file>
       <file name="Workflow.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/views/Workflow.vue">
         <metrics statements="39" coveredstatements="0" conditionals="9" coveredconditionals="0" methods="6" coveredmethods="0"/>
