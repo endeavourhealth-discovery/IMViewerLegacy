@@ -52,7 +52,6 @@ export default class Definition extends Vue {
       const currentFontSize = parseFloat(
         window.getComputedStyle(html, null).getPropertyValue("font-size")
       );
-
       const container = document.getElementById("container");
       if (container) {
         this.editor = monaco.editor.create(container, {

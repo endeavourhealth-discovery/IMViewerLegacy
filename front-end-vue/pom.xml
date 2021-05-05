@@ -10,16 +10,18 @@
   </parent>
 
   <artifactId>front-end-vue</artifactId>
+  <version>1.0-SNAPSHOT</version>
 
   <properties>
     <sonar.projectKey>endeavourhealth-discovery_IMViewer::frontend</sonar.projectKey>
     <sonar.sources>src</sonar.sources>
+    <sonar.nodejs.executable>node/node</sonar.nodejs.executable>
     <sonar.typescript.tsconfigPath>tsconfig.json</sonar.typescript.tsconfigPath>
     <sonar.ts.tslint.configPath>tslint.json</sonar.ts.tslint.configPath>
     <sonar.tests>.</sonar.tests>
     <sonar.test.inclusions>**/*.spec.ts,*/*.ts</sonar.test.inclusions>
     <sonar.exclusions>**/node_modules/**, **/environments/**/*, **/*.service.ts</sonar.exclusions>
-    <sonar.javascript.lcov.reportPaths>coverage/front-end-vue/lcov.info</sonar.javascript.lcov.reportPaths>
+    <sonar.javascript.lcov.reportPaths>coverage/lcov.info</sonar.javascript.lcov.reportPaths>
   </properties>
 
   <build>
@@ -54,7 +56,16 @@
             </goals>
           </execution>
           <execution>
-            <id>ng build</id>
+            <id>npm test</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>run test:unit</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm build</id>
             <goals>
               <goal>npm</goal>
             </goals>
