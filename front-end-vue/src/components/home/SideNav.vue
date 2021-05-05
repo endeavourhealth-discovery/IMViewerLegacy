@@ -148,7 +148,12 @@ export default class SideNav extends Vue {
 .layout-menu-container {
   padding: 20px 0;
   height: 100%;
-  width: 8vw;
+}
+
+@media screen and (max-width: 1439px) {
+  .layout-menu-container {
+    width: 8vw;
+  }
 }
 
 @media screen and (min-width: 1440px) {

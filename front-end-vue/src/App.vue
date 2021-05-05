@@ -107,8 +107,16 @@ body {
     font-size: 2em !important;
   }
 
-  .layout-menu-container {
-    width: 60px !important;
+  @media screen and (max-width: 1439px) {
+    .layout-menu-container {
+      width: 8vw;
+    }
+  }
+
+  @media screen and (min-width: 1440px) {
+    .layout-menu-container {
+      width: 115px;
+    }
   }
 }
 </style>
