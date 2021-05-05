@@ -4,7 +4,7 @@
       class="p-d-flex p-flex-column p-jc-sm-around p-ai-center confirm-card"
     >
       <template #header>
-        <i class="pi pi-fw pi-key icon-header" />
+        <i class="pi pi-fw pi-key icon-header" aria-hidden="true" />
       </template>
       <template #title>
         Confirmation Code
@@ -27,10 +27,12 @@
               <i
                 v-if="codeVerified"
                 class="pi pi-check-circle password-check"
+                aria-hidden="true"
               />
               <i
                 v-if="!codeVerified && code !== ''"
                 class="pi pi-times-circle password-times"
+                aria-hidden="true"
               />
             </div>
             <small id="code-help"

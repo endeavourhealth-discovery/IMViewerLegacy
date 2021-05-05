@@ -35,6 +35,7 @@
               <i
                 :class="getPerspectiveByConceptType(slotProps.data.conceptType)"
                 class="result-icon"
+                aria-hidden="true"
               />
             </div>
             <div class="result-text-container">

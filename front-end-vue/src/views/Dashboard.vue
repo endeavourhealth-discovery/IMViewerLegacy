@@ -129,6 +129,60 @@ export default class Dashboard extends Vue {
           }
         }
       };
+    } else if (width >= 892) {
+      this.chartOptions = {
+        legend: {
+          position: "right",
+          labels: {
+            boxWidth: 40,
+            fontSize: 8
+          },
+          onHover: function(e: any) {
+            e.target.style.cursor = "pointer";
+          }
+        },
+        hover: {
+          onHover: function(e: any) {
+            e.target.style.cursor = "default";
+          }
+        }
+      };
+    } else if (width >= 557) {
+      this.chartOptions = {
+        legend: {
+          position: "bottom",
+          labels: {
+            boxWidth: 20,
+            fontSize: 6
+          },
+          onHover: function(e: any) {
+            e.target.style.cursor = "pointer";
+          }
+        },
+        hover: {
+          onHover: function(e: any) {
+            e.target.style.cursor = "default";
+          }
+        }
+      };
+    } else if (width >= 0) {
+      this.chartOptions = {
+        legend: {
+          position: "bottom",
+          labels: {
+            boxWidth: 10,
+            fontSize: 4
+          },
+          onHover: function(e: any) {
+            e.target.style.cursor = "pointer";
+          }
+        },
+        hover: {
+          onHover: function(e: any) {
+            e.target.style.cursor = "default";
+          }
+        }
+      };
     } else {
       this.chartOptions = {
         legend: {
@@ -144,16 +198,33 @@ export default class Dashboard extends Vue {
 .dashboard-container {
   grid-area: content;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  grid-template-areas:
-    "overview types"
-    "schemes status";
   column-gap: 7px;
   row-gap: 7px;
   width: 100%;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+@media screen and (min-width: 1024px) {
+  .dashboard-container {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+      "overview types"
+      "schemes status";
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .dashboard-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+    grid-template-areas:
+      "overview"
+      "types"
+      "schemes"
+      "status";
+  }
 }
 </style>

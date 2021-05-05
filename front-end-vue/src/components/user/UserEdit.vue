@@ -58,10 +58,12 @@
               <i
                 v-if="showEmail1Notice && email1Verified"
                 class="pi pi-check-circle email-check"
+                aria-hidden="true"
               />
               <i
                 v-if="showEmail1Notice && !email1Verified"
                 class="pi pi-times-circle email-times"
+                aria-hidden="true"
               />
             </div>
           </div>

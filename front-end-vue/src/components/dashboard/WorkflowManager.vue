@@ -2,7 +2,7 @@
   <div class="modulecard-container">
     <Card class="modulecard">
       <template #header>
-        <i class="fas fa-tasks icon-workflow" />
+        <i class="fas fa-tasks icon-workflow" aria-hidden="true" />
       </template>
       <template #title> Workflow Manager </template>
       <template #subtitle> Helps to manage the workflow </template>

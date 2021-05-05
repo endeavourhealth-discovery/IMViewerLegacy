@@ -2,16 +2,19 @@
   <div id="header-home" class="p-d-flex p-flex-row p-jc-start header-container">
     <div class="p-d-flex p-flex-column p-jc-center header-icon-container">
       <div v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
-        <i class="fas fa-home icon-home icon-header" />
+        <i class="fas fa-home icon-home icon-header" aria-hidden="true" />
       </div>
       <div v-else-if="concept && isClaz">
-        <i class="fas fa-sitemap icon-sitemap icon-header" />
+        <i class="fas fa-sitemap icon-sitemap icon-header" aria-hidden="true" />
       </div>
       <div v-else-if="concept && isSet">
-        <i class="fas fa-tasks icon-tasks icon-header" />
+        <i class="fas fa-tasks icon-tasks icon-header" aria-hidden="true" />
       </div>
       <div v-else>
-        <i class="fas fa-lightbulb icon-lightbulb icon-header" />
+        <i
+          class="fas fa-lightbulb icon-lightbulb icon-header"
+          aria-hidden="true"
+        />
       </div>
     </div>
     <div class="p-d-flex p-flex-column p-jc-center text-container">
@@ -72,6 +75,7 @@ export default class Header extends Vue {
 .header-container {
   grid-area: header;
   height: 100% !important;
+  gap: 7px;
 }
 
 .header .p-card-header {
@@ -96,7 +100,7 @@ export default class Header extends Vue {
 }
 
 .icon-header {
-  width: 100px;
+  /* width: 100px; */
   font-size: 6rem;
   padding: 5px;
 }
@@ -115,5 +119,9 @@ export default class Header extends Vue {
 
 .icon-lightbulb {
   color: orange;
+}
+
+span {
+  font-size: 1rem;
 }
 </style>
