@@ -27,9 +27,14 @@ body {
 
 #popup-user {
   background-color: #3b3e47 !important;
-  left: 8vw !important;
   bottom: calc(4rem + 45px ) !important;
   top: unset !important;
+}
+
+@media screen and (max-width: 1439px) {
+  #popup-user {
+    left: 8vw !important;
+  }
 }
 
 @media screen and (min-width: 1440px) {
