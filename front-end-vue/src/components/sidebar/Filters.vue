@@ -1,5 +1,5 @@
 <template>
-  <div class="p-field p-col-12 p-md-12">
+  <div class="p-field">
     <span class="p-float-label">
       <MultiSelect
         id="status"
@@ -13,7 +13,7 @@
     </span>
   </div>
 
-  <div class="p-field p-col-12 p-md-12">
+  <div class="p-field">
     <span class="p-float-label">
       <MultiSelect
         id="scheme"
@@ -28,7 +28,7 @@
     </span>
   </div>
 
-  <div class="p-field p-col-12 p-md-12">
+  <div class="p-field">
     <span class="p-float-label">
       <MultiSelect
         id="conceptType"
@@ -118,6 +118,10 @@ export default class Filters extends Vue {
 
 <style scoped>
 label {
-  font-size: 1.25rem !important;
+  font-size: 1rem !important;
+}
+
+.p-field {
+  margin-top: 1rem;
 }
 </style>
