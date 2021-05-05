@@ -1,7 +1,7 @@
 <template>
   <div class="p-d-flex p-flex-column p-jc-start" id="side-bar">
     <span class="p-input-icon-left" id="search-bar">
-      <i class="pi pi-search" />
+      <i class="pi pi-search" aria-hidden="true" />
       <InputText
         type="text"
         v-model="searchTerm"
@@ -19,21 +19,21 @@
     >
       <TabPanel>
         <template #header>
-          <i class="fas fa-project-diagram icon-header" />
+          <i class="fas fa-project-diagram icon-header" aria-hidden="true" />
           <span>Hierarchy</span>
         </template>
         <Hierarchy />
       </TabPanel>
       <TabPanel>
         <template #header>
-          <i class="fas fa-history icon-header" />
+          <i class="fas fa-history icon-header" aria-hidden="true" />
           <span>History</span>
         </template>
         <History />
       </TabPanel>
       <TabPanel>
         <template #header>
-          <i class="fas fa-search icon-header" />
+          <i class="fas fa-search icon-header" aria-hidden="true" />
           <span>Search results</span>
         </template>
 

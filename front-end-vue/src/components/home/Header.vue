@@ -2,16 +2,16 @@
   <div id="header-home" class="p-d-flex p-flex-row p-jc-start header-container">
     <div class="p-d-flex p-flex-column p-jc-center header-icon-container">
       <div v-if="$route.name === 'Home' || $route.name === 'Dashboard'">
-        <i class="fas fa-home icon-home icon-header" />
+        <i class="fas fa-home icon-home icon-header" aria-hidden="true" />
       </div>
       <div v-else-if="concept && isClaz">
-        <i class="fas fa-sitemap icon-sitemap icon-header" />
+        <i class="fas fa-sitemap icon-sitemap icon-header" aria-hidden="true" />
       </div>
       <div v-else-if="concept && isSet">
-        <i class="fas fa-tasks icon-tasks icon-header" />
+        <i class="fas fa-tasks icon-tasks icon-header" aria-hidden="true" />
       </div>
       <div v-else>
-        <i class="fas fa-lightbulb icon-lightbulb icon-header" />
+        <i class="fas fa-lightbulb icon-lightbulb icon-header" aria-hidden="true" />
       </div>
     </div>
     <div class="p-d-flex p-flex-column p-jc-center text-container">

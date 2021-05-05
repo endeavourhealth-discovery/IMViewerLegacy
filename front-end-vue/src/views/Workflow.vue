@@ -9,7 +9,7 @@
 
         <div class="p-col-3">
           <span class="p-input-icon-left" style="width: 100%">
-            <i class="pi pi-search" />
+            <i class="pi pi-search" aria-hidden="true" />
             <InputText
               type="text"
               v-model="searchTerm"
@@ -24,7 +24,7 @@
           <TabView class="sidemenu" v-model:activeIndex="active">
             <TabPanel>
               <template #header>
-                <i class="fas fa-project-diagram" style="padding: 1px;" />
+                <i class="fas fa-project-diagram" style="padding: 1px;" aria-hidden="true" />
                 <span>Workflows</span>
               </template>
 
@@ -71,7 +71,7 @@
                         Workflow</span
                       >
                       <span class="p-input-icon-left">
-                        <i class="pi pi-search" />
+                        <i class="pi pi-search" aria-hidden="true" />
                         <InputText
                           v-model="filters1['global'].value"
                           placeholder="Keyword Search"
@@ -146,7 +146,7 @@
                         Workflow</span
                       >
                       <span class="p-input-icon-left">
-                        <i class="pi pi-search" />
+                        <i class="pi pi-search" aria-hidden="true" />
                         <InputText
                           v-model="filters2['global'].value"
                           placeholder="Keyword Search"

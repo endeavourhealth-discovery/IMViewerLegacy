@@ -4,7 +4,7 @@
       class="p-d-flex p-flex-column p-jc-sm-around p-ai-center recovery-card"
     >
       <template #header>
-        <i class="pi pi-fw pi-user icon-user" />
+        <i class="pi pi-fw pi-user icon-user" aria-hidden="true" />
       </template>
       <template #title>
         Account Recovery: <br /><br />Recover By Email
@@ -24,10 +24,12 @@
               <i
                 v-if="showEmailNotice && emailVerified"
                 class="pi pi-check-circle email-check"
+                aria-hidden="true"
               />
               <i
                 v-if="showEmailNotice && !emailVerified"
                 class="pi pi-times-circle email-times"
+                aria-hidden="true"
               />
             </div>
           </div>
