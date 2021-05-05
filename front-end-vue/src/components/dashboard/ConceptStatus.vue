@@ -116,7 +116,7 @@ export default class ConceptStatus extends Vue {
     grid-area: status;
     height: 100%;
     width: 100%;
-    max-width: calc(35vw);
+    max-width: calc(35vw - 57.5px - 21px);
   }
 }
 
