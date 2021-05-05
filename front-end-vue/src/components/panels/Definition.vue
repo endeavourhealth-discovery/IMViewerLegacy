@@ -53,9 +53,9 @@ export default class Definition extends Vue {
         window.getComputedStyle(html, null).getPropertyValue("font-size")
       );
 
-      this.editor = monaco.editor.create(
-        document.getElementById("container")!,
-        {
+      const container = document.getElementById("container");
+      if (container) {
+        this.editor = monaco.editor.create(container, {
           value: this.filteredDefinition,
           language: "DiscoverySyntax",
           readOnly: true,
@@ -66,8 +66,10 @@ export default class Definition extends Vue {
             enabled: false
           },
           fontSize: currentFontSize
-        }
-      );
+        });
+      } else {
+        LoggerService.error(undefined, "monaco container not found");
+      }
     } catch (error) {
       this.$toast.add(
         LoggerService.error("Monaco editor initialisation failed", error)

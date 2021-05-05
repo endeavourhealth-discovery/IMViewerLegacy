@@ -24,7 +24,11 @@
           <TabView class="sidemenu" v-model:activeIndex="active">
             <TabPanel>
               <template #header>
-                <i class="fas fa-project-diagram" style="padding: 1px;" aria-hidden="true" />
+                <i
+                  class="fas fa-project-diagram"
+                  style="padding: 1px;"
+                  aria-hidden="true"
+                />
                 <span>Workflows</span>
               </template>
 
