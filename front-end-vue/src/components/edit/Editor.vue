@@ -255,6 +255,10 @@ export default class EditorDialog extends Vue {
 </script>
 
 <style scoped>
+.p-tabview {
+  padding-top: 3px;
+}
+
 .editor-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
