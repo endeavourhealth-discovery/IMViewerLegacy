@@ -155,6 +155,12 @@ export default class SideNav extends Vue {
   width: 8vw;
 }
 
+@media screen and (min-width: 1440px) {
+  .layout-menu-container {
+    width: 115px;
+  }
+}
+
 .sidebutton {
   cursor: pointer;
 }
