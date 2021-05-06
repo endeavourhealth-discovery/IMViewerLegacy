@@ -29,10 +29,7 @@ import LoggerService from "@/services/LoggerService";
 export default class Home extends Vue {
   async mounted() {
     // check for user and log them in if found or logout if not
-    await store.dispatch("authenticateCurrentUser")
-    .catch(err => {
-      LoggerService.error("Error authenticating user from previous session", err);
-    });
+    await store.dispatch("authenticateCurrentUser");
     this.updateRoute();
   }
 
