@@ -1,3 +1,7 @@
 export function toSentenceCase(text: string) {
-  return text[0].toUpperCase() + text.substring(1).toLowerCase();
+  if (typeof text === "string"){
+    return text[0].toUpperCase() + text.substring(1).toLowerCase();
+  } else {
+    return text;
+  }
 }

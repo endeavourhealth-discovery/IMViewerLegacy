@@ -14,7 +14,7 @@
           scrollHeight="350px"
         >
           <template #header>
-            Ontology Data
+            Ontology data
           </template>
           <Column field="label" header="Label"></Column>
           <Column field="count" header="Total"></Column>
