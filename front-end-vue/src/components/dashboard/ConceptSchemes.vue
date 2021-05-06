@@ -67,45 +67,38 @@ export default class ConceptSchemes extends Vue {
   mounted() {
     this.updatedChartOptions = { ...this.chartOptions };
     // chart scheme
-    // strip out if statement and commit "updateConceptScheme" when server caching is implemented
     store.commit("updateLoading", { key: "reportScheme", value: true });
-    if ("datasets" in this.conceptSchemes) {
-      this.chartConceptSchemes = this.conceptSchemes;
-      store.commit("updateLoading", { key: "reportScheme", value: false });
-    } else {
-      ReportService.getConceptSchemeReport()
-        .then(res => {
-          for (const schema of res.data) {
-            this.chartConceptSchemes.labels.push(schema.label);
-            this.chartConceptSchemes.datasets[0].data.push(schema.count);
-          }
-          this.realData = { ...this.chartConceptSchemes.datasets[0].data };
-          // set tooltip to use real data
-          this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
-          // refactor data to a minimum graph size (1%) if less than min
-          this.chartConceptSchemes.datasets[0].data = rescaleData(
-            this.chartConceptSchemes.datasets[0].data
-          );
-          store.commit("updateConceptSchemes", this.chartConceptSchemes);
-          const length = Object.keys(res.data).length;
-          const bgs = palette("tol-rainbow", length);
-          const bgsFixed = bgs.map((color: string) => "#" + color);
-          const hovers = palette("tol-rainbow", length);
-          const hoversFixed = hovers.map((color: string) => "#" + color);
-          const hoversLighter = hoversFixed.map((color: string) =>
-            colorLighter(color)
-          );
-          this.chartConceptSchemes.datasets[0].backgroundColor = bgsFixed;
-          this.chartConceptSchemes.datasets[0].hoverBackgroundColor = hoversLighter;
-          store.commit("updateLoading", { key: "reportScheme", value: false });
-        })
-        .catch(err => {
-          store.commit("updateLoading", { key: "reportScheme", value: false });
-          this.$toast.add(
-            LoggerService.error("Concept schemes server request failed", err)
-          );
-        });
-    }
+    ReportService.getConceptSchemeReport()
+      .then(res => {
+        for (const schema of res.data) {
+          this.chartConceptSchemes.labels.push(schema.label);
+          this.chartConceptSchemes.datasets[0].data.push(schema.count);
+        }
+        this.realData = { ...this.chartConceptSchemes.datasets[0].data };
+        // set tooltip to use real data
+        this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
+        // refactor data to a minimum graph size (1%) if less than min
+        this.chartConceptSchemes.datasets[0].data = rescaleData(
+          this.chartConceptSchemes.datasets[0].data
+        );
+        const length = Object.keys(res.data).length;
+        const bgs = palette("tol-rainbow", length);
+        const bgsFixed = bgs.map((color: string) => "#" + color);
+        const hovers = palette("tol-rainbow", length);
+        const hoversFixed = hovers.map((color: string) => "#" + color);
+        const hoversLighter = hoversFixed.map((color: string) =>
+          colorLighter(color)
+        );
+        this.chartConceptSchemes.datasets[0].backgroundColor = bgsFixed;
+        this.chartConceptSchemes.datasets[0].hoverBackgroundColor = hoversLighter;
+        store.commit("updateLoading", { key: "reportScheme", value: false });
+      })
+      .catch(err => {
+        store.commit("updateLoading", { key: "reportScheme", value: false });
+        this.$toast.add(
+          LoggerService.error("Concept schemes server request failed", err)
+        );
+      });
   } // mounted end
 }
 </script>

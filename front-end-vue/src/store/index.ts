@@ -8,8 +8,6 @@ import { avatars } from "@/models/user/Avatars";
 import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 import LoggerService from "@/services/LoggerService";
-import { PieChartData } from "@/models/charts/PieChartData";
-import { ConceptRole } from "@/models/TTConcept/ConceptRole";
 import { Member } from "@/models/members/Member";
 
 export default createStore({
@@ -29,11 +27,6 @@ export default createStore({
       "snomedLicenseAccepted"
     ) as string,
     historyCount: 0 as number,
-    // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
-    ontologyOverview: [],
-    conceptTypes: {} as PieChartData,
-    conceptSchemes: {} as PieChartData,
-    conceptStatus: {} as PieChartData,
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
@@ -110,19 +103,6 @@ export default createStore({
     },
     updateHistoryCount(state, count) {
       state.historyCount = count;
-    },
-    // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
-    updateOntologyOverview(state, tableData) {
-      state.ontologyOverview = tableData;
-    },
-    updateConceptTypes(state, chartConceptTypes) {
-      state.conceptTypes = chartConceptTypes;
-    },
-    updateConceptSchemes(state, chartConceptSchemes) {
-      state.conceptSchemes = chartConceptSchemes;
-    },
-    updateConceptStatus(state, chartConceptStatus) {
-      state.conceptStatus = chartConceptStatus;
     }
   },
   actions: {
@@ -144,7 +124,7 @@ export default createStore({
         }),
         ConceptService.getConceptGraph(iri).then(res => {
           graph = res.data;
-        }),
+        })
       ])
         .then(() => {
           const updated = new ConceptAggregate(

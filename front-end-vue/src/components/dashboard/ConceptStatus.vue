@@ -67,45 +67,38 @@ export default class ConceptStatus extends Vue {
   mounted() {
     this.updatedChartOptions = { ...this.chartOptions };
     // chart status
-    // strip out if statement and commit "updateConceptStatus" when server caching is implemented
     store.commit("updateLoading", { key: "reportStatus", value: true });
-    if ("datasets" in this.conceptStatus) {
-      this.chartConceptStatus = this.conceptStatus;
-      store.commit("updateLoading", { key: "reportStatus", value: false });
-    } else {
-      ReportService.getConceptStatusReport()
-        .then(res => {
-          for (const status of res.data) {
-            this.chartConceptStatus.labels.push(status.label);
-            this.chartConceptStatus.datasets[0].data.push(status.count);
-          }
-          this.realData = { ...this.chartConceptStatus.datasets[0].data };
-          // set tooltip to use real data
-          this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
-          // refactor data to a minimum graph size (1%) if less than min
-          this.chartConceptStatus.datasets[0].data = rescaleData(
-            this.chartConceptStatus.datasets[0].data
-          );
-          store.commit("updateConceptStatus", this.chartConceptStatus);
-          const length = Object.keys(res.data).length;
-          const bgs = palette("tol-rainbow", length);
-          const bgsFixed = bgs.map((color: string) => "#" + color);
-          const hovers = palette("tol-rainbow", length);
-          const hoversFixed = hovers.map((color: string) => "#" + color);
-          const hoversLighter = hoversFixed.map((color: string) =>
-            colorLighter(color)
-          );
-          this.chartConceptStatus.datasets[0].backgroundColor = bgsFixed;
-          this.chartConceptStatus.datasets[0].hoverBackgroundColor = hoversLighter;
-          store.commit("updateLoading", { key: "reportStatus", value: false });
-        })
-        .catch(err => {
-          store.commit("updateLoading", { key: "reportStatus", value: false });
-          this.$toast.add(
-            LoggerService.error("Concept status server request failed", err)
-          );
-        });
-    }
+    ReportService.getConceptStatusReport()
+      .then(res => {
+        for (const status of res.data) {
+          this.chartConceptStatus.labels.push(status.label);
+          this.chartConceptStatus.datasets[0].data.push(status.count);
+        }
+        this.realData = { ...this.chartConceptStatus.datasets[0].data };
+        // set tooltip to use real data
+        this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
+        // refactor data to a minimum graph size (1%) if less than min
+        this.chartConceptStatus.datasets[0].data = rescaleData(
+          this.chartConceptStatus.datasets[0].data
+        );
+        const length = Object.keys(res.data).length;
+        const bgs = palette("tol-rainbow", length);
+        const bgsFixed = bgs.map((color: string) => "#" + color);
+        const hovers = palette("tol-rainbow", length);
+        const hoversFixed = hovers.map((color: string) => "#" + color);
+        const hoversLighter = hoversFixed.map((color: string) =>
+          colorLighter(color)
+        );
+        this.chartConceptStatus.datasets[0].backgroundColor = bgsFixed;
+        this.chartConceptStatus.datasets[0].hoverBackgroundColor = hoversLighter;
+        store.commit("updateLoading", { key: "reportStatus", value: false });
+      })
+      .catch(err => {
+        store.commit("updateLoading", { key: "reportStatus", value: false });
+        this.$toast.add(
+          LoggerService.error("Concept status server request failed", err)
+        );
+      });
   }
 }
 </script>

@@ -48,31 +48,24 @@ export default class OntologyOverview extends Vue {
 
   mounted() {
     // table data
-    // strip out if statement and commit "updateOntologyOverview" when server caching is implemented
     store.commit("updateLoading", { key: "reportCategory", value: true });
-    if (this.ontologyOverview.length > 0) {
-      this.tableData = this.ontologyOverview;
-      store.commit("updateLoading", { key: "reportCategory", value: false });
-    } else {
-      ReportService.getConceptCategoryReport()
-        .then(res => {
-          this.tableData = res.data;
-          store.commit("updateOntologyOverview", this.tableData);
-          store.commit("updateLoading", {
-            key: "reportCategory",
-            value: false
-          });
-        })
-        .catch(err => {
-          store.commit("updateLoading", {
-            key: "reportCategory",
-            value: false
-          });
-          this.$toast.add(
-            LoggerService.error("Ontology Overview server request failed", err)
-          );
+    ReportService.getConceptCategoryReport()
+      .then(res => {
+        this.tableData = res.data;
+        store.commit("updateLoading", {
+          key: "reportCategory",
+          value: false
         });
-    }
+      })
+      .catch(err => {
+        store.commit("updateLoading", {
+          key: "reportCategory",
+          value: false
+        });
+        this.$toast.add(
+          LoggerService.error("Ontology Overview server request failed", err)
+        );
+      });
   }
 }
 </script>
