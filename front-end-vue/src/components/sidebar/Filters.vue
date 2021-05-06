@@ -9,7 +9,7 @@
         placeholder="Select Status"
         display="chip"
       />
-      <label for="status">Select Status:</label>
+      <label for="status">Select status:</label>
     </span>
   </div>
 
@@ -24,7 +24,7 @@
         placeholder="Select Schemes"
         display="chip"
       />
-      <label for="scheme">Select Scheme:</label>
+      <label for="scheme">Select scheme:</label>
     </span>
   </div>
 
@@ -38,7 +38,7 @@
         placeholder="Select Concept Type"
         display="chip"
       />
-      <label for="scheme">Select Concept Type:</label>
+      <label for="scheme">Select concept type:</label>
     </span>
   </div>
 </template>

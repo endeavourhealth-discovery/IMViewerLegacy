@@ -256,7 +256,7 @@ export default class SidebarControl extends Vue {
 }
 
 .icon-header {
-  padding: 1px;
+  margin: 0 4px 0 0;
 }
 
 .p-tabview-panel {
