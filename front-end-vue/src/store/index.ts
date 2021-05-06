@@ -253,10 +253,7 @@ export default createStore({
         } else {
           result = res;
         }
-      })
-      .catch(err => {
-        LoggerService.error(undefined, err);
-      })
+      });
       return result
     },
     async authenticateCurrentUser({ commit, dispatch }) {
@@ -279,13 +276,16 @@ export default createStore({
           commit("updateCurrentUser", loggedInUser);
           result.authenticated = true;
         } else {
-          dispatch("logoutCurrentUser");
+          dispatch("logoutCurrentUser")
+          .then(res => {
+            if (res.status === 200) {
+              LoggerService.info(undefined, "Force logout successful");
+            } else {
+              LoggerService.error(undefined, "Force logout failed")
+            }
+          });
         }
       })
-      .catch (err => {
-        LoggerService.error(undefined, err);
-        dispatch("logoutCurrentUser");
-      });
       return result;
     }
   },
