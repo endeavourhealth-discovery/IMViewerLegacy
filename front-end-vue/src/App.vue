@@ -24,26 +24,37 @@ body {
   overflow: hidden;
 }
 
-.popup-user {
+#popup-user {
   background-color: #3b3e47 !important;
-  left: 100px !important;
-  bottom: 95px !important;
+  bottom: calc(4rem + 45px) !important;
   top: unset !important;
 }
 
-.popup-user ul li a .p-menuitem-icon {
+@media screen and (max-width: 1439px) {
+  #popup-user {
+    left: 8vw !important;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  #popup-user {
+    left: 115px !important;
+  }
+}
+
+#popup-user ul li a .p-menuitem-icon {
   color: lightgray !important;
 }
 
-.popup-user ul li a .p-menuitem-text {
+#popup-user ul li a .p-menuitem-text {
   color: lightgray !important;
 }
 
-.popup-user ul li:hover a .p-menuitem-icon {
+#popup-user ul li:hover a .p-menuitem-icon {
   color: #3b3e47 !important;
 }
 
-.popup-user ul li:hover a .p-menuitem-text {
+#popup-user ul li:hover a .p-menuitem-text {
   color: #3b3e47 !important;
 }
 
@@ -59,7 +70,7 @@ body {
 }
 
 /* Settings specifically for dealing with 300% scaling */
-@media (-webkit-device-pixel-ratio: 3.0) {
+@media (-webkit-device-pixel-ratio: 3) {
   .p-component {
     font-size: 0.7rem !important;
   }
@@ -96,8 +107,16 @@ body {
     font-size: 2em !important;
   }
 
-  .layout-menu-container {
-    width: 60px !important;
+  @media screen and (max-width: 1439px) {
+    .layout-menu-container {
+      width: 8vw;
+    }
+  }
+
+  @media screen and (min-width: 1440px) {
+    .layout-menu-container {
+      width: 115px;
+    }
   }
 }
 </style>

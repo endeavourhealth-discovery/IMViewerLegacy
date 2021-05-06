@@ -4,7 +4,7 @@
       class="p-d-flex p-flex-column p-jc-sm-around p-ai-center recovery-card"
     >
       <template #header>
-        <i class="pi pi-fw pi-user icon-header" />
+        <i class="pi pi-fw pi-user icon-header" aria-hidden="true" />
       </template>
       <template #title>
         Account Recovery: <br /><br />Submit Password Reset Code
@@ -28,11 +28,13 @@
                 v-if="codeVerified"
                 class="pi pi-check-circle"
                 style="color: #439446; fontSize: 2em"
+                aria-hidden="true"
               />
               <i
                 v-if="!codeVerified && code !== ''"
                 class="pi pi-times-circle"
                 style="color: #e60017; fontSize: 2em"
+                aria-hidden="true"
               />
             </div>
             <small id="code-help"

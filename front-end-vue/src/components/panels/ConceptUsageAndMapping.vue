@@ -81,7 +81,7 @@ export default class ConceptUsageAndMapping extends Vue {
   onNodeSelect(concept: any) {
     this.$router.push({
       name: "Concept",
-      params: { selectedIri: concept.iri }
+      params: { selectedIri: concept["@id"] }
     });
   }
 }

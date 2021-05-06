@@ -43,6 +43,7 @@
             @click="toggle"
             aria-haspopup="true"
             aria-controls="overlay_menu"
+            aria-hidden="true"
           ></i>
           <img
             v-if="isLoggedIn"
@@ -54,13 +55,8 @@
             aria-haspopup="true"
             aria-controls="overlay_menu"
           />
-          <Menu
-            ref="menu"
-            :model="getItems()"
-            :popup="true"
-            class="popup-user"
-          />
-          <i class="pi pi-cog settings-icon"></i>
+          <Menu ref="menu" :model="getItems()" :popup="true" id="popup-user" />
+          <i class="pi pi-cog settings-icon" aria-hidden="true"></i>
         </div>
       </div>
     </div>
@@ -80,6 +76,7 @@ export default class SideNav extends Vue {
   currentUser!: User;
   isLoggedIn!: boolean;
   $refs!: any;
+  userPopupBottom = 0;
 
   isActive(item: string) {
     if (this.$route.name == item) {
@@ -151,7 +148,18 @@ export default class SideNav extends Vue {
 .layout-menu-container {
   padding: 20px 0;
   height: 100%;
-  width: 100px;
+}
+
+@media screen and (max-width: 1439px) {
+  .layout-menu-container {
+    width: 8vw;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .layout-menu-container {
+    width: 115px;
+  }
 }
 
 .sidebutton {
@@ -169,7 +177,7 @@ export default class SideNav extends Vue {
 .user-icon,
 .settings-icon {
   width: 100%;
-  font-size: 4em;
+  font-size: 4rem;
   color: lightgray;
   padding: 5px;
   cursor: pointer;
@@ -180,7 +188,7 @@ export default class SideNav extends Vue {
 }
 
 .avatar-icon {
-  width: 60px;
+  width: 4rem;
   border: 1px solid lightgray;
   border-radius: 50%;
   cursor: pointer;
@@ -188,7 +196,7 @@ export default class SideNav extends Vue {
 
 .im-logo {
   text-align: center;
-  font-size: 4em;
+  font-size: 4rem;
   color: lightgray;
   font-weight: bold;
   cursor: pointer;

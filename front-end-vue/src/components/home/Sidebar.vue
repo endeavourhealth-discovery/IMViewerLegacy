@@ -1,6 +1,6 @@
 <template>
   <span class="p-input-icon-left" style="width: 100%">
-    <i class="pi pi-search" />
+    <i class="pi pi-search" aria-hidden="true" />
     <InputText
       type="text"
       v-model="searchResult"
@@ -14,21 +14,21 @@
   <TabView class="sidemenu">
     <TabPanel>
       <template #header>
-        <i class="fas fa-project-diagram header-icon" />
+        <i class="fas fa-project-diagram header-icon" aria-hidden="true" />
         <span>Tree</span>
       </template>
       <Tree :value="root" :expandedKeys="expandedKeys"></Tree>
     </TabPanel>
     <TabPanel>
       <template #header>
-        <i class="fas fa-history header-icon" />
+        <i class="fas fa-history header-icon" aria-hidden="true" />
         <span>History</span>
       </template>
       List
     </TabPanel>
     <TabPanel>
       <template #header>
-        <i class="fas fa-search header-icon" />
+        <i class="fas fa-search header-icon" aria-hidden="true" />
         <span>Search results</span>
       </template>
       Search
@@ -110,6 +110,6 @@ export default class Header extends Vue {
 }
 
 .header-icon {
-  padding: 1px;;
+  padding: 1px;
 }
 </style>
