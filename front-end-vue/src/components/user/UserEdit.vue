@@ -115,7 +115,7 @@
             >
           </div>
           <div v-if="showPasswordEdit" class="p-field">
-            <label for="passwordNew2">Confirm New Password</label>
+            <label for="passwordNew2">Confirm new password</label>
             <InputText
               id="passwordNew2"
               type="password"
@@ -411,7 +411,7 @@ export default class UserEdit extends Vue {
       icon: "warning",
       title: "Warning",
       text:
-        "Are you sure you want to reset this form? Any changes you have made will be lost!",
+        "Are you sure that you want to reset changes to this form? Any changes you have made will be lost.",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       confirmButtonText: "Reset"
