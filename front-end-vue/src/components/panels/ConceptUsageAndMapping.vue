@@ -40,7 +40,7 @@
       ></Panel>
     </div> -->
     <div class="usage-container">
-      <Panel header="Used In" :toggleable="true"
+      <Panel header="Used in" :toggleable="true"
         ><div
           class="p-d-flex p-flex-row p-jc-center"
           v-if="$store.state.loading.get('usages')"

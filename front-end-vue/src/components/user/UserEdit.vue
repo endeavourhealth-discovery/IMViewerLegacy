@@ -10,17 +10,17 @@
         />
       </template>
       <template #title>
-        Edit My Account
+        Edit my account
       </template>
       <template #content>
         <div class="p-fluid p-d-flex p-flex-column p-jc-start user-edit-form">
           <div class="p-field">
             <label for="username">Username</label>
             <InputText id="username" type="text" v-model="username" disabled />
-            <small id="user-help">Username cannot currently be changed</small>
+            <small id="user-help">Username cannot currently be changed.</small>
           </div>
           <div class="p-field">
-            <label for="firstName">First Name</label>
+            <label for="firstName">First name</label>
             <InputText
               id="firstName"
               type="text"
@@ -29,11 +29,11 @@
             />
             <InlineMessage v-if="showFirstNameNotice" severity="error"
               >First name contains unexpected characters. A-Z and hyphens only
-              allowed e.g."Mary-Anne"</InlineMessage
+              allowed e.g."Mary-Anne".</InlineMessage
             >
           </div>
           <div class="p-field">
-            <label for="lastName">Last Name</label>
+            <label for="lastName">Last name</label>
             <InputText
               id="lastName"
               type="text"
@@ -42,11 +42,11 @@
             />
             <InlineMessage v-if="showLastNameNotice" severity="error"
               >Last name contains unexpected characters. A-Z, apostropies and
-              hyphens only allowed e.g."O'Keith-Smith"</InlineMessage
+              hyphens only allowed e.g."O'Keith-Smith".</InlineMessage
             >
           </div>
           <div class="p-field">
-            <label for="email1">Email Address</label>
+            <label for="email1">Email address</label>
             <div class="p-d-flex p-flex-row p-ai-center">
               <InputText
                 id="email1"
@@ -68,7 +68,7 @@
             </div>
           </div>
           <div class="p-field">
-            <label for="email2">Confirm Email Address</label>
+            <label for="email2">Confirm email address</label>
             <InputText
               id="email2"
               type="text"
@@ -80,11 +80,11 @@
             >
           </div>
           <div v-if="showPasswordEdit" class="p-field">
-            <label for="passwordOld">Current Password</label>
+            <label for="passwordOld">Current password</label>
             <InputText id="passwordOld" type="password" v-model="passwordOld" />
           </div>
           <div v-if="showPasswordEdit" class="p-field">
-            <label for="passwordNew1">New Password</label>
+            <label for="passwordNew1">New password</label>
             <InputText
               id="passwordNew1"
               type="password"
@@ -93,23 +93,23 @@
             <InlineMessage
               v-if="passwordStrength === 'strong'"
               severity="success"
-              >Password Strength: Strong</InlineMessage
+              >Password strength: Strong</InlineMessage
             >
             <InlineMessage
               v-if="passwordStrength === 'medium'"
               severity="success"
-              >Password Strength: Medium</InlineMessage
+              >Password strength: Medium</InlineMessage
             >
             <InlineMessage v-if="passwordStrength === 'weak'" severity="warn"
-              >Password Strength: Weak</InlineMessage
+              >Password strength: Weak</InlineMessage
             >
             <InlineMessage
               v-if="passwordStrength === 'fail' && passwordNew1 !== ''"
               severity="error"
-              >Invalid Password</InlineMessage
+              >Invalid password</InlineMessage
             >
             <small id="password-help"
-              >Password min length 8 characters. Improve password strength with
+              >Password must be a minimum length of 8 characters. Improve password strength with
               a mixture of UPPERCASE, lowercase, numbers and special characters
               [!@#$%^&*].</small
             >
@@ -126,31 +126,31 @@
               >New passwords do not match!</InlineMessage
             >
           </div>
-          <div class="p-d-flex p-flex-row p-jc-evenly p-ai-center">
+          <div class="p-d-flex p-flex-column p-jc-start p-ai-center">
             <Button
               v-if="!showPasswordEdit"
               class="password-edit p-button-secondary"
               type="submit"
-              label="Change Password"
+              label="Change password"
               v-on:click.prevent="editPasswordClicked(true)"
             />
             <Button
               v-else
               class="password-edit p-button-secondary"
               type="submit"
-              label="Cancel Password Edit"
+              label="Cancel password edit"
               v-on:click.prevent="editPasswordClicked(false)"
             />
             <Button
               class="form-reset p-button-warning"
               type="button"
-              label="Reset"
+              label="Reset changes"
               v-on:click.prevent="resetForm"
             />
             <Button
               class="user-edit"
               type="submit"
-              label="Update"
+              label="Update Account"
               v-on:click.prevent="handleEditSubmit"
             />
           </div>
@@ -443,6 +443,10 @@ export default class UserEdit extends Vue {
 .password-edit,
 .form-reset {
   width: fit-content !important;
+}
+
+.form-reset {
+  margin: 10px 0px;
 }
 
 .user-edit-form {

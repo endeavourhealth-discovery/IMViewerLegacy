@@ -2,7 +2,7 @@
   <div class="p-d-flex p-flex-row p-jc-start">
     <Button
       class="back-button"
-      label="back"
+      label="Back"
       icon="pi pi-arrow-circle-left"
       iconPos="left"
       v-on:click.prevent="clickedBack"

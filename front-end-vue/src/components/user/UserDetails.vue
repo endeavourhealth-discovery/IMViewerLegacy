@@ -11,7 +11,7 @@
         />
       </template>
       <template #title>
-        My Account Details
+        My account details
       </template>
       <template #content>
         <div
@@ -28,7 +28,7 @@
             />
           </div>
           <div class="p-field">
-            <label for="firstName">First Name</label>
+            <label for="firstName">First name</label>
             <InputText
               id="firstName"
               type="text"
@@ -37,7 +37,7 @@
             />
           </div>
           <div class="p-field">
-            <label for="lastName">Last Name</label>
+            <label for="lastName">Last name</label>
             <InputText
               id="lastName"
               type="text"
@@ -46,7 +46,7 @@
             />
           </div>
           <div class="p-field">
-            <label for="email">Email Address</label>
+            <label for="email">Email address</label>
             <InputText
               id="email"
               type="text"
