@@ -9,6 +9,7 @@ import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 import LoggerService from "@/services/LoggerService";
 import { Member } from "@/models/members/Member";
+import { IM } from "@/vocabulary/IM";
 
 export default createStore({
   state: {
@@ -31,15 +32,15 @@ export default createStore({
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
         {
-          iri: "http://endhealth.info/im#891071000252105",
+          iri: IM.DISCOVERY_CODE,
           name: "Discovery code"
         },
         {
-          iri: "http://endhealth.info/im#891101000252101",
+          iri: IM.CODE_SCHEME_SNOMED,
           name: "Snomed-CT code"
         },
         {
-          iri: "http://endhealth.info/im#891111000252103",
+          iri: IM.CODE_SCHEME_TERMS,
           name: "Term based code"
         }
       ],
