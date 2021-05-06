@@ -16,10 +16,15 @@ describe("User.vue", () => {
         stubs: ["router-link", "router-view"]
       },
     });
+    store.commit("updateSnomedLicenseAccepted", "true");
   });
 
   it("should render containers", () => {
     expect(wrapper.find(".layout-main")).toBeTruthy();
     expect(wrapper.find(".main-grid")).toBeTruthy();
+  });
+
+  it("should check for authenticated user", () => {
+
   })
 });
