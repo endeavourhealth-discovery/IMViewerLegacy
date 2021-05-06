@@ -95,6 +95,7 @@
           @closeDialog="closeDialog"
           :display="display"
           :concept="editorConcept"
+          :header="dialogHeader"
           :definitionText="editorDefinitionText"
         />
         <DownloadDialog
@@ -172,6 +173,7 @@ export default class ConceptSummary extends Vue {
   display = false;
   synonyms: { synonym: string }[] = [];
   conceptIri!: string;
+  dialogHeader = "";
 
   mounted() {
     ConceptService.getConceptSynonyms(this.conceptIri)
@@ -241,12 +243,14 @@ export default class ConceptSummary extends Vue {
 
   openAddDialog() {
     this.editDialogView = false;
+    this.dialogHeader = "Create";
     this.display = true;
   }
 
   openEditDialog() {
     this.editDialogView = true;
     this.display = true;
+    this.dialogHeader = "Edit";
   }
 
   openDownloadDialog() {

@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    header="Form"
+    :header="header"
     v-model:visible="display"
     :style="{ width: '50vw' }"
     :maximizable="true"
@@ -46,7 +46,7 @@ import LoggerService from "@/services/LoggerService";
   components: {
     Editor
   },
-  props: ["concept", "definitionText", "display"]
+  props: ["concept", "definitionText", "display", "header"]
 })
 export default class EditorDialog extends Vue {
   private updatedText = "";
