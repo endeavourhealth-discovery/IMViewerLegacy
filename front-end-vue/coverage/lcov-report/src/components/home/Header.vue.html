@@ -22,9 +22,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">62.5% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/16</span>
+                <span class='fraction'>10/16</span>
             </div>
         
             
@@ -36,16 +36,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">25% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>1/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">57.14% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>8/14</span>
             </div>
         
             
@@ -54,7 +54,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -227,10 +227,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -242,18 +242,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -354,10 +354,10 @@
 &lt;/template&gt;
 &nbsp;
 &lt;script lang="ts"&gt;
-<span class="cstat-no" title="statement not covered" >import { Options, Vue } from "vue-class-component";</span>
-<span class="cstat-no" title="statement not covered" >import { isValueSet, isRecordModel } from "../../helpers/ConceptTypeMethods";</span>
-<span class="cstat-no" title="statement not covered" >import { mapState } from "vuex";</span>
-<span class="cstat-no" title="statement not covered" >import { RDF } from "@/vocabulary/RDF";</span>
+import { Options, Vue } from "vue-class-component";
+import { isValueSet, isRecordModel } from "../../helpers/ConceptTypeMethods";
+import { mapState } from "vuex";
+import { RDF } from "@/vocabulary/RDF";
 &nbsp;
 @Options({
   name: "Header",
@@ -369,18 +369,18 @@
     }
   }
 })
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >export default class <span class="cstat-no" title="statement not covered" >H</span></span>eader </span>extends <span class="cstat-no" title="statement not covered" >Vue {</span>
+export default class Header extends Vue {
 <span class="cstat-no" title="statement not covered" >  concept = {</span>} as any;
 &nbsp;
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  get i</span></span>sSet() {
+<span class="fstat-no" title="function not covered" >  get i</span>sSet() {
     const conceptTypeElements = <span class="cstat-no" title="statement not covered" >this.c</span>oncept[RDF.TYPE];
 <span class="cstat-no" title="statement not covered" >    return i</span>sValueSet(conceptTypeElements);
   }
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  get i</span></span>sClaz() {
+<span class="fstat-no" title="function not covered" >  get i</span>sClaz() {
     const conceptTypeElements = <span class="cstat-no" title="statement not covered" >this.c</span>oncept[RDF.TYPE];
 <span class="cstat-no" title="statement not covered" >    return i</span>sRecordModel(conceptTypeElements);
   }
-<span class="cstat-no" title="statement not covered" >}</span>
+}
 &lt;/script&gt;
 &nbsp;
 &lt;style scoped&gt;
@@ -444,7 +444,7 @@ span {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Wed May 05 2021 17:17:07 GMT+0100 (British Summer Time)
+                at Thu May 06 2021 09:52:01 GMT+0100 (British Summer Time)
             </div>
         </div>
         <script src="../../../prettify.js"></script>

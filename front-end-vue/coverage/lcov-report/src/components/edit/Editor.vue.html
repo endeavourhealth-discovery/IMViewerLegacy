@@ -374,7 +374,8 @@
 <a name='L316'></a><a href='#L316'>316</a>
 <a name='L317'></a><a href='#L317'>317</a>
 <a name='L318'></a><a href='#L318'>318</a>
-<a name='L319'></a><a href='#L319'>319</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L319'></a><a href='#L319'>319</a>
+<a name='L320'></a><a href='#L320'>320</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -460,9 +461,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -631,6 +629,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -693,91 +695,88 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&lt;template&gt;
-  &lt;div class="p-fluid editor-grid"&gt;
-    &lt;div class="p-field float-label-container iri"&gt;
-      &lt;span class="p-float-label"&gt;
-        &lt;InputText
-          class="p-inputtext-sm"
-          v-model="conceptDto.iri"
-          type="text"
-          @input="updateConceptDto"
-        /&gt;
-        &lt;label for="Iri"&gt;Iri&lt;/label&gt;
-      &lt;/span&gt;
-    &lt;/div&gt;
-    &lt;div class="p-field float-label-container name"&gt;
-      &lt;span class="p-float-label"&gt;
-        &lt;InputText
-          class="p-inputtext-sm"
-          v-model="conceptDto.name"
-          type="text"
-        /&gt;
-        &lt;label for="Name"&gt;Name&lt;/label&gt;
-      &lt;/span&gt;
-    &lt;/div&gt;
-    &lt;div class="p-field float-label-container code"&gt;
-      &lt;span class="p-float-label"&gt;
-        &lt;InputText
-          class="p-inputtext-sm"
-          v-model="conceptDto.code"
-          type="text"
-        /&gt;
-        &lt;label for="Name"&gt;Code&lt;/label&gt;
-      &lt;/span&gt;
-    &lt;/div&gt;
-    &lt;div class="p-field float-label-container description"&gt;
-      &lt;span class="p-float-label"&gt;
-        &lt;Textarea
-          class="p-inputtext-sm"
-          v-model="conceptDto.description"
-          rows="4"
-        /&gt;
-        &lt;label for="address"&gt;Description&lt;/label&gt;
-      &lt;/span&gt;
-    &lt;/div&gt;
-    &lt;div class="p-field float-label-container version"&gt;
-      &lt;span class="p-float-label"&gt;
-        &lt;InputText
-          class="p-inputtext-sm"
-          v-model="conceptDto.version"
-          type="text"
-        /&gt;
-        &lt;label for="Version"&gt;Version&lt;/label&gt;
-      &lt;/span&gt;
-    &lt;/div&gt;
-    &lt;div class="p-field float-label-container status"&gt;
-      &lt;span class="p-float-label"&gt;
-        &lt;Dropdown
-          class="p-inputtext-sm"
-          v-model="conceptDto.status"
-          :options="statusOptions"
-        /&gt;
-        &lt;label&gt;Status&lt;/label&gt;
-      &lt;/span&gt;
-    &lt;/div&gt;
-    &lt;div class="p-field float-label-container scheme"&gt;
-      &lt;span class="p-float-label"&gt;
-        &lt;Dropdown
-          class="p-inputtext-sm"
-          v-model="conceptDto.scheme"
-          optionValue="name"
-          :options="schemeOptions"
-          optionLabel="name"
-        /&gt;
-        &lt;label&gt;Scheme&lt;/label&gt;
-      &lt;/span&gt;
-    &lt;/div&gt;
-    &lt;div class="p-field imlang-container"&gt;
-      &lt;Card&gt;
-        &lt;template #title&gt;
-          IMLang
-        &lt;/template&gt;
-        &lt;template #content&gt;
-          &lt;div style="height:500px;" id="editor-container"&gt;&lt;/div&gt;
-        &lt;/template&gt;
-      &lt;/Card&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
+  &lt;TabView&gt;
+    &lt;TabPanel header="Form"&gt;
+      &lt;div class="p-fluid editor-grid"&gt;
+        &lt;div class="p-field float-label-container iri"&gt;
+          &lt;span class="p-float-label"&gt;
+            &lt;InputText
+              class="p-inputtext-sm"
+              v-model="conceptDto.iri"
+              type="text"
+              @input="updateConceptDto"
+            /&gt;
+            &lt;label for="Iri"&gt;Iri&lt;/label&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="p-field float-label-container name"&gt;
+          &lt;span class="p-float-label"&gt;
+            &lt;InputText
+              class="p-inputtext-sm"
+              v-model="conceptDto.name"
+              type="text"
+            /&gt;
+            &lt;label for="Name"&gt;Name&lt;/label&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="p-field float-label-container code"&gt;
+          &lt;span class="p-float-label"&gt;
+            &lt;InputText
+              class="p-inputtext-sm"
+              v-model="conceptDto.code"
+              type="text"
+            /&gt;
+            &lt;label for="Name"&gt;Code&lt;/label&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="p-field float-label-container description"&gt;
+          &lt;span class="p-float-label"&gt;
+            &lt;Textarea
+              class="p-inputtext-sm"
+              v-model="conceptDto.description"
+              rows="4"
+            /&gt;
+            &lt;label for="address"&gt;Description&lt;/label&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="p-field float-label-container version"&gt;
+          &lt;span class="p-float-label"&gt;
+            &lt;InputText
+              class="p-inputtext-sm"
+              v-model="conceptDto.version"
+              type="text"
+            /&gt;
+            &lt;label for="Version"&gt;Version&lt;/label&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="p-field float-label-container status"&gt;
+          &lt;span class="p-float-label"&gt;
+            &lt;Dropdown
+              class="p-inputtext-sm"
+              v-model="conceptDto.status"
+              :options="statusOptions"
+            /&gt;
+            &lt;label&gt;Status&lt;/label&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="p-field float-label-container scheme"&gt;
+          &lt;span class="p-float-label"&gt;
+            &lt;Dropdown
+              class="p-inputtext-sm"
+              v-model="conceptDto.scheme"
+              optionValue="name"
+              :options="schemeOptions"
+              optionLabel="name"
+            /&gt;
+            &lt;label&gt;Scheme&lt;/label&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/TabPanel&gt;
+    &lt;TabPanel header="IMLang"&gt;
+      &lt;div style="height:250px;" id="editor-container"&gt;&lt;/div&gt;
+    &lt;/TabPanel&gt;
+  &lt;/TabView&gt;
 &lt;/template&gt;
 &nbsp;
 &lt;script lang="ts"&gt;
@@ -952,6 +951,10 @@ import { ConceptReference } from "@/models/ConceptReference";
 &lt;/script&gt;
 &nbsp;
 &lt;style scoped&gt;
+.p-tabview {
+  padding-top: 3px;
+}
+&nbsp;
 .editor-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1017,7 +1020,7 @@ import { ConceptReference } from "@/models/ConceptReference";
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Wed May 05 2021 17:17:07 GMT+0100 (British Summer Time)
+                at Thu May 06 2021 09:52:01 GMT+0100 (British Summer Time)
             </div>
         </div>
         <script src="../../../prettify.js"></script>
