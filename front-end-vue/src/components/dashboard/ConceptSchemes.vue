@@ -1,7 +1,7 @@
 <template>
   <div class="dashcard-container">
     <Card class="dashcard dash-pie">
-      <template #title> Ontology Concept Schemes </template>
+      <template #title> Ontology concept schemes </template>
       <template #subtitle>
         A brief overview of the schemes of data stored in the Ontology
       </template>

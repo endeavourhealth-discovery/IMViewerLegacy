@@ -55,7 +55,7 @@
             id="code-link"
             class="footer-link"
             @click="$router.push({ name: 'ConfirmCode' })"
-            >Enter it here</a
+            >Add it here</a
           ></small
         >
         <br />

@@ -1,7 +1,7 @@
 <template>
   <div class="dashcard-container">
     <Card class="dashcard dash-table">
-      <template #title> Ontology Overview </template>
+      <template #title> Ontology overview </template>
       <template #subtitle>
         A brief overview of the concepts stored in the Ontology
       </template>
@@ -36,6 +36,7 @@ import store from "@/store/index";
 import { mapState } from "vuex";
 import ReportService from "@/services/ReportService";
 import LoggerService from "@/services/LoggerService";
+import { toSentenceCase } from "@/helpers/TextConverters";
 
 @Options({
   name: "OntologyOverview",
@@ -52,6 +53,9 @@ export default class OntologyOverview extends Vue {
     ReportService.getConceptCategoryReport()
       .then(res => {
         this.tableData = res.data;
+        this.tableData.map((row: {count: number, label: string}) => {
+          row.label = toSentenceCase(row.label);
+        })
         store.commit("updateLoading", {
           key: "reportCategory",
           value: false
@@ -66,7 +70,7 @@ export default class OntologyOverview extends Vue {
           LoggerService.error("Ontology Overview server request failed", err)
         );
       });
-  }
+  } // mounted end
 }
 </script>
 
