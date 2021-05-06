@@ -67,45 +67,38 @@ export default class ConceptTypes extends Vue {
   mounted() {
     this.updatedChartOptions = { ...this.chartOptions };
     // chart type
-    // remove if statement and commit "updateConceptTypes" when server caching in place
     store.commit("updateLoading", { key: "reportType", value: true });
-    if ("datasets" in this.conceptTypes) {
-      this.chartConceptTypes = this.conceptTypes;
-      store.commit("updateLoading", { key: "reportType", value: false });
-    } else {
-      ReportService.getConceptTypeReport()
-        .then(res => {
-          for (const type of res.data) {
-            this.chartConceptTypes.labels.push(type.label);
-            this.chartConceptTypes.datasets[0].data.push(type.count);
-          }
-          this.realData = { ...this.chartConceptTypes.datasets[0].data };
-          // set tooltip to use real data
-          this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
-          // refactor data to a minimum graph size (1%) if less than min
-          this.chartConceptTypes.datasets[0].data = rescaleData(
-            this.chartConceptTypes.datasets[0].data
-          );
-          store.commit("updateConceptTypes", this.chartConceptTypes);
-          const length = Object.keys(res.data).length;
-          const bgs = palette("tol-rainbow", length);
-          const bgsFixed = bgs.map((color: string) => "#" + color);
-          const hovers = palette("tol-rainbow", length);
-          const hoversFixed = hovers.map((color: string) => "#" + color);
-          const hoversLighter = hoversFixed.map((color: string) =>
-            colorLighter(color)
-          );
-          this.chartConceptTypes.datasets[0].backgroundColor = bgsFixed;
-          this.chartConceptTypes.datasets[0].hoverBackgroundColor = hoversLighter;
-          store.commit("updateLoading", { key: "reportType", value: false });
-        })
-        .catch(err => {
-          store.commit("updateLoading", { key: "reportType", value: false });
-          this.$toast.add(
-            LoggerService.error("Concept types server request failed", err)
-          );
-        });
-    }
+    ReportService.getConceptTypeReport()
+      .then(res => {
+        for (const type of res.data) {
+          this.chartConceptTypes.labels.push(type.label);
+          this.chartConceptTypes.datasets[0].data.push(type.count);
+        }
+        this.realData = { ...this.chartConceptTypes.datasets[0].data };
+        // set tooltip to use real data
+        this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
+        // refactor data to a minimum graph size (1%) if less than min
+        this.chartConceptTypes.datasets[0].data = rescaleData(
+          this.chartConceptTypes.datasets[0].data
+        );
+        const length = Object.keys(res.data).length;
+        const bgs = palette("tol-rainbow", length);
+        const bgsFixed = bgs.map((color: string) => "#" + color);
+        const hovers = palette("tol-rainbow", length);
+        const hoversFixed = hovers.map((color: string) => "#" + color);
+        const hoversLighter = hoversFixed.map((color: string) =>
+          colorLighter(color)
+        );
+        this.chartConceptTypes.datasets[0].backgroundColor = bgsFixed;
+        this.chartConceptTypes.datasets[0].hoverBackgroundColor = hoversLighter;
+        store.commit("updateLoading", { key: "reportType", value: false });
+      })
+      .catch(err => {
+        store.commit("updateLoading", { key: "reportType", value: false });
+        this.$toast.add(
+          LoggerService.error("Concept types server request failed", err)
+        );
+      });
   }
 }
 </script>
