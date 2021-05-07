@@ -142,6 +142,15 @@
         <div class="p-d-flex p-flex-row p-jc-center">
           <!-- <ConfirmDialogue></ConfirmDialogue> -->
           <Button
+            v-if="!allVerified()"
+            class="user-submit"
+            type="submit"
+            label="Register"
+            disabled
+            v-on:click.prevent="handleSubmit"
+          />
+          <Button
+            v-else
             class="user-submit"
             type="submit"
             label="Register"
