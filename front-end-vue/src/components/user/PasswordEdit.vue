@@ -34,6 +34,11 @@
           <div class="p-field">
             <label for="passwordOld">Current password</label>
             <InputText id="passwordOld" type="password" v-model="passwordOld" />
+            <InlineMessage
+              v-if="passwordStrengthOld === 'fail' && passwordOld !== ''"
+              severity="error"
+              >Invalid password</InlineMessage
+            >
           </div>
           <div class="p-field">
             <label for="passwordNew1">New password</label>
@@ -110,6 +115,12 @@ import AuthService from "@/services/AuthService";
   components: {},
   computed: mapState(["currentUser"]),
   watch: {
+    passwordOld: {
+      immediate: true,
+      handler(newValue) {
+        this.passwordStrengthOld = checkPasswordStrength(newValue);
+      }
+    },
     passwordNew1: {
       immediate: true,
       handler(newValue) {
@@ -131,6 +142,7 @@ export default class PasswordEdit extends Vue {
   passwordNew2 = "";
   passwordsMatch = false;
   passwordStrength: PasswordStrength = PasswordStrength.fail;
+  passwordStrengthOld: PasswordStrength = PasswordStrength.fail;
   showPassword2Message = false;
 
   setShowPassword2Message() {
@@ -141,6 +153,7 @@ export default class PasswordEdit extends Vue {
     if (
       this.passwordsMatch &&
       this.passwordStrength !== PasswordStrength.fail &&
+      this.passwordStrengthOld !== PasswordStrength.fail &&
       this.passwordDifferentFromOriginal()
     ) {
       AuthService.changePassword(this.passwordOld, this.passwordNew1).then(

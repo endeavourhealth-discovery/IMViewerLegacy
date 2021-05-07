@@ -82,6 +82,11 @@
           <div v-if="showPasswordEdit" class="p-field">
             <label for="passwordOld">Current password</label>
             <InputText id="passwordOld" type="password" v-model="passwordOld" />
+            <InlineMessage
+              v-if="passwordStrengthOld === 'fail' && passwordOld !== ''"
+              severity="error"
+              >Invalid password</InlineMessage
+            >
           </div>
           <div v-if="showPasswordEdit" class="p-field">
             <label for="passwordNew1">New password</label>
@@ -197,6 +202,12 @@ import AvatarWithSelector from "./AvatarWithSelector.vue";
         this.emailsMatch = verifyEmailsMatch(this.email1, newValue);
       }
     },
+    passwordOld: {
+      immediate: true,
+      handler(newValue) {
+        this.passwordStrengthOld = checkPasswordStrength(newValue);
+      }
+    },
     passwordNew1: {
       immediate: true,
       handler(newValue) {
@@ -241,6 +252,7 @@ export default class UserEdit extends Vue {
   passwordNew1 = "";
   passwordNew2 = "";
   passwordStrength: PasswordStrength = PasswordStrength.fail;
+  passwordStrengthOld: PasswordStrength = PasswordStrength.fail;
   showPasswordEdit = false;
   passwordsMatch = false;
   showPassword2Notice = false;
@@ -294,6 +306,7 @@ export default class UserEdit extends Vue {
       this.showPasswordEdit &&
       this.passwordsMatch &&
       this.passwordStrength !== PasswordStrength.fail &&
+      this.passwordStrengthOld !== PasswordStrength.fail &&
       this.passwordDifferentFromOriginal() &&
       this.allVerified()
     ) {
@@ -349,7 +362,7 @@ export default class UserEdit extends Vue {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "Error. Password error or updated details error."
+          text: "Password error or updated details error."
         });
       }
     } else if (
