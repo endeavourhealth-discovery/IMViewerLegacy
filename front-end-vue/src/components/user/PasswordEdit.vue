@@ -34,12 +34,6 @@
           <div class="p-field">
             <label for="passwordOld">Current password</label>
             <InputText id="passwordOld" type="password" v-model="passwordOld" />
-            <InlineMessage
-              v-if="passwordStrengthOld === 'fail' && passwordOld !== ''"
-              severity="error"
-            >
-              Invalid password
-            </InlineMessage>
           </div>
           <div class="p-field">
             <label for="passwordNew1">New password</label>
@@ -90,6 +84,15 @@
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
             <Button
+              v-if="setButtonDisabled()"
+              class="user-edit"
+              type="submit"
+              label="Change password"
+              disabled
+              v-on:click.prevent="handleEditSubmit"
+            />
+            <Button
+              v-else
               class="user-edit"
               type="submit"
               label="Change password"
@@ -206,6 +209,14 @@ export default class PasswordEdit extends Vue {
   checkKey(event: any) {
     if (event.keyCode === 13) {
       this.handleEditSubmit();
+    }
+  }
+
+  setButtonDisabled() {
+    if (this.passwordStrength !== PasswordStrength.fail && this.passwordsMatch && this.passwordOld !== "") {
+      return false;
+    } else {
+      return true;
     }
   }
 }
