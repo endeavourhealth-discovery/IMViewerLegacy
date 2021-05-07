@@ -82,12 +82,6 @@
           <div v-if="showPasswordEdit" class="p-field">
             <label for="passwordOld">Current password</label>
             <InputText id="passwordOld" type="password" v-model="passwordOld" />
-            <InlineMessage
-              v-if="passwordStrengthOld === 'fail' && passwordOld !== ''"
-              severity="error"
-            >
-              Invalid password
-            </InlineMessage>
           </div>
           <div v-if="showPasswordEdit" class="p-field">
             <label for="passwordNew1">New password</label>
@@ -366,7 +360,7 @@ export default class UserEdit extends Vue {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "Password error or updated details error."
+          text: "Authentication failed. Please check your current password."
         });
       }
     } else if (
