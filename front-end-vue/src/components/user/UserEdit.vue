@@ -27,10 +27,10 @@
               v-model="firstName"
               v-on:blur="setShowFirstNameNotice"
             />
-            <InlineMessage v-if="showFirstNameNotice" severity="error"
-              >First name contains unexpected characters. A-Z and hyphens only
-              allowed e.g."Mary-Anne".</InlineMessage
-            >
+            <InlineMessage v-if="showFirstNameNotice" severity="error">
+              First name contains unexpected characters. A-Z and hyphens only
+              allowed e.g."Mary-Anne".
+            </InlineMessage>
           </div>
           <div class="p-field">
             <label for="lastName">Last name</label>
@@ -40,10 +40,10 @@
               v-model="lastName"
               v-on:blur="setShowLastNameNotice"
             />
-            <InlineMessage v-if="showLastNameNotice" severity="error"
-              >Last name contains unexpected characters. A-Z, apostropies and
-              hyphens only allowed e.g."O'Keith-Smith".</InlineMessage
-            >
+            <InlineMessage v-if="showLastNameNotice" severity="error">
+              Last name contains unexpected characters. A-Z, apostropies and
+              hyphens only allowed e.g."O'Keith-Smith".
+            </InlineMessage>
           </div>
           <div class="p-field">
             <label for="email1">Email address</label>
@@ -75,9 +75,9 @@
               v-model="email2"
               v-on:blur="setShowEmail2Notice()"
             />
-            <InlineMessage v-if="showEmail2Notice" severity="error"
-              >Email addresses do not match!</InlineMessage
-            >
+            <InlineMessage v-if="showEmail2Notice" severity="error">
+              Email addresses do not match!
+            </InlineMessage>
           </div>
           <div v-if="showPasswordEdit" class="p-field">
             <label for="passwordOld">Current password</label>
@@ -85,8 +85,9 @@
             <InlineMessage
               v-if="passwordStrengthOld === 'fail' && passwordOld !== ''"
               severity="error"
-              >Invalid password</InlineMessage
             >
+              Invalid password
+            </InlineMessage>
           </div>
           <div v-if="showPasswordEdit" class="p-field">
             <label for="passwordNew1">New password</label>
@@ -98,21 +99,24 @@
             <InlineMessage
               v-if="passwordStrength === 'strong'"
               severity="success"
-              >Password strength: Strong</InlineMessage
             >
+              Password strength: Strong
+            </InlineMessage>
             <InlineMessage
               v-if="passwordStrength === 'medium'"
               severity="success"
-              >Password strength: Medium</InlineMessage
             >
-            <InlineMessage v-if="passwordStrength === 'weak'" severity="warn"
-              >Password strength: Weak</InlineMessage
-            >
+              Password strength: Medium
+            </InlineMessage>
+            <InlineMessage v-if="passwordStrength === 'weak'" severity="warn">
+              Password strength: Weak
+            </InlineMessage>
             <InlineMessage
               v-if="passwordStrength === 'fail' && passwordNew1 !== ''"
               severity="error"
-              >Invalid password</InlineMessage
             >
+              Invalid password
+            </InlineMessage>
             <small id="password-help">
               Password must be a minimum length of 8 characters. Improve
               password strength with a mixture of UPPERCASE, lowercase, numbers
@@ -127,9 +131,9 @@
               v-model="passwordNew2"
               v-on:blur="setShowPassword2Notice"
             />
-            <InlineMessage v-if="showPassword2Notice" severity="error"
-              >New passwords do not match</InlineMessage
-            >
+            <InlineMessage v-if="showPassword2Notice" severity="error">
+              New passwords do not match
+            </InlineMessage>
           </div>
           <div class="p-d-flex p-flex-column p-jc-start p-ai-center">
             <Button

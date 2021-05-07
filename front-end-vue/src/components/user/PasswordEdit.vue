@@ -37,8 +37,9 @@
             <InlineMessage
               v-if="passwordStrengthOld === 'fail' && passwordOld !== ''"
               severity="error"
-              >Invalid password</InlineMessage
             >
+              Invalid password
+            </InlineMessage>
           </div>
           <div class="p-field">
             <label for="passwordNew1">New password</label>
@@ -50,21 +51,24 @@
             <InlineMessage
               v-if="passwordStrength === 'strong'"
               severity="success"
-              >Password strength: Strong</InlineMessage
             >
+              Password strength: Strong
+            </InlineMessage>
             <InlineMessage
               v-if="passwordStrength === 'medium'"
               severity="success"
-              >Password strength: Medium</InlineMessage
             >
-            <InlineMessage v-if="passwordStrength === 'weak'" severity="warn"
-              >Password strength: Weak</InlineMessage
-            >
+              Password strength: Medium
+            </InlineMessage>
+            <InlineMessage v-if="passwordStrength === 'weak'" severity="warn">
+              Password strength: Weak
+            </InlineMessage>
             <InlineMessage
               v-if="passwordStrength === 'fail' && passwordNew1 !== ''"
               severity="error"
-              >Invalid password</InlineMessage
             >
+              Invalid password
+            </InlineMessage>
             <small id="password-help">
               Password must be a minimum length of 8 characters. Improve
               password strength with a mixture of UPPERCASE, lowercase, numbers
@@ -80,9 +84,9 @@
               v-on:blur="setShowPassword2Message"
               @keyup="checkKey"
             />
-            <InlineMessage v-if="showPassword2Message" severity="error"
-              >New passwords do not match!</InlineMessage
-            >
+            <InlineMessage v-if="showPassword2Message" severity="error">
+              New passwords do not match!
+            </InlineMessage>
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
             <Button
