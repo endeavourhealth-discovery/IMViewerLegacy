@@ -204,7 +204,11 @@ export default class PasswordEdit extends Vue {
   }
 
   setButtonDisabled() {
-    if (this.passwordStrength !== PasswordStrength.fail && this.passwordsMatch && this.passwordOld !== "") {
+    if (
+      this.passwordStrength !== PasswordStrength.fail &&
+      this.passwordsMatch &&
+      this.passwordOld !== ""
+    ) {
       return false;
     } else {
       return true;

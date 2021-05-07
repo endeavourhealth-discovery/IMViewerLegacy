@@ -120,9 +120,9 @@
             Invalid password
           </InlineMessage>
           <small id="password-help">
-            Password must be a minimum length of 8 characters. Improve
-            password strength with a mixture of UPPERCASE, lowercase, numbers
-            and special characters [!@#$%^&*].
+            Password must be a minimum length of 8 characters. Improve password
+            strength with a mixture of UPPERCASE, lowercase, numbers and special
+            characters [!@#$%^&*].
           </small>
         </div>
         <div class="p-field">

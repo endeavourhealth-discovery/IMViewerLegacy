@@ -444,14 +444,19 @@ export default class UserEdit extends Vue {
   }
 
   setButtonDisabled() {
-    if (this.allVerified() && !this.showPasswordEdit && this.checkForChanges()) {
+    if (
+      this.allVerified() &&
+      !this.showPasswordEdit &&
+      this.checkForChanges()
+    ) {
       return false;
     } else if (
       this.allVerified() &&
       this.showPasswordEdit &&
       this.passwordsMatch &&
       this.passwordStrength !== PasswordStrength.fail &&
-      this.passwordStrengthOld !== PasswordStrength.fail) {
+      this.passwordStrengthOld !== PasswordStrength.fail
+    ) {
       return false;
     } else {
       return true;
@@ -459,7 +464,8 @@ export default class UserEdit extends Vue {
   }
 
   checkForChanges() {
-    if (this.currentUser.firstName === this.firstName &&
+    if (
+      this.currentUser.firstName === this.firstName &&
       this.currentUser.lastName === this.lastName &&
       this.currentUser.email === this.email1 &&
       this.currentUser.avatar === this.selectedAvatar
