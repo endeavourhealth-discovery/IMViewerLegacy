@@ -197,47 +197,26 @@ import AvatarWithSelector from "./AvatarWithSelector.vue";
   },
   computed: mapState(["currentUser", "isLoggedIn"]),
   watch: {
-    email1: {
-      immediate: true,
-      handler(newValue) {
-        this.email1Verified = verifyIsEmail(newValue);
-      }
+    email1(newValue) {
+      this.email1Verified = verifyIsEmail(newValue);
     },
-    email2: {
-      immediate: true,
-      handler(newValue) {
-        this.emailsMatch = verifyEmailsMatch(this.email1, newValue);
-      }
+    email2(newValue) {
+      this.emailsMatch = verifyEmailsMatch(this.email1, newValue);
     },
-    passwordOld: {
-      immediate: true,
-      handler(newValue) {
-        this.passwordStrengthOld = checkPasswordStrength(newValue);
-      }
+    passwordOld(newValue) {
+      this.passwordStrengthOld = checkPasswordStrength(newValue);
     },
-    passwordNew1: {
-      immediate: true,
-      handler(newValue) {
-        this.passwordStrength = checkPasswordStrength(newValue);
-      }
+    passwordNew1(newValue) {
+      this.passwordStrength = checkPasswordStrength(newValue);
     },
-    passwordNew2: {
-      immediate: true,
-      handler(newValue) {
-        this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, newValue);
-      }
+    passwordNew2(newValue) {
+      this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, newValue);
     },
-    firstName: {
-      immediate: true,
-      handler(newValue) {
-        this.firstNameVerified = verifyIsName(newValue);
-      }
+    firstName(newValue) {
+      this.firstNameVerified = verifyIsName(newValue);
     },
-    lastName: {
-      immediate: true,
-      handler(newValue) {
-        this.lastNameVerified = verifyIsName(newValue);
-      }
+    lastName(newValue) {
+      this.lastNameVerified = verifyIsName(newValue);
     }
   }
 })

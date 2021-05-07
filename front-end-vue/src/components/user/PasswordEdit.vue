@@ -122,23 +122,14 @@ import AuthService from "@/services/AuthService";
   components: {},
   computed: mapState(["currentUser"]),
   watch: {
-    passwordOld: {
-      immediate: true,
-      handler(newValue) {
-        this.passwordStrengthOld = checkPasswordStrength(newValue);
-      }
+    passwordOld(newValue) {
+      this.passwordStrengthOld = checkPasswordStrength(newValue);
     },
-    passwordNew1: {
-      immediate: true,
-      handler(newValue) {
-        this.passwordStrength = checkPasswordStrength(newValue);
-      }
+    passwordNew1(newValue) {
+      this.passwordStrength = checkPasswordStrength(newValue);
     },
-    passwordNew2: {
-      immediate: true,
-      handler(newValue) {
-        this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, newValue);
-      }
+    passwordNew2(newValue) {
+      this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, newValue);
     }
   }
 })

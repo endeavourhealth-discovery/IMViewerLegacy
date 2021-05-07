@@ -76,11 +76,8 @@ import Swal from "sweetalert2";
     }
   },
   watch: {
-    code: {
-      immediate: true,
-      handler() {
-        this.verifyCode();
-      }
+    code(newValue) {
+      this.verifyCode();
     }
   }
 })
