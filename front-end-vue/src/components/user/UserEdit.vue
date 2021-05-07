@@ -108,11 +108,11 @@
               severity="error"
               >Invalid password</InlineMessage
             >
-            <small id="password-help"
-              >Password must be a minimum length of 8 characters. Improve password strength with
-              a mixture of UPPERCASE, lowercase, numbers and special characters
-              [!@#$%^&*].</small
-            >
+            <small id="password-help">
+              Password must be a minimum length of 8 characters. Improve
+              password strength with a mixture of UPPERCASE, lowercase, numbers
+              and special characters [!@#$%^&*].
+            </small>
           </div>
           <div v-if="showPasswordEdit" class="p-field">
             <label for="passwordNew2">Confirm new password</label>
@@ -344,7 +344,7 @@ export default class UserEdit extends Vue {
           icon: "error",
           title: "Error",
           text: "New password can not be the same as the current password."
-        })
+        });
       } else {
         Swal.fire({
           icon: "error",
@@ -416,7 +416,7 @@ export default class UserEdit extends Vue {
   }
 
   passwordDifferentFromOriginal() {
-    return this.passwordOld !== this.passwordNew1? true: false;
+    return this.passwordOld !== this.passwordNew1 ? true : false;
   }
 
   resetForm() {

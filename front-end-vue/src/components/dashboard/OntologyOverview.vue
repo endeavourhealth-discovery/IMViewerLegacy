@@ -53,9 +53,9 @@ export default class OntologyOverview extends Vue {
     ReportService.getConceptCategoryReport()
       .then(res => {
         this.tableData = res.data;
-        this.tableData.map((row: {count: number, label: string}) => {
+        this.tableData.map((row: { count: number; label: string }) => {
           row.label = toSentenceCase(row.label);
-        })
+        });
         store.commit("updateLoading", {
           key: "reportCategory",
           value: false

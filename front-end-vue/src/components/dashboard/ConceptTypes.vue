@@ -75,7 +75,9 @@ export default class ConceptTypes extends Vue {
           this.chartConceptTypes.labels.push(type.label);
           this.chartConceptTypes.datasets[0].data.push(type.count);
         }
-        this.chartConceptTypes.labels = this.chartConceptTypes.labels.map(label => toSentenceCase(label));
+        this.chartConceptTypes.labels = this.chartConceptTypes.labels.map(
+          label => toSentenceCase(label)
+        );
         this.realData = { ...this.chartConceptTypes.datasets[0].data };
         // set tooltip to use real data
         this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
