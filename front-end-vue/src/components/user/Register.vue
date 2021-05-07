@@ -198,47 +198,26 @@ import AvatarWithSelector from "./AvatarWithSelector.vue";
   },
   emits: ["userCreated"],
   watch: {
-    username: {
-      immediate: true,
-      handler(newValue) {
-        this.usernameVerified = verifyIsUsername(newValue);
-      }
+    username(newValue) {
+      this.usernameVerified = verifyIsUsername(newValue);
     },
-    email1: {
-      immediate: true,
-      handler(newValue) {
-        this.email1Verified = verifyIsEmail(newValue);
-      }
+    email1(newValue) {
+      this.email1Verified = verifyIsEmail(newValue);
     },
-    email2: {
-      immediate: true,
-      handler(newValue) {
-        this.emailsMatch = verifyEmailsMatch(this.email1, newValue);
-      }
+    email2(newValue) {
+      this.emailsMatch = verifyEmailsMatch(this.email1, newValue);
     },
-    firstName: {
-      immediate: true,
-      handler(newValue) {
-        this.firstNameVerified = verifyIsName(newValue);
-      }
+    firstName(newValue) {
+      this.firstNameVerified = verifyIsName(newValue);
     },
-    lastName: {
-      immediate: true,
-      handler(newValue) {
-        this.lastNameVerified = verifyIsName(newValue);
-      }
+    lastName(newValue) {
+      this.lastNameVerified = verifyIsName(newValue);
     },
-    password1: {
-      immediate: true,
-      handler(newValue) {
-        this.passwordStrength = checkPasswordStrength(newValue);
-      }
+    password1(newValue) {
+      this.passwordStrength = checkPasswordStrength(newValue);
     },
-    password2: {
-      immediate: true,
-      handler(newValue) {
-        this.passwordsMatch = verifyPasswordsMatch(this.password1, newValue);
-      }
+    password2(newValue) {
+      this.passwordsMatch = verifyPasswordsMatch(this.password1, newValue);
     }
   }
 })
