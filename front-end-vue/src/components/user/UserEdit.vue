@@ -123,7 +123,7 @@
               v-on:blur="setShowPassword2Notice"
             />
             <InlineMessage v-if="showPassword2Notice" severity="error"
-              >New passwords do not match!</InlineMessage
+              >New passwords do not match</InlineMessage
             >
           </div>
           <div class="p-d-flex p-flex-column p-jc-start p-ai-center">
@@ -294,6 +294,7 @@ export default class UserEdit extends Vue {
       this.showPasswordEdit &&
       this.passwordsMatch &&
       this.passwordStrength !== PasswordStrength.fail &&
+      this.passwordDifferentFromOriginal() &&
       this.allVerified()
     ) {
       const updatedUser = new User(
@@ -338,11 +339,19 @@ export default class UserEdit extends Vue {
         }
       });
     } else if (this.showPasswordEdit) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Error. Password error or updated details error."
-      });
+      if (!this.passwordDifferentFromOriginal()) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "New password can not be the same as the current password."
+        })
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Error. Password error or updated details error."
+        });
+      }
     } else if (
       this.currentUser.firstName === this.firstName &&
       this.currentUser.lastName === this.lastName &&
@@ -404,6 +413,10 @@ export default class UserEdit extends Vue {
     } else {
       return false;
     }
+  }
+
+  passwordDifferentFromOriginal() {
+    return this.passwordOld !== this.passwordNew1? true: false;
   }
 
   resetForm() {

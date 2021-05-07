@@ -15,14 +15,14 @@
         />
       </template>
       <template #title>
-        Change Password
+        Change password
       </template>
       <template #content>
         <div
           class="p-fluid p-d-flex p-flex-column p-jc-start password-edit-form"
         >
           <div v-if="currentUser.username" class="p-field">
-            <label for="userName">User: </label>
+            <label for="userName">User</label>
             <InputText
               class="p-text-capitalize"
               id="username"
@@ -32,11 +32,11 @@
             />
           </div>
           <div class="p-field">
-            <label for="passwordOld">Current Password</label>
+            <label for="passwordOld">Current password</label>
             <InputText id="passwordOld" type="password" v-model="passwordOld" />
           </div>
           <div class="p-field">
-            <label for="passwordNew1">New Password</label>
+            <label for="passwordNew1">New password</label>
             <InputText
               id="passwordNew1"
               type="password"
@@ -45,29 +45,29 @@
             <InlineMessage
               v-if="passwordStrength === 'strong'"
               severity="success"
-              >Password Strength: Strong</InlineMessage
+              >Password strength: Strong</InlineMessage
             >
             <InlineMessage
               v-if="passwordStrength === 'medium'"
               severity="success"
-              >Password Strength: Medium</InlineMessage
+              >Password strength: Medium</InlineMessage
             >
             <InlineMessage v-if="passwordStrength === 'weak'" severity="warn"
-              >Password Strength: Weak</InlineMessage
+              >Password strength: Weak</InlineMessage
             >
             <InlineMessage
               v-if="passwordStrength === 'fail' && passwordNew1 !== ''"
               severity="error"
-              >Invalid Password</InlineMessage
+              >Invalid password</InlineMessage
             >
             <small id="password-help"
-              >Password min length 8 characters. Improve password strength with
+              >Password must be a minimum length of 8 characters. Improve password strength with
               a mixture of UPPERCASE, lowercase, numbers and special characters
               [!@#$%^&*].</small
             >
           </div>
           <div class="p-field">
-            <label for="passwordNew2">Confirm New Password</label>
+            <label for="passwordNew2">Confirm new password</label>
             <InputText
               id="passwordNew2"
               type="password"
@@ -83,7 +83,7 @@
             <Button
               class="user-edit"
               type="submit"
-              label="Submit"
+              label="Change password"
               v-on:click.prevent="handleEditSubmit"
             />
           </div>
