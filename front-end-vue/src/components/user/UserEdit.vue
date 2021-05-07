@@ -151,6 +151,15 @@
               v-on:click.prevent="resetForm"
             />
             <Button
+              v-if="setButtonDisabled()"
+              class="user-edit"
+              type="submit"
+              label="Update Account"
+              disabled
+              v-on:click.prevent="handleEditSubmit"
+            />
+            <Button
+              v-else
               class="user-edit"
               type="submit"
               label="Update Account"
@@ -364,10 +373,7 @@ export default class UserEdit extends Vue {
         });
       }
     } else if (
-      this.currentUser.firstName === this.firstName &&
-      this.currentUser.lastName === this.lastName &&
-      this.currentUser.email === this.email1 &&
-      this.currentUser.avatar === this.selectedAvatar
+      !this.checkForChanges()
     ) {
       Swal.fire({
         icon: "warning",
@@ -458,6 +464,36 @@ export default class UserEdit extends Vue {
 
   updateAvatar(newValue: { value: string }) {
     this.selectedAvatar = newValue;
+  }
+
+  setButtonDisabled() {
+    if (this.allVerified() && !this.showPasswordEdit && this.checkForChanges()) {
+      console.log("here")
+      return false;
+    } else if (
+      this.allVerified() &&
+      this.showPasswordEdit &&
+      this.passwordsMatch &&
+      this.passwordStrength !== PasswordStrength.fail &&
+      this.passwordStrengthOld !== PasswordStrength.fail) {
+      console.log("here2")
+      return false;
+    } else {
+      console.log("here3")
+      return true;
+    }
+  }
+
+  checkForChanges() {
+    if (this.currentUser.firstName === this.firstName &&
+      this.currentUser.lastName === this.lastName &&
+      this.currentUser.email === this.email1 &&
+      this.currentUser.avatar === this.selectedAvatar
+    ) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }
 </script>
