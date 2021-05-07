@@ -25,15 +25,12 @@
     <ConceptDetails v-if="conceptAggregate.concept && !isSet" />
 
     <ConceptMembers v-if="conceptAggregate.concept && isSet" />
-
-    <ConceptUsageAndMapping />
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import ConceptSummary from "@/components/panels/ConceptSummary.vue";
-import ConceptUsageAndMapping from "@/components/panels/ConceptUsageAndMapping.vue";
 import ConceptMembers from "@/components/panels/ConceptMembers.vue";
 import ConceptDetails from "./ConceptDetails.vue";
 import { isValueSet } from "../../helpers/ConceptTypeMethods";
@@ -44,7 +41,6 @@ import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
   name: "PanelControl",
   components: {
     ConceptSummary,
-    ConceptUsageAndMapping,
     ConceptMembers,
     ConceptDetails
   },
