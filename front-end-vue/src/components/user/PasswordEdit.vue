@@ -140,7 +140,8 @@ export default class PasswordEdit extends Vue {
   handleEditSubmit() {
     if (
       this.passwordsMatch &&
-      this.passwordStrength !== PasswordStrength.fail
+      this.passwordStrength !== PasswordStrength.fail &&
+      this.passwordDifferentFromOriginal()
     ) {
       AuthService.changePassword(this.passwordOld, this.passwordNew1).then(
         res => {
@@ -161,6 +162,12 @@ export default class PasswordEdit extends Vue {
           }
         }
       );
+    } else if (!this.passwordDifferentFromOriginal()) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "New password can not be the same as the current password."
+      })
     } else {
       Swal.fire({
         icon: "error",
@@ -169,6 +176,10 @@ export default class PasswordEdit extends Vue {
           "Error updating password. Authentication error or new passwords do not match."
       });
     }
+  }
+
+  passwordDifferentFromOriginal() {
+    return this.passwordOld !== this.passwordNew1? true: false;
   }
 
   getUrl(item: string) {
