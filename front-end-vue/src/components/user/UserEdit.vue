@@ -372,9 +372,7 @@ export default class UserEdit extends Vue {
           text: "Authentication failed. Please check your current password."
         });
       }
-    } else if (
-      !this.checkForChanges()
-    ) {
+    } else if (!this.checkForChanges()) {
       Swal.fire({
         icon: "warning",
         title: "Nothing to update",
@@ -468,7 +466,6 @@ export default class UserEdit extends Vue {
 
   setButtonDisabled() {
     if (this.allVerified() && !this.showPasswordEdit && this.checkForChanges()) {
-      console.log("here")
       return false;
     } else if (
       this.allVerified() &&
@@ -476,10 +473,8 @@ export default class UserEdit extends Vue {
       this.passwordsMatch &&
       this.passwordStrength !== PasswordStrength.fail &&
       this.passwordStrengthOld !== PasswordStrength.fail) {
-      console.log("here2")
       return false;
     } else {
-      console.log("here3")
       return true;
     }
   }
