@@ -352,7 +352,7 @@ export default class UserEdit extends Vue {
       Swal.fire({
         icon: "warning",
         title: "Nothing to update",
-        text: "Account details have not been edited"
+        text: "Your account details have not been updated."
       });
     } else if (this.allVerified()) {
       const updatedUser = new User(
@@ -413,8 +413,8 @@ export default class UserEdit extends Vue {
       text:
         "Are you sure that you want to reset changes to this form? Any changes you have made will be lost.",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      confirmButtonText: "Reset"
+      confirmButtonText: "Reset changes",
+      reverseButtons: true
     }).then(result => {
       if (result.isConfirmed) {
         this.username = this.currentUser.username;
