@@ -94,7 +94,7 @@ export default class AvatarWithSelector extends Vue {
 
 #selected-avatar {
   margin-block-start: 0.5em;
-  width: 150px;
+  width: 15rem;
   border: 1px solid lightgray;
   border-radius: 50%;
 }
