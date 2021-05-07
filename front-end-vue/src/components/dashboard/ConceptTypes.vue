@@ -1,7 +1,7 @@
 <template>
   <div class="dashcard-container">
     <Card class="dashcard dash-pie">
-      <template #title> Ontology Concept Types </template>
+      <template #title> Ontology concept types </template>
       <template #subtitle>
         A brief overview of the types of data stored in the Ontology
       </template>
@@ -34,6 +34,7 @@ const palette = require("../../../node_modules/google-palette");
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
 import { setTooltips, rescaleData } from "@/helpers/GraphRescale";
+import { toSentenceCase } from "@/helpers/TextConverters";
 
 @Options({
   name: "ConceptTypes",
@@ -74,6 +75,9 @@ export default class ConceptTypes extends Vue {
           this.chartConceptTypes.labels.push(type.label);
           this.chartConceptTypes.datasets[0].data.push(type.count);
         }
+        this.chartConceptTypes.labels = this.chartConceptTypes.labels.map(
+          label => toSentenceCase(label)
+        );
         this.realData = { ...this.chartConceptTypes.datasets[0].data };
         // set tooltip to use real data
         this.updatedChartOptions["tooltips"] = setTooltips(this.realData);

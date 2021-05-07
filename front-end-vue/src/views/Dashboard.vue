@@ -29,11 +29,8 @@ import ConceptStatus from "@/components/dashboard/ConceptStatus.vue";
     "concept-status": ConceptStatus
   },
   watch: {
-    windowWidth: {
-      immediate: true,
-      handler(newValue) {
-        this.setLegendOptions(newValue);
-      }
+    windowWidth(newValue) {
+      this.setLegendOptions(newValue);
     }
   }
 })

@@ -119,4 +119,8 @@ body {
     }
   }
 }
+
+.swal2-container .swal2-popup .swal2-actions {
+  justify-content: flex-end;
+}
 </style>

@@ -137,23 +137,14 @@ import Swal from "sweetalert2";
     }
   },
   watch: {
-    code: {
-      immediate: true,
-      handler() {
-        this.verifyCode();
-      }
+    code() {
+      this.verifyCode();
     },
-    newPassword1: {
-      immediate: true,
-      handler(newValue) {
-        this.passwordStrength = checkPasswordStrength(newValue);
-      }
+    newPassword1(newValue) {
+      this.passwordStrength = checkPasswordStrength(newValue);
     },
-    newPassword2: {
-      immediate: true,
-      handler(newValue) {
-        this.passwordsMatch = verifyPasswordsMatch(this.newPassword1, newValue);
-      }
+    newPassword2(newValue) {
+      this.passwordsMatch = verifyPasswordsMatch(this.newPassword1, newValue);
     }
   }
 })
@@ -246,7 +237,7 @@ export default class ForgotPasswordSubmit extends Vue {
 }
 
 .icon-header {
-  font-size: 50px;
+  font-size: 5rem;
   margin-top: 1em;
 }
 </style>

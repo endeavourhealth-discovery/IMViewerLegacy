@@ -55,7 +55,7 @@
             id="code-link"
             class="footer-link"
             @click="$router.push({ name: 'ConfirmCode' })"
-            >Enter it here</a
+            >Add it here</a
           ></small
         >
         <br />
@@ -189,7 +189,7 @@ export default class Login extends Vue {
 }
 
 .icon-header {
-  font-size: 50px;
+  font-size: 5rem;
   margin-top: 1em;
 }
 </style>

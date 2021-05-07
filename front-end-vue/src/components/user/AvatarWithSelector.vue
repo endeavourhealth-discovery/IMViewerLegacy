@@ -49,17 +49,11 @@ import { avatars } from "@/models/user/Avatars";
   props: ["selectedAvatar"],
   emits: ["avatarSelected"],
   watch: {
-    selectedAvatar: {
-      immediate: true,
-      handler(newValue) {
-        this.newAvatar = newValue;
-      }
+    selectedAvatar(newValue) {
+      this.newAvatar = newValue;
     },
-    newAvatar: {
-      immediate: true,
-      handler(newValue) {
-        this.$emit("avatarSelected", newValue);
-      }
+    newAvatar(newValue) {
+      this.$emit("avatarSelected", newValue);
     }
   }
 })
@@ -94,7 +88,7 @@ export default class AvatarWithSelector extends Vue {
 
 #selected-avatar {
   margin-block-start: 0.5em;
-  width: 150px;
+  width: 15rem;
   border: 1px solid lightgray;
   border-radius: 50%;
 }

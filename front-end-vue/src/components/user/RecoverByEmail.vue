@@ -67,11 +67,8 @@ import { verifyIsEmail } from "@/helpers/UserMethods";
 @Options({
   name: "RecoverByEmail",
   watch: {
-    email: {
-      immediate: true,
-      handler(newValue, oldValue) {
-        this.emailVerified = verifyIsEmail(newValue);
-      }
+    email(newValue) {
+      this.emailVerified = verifyIsEmail(newValue);
     }
   }
 })

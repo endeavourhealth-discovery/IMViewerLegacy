@@ -10,43 +10,43 @@
         />
       </template>
       <template #title>
-        Edit My Account
+        Edit my account
       </template>
       <template #content>
         <div class="p-fluid p-d-flex p-flex-column p-jc-start user-edit-form">
           <div class="p-field">
             <label for="username">Username</label>
             <InputText id="username" type="text" v-model="username" disabled />
-            <small id="user-help">Username cannot currently be changed</small>
+            <small id="user-help">Username cannot currently be changed.</small>
           </div>
           <div class="p-field">
-            <label for="firstName">First Name</label>
+            <label for="firstName">First name</label>
             <InputText
               id="firstName"
               type="text"
               v-model="firstName"
               v-on:blur="setShowFirstNameNotice"
             />
-            <InlineMessage v-if="showFirstNameNotice" severity="error"
-              >First name contains unexpected characters. A-Z and hyphens only
-              allowed e.g."Mary-Anne"</InlineMessage
-            >
+            <InlineMessage v-if="showFirstNameNotice" severity="error">
+              First name contains unexpected characters. A-Z and hyphens only
+              allowed e.g."Mary-Anne".
+            </InlineMessage>
           </div>
           <div class="p-field">
-            <label for="lastName">Last Name</label>
+            <label for="lastName">Last name</label>
             <InputText
               id="lastName"
               type="text"
               v-model="lastName"
               v-on:blur="setShowLastNameNotice"
             />
-            <InlineMessage v-if="showLastNameNotice" severity="error"
-              >Last name contains unexpected characters. A-Z, apostropies and
-              hyphens only allowed e.g."O'Keith-Smith"</InlineMessage
-            >
+            <InlineMessage v-if="showLastNameNotice" severity="error">
+              Last name contains unexpected characters. A-Z, apostropies and
+              hyphens only allowed e.g."O'Keith-Smith".
+            </InlineMessage>
           </div>
           <div class="p-field">
-            <label for="email1">Email Address</label>
+            <label for="email1">Email address</label>
             <div class="p-d-flex p-flex-row p-ai-center">
               <InputText
                 id="email1"
@@ -68,23 +68,23 @@
             </div>
           </div>
           <div class="p-field">
-            <label for="email2">Confirm Email Address</label>
+            <label for="email2">Confirm email address</label>
             <InputText
               id="email2"
               type="text"
               v-model="email2"
               v-on:blur="setShowEmail2Notice()"
             />
-            <InlineMessage v-if="showEmail2Notice" severity="error"
-              >Email addresses do not match!</InlineMessage
-            >
+            <InlineMessage v-if="showEmail2Notice" severity="error">
+              Email addresses do not match!
+            </InlineMessage>
           </div>
           <div v-if="showPasswordEdit" class="p-field">
-            <label for="passwordOld">Current Password</label>
+            <label for="passwordOld">Current password</label>
             <InputText id="passwordOld" type="password" v-model="passwordOld" />
           </div>
           <div v-if="showPasswordEdit" class="p-field">
-            <label for="passwordNew1">New Password</label>
+            <label for="passwordNew1">New password</label>
             <InputText
               id="passwordNew1"
               type="password"
@@ -93,64 +93,76 @@
             <InlineMessage
               v-if="passwordStrength === 'strong'"
               severity="success"
-              >Password Strength: Strong</InlineMessage
             >
+              Password strength: Strong
+            </InlineMessage>
             <InlineMessage
               v-if="passwordStrength === 'medium'"
               severity="success"
-              >Password Strength: Medium</InlineMessage
             >
-            <InlineMessage v-if="passwordStrength === 'weak'" severity="warn"
-              >Password Strength: Weak</InlineMessage
-            >
+              Password strength: Medium
+            </InlineMessage>
+            <InlineMessage v-if="passwordStrength === 'weak'" severity="warn">
+              Password strength: Weak
+            </InlineMessage>
             <InlineMessage
               v-if="passwordStrength === 'fail' && passwordNew1 !== ''"
               severity="error"
-              >Invalid Password</InlineMessage
             >
-            <small id="password-help"
-              >Password min length 8 characters. Improve password strength with
-              a mixture of UPPERCASE, lowercase, numbers and special characters
-              [!@#$%^&*].</small
-            >
+              Invalid password
+            </InlineMessage>
+            <small id="password-help">
+              Password must be a minimum length of 8 characters. Improve
+              password strength with a mixture of UPPERCASE, lowercase, numbers
+              and special characters [!@#$%^&*].
+            </small>
           </div>
           <div v-if="showPasswordEdit" class="p-field">
-            <label for="passwordNew2">Confirm New Password</label>
+            <label for="passwordNew2">Confirm new password</label>
             <InputText
               id="passwordNew2"
               type="password"
               v-model="passwordNew2"
               v-on:blur="setShowPassword2Notice"
             />
-            <InlineMessage v-if="showPassword2Notice" severity="error"
-              >New passwords do not match!</InlineMessage
-            >
+            <InlineMessage v-if="showPassword2Notice" severity="error">
+              New passwords do not match
+            </InlineMessage>
           </div>
-          <div class="p-d-flex p-flex-row p-jc-evenly p-ai-center">
+          <div class="p-d-flex p-flex-column p-jc-start p-ai-center">
             <Button
               v-if="!showPasswordEdit"
               class="password-edit p-button-secondary"
               type="submit"
-              label="Change Password"
+              label="Change password"
               v-on:click.prevent="editPasswordClicked(true)"
             />
             <Button
               v-else
               class="password-edit p-button-secondary"
               type="submit"
-              label="Cancel Password Edit"
+              label="Cancel password edit"
               v-on:click.prevent="editPasswordClicked(false)"
             />
             <Button
               class="form-reset p-button-warning"
               type="button"
-              label="Reset"
+              label="Reset changes"
               v-on:click.prevent="resetForm"
             />
             <Button
+              v-if="setButtonDisabled()"
               class="user-edit"
               type="submit"
-              label="Update"
+              label="Update Account"
+              disabled
+              v-on:click.prevent="handleEditSubmit"
+            />
+            <Button
+              v-else
+              class="user-edit"
+              type="submit"
+              label="Update Account"
               v-on:click.prevent="handleEditSubmit"
             />
           </div>
@@ -185,41 +197,26 @@ import AvatarWithSelector from "./AvatarWithSelector.vue";
   },
   computed: mapState(["currentUser", "isLoggedIn"]),
   watch: {
-    email1: {
-      immediate: true,
-      handler(newValue) {
-        this.email1Verified = verifyIsEmail(newValue);
-      }
+    email1(newValue) {
+      this.email1Verified = verifyIsEmail(newValue);
     },
-    email2: {
-      immediate: true,
-      handler(newValue) {
-        this.emailsMatch = verifyEmailsMatch(this.email1, newValue);
-      }
+    email2(newValue) {
+      this.emailsMatch = verifyEmailsMatch(this.email1, newValue);
     },
-    passwordNew1: {
-      immediate: true,
-      handler(newValue) {
-        this.passwordStrength = checkPasswordStrength(newValue);
-      }
+    passwordOld(newValue) {
+      this.passwordStrengthOld = checkPasswordStrength(newValue);
     },
-    passwordNew2: {
-      immediate: true,
-      handler(newValue) {
-        this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, newValue);
-      }
+    passwordNew1(newValue) {
+      this.passwordStrength = checkPasswordStrength(newValue);
     },
-    firstName: {
-      immediate: true,
-      handler(newValue) {
-        this.firstNameVerified = verifyIsName(newValue);
-      }
+    passwordNew2(newValue) {
+      this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, newValue);
     },
-    lastName: {
-      immediate: true,
-      handler(newValue) {
-        this.lastNameVerified = verifyIsName(newValue);
-      }
+    firstName(newValue) {
+      this.firstNameVerified = verifyIsName(newValue);
+    },
+    lastName(newValue) {
+      this.lastNameVerified = verifyIsName(newValue);
     }
   }
 })
@@ -241,6 +238,7 @@ export default class UserEdit extends Vue {
   passwordNew1 = "";
   passwordNew2 = "";
   passwordStrength: PasswordStrength = PasswordStrength.fail;
+  passwordStrengthOld: PasswordStrength = PasswordStrength.fail;
   showPasswordEdit = false;
   passwordsMatch = false;
   showPassword2Notice = false;
@@ -294,6 +292,8 @@ export default class UserEdit extends Vue {
       this.showPasswordEdit &&
       this.passwordsMatch &&
       this.passwordStrength !== PasswordStrength.fail &&
+      this.passwordStrengthOld !== PasswordStrength.fail &&
+      this.passwordDifferentFromOriginal() &&
       this.allVerified()
     ) {
       const updatedUser = new User(
@@ -338,21 +338,24 @@ export default class UserEdit extends Vue {
         }
       });
     } else if (this.showPasswordEdit) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Error. Password error or updated details error."
-      });
-    } else if (
-      this.currentUser.firstName === this.firstName &&
-      this.currentUser.lastName === this.lastName &&
-      this.currentUser.email === this.email1 &&
-      this.currentUser.avatar === this.selectedAvatar
-    ) {
+      if (!this.passwordDifferentFromOriginal()) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "New password can not be the same as the current password."
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Authentication failed. Please check your current password."
+        });
+      }
+    } else if (!this.checkForChanges()) {
       Swal.fire({
         icon: "warning",
         title: "Nothing to update",
-        text: "Account details have not been edited"
+        text: "Your account details have not been updated."
       });
     } else if (this.allVerified()) {
       const updatedUser = new User(
@@ -406,15 +409,19 @@ export default class UserEdit extends Vue {
     }
   }
 
+  passwordDifferentFromOriginal() {
+    return this.passwordOld !== this.passwordNew1 ? true : false;
+  }
+
   resetForm() {
     Swal.fire({
       icon: "warning",
       title: "Warning",
       text:
-        "Are you sure you want to reset this form? Any changes you have made will be lost!",
+        "Are you sure that you want to reset changes to this form? Any changes you have made will be lost.",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      confirmButtonText: "Reset"
+      confirmButtonText: "Reset changes",
+      reverseButtons: true
     }).then(result => {
       if (result.isConfirmed) {
         this.username = this.currentUser.username;
@@ -435,6 +442,39 @@ export default class UserEdit extends Vue {
   updateAvatar(newValue: { value: string }) {
     this.selectedAvatar = newValue;
   }
+
+  setButtonDisabled() {
+    if (
+      this.allVerified() &&
+      !this.showPasswordEdit &&
+      this.checkForChanges()
+    ) {
+      return false;
+    } else if (
+      this.allVerified() &&
+      this.showPasswordEdit &&
+      this.passwordsMatch &&
+      this.passwordStrength !== PasswordStrength.fail &&
+      this.passwordStrengthOld !== PasswordStrength.fail
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  checkForChanges() {
+    if (
+      this.currentUser.firstName === this.firstName &&
+      this.currentUser.lastName === this.lastName &&
+      this.currentUser.email === this.email1 &&
+      this.currentUser.avatar === this.selectedAvatar
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 }
 </script>
 
@@ -443,6 +483,10 @@ export default class UserEdit extends Vue {
 .password-edit,
 .form-reset {
   width: fit-content !important;
+}
+
+.form-reset {
+  margin: 10px 0px;
 }
 
 .user-edit-form {

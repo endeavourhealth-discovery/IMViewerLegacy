@@ -1,7 +1,7 @@
 <template>
   <div class="dashcard-container">
     <Card class="dashcard dash-pie">
-      <template #title> Ontology Concept Status </template>
+      <template #title> Ontology concept status </template>
       <template #subtitle>
         A brief overview of the status of concepts stored in the Ontology
       </template>

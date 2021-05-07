@@ -65,7 +65,8 @@ export default class Logout extends Vue {
       title: "Are you sure?",
       text: "Confirm logout request",
       showCancelButton: true,
-      confirmButtonText: "Logout"
+      confirmButtonText: "Logout",
+      reverseButtons: true
     }).then(result => {
       if (result.isConfirmed) {
         store.dispatch("logoutCurrentUser").then(res => {
@@ -116,7 +117,7 @@ export default class Logout extends Vue {
 }
 
 .icon-header {
-  font-size: 50px;
+  font-size: 5rem;
   margin-top: 1em;
 }
 </style>

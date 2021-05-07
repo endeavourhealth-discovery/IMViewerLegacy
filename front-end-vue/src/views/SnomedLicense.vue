@@ -118,14 +118,11 @@ import store from "@/store/index";
   name: "SnomedLicense",
   computed: mapState(["snomedLicenseAccepted"]),
   watch: {
-    snomedLicenseAccepted: {
-      immediate: true,
-      handler(newValue) {
-        if (newValue === "true") {
-          this.showDialog = false;
-        } else {
-          this.showDialog = true;
-        }
+    snomedLicenseAccepted(newValue) {
+      if (newValue === "true") {
+        this.showDialog = false;
+      } else {
+        this.showDialog = true;
       }
     }
   }
