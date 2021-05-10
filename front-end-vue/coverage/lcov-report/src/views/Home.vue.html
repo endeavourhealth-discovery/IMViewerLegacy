@@ -22,16 +22,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">55.17% </span>
+                <span class="strong">68.97% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>16/29</span>
+                <span class='fraction'>20/29</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8.33% </span>
+                <span class="strong">33.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/12</span>
+                <span class='fraction'>4/12</span>
             </div>
         
             
@@ -43,9 +43,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">51.85% </span>
+                <span class="strong">66.67% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>14/27</span>
+                <span class='fraction'>18/27</span>
             </div>
         
             
@@ -199,43 +199,43 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -311,7 +311,7 @@ import LoggerService from "@/services/LoggerService";
 export default class Home extends Vue {
   async mounted() {
     // check for user and log them in if found or logout if not
-    await store.dispatch("authenticateCurrentUser");
+    await store.dispatch("authenticateCurrentUser")
     this.updateRoute();
   }
 &nbsp;
@@ -320,18 +320,18 @@ export default class Home extends Vue {
   }
 &nbsp;
   updateRoute() {
-    if (this.$route.name === "Home" || <span class="branch-1 cbranch-no" title="branch not covered" >this.$route.name === "Dashboard") {</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.$route.name === "Home" || this.$route.name === "Dashboard") {
 <span class="cstat-no" title="statement not covered" >      store.c</span>ommit(
         "updateConceptIri",
         "http://endhealth.info/im#DiscoveryOntology"
       );
-    } else <span class="cstat-no" title="statement not covered" >if (this.$route.name === "Concept") {</span>
+    } else <span class="missing-if-branch" title="if path not taken" >I</span>if (this.$route.name === "Concept") {
 <span class="cstat-no" title="statement not covered" >      store.c</span>ommit(
         "updateConceptIri",
         this.$route.params.selectedIri as string
       );
     }
-<span class="cstat-no" title="statement not covered" >    store</span>
+    store
       .dispatch("fetchConceptAggregate", store.state.conceptIri)
       .then(<span class="fstat-no" title="function not covered" >res </span>=&gt; {
 <span class="cstat-no" title="statement not covered" >        if (!res) {</span>
@@ -340,14 +340,14 @@ export default class Home extends Vue {
           );
         }
       });
-<span class="cstat-no" title="statement not covered" >    store.d</span>ispatch("fetchConceptMapped", store.state.conceptIri).then(<span class="fstat-no" title="function not covered" >res </span>=&gt; {
+    store.dispatch("fetchConceptMapped", store.state.conceptIri).then(<span class="fstat-no" title="function not covered" >res </span>=&gt; {
 <span class="cstat-no" title="statement not covered" >      if (!res) {</span>
 <span class="cstat-no" title="statement not covered" >        this.</span>$toast.add(
           LoggerService.error("Concept mapped server request failed")
         );
       }
     });
-<span class="cstat-no" title="statement not covered" >    store.d</span>ispatch("fetchConceptUsages", store.state.conceptIri).then(<span class="fstat-no" title="function not covered" >res </span>=&gt; {
+    store.dispatch("fetchConceptUsages", store.state.conceptIri).then(<span class="fstat-no" title="function not covered" >res </span>=&gt; {
 <span class="cstat-no" title="statement not covered" >      if (!res) {</span>
 <span class="cstat-no" title="statement not covered" >        this.</span>$toast.add(
           LoggerService.error("Concept usages server request failed")
@@ -399,7 +399,7 @@ export default class Home extends Vue {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Thu May 06 2021 12:22:37 GMT+0100 (British Summer Time)
+                at Mon May 10 2021 15:41:57 GMT+0100 (British Summer Time)
             </div>
         </div>
         <script src="../../prettify.js"></script>

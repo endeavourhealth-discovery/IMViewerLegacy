@@ -24,28 +24,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>0/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>0/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
@@ -161,10 +161,7 @@
 <a name='L103'></a><a href='#L103'>103</a>
 <a name='L104'></a><a href='#L104'>104</a>
 <a name='L105'></a><a href='#L105'>105</a>
-<a name='L106'></a><a href='#L106'>106</a>
-<a name='L107'></a><a href='#L107'>107</a>
-<a name='L108'></a><a href='#L108'>108</a>
-<a name='L109'></a><a href='#L109'>109</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L106'></a><a href='#L106'>106</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -202,6 +199,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -214,16 +212,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -235,7 +230,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -275,7 +269,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&lt;template&gt;
   &lt;div class="dashcard-container"&gt;
     &lt;Card class="dashcard dash-table"&gt;
-      &lt;template #title&gt; Ontology Overview &lt;/template&gt;
+      &lt;template #title&gt; Ontology overview &lt;/template&gt;
       &lt;template #subtitle&gt;
         A brief overview of the concepts stored in the Ontology
       &lt;/template&gt;
@@ -288,7 +282,7 @@
           scrollHeight="350px"
         &gt;
           &lt;template #header&gt;
-            Ontology Data
+            Ontology data
           &lt;/template&gt;
           &lt;Column field="label" header="Label"&gt;&lt;/Column&gt;
           &lt;Column field="count" header="Total"&gt;&lt;/Column&gt;
@@ -310,6 +304,7 @@
 <span class="cstat-no" title="statement not covered" >import { mapState } from "vuex";</span>
 <span class="cstat-no" title="statement not covered" >import ReportService from "@/services/ReportService";</span>
 <span class="cstat-no" title="statement not covered" >import LoggerService from "@/services/LoggerService";</span>
+<span class="cstat-no" title="statement not covered" >import { toSentenceCase } from "@/helpers/TextConverters";</span>
 &nbsp;
 @Options({
   name: "OntologyOverview",
@@ -322,32 +317,28 @@
 &nbsp;
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  mounted() {</span></span>
     // table data
-    // strip out if statement and commit "updateOntologyOverview" when server caching is implemented
 <span class="cstat-no" title="statement not covered" >    store.c</span>ommit("updateLoading", { key: "reportCategory", value: true });
-<span class="cstat-no" title="statement not covered" >    if (this.ontologyOverview.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >      this.t</span>ableData = this.ontologyOverview;
-<span class="cstat-no" title="statement not covered" >      store.c</span>ommit("updateLoading", { key: "reportCategory", value: false });
-    } else {
-<span class="cstat-no" title="statement not covered" >      ReportService.g</span>etConceptCategoryReport()
-        .then(<span class="fstat-no" title="function not covered" >res </span>=&gt; {
-<span class="cstat-no" title="statement not covered" >          this.</span>tableData = res.data;
-<span class="cstat-no" title="statement not covered" >          store.c</span>ommit("updateOntologyOverview", this.tableData);
-<span class="cstat-no" title="statement not covered" >          store.c</span>ommit("updateLoading", {
-            key: "reportCategory",
-            value: false
-          });
-        })
-        .catch(<span class="fstat-no" title="function not covered" >err </span>=&gt; {
-<span class="cstat-no" title="statement not covered" >          store.c</span>ommit("updateLoading", {
-            key: "reportCategory",
-            value: false
-          });
-<span class="cstat-no" title="statement not covered" >          this.</span>$toast.add(
-            LoggerService.error("Ontology Overview server request failed", err)
-          );
+<span class="cstat-no" title="statement not covered" >    ReportService.g</span>etConceptCategoryReport()
+      .then(<span class="fstat-no" title="function not covered" >res </span>=&gt; {
+<span class="cstat-no" title="statement not covered" >        this.</span>tableData = res.data;
+<span class="cstat-no" title="statement not covered" >        this.</span>tableData.map(<span class="fstat-no" title="function not covered" >(r</span>ow: { count: number; label: string }) =&gt; {
+<span class="cstat-no" title="statement not covered" >          row.</span>label = toSentenceCase(row.label);
         });
-    }
-  }
+<span class="cstat-no" title="statement not covered" >        store.c</span>ommit("updateLoading", {
+          key: "reportCategory",
+          value: false
+        });
+      })
+      .catch(<span class="fstat-no" title="function not covered" >err </span>=&gt; {
+<span class="cstat-no" title="statement not covered" >        store.c</span>ommit("updateLoading", {
+          key: "reportCategory",
+          value: false
+        });
+<span class="cstat-no" title="statement not covered" >        this.</span>$toast.add(
+          LoggerService.error("Ontology Overview server request failed", err)
+        );
+      });
+  } // mounted end
 <span class="cstat-no" title="statement not covered" >}</span>
 &lt;/script&gt;
 &nbsp;
@@ -387,7 +378,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Thu May 06 2021 12:22:37 GMT+0100 (British Summer Time)
+                at Mon May 10 2021 15:41:57 GMT+0100 (British Summer Time)
             </div>
         </div>
         <script src="../../../prettify.js"></script>

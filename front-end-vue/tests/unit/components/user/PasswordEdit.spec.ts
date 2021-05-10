@@ -13,6 +13,7 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
   let wrapper: any;
 
   beforeEach(() => {
+    const $router = { name: "Home"};
     const user = new User(
       "testUser",
       "John",
@@ -26,7 +27,8 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
     wrapper = mount(PasswordEdit, {
       global: {
         plugins: [store],
-        components: { Card, Button, InputText, InlineMessage }
+        components: { Card, Button, InputText, InlineMessage },
+        mocks: { $router }
       }
     });
   });
