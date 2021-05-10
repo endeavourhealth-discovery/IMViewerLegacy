@@ -88,6 +88,7 @@
           </p>
           <Definition
             :definition="definitionText"
+            :resize="resize"
             style="width: 95%; height: 100px;"
           />
         </div>
@@ -174,8 +175,18 @@ export default class ConceptSummary extends Vue {
   synonyms: { synonym: string }[] = [];
   conceptIri!: string;
   dialogHeader = "";
+  resize = false;
+
+  handleResize() {
+    this.resize = !this.resize;
+  }
+
+  unmounted() {
+    window.onresize = null;
+  }
 
   mounted() {
+    window.onresize = this.handleResize;
     ConceptService.getConceptSynonyms(this.conceptIri)
       .then(res => {
         this.synonyms = [];

@@ -14,16 +14,21 @@ import {
 @Options({
   name: "Definition",
   components: {},
-  props: ["definition"],
+  props: ["definition", "resize"],
   watch: {
     async definition() {
       const model = monaco.editor.getModels()[0];
       model.setValue(this.filteredDefinition);
+    },
+    async resize() {
+      this.destroyMonaco();
+      this.initEditor();
     }
   }
 })
 export default class Definition extends Vue {
   definition!: string;
+  resize!: boolean;
 
   get filteredDefinition() {
     const lines = this.definition.split(";");
@@ -76,13 +81,21 @@ export default class Definition extends Vue {
     }
   }
 
+  destroyMonaco() {
+    monaco.editor.getModels().forEach(model => model.dispose());
+    const container = document.getElementById("container");
+    if (container) {
+      container.removeAttribute("data-keybinding-context");
+      container.removeAttribute("data-mode-id");
+    }
+  }
+
   mounted() {
     this.initEditor();
   }
 
   beforeUnmount() {
-    const model = monaco.editor.getModels()[0];
-    model.dispose();
+    this.destroyMonaco();
   }
 }
 </script>
