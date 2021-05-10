@@ -192,16 +192,14 @@ export default class Graph extends Vue {
       .append("text")
       .attr("id", (d: any) => d.data.valueTypeIri || d.data.iri)
       .attr("dy", ".35em")
-      .attr("x", (d: any) => (d.children || d.depth <= 1 ? -15 : 15))
+      .attr("x", (d: any) => (d.children ? -15 : 15))
       .attr("y", (d: any) => {
         d.children && d.depth !== 0 ? 0 : d;
       })
       .attr("name", (d: any) => d.data.valueTypeName || d.data.name)
       .attr("inheritedFrom", (d: any) => d.data.inheritedFromName)
       .attr("inheritedFrom", (d: any) => d.data.inheritedFromName)
-      .style("text-anchor", (d: any) =>
-        d.children || d.depth <= 1 ? "end" : "start"
-      )
+      .style("text-anchor", (d: any) => (d.children ? "end" : "start"))
       .text(
         (d: any) =>
           d.data.valueTypeName ||
