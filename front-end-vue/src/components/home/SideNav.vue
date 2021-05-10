@@ -109,17 +109,17 @@ export default class SideNav extends Vue {
 
   accountItems: [{}, {}, {}, {}] = [
     {
-      label: "My Account",
+      label: "My account",
       icon: "pi pi-fw pi-user",
       to: "/user/my-account" //+ this.user.id
     },
     {
-      label: "Edit Account",
+      label: "Edit account",
       icon: "pi pi-fw pi-user-edit",
       to: "/user/my-account/edit"
     },
     {
-      label: "Change Password",
+      label: "Change password",
       icon: "pi pi-fw pi-lock",
       to: "/user/my-account/password-edit"
     },

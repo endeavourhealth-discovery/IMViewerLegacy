@@ -1,7 +1,7 @@
 <template>
   <div class="dashcard-container">
     <Card class="dashcard dash-table">
-      <template #title> Ontology Overview </template>
+      <template #title> Ontology overview </template>
       <template #subtitle>
         A brief overview of the concepts stored in the Ontology
       </template>
@@ -14,7 +14,7 @@
           scrollHeight="350px"
         >
           <template #header>
-            Ontology Data
+            Ontology data
           </template>
           <Column field="label" header="Label"></Column>
           <Column field="count" header="Total"></Column>
@@ -36,6 +36,7 @@ import store from "@/store/index";
 import { mapState } from "vuex";
 import ReportService from "@/services/ReportService";
 import LoggerService from "@/services/LoggerService";
+import { toSentenceCase } from "@/helpers/TextConverters";
 
 @Options({
   name: "OntologyOverview",
@@ -48,32 +49,28 @@ export default class OntologyOverview extends Vue {
 
   mounted() {
     // table data
-    // strip out if statement and commit "updateOntologyOverview" when server caching is implemented
     store.commit("updateLoading", { key: "reportCategory", value: true });
-    if (this.ontologyOverview.length > 0) {
-      this.tableData = this.ontologyOverview;
-      store.commit("updateLoading", { key: "reportCategory", value: false });
-    } else {
-      ReportService.getConceptCategoryReport()
-        .then(res => {
-          this.tableData = res.data;
-          store.commit("updateOntologyOverview", this.tableData);
-          store.commit("updateLoading", {
-            key: "reportCategory",
-            value: false
-          });
-        })
-        .catch(err => {
-          store.commit("updateLoading", {
-            key: "reportCategory",
-            value: false
-          });
-          this.$toast.add(
-            LoggerService.error("Ontology Overview server request failed", err)
-          );
+    ReportService.getConceptCategoryReport()
+      .then(res => {
+        this.tableData = res.data;
+        this.tableData.map((row: { count: number; label: string }) => {
+          row.label = toSentenceCase(row.label);
         });
-    }
-  }
+        store.commit("updateLoading", {
+          key: "reportCategory",
+          value: false
+        });
+      })
+      .catch(err => {
+        store.commit("updateLoading", {
+          key: "reportCategory",
+          value: false
+        });
+        this.$toast.add(
+          LoggerService.error("Ontology Overview server request failed", err)
+        );
+      });
+  } // mounted end
 }
 </script>
 

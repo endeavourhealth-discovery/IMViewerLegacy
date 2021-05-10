@@ -1,7 +1,7 @@
 <template>
   <div class="p-d-flex p-flex-row members-container">
     <div class="included-container">
-      <Panel header="Included Members" :toggleable="true">
+      <Panel header="Included members" :toggleable="true">
         <template #icons>
           <button class="p-panel-header-icon p-link p-mr-2" @click="toggle">
             <span class="pi pi-cog"></span>
@@ -30,7 +30,7 @@
       ></Panel>
     </div>
     <div class="excluded-container">
-      <Panel header="Excluded Members" :toggleable="true">
+      <Panel header="Excluded members" :toggleable="true">
         <div
           class="p-d-flex p-flex-row p-jc-center"
           v-if="loading.get('members')"

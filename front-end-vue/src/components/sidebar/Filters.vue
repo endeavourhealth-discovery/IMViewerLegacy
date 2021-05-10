@@ -9,7 +9,7 @@
         placeholder="Select Status"
         display="chip"
       />
-      <label for="status">Select Status:</label>
+      <label for="status">Select status:</label>
     </span>
   </div>
 
@@ -24,7 +24,7 @@
         placeholder="Select Schemes"
         display="chip"
       />
-      <label for="scheme">Select Scheme:</label>
+      <label for="scheme">Select scheme:</label>
     </span>
   </div>
 
@@ -38,12 +38,13 @@
         placeholder="Select Concept Type"
         display="chip"
       />
-      <label for="scheme">Select Concept Type:</label>
+      <label for="scheme">Select concept type:</label>
     </span>
   </div>
 </template>
 
 <script lang="ts">
+import { IM } from "@/vocabulary/IM";
 import { Options, Vue } from "vue-class-component";
 
 @Options({
@@ -55,19 +56,19 @@ export default class Filters extends Vue {
   statusOptions = ["Active", "Draft", "Inactive"];
   schemeOptions = [
     {
-      iri: "http://endhealth.info/im#891081000252108",
+      iri: IM.CODE_SCHEME_BARTS,
       name: "Barts Cerner code"
     },
     {
-      iri: "http://endhealth.info/im#891051000252101",
+      iri: IM.CODE_SCHEME_CTV3,
       name: "CTV3 Code"
     },
     {
-      iri: "http://endhealth.info/im#891071000252105",
+      iri: IM.DISCOVERY_CODE,
       name: "Discovery code"
     },
     {
-      iri: "http://endhealth.info/im#891031000252107",
+      iri: IM.CODE_SCHEME_EMIS,
       name: "EMIS local code"
     },
     {
@@ -75,19 +76,19 @@ export default class Filters extends Vue {
       name: "Homerton Cerner code"
     },
     {
-      iri: "http://endhealth.info/im#891021000252109",
+      iri: IM.CODE_SCHEME_ICD10,
       name: "ICD10 code"
     },
     {
-      iri: "http://endhealth.info/im#891041000252103",
+      iri: IM.CODE_SCHEME_OPCS4,
       name: "OPCS4 code"
     },
     {
-      iri: "http://endhealth.info/im#891141000252104",
+      iri: IM.CODE_SCHEME_READ,
       name: "Read 2 code"
     },
     {
-      iri: "http://endhealth.info/im#891101000252101",
+      iri: IM.CODE_SCHEME_SNOMED,
       name: "Snomed-CT code"
     },
     {
@@ -95,7 +96,7 @@ export default class Filters extends Vue {
       name: "TPP local codes"
     },
     {
-      iri: "http://endhealth.info/im#891111000252103",
+      iri: IM.CODE_SCHEME_TERMS,
       name: "Term based code"
     }
   ];

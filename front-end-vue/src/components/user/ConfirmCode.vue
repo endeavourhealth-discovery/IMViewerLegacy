@@ -76,11 +76,8 @@ import Swal from "sweetalert2";
     }
   },
   watch: {
-    code: {
-      immediate: true,
-      handler() {
-        this.verifyCode();
-      }
+    code() {
+      this.verifyCode();
     }
   }
 })
@@ -182,7 +179,7 @@ export default class ConfirmCode extends Vue {
 }
 
 .icon-header {
-  font-size: 50px;
+  font-size: 5rem;
   margin-top: 1em;
 }
 

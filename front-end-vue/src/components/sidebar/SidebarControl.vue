@@ -202,12 +202,12 @@ export default class SidebarControl extends Vue {
     );
     const header = document.getElementById("header-home");
     if (header) {
-      this.headerHeight = header.offsetHeight;
+      this.headerHeight = header.getBoundingClientRect().height;
     }
     const sidebar = document.getElementById("side-bar");
     if (sidebar) {
       sidebar.style.maxHeight =
-        this.windowHeight - this.headerHeight - currentFontSize * 2 + "px";
+        this.windowHeight - this.headerHeight - currentFontSize * 2 - 7 + "px";
     }
     const fixedSidebar = document.getElementById("side-bar");
     const searchBar = document.getElementById("search-bar");
@@ -223,6 +223,7 @@ export default class SidebarControl extends Vue {
 <style scoped>
 #side-bar {
   /* padding: 7px; */
+  max-height: 100%;
   grid-area: sidebar;
   height: 100%;
   width: 30vw;
@@ -256,7 +257,7 @@ export default class SidebarControl extends Vue {
 }
 
 .icon-header {
-  padding: 1px;
+  margin: 0 4px 0 0;
 }
 
 .p-tabview-panel {

@@ -8,10 +8,9 @@ import { avatars } from "@/models/user/Avatars";
 import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 import LoggerService from "@/services/LoggerService";
-import { PieChartData } from "@/models/charts/PieChartData";
-import { ConceptRole } from "@/models/TTConcept/ConceptRole";
 import { Member } from "@/models/members/Member";
 import { CustomAlert } from "@/models/user/CustomAlert";
+import { IM } from "@/vocabulary/IM";
 
 export default createStore({
   state: {
@@ -30,24 +29,19 @@ export default createStore({
       "snomedLicenseAccepted"
     ) as string,
     historyCount: 0 as number,
-    // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
-    ontologyOverview: [],
-    conceptTypes: {} as PieChartData,
-    conceptSchemes: {} as PieChartData,
-    conceptStatus: {} as PieChartData,
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
         {
-          iri: "http://endhealth.info/im#891071000252105",
+          iri: IM.DISCOVERY_CODE,
           name: "Discovery code"
         },
         {
-          iri: "http://endhealth.info/im#891101000252101",
+          iri: IM.CODE_SCHEME_SNOMED,
           name: "Snomed-CT code"
         },
         {
-          iri: "http://endhealth.info/im#891111000252103",
+          iri: IM.CODE_SCHEME_TERMS,
           name: "Term based code"
         }
       ],
@@ -111,19 +105,6 @@ export default createStore({
     },
     updateHistoryCount(state, count) {
       state.historyCount = count;
-    },
-    // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
-    updateOntologyOverview(state, tableData) {
-      state.ontologyOverview = tableData;
-    },
-    updateConceptTypes(state, chartConceptTypes) {
-      state.conceptTypes = chartConceptTypes;
-    },
-    updateConceptSchemes(state, chartConceptSchemes) {
-      state.conceptSchemes = chartConceptSchemes;
-    },
-    updateConceptStatus(state, chartConceptStatus) {
-      state.conceptStatus = chartConceptStatus;
     }
   },
   actions: {
@@ -145,7 +126,7 @@ export default createStore({
         }),
         ConceptService.getConceptGraph(iri).then(res => {
           graph = res.data;
-        }),
+        })
       ])
         .then(() => {
           const updated = new ConceptAggregate(
@@ -244,8 +225,7 @@ export default createStore({
     },
     async logoutCurrentUser({ commit }) {
       let result = new CustomAlert(500, "Logout (store) failed");
-      await AuthService.signOut()
-      .then(res => {
+      await AuthService.signOut().then(res => {
         if (res.status === 200) {
           commit("updateCurrentUser", null);
           commit("updateIsLoggedIn", false);
@@ -254,12 +234,11 @@ export default createStore({
           result = res;
         }
       });
-      return result
+      return result;
     },
     async authenticateCurrentUser({ commit, dispatch }) {
       const result = { authenticated: false };
-      await AuthService.getCurrentAuthenticatedUser()
-      .then(res => {
+      await AuthService.getCurrentAuthenticatedUser().then(res => {
         if (res.status === 200 && res.user) {
           commit("updateIsLoggedIn", true);
           const loggedInUser = res.user;
@@ -276,16 +255,15 @@ export default createStore({
           commit("updateCurrentUser", loggedInUser);
           result.authenticated = true;
         } else {
-          dispatch("logoutCurrentUser")
-          .then(res => {
+          dispatch("logoutCurrentUser").then(res => {
             if (res.status === 200) {
               LoggerService.info(undefined, "Force logout successful");
             } else {
-              LoggerService.error(undefined, "Force logout failed")
+              LoggerService.error(undefined, "Force logout failed");
             }
           });
         }
-      })
+      });
       return result;
     }
   },

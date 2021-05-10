@@ -123,7 +123,7 @@ export default {
       return new CustomAlert(200, "Password successfully changed");
     } catch (err) {
       console.error(err);
-      return new CustomAlert(400, "Error updating password with server", err);
+      return new CustomAlert(400, err.message, err);
     }
   },
 
