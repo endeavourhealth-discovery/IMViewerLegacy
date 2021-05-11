@@ -1,5 +1,5 @@
 import store from "@/store/index";
-import { mount } from "@vue/test-utils";
+import { mount, flushPromises } from "@vue/test-utils";
 import Login from "@/components/user/Login.vue";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
@@ -86,8 +86,9 @@ describe("login.vue with registeredUser", () => {
     wrapper.vm.handleSubmit();
     await wrapper.vm.$nextTick();
     expect(Auth.signIn).toHaveReturned();
-    // expect(store.state.currentUser.username).toBe("devtest");
-    // expect(store.state.registeredUsername).toBe("");
-    // expect(store.state.isLoggedIn).toBe(true);
+    await flushPromises();
+    expect(store.state.currentUser.username).toBe("devtest");
+    expect(store.state.registeredUsername).toBe(null);
+    expect(store.state.isLoggedIn).toBe(true);
   });
 });
