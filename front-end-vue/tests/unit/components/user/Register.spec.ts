@@ -7,17 +7,29 @@ import InlineMessage from "primevue/inlinemessage";
 import Button from "primevue/button";
 import SelectButton from "primevue/selectbutton";
 import OverlayPanel from "primevue/overlaypanel";
+import AvatarWithSelector from "@/components/user/AvatarWithSelector.vue";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 import { avatars } from "@/models/user/Avatars";
+import { Auth } from "aws-amplify";
 
 describe("register.vue empty", () => {
   let wrapper: any;
 
+
+  Auth.signUp = jest.fn().mockImplementation(() => {
+    return {
+      status: 200
+    }
+  })
+
   beforeEach(() => {
+    const $router = { push: jest.fn() };
+    const $route = { name: jest.fn() };
     wrapper = mount(Register, {
       global: {
         plugins: [store],
-        components: { Card, Button, InputText, InlineMessage, SelectButton, OverlayPanel }
+        components: { Card, Button, InputText, InlineMessage, SelectButton, OverlayPanel, AvatarWithSelector },
+        mocks: { $router, $route }
       }
     });
   });
@@ -40,11 +52,20 @@ describe("register.vue empty", () => {
 describe("register.vue prefilled", () => {
   let wrapper: any;
 
+  Auth.signUp = jest.fn().mockImplementation(() => {
+    return {
+      status: 200
+    }
+  });
+
   beforeEach(() => {
+    const $router = { push: jest.fn() };
+    const $route = { name: jest.fn() };
     wrapper = mount(Register, {
       global: {
         plugins: [store],
-        components: { Card, Button, InputText, InlineMessage, OverlayPanel, SelectButton }
+        components: { Card, Button, InputText, InlineMessage, OverlayPanel, SelectButton, AvatarWithSelector },
+        mocks: { $router, $route }
       }
     });
     wrapper.vm.username = "DevTest";

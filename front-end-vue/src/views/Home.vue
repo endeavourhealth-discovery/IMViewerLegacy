@@ -29,11 +29,7 @@ import LoggerService from "@/services/LoggerService";
 export default class Home extends Vue {
   async mounted() {
     // check for user and log them in if found or logout if not
-    store.dispatch("authenticateCurrentUser");
-    this.updateRoute();
-  }
-
-  updated() {
+    await store.dispatch("authenticateCurrentUser");
     this.updateRoute();
   }
 
@@ -65,7 +61,7 @@ export default class Home extends Vue {
         );
       }
     });
-    store.dispatch("fetchConceptUsages", store.state.conceptIri).catch(res => {
+    store.dispatch("fetchConceptUsages", store.state.conceptIri).then(res => {
       if (!res) {
         this.$toast.add(
           LoggerService.error("Concept usages server request failed")
