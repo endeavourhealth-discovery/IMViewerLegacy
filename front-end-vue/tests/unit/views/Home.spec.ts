@@ -66,8 +66,6 @@ mock.onGet(
   url + "api/concept/graph", { params: { iri: "http://endhealth.info/im#DiscoveryOntology"}}
 ).reply(200, { data: { children: [], iri: "http://endhealth.info/#imDiscoveryOntology", name: "Discovery ontology"} })
 
-
-
 describe("Home.vue", () => {
   let wrapper: any;
   beforeEach(() => {
@@ -98,9 +96,12 @@ describe("Home.vue", () => {
     store.commit("updateSnomedLicenseAccepted", "true");
   });
 
-  it("should render containers", () => {
-    expect(wrapper.find(".layout-main")).toBeTruthy();
-    expect(wrapper.find(".main-grid")).toBeTruthy();
+  it("should check for authenticated user on mount and log in if found __ true", () => {
+    expect(store.state.currentUser.username).toBe("devtest");
+    expect(store.state.currentUser.firstName).toBe("Dev");
+    expect(store.state.currentUser.lastName).toBe("Test");
+    expect(store.state.currentUser.email).toBe("dev.test@ergosoft.co.uk");
+    expect(store.state.currentUser.avatar.value).toBe("colour/001-man.png");
   });
 
   xit("should check for authenticated user", () => {
