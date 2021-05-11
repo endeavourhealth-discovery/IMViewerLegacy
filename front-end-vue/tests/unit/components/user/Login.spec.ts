@@ -85,7 +85,6 @@ describe("login.vue with registeredUser", () => {
     wrapper.vm.password = "12345678";
     wrapper.vm.handleSubmit();
     await wrapper.vm.$nextTick();
-    console.log(store.state.currentUser);
     expect(Auth.signIn).toHaveReturned();
     // expect(store.state.currentUser.username).toBe("devtest");
     // expect(store.state.registeredUsername).toBe("");
