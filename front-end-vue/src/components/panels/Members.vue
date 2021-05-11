@@ -1,7 +1,7 @@
 <template>
   <div class="p-d-flex p-flex-row members-container">
     <div class="included-container">
-      <Panel header="Included members" :toggleable="true">
+      <Panel header="Included members">
         <template #icons>
           <button class="p-panel-header-icon p-link p-mr-2" @click="toggle">
             <span class="pi pi-cog"></span>
@@ -30,7 +30,7 @@
       ></Panel>
     </div>
     <div class="excluded-container">
-      <Panel header="Excluded members" :toggleable="true">
+      <Panel header="Excluded members">
         <div
           class="p-d-flex p-flex-row p-jc-center"
           v-if="loading.get('members')"
@@ -70,7 +70,7 @@ import { IM } from "@/vocabulary/IM";
   prop: {},
   computed: mapState(["members", "loading", "conceptAggregate"])
 })
-export default class ConceptMembers extends Vue {
+export default class Members extends Vue {
   conceptAggregate!: ConceptAggregate;
   selectedIncludedMember: {} = {};
   selectedExcludedMember: {} = {};
@@ -116,6 +116,10 @@ export default class ConceptMembers extends Vue {
     }
   ];
 
+  mounted() {
+    console.log("mounted members");
+  }
+
   onNodeSelect(member: any) {
     this.$router.push({
       name: "Concept",
@@ -159,6 +163,9 @@ export default class ConceptMembers extends Vue {
 </script>
 
 <style scoped>
+.p-panel-header {
+  all: unset;
+}
 .members-container {
   width: 100%;
 }

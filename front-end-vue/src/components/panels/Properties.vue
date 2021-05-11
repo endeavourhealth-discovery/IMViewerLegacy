@@ -1,12 +1,12 @@
 <template>
   <DataTable
-    :value="roles"
+    :value="properties"
     :rowsPerPageOptions="[10, 25, 50]"
-    :paginator="roles.length > 10 ? true : false"
+    :paginator="properties.length > 10 ? true : false"
     :rows="10"
     :scrollable="true"
     scrollHeight="flex"
-    id="roles-table"
+    id="properties-table"
   >
     <template #empty>
       No records found
@@ -20,16 +20,26 @@
     </Column>
     <Column field="valueTypeName" header="Type">
       <template #body="slotProps">
-        <div
-          v-if="slotProps.data.valueTypeName"
-          class="link"
-          @click="navigate(slotProps.data.valueTypeIri)"
-        >
+        <div class="link" @click="navigate(slotProps.data.valueTypeIri)">
           {{ slotProps.data.valueTypeName || slotProps.data.valueTypeIri }}
         </div>
-        <div v-else>
-          -
+      </template>
+    </Column>
+    <Column field="inheritedFromName" header="Inherited From">
+      <template #body="slotProps">
+        <div
+          v-if="slotProps.data.inheritedFromName"
+          class="link"
+          @click="navigate(slotProps.data.inheritedFromIri)"
+        >
+          {{ slotProps.data.inheritedFromName }}
         </div>
+        <div v-else>-</div>
+      </template>
+    </Column>
+    <Column field="quantificationType" header="Cardinality">
+      <template #body="slotProps">
+        {{ `${slotProps.data.min || 0} : ${slotProps.data.max || "*"}` }}
       </template>
     </Column>
   </DataTable>
@@ -41,17 +51,17 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import GraphData from "@/models/GraphData";
 
 @Options({
-  name: "RolesTable",
+  name: "PropertiesTable",
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {
     async conceptAggregate(newValue) {
-      this.roles = this.getRoles(newValue.graph);
+      this.properties = this.getProperties(newValue.graph);
     }
   }
 })
-export default class RolesTable extends Vue {
-  roles = [];
+export default class Properties extends Vue {
+  properties = [];
 
   navigate(iri: any) {
     const currentRoute = this.$route.name as RouteRecordName | undefined;
@@ -62,11 +72,15 @@ export default class RolesTable extends Vue {
       });
   }
 
-  getRoles(graph: GraphData) {
+  getProperties(graph: GraphData) {
+    const allProperties: any[] = [];
     const properties = graph.children.filter(
-      (child: any) => child.name === "Roles"
+      (child: any) => child.name === "Properties"
     );
-    return properties[0].children;
+    properties[0].children.forEach((prop: any) => {
+      allProperties.push(...prop.children);
+    });
+    return allProperties;
   }
 }
 </script>
@@ -84,7 +98,7 @@ div.link {
   text-transform: capitalize;
 }
 
-#roles-table {
+#properties-table {
   height: 604px;
 }
 </style>

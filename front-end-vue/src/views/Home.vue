@@ -1,8 +1,8 @@
 <template>
-  <side-nav />
+  <SideNav />
   <div class="layout-main">
     <div class="main-grid">
-      <Header />
+      <!-- <Header /> -->
       <SidebarControl />
       <router-view />
     </div>

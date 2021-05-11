@@ -65,6 +65,7 @@ export default class Graph extends Vue {
   windowWidth = window.innerWidth;
 
   mounted() {
+    console.log("mounted graph");
     this.margin = { top: 20, right: 90, bottom: 30, left: 90 };
     this.width = 660 - this.margin.left - this.margin.right;
     this.height = 500 - this.margin.top - this.margin.bottom;

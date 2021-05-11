@@ -29,7 +29,7 @@ import { Options, Vue } from "vue-class-component";
   components: {},
   prop: {}
 })
-export default class Mappings extends Vue {
+export default class Terms extends Vue {
   selectedMappedFrom: {} = {};
   selectedMappedTo: {} = {};
   selectedUsage: {} = {};
