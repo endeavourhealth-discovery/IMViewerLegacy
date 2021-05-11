@@ -51,8 +51,22 @@ mock.onGet(
 )
 
 mock.onGet(
+  url + "api/concept/mappedTo", { params: { iri: "http://endhealth.info/im#DiscoveryOntology"}}
+).reply(200, [])
+
+mock.onGet(
+  url + "api/concept/mappedFrom", { params: { iri: "http://endhealth.info/im#DiscoveryOntology"}}
+).reply(200, [])
+
+mock.onGet(
+  url + "api/concept/usages", { params: { iri: "http://endhealth.info/im#DiscoveryOntology"}}
+).reply(200, [{ "@id": "http://snomed.info/sct#138875005", name: "SNOMED CT Concept (SNOMED RT+CTV3)" }])
+
+mock.onGet(
   url + "api/concept/graph", { params: { iri: "http://endhealth.info/im#DiscoveryOntology"}}
 ).reply(200, { data: { children: [], iri: "http://endhealth.info/#imDiscoveryOntology", name: "Discovery ontology"} })
+
+
 
 describe("Home.vue", () => {
   let wrapper: any;
