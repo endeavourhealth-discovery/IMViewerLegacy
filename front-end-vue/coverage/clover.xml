@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1620731242504" clover="3.2.0">
-  <project timestamp="1620731242504" name="All files">
-    <metrics statements="1486" coveredstatements="361" conditionals="648" coveredconditionals="79" methods="384" coveredmethods="64" elements="2518" coveredelements="504" complexity="0" loc="1486" ncloc="1486" packages="9" files="46" classes="46"/>
+<coverage generated="1620740003448" clover="3.2.0">
+  <project timestamp="1620740003448" name="All files">
+    <metrics statements="1486" coveredstatements="372" conditionals="648" coveredconditionals="84" methods="384" coveredmethods="67" elements="2518" coveredelements="523" complexity="0" loc="1486" ncloc="1486" packages="9" files="46" classes="46"/>
     <package name="src">
       <metrics statements="7" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <file name="App.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/App.vue">
@@ -997,7 +997,7 @@
       </file>
     </package>
     <package name="src.components.user">
-      <metrics statements="459" coveredstatements="260" conditionals="209" coveredconditionals="73" methods="124" coveredmethods="49"/>
+      <metrics statements="459" coveredstatements="271" conditionals="209" coveredconditionals="78" methods="124" coveredmethods="52"/>
       <file name="AvatarWithSelector.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/components/user/AvatarWithSelector.vue">
         <metrics statements="13" coveredstatements="9" conditionals="3" coveredconditionals="3" methods="5" coveredmethods="2"/>
         <line num="44" count="2" type="stmt"/>
@@ -1124,33 +1124,33 @@
         <line num="219" count="1" type="stmt"/>
       </file>
       <file name="Login.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/components/user/Login.vue">
-        <metrics statements="40" coveredstatements="15" conditionals="21" coveredconditionals="7" methods="10" coveredmethods="3"/>
+        <metrics statements="40" coveredstatements="26" conditionals="21" coveredconditionals="12" methods="10" coveredmethods="6"/>
         <line num="78" count="1" type="stmt"/>
         <line num="79" count="1" type="stmt"/>
         <line num="80" count="1" type="stmt"/>
         <line num="81" count="1" type="stmt"/>
         <line num="82" count="1" type="stmt"/>
-        <line num="88" count="2" type="stmt"/>
-        <line num="92" count="3" type="cond" truecount="3" falsecount="0"/>
-        <line num="94" count="2" type="stmt"/>
-        <line num="95" count="2" type="stmt"/>
+        <line num="88" count="4" type="stmt"/>
+        <line num="92" count="5" type="cond" truecount="3" falsecount="0"/>
+        <line num="94" count="4" type="stmt"/>
+        <line num="95" count="4" type="stmt"/>
         <line num="97" count="1" type="stmt"/>
-        <line num="98" count="2" type="cond" truecount="4" falsecount="0"/>
-        <line num="99" count="1" type="stmt"/>
-        <line num="103" count="1" type="stmt"/>
-        <line num="104" count="0" type="stmt"/>
-        <line num="106" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="107" count="0" type="stmt"/>
-        <line num="108" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="109" count="0" type="stmt"/>
-        <line num="110" count="0" type="stmt"/>
-        <line num="112" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="98" count="4" type="cond" truecount="4" falsecount="0"/>
+        <line num="99" count="3" type="stmt"/>
+        <line num="103" count="3" type="stmt"/>
+        <line num="104" count="2" type="stmt"/>
+        <line num="106" count="2" type="cond" truecount="3" falsecount="1"/>
+        <line num="107" count="2" type="stmt"/>
+        <line num="108" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="109" count="2" type="stmt"/>
+        <line num="110" count="2" type="stmt"/>
+        <line num="112" count="2" type="cond" truecount="1" falsecount="1"/>
         <line num="113" count="0" type="stmt"/>
         <line num="116" count="0" type="stmt"/>
-        <line num="118" count="0" type="stmt"/>
-        <line num="119" count="0" type="stmt"/>
-        <line num="120" count="0" type="stmt"/>
-        <line num="121" count="0" type="stmt"/>
+        <line num="118" count="2" type="stmt"/>
+        <line num="119" count="2" type="stmt"/>
+        <line num="120" count="2" type="stmt"/>
+        <line num="121" count="2" type="stmt"/>
         <line num="126" count="0" type="stmt"/>
         <line num="129" count="0" type="stmt"/>
         <line num="130" count="0" type="cond" truecount="0" falsecount="2"/>

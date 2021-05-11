@@ -22,30 +22,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">40.48% </span>
+                <span class="strong">66.67% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>17/42</span>
+                <span class='fraction'>28/42</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">57.14% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>7/21</span>
+                <span class='fraction'>12/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">30% </span>
+                <span class="strong">60% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/10</span>
+                <span class='fraction'>6/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.5% </span>
+                <span class="strong">65% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>15/40</span>
+                <span class='fraction'>26/40</span>
             </div>
         
             
@@ -54,7 +54,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -338,40 +338,40 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -548,25 +548,25 @@ export default class Login extends Vue {
     }
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" >  handleSubmit() {</span>
-<span class="cstat-no" title="statement not covered" >    AuthService.s</span>ignIn(this.username, this.password)
-      .then(<span class="fstat-no" title="function not covered" >res </span>=&gt; {
-<span class="cstat-no" title="statement not covered" >        if (res.status === 200 &amp;&amp; res.user) {</span>
-          const loggedInUser = <span class="cstat-no" title="statement not covered" >res.user;</span>
-<span class="cstat-no" title="statement not covered" >          if ("value" in loggedInUser.avatar) {</span>
-            const result = <span class="cstat-no" title="statement not covered" >avatars.f</span>ind(
-<span class="fstat-no" title="function not covered" >              avatar </span>=&gt; <span class="cstat-no" title="statement not covered" >avatar.</span>value === loggedInUser.avatar.value
+  handleSubmit() {
+    AuthService.signIn(this.username, this.password)
+      .then(res =&gt; {
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (res.status === 200 &amp;&amp; res.user) {
+          const loggedInUser = res.user;
+          <span class="missing-if-branch" title="else path not taken" >E</span>if ("value" in loggedInUser.avatar) {
+            const result = avatars.find(
+              avatar =&gt; avatar.value === loggedInUser.avatar.value
             );
-<span class="cstat-no" title="statement not covered" >            if (!result) {</span>
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (!result) {
 <span class="cstat-no" title="statement not covered" >              loggedInUser.</span>avatar = avatars[0];
             }
           } else {
 <span class="cstat-no" title="statement not covered" >            loggedInUser.</span>avatar = avatars[0];
           }
-<span class="cstat-no" title="statement not covered" >          store.c</span>ommit("updateCurrentUser", loggedInUser);
-<span class="cstat-no" title="statement not covered" >          store.c</span>ommit("updateRegisteredUsername", null);
-<span class="cstat-no" title="statement not covered" >          store.c</span>ommit("updateIsLoggedIn", true);
-<span class="cstat-no" title="statement not covered" >          Swal.f</span>ire({
+          store.commit("updateCurrentUser", loggedInUser);
+          store.commit("updateRegisteredUsername", null);
+          store.commit("updateIsLoggedIn", true);
+          Swal.fire({
             icon: "success",
             title: "Success",
             text: "Login successful"
@@ -648,7 +648,7 @@ export default class Login extends Vue {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Tue May 11 2021 12:07:22 GMT+0100 (British Summer Time)
+                at Tue May 11 2021 14:33:23 GMT+0100 (British Summer Time)
             </div>
         </div>
         <script src="../../../prettify.js"></script>
