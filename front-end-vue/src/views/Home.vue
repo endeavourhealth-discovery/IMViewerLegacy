@@ -33,10 +33,6 @@ export default class Home extends Vue {
     this.updateRoute();
   }
 
-  updated() {
-    this.updateRoute();
-  }
-
   updateRoute() {
     if (this.$route.name === "Home" || this.$route.name === "Dashboard") {
       store.commit(
