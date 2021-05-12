@@ -69,27 +69,24 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import { mapState } from "vuex";
 import { User } from "@/models/user/User";
 
-@Options({
+export default defineComponent({
   name: "UserDetails",
   components: {},
-  computed: mapState(["currentUser", "isLoggedIn"])
+  computed: mapState(["currentUser", "isLoggedIn"]),
+  methods: {
+    handleEditClicked(): void {
+      this.$router.push({ name: "UserEdit" });
+    },
+
+    getUrl(item: string): string {
+      return require("@/assets/avatars/" + item);
+    }
+  }
 })
-export default class UserDetails extends Vue {
-  currentUser!: User;
-  isLoggedIn!: boolean;
-
-  handleEditClicked() {
-    this.$router.push({ name: "UserEdit" });
-  }
-
-  getUrl(item: string) {
-    return require("@/assets/avatars/" + item);
-  }
-}
 </script>
 
 <style scoped>

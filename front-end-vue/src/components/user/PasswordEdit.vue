@@ -107,7 +107,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { User } from "@/models/user/User";
 import {
   verifyPasswordsMatch,
   checkPasswordStrength

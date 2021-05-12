@@ -59,72 +59,75 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import Swal from "sweetalert2";
 import AuthService from "@/services/AuthService";
 import { verifyIsEmail } from "@/helpers/UserMethods";
 
-@Options({
+export default defineComponent({
   name: "RecoverByEmail",
   watch: {
     email(newValue) {
       this.emailVerified = verifyIsEmail(newValue);
     }
-  }
-})
-export default class RecoverByEmail extends Vue {
-  email = "";
-  emailVerified = false;
-  showEmailNotice = false;
+  },
+  data() {
+    return {
+      email: "",
+      emailVerified: false,
+      showEmailNotice: false
+    }
+  },
+  methods: {
+    setShowEmailNotice(result: boolean) {
+      this.showEmailNotice = result;
+    },
 
-  setShowEmailNotice(result: boolean) {
-    this.showEmailNotice = result;
-  }
-
-  handleSubmit() {
-    if (this.emailVerified) {
-      Swal.fire({
-        icon: "warning",
-        title: "Warning",
-        text: "Recover account with email: " + this.email,
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "Request Code"
-      }).then(result => {
-        if (result.isConfirmed) {
-          AuthService.forgotUsername(this.email).then(res => {
-            if (res.status === 200) {
-              Swal.fire({
-                icon: "success",
-                title: "Code requested",
-                text:
-                  "Recovery code for email has been requested: " +
-                  this.email +
-                  ". Check your inbox for a recovery code."
-              }).then(() => {
-                this.$router.push({ name: "RecoverByEmailSubmit" });
-              });
-            } else {
-              Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: res.message + ". Check email is correct."
-              });
-            }
-          });
-        }
-      });
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text:
-          "Failed email validation. Ensure you have entered a valid email address.",
-        confirmButtonText: "Close"
-      });
+    handleSubmit() {
+      if (this.emailVerified) {
+        Swal.fire({
+          icon: "warning",
+          title: "Warning",
+          text: "Recover account with email: " + this.email,
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Request Code"
+        }).then(result => {
+          if (result.isConfirmed) {
+            AuthService.forgotUsername(this.email).then(res => {
+              if (res.status === 200) {
+                Swal.fire({
+                  icon: "success",
+                  title: "Code requested",
+                  text:
+                    "Recovery code for email has been requested: " +
+                    this.email +
+                    ". Check your inbox for a recovery code."
+                }).then(() => {
+                  this.$router.push({ name: "RecoverByEmailSubmit" });
+                });
+              } else {
+                Swal.fire({
+                  icon: "error",
+                  title: "Error",
+                  text: res.message + ". Check email is correct."
+                });
+              }
+            });
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text:
+            "Failed email validation. Ensure you have entered a valid email address.",
+          confirmButtonText: "Close"
+        });
+      }
     }
   }
-}
+})
 </script>
 
 <style scoped>

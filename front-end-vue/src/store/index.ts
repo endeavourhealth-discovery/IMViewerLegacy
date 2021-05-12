@@ -13,6 +13,7 @@ import { CustomAlert } from "@/models/user/CustomAlert";
 import { IM } from "@/vocabulary/IM";
 
 export default createStore({
+  // update stateType.ts when adding new state!
   state: {
     loading: new Map<string, boolean>(),
     conceptIri: "http://www.w3.org/2002/07/owl#Thing",
