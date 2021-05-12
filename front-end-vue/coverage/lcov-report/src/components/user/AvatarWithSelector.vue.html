@@ -22,16 +22,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">73.33% </span>
+                <span class="strong">55.56% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>11/15</span>
+                <span class='fraction'>5/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>0/0</span>
             </div>
         
             
@@ -43,9 +43,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">69.23% </span>
+                <span class="strong">55.56% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/13</span>
+                <span class='fraction'>5/9</span>
             </div>
         
             
@@ -155,7 +155,9 @@
 <a name='L97'></a><a href='#L97'>97</a>
 <a name='L98'></a><a href='#L98'>98</a>
 <a name='L99'></a><a href='#L99'>99</a>
-<a name='L100'></a><a href='#L100'>100</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -201,7 +203,7 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -214,20 +216,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">49x</span>
 <span class="cline-any cline-yes">47x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">47x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">47x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -297,10 +301,10 @@
 &lt;/template&gt;
 &nbsp;
 &lt;script lang="ts"&gt;
-import { Options, Vue } from "vue-class-component";
 import { avatars } from "@/models/user/Avatars";
+import { defineComponent } from "vue";
 &nbsp;
-@Options({
+export default defineComponent({
   name: "AvatarWithSelector",
   props: ["selectedAvatar"],
   emits: ["avatarSelected"],
@@ -311,22 +315,24 @@ import { avatars } from "@/models/user/Avatars";
     newAvatar<span class="fstat-no" title="function not covered" >(n</span>ewValue) {
 <span class="cstat-no" title="statement not covered" >      this.$</span>emit("avatarSelected", newValue);
     }
-  }
-})
-export default class AvatarWithSelector extends Vue {
-  avatarOptions = avatars;
-  selectedAvatar!: { value: string };
-  newAvatar = this.selectedAvatar;
+  },
+  data() {
+    return {
+      avatarOptions: avatars,
+      newAvatar: this.selectedAvatar
+    };
+  },
+  methods: {
+<span class="fstat-no" title="function not covered" >    toggleAvatarSelect(</span>event: any) {
+      const x = <span class="cstat-no" title="statement not covered" >this.$refs.avatar as any;</span>
+<span class="cstat-no" title="statement not covered" >      x.</span>toggle(event);
+    },
 &nbsp;
-<span class="fstat-no" title="function not covered" >  toggleAvatarSelect(e</span>vent: any) {
-    const x = <span class="cstat-no" title="statement not covered" >this.$refs.avatar as any;</span>
-<span class="cstat-no" title="statement not covered" >    x.</span>toggle(event);
+    getUrl(item: string) {
+      return require("@/assets/avatars/" + item);
+    }
   }
-&nbsp;
-  getUrl(item: string) {
-    return require("@/assets/avatars/" + item);
-  }
-}
+});
 &lt;/script&gt;
 &nbsp;
 &lt;style scoped&gt;
@@ -360,7 +366,7 @@ export default class AvatarWithSelector extends Vue {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Wed May 12 2021 09:41:50 GMT+0100 (British Summer Time)
+                at Wed May 12 2021 15:10:02 GMT+0100 (British Summer Time)
             </div>
         </div>
         <script src="../../../prettify.js"></script>

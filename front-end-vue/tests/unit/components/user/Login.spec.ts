@@ -1,4 +1,3 @@
-import store from "@/store/index";
 import { mount, flushPromises } from "@vue/test-utils";
 import Login from "@/components/user/Login.vue";
 import Card from "primevue/card";
@@ -22,15 +21,17 @@ Auth.signIn = jest.fn().mockImplementation(() => {
 
 describe("login.vue no registeredUser", () => {
   let wrapper: any;
+  let mockStore: any;
 
   beforeEach(() => {
-    store.commit("updateCurrentUser", {});
-    store.commit("updateRegisteredUsername", "");
-    store.commit("updateIsLoggedIn", false);
+    mockStore = {
+      state: {registeredUsername: ""},
+      commit: jest.fn()
+    }
     wrapper = mount(Login, {
       global: {
-        plugins: [store],
-        components: { Card, Button, InputText }
+        components: { Card, Button, InputText },
+        mocks: { $store: mockStore }
       }
     });
   });
@@ -47,15 +48,17 @@ describe("login.vue no registeredUser", () => {
 
 describe("login.vue with registeredUser", () => {
   let wrapper: any;
+  let mockStore: any;
 
   beforeEach(() => {
-    store.commit("updateRegisteredUsername", "testUser");
-    store.commit("updateCurrentUser", {});
-    store.commit("updateIsLoggedIn", false);
+    mockStore = {
+      state: {registeredUsername: "testUser"},
+      commit: jest.fn()
+    }
     wrapper = mount(Login, {
       global: {
-        plugins: [store],
-        components: { Card, Button, InputText }
+        components: { Card, Button, InputText },
+        mocks: { $store: mockStore }
       }
     });
   });
@@ -78,17 +81,17 @@ describe("login.vue with registeredUser", () => {
   });
 
   it("updates the store on successful login", async () => {
-    expect(store.state.currentUser).toStrictEqual({});
-    expect(store.state.registeredUsername).toBe("testUser");
-    expect(store.state.isLoggedIn).toBe(false);
     wrapper.vm.username = "Devtest";
     wrapper.vm.password = "12345678";
     wrapper.vm.handleSubmit();
     await wrapper.vm.$nextTick();
     expect(Auth.signIn).toHaveReturned();
     await flushPromises();
-    expect(store.state.currentUser.username).toBe("devtest");
-    expect(store.state.registeredUsername).toBe(null);
-    expect(store.state.isLoggedIn).toBe(true);
+    expect(mockStore.commit).toHaveBeenCalledTimes(3);
+    expect(mockStore.commit.mock.calls).toEqual([
+      ["updateCurrentUser", {"avatar": {"value": "colour/001-man.png"}, "email": "dev.test@ergosoft.co.uk", "firstName": "Dev", "id": "9gkej864-l39k-9u87-4lau-w7777b3m5g09", "lastName": "Test", "password": "", "username": "devtest"}],
+      ["updateRegisteredUsername", null],
+      ["updateIsLoggedIn", true]
+    ]);
   });
 });
