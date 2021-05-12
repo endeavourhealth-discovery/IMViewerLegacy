@@ -24,7 +24,6 @@
           <TabPanel header="Terms">
             <Terms />
           </TabPanel>
-          <TabPanel header="Maps"> </TabPanel>
           <TabPanel header="Used In">
             <UsedIn />
           </TabPanel>
@@ -33,7 +32,7 @@
           </TabPanel>
         </TabView>
       </div>
-      <div v-else>
+      <div v-if="conceptAggregate.concept && !isSet">
         <TabView>
           <TabPanel header="Definition">
             <Definition />
@@ -44,7 +43,6 @@
           <TabPanel header="Terms">
             <Terms />
           </TabPanel>
-          <TabPanel header="Maps"> </TabPanel>
           <TabPanel header="Used In">
             <UsedIn />
           </TabPanel>
@@ -98,7 +96,12 @@ import DownloadDialog from "@/components/panels/DownloadDialog.vue";
     EditDialog,
     DownloadDialog
   },
-  computed: mapState(["conceptAggregate"])
+  computed: mapState(["conceptAggregate"]),
+  watch: {
+    conceptAggregate(newValue) {
+      this.concept = newValue.concept;
+    }
+  }
 })
 export default class Concept extends Vue {
   private conceptAggregate!: ConceptAggregate;

@@ -10,43 +10,11 @@
             <strong>Name:</strong>
             {{ concept["http://www.w3.org/2000/01/rdf-schema#label"] }}
           </p>
-          <Button
-            id="synonyms-button"
-            class="p-button-rounded"
-            icon="pi pi-book"
-            iconPos="right"
-            aria:haspopup="true"
-            aria-controls="overlay_panel"
-            @click="handleSynonymsClick($event)"
-          ></Button>
-          <OverlayPanel ref="op" id="overlay_panel" style="width: fit-content;">
-            <DataTable
-              :value="synonyms.length > 1 ? synonyms : [{ synonym: 'None' }]"
-              :paginator="synonyms.length > 10 ? true : false"
-              :rows="10"
-              responsiveLayout="scroll"
-            >
-              <Column field="synonym" header="Synonyms"></Column>
-            </DataTable>
-          </OverlayPanel>
         </div>
         <p class="break-text">
           <strong>Iri:</strong>
           {{ concept["@id"] }}
         </p>
-        <p>
-          <strong>Code:</strong>
-          {{ concept["http://endhealth.info/im#code"] }}
-        </p>
-        <div v-if="concept['http://www.w3.org/2000/01/rdf-schema#comment']">
-          <p>
-            <strong>Description:</strong>
-          </p>
-          <ScrollPanel style="width: 100%; height: 100px" class="custom">
-            <!-- div content injected by javascript -->
-            <div id="description"></div>
-          </ScrollPanel>
-        </div>
       </div>
       <div
         class="right-side"
@@ -59,12 +27,6 @@
           </span>
         </p>
         <p>
-          <strong>Scheme: </strong>
-          <span v-if="concept['http://endhealth.info/im#scheme']">
-            {{ concept["http://endhealth.info/im#scheme"]["name"] }}
-          </span>
-        </p>
-        <p>
           <strong>Types: </strong>
           <span
             v-if="concept['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']"
@@ -73,6 +35,16 @@
           </span>
         </p>
       </div>
+    </div>
+    <div v-if="concept['http://www.w3.org/2000/01/rdf-schema#comment']">
+      <p>
+        <strong>Description:</strong>
+      </p>
+
+      <ScrollPanel style="width: 100%; height: 100px" class="custom">
+        <!-- div content injected by javascript -->
+        <div id="description"></div>
+      </ScrollPanel>
     </div>
   </div>
 </template>
