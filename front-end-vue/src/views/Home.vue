@@ -16,7 +16,6 @@ import Header from "@/components/home/Header.vue";
 import SidebarControl from "@/components/sidebar/SidebarControl.vue";
 import store from "@/store/index";
 import LoggerService from "@/services/LoggerService";
-
 @Options({
   name: "Home",
   components: {
@@ -32,7 +31,6 @@ export default class Home extends Vue {
     await store.dispatch("authenticateCurrentUser");
     this.updateRoute();
   }
-
   updateRoute() {
     if (this.$route.name === "Home" || this.$route.name === "Dashboard") {
       store.commit(
@@ -91,17 +89,14 @@ export default class Home extends Vue {
   /* max-height: 50vh;
   min-height: 50vh; */
 }
-
 .header-grow {
   flex-grow: 1;
 }
-
 .user-menu {
   height: 100%;
   margin-left: 5px;
   width: 12.5rem;
 }
-
 .p-menubar {
   height: 100%;
 }

@@ -174,9 +174,7 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
 import { User } from "@/models/user/User";
-import store from "@/store/index";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 import Swal from "sweetalert2";
 import {
@@ -190,8 +188,9 @@ import {
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
 import AvatarWithSelector from "./AvatarWithSelector.vue";
+import { defineComponent } from "vue";
 
-@Options({
+export default defineComponent({
   name: "Register",
   components: {
     "avatar-with-selector": AvatarWithSelector
@@ -219,174 +218,179 @@ import AvatarWithSelector from "./AvatarWithSelector.vue";
     password2(newValue) {
       this.passwordsMatch = verifyPasswordsMatch(this.password1, newValue);
     }
-  }
-})
-export default class Register extends Vue {
-  username = "";
-  usernameVerified = false;
-  email1 = "";
-  email1Verified = false;
-  email2 = "";
-  emailsMatch = false;
-  firstName = "";
-  firstNameVerified = false;
-  lastName = "";
-  lastNameVerified = false;
-  password1 = "";
-  password2 = "";
-  passwordStrength: PasswordStrength = PasswordStrength.fail;
-  passwordsMatch = false;
-  showEmail1Notice = false;
-  showEmail2Notice = false;
-  showPassword2Notice = false;
-  showUsernameNotice = false;
-  showFirstNameNotice = false;
-  showLastNameNotice = false;
-  selectedAvatar = avatars[0];
+  },
 
-  setShowUsernameNotice() {
-    this.showUsernameNotice = this.usernameVerified ? false : true;
-  }
+  data() {
+    return {
+      username: "",
+      usernameVerified: false,
+      email1: "",
+      email1Verified: false,
+      email2: "",
+      emailsMatch: false,
+      firstName: "",
+      firstNameVerified: false,
+      lastName: "",
+      lastNameVerified: false,
+      password1: "",
+      password2: "",
+      passwordStrength: PasswordStrength.fail as PasswordStrength,
+      passwordsMatch: false,
+      showEmail1Notice: false,
+      showEmail2Notice: false,
+      showPassword2Notice: false,
+      showUsernameNotice: false,
+      showFirstNameNotice: false,
+      showLastNameNotice: false,
+      selectedAvatar: avatars[0] as { value: string }
+    };
+  },
 
-  setShowEmail1Notice(result: boolean) {
-    this.showEmail1Notice = result;
-  }
+  methods: {
+    setShowUsernameNotice(): void {
+      this.showUsernameNotice = this.usernameVerified ? false : true;
+    },
 
-  setShowEmail2Notice() {
-    this.showEmail2Notice = this.emailsMatch ? false : true;
-  }
+    setShowEmail1Notice(result: boolean): void {
+      this.showEmail1Notice = result;
+    },
 
-  setShowPassword2Notice() {
-    this.showPassword2Notice = this.passwordsMatch ? false : true;
-  }
+    setShowEmail2Notice(): void {
+      this.showEmail2Notice = this.emailsMatch ? false : true;
+    },
 
-  setShowFirstNameNotice() {
-    this.showFirstNameNotice = this.firstNameVerified ? false : true;
-  }
+    setShowPassword2Notice(): void {
+      this.showPassword2Notice = this.passwordsMatch ? false : true;
+    },
 
-  setShowLastNameNotice() {
-    this.showLastNameNotice = this.lastNameVerified ? false : true;
-  }
+    setShowFirstNameNotice(): void {
+      this.showFirstNameNotice = this.firstNameVerified ? false : true;
+    },
 
-  handleSubmit() {
-    if (this.allVerified()) {
-      const user = new User(
-        this.username,
-        this.firstName,
-        this.lastName,
-        this.email1.toLowerCase(),
-        this.password1,
-        this.selectedAvatar
-      );
-      AuthService.register(user)
-        .then(res => {
-          if (res.status === 201) {
-            Swal.fire({
-              icon: "success",
-              title: "Success",
-              text: res.message,
-              showCancelButton: true,
-              confirmButtonText: "Continue"
-            }).then(result => {
-              this.$emit("userCreated", user);
-              if (result.isConfirmed) {
-                store.commit("updateRegisteredUsername", this.username);
-                this.$router.push({ name: "ConfirmCode" });
-              } else {
-                this.clearForm();
-              }
-            });
-          } else if (res.status === 409) {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: "Username already taken. Please pick another username",
-              confirmButtonText: "Close"
-            });
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: res.message,
-              confirmButtonText: "Close"
-            });
-          }
-        })
-        .catch(err => {
-          console.error(err);
+    setShowLastNameNotice(): void {
+      this.showLastNameNotice = this.lastNameVerified ? false : true;
+    },
+
+    handleSubmit(): void {
+      if (this.allVerified()) {
+        const user = new User(
+          this.username,
+          this.firstName,
+          this.lastName,
+          this.email1.toLowerCase(),
+          this.password1,
+          this.selectedAvatar
+        );
+        AuthService.register(user)
+          .then(res => {
+            if (res.status === 201) {
+              Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: res.message,
+                showCancelButton: true,
+                confirmButtonText: "Continue"
+              }).then(result => {
+                this.$emit("userCreated", user);
+                if (result.isConfirmed) {
+                  this.$store.commit("updateRegisteredUsername", this.username);
+                  this.$router.push({ name: "ConfirmCode" });
+                } else {
+                  this.clearForm();
+                }
+              });
+            } else if (res.status === 409) {
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Username already taken. Please pick another username",
+                confirmButtonText: "Close"
+              });
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: res.message,
+                confirmButtonText: "Close"
+              });
+            }
+          })
+          .catch(err => {
+            console.error(err);
+          });
+        // this.$confirm.require({
+        //   message: "User created successfully!",
+        //   header: "Success",
+        //   icon: "pi pi-check",
+        //   acceptLabel: "Login",
+        //   rejectLabel: "Close",
+        //   accept: () => {
+        //     this.$router.push({name: "Login"});
+        //   },
+        //   reject: () => {
+        //     this.$confirm.close();
+        //   } // prime vue version -- ugly...
+        // })
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "User creation failed. Check input data.",
+          confirmButtonText: "Close"
         });
-      // this.$confirm.require({
-      //   message: "User created successfully!",
-      //   header: "Success",
-      //   icon: "pi pi-check",
-      //   acceptLabel: "Login",
-      //   rejectLabel: "Close",
-      //   accept: () => {
-      //     this.$router.push({name: "Login"});
-      //   },
-      //   reject: () => {
-      //     this.$confirm.close();
-      //   } // prime vue version -- ugly...
-      // })
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "User creation failed. Check input data.",
-        confirmButtonText: "Close"
-      });
+      }
+    },
+
+    clearForm(): void {
+      this.username = "";
+      this.usernameVerified = false;
+      this.email1 = "";
+      this.email1Verified = false;
+      this.email2 = "";
+      this.emailsMatch = false;
+      this.firstName = "";
+      this.lastName = "";
+      this.password1 = "";
+      this.password2 = "";
+      this.passwordStrength = PasswordStrength.fail;
+      this.passwordsMatch = false;
+      this.showEmail1Notice = false;
+      this.showEmail2Notice = false;
+      this.showPassword2Notice = false;
+      this.showFirstNameNotice = false;
+      this.showLastNameNotice = false;
+      this.selectedAvatar = avatars[0];
+    },
+
+    allVerified(): boolean {
+      if (
+        verifyIsUsername(this.username) &&
+        verifyIsEmail(this.email1) &&
+        verifyIsEmail(this.email2) &&
+        verifyEmailsMatch(this.email1, this.email2) &&
+        verifyPasswordsMatch(this.password1, this.password2) &&
+        this.passwordStrength !== PasswordStrength.fail &&
+        verifyIsName(this.firstName) &&
+        verifyIsName(this.lastName) &&
+        "value" in this.selectedAvatar
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    updateAvatar(newValue: { value: string }): void {
+      this.selectedAvatar = newValue;
+    },
+
+    checkKey(event: any): void {
+      if (event.keyCode === 13) {
+        this.handleSubmit();
+      }
     }
   }
-
-  clearForm() {
-    this.username = "";
-    this.usernameVerified = false;
-    this.email1 = "";
-    this.email1Verified = false;
-    this.email2 = "";
-    this.emailsMatch = false;
-    this.firstName = "";
-    this.lastName = "";
-    this.password1 = "";
-    this.password2 = "";
-    this.passwordStrength = PasswordStrength.fail;
-    this.passwordsMatch = false;
-    this.showEmail1Notice = false;
-    this.showEmail2Notice = false;
-    this.showPassword2Notice = false;
-    this.showFirstNameNotice = false;
-    this.showLastNameNotice = false;
-    this.selectedAvatar = avatars[0];
-  }
-
-  allVerified() {
-    if (
-      verifyIsUsername(this.username) &&
-      verifyIsEmail(this.email1) &&
-      verifyIsEmail(this.email2) &&
-      verifyEmailsMatch(this.email1, this.email2) &&
-      verifyPasswordsMatch(this.password1, this.password2) &&
-      this.passwordStrength !== PasswordStrength.fail &&
-      verifyIsName(this.firstName) &&
-      verifyIsName(this.lastName) &&
-      "value" in this.selectedAvatar
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  updateAvatar(newValue: { value: string }) {
-    this.selectedAvatar = newValue;
-  }
-
-  checkKey(event: any) {
-    if (event.keyCode === 13) {
-      this.handleSubmit();
-    }
-  }
-}
+});
 </script>
 
 <style scoped>

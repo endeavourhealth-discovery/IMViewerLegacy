@@ -81,7 +81,7 @@ export default {
     try {
       const user = await Auth.currentAuthenticatedUser();
       if (user.attributes.sub === userToUpdate.id) {
-        const atts: object = {
+        const atts: { email: string, "custom:forename": string, "custom:surname": string, "custom:avatar": string } = {
           email: userToUpdate.email,
           "custom:forename": userToUpdate.firstName,
           "custom:surname": userToUpdate.lastName,

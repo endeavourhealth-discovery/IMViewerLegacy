@@ -75,100 +75,97 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import store from "@/store/index";
+import { defineComponent } from "vue";
+import { mapState} from "vuex";
 import Swal from "sweetalert2";
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
 
-@Options({
+export default defineComponent({
   name: "Login",
-  computed: {
-    registeredUsername() {
-      return store.state.registeredUsername;
+  computed: mapState(["registeredUsername"]),
+  data() {
+    return {
+      username: "",
+      password: ""
     }
-  }
-})
-export default class Login extends Vue {
-  registeredUsername!: string;
-  username = "";
-  password = "";
-
+  },
   mounted() {
     if (this.registeredUsername && this.registeredUsername !== "") {
       this.username = this.registeredUsername;
     }
-  }
-
-  handleSubmit() {
-    AuthService.signIn(this.username, this.password)
-      .then(res => {
-        if (res.status === 200 && res.user) {
-          const loggedInUser = res.user;
-          if ("value" in loggedInUser.avatar) {
-            const result = avatars.find(
-              avatar => avatar.value === loggedInUser.avatar.value
-            );
-            if (!result) {
+  },
+  methods: {
+    handleSubmit(): void {
+      AuthService.signIn(this.username, this.password)
+        .then(res => {
+          if (res.status === 200 && res.user) {
+            const loggedInUser = res.user;
+            if ("value" in loggedInUser.avatar) {
+              const result = avatars.find(
+                avatar => avatar.value === loggedInUser.avatar.value
+              );
+              if (!result) {
+                loggedInUser.avatar = avatars[0];
+              }
+            } else {
               loggedInUser.avatar = avatars[0];
             }
+            this.$store.commit("updateCurrentUser", loggedInUser);
+            this.$store.commit("updateRegisteredUsername", null);
+            this.$store.commit("updateIsLoggedIn", true);
+            Swal.fire({
+              icon: "success",
+              title: "Success",
+              text: "Login successful"
+            }).then(() => {
+              this.$router.push({ name: "Home" });
+            });
           } else {
-            loggedInUser.avatar = avatars[0];
+            console.log(res.message);
+            if (res.status === 401) {
+              Swal.fire({
+                icon: "warning",
+                title: "User Unconfirmed",
+                text:
+                  "Account has not been confirmed. Please confirm account to continue.",
+                showCloseButton: true,
+                showCancelButton: true,
+                confirmButtonText: "Confirm Account"
+              }).then(result => {
+                if (result.isConfirmed) {
+                  this.$store.commit("updateRegisteredUsername", this.username);
+                  this.$router.push({ name: "ConfirmCode" });
+                }
+              });
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: res.message,
+                confirmButtonText: "Close"
+              });
+            }
           }
-          store.commit("updateCurrentUser", loggedInUser);
-          store.commit("updateRegisteredUsername", null);
-          store.commit("updateIsLoggedIn", true);
+        })
+        .catch(err => {
+          console.error(err);
           Swal.fire({
-            icon: "success",
-            title: "Success",
-            text: "Login successful"
-          }).then(() => {
-            this.$router.push({ name: "Home" });
+            icon: "error",
+            title: "Error",
+            text: "Authentication error",
+            confirmButtonText: "Close"
           });
-        } else {
-          console.log(res.message);
-          if (res.status === 401) {
-            Swal.fire({
-              icon: "warning",
-              title: "User Unconfirmed",
-              text:
-                "Account has not been confirmed. Please confirm account to continue.",
-              showCloseButton: true,
-              showCancelButton: true,
-              confirmButtonText: "Confirm Account"
-            }).then(result => {
-              if (result.isConfirmed) {
-                store.commit("updateRegisteredUsername", this.username);
-                this.$router.push({ name: "ConfirmCode" });
-              }
-            });
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: res.message,
-              confirmButtonText: "Close"
-            });
-          }
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Authentication error",
-          confirmButtonText: "Close"
         });
-      });
-  }
+    },
 
-  checkKey(event: any) {
-    if (event.keyCode === 13) {
-      this.handleSubmit();
+    checkKey(event: any): void {
+      if (event.keyCode === 13) {
+        this.handleSubmit();
+      }
     }
   }
-}
+})
 </script>
 
 <style scoped>

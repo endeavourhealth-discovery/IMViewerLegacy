@@ -106,8 +106,7 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import { User } from "@/models/user/User";
+import { defineComponent } from "vue";
 import {
   verifyPasswordsMatch,
   checkPasswordStrength
@@ -117,7 +116,7 @@ import { mapState } from "vuex";
 import Swal from "sweetalert2";
 import AuthService from "@/services/AuthService";
 
-@Options({
+export default defineComponent({
   name: "PasswordEdit",
   components: {},
   computed: mapState(["currentUser"]),
@@ -131,90 +130,92 @@ import AuthService from "@/services/AuthService";
     passwordNew2(newValue) {
       this.passwordsMatch = verifyPasswordsMatch(this.passwordNew1, newValue);
     }
+  },
+  data() {
+    return {
+      passwordOld: "",
+      passwordNew1: "",
+      passwordNew2: "",
+      passwordsMatch: false,
+      passwordStrength: PasswordStrength.fail as PasswordStrength,
+      passwordStrengthOld: PasswordStrength.fail as PasswordStrength,
+      showPassword2Message: false
+    }
+  },
+  methods: {
+    setShowPassword2Message(): void {
+      this.showPassword2Message = this.passwordsMatch ? false : true;
+    },
+
+    handleEditSubmit(): void {
+      if (
+        this.passwordsMatch &&
+        this.passwordStrength !== PasswordStrength.fail &&
+        this.passwordStrengthOld !== PasswordStrength.fail &&
+        this.passwordDifferentFromOriginal()
+      ) {
+        AuthService.changePassword(this.passwordOld, this.passwordNew1).then(
+          res => {
+            if (res.status === 200) {
+              Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: "Password successfully updated"
+              }).then(() => {
+                this.$router.push({ name: "Home" });
+              });
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: res.message
+              });
+            }
+          }
+        );
+      } else if (!this.passwordDifferentFromOriginal()) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "New password can not be the same as the current password."
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text:
+            "Error updating password. Authentication error or new passwords do not match."
+        });
+      }
+    },
+
+    passwordDifferentFromOriginal(): boolean {
+      return this.passwordOld !== this.passwordNew1 ? true : false;
+    },
+
+    getUrl(item: string): string {
+      return require("@/assets/avatars/" + item);
+    },
+
+    checkKey(event: any): void {
+      if (event.keyCode === 13) {
+        this.handleEditSubmit();
+      }
+    },
+
+    setButtonDisabled(): boolean {
+      if (
+        this.passwordStrength !== PasswordStrength.fail &&
+        this.passwordsMatch &&
+        this.passwordOld !== ""
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    }
   }
 })
-export default class PasswordEdit extends Vue {
-  currentUser!: User;
-  passwordOld = "";
-  passwordNew1 = "";
-  passwordNew2 = "";
-  passwordsMatch = false;
-  passwordStrength: PasswordStrength = PasswordStrength.fail;
-  passwordStrengthOld: PasswordStrength = PasswordStrength.fail;
-  showPassword2Message = false;
-
-  setShowPassword2Message() {
-    this.showPassword2Message = this.passwordsMatch ? false : true;
-  }
-
-  handleEditSubmit() {
-    if (
-      this.passwordsMatch &&
-      this.passwordStrength !== PasswordStrength.fail &&
-      this.passwordStrengthOld !== PasswordStrength.fail &&
-      this.passwordDifferentFromOriginal()
-    ) {
-      AuthService.changePassword(this.passwordOld, this.passwordNew1).then(
-        res => {
-          if (res.status === 200) {
-            Swal.fire({
-              icon: "success",
-              title: "Success",
-              text: "Password successfully updated"
-            }).then(() => {
-              this.$router.push({ name: "Home" });
-            });
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: res.message
-            });
-          }
-        }
-      );
-    } else if (!this.passwordDifferentFromOriginal()) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "New password can not be the same as the current password."
-      });
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text:
-          "Error updating password. Authentication error or new passwords do not match."
-      });
-    }
-  }
-
-  passwordDifferentFromOriginal() {
-    return this.passwordOld !== this.passwordNew1 ? true : false;
-  }
-
-  getUrl(item: string) {
-    return require("@/assets/avatars/" + item);
-  }
-
-  checkKey(event: any) {
-    if (event.keyCode === 13) {
-      this.handleEditSubmit();
-    }
-  }
-
-  setButtonDisabled() {
-    if (
-      this.passwordStrength !== PasswordStrength.fail &&
-      this.passwordsMatch &&
-      this.passwordOld !== ""
-    ) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-}
 </script>
 
 <style scoped>

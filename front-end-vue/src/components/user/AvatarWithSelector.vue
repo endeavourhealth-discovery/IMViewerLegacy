@@ -41,10 +41,10 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
 import { avatars } from "@/models/user/Avatars";
+import { defineComponent } from "vue";
 
-@Options({
+export default defineComponent({
   name: "AvatarWithSelector",
   props: ["selectedAvatar"],
   emits: ["avatarSelected"],
@@ -55,22 +55,24 @@ import { avatars } from "@/models/user/Avatars";
     newAvatar(newValue) {
       this.$emit("avatarSelected", newValue);
     }
-  }
-})
-export default class AvatarWithSelector extends Vue {
-  avatarOptions = avatars;
-  selectedAvatar!: { value: string };
-  newAvatar = this.selectedAvatar;
+  },
+  data() {
+    return {
+      avatarOptions: avatars,
+      newAvatar: this.selectedAvatar
+    };
+  },
+  methods: {
+    toggleAvatarSelect(event: any) {
+      const x = this.$refs.avatar as any;
+      x.toggle(event);
+    },
 
-  toggleAvatarSelect(event: any) {
-    const x = this.$refs.avatar as any;
-    x.toggle(event);
+    getUrl(item: string) {
+      return require("@/assets/avatars/" + item);
+    }
   }
-
-  getUrl(item: string) {
-    return require("@/assets/avatars/" + item);
-  }
-}
+});
 </script>
 
 <style scoped>
