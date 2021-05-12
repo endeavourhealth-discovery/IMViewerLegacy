@@ -9,7 +9,7 @@
       </template>
       <template #header>
         <div>
-          <i v-bind:class="icon" />
+          <i :class="icon" />
           {{ header }}
         </div>
       </template>
@@ -183,7 +183,7 @@ export default class Concept extends Vue {
   }
 
   private get icon() {
-    const icon = getIconFromType(this.conceptAggregate?.concept?.[RDF.TYPE]);
+    const icon = getIconFromType(this.concept?.[RDF.TYPE]);
     return icon;
   }
 }
@@ -191,6 +191,7 @@ export default class Concept extends Vue {
 <style scoped>
 .concept-container {
   /* height: calc(100vh - 123px); */
+
   grid-area: content;
   height: 100%;
   width: 100%;

@@ -40,15 +40,13 @@ import { RDF } from "@/vocabulary/RDF";
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {
-    conceptAggregate(newValue) {
-      this.eraseTree();
+    async conceptAggregate(newValue) {
       const conceptTypeElements = newValue.concept[RDF.TYPE];
       if (!isValueSet(conceptTypeElements)) {
         this.graphData = newValue.graph;
         this.root = d3.hierarchy(this.graphData);
-        this.drawTree();
-        this.initSvgPanZoom();
         this.initView();
+        this.initSvgPanZoom();
         this.zoomReset();
       }
     }
@@ -60,12 +58,11 @@ export default class Graph extends Vue {
   margin: any = {};
   width = 660;
   height = 500;
-  panZoom!: any;
+  panZoom!: SvgPanZoom.Instance;
   windowHeight = window.innerHeight;
   windowWidth = window.innerWidth;
 
   mounted() {
-    console.log("mounted graph");
     this.margin = { top: 20, right: 90, bottom: 30, left: 90 };
     this.width = 660 - this.margin.left - this.margin.right;
     this.height = 500 - this.margin.top - this.margin.bottom;
@@ -73,21 +70,21 @@ export default class Graph extends Vue {
     this.$nextTick(() => {
       window.addEventListener("resize", this.onResize);
     });
-  } // mounted end
+  }
 
   beforeDestroy() {
     window.removeEventListener("resize", this.onResize);
+    this.panZoom.destroy();
+    this.eraseTree();
   }
 
   onResize() {
     this.windowHeight = window.innerHeight;
     this.windowWidth = window.innerWidth;
-    if (this.panZoom) {
-      this.panZoom.destroy();
-    }
+    this.root = d3.hierarchy(this.graphData);
     this.initSvgPanZoom();
-    this.initView();
     this.zoomReset();
+    this.initView();
   }
 
   zoomIn() {
@@ -104,6 +101,9 @@ export default class Graph extends Vue {
   }
 
   initSvgPanZoom() {
+    if (this.panZoom) {
+      this.panZoom.destroy();
+    }
     this.panZoom = svgPanZoom("#svg", {
       zoomEnabled: true,
       fit: true,
@@ -283,8 +283,12 @@ export default class Graph extends Vue {
   }
 
   initView() {
-    this.onCircleClick({ srcElement: { id: "Parents" } });
-    this.onCircleClick({ srcElement: { id: "Children" } });
+    try {
+      this.onCircleClick({ srcElement: { id: "Parents" } });
+      this.onCircleClick({ srcElement: { id: "Children" } });
+    } catch (error) {
+      //
+    }
   }
 
   onCircleClick(event: any) {
