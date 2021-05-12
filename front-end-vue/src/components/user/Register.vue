@@ -189,8 +189,9 @@ import {
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
 import AvatarWithSelector from "./AvatarWithSelector.vue";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   name: "Register",
   components: {
     "avatar-with-selector": AvatarWithSelector
@@ -243,7 +244,7 @@ export default {
       showFirstNameNotice: false,
       showLastNameNotice: false,
       selectedAvatar: avatars[0] as { value: string }
-    }
+    };
   },
 
   methods: {
@@ -390,7 +391,7 @@ export default {
       }
     }
   }
-}
+});
 </script>
 
 <style scoped>

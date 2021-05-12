@@ -71,7 +71,7 @@ import awsconfig from "./aws-exports";
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
 
-createApp(App)
+const app = createApp(App)
   .use(store)
   .use(router)
   .use(PrimeVue, { ripple: true })
@@ -116,4 +116,5 @@ createApp(App)
   .component("SelectButton", SelectButton)
   .component("Toast", Toast)
   .component("Checkbox", Checkbox)
-  .mount("#app");
+
+app.mount("#app");

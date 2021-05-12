@@ -16,23 +16,22 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
 import { mapState } from "vuex";
-import store from "@/store/index";
+import { defineComponent } from "vue";
 
-@Options({
+export default defineComponent({
   name: "ButtonBar",
-  computed: mapState(["snomedLicenseAccepted"])
-})
-export default class extends Vue {
-  clickedBack() {
-    if (store.state.historyCount === window.history.length) {
-      this.$router.push({ name: "Dashboard" });
-    } else {
-      this.$router.go(-1);
+  computed: mapState(["snomedLicenseAccepted"]),
+  methods: {
+    clickedBack() {
+      if (this.$store.state.historyCount === window.history.length) {
+        this.$router.push({ name: "Dashboard" });
+      } else {
+        this.$router.go(-1);
+      }
     }
   }
-}
+})
 </script>
 
 <style scoped>

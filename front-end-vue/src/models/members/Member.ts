@@ -6,7 +6,11 @@ export class Member {
   included: MemberNode[];
   valueSet: ConceptReference;
 
-  constructor(excluded: MemberNode[], included: MemberNode[], valueSet: ConceptReference) {
+  constructor(
+    excluded: MemberNode[],
+    included: MemberNode[],
+    valueSet: ConceptReference
+  ) {
     this.excluded = excluded;
     this.included = included;
     this.valueSet = valueSet;

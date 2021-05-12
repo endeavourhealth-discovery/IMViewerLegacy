@@ -42,8 +42,9 @@
 
 <script lang="ts">
 import { avatars } from "@/models/user/Avatars";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   name: "AvatarWithSelector",
   props: ["selectedAvatar"],
   emits: ["avatarSelected"],
@@ -71,7 +72,7 @@ export default {
       return require("@/assets/avatars/" + item);
     }
   }
-};
+});
 </script>
 
 <style scoped>
