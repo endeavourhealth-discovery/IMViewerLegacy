@@ -40,7 +40,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { avatars } from "@/models/user/Avatars";
 
 export default {
@@ -62,12 +62,12 @@ export default {
     };
   },
   methods: {
-    toggleAvatarSelect(event) {
-      const x = this.$refs.avatar;
+    toggleAvatarSelect(event: any) {
+      const x = this.$refs.avatar as any;
       x.toggle(event);
     },
 
-    getUrl(item) {
+    getUrl(item: string) {
       return require("@/assets/avatars/" + item);
     }
   }
