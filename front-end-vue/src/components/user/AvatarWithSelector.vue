@@ -63,12 +63,12 @@ export default defineComponent({
     };
   },
   methods: {
-    toggleAvatarSelect(event: any) {
+    toggleAvatarSelect(event: any): void {
       const x = this.$refs.avatar as any;
       x.toggle(event);
     },
 
-    getUrl(item: string) {
+    getUrl(item: string): string {
       return require("@/assets/avatars/" + item);
     }
   }
