@@ -9,6 +9,7 @@ import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 import LoggerService from "@/services/LoggerService";
 import { Member } from "@/models/members/Member";
+import { CustomAlert } from "@/models/user/CustomAlert";
 import { IM } from "@/vocabulary/IM";
 
 export default createStore({
@@ -186,6 +187,7 @@ export default createStore({
     async fetchConceptMembers({ commit }, iri) {
       commit("updateLoading", { key: "members", value: true });
       let members: Member;
+      let success = true;
       await ConceptService.getConceptMembers(iri, false)
         .then(res => {
           members = res.data;
@@ -194,8 +196,10 @@ export default createStore({
         })
         .catch(err => {
           LoggerService.error(undefined, err);
+          success = false;
           commit("updateLoading", { key: "members", value: false });
         });
+      return success;
     },
     async fetchSearchResults(
       { commit },
@@ -220,24 +224,21 @@ export default createStore({
       return success;
     },
     async logoutCurrentUser({ commit }) {
-      try {
-        const res = await AuthService.signOut();
+      let result = new CustomAlert(500, "Logout (store) failed");
+      await AuthService.signOut().then(res => {
         if (res.status === 200) {
           commit("updateCurrentUser", null);
           commit("updateIsLoggedIn", false);
-          return res;
+          result = res;
         } else {
-          LoggerService.error(undefined, res.error);
-          return res;
+          result = res;
         }
-      } catch (err) {
-        LoggerService.error(undefined, err);
-        return { status: 500, error: err, message: "Logout (store) failed" };
-      }
+      });
+      return result;
     },
     async authenticateCurrentUser({ commit, dispatch }) {
-      try {
-        const res = await AuthService.getCurrentAuthenticatedUser();
+      const result = { authenticated: false };
+      await AuthService.getCurrentAuthenticatedUser().then(res => {
         if (res.status === 200 && res.user) {
           commit("updateIsLoggedIn", true);
           const loggedInUser = res.user;
@@ -252,17 +253,18 @@ export default createStore({
             loggedInUser.avatar = avatars[0];
           }
           commit("updateCurrentUser", loggedInUser);
-          return { authenticated: true };
+          result.authenticated = true;
         } else {
-          LoggerService.error(undefined, res.error);
-          dispatch("logoutCurrentUser");
-          return { authenticated: false };
+          dispatch("logoutCurrentUser").then(res => {
+            if (res.status === 200) {
+              LoggerService.info(undefined, "Force logout successful");
+            } else {
+              LoggerService.error(undefined, "Force logout failed");
+            }
+          });
         }
-      } catch (err) {
-        LoggerService.error(undefined, err);
-        dispatch("logoutCurrentUser");
-        return { authenticated: false };
-      }
+      });
+      return result;
     }
   },
   modules: {}

@@ -28,9 +28,9 @@ import { Options, Vue } from "vue-class-component";
   prop: {}
 })
 export default class UsedIn extends Vue {
-  selectedMappedFrom: {} = {};
-  selectedMappedTo: {} = {};
-  selectedUsage: {} = {};
+  selectedMappedFrom: any = {};
+  selectedMappedTo: any = {};
+  selectedUsage: any = {};
 
   onNodeSelect(concept: any) {
     this.$router.push({

@@ -7,14 +7,50 @@ import InlineMessage from "primevue/inlinemessage";
 import Button from "primevue/button";
 import SelectButton from "primevue/selectbutton";
 import OverlayPanel from "primevue/overlaypanel";
+import AvatarWithSelector from "@/components/user/AvatarWithSelector.vue";
 import { User } from "@/models/user/User";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 import { avatars } from "@/models/user/Avatars";
+import { Auth } from "aws-amplify";
 
 describe("userEdit.vue no password edit", () => {
   let wrapper: any;
 
+  Auth.currentAuthenticatedUser = jest.fn().mockImplementation(() => {
+    return {
+      username: "devtest",
+      attributes: {
+        "custom:avatar": "colour/001-man.png",
+        "custom:forename": "Dev",
+        "custom:surname": "Test",
+        email: "dev.test@ergosoft.co.uk",
+        email_verified: true,
+        sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
+      }
+    }
+  })
+
+  Auth.changePassword = jest.fn().mockImplementation(() => {
+    return { status: 200 }
+  })
+
+  Auth.updateUserAttributes = jest.fn().mockImplementation(() => {
+    return {
+      username: "devtestedited",
+      attributes: {
+        "custom:avatar": "colour/002-man.png",
+        "custom:forename": "Dev",
+        "custom:surname": "Test",
+        email: "dev.test@ergosoft.co.uk",
+        email_verified: true,
+        sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
+      }
+    }
+  })
+
   beforeEach(() => {
+    const $router = { push: jest.fn() };
+    const $route = { name: jest.fn() };
     const user = new User(
       "testUser",
       "John",
@@ -28,7 +64,8 @@ describe("userEdit.vue no password edit", () => {
     wrapper = mount(UserEdit, {
       global: {
         plugins: [store],
-        components: { Card, Button, InputText, InlineMessage, SelectButton, OverlayPanel }
+        components: { Card, Button, InputText, InlineMessage, SelectButton, OverlayPanel, AvatarWithSelector },
+        mocks: { $router, $route }
       }
     });
   });

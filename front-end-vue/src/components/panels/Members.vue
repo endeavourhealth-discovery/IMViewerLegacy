@@ -72,8 +72,8 @@ import { IM } from "@/vocabulary/IM";
 })
 export default class Members extends Vue {
   conceptAggregate!: ConceptAggregate;
-  selectedIncludedMember: {} = {};
-  selectedExcludedMember: {} = {};
+  selectedIncludedMember: any = {};
+  selectedExcludedMember: any = {};
 
   items = [
     {

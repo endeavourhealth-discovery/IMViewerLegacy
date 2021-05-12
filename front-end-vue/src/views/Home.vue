@@ -16,7 +16,6 @@ import Header from "@/components/home/Header.vue";
 import SidebarControl from "@/components/sidebar/SidebarControl.vue";
 import store from "@/store/index";
 import LoggerService from "@/services/LoggerService";
-
 @Options({
   name: "Home",
   components: {
@@ -29,14 +28,9 @@ import LoggerService from "@/services/LoggerService";
 export default class Home extends Vue {
   async mounted() {
     // check for user and log them in if found or logout if not
-    store.dispatch("authenticateCurrentUser");
+    await store.dispatch("authenticateCurrentUser");
     this.updateRoute();
   }
-
-  updated() {
-    this.updateRoute();
-  }
-
   updateRoute() {
     if (this.$route.name === "Home" || this.$route.name === "Dashboard") {
       store.commit(
@@ -65,7 +59,7 @@ export default class Home extends Vue {
         );
       }
     });
-    store.dispatch("fetchConceptUsages", store.state.conceptIri).catch(res => {
+    store.dispatch("fetchConceptUsages", store.state.conceptIri).then(res => {
       if (!res) {
         this.$toast.add(
           LoggerService.error("Concept usages server request failed")
@@ -95,17 +89,14 @@ export default class Home extends Vue {
   /* max-height: 50vh;
   min-height: 50vh; */
 }
-
 .header-grow {
   flex-grow: 1;
 }
-
 .user-menu {
   height: 100%;
   margin-left: 5px;
   width: 12.5rem;
 }
-
 .p-menubar {
   height: 100%;
 }
