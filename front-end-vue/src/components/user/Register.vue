@@ -175,7 +175,6 @@
 
 <script lang="ts">
 import { User } from "@/models/user/User";
-import store from "@/store/index";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 import Swal from "sweetalert2";
 import {
@@ -294,7 +293,7 @@ export default defineComponent({
               }).then(result => {
                 this.$emit("userCreated", user);
                 if (result.isConfirmed) {
-                  store.commit("updateRegisteredUsername", this.username);
+                  this.$store.commit("updateRegisteredUsername", this.username);
                   this.$router.push({ name: "ConfirmCode" });
                 } else {
                   this.clearForm();
