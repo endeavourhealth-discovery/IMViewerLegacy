@@ -14,33 +14,35 @@
     :filter="true"
     emptyMessage="No results found"
     emptyFilterMessage="No results found"
-    v-model="selectedMappedFrom"
-    @change="onNodeSelect(selectedMappedFrom)"
+    v-model="selected"
+    @change="onNodeSelect(selected)"
     :options="$store.state.mapped"
     optionLabel="name"
   >
   </Listbox>
 </template>
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "@vue/runtime-core";
 
-@Options({
-  name: "Mappings",
+export default defineComponent({
+  name: "Terms",
   components: {},
-  prop: {}
-})
-export default class Terms extends Vue {
-  selectedMappedFrom: {} = {};
-  selectedMappedTo: {} = {};
-  selectedUsage: {} = {};
-
-  onNodeSelect(concept: any) {
-    this.$router.push({
-      name: "Concept",
-      params: { selectedIri: concept["@id"] }
-    });
+  props: {},
+  data() {
+    return {
+      selected: {}
+    };
+  },
+  methods: {
+    onNodeSelect(concept: any) {
+      if (concept?.["@id"])
+        this.$router.push({
+          name: "Concept",
+          params: { selectedIri: concept["@id"] }
+        });
+    }
   }
-}
+});
 </script>
 
 <style scoped>

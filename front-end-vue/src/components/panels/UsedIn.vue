@@ -20,25 +20,26 @@
   ></Listbox>
 </template>
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "@vue/runtime-core";
 
-@Options({
+export default defineComponent({
   name: "UsedIn",
   components: {},
-  prop: {}
-})
-export default class UsedIn extends Vue {
-  selectedMappedFrom: any = {};
-  selectedMappedTo: any = {};
-  selectedUsage: any = {};
-
-  onNodeSelect(concept: any) {
-    this.$router.push({
-      name: "Concept",
-      params: { selectedIri: concept["@id"] }
-    });
+  props: {},
+  data() {
+    return {
+      selectedUsage: {}
+    };
+  },
+  methods: {
+    onNodeSelect(concept: any) {
+      this.$router.push({
+        name: "Concept",
+        params: { selectedIri: concept["@id"] }
+      });
+    }
   }
-}
+});
 </script>
 
 <style scoped>

@@ -46,43 +46,46 @@
 </template>
 <script lang="ts">
 import { mapState } from "vuex";
-import { Options, Vue } from "vue-class-component";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import GraphData from "@/models/GraphData";
+import { defineComponent } from "@vue/runtime-core";
 
-@Options({
+export default defineComponent({
   name: "PropertiesTable",
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {
-    async conceptAggregate(newValue) {
+    conceptAggregate(newValue) {
       this.properties = this.getProperties(newValue.graph);
     }
-  }
-})
-export default class Properties extends Vue {
-  properties = [];
+  },
+  data() {
+    return {
+      properties: [] as any[]
+    };
+  },
+  methods: {
+    navigate(iri: any) {
+      const currentRoute = this.$route.name as RouteRecordName | undefined;
+      if (iri)
+        this.$router.push({
+          name: currentRoute,
+          params: { selectedIri: iri }
+        });
+    },
 
-  navigate(iri: any) {
-    const currentRoute = this.$route.name as RouteRecordName | undefined;
-    if (iri)
-      this.$router.push({
-        name: currentRoute,
-        params: { selectedIri: iri }
+    getProperties(graph: GraphData) {
+      const allProperties: any[] = [];
+      const properties = graph.children.filter(
+        (child: any) => child.name === "Properties"
+      );
+      properties[0].children.forEach((prop: any) => {
+        allProperties.push(...prop.children);
       });
+      return allProperties;
+    }
   }
-
-  getProperties(graph: GraphData) {
-    const allProperties: any[] = [];
-    const properties = graph.children.filter(
-      (child: any) => child.name === "Properties"
-    );
-    properties[0].children.forEach((prop: any) => {
-      allProperties.push(...prop.children);
-    });
-    return allProperties;
-  }
-}
+});
 </script>
 
 <style scoped>

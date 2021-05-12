@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    v-model:visible="showDialog"
+    :visible="showDialog"
     :modal="true"
     :closable="false"
     :maximizable="true"
@@ -104,111 +104,112 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
 import LoggerService from "@/services/LoggerService";
 import { mapState } from "vuex";
-import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
-import { Member } from "@/models/members/Member";
 import { IM } from "@/vocabulary/IM";
+import { defineComponent } from "@vue/runtime-core";
 
-@Options({
+export default defineComponent({
   name: "DownloadDialog",
   props: ["concept", "showDialog"],
-  computed: mapState(["conceptAggregate", "members"])
-})
-export default class DownloadDialog extends Vue {
-  conceptAggregate!: ConceptAggregate;
-  members!: Member;
-  concept!: any;
-  includeChildren = true;
-  includeProperties = true;
-  includeMembers = true;
-  includeParents = true;
-  includeInactive = false;
-  includeRoles = false;
-  format = {
-    name: "Excel(.xlsx)",
-    value: "excel",
-    mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-  };
-  formatOptions = [
-    { name: "JSON", value: "json", mime: "application/json" },
-    {
-      name: "Excel(.xlsx)",
-      value: "excel",
-      mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  computed: mapState(["conceptAggregate", "members"]),
+  watch: {
+    conceptAggregate() {
+      this.includeParents = !!this.conceptAggregate.parents?.length;
+      this.includeChildren = !!this.conceptAggregate.children?.length;
+      this.includeProperties = this.hasProperties();
+      this.includeRoles = this.hasRoles();
+      this.includeMembers =
+        !!this.members?.included?.length || !!this.members?.excluded?.length;
     }
-  ];
+  },
+  data() {
+    return {
+      includeChildren: true,
+      includeProperties: true,
+      includeMembers: true,
+      includeParents: true,
+      includeInactive: false,
+      includeRoles: false,
+      format: {
+        name: "Excel(.xlsx)",
+        value: "excel",
+        mime:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      },
+      formatOptions: [
+        { name: "JSON", value: "json", mime: "application/json" },
+        {
+          name: "Excel(.xlsx)",
+          value: "excel",
+          mime:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        }
+      ]
+    };
+  },
+  methods: {
+    hasRoles() {
+      try {
+        const roles = this.conceptAggregate.graph.children.filter(
+          (child: any) => child.name === "Roles"
+        );
+        return !!roles[0].children.length;
+      } catch (error) {
+        return false;
+      }
+    },
 
-  updated() {
-    this.includeParents = !!this.conceptAggregate.parents?.length;
-    this.includeChildren = !!this.conceptAggregate.children?.length;
-    this.includeProperties = this.hasProperties();
-    this.includeRoles = this.hasRoles();
-    this.includeMembers =
-      !!this.members?.included?.length || !!this.members?.excluded?.length;
-  }
+    hasProperties() {
+      try {
+        const properties = this.conceptAggregate.graph.children.filter(
+          (child: any) => child.name === "Properties"
+        );
+        const direct = properties[0].children[0].children;
+        const inherited = properties[0].children[1].children;
+        return !!direct.length || !!inherited.length;
+      } catch (error) {
+        return false;
+      }
+    },
 
-  hasRoles() {
-    try {
-      const roles = this.conceptAggregate.graph.children.filter(
-        (child: any) => child.name === "Roles"
-      );
-      return !!roles[0].children.length;
-    } catch (error) {
-      return false;
+    closeDownloadDialog() {
+      this.$emit("closeDownloadDialog");
+    },
+
+    downloadConcept() {
+      const modIri = this.concept[IM.IRI]
+        .replace(/\//gi, "%2F")
+        .replace(/#/gi, "%23");
+
+      const url =
+        process.env.VUE_APP_API +
+        "api/concept/download?iri=" +
+        modIri +
+        "&format=" +
+        this.format.value +
+        "&children=" +
+        this.includeChildren +
+        "&properties=" +
+        this.includeProperties +
+        "&members=" +
+        this.includeMembers +
+        "&parents=" +
+        this.includeParents +
+        "&roles=" +
+        this.includeRoles +
+        "&inactive=" +
+        this.includeInactive;
+      const popup = window.open(url);
+      if (!popup) {
+        this.$toast.add(LoggerService.error("Download failed from server"));
+      } else {
+        this.$toast.add(LoggerService.success("Download will begin shortly"));
+      }
+      this.closeDownloadDialog();
     }
   }
-
-  hasProperties() {
-    try {
-      const properties = this.conceptAggregate.graph.children.filter(
-        (child: any) => child.name === "Properties"
-      );
-      const direct = properties[0].children[0].children;
-      const inherited = properties[0].children[1].children;
-      return !!direct.length || !!inherited.length;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  closeDownloadDialog() {
-    this.$emit("closeDownloadDialog");
-  }
-
-  downloadConcept() {
-    const modIri = this.concept[IM.IRI]
-      .replace(/\//gi, "%2F")
-      .replace(/#/gi, "%23");
-
-    const url =
-      process.env.VUE_APP_API +
-      "api/concept/download?iri=" +
-      modIri +
-      "&format=" +
-      this.format.value +
-      "&children=" +
-      this.includeChildren +
-      "&properties=" +
-      this.includeProperties +
-      "&members=" +
-      this.includeMembers +
-      "&parents=" +
-      this.includeParents +
-      "&roles=" +
-      this.includeRoles +
-      "&inactive=" +
-      this.includeInactive;
-    const popup = window.open(url);
-    if (!popup) {
-      this.$toast.add(LoggerService.error("Download failed from server"));
-    } else {
-      this.$toast.add(LoggerService.success("Download will begin shortly"));
-    }
-    this.closeDownloadDialog();
-  }
-}
+});
 </script>
 
 <style scoped>

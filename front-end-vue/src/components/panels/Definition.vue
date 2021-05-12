@@ -50,120 +50,53 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import ConceptService from "@/services/ConceptService";
-import EditDialog from "@/components/edit/EditDialog.vue";
 import { mapState } from "vuex";
-import Definition from "./Definition.vue";
-import LoggerService from "@/services/LoggerService";
-import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
-import { IM } from "@/vocabulary/IM";
+import { defineComponent } from "vue";
+import { RDF } from "@/vocabulary/RDF";
 
-@Options({
-  name: "ConceptSummary",
-  components: { EditDialog, Definition },
-  prop: {},
-  computed: mapState(["conceptAggregate", "conceptIri"]),
+export default defineComponent({
+  name: "Definition",
+  components: {},
+  props: {},
+  computed: mapState(["conceptAggregate"]),
   watch: {
     conceptAggregate(newValue) {
       this.concept = newValue.concept;
+      this.conceptTypes = this.getConceptTypes(this.concept?.[RDF.TYPE]);
       this.descriptionHTML =
         "<p class='description-p'>" +
-        this.convertTextToHTML(this.concept[RDFS.COMMENT]) +
+        this.convertTextToHTML(this.concept?.[RDFS.COMMENT]) +
         "</p>";
       const descContainer = document.getElementById("description");
       if (descContainer) {
         descContainer.innerHTML = this.descriptionHTML;
       }
-      ConceptService.getConceptImLang(newValue.concept[IM.IRI])
-        .then(res => {
-          this.definitionText = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Concept IM Lang server request failed", err)
-          );
-        });
-    },
-    conceptIri(newValue) {
-      ConceptService.getConceptSynonyms(newValue)
-        .then(res => {
-          this.synonyms = [];
-          for (const data of res.data) {
-            if (data !== this.concept[RDFS.LABEL]) {
-              this.synonyms.push({ synonym: data });
-            }
-          }
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Concept synonyms server request failed", err)
-          );
-        });
     }
-  }
-})
-export default class Summary extends Vue {
-  editDialogView = true;
-  showDownloadDialog = false;
-  concept = {} as any;
-  definitionText = "";
-  descriptionHTML = {} as any;
-  display = false;
-  synonyms: { synonym: string }[] = [];
-  conceptIri!: string;
-  dialogHeader = "";
-  resize = false;
+  },
+  data() {
+    return {
+      concept: {} as any,
+      definitionText: "",
+      descriptionHTML: {} as any,
+      conceptTypes: ""
+    };
+  },
 
-  handleResize() {
-    this.resize = !this.resize;
-  }
+  methods: {
+    convertTextToHTML(text: string) {
+      return text?.replaceAll("<p>", "</p>\n<p class='description-p'>");
+    },
 
-  unmounted() {
-    window.onresize = null;
-  }
-
-  mounted() {
-    window.onresize = this.handleResize;
-    ConceptService.getConceptSynonyms(this.conceptIri)
-      .then(res => {
-        this.synonyms = [];
-        for (const data of res.data) {
-          this.synonyms.push({ synonym: data });
-        }
-      })
-      .catch(err => {
-        this.$toast.add(
-          LoggerService.error(
-            "Concept synonyms server request failed at component mount",
-            err
-          )
-        );
-      });
-  }
-
-  get conceptTypes() {
-    if (this.concept[RDF.TYPE]) {
-      return this.concept[RDF.TYPE]
+    getConceptTypes(types: any) {
+      return types
         .map(function(type: any) {
           return type.name;
         })
         .join(", ");
-    } else {
-      return null;
     }
   }
-
-  handleSynonymsClick(event: any) {
-    const y = this.$refs.op as any;
-    y.toggle(event);
-  }
-
-  convertTextToHTML(text: string) {
-    return text?.replaceAll("<p>", "</p>\n<p class='description-p'>");
-  }
-}
+});
 </script>
 
 <style scoped>
