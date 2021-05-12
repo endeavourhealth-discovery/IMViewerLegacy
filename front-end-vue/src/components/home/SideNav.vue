@@ -94,7 +94,7 @@ export default class SideNav extends Vue {
     }
   }
 
-  loginItems: [{}, {}] = [
+  loginItems: {label: string, icon: string, to: string}[] = [
     {
       label: "Login",
       icon: "pi pi-fw pi-user",
@@ -107,7 +107,7 @@ export default class SideNav extends Vue {
     }
   ];
 
-  accountItems: [{}, {}, {}, {}] = [
+  accountItems: {label: string, icon: string, to: string}[] = [
     {
       label: "My account",
       icon: "pi pi-fw pi-user",

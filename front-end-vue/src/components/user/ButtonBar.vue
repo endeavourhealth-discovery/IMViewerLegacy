@@ -23,7 +23,7 @@ export default defineComponent({
   name: "ButtonBar",
   computed: mapState(["snomedLicenseAccepted"]),
   methods: {
-    clickedBack() {
+    clickedBack(): void {
       if (this.$store.state.historyCount === window.history.length) {
         this.$router.push({ name: "Dashboard" });
       } else {

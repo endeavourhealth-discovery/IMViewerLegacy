@@ -115,6 +115,6 @@ const app = createApp(App)
   .component("Timeline", Timeline)
   .component("SelectButton", SelectButton)
   .component("Toast", Toast)
-  .component("Checkbox", Checkbox)
+  .component("Checkbox", Checkbox);
 
 app.mount("#app");
