@@ -63,59 +63,89 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import store from "@/store/index";
+import { mapState } from "vuex";
 import AuthService from "@/services/AuthService";
 import Swal from "sweetalert2";
+import { defineComponent } from "vue";
 
-@Options({
+export default defineComponent({
   name: "ConfirmCode",
-  computed: {
-    registeredUsername() {
-      return store.state.registeredUsername;
-    }
-  },
+  computed: mapState(["registeredUsername"]),
   watch: {
     code() {
       this.verifyCode();
     }
-  }
-})
-export default class ConfirmCode extends Vue {
-  registeredUsername!: string;
-  code = "";
-  codeVerified = false;
-  username = "";
-
+  },
+  data() {
+    return {
+      code: "",
+      codeVerified: false,
+      username: ""
+    }
+  },
   mounted() {
     if (this.registeredUsername && this.registeredUsername !== "") {
       this.username = this.registeredUsername;
     }
-  }
+  },
+  methods: {
+    verifyCode() {
+      this.codeVerified = /^(?=.{6,})/.test(this.code);
+    },
 
-  verifyCode() {
-    this.codeVerified = /^(?=.{6,})/.test(this.code);
-  }
+    handleSubmit() {
+      if (this.codeVerified && this.username !== "") {
+        AuthService.confirmRegister(this.username, this.code)
+          .then(res => {
+            if (res.status === 200) {
+              Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: res.message,
+                confirmButtonText: "Login"
+              }).then(() => {
+                this.$store.commit("updateRegisteredUsername", this.username);
+                this.$router.push({ name: "Login" });
+              });
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: res.message
+              });
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: "Auth Service Error"
+            });
+          });
+      } else {
+        Swal.fire({
+          icon: "warning",
+          title: "Invalid Credentials",
+          text: "Username or Confirmation Code incorrect."
+        });
+      }
+    },
 
-  handleSubmit() {
-    if (this.codeVerified && this.username !== "") {
-      AuthService.confirmRegister(this.username, this.code)
+    requestCode() {
+      AuthService.resendConfirmationCode(this.username)
         .then(res => {
           if (res.status === 200) {
             Swal.fire({
               icon: "success",
               title: "Success",
-              text: res.message,
-              confirmButtonText: "Login"
-            }).then(() => {
-              store.commit("updateRegisteredUsername", this.username);
-              this.$router.push({ name: "Login" });
+              text: "Code has been resent to email for: " + this.username
             });
           } else {
             Swal.fire({
               icon: "error",
               title: "Error",
-              text: res.message
+              text: "Error! Code resending failed. Please contact an admin."
             });
           }
         })
@@ -124,45 +154,13 @@ export default class ConfirmCode extends Vue {
           Swal.fire({
             icon: "error",
             title: "Error",
-            text: "Auth Service Error"
+            text: "Internal application error"
           });
         });
-    } else {
-      Swal.fire({
-        icon: "warning",
-        title: "Invalid Credentials",
-        text: "Username or Confirmation Code incorrect."
-      });
     }
   }
 
-  requestCode() {
-    AuthService.resendConfirmationCode(this.username)
-      .then(res => {
-        if (res.status === 200) {
-          Swal.fire({
-            icon: "success",
-            title: "Success",
-            text: "Code has been resent to email for: " + this.username
-          });
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Error! Code resending failed. Please contact an admin."
-          });
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Internal application error"
-        });
-      });
-  }
-}
+})
 </script>
 
 <style scoped>
