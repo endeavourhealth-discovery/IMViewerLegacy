@@ -31,22 +31,22 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import store from "@/store/index";
 import { mapState } from "vuex";
 import ReportService from "@/services/ReportService";
 import LoggerService from "@/services/LoggerService";
 import { toSentenceCase } from "@/helpers/TextConverters";
 
-@Options({
+export default defineComponent({
   name: "OntologyOverview",
   computed: mapState(["ontologyOverview"]),
-  props: []
-})
-export default class OntologyOverview extends Vue {
-  tableData: any = [];
-  ontologyOverview!: [];
-
+  props: [],
+  data() {
+    return {
+      tableData: [] as any
+    }
+  },
   mounted() {
     // table data
     store.commit("updateLoading", { key: "reportCategory", value: true });
@@ -71,7 +71,7 @@ export default class OntologyOverview extends Vue {
         );
       });
   } // mounted end
-}
+});
 </script>
 
 <style scoped>
