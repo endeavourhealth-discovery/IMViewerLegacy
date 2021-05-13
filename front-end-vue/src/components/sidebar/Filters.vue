@@ -53,7 +53,7 @@ export default defineComponent({
   props: ["search"],
   data() {
     return {
-      statusOptions: ["Active", "Draft", "Inactive"],
+      statusOptions: ["Active", "Draft", "Inactive"] as string[],
       schemeOptions: [
         {
           iri: IM.CODE_SCHEME_BARTS,
@@ -99,7 +99,7 @@ export default defineComponent({
           iri: IM.CODE_SCHEME_TERMS,
           name: "Term based code"
         }
-      ],
+      ] as { iri: string, name: string }[],
       typeOptions: [
         "Class",
         "ObjectProperty",
@@ -113,7 +113,7 @@ export default defineComponent({
         "Term",
         "Legacy",
         "CategoryGroup"
-      ]
+      ] as string[]
     }
   }
 })
