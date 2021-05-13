@@ -6,7 +6,7 @@
 import { IM } from "@/vocabulary/IM";
 import { OWL } from "@/vocabulary/OWL";
 
-export function isValueSet(conceptTypeElements: any) {
+export function isValueSet(conceptTypeElements: any): boolean {
   return conceptTypeElements?.some(
     (e: any) =>
       e[IM.IRI] === IM.SET ||
@@ -15,7 +15,7 @@ export function isValueSet(conceptTypeElements: any) {
   );
 }
 
-export function isRecordModel(conceptTypeElements: any) {
+export function isRecordModel(conceptTypeElements: any): boolean {
   return conceptTypeElements?.some((e: any) => {
     return (
       e[IM.IRI] === OWL.OBJECT_PROPERTY ||
@@ -25,13 +25,13 @@ export function isRecordModel(conceptTypeElements: any) {
   });
 }
 
-export function isFolder(conceptTypeElements: any) {
+export function isFolder(conceptTypeElements: any): boolean {
   return conceptTypeElements?.some((e: any) => {
     return e[IM.IRI] === IM.FOLDER;
   });
 }
 
-export function getIconFromType(conceptTypes: any) {
+export function getIconFromType(conceptTypes: any): string {
   if (isRecordModel(conceptTypes?.elements || conceptTypes)) {
     return "fas fa-fw fa-sitemap";
   }

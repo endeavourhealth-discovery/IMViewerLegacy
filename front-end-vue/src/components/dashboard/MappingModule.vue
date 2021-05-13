@@ -18,13 +18,12 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 
-@Options({
+export default defineComponent({
   name: "mappingModule",
   props: []
 })
-export default class MappingModule extends Vue {}
 </script>
 
 <style scoped>

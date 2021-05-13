@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import Hierarchy from "@/components/sidebar/Hierarchy.vue";
 import History from "@/components/sidebar/History.vue";
 import SearchResults from "@/components/sidebar/SearchResults.vue";
@@ -62,162 +62,163 @@ import { ConceptType } from "@/models/search/ConceptType";
 import LoggerService from "@/services/LoggerService";
 import axios from "axios";
 
-@Options({
+export default defineComponent({
   name: "SidebarControl",
-  components: { Hierarchy, History, SearchResults, Filters }
-})
-export default class SidebarControl extends Vue {
-  searchTerm = "";
-  active = 0;
-  debounce = 0;
-  request!: any;
-  windowHeight = 0;
-  windowWidth = 0;
-  headerHeight = 0;
-
+  components: { Hierarchy, History, SearchResults, Filters },
+  data() {
+    return {
+      searchTerm: "",
+      active: 0,
+      debounce: 0,
+      request: null as any,
+      windowHeight: 0,
+      windowWidth: 0,
+      headerHeight: 0
+    }
+  },
   mounted() {
     this.$nextTick(() => {
       window.addEventListener("resize", this.onResize);
     });
 
     this.setContainerHeights();
-  }
-
-  beforeDestroy() {
+  },
+  beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
-  }
+  },
+  methods: {
+    onResize(): void {
+      this.setContainerHeights();
+    },
 
-  onResize() {
-    this.setContainerHeights();
-  }
+    async search(): Promise<void> {
+      if (this.searchTerm.length > 2) {
+        store.commit("updateLoading", { key: "searchResults", value: true });
+        this.active = 2;
+        const searchRequest = new SearchRequest();
+        searchRequest.termFilter = this.searchTerm;
+        searchRequest.sortBy = SortBy.Usage;
+        searchRequest.page = 1;
+        searchRequest.size = 100;
+        searchRequest.schemeFilter = store.state.filters.selectedSchemes.map(
+          s => s.iri
+        );
+        searchRequest.markIfDescendentOf = [
+          ":DiscoveryCommonDataModel",
+          ":SemanticConcept",
+          ":VSET_ValueSet"
+        ];
 
-  async search() {
-    if (this.searchTerm.length > 2) {
-      store.commit("updateLoading", { key: "searchResults", value: true });
-      this.active = 2;
-      const searchRequest = new SearchRequest();
-      searchRequest.termFilter = this.searchTerm;
-      searchRequest.sortBy = SortBy.Usage;
-      searchRequest.page = 1;
-      searchRequest.size = 100;
-      searchRequest.schemeFilter = store.state.filters.selectedSchemes.map(
-        s => s.iri
-      );
-      searchRequest.markIfDescendentOf = [
-        ":DiscoveryCommonDataModel",
-        ":SemanticConcept",
-        ":VSET_ValueSet"
-      ];
-
-      searchRequest.statusFilter = [];
-      store.state.filters.selectedStatus.forEach(status => {
-        if (status == "Active") {
-          searchRequest.statusFilter.push(ConceptStatus.Active);
-        }
-        if (status == "Draft") {
-          searchRequest.statusFilter.push(ConceptStatus.Draft);
-        }
-        if (status == "Inactive") {
-          searchRequest.statusFilter.push(ConceptStatus.Inactive);
-        }
-      });
-
-      searchRequest.typeFilter = [];
-      store.state.filters.selectedTypes.forEach(type => {
-        if (type == "Class") {
-          searchRequest.typeFilter.push(ConceptType.Class);
-        }
-        if (type == "ObjectProperty") {
-          searchRequest.typeFilter.push(ConceptType.ObjectProperty);
-        }
-        if (type == "DataProperty") {
-          searchRequest.typeFilter.push(ConceptType.DataProperty);
-        }
-        if (type == "DataType") {
-          searchRequest.typeFilter.push(ConceptType.DataType);
-        }
-        if (type == "Annotation") {
-          searchRequest.typeFilter.push(ConceptType.Annotation);
-        }
-        if (type == "Individual") {
-          searchRequest.typeFilter.push(ConceptType.Individual);
-        }
-        if (type == "Record") {
-          searchRequest.typeFilter.push(ConceptType.Record);
-        }
-        if (type == "ValueSet") {
-          searchRequest.typeFilter.push(ConceptType.ValueSet);
-        }
-        if (type == "Folder") {
-          searchRequest.typeFilter.push(ConceptType.Folder);
-        }
-        if (type == "Legacy") {
-          searchRequest.typeFilter.push(ConceptType.Legacy);
-        }
-      });
-      if (this.request) {
-        await this.request.cancel();
-      }
-      const axiosSource = axios.CancelToken.source();
-      this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
-      store
-        .dispatch("fetchSearchResults", {
-          searchRequest: searchRequest,
-          cancelToken: axiosSource.token
-        })
-        .then(res => {
-          if (res === "false") {
-            store.commit("updateLoading", {
-              key: "searchResults",
-              value: false
-            });
-            this.$toast.add(
-              LoggerService.error("Search results server request failed")
-            );
-          } else if (res === "true") {
-            store.commit("updateLoading", {
-              key: "searchResults",
-              value: false
-            });
+        searchRequest.statusFilter = [];
+        store.state.filters.selectedStatus.forEach(status => {
+          if (status == "Active") {
+            searchRequest.statusFilter.push(ConceptStatus.Active);
+          }
+          if (status == "Draft") {
+            searchRequest.statusFilter.push(ConceptStatus.Draft);
+          }
+          if (status == "Inactive") {
+            searchRequest.statusFilter.push(ConceptStatus.Inactive);
           }
         });
-    } else {
-      this.active = 0;
-    }
-  }
 
-  debounceForSearch() {
-    clearTimeout(this.debounce);
-    this.debounce = window.setTimeout(() => {
-      this.search();
-    }, 600);
-  }
+        searchRequest.typeFilter = [];
+        store.state.filters.selectedTypes.forEach(type => {
+          if (type == "Class") {
+            searchRequest.typeFilter.push(ConceptType.Class);
+          }
+          if (type == "ObjectProperty") {
+            searchRequest.typeFilter.push(ConceptType.ObjectProperty);
+          }
+          if (type == "DataProperty") {
+            searchRequest.typeFilter.push(ConceptType.DataProperty);
+          }
+          if (type == "DataType") {
+            searchRequest.typeFilter.push(ConceptType.DataType);
+          }
+          if (type == "Annotation") {
+            searchRequest.typeFilter.push(ConceptType.Annotation);
+          }
+          if (type == "Individual") {
+            searchRequest.typeFilter.push(ConceptType.Individual);
+          }
+          if (type == "Record") {
+            searchRequest.typeFilter.push(ConceptType.Record);
+          }
+          if (type == "ValueSet") {
+            searchRequest.typeFilter.push(ConceptType.ValueSet);
+          }
+          if (type == "Folder") {
+            searchRequest.typeFilter.push(ConceptType.Folder);
+          }
+          if (type == "Legacy") {
+            searchRequest.typeFilter.push(ConceptType.Legacy);
+          }
+        });
+        if (this.request) {
+          await this.request.cancel();
+        }
+        const axiosSource = axios.CancelToken.source();
+        this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
+        store
+          .dispatch("fetchSearchResults", {
+            searchRequest: searchRequest,
+            cancelToken: axiosSource.token
+          })
+          .then(res => {
+            if (res === "false") {
+              store.commit("updateLoading", {
+                key: "searchResults",
+                value: false
+              });
+              this.$toast.add(
+                LoggerService.error("Search results server request failed")
+              );
+            } else if (res === "true") {
+              store.commit("updateLoading", {
+                key: "searchResults",
+                value: false
+              });
+            }
+          });
+      } else {
+        this.active = 0;
+      }
+    },
 
-  setContainerHeights() {
-    this.windowHeight = window.innerHeight;
-    this.windowWidth = window.innerWidth;
-    const html = document.documentElement;
-    const currentFontSize = parseFloat(
-      window.getComputedStyle(html, null).getPropertyValue("font-size")
-    );
-    const header = document.getElementById("header-home");
-    if (header) {
-      this.headerHeight = header.getBoundingClientRect().height;
-    }
-    const sidebar = document.getElementById("side-bar");
-    if (sidebar) {
-      sidebar.style.maxHeight =
-        this.windowHeight - this.headerHeight - currentFontSize * 2 - 7 + "px";
-    }
-    const fixedSidebar = document.getElementById("side-bar");
-    const searchBar = document.getElementById("search-bar");
-    const sideMenu = document.getElementById("side-menu");
-    if (searchBar && fixedSidebar && sideMenu) {
-      sideMenu.style.maxHeight =
-        fixedSidebar.offsetHeight - searchBar.offsetHeight + "px";
+    debounceForSearch(): void {
+      clearTimeout(this.debounce);
+      this.debounce = window.setTimeout(() => {
+        this.search();
+      }, 600);
+    },
+
+    setContainerHeights(): void {
+      this.windowHeight = window.innerHeight;
+      this.windowWidth = window.innerWidth;
+      const html = document.documentElement;
+      const currentFontSize = parseFloat(
+        window.getComputedStyle(html, null).getPropertyValue("font-size")
+      );
+      const header = document.getElementById("header-home");
+      if (header) {
+        this.headerHeight = header.getBoundingClientRect().height;
+      }
+      const sidebar = document.getElementById("side-bar");
+      if (sidebar) {
+        sidebar.style.maxHeight =
+          this.windowHeight - this.headerHeight - currentFontSize * 2 + "px";
+      }
+      const fixedSidebar = document.getElementById("side-bar");
+      const searchBar = document.getElementById("search-bar");
+      const sideMenu = document.getElementById("side-menu");
+      if (searchBar && fixedSidebar && sideMenu) {
+        sideMenu.style.maxHeight =
+          fixedSidebar.offsetHeight - searchBar.offsetHeight + "px";
+      }
     }
   }
-}
+})
 </script>
 
 <style scoped>

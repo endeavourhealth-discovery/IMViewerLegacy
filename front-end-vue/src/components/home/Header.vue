@@ -42,12 +42,12 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import { isValueSet, isRecordModel } from "../../helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import { RDF } from "@/vocabulary/RDF";
 
-@Options({
+export default defineComponent({
   name: "Header",
   components: {},
   computed: mapState(["conceptAggregate"]),
@@ -55,20 +55,24 @@ import { RDF } from "@/vocabulary/RDF";
     conceptAggregate(newValue) {
       this.concept = newValue.concept;
     }
-  }
-})
-export default class Header extends Vue {
-  concept = {} as any;
+  },
+  data() {
+    return {
+      concept: {} as any
+    }
+  },
+  methods: {
+    isSet(): boolean {
+      const conceptTypeElements = this.concept[RDF.TYPE];
+      return isValueSet(conceptTypeElements);
+    },
 
-  get isSet() {
-    const conceptTypeElements = this.concept[RDF.TYPE];
-    return isValueSet(conceptTypeElements);
+    isClaz(): boolean {
+      const conceptTypeElements = this.concept[RDF.TYPE];
+      return isRecordModel(conceptTypeElements);
+    }
   }
-  get isClaz() {
-    const conceptTypeElements = this.concept[RDF.TYPE];
-    return isRecordModel(conceptTypeElements);
-  }
-}
+});
 </script>
 
 <style scoped>
