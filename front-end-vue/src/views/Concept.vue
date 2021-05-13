@@ -69,14 +69,13 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import Properties from "../components/panels/Properties.vue";
 import Graph from "../components/panels/Graph.vue";
 import Terms from "../components/panels/Terms.vue";
 import Definition from "../components/panels/Definition.vue";
 import UsedIn from "../components/panels/UsedIn.vue";
 import Members from "../components/panels/Members.vue";
-import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 import { getIconFromType, isValueSet } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import { RDFS } from "@/vocabulary/RDFS";
@@ -84,7 +83,7 @@ import { RDF } from "@/vocabulary/RDF";
 import EditDialog from "@/components/edit/EditDialog.vue";
 import DownloadDialog from "@/components/panels/DownloadDialog.vue";
 
-@Options({
+export default defineComponent({
   name: "Concept",
   components: {
     Properties,
@@ -98,95 +97,96 @@ import DownloadDialog from "@/components/panels/DownloadDialog.vue";
   },
   computed: mapState(["conceptAggregate"]),
   watch: {
-    conceptAggregate(newValue) {
+    conceptAggregate(newValue): void {
       this.concept = newValue.concept;
     }
+  },
+  data() {
+    return {
+      editDialogView: true,
+      showDownloadDialog: false,
+      concept: {} as any,
+      definitionText: "",
+      display: false,
+      dialogHeader: "",
+      items: [
+        {
+          label: "Edit Concept",
+          icon: "pi pi-pencil",
+          command: () => {
+            this.openEditDialog();
+          }
+        },
+        {
+          label: "Download Concept",
+          icon: "pi pi-download",
+          command: () => {
+            this.openDownloadDialog();
+          }
+        },
+        {
+          label: "Create New Concept",
+          icon: "pi pi-plus",
+          command: () => {
+            this.openAddDialog();
+          }
+        }
+      ] as {label: string, icon: string, command: () => void}[]
+    }
+  },
+  methods: {
+    toggle(event: any): void {
+      const x = this.$refs.menu as any;
+      x.toggle(event);
+    },
+
+    closeDialog(): void {
+      this.display = false;
+    },
+
+    openAddDialog(): void {
+      this.editDialogView = false;
+      this.dialogHeader = "Create";
+      this.display = true;
+    },
+
+    openEditDialog(): void {
+      this.editDialogView = true;
+      this.display = true;
+      this.dialogHeader = "Edit";
+    },
+
+    openDownloadDialog(): void {
+      this.showDownloadDialog = true;
+    },
+
+    closeDownloadDialog(): void {
+      this.showDownloadDialog = false;
+    },
+
+    get editorConcept(): any {
+      return this.editDialogView ? this.concept : {};
+    },
+
+    get editorDefinitionText(): any {
+      return this.editDialogView ? this.definitionText : "type ";
+    },
+
+    get header(): any {
+      return this.conceptAggregate?.concept?.[RDFS.LABEL];
+    },
+
+    get isSet(): any {
+      const conceptTypeElements = this.conceptAggregate?.concept?.[RDF.TYPE];
+      return isValueSet(conceptTypeElements);
+    },
+
+    get icon(): any {
+      const icon = getIconFromType(this.concept?.[RDF.TYPE]);
+      return icon;
+    },
   }
 })
-export default class Concept extends Vue {
-  private conceptAggregate!: ConceptAggregate;
-  private editDialogView = true;
-  private showDownloadDialog = false;
-  private concept = {} as any;
-  private definitionText = "";
-  private display = false;
-  private dialogHeader = "";
-
-  items = [
-    {
-      label: "Edit Concept",
-      icon: "pi pi-pencil",
-      command: () => {
-        this.openEditDialog();
-      }
-    },
-    {
-      label: "Download Concept",
-      icon: "pi pi-download",
-      command: () => {
-        this.openDownloadDialog();
-      }
-    },
-    {
-      label: "Create New Concept",
-      icon: "pi pi-plus",
-      command: () => {
-        this.openAddDialog();
-      }
-    }
-  ];
-
-  private toggle(event: any) {
-    const x = this.$refs.menu as any;
-    x.toggle(event);
-  }
-
-  private closeDialog() {
-    this.display = false;
-  }
-
-  private openAddDialog() {
-    this.editDialogView = false;
-    this.dialogHeader = "Create";
-    this.display = true;
-  }
-
-  private openEditDialog() {
-    this.editDialogView = true;
-    this.display = true;
-    this.dialogHeader = "Edit";
-  }
-
-  private openDownloadDialog() {
-    this.showDownloadDialog = true;
-  }
-
-  private closeDownloadDialog() {
-    this.showDownloadDialog = false;
-  }
-
-  private get editorConcept() {
-    return this.editDialogView ? this.concept : {};
-  }
-
-  private get editorDefinitionText() {
-    return this.editDialogView ? this.definitionText : "type ";
-  }
-
-  private get header() {
-    return this.conceptAggregate?.concept?.[RDFS.LABEL];
-  }
-
-  private get isSet() {
-    const conceptTypeElements = this.conceptAggregate?.concept?.[RDF.TYPE];
-    return isValueSet(conceptTypeElements);
-  }
-
-  private get icon() {
-    const icon = getIconFromType(this.concept?.[RDF.TYPE]);
-    return icon;
-  }
-}
 </script>
 <style scoped>
 .concept-container {
