@@ -95,7 +95,7 @@ import {
 import { DiscoverySyntaxLexer } from "@/discovery-syntax/DiscoverySyntaxLexer";
 import { DiscoverySyntaxParser } from "@/discovery-syntax/DiscoverySyntaxParser";
 import { ANTLRInputStream, CommonTokenStream } from "antlr4ts";
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import * as monaco from "monaco-editor";
 import { getDiscoveryCompletionProvider } from "@/services/MonacoService";
 import { ConceptDto } from "@/models/ConceptDto";
@@ -107,21 +107,21 @@ import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 
-@Options({
+export default defineComponent({
   name: "Editor",
   components: { Dropdown },
-  props: ["definitionText", "concept"]
-})
-export default class EditorDialog extends Vue {
-  private definitionText!: string;
-  private concept!: any;
-  private editorText = this.definitionText;
-  private conceptDto = {} as ConceptDto;
-  private schemeOptions: ConceptReference[] = [];
-  private statusOptions = Object.keys(ConceptStatus).filter(f =>
-    isNaN(Number(f))
-  );
-
+  props: ["definitionText", "concept"],
+  emits: ["updateConceptDto", "updateText", "updateValid"],
+  data() {
+    return {
+      editorText: this.definitionText,
+      conceptDto: {} as ConceptDto,
+      schemeOptions: [] as ConceptReference[],
+      statusOptions: Object.keys(ConceptStatus).filter(f =>
+        isNaN(Number(f))
+      ) as any
+    }
+  },
   async mounted() {
     this.initMonaco();
     this.validate();
@@ -144,94 +144,7 @@ export default class EditorDialog extends Vue {
       undefined,
       this.definitionText
     );
-  }
-
-  updateConceptDto() {
-    this.$emit("updateConceptDto", this.conceptDto);
-  }
-
-  private initMonaco() {
-    monaco.languages.register({ id: DiscoveryLanguageId });
-    monaco.languages.onLanguage(DiscoveryLanguageId, () => {
-      monaco.languages.setMonarchTokensProvider(
-        DiscoveryLanguageId,
-        DiscoveryLanguage
-      );
-      monaco.languages.setLanguageConfiguration(
-        DiscoveryLanguageId,
-        richLanguageConfiguration
-      );
-      monaco.languages.registerCompletionItemProvider(
-        DiscoveryLanguageId,
-        getDiscoveryCompletionProvider()
-      );
-    });
-
-    const editor = document.getElementById("editor-container");
-
-    if (editor) {
-      monaco.editor.create(editor, {
-        value: this.definitionText,
-        language: "DiscoverySyntax",
-        wordWrap: "wordWrapColumn",
-        wordWrapColumn: this.wordWrapColumn,
-        automaticLayout: true
-      });
-
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
-      const that = this;
-      const model = monaco.editor.getModels()[1];
-      model.onDidChangeContent(() => {
-        this.$emit("updateText", model.getValue());
-        that.editorText = model.getValue();
-        that.validate();
-      });
-    }
-  }
-
-  get isValidSyntax(): boolean {
-    let validation;
-    try {
-      validation = this.parse(this.definitionText);
-      return !!this.editorText && !validation.errors.length;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  validate() {
-    const ret = this.parse(this.editorText);
-    const isValid = !!this.editorText && !ret.errors.length;
-    this.$emit("updateValid", isValid);
-    const model = monaco.editor.getModels()[0];
-    monaco.editor.setModelMarkers(
-      model,
-      DiscoveryLanguageId,
-      ret.errors.map(e => this.toDiagnostics(e))
-    );
-  }
-
-  parse(code: string): { errors: Error[] } {
-    const inputStream = new ANTLRInputStream(code);
-    const lexer = new DiscoverySyntaxLexer(inputStream);
-    lexer.removeErrorListeners();
-    const todoLangErrorListener = new ErrorListener();
-    lexer.addErrorListener(todoLangErrorListener);
-    const tokenStream = new CommonTokenStream(lexer);
-    const parser = new DiscoverySyntaxParser(tokenStream);
-    parser.removeErrorListeners();
-    parser.addErrorListener(todoLangErrorListener);
-    const errors: Error[] = todoLangErrorListener.getErrors();
-    return { errors };
-  }
-
-  toDiagnostics(error: Error): monaco.editor.IMarkerData {
-    return {
-      ...error,
-      severity: monaco.MarkerSeverity.Error
-    };
-  }
-
+  },
   beforeUnmount() {
     const editor = document.getElementById("editor-container");
     const model = monaco.editor.getModels()[1];
@@ -241,17 +154,104 @@ export default class EditorDialog extends Vue {
       if (childNode) editor.removeChild(childNode);
     }
     editor?.removeAttribute("context");
-  }
+  },
+  methods: {
+    updateConceptDto(): void {
+      this.$emit("updateConceptDto", this.conceptDto);
+    },
 
-  get wordWrapColumn() {
-    const width =
-      document.getElementById("editor-container")?.clientWidth ||
-      window.innerWidth ||
-      document.documentElement.clientWidth ||
-      document.body.clientWidth;
-    return width < 700 ? 60 : 120;
+    initMonaco(): void {
+      monaco.languages.register({ id: DiscoveryLanguageId });
+      monaco.languages.onLanguage(DiscoveryLanguageId, () => {
+        monaco.languages.setMonarchTokensProvider(
+          DiscoveryLanguageId,
+          DiscoveryLanguage
+        );
+        monaco.languages.setLanguageConfiguration(
+          DiscoveryLanguageId,
+          richLanguageConfiguration
+        );
+        monaco.languages.registerCompletionItemProvider(
+          DiscoveryLanguageId,
+          getDiscoveryCompletionProvider()
+        );
+      });
+
+      const editor = document.getElementById("editor-container");
+
+      if (editor) {
+        monaco.editor.create(editor, {
+          value: this.definitionText,
+          language: "DiscoverySyntax",
+          wordWrap: "wordWrapColumn",
+          wordWrapColumn: this.wordWrapColumn(),
+          automaticLayout: true
+        });
+
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const that = this;
+        const model = monaco.editor.getModels()[1];
+        model.onDidChangeContent(() => {
+          this.$emit("updateText", model.getValue());
+          that.editorText = model.getValue();
+          that.validate();
+        });
+      }
+    },
+
+    isValidSyntax(): boolean {
+      let validation;
+      try {
+        validation = this.parse(this.definitionText);
+        return !!this.editorText && !validation.errors.length;
+      } catch (error) {
+        return false;
+      }
+    },
+
+    validate(): void {
+      const ret = this.parse(this.editorText);
+      const isValid = !!this.editorText && !ret.errors.length;
+      this.$emit("updateValid", isValid);
+      const model = monaco.editor.getModels()[0];
+      monaco.editor.setModelMarkers(
+        model,
+        DiscoveryLanguageId,
+        ret.errors.map(e => this.toDiagnostics(e))
+      );
+    },
+
+    parse(code: string): { errors: Error[] } {
+      const inputStream = new ANTLRInputStream(code);
+      const lexer = new DiscoverySyntaxLexer(inputStream);
+      lexer.removeErrorListeners();
+      const todoLangErrorListener = new ErrorListener();
+      lexer.addErrorListener(todoLangErrorListener);
+      const tokenStream = new CommonTokenStream(lexer);
+      const parser = new DiscoverySyntaxParser(tokenStream);
+      parser.removeErrorListeners();
+      parser.addErrorListener(todoLangErrorListener);
+      const errors: Error[] = todoLangErrorListener.getErrors();
+      return { errors };
+    },
+
+    toDiagnostics(error: Error): monaco.editor.IMarkerData {
+      return {
+        ...error,
+        severity: monaco.MarkerSeverity.Error
+      };
+    },
+
+    wordWrapColumn() {
+      const width =
+        document.getElementById("editor-container")?.clientWidth ||
+        window.innerWidth ||
+        document.documentElement.clientWidth ||
+        document.body.clientWidth;
+      return width < 700 ? 60 : 120;
+    }
   }
-}
+})
 </script>
 
 <style scoped>
