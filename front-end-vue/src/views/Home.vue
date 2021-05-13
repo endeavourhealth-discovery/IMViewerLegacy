@@ -29,7 +29,7 @@ export default defineComponent({
     this.updateRoute();
   },
   methods: {
-    updateRoute() {
+    updateRoute(): void {
       if (this.$route.name === "Home" || this.$route.name === "Dashboard") {
         store.commit(
           "updateConceptIri",

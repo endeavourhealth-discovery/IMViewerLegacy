@@ -71,7 +71,7 @@ export default defineComponent({
       this.windowWidth = window.innerWidth;
     },
 
-    setLegendOptions(width: number) {
+    setLegendOptions(width: number): void {
       if (width > 1750) {
         this.chartOptions = {
           legend: {
