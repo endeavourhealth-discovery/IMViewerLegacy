@@ -15,11 +15,6 @@
           <strong>Iri:</strong>
           {{ concept["@id"] }}
         </p>
-      </div>
-      <div
-        class="right-side"
-        v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']"
-      >
         <p>
           <strong>Status: </strong>
           <span v-if="concept['http://endhealth.info/im#status']">
@@ -35,17 +30,43 @@
           </span>
         </p>
       </div>
-    </div>
-    <div v-if="concept['http://www.w3.org/2000/01/rdf-schema#comment']">
-      <p>
+      <div
+        class="right-side"
+        v-if="concept['http://www.w3.org/2000/01/rdf-schema#comment']"
+      >
         <strong>Description:</strong>
-      </p>
 
-      <ScrollPanel style="width: 100%; height: 100px" class="custom">
-        <!-- div content injected by javascript -->
-        <div id="description"></div>
-      </ScrollPanel>
+        <ScrollPanel style="height: 100px" class="custom">
+          <!-- div content injected by javascript -->
+          <div id="description"></div>
+        </ScrollPanel>
+      </div>
     </div>
+    <Divider align="left">
+      <div class="p-d-inline-flex p-ai-center">
+        <b>Definitional properties</b>
+      </div>
+    </Divider>
+    <div>
+      <strong>is a: </strong>Hospital Encounter, takes place in care setting :
+      Accident and emergency
+    </div>
+    <div>
+      <strong>has sub types :</strong> (1) Accident and emergency discharge
+    </div>
+    <Divider align="left">
+      <div class="p-d-inline-flex p-ai-center">
+        <b>Data model properties</b>
+      </div>
+    </Divider>
+    <DataTable :value="data" responsiveLayout="scroll">
+      <Column
+        v-for="col of columns"
+        :field="col.field"
+        :header="col.header"
+        :key="col.field"
+      ></Column>
+    </DataTable>
   </div>
 </template>
 
@@ -59,6 +80,27 @@ export default defineComponent({
   components: {},
   props: {
     concept: {} as any
+  },
+  data() {
+    return {
+      columns: [
+        { field: "property", header: "Property" },
+        { field: "type", header: "Type" },
+        { field: "range", header: "Range" }
+      ],
+      data: [
+        {
+          property: "A&e department type",
+          type: "Class",
+          range: "Accident and emergency (setting)"
+        },
+        {
+          property: "Has arrival mode",
+          type: "Value set",
+          range: "Emergency care arrival value set"
+        }
+      ]
+    };
   },
   computed: {
     conceptTypes(): string {

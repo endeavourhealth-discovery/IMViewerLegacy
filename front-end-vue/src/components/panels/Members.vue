@@ -2,10 +2,7 @@
   <div class="p-d-flex p-flex-row members-container">
     <div class="included-container">
       <Panel header="Included members">
-        <div
-          class="p-d-flex p-flex-row p-jc-center"
-          v-if="loading.get('members')"
-        >
+        <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
           <div class="spinner">
             <ProgressSpinner />
           </div>
@@ -25,10 +22,7 @@
     </div>
     <div class="excluded-container">
       <Panel header="Excluded members">
-        <div
-          class="p-d-flex p-flex-row p-jc-center"
-          v-if="loading.get('members')"
-        >
+        <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
           <div class="spinner">
             <ProgressSpinner />
           </div>
@@ -50,21 +44,34 @@
 </template>
 
 <script lang="ts">
-import { mapState } from "vuex";
 import { defineComponent } from "@vue/runtime-core";
+import ConceptService from "@/services/ConceptService";
 
 export default defineComponent({
   name: "Members",
   components: {},
-  prop: {},
-  computed: mapState(["members", "loading", "conceptAggregate"]),
+  props: {
+    conceptIri: String
+  },
+  watch: {
+    async conceptIri(newValue) {
+      await this.getMembers(newValue);
+    }
+  },
   data() {
     return {
+      loading: false,
+      members: [],
       selectedIncludedMember: {},
       selectedExcludedMember: {}
     };
   },
   methods: {
+    async getMembers(iri: string) {
+      this.loading = true;
+      this.members = (await ConceptService.getConceptMembers(iri, false)).data;
+      this.loading = false;
+    },
     onNodeSelect(member: any) {
       this.$router.push({
         name: "Concept",

@@ -15,17 +15,14 @@
           <TabPanel header="Definition">
             <Definition :concept="concept" />
           </TabPanel>
-          <TabPanel header="Record structure">
-            <Properties />
-          </TabPanel>
           <TabPanel header="Terms">
             <Terms />
           </TabPanel>
           <TabPanel header="Used In">
-            <UsedIn />
+            <UsedIn :conceptIri="concept['@id']" />
           </TabPanel>
           <TabPanel header="Members">
-            <Members />
+            <Members :conceptIri="concept['@id']" />
           </TabPanel>
         </TabView>
       </div>
@@ -35,16 +32,16 @@
             <Definition :concept="concept" />
           </TabPanel>
           <TabPanel header="Record structure">
-            <Properties />
+            <Properties :conceptIri="concept['@id']" />
           </TabPanel>
           <TabPanel header="Terms">
             <Terms />
           </TabPanel>
           <TabPanel header="Used In">
-            <UsedIn />
+            <UsedIn :conceptIri="concept['@id']" />
           </TabPanel>
           <TabPanel header="Graph">
-            <Graph />
+            <Graph :graph="conceptAggregate.graph" />
           </TabPanel>
         </TabView>
       </div>
@@ -108,7 +105,7 @@ export default defineComponent({
       return isValueSet(conceptTypeElements);
     },
 
-    ...mapState(["conceptAggregate"])
+    ...mapState(["conceptAggregate", "conceptIri"])
   },
   watch: {
     conceptAggregate(newValue): void {
