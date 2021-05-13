@@ -45,76 +45,78 @@
 
 <script lang="ts">
 import { IM } from "@/vocabulary/IM";
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 
-@Options({
+export default defineComponent({
   name: "Filters",
   components: {},
-  props: ["search"]
-})
-export default class Filters extends Vue {
-  statusOptions = ["Active", "Draft", "Inactive"];
-  schemeOptions = [
-    {
-      iri: IM.CODE_SCHEME_BARTS,
-      name: "Barts Cerner code"
-    },
-    {
-      iri: IM.CODE_SCHEME_CTV3,
-      name: "CTV3 Code"
-    },
-    {
-      iri: IM.DISCOVERY_CODE,
-      name: "Discovery code"
-    },
-    {
-      iri: IM.CODE_SCHEME_EMIS,
-      name: "EMIS local code"
-    },
-    {
-      iri: "http://endhealth.info/im#581000252100",
-      name: "Homerton Cerner code"
-    },
-    {
-      iri: IM.CODE_SCHEME_ICD10,
-      name: "ICD10 code"
-    },
-    {
-      iri: IM.CODE_SCHEME_OPCS4,
-      name: "OPCS4 code"
-    },
-    {
-      iri: IM.CODE_SCHEME_READ,
-      name: "Read 2 code"
-    },
-    {
-      iri: IM.CODE_SCHEME_SNOMED,
-      name: "Snomed-CT code"
-    },
-    {
-      iri: "http://endhealth.info/im#631000252102",
-      name: "TPP local codes"
-    },
-    {
-      iri: IM.CODE_SCHEME_TERMS,
-      name: "Term based code"
+  props: ["search"],
+  data() {
+    return {
+      statusOptions: ["Active", "Draft", "Inactive"],
+      schemeOptions: [
+        {
+          iri: IM.CODE_SCHEME_BARTS,
+          name: "Barts Cerner code"
+        },
+        {
+          iri: IM.CODE_SCHEME_CTV3,
+          name: "CTV3 Code"
+        },
+        {
+          iri: IM.DISCOVERY_CODE,
+          name: "Discovery code"
+        },
+        {
+          iri: IM.CODE_SCHEME_EMIS,
+          name: "EMIS local code"
+        },
+        {
+          iri: "http://endhealth.info/im#581000252100",
+          name: "Homerton Cerner code"
+        },
+        {
+          iri: IM.CODE_SCHEME_ICD10,
+          name: "ICD10 code"
+        },
+        {
+          iri: IM.CODE_SCHEME_OPCS4,
+          name: "OPCS4 code"
+        },
+        {
+          iri: IM.CODE_SCHEME_READ,
+          name: "Read 2 code"
+        },
+        {
+          iri: IM.CODE_SCHEME_SNOMED,
+          name: "Snomed-CT code"
+        },
+        {
+          iri: "http://endhealth.info/im#631000252102",
+          name: "TPP local codes"
+        },
+        {
+          iri: IM.CODE_SCHEME_TERMS,
+          name: "Term based code"
+        }
+      ],
+      typeOptions: [
+        "Class",
+        "ObjectProperty",
+        "DataProperty",
+        "DataType",
+        "Annotation",
+        "Individual",
+        "Record",
+        "ValueSet",
+        "Folder",
+        "Term",
+        "Legacy",
+        "CategoryGroup"
+      ]
     }
-  ];
-  typeOptions = [
-    "Class",
-    "ObjectProperty",
-    "DataProperty",
-    "DataType",
-    "Annotation",
-    "Individual",
-    "Record",
-    "ValueSet",
-    "Folder",
-    "Term",
-    "Legacy",
-    "CategoryGroup"
-  ];
-}
+  }
+})
 </script>
 
 <style scoped>
