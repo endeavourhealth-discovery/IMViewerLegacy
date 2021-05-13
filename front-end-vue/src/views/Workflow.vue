@@ -209,203 +209,206 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import Header from "@/components/home/Header.vue";
-import SidebarControl from "@/components/sidebar/SidebarControl.vue";
+// import SidebarControl from "@/components/sidebar/SidebarControl.vue";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
+import { Filters } from "@/models/workflow/Filters";
+import { WorkflowItem } from "@/models/workflow/WorkFlowItem";
 
-@Options({
+export default defineComponent({
   name: "Workflow",
   components: {
     SideNav,
     Header,
-    SidebarControl
-  }
-})
-export default class Workflow extends Vue {
-  createTable: any = [];
-  updateTable: any = [];
-  expandedRows = [];
-  expandedRows2 = [];
+    // SidebarControl
+  },
+  data() {
+    return {
+      createTable: [] as any,
+      updateTable: [] as any,
+      expandedRows: [],
+      expandedRows2: [],
+      selectedWorkflow: {
+        name: "Create New Concept Workflow",
+        value: "createWorkflow"
+      } as { name: string, value: string },
+      workflows: [
+        { name: "Create New Concept Workflow", value: "createWorkflow" },
+        { name: "Update Concept Workflow", value: "updateWorkflow" }
+      ] as { name: string, value: string }[],
+      filters1: {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        name: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
+        },
+        "country.name": {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
+        },
+        representative: { value: null, matchMode: FilterMatchMode.IN },
+        date: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
+        },
+        balance: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
+        },
+        status: {
+          operator: FilterOperator.OR,
+          constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
+        },
+        activity: { value: null, matchMode: FilterMatchMode.BETWEEN },
+        verified: { value: null, matchMode: FilterMatchMode.EQUALS }
+      } as Filters,
 
-  selectedWorkflow = {
-    name: "Create New Concept Workflow",
-    value: "createWorkflow"
-  };
-  workflows = [
-    { name: "Create New Concept Workflow", value: "createWorkflow" },
-    { name: "Update Concept Workflow", value: "updateWorkflow" }
-  ];
+      filters2: {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        name: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
+        },
+        "country.name": {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
+        },
+        representative: { value: null, matchMode: FilterMatchMode.IN },
+        date: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
+        },
+        balance: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
+        },
+        status: {
+          operator: FilterOperator.OR,
+          constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
+        },
+        activity: { value: null, matchMode: FilterMatchMode.BETWEEN },
+        verified: { value: null, matchMode: FilterMatchMode.EQUALS }
+      } as Filters,
 
-  filters1 = {
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    name: {
-      operator: FilterOperator.AND,
-      constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
-    },
-    "country.name": {
-      operator: FilterOperator.AND,
-      constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
-    },
-    representative: { value: null, matchMode: FilterMatchMode.IN },
-    date: {
-      operator: FilterOperator.AND,
-      constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
-    },
-    balance: {
-      operator: FilterOperator.AND,
-      constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
-    },
-    status: {
-      operator: FilterOperator.OR,
-      constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
-    },
-    activity: { value: null, matchMode: FilterMatchMode.BETWEEN },
-    verified: { value: null, matchMode: FilterMatchMode.EQUALS }
-  };
-
-  filters2 = {
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    name: {
-      operator: FilterOperator.AND,
-      constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
-    },
-    "country.name": {
-      operator: FilterOperator.AND,
-      constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
-    },
-    representative: { value: null, matchMode: FilterMatchMode.IN },
-    date: {
-      operator: FilterOperator.AND,
-      constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
-    },
-    balance: {
-      operator: FilterOperator.AND,
-      constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
-    },
-    status: {
-      operator: FilterOperator.OR,
-      constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
-    },
-    activity: { value: null, matchMode: FilterMatchMode.BETWEEN },
-    verified: { value: null, matchMode: FilterMatchMode.EQUALS }
-  };
-
-  createWorkflow = [
-    {
-      taskName: "Request to create new Concept",
-      step: 1,
-      automated: false,
-      active: false
-    },
-    {
-      taskName: "Create definition for new Draft Concept",
-      step: 2,
-      automated: false,
-      active: false
-    },
-    {
-      taskName: "Approve/Deny definition for Concept",
-      step: 3,
-      automated: false,
-      active: false
-    },
-    {
-      taskName: "Change concept status to Active",
-      step: 4,
-      automated: true,
-      active: false
+      createWorkflow: [
+        {
+          taskName: "Request to create new Concept",
+          step: 1,
+          automated: false,
+          active: false
+        },
+        {
+          taskName: "Create definition for new Draft Concept",
+          step: 2,
+          automated: false,
+          active: false
+        },
+        {
+          taskName: "Approve/Deny definition for Concept",
+          step: 3,
+          automated: false,
+          active: false
+        },
+        {
+          taskName: "Change concept status to Active",
+          step: 4,
+          automated: true,
+          active: false
+        }
+      ] as WorkflowItem[],
+      updateWorkflow: [
+        {
+          taskName: "Request to change existing Concept",
+          step: 1,
+          automated: false,
+          active: false
+        },
+        {
+          taskName: "Create definition for updated Concept as Draft",
+          step: 2,
+          automated: false,
+          active: false
+        },
+        {
+          taskName: "Approve/Deny new definition for Concept",
+          step: 3,
+          automated: false,
+          active: false
+        },
+        {
+          taskName: "Replace concept definition and archive old concept",
+          step: 4,
+          automated: true,
+          active: false
+        }
+      ] as WorkflowItem[]
     }
-  ];
-  updateWorkflow = [
-    {
-      taskName: "Request to change existing Concept",
-      step: 1,
-      automated: false,
-      active: false
-    },
-    {
-      taskName: "Create definition for updated Concept as Draft",
-      step: 2,
-      automated: false,
-      active: false
-    },
-    {
-      taskName: "Approve/Deny new definition for Concept",
-      step: 3,
-      automated: false,
-      active: false
-    },
-    {
-      taskName: "Replace concept definition and archive old concept",
-      step: 4,
-      automated: true,
-      active: false
-    }
-  ];
-
+  },
   mounted() {
     this.generateCreateTable();
     this.generateUpdateTable();
-  }
+  },
+  methods: {
+    generateCreateTable(): void {
+      let x = 100;
 
-  generateCreateTable() {
-    let x = 100;
-
-    while (x > 0) {
-      const currentStep = Math.floor(Math.random() * 4) + 1;
-      this.createTable.push({
-        taskId: "Define concept " + Math.floor(Math.random() * 100) + 1,
-        currentStep: currentStep,
-        status: currentStep == 4 ? "Complete" : "In Progress",
-        workflow: this.generateWorkflow(this.createWorkflow, currentStep),
-        author: "user " + Math.floor(Math.random() * 100) + 1,
-        createdDate: new Date().toDateString(),
-        updatedDate: new Date().toDateString()
-      });
-      x--;
-    }
-  }
-
-  generateUpdateTable() {
-    let x = 100;
-
-    while (x > 0) {
-      const currentStep = Math.floor(Math.random() * 4) + 1;
-
-      this.updateTable.push({
-        taskId: "Update Concept " + Math.floor(Math.random() * 100) + 1,
-        currentStep: currentStep,
-        status: currentStep == 4 ? "Complete" : "In Progress",
-        workflow: this.generateWorkflow(this.updateWorkflow, currentStep),
-        author: "user " + Math.floor(Math.random() * 100) + 1,
-        createdDate: new Date().toDateString(),
-        updatedDate: new Date().toDateString()
-      });
-      x--;
-    }
-  }
-
-  generateWorkflow(workflow: any[], step: any) {
-    const customWorkFlow: any[] = [];
-
-    workflow.forEach((item: any) => {
-      if (item.step == step) {
-        customWorkFlow.push({
-          taskName: item.taskName,
-          step: item.step,
-          automated: item.automated,
-          active: true
+      while (x > 0) {
+        const currentStep = Math.floor(Math.random() * 4) + 1;
+        this.createTable.push({
+          taskId: "Define concept " + Math.floor(Math.random() * 100) + 1,
+          currentStep: currentStep,
+          status: currentStep == 4 ? "Complete" : "In Progress",
+          workflow: this.generateWorkflow(this.createWorkflow, currentStep),
+          author: "user " + Math.floor(Math.random() * 100) + 1,
+          createdDate: new Date().toDateString(),
+          updatedDate: new Date().toDateString()
         });
-      } else {
-        customWorkFlow.push(item);
+        x--;
       }
-    });
+    },
 
-    return customWorkFlow;
+    generateUpdateTable(): void {
+      let x = 100;
+
+      while (x > 0) {
+        const currentStep = Math.floor(Math.random() * 4) + 1;
+
+        this.updateTable.push({
+          taskId: "Update Concept " + Math.floor(Math.random() * 100) + 1,
+          currentStep: currentStep,
+          status: currentStep == 4 ? "Complete" : "In Progress",
+          workflow: this.generateWorkflow(this.updateWorkflow, currentStep),
+          author: "user " + Math.floor(Math.random() * 100) + 1,
+          createdDate: new Date().toDateString(),
+          updatedDate: new Date().toDateString()
+        });
+        x--;
+      }
+    },
+
+    generateWorkflow(workflow: WorkflowItem[], step: number): WorkflowItem[] {
+      const customWorkFlow: WorkflowItem[] = [];
+      console.log(workflow);
+
+      workflow.forEach((item: WorkflowItem) => {
+        if (item.step == step) {
+          customWorkFlow.push({
+            taskName: item.taskName,
+            step: item.step,
+            automated: item.automated,
+            active: true
+          });
+        } else {
+          customWorkFlow.push(item);
+        }
+      });
+
+      return customWorkFlow;
+    }
   }
-}
+})
 </script>
 
 <style>
