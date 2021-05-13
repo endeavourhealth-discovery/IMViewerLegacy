@@ -45,19 +45,23 @@
   </DataTable>
 </template>
 <script lang="ts">
-import { mapState } from "vuex";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
-import GraphData from "@/models/GraphData";
 import { defineComponent } from "@vue/runtime-core";
+import ConceptService from "@/services/ConceptService";
 
 export default defineComponent({
   name: "PropertiesTable",
   components: {},
-  computed: mapState(["conceptAggregate"]),
+  props: {
+    conceptIri: String
+  },
   watch: {
-    conceptAggregate(newValue) {
-      this.properties = this.getProperties(newValue.graph);
+    async conceptIri(newValue) {
+      this.properties = await this.getProperties(newValue);
     }
+  },
+  async mounted() {
+    this.properties = await this.getProperties(this.conceptIri!);
   },
   data() {
     return {
@@ -74,7 +78,8 @@ export default defineComponent({
         });
     },
 
-    getProperties(graph: GraphData) {
+    async getProperties(iri: string) {
+      const graph = (await ConceptService.getConceptGraph(iri)).data;
       const allProperties: any[] = [];
       const properties = graph.children.filter(
         (child: any) => child.name === "Properties"

@@ -15,14 +15,11 @@
           <TabPanel header="Definition">
             <Definition :concept="concept" />
           </TabPanel>
-          <TabPanel header="Record structure">
-            <Properties />
-          </TabPanel>
           <TabPanel header="Terms">
             <Terms />
           </TabPanel>
           <TabPanel header="Used In">
-            <UsedIn />
+            <UsedIn :conceptIri="concept['@id']" />
           </TabPanel>
           <TabPanel header="Members">
             <Members :conceptIri="concept['@id']" />
@@ -35,13 +32,13 @@
             <Definition :concept="concept" />
           </TabPanel>
           <TabPanel header="Record structure">
-            <Properties />
+            <Properties :conceptIri="concept['@id']" />
           </TabPanel>
           <TabPanel header="Terms">
             <Terms />
           </TabPanel>
           <TabPanel header="Used In">
-            <UsedIn />
+            <UsedIn :conceptIri="concept['@id']" />
           </TabPanel>
           <TabPanel header="Graph">
             <Graph :graph="conceptAggregate.graph" />

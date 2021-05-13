@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="p-d-flex p-flex-row p-jc-center"
-    v-if="$store.state.loading.get('usages')"
-  >
+  <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
     <div class="spinner">
       <ProgressSpinner />
     </div>
@@ -15,23 +12,42 @@
     emptyFilterMessage="No results found"
     v-model="selectedUsage"
     @change="onNodeSelect(selectedUsage)"
-    :options="$store.state.usages"
+    :options="usages"
     optionLabel="name"
   ></Listbox>
 </template>
 <script lang="ts">
+import ConceptService from "@/services/ConceptService";
 import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
   name: "UsedIn",
   components: {},
-  props: {},
+  props: {
+    conceptIri: String
+  },
+  watch: {
+    async conceptIri(newValue) {
+      await this.getUsages(newValue);
+    }
+  },
+  async mounted() {
+    await this.getUsages(this.conceptIri!);
+  },
   data() {
     return {
-      selectedUsage: {}
+      selectedUsage: {},
+      usages: [],
+      loading: false
     };
   },
   methods: {
+    async getUsages(iri: string) {
+      this.loading = true;
+      this.usages = (await ConceptService.getConceptUsages(iri)).data;
+      this.loading = false;
+    },
+
     onNodeSelect(concept: any) {
       this.$router.push({
         name: "Concept",
