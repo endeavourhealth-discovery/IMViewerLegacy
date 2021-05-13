@@ -62,12 +62,12 @@ export default defineComponent({
     }
   },
   methods: {
-    isSet(): any {
+    isSet(): boolean {
       const conceptTypeElements = this.concept[RDF.TYPE];
       return isValueSet(conceptTypeElements);
     },
 
-    isClaz(): any {
+    isClaz(): boolean {
       const conceptTypeElements = this.concept[RDF.TYPE];
       return isRecordModel(conceptTypeElements);
     }
