@@ -16,28 +16,30 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import store from "@/store/index";
 import { HistoryItem } from "@/models/HistoryItem";
 
-@Options({
+export default defineComponent({
   name: "History",
-  components: {}
+  data() {
+    return {
+      selectedHistoryItem: {} as HistoryItem
+    }
+  },
+  methods: {
+    history(): any {
+      const viewHistory = store.state.history.filter(obj => {
+        return !!obj.conceptName;
+      });
+      return viewHistory;
+    },
+
+    navigate(): void {
+      this.$router.push(this.selectedHistoryItem.url);
+    }
+  }
 })
-export default class History extends Vue {
-  selectedHistoryItem: HistoryItem = {} as HistoryItem;
-
-  get history() {
-    const viewHistory = store.state.history.filter(obj => {
-      return !!obj.conceptName;
-    });
-    return viewHistory;
-  }
-
-  navigate() {
-    this.$router.push(this.selectedHistoryItem.url);
-  }
-}
 </script>
 
 <style scoped>
