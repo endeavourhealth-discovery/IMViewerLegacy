@@ -50,7 +50,6 @@
 </template>
 
 <script lang="ts">
-import { mapState } from "vuex";
 import { RDFS } from "@/vocabulary/RDFS";
 import { defineComponent } from "vue";
 import { RDF } from "@/vocabulary/RDF";
@@ -58,42 +57,32 @@ import { RDF } from "@/vocabulary/RDF";
 export default defineComponent({
   name: "Definition",
   components: {},
-  props: {},
-  computed: mapState(["conceptAggregate"]),
-  watch: {
-    conceptAggregate(newValue) {
-      this.concept = newValue.concept;
-      this.conceptTypes = this.getConceptTypes(this.concept?.[RDF.TYPE]);
-      this.descriptionHTML =
-        "<p class='description-p'>" +
-        this.convertTextToHTML(this.concept?.[RDFS.COMMENT]) +
-        "</p>";
-      const descContainer = document.getElementById("description");
-      if (descContainer) {
-        descContainer.innerHTML = this.descriptionHTML;
-      }
-    }
+  props: {
+    concept: {} as any
   },
-  data() {
-    return {
-      concept: {} as any,
-      definitionText: "",
-      descriptionHTML: {} as any,
-      conceptTypes: ""
-    };
-  },
-
-  methods: {
-    convertTextToHTML(text: string) {
-      return text?.replaceAll("<p>", "</p>\n<p class='description-p'>");
-    },
-
-    getConceptTypes(types: any) {
-      return types
+  computed: {
+    conceptTypes(): string {
+      return this.concept[RDF.TYPE]
         .map(function(type: any) {
           return type.name;
         })
         .join(", ");
+    },
+
+    descriptionHTML(): string {
+      const text = this.concept?.[RDFS.COMMENT]?.replaceAll(
+        "<p>",
+        "</p>\n<p class='description-p'>"
+      );
+      return "<p class='description-p'>" + text + "</p>";
+    }
+  },
+  watch: {
+    descriptionHTML(newValue) {
+      const descContainer = document.getElementById("description");
+      if (descContainer) {
+        descContainer.innerHTML = newValue;
+      }
     }
   }
 });

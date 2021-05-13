@@ -16,7 +16,7 @@
       <div v-if="conceptAggregate.concept && isSet">
         <TabView>
           <TabPanel header="Definition">
-            <Definition />
+            <Definition :concept="concept" />
           </TabPanel>
           <TabPanel header="Record structure">
             <Properties />
@@ -35,7 +35,7 @@
       <div v-if="conceptAggregate.concept && !isSet">
         <TabView>
           <TabPanel header="Definition">
-            <Definition />
+            <Definition :concept="concept" />
           </TabPanel>
           <TabPanel header="Record structure">
             <Properties />
@@ -62,7 +62,7 @@
       <DownloadDialog
         @closeDownloadDialog="closeDownloadDialog"
         :showDialog="showDownloadDialog"
-        :concept="concept"
+        :conceptAggregate="conceptAggregate"
       />
     </Panel>
   </div>
