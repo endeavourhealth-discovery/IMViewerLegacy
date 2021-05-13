@@ -62,7 +62,7 @@
       <DownloadDialog
         @closeDownloadDialog="closeDownloadDialog"
         :showDialog="showDownloadDialog"
-        :concept="concept"
+        :conceptAggregate="conceptAggregate"
       />
     </Panel>
   </div>

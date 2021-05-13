@@ -45,7 +45,10 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!members?.included?.length && !members?.excluded?.length"
+            :disabled="
+              !$store.state.members?.included?.length &&
+                !$store.state.members?.excluded?.length
+            "
             id="members"
             :binary="true"
             value="Include members"
@@ -105,22 +108,26 @@
 
 <script lang="ts">
 import LoggerService from "@/services/LoggerService";
-import { mapState } from "vuex";
 import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
   name: "DownloadDialog",
-  props: ["concept", "showDialog"],
-  computed: mapState(["conceptAggregate", "members"]),
+  props: ["conceptAggregate", "showDialog"],
+  computed: {
+    concept(): any {
+      return this.conceptAggregate.concept;
+    }
+  },
   watch: {
-    conceptAggregate() {
+    concept() {
       this.includeParents = !!this.conceptAggregate.parents?.length;
       this.includeChildren = !!this.conceptAggregate.children?.length;
       this.includeProperties = this.hasProperties();
       this.includeRoles = this.hasRoles();
       this.includeMembers =
-        !!this.members?.included?.length || !!this.members?.excluded?.length;
+        !!this.$store.state.members?.included?.length ||
+        !!this.$store.state.members?.excluded?.length;
     }
   },
   data() {
