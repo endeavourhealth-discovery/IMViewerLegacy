@@ -8,10 +8,7 @@
         <Menu id="config_menu" ref="menu" :model="items" :popup="true" />
       </template>
       <template #header>
-        <div>
-          <i :class="icon" />
-          {{ header }}
-        </div>
+        <PanelHeader :icon="icon" :header="header" />
       </template>
       <div v-if="conceptAggregate.concept && isSet">
         <TabView>
@@ -76,6 +73,7 @@ import Terms from "../components/panels/Terms.vue";
 import Definition from "../components/panels/Definition.vue";
 import UsedIn from "../components/panels/UsedIn.vue";
 import Members from "../components/panels/Members.vue";
+import PanelHeader from "../components/panels/PanelHeader.vue";
 import { getIconFromType, isValueSet } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import { RDFS } from "@/vocabulary/RDFS";
@@ -86,6 +84,7 @@ import DownloadDialog from "@/components/panels/DownloadDialog.vue";
 export default defineComponent({
   name: "Concept",
   components: {
+    PanelHeader,
     Properties,
     Graph,
     Terms,
@@ -95,10 +94,27 @@ export default defineComponent({
     EditDialog,
     DownloadDialog
   },
-  computed: mapState(["conceptAggregate"]),
+  computed: {
+    editorConcept(): any {
+      return this.editDialogView ? this.concept : {};
+    },
+
+    editorDefinitionText(): any {
+      return this.editDialogView ? this.definitionText : "type ";
+    },
+
+    isSet(): any {
+      const conceptTypeElements = this.conceptAggregate?.concept?.[RDF.TYPE];
+      return isValueSet(conceptTypeElements);
+    },
+
+    ...mapState(["conceptAggregate"])
+  },
   watch: {
     conceptAggregate(newValue): void {
       this.concept = newValue.concept;
+      this.icon = getIconFromType(this.concept?.[RDF.TYPE]);
+      this.header = this.conceptAggregate?.concept?.[RDFS.LABEL];
     }
   },
   data() {
@@ -108,6 +124,8 @@ export default defineComponent({
       concept: {} as any,
       definitionText: "",
       display: false,
+      icon: "",
+      header: "",
       dialogHeader: "",
       items: [
         {
@@ -131,8 +149,8 @@ export default defineComponent({
             this.openAddDialog();
           }
         }
-      ] as {label: string, icon: string, command: () => void}[]
-    }
+      ] as { label: string; icon: string; command: () => void }[]
+    };
   },
   methods: {
     toggle(event: any): void {
@@ -162,31 +180,9 @@ export default defineComponent({
 
     closeDownloadDialog(): void {
       this.showDownloadDialog = false;
-    },
-
-    get editorConcept(): any {
-      return this.editDialogView ? this.concept : {};
-    },
-
-    get editorDefinitionText(): any {
-      return this.editDialogView ? this.definitionText : "type ";
-    },
-
-    get header(): any {
-      return this.conceptAggregate?.concept?.[RDFS.LABEL];
-    },
-
-    get isSet(): any {
-      const conceptTypeElements = this.conceptAggregate?.concept?.[RDF.TYPE];
-      return isValueSet(conceptTypeElements);
-    },
-
-    get icon(): any {
-      const icon = getIconFromType(this.concept?.[RDF.TYPE]);
-      return icon;
-    },
+    }
   }
-})
+});
 </script>
 <style scoped>
 .concept-container {
