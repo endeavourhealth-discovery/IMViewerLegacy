@@ -1,7 +1,7 @@
 <template>
   <Listbox
     v-model="selectedHistoryItem"
-    :options="history"
+    :options="history()"
     optionLabel="conceptName"
     @click="navigate"
     class="history-listbox"
