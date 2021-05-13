@@ -44,7 +44,7 @@
             <UsedIn />
           </TabPanel>
           <TabPanel header="Graph">
-            <Graph />
+            <Graph :graph="conceptAggregate.graph" />
           </TabPanel>
         </TabView>
       </div>

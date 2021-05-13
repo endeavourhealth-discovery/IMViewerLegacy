@@ -27,7 +27,6 @@
 <script lang="ts">
 import * as d3 from "d3";
 import svgPanZoom from "svg-pan-zoom";
-import SvgPanZoom from "svg-pan-zoom";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { mapState } from "vuex";
 import { HierarchyNode } from "d3";
@@ -39,22 +38,22 @@ import { defineComponent } from "@vue/runtime-core";
 export default defineComponent({
   name: "Graph",
   components: {},
-  computed: mapState(["conceptAggregate"]),
+  props: {
+    graph: {} as any
+  },
+  computed: {
+    root(): HierarchyNode<unknown> {
+      return d3.hierarchy(this.graph);
+    }
+  },
   watch: {
-    conceptAggregate(newValue) {
-      const conceptTypeElements = newValue.concept[RDF.TYPE];
-      if (!isValueSet(conceptTypeElements)) {
-        this.graphData = newValue.graph;
-        this.root = d3.hierarchy(this.graphData);
-        this.initView();
-        this.panZoom = this.initSvgPanZoom();
-      }
+    graph() {
+      this.initView();
+      this.initSvgPanZoom();
     }
   },
   data() {
     return {
-      graphData: {} as GraphData,
-      root: {} as HierarchyNode<unknown>,
       margin: {} as any,
       width: 660,
       height: 500,
@@ -64,6 +63,9 @@ export default defineComponent({
     };
   },
   mounted() {
+    this.initView();
+    this.initSvgPanZoom();
+
     this.margin = { top: 20, right: 90, bottom: 30, left: 90 };
     this.width = 660 - this.margin.left - this.margin.right;
     this.height = 500 - this.margin.top - this.margin.bottom;
@@ -80,7 +82,6 @@ export default defineComponent({
     onResize() {
       this.windowHeight = window.innerHeight;
       this.windowWidth = window.innerWidth;
-      this.root = d3.hierarchy(this.graphData);
       this.initSvgPanZoom();
       this.zoomReset();
       this.initView();
@@ -100,7 +101,8 @@ export default defineComponent({
     },
 
     initSvgPanZoom() {
-      return svgPanZoom("#svg", {
+      // this.panZoom?.destroy();
+      this.panZoom = svgPanZoom("#svg", {
         zoomEnabled: true,
         fit: false,
         center: true,
@@ -119,8 +121,8 @@ export default defineComponent({
       this.eraseTree();
 
       const treemap = d3.tree().size([this.height, this.width]);
-      let nodes: any = d3.hierarchy(this.graphData, (d: any) => d.children);
-      const isBig = this.graphData.children.some((child: GraphData) => {
+      let nodes: any = d3.hierarchy(this.graph, (d: any) => d.children);
+      const isBig = this.graph.children.some((child: GraphData) => {
         return child.children?.length > 50;
       });
       nodes = treemap(nodes);
@@ -299,7 +301,7 @@ export default defineComponent({
         event.srcElement.id === "Properties" ||
         event.srcElement.id === "Roles"
       ) {
-        const currentParent = (this.graphData as any).children.filter(
+        const currentParent = this.graph.children.filter(
           (child: any) => child.name === event.srcElement.id
         );
         if (currentParent[0].children && currentParent[0].children.length) {
@@ -315,7 +317,7 @@ export default defineComponent({
         event.srcElement.id === "Direct" ||
         event.srcElement.id === "Inherited"
       ) {
-        const currentGrandParent = (this.graphData as any).children.filter(
+        const currentGrandParent = this.graph.children.filter(
           (child: any) => child.name === "Properties"
         );
         const currentParent = currentGrandParent[0].children.filter(
