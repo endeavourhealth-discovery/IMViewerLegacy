@@ -25,7 +25,7 @@
             <UsedIn />
           </TabPanel>
           <TabPanel header="Members">
-            <Members />
+            <Members :conceptIri="concept['@id']" />
           </TabPanel>
         </TabView>
       </div>
@@ -108,7 +108,7 @@ export default defineComponent({
       return isValueSet(conceptTypeElements);
     },
 
-    ...mapState(["conceptAggregate"])
+    ...mapState(["conceptAggregate", "conceptIri"])
   },
   watch: {
     conceptAggregate(newValue): void {
