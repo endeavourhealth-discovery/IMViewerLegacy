@@ -131,8 +131,8 @@ export default defineComponent({
             this.openAddDialog();
           }
         }
-      ] as {label: string, icon: string, command: () => void}[]
-    }
+      ] as { label: string; icon: string; command: () => void }[]
+    };
   },
   methods: {
     toggle(event: any): void {
@@ -184,9 +184,9 @@ export default defineComponent({
     get icon(): any {
       const icon = getIconFromType(this.concept?.[RDF.TYPE]);
       return icon;
-    },
+    }
   }
-})
+});
 </script>
 <style scoped>
 .concept-container {

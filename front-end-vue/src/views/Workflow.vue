@@ -221,7 +221,7 @@ export default defineComponent({
   name: "Workflow",
   components: {
     SideNav,
-    Header,
+    Header
     // SidebarControl
   },
   data() {
@@ -233,11 +233,11 @@ export default defineComponent({
       selectedWorkflow: {
         name: "Create New Concept Workflow",
         value: "createWorkflow"
-      } as { name: string, value: string },
+      } as { name: string; value: string },
       workflows: [
         { name: "Create New Concept Workflow", value: "createWorkflow" },
         { name: "Update Concept Workflow", value: "updateWorkflow" }
-      ] as { name: string, value: string }[],
+      ] as { name: string; value: string }[],
       filters1: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         name: {
@@ -344,7 +344,7 @@ export default defineComponent({
           active: false
         }
       ] as WorkflowItem[]
-    }
+    };
   },
   mounted() {
     this.generateCreateTable();
@@ -408,7 +408,7 @@ export default defineComponent({
       return customWorkFlow;
     }
   }
-})
+});
 </script>
 
 <style>

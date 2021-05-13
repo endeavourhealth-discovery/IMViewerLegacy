@@ -129,7 +129,7 @@ export default defineComponent({
   data() {
     return {
       showDialog: true
-    }
+    };
   },
   methods: {
     submitDecline(): void {
@@ -145,7 +145,7 @@ export default defineComponent({
       }
     }
   }
-})
+});
 </script>
 
 <style scoped>

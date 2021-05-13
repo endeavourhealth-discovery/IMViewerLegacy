@@ -52,7 +52,7 @@ export default defineComponent({
       windowHeight: 0,
       windowWidth: 0,
       graphHeight: 200
-    }
+    };
   },
   mounted() {
     this.$nextTick(() => {
@@ -189,7 +189,7 @@ export default defineComponent({
       }
     }
   }
-})
+});
 </script>
 
 <style scoped>
