@@ -25,7 +25,7 @@ export default defineComponent({
   data() {
     return {
       selectedHistoryItem: {} as HistoryItem
-    }
+    };
   },
   methods: {
     history(): any {
@@ -39,7 +39,7 @@ export default defineComponent({
       this.$router.push(this.selectedHistoryItem.url);
     }
   }
-})
+});
 </script>
 
 <style scoped>

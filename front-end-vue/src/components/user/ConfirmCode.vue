@@ -81,7 +81,7 @@ export default defineComponent({
       code: "",
       codeVerified: false,
       username: ""
-    }
+    };
   },
   mounted() {
     if (this.registeredUsername && this.registeredUsername !== "") {
@@ -159,8 +159,7 @@ export default defineComponent({
         });
     }
   }
-
-})
+});
 </script>
 
 <style scoped>

@@ -99,7 +99,7 @@ export default defineComponent({
           iri: IM.CODE_SCHEME_TERMS,
           name: "Term based code"
         }
-      ] as { iri: string, name: string }[],
+      ] as { iri: string; name: string }[],
       typeOptions: [
         "Class",
         "ObjectProperty",
@@ -114,9 +114,9 @@ export default defineComponent({
         "Legacy",
         "CategoryGroup"
       ] as string[]
-    }
+    };
   }
-})
+});
 </script>
 
 <style scoped>

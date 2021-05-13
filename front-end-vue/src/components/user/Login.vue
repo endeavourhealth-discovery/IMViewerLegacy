@@ -76,7 +76,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { mapState} from "vuex";
+import { mapState } from "vuex";
 import Swal from "sweetalert2";
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
@@ -88,7 +88,7 @@ export default defineComponent({
     return {
       username: "",
       password: ""
-    }
+    };
   },
   mounted() {
     if (this.registeredUsername && this.registeredUsername !== "") {
@@ -165,7 +165,7 @@ export default defineComponent({
       }
     }
   }
-})
+});
 </script>
 
 <style scoped>

@@ -78,7 +78,7 @@ export default defineComponent({
       expandedKeys: {} as any,
       selectedKey: {} as any,
       parentLabel: ""
-    }
+    };
   },
   methods: {
     createTree(concept: any, parentHierarchy: any, children: any): void {
@@ -232,9 +232,7 @@ export default defineComponent({
         });
     }
   }
-
-
-})
+});
 </script>
 
 <style>

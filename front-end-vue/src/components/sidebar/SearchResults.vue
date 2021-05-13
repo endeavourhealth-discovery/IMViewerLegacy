@@ -100,10 +100,10 @@ export default defineComponent({
   },
   data() {
     return {
-      results:  new SearchResponse() as SearchResponse,
+      results: new SearchResponse() as SearchResponse,
       selectedResult: {} as ConceptSummary,
       hoveredResult: {} as ConceptSummary | any
-    }
+    };
   },
   methods: {
     getPerspectiveByConceptType(conceptType: any): any {
@@ -131,7 +131,7 @@ export default defineComponent({
         .join(", ");
     }
   }
-})
+});
 </script>
 
 <style scoped>

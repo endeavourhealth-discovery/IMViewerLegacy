@@ -120,7 +120,7 @@ export default defineComponent({
       statusOptions: Object.keys(ConceptStatus).filter(f =>
         isNaN(Number(f))
       ) as any
-    }
+    };
   },
   async mounted() {
     this.initMonaco();
@@ -251,7 +251,7 @@ export default defineComponent({
       return width < 700 ? 60 : 120;
     }
   }
-})
+});
 </script>
 
 <style scoped>

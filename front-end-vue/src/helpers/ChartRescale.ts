@@ -1,4 +1,6 @@
-export function setTooltips(counts: number[]) {
+export function setTooltips(
+  counts: number[]
+): { callbacks: { label(t: any, d: any): string } } {
   const tooltipOptions = {
     callbacks: {
       label: function(t: any, d: any) {
@@ -8,11 +10,11 @@ export function setTooltips(counts: number[]) {
         return label + ":" + value;
       }
     }
-  };
+  } as { callbacks: { label(t: any, d: any): string } };
   return tooltipOptions;
 }
 
-export function rescaleData(data: number[]) {
+export function rescaleData(data: number[]): number[] {
   const sum = data.reduce((a, b) => a + b, 0);
   const minPercent = 0.75;
   const min = sum * (minPercent / 100);

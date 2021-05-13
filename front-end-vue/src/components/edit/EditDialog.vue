@@ -49,7 +49,7 @@ export default defineComponent({
   props: ["concept", "definitionText", "display", "header"],
   watch: {
     display(newValue) {
-      this.showDialog = newValue
+      this.showDialog = newValue;
     }
   },
   data() {
@@ -58,7 +58,7 @@ export default defineComponent({
       isValidSyntax: true,
       conceptDto: {} as ConceptDto,
       showDialog: this.display
-    }
+    };
   },
   methods: {
     updateValid(newIsValid: boolean): void {
@@ -97,7 +97,7 @@ export default defineComponent({
       this.$emit("closeDialog");
     }
   }
-})
+});
 </script>
 
 <style scoped></style>

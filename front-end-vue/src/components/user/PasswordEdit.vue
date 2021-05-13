@@ -140,7 +140,7 @@ export default defineComponent({
       passwordStrength: PasswordStrength.fail as PasswordStrength,
       passwordStrengthOld: PasswordStrength.fail as PasswordStrength,
       showPassword2Message: false
-    }
+    };
   },
   methods: {
     setShowPassword2Message(): void {
@@ -215,7 +215,7 @@ export default defineComponent({
       }
     }
   }
-})
+});
 </script>
 
 <style scoped>

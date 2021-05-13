@@ -3,7 +3,8 @@ export interface ChartOptions {
     position?: string,
     onHover?: Function,
     labels?: {boxWidth: number, fontSize: number},
-    display?: boolean
+    display?: boolean,
   },
-  hover?: {onHover: Function}
+  hover?: {onHover: Function},
+  tooltips?: { callbacks: {label(t: any, d: any): string } }
 }
