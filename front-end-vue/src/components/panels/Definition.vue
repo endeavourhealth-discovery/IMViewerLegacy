@@ -42,7 +42,7 @@
         </ScrollPanel>
       </div>
     </div>
-    <Divider align="left">
+    <!-- <Divider align="left">
       <div class="p-d-inline-flex p-ai-center">
         <b>Definitional properties</b>
       </div>
@@ -66,7 +66,7 @@
         :header="col.header"
         :key="col.field"
       ></Column>
-    </DataTable>
+    </DataTable> -->
   </div>
 </template>
 
