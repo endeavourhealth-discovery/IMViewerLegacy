@@ -1,5 +1,4 @@
 import { ConceptNode } from "./ConceptNode";
-import { ConceptRole } from "./ConceptRole";
 
 export class ConceptAggregate {
   concept: any;

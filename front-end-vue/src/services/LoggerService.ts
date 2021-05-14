@@ -1,10 +1,13 @@
+import { ToastType } from "@/models/services/ToastType";
+
 export default {
   // for toast functionality, LoggerService should be called within Vue toast operation
   // e.g.
   // this.$toast.add(
   // LoggerService.error("Concept schemes server request failed", err)
   // );
-  error(toastMessage?: string, consoleData?: any) {
+
+  error(toastMessage?: string, consoleData?: Error | string): ToastType | void {
     if (consoleData) {
       console.error(consoleData);
     }
@@ -18,7 +21,7 @@ export default {
     }
   },
 
-  warn(toastMessage?: string, consoleData?: any) {
+  warn(toastMessage?: string, consoleData?: Error | string): ToastType | void {
     if (consoleData) {
       console.log(consoleData);
     }
@@ -32,7 +35,7 @@ export default {
     }
   },
 
-  info(toastMessage?: string, consoleData?: any) {
+  info(toastMessage?: string, consoleData?: Error | string): ToastType | void {
     if (consoleData) {
       console.info(consoleData);
     }
@@ -46,7 +49,7 @@ export default {
     }
   },
 
-  success(toastMessage?: string, consoleData?: any) {
+  success(toastMessage?: string, consoleData?: string): ToastType | void {
     if (consoleData) {
       console.log(consoleData);
     }
@@ -60,11 +63,11 @@ export default {
     }
   },
 
-  debug(consoleData: any) {
+  debug(consoleData: Error | string): void {
     console.debug(consoleData);
   },
 
-  trace(consoleData: any) {
+  trace(consoleData: Error | string): void {
     console.trace(consoleData);
   }
 };

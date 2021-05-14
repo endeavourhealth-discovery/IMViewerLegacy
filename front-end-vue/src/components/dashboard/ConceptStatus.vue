@@ -33,7 +33,8 @@ import { colorLighter } from "@/helpers/ColorMethods";
 const palette = require("../../../node_modules/google-palette");
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
-import { setTooltips, rescaleData } from "@/helpers/GraphRescale";
+import { setTooltips, rescaleData } from "@/helpers/ChartRescale";
+import { ChartOptions } from "@/models/charts/ChartOptions";
 
 export default defineComponent({
   name: "ConceptStatus",
@@ -48,8 +49,8 @@ export default defineComponent({
   },
   data() {
     return {
-      updatedChartOptions: {} as any,
-      realData: {} as any,
+      updatedChartOptions: {} as ChartOptions,
+      realData: {} as number[],
       chartConceptStatus: new PieChartData(
         [
           {
@@ -61,7 +62,7 @@ export default defineComponent({
         ],
         []
       ) as PieChartData
-    }
+    };
   },
   mounted() {
     this.updatedChartOptions = { ...this.chartOptions };
@@ -99,7 +100,7 @@ export default defineComponent({
         );
       });
   }
-})
+});
 </script>
 
 <style scoped>

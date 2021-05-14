@@ -71,7 +71,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
-import { User } from "@/models/user/User";
 
 export default defineComponent({
   name: "UserDetails",
@@ -86,7 +85,7 @@ export default defineComponent({
       return require("@/assets/avatars/" + item);
     }
   }
-})
+});
 </script>
 
 <style scoped>

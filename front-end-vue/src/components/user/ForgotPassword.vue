@@ -58,7 +58,7 @@ export default defineComponent({
   data() {
     return {
       username: ""
-    }
+    };
   },
   methods: {
     handleSubmit(): void {

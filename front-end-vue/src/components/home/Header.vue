@@ -59,7 +59,7 @@ export default defineComponent({
   data() {
     return {
       concept: {} as any
-    }
+    };
   },
   methods: {
     isSet(): boolean {

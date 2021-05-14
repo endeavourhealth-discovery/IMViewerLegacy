@@ -84,7 +84,7 @@ export default defineComponent({
           icon: "pi pi-fw pi-user-plus",
           to: "/user/register"
         }
-      ] as { label: string, icon: string, to: string }[],
+      ] as { label: string; icon: string; to: string }[],
 
       accountItems: [
         {
@@ -107,8 +107,8 @@ export default defineComponent({
           icon: "pi pi-fw pi-lock-open",
           to: "/user/logout" //+ this.user.id
         }
-      ] as { label: string, icon: string, to: string }[]
-    }
+      ] as { label: string; icon: string; to: string }[]
+    };
   },
   methods: {
     isActive(item: string): boolean {
@@ -119,7 +119,7 @@ export default defineComponent({
       }
     },
 
-    getItems(): { label: string, icon: string, to: string }[] {
+    getItems(): { label: string; icon: string; to: string }[] {
       if (this.isLoggedIn) {
         return this.accountItems;
       } else {
@@ -136,7 +136,7 @@ export default defineComponent({
       return require("@/assets/avatars/" + item);
     }
   }
-})
+});
 </script>
 
 <style scoped>

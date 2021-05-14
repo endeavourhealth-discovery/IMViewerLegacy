@@ -45,7 +45,7 @@ export default defineComponent({
   data() {
     return {
       tableData: [] as any
-    }
+    };
   },
   mounted() {
     // table data

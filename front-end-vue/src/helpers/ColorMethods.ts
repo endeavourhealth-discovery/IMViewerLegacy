@@ -1,5 +1,5 @@
 // generates lighter graph segment colours for mouse hover
-export function colorLighter(color: string) {
+export function colorLighter(color: string): string | void {
   function hexToRgb(hex: string) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result

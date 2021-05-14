@@ -244,7 +244,7 @@ export default defineComponent({
       showLastNameNotice: false,
       selectedAvatar: avatars[0],
       avatarOptions: avatars
-    }
+    };
   },
   mounted() {
     if (this.currentUser && this.isLoggedIn) {
@@ -306,28 +306,29 @@ export default defineComponent({
         updatedUser.setId(this.currentUser.id);
         AuthService.updateUser(updatedUser).then(res => {
           if (res.status === 200) {
-            AuthService.changePassword(this.passwordOld, this.passwordNew1).then(
-              res2 => {
-                if (res2.status === 200) {
-                  Swal.fire({
-                    icon: "success",
-                    title: "Success",
-                    text: "User details and password successfully updated"
-                  }).then(() => {
-                    store.commit("updateCurrentUser", res.user);
-                    this.$router.push({ name: "UserDetails" });
-                  });
-                } else {
-                  Swal.fire({
-                    icon: "error",
-                    title: "Error",
-                    text:
-                      "Password update failed, but user details updated successfully. " +
-                      res2.message
-                  });
-                }
+            AuthService.changePassword(
+              this.passwordOld,
+              this.passwordNew1
+            ).then(res2 => {
+              if (res2.status === 200) {
+                Swal.fire({
+                  icon: "success",
+                  title: "Success",
+                  text: "User details and password successfully updated"
+                }).then(() => {
+                  store.commit("updateCurrentUser", res.user);
+                  this.$router.push({ name: "UserDetails" });
+                });
+              } else {
+                Swal.fire({
+                  icon: "error",
+                  title: "Error",
+                  text:
+                    "Password update failed, but user details updated successfully. " +
+                    res2.message
+                });
               }
-            );
+            });
           } else {
             Swal.fire({
               icon: "error",
@@ -475,7 +476,7 @@ export default defineComponent({
       }
     }
   }
-})
+});
 </script>
 
 <style scoped>

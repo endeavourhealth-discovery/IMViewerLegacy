@@ -1,6 +1,6 @@
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 
-export function verifyIsEmail(email: any) {
+export function verifyIsEmail(email: string): boolean {
   if (
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
       email
@@ -12,7 +12,10 @@ export function verifyIsEmail(email: any) {
   }
 }
 
-export function verifyPasswordsMatch(password1: string, password2: string) {
+export function verifyPasswordsMatch(
+  password1: string,
+  password2: string
+): boolean {
   if (password1 !== "" && password2 !== "" && password1 === password2) {
     return true;
   } else {
@@ -20,7 +23,7 @@ export function verifyPasswordsMatch(password1: string, password2: string) {
   }
 }
 
-export function verifyEmailsMatch(email1: string, email2: string) {
+export function verifyEmailsMatch(email1: string, email2: string): boolean {
   if (
     email1 !== "" &&
     email2 !== "" &&
@@ -32,7 +35,7 @@ export function verifyEmailsMatch(email1: string, email2: string) {
   }
 }
 
-export function verifyIsName(name: string) {
+export function verifyIsName(name: string): boolean {
   if (name !== "" && /^[a-zA-Z]'?[a-zA-Z]+-?[a-zA-Z]+$/.test(name)) {
     return true;
   } else {
@@ -40,7 +43,7 @@ export function verifyIsName(name: string) {
   }
 }
 
-export function verifyIsUsername(name: string) {
+export function verifyIsUsername(name: string): boolean {
   if (name !== "" && /^[-_a-zA-Z0-9]+$/.test(name)) {
     return true;
   } else {
@@ -48,7 +51,7 @@ export function verifyIsUsername(name: string) {
   }
 }
 
-export function checkPasswordStrength(password: any) {
+export function checkPasswordStrength(password: string): PasswordStrength {
   const strongCheck = new RegExp(
     "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
   );

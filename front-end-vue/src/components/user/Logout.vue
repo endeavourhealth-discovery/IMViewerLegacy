@@ -93,7 +93,7 @@ export default defineComponent({
       return require("@/assets/avatars/" + item);
     }
   }
-})
+});
 </script>
 
 <style scoped>
