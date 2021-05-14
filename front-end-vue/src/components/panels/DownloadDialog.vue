@@ -25,7 +25,7 @@
       >
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!conceptAggregate.children?.length"
+            :disabled="!children?.length"
             id="children"
             :binary="true"
             value="Include children"
@@ -35,7 +35,7 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!hasProperties()"
+            :disabled="!props?.length"
             id="properties"
             :binary="true"
             value="Include properties"
@@ -58,7 +58,7 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!conceptAggregate.parents?.length"
+            :disabled="!parents?.length"
             id="parents"
             :binary="true"
             value="Include parents"
@@ -77,7 +77,7 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!hasRoles()"
+            :disabled="!roles?.length"
             id="roles"
             :binary="true"
             value="Include roles"
@@ -107,31 +107,31 @@
 </template>
 
 <script lang="ts">
+import ConceptService from "@/services/ConceptService";
 import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
   name: "DownloadDialog",
-  props: ["conceptAggregate", "showDialog"],
-  computed: {
-    concept(): any {
-      return this.conceptAggregate.concept;
-    }
-  },
+  props: ["conceptIri", "showDialog"],
   watch: {
-    concept() {
-      this.includeParents = !!this.conceptAggregate.parents?.length;
-      this.includeChildren = !!this.conceptAggregate.children?.length;
-      this.includeProperties = this.hasProperties();
-      this.includeRoles = this.hasRoles();
-      this.includeMembers =
-        !!this.$store.state.members?.included?.length ||
-        !!this.$store.state.members?.excluded?.length;
+    async conceptIri(newValue) {
+      await this.init(newValue);
     }
   },
+  async mounted() {
+    await this.init(this.conceptIri);
+  },
+
   data() {
     return {
+      concept: {},
+      parents: [] as any,
+      children: [] as any,
+      props: [],
+      roles: [],
+      members: {} as any,
       includeChildren: true,
       includeProperties: true,
       includeMembers: true,
@@ -156,36 +156,12 @@ export default defineComponent({
     };
   },
   methods: {
-    hasRoles() {
-      try {
-        const roles = this.conceptAggregate.graph.children.filter(
-          (child: any) => child.name === "Roles"
-        );
-        return !!roles[0].children.length;
-      } catch (error) {
-        return false;
-      }
-    },
-
-    hasProperties() {
-      try {
-        const properties = this.conceptAggregate.graph.children.filter(
-          (child: any) => child.name === "Properties"
-        );
-        const direct = properties[0].children[0].children;
-        const inherited = properties[0].children[1].children;
-        return !!direct.length || !!inherited.length;
-      } catch (error) {
-        return false;
-      }
-    },
-
     closeDownloadDialog() {
       this.$emit("closeDownloadDialog");
     },
 
     downloadConcept() {
-      const modIri = this.concept[IM.IRI]
+      const modIri = this.conceptIri
         .replace(/\//gi, "%2F")
         .replace(/#/gi, "%23");
 
@@ -214,6 +190,21 @@ export default defineComponent({
         this.$toast.add(LoggerService.success("Download will begin shortly"));
       }
       this.closeDownloadDialog();
+    },
+    async init(iri: string) {
+      this.concept = (await ConceptService.getConcept(iri)).data;
+      this.parents = (await ConceptService.getConceptParents(iri)).data;
+      this.children = (await ConceptService.getConceptChildren(iri)).data;
+      this.props = (await ConceptService.getConceptProperties(iri)).data;
+      this.roles = (await ConceptService.getConceptRoles(iri)).data;
+      this.members = (await ConceptService.getConceptMembers(iri, false)).data;
+
+      this.includeParents = !!this.parents.length;
+      this.includeChildren = !!this.children.length;
+      this.includeProperties = !!this.props.length;
+      this.includeRoles = !!this.roles.length;
+      this.includeMembers =
+        !!this.members?.included?.length || !!this.members.excluded?.length;
     }
   }
 });

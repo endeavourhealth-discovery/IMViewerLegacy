@@ -10,38 +10,38 @@
       <template #header>
         <PanelHeader :icon="icon" :header="header" />
       </template>
-      <div v-if="conceptAggregate.concept && isSet">
+      <div v-if="concept && isSet">
         <TabView>
           <TabPanel header="Definition">
             <Definition :concept="concept" />
           </TabPanel>
           <TabPanel header="Terms">
-            <Terms />
+            <Terms :conceptIri="conceptIri" />
           </TabPanel>
           <TabPanel header="Used In">
-            <UsedIn :conceptIri="concept['@id']" />
+            <UsedIn :conceptIri="conceptIri" />
           </TabPanel>
           <TabPanel header="Members">
-            <Members :conceptIri="concept['@id']" />
+            <Members :conceptIri="conceptIri" />
           </TabPanel>
         </TabView>
       </div>
-      <div v-if="conceptAggregate.concept && !isSet">
+      <div v-if="concept && !isSet">
         <TabView>
           <TabPanel header="Definition">
             <Definition :concept="concept" />
           </TabPanel>
           <TabPanel header="Record structure">
-            <Properties :conceptIri="concept['@id']" />
+            <Properties :conceptIri="conceptIri" />
           </TabPanel>
           <TabPanel header="Terms">
-            <Terms />
+            <Terms :conceptIri="conceptIri" />
           </TabPanel>
           <TabPanel header="Used In">
-            <UsedIn :conceptIri="concept['@id']" />
+            <UsedIn :conceptIri="conceptIri" />
           </TabPanel>
           <TabPanel header="Graph">
-            <Graph :graph="conceptAggregate.graph" />
+            <Graph :conceptIri="conceptIri" />
           </TabPanel>
         </TabView>
       </div>
@@ -56,7 +56,7 @@
       <DownloadDialog
         @closeDownloadDialog="closeDownloadDialog"
         :showDialog="showDownloadDialog"
-        :conceptAggregate="conceptAggregate"
+        :conceptIri="conceptIri"
       />
     </Panel>
   </div>
@@ -77,6 +77,7 @@ import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";
 import EditDialog from "@/components/edit/EditDialog.vue";
 import DownloadDialog from "@/components/panels/DownloadDialog.vue";
+import ConceptService from "@/services/ConceptService";
 
 export default defineComponent({
   name: "Concept",
@@ -101,18 +102,21 @@ export default defineComponent({
     },
 
     isSet(): any {
-      const conceptTypeElements = this.conceptAggregate?.concept?.[RDF.TYPE];
+      const conceptTypeElements = this?.concept?.[RDF.TYPE];
       return isValueSet(conceptTypeElements);
     },
 
-    ...mapState(["conceptAggregate", "conceptIri"])
+    ...mapState(["conceptIri"])
   },
   watch: {
-    conceptAggregate(newValue): void {
-      this.concept = newValue.concept;
+    async conceptIri(newValue) {
+      this.concept = await this.getConcept(newValue);
       this.icon = getIconFromType(this.concept?.[RDF.TYPE]);
-      this.header = this.conceptAggregate?.concept?.[RDFS.LABEL];
+      this.header = this.concept?.[RDFS.LABEL];
     }
+  },
+  async mounted() {
+    await this.init();
   },
   data() {
     return {
@@ -150,6 +154,16 @@ export default defineComponent({
     };
   },
   methods: {
+    async getConcept(iri: string) {
+      return (await ConceptService.getConcept(iri)).data;
+    },
+
+    async init() {
+      this.concept = await this.getConcept(this.conceptIri);
+      this.icon = getIconFromType(this.concept?.[RDF.TYPE]);
+      this.header = this.concept?.[RDFS.LABEL];
+    },
+
     toggle(event: any): void {
       const x = this.$refs.menu as any;
       x.toggle(event);

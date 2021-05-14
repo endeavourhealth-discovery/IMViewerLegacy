@@ -31,12 +31,13 @@ import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { HierarchyNode } from "d3";
 import GraphData from "../../models/GraphData";
 import { defineComponent } from "@vue/runtime-core";
+import ConceptService from "@/services/ConceptService";
 
 export default defineComponent({
   name: "Graph",
   components: {},
   props: {
-    graph: {} as any
+    conceptIri: String
   },
   computed: {
     root(): HierarchyNode<unknown> {
@@ -44,13 +45,15 @@ export default defineComponent({
     }
   },
   watch: {
-    graph() {
+    async conceptIri(newValue) {
+      await this.getGraph(newValue);
       this.initView();
       this.initSvgPanZoom();
     }
   },
   data() {
     return {
+      graph: {} as GraphData,
       margin: {} as any,
       width: 660,
       height: 500,
@@ -59,7 +62,8 @@ export default defineComponent({
       windowWidth: window.innerWidth
     };
   },
-  mounted() {
+  async mounted() {
+    await this.getGraph(this.conceptIri!);
     this.initView();
     this.initSvgPanZoom();
 
@@ -76,6 +80,10 @@ export default defineComponent({
   },
 
   methods: {
+    async getGraph(iri: string) {
+      this.graph = (await ConceptService.getConceptGraph(iri)).data;
+    },
+
     onResize() {
       this.windowHeight = window.innerHeight;
       this.windowWidth = window.innerWidth;

@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="p-d-flex p-flex-row p-jc-center"
-    v-if="$store.state.loading.get('mapped')"
-  >
+  <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
     <div class="spinner">
       <ProgressSpinner />
     </div>
@@ -16,7 +13,7 @@
     emptyFilterMessage="No results found"
     v-model="selected"
     @change="onNodeSelect(selected)"
-    :options="$store.state.mapped"
+    :options="terms"
     optionLabel="name"
   >
   </Listbox>
@@ -27,13 +24,30 @@ import { defineComponent } from "@vue/runtime-core";
 export default defineComponent({
   name: "Terms",
   components: {},
-  props: {},
+  props: {
+    conceptIri: String
+  },
+  watch: {
+    async conceptIri(newValue) {
+      await this.getTerms(newValue);
+    }
+  },
+  async mounted() {
+    await this.getTerms(this.conceptIri!);
+  },
   data() {
     return {
-      selected: {}
+      selected: {},
+      loading: false,
+      terms: []
     };
   },
   methods: {
+    async getTerms(iri: string) {
+      this.loading = true;
+      // TODO call to get the terms
+      this.loading = false;
+    },
     onNodeSelect(concept: any) {
       if (concept?.["@id"])
         this.$router.push({
