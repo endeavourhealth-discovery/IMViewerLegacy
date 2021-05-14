@@ -1,44 +1,44 @@
 <template>
   <div class="p-d-flex p-flex-row members-container">
     <div class="included-container">
-      <Panel header="Included members">
-        <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
-          <div class="spinner">
-            <ProgressSpinner />
-          </div>
+      <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
+        <div class="spinner">
+          <ProgressSpinner />
         </div>
-        <Listbox
-          v-else
-          listStyle="height:300px"
-          :filter="true"
-          emptyMessage="No results found"
-          emptyFilterMessage="No results found"
-          v-model="selectedIncludedMember"
-          @change="onNodeSelect(selectedIncludedMember)"
-          :options="members.included"
-          optionLabel="concept.name"
-        ></Listbox
-      ></Panel>
-    </div>
-    <div class="excluded-container">
-      <Panel header="Excluded members">
-        <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
-          <div class="spinner">
-            <ProgressSpinner />
+      </div>
+      <Listbox
+        v-else
+        listStyle="height:300px"
+        :filter="true"
+        emptyMessage="No results found"
+        emptyFilterMessage="No results found"
+        v-model="selectedIncludedMember"
+        @change="onNodeSelect(selectedIncludedMember.member)"
+        :options="combinedMembers"
+      >
+        <template #option="slotProps">
+          <div>
+            <span>
+              <div>
+                <i
+                  v-if="slotProps.option.included"
+                  class="pi pi-plus"
+                  style="fontSize: 0.7rem"
+                ></i>
+                <i
+                  v-if="!slotProps.option.included"
+                  class="pi pi-minus"
+                  style="fontSize: 0.7rem"
+                ></i>
+                {{
+                  slotProps.option.member?.concept.name ||
+                    slotProps.option.member?.concept["@id"]
+                }}
+              </div>
+            </span>
           </div>
-        </div>
-        <Listbox
-          v-else
-          listStyle="height:300px"
-          :filter="true"
-          emptyMessage="No results found"
-          emptyFilterMessage="No results found"
-          v-model="selectedExcludedMember"
-          @change="onNodeSelect(selectedExcludedMember)"
-          :options="members.excluded"
-          optionLabel="concept.name"
-        ></Listbox
-      ></Panel>
+        </template>
+      </Listbox>
     </div>
   </div>
 </template>
@@ -51,19 +51,23 @@ export default defineComponent({
   name: "Members",
   components: {},
   props: {
-    conceptIri: String
+    conceptIri: String,
   },
   watch: {
     async conceptIri(newValue) {
       await this.getMembers(newValue);
-    }
+    },
   },
+  async mounted() {
+    await this.getMembers(this.conceptIri!);
+  },
+
   data() {
     return {
       loading: false,
-      members: [],
+      members: [] as any,
       selectedIncludedMember: {},
-      selectedExcludedMember: {}
+      combinedMembers: [] as any,
     };
   },
   methods: {
@@ -71,19 +75,32 @@ export default defineComponent({
       this.loading = true;
       this.members = (await ConceptService.getConceptMembers(iri, false)).data;
       this.loading = false;
+      this.combinedMembers = this.getCombinedMembers();
+    },
+    getCombinedMembers() {
+      const combinedMembers: { included: boolean; member: any }[] = [];
+      this.members?.included?.forEach((included: any) => {
+        const member = { included: true, member: included };
+        combinedMembers.push(member);
+      });
+      this.members?.excluded?.forEach((included: any) => {
+        const member = { included: false, member: included };
+        combinedMembers.push(member);
+      });
+      return combinedMembers;
     },
     onNodeSelect(member: any) {
       this.$router.push({
         name: "Concept",
-        params: { selectedIri: member.concept["@id"] }
+        params: { selectedIri: member.concept["@id"] },
       });
     },
 
     toggle(event: any) {
       const x = this.$refs.menu as any;
       x.toggle(event);
-    }
-  }
+    },
+  },
 });
 </script>
 
@@ -95,7 +112,7 @@ export default defineComponent({
   width: 100%;
 }
 .included-container {
-  width: 50%;
+  width: 100%;
 }
 .excluded-container {
   width: 50%;
