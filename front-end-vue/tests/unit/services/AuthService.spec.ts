@@ -55,4 +55,38 @@ describe("register", () => {
     expect(Auth.signUp).toBeCalledWith({ username: "devTest", password: "12345678", attributes: { email: "john.doe@ergosoft.co.uk", "custom:forename": "John", "custom:surname": "Doe", "custom:avatar": "colour/002-man.png"}});
     expect(promiseResult).toStrictEqual(new CustomAlert(400, "User registration failed", err));
   });
-})
+});
+
+describe("confirmRegister", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns 200 with auth success", async () => {
+    Auth.confirmSignUp = jest.fn().mockResolvedValue({ status: 200, message: "test confirm code"});
+    const result = AuthService.confirmRegister("devTest", "123456");
+    let promiseResult: any;
+    result.then(res => {
+      promiseResult = res
+    })
+    await flushPromises()
+    expect(Auth.confirmSignUp).toBeCalledTimes(1);
+    expect(Auth.confirmSignUp).toBeCalledWith("devTest", "123456");
+    expect(promiseResult).toStrictEqual(new CustomAlert(200, "Register confirmation successful"));
+  });
+
+  it("returns 403 with auth fail", async () => {
+    Auth.confirmSignUp = jest.fn().mockRejectedValue({ code: "TestErrorCode", name: "testError", message: "CodeRejected" });
+    const result = AuthService.confirmRegister("devTest", "123456");
+    let promiseResult: any;
+    let err: any;
+    result.then(res => {
+      err = res.error
+      promiseResult = res
+    });
+    await flushPromises()
+    expect(Auth.confirmSignUp).toBeCalledTimes(1);
+    expect(Auth.confirmSignUp).toBeCalledWith("devTest", "123456");
+    expect(promiseResult).toStrictEqual(new CustomAlert(403, "Failed register confirmation", err));
+  });
+});
