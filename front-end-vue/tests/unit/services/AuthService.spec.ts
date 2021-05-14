@@ -252,6 +252,7 @@ describe("updateUser", () => {
       promiseResult = res
     })
     await flushPromises();
+    expect(Auth.currentAuthenticatedUser).toHaveBeenCalledTimes(2);
     expect(Auth.updateUserAttributes).toHaveBeenCalledTimes(1);
     expect(Auth.updateUserAttributes).toHaveBeenCalledWith({
       username: "devtest",
@@ -273,17 +274,42 @@ describe("updateUser", () => {
     expect(promiseResult).toStrictEqual(new CustomAlert(200, "User updated successfully", undefined, updatedUser));
   });
 
-  xit("returns 400 with auth fail", async () => {
-    Auth.signOut = jest.fn().mockRejectedValue({ code: "Logout", name: "testError", message: "Logout error test" });
-    const result = AuthService.signOut();
+  it("returns 403 with auth fail, ids differ", async () => {
+    Auth.currentAuthenticatedUser = jest.fn().mockResolvedValueOnce({
+      username: "devtest",
+      attributes: {
+        "custom:avatar": "colour/002-man.png",
+        "custom:forename": "John",
+        "custom:surname": "Doe",
+        email: "john.doe@ergosoft.co.uk",
+        email_verified: true,
+        sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
+      }
+    }).mockResolvedValueOnce({
+      username: "devtestupdated",
+      attributes: {
+        "custom:avatar": "colour/003-man.png",
+        "custom:forename": "Bill",
+        "custom:surname": "Williams",
+        email: "bill.williams@ergosoft.co.uk",
+        email_verified: true,
+        sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
+      }
+    });
+    Auth.updateUserAttributes = jest.fn().mockResolvedValue({ code: "UpdateUser", name: "updatesuccess", message: "User updated" });
+    const updatedUser = new User("devtestupdated", "Bill", "Williams", "bill.williams@ergosoft.co.uk", "87654321", { value: "colour/003-man.png" });
+    updatedUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g08")
+    const result = AuthService.updateUser(updatedUser);
     let promiseResult: any;
     let err: any;
     result.then(res => {
       err = res.error
       promiseResult = res
-    });
+    })
     await flushPromises();
-    expect(Auth.signOut).toBeCalledTimes(1);
-    expect(promiseResult).toStrictEqual(new CustomAlert(400, "Error logging out from auth server", err));
+    expect(Auth.currentAuthenticatedUser).toHaveBeenCalledTimes(1);
+    expect(Auth.updateUserAttributes).toHaveBeenCalledTimes(0);
+    expect(promiseResult).toStrictEqual(new CustomAlert(403, "Authentication error with server", err));
   });
+
 });
