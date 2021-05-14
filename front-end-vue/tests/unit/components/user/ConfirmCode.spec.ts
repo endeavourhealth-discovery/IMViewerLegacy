@@ -5,8 +5,11 @@ import ConfirmCode from "@/components/user/ConfirmCode.vue";
 import InputText from "primevue/inputtext";
 import Swal from "sweetalert2";
 import { Auth } from "aws-amplify";
+import AuthService from "@/services/AuthService";
 
 Auth.confirmSignUp = jest.fn().mockResolvedValue({ status: 200, message: "test"});
+
+AuthService.confirmRegister = jest.fn().mockResolvedValue({ status: 200, message: "Register confirmation successful" });
 
 Swal.fire = jest.fn().mockImplementation(() => Promise.resolve());
 
@@ -111,8 +114,8 @@ describe("ConfirmCode.vue with registeredUser", () => {
     wrapper.vm.handleSubmit();
     await flushPromises();
     await wrapper.vm.$nextTick();
-    expect(Auth.confirmSignUp).toBeCalledTimes(1);
-    expect(Auth.confirmSignUp).toBeCalledWith("testUser", "123456");
+    expect(AuthService.confirmRegister).toBeCalledTimes(1);
+    expect(AuthService.confirmRegister).toBeCalledWith("testUser", "123456");
   });
 
   it("opens swal on correct username/code", async() => {
@@ -136,7 +139,20 @@ describe("ConfirmCode.vue with registeredUser", () => {
   });
 
   it("opens swal on authservice fail", async() => {
-    Auth.confirmSignUp = jest.fn().mockRejectedValue({ status: 403, message: "test"});
+    AuthService.confirmRegister = jest.fn().mockRejectedValue({ status: 403, message: "Failed register confirmation", error: "test err" })
+    // Auth.confirmSignUp = jest.fn().mockRejectedValue({ status: 403, message: "test"});
+    wrapper.vm.code = "123456";
+    await wrapper.vm.$nextTick;
+    wrapper.vm.handleSubmit();
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(Swal.fire).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledWith({icon: "error", title: "Error", text: "Auth Service Error" });
+  });
+
+  it("opens swal on auth code fail", async() => {
+    AuthService.confirmRegister = jest.fn().mockResolvedValue({ status: 403, message: "Failed register confirmation", error: "test err" })
+    // Auth.confirmSignUp = jest.fn().mockRejectedValue({ status: 403, message: "test"});
     wrapper.vm.code = "123456";
     await wrapper.vm.$nextTick;
     wrapper.vm.handleSubmit();
