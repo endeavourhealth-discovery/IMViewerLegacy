@@ -6,7 +6,7 @@ import { CustomAlert } from "@/models/user/CustomAlert";
 
 Auth.confirmSignUp = jest.fn().mockResolvedValue({ status: 200, message: "test confirm code"});
 
-const testUser = new User("devTest", "John", "Doe", "john.doe@ergosoft.co.uk", "12345678", { value: "colour/002-man.png" });
+const testUser = new User("devtest", "John", "Doe", "john.doe@ergosoft.co.uk", "12345678", { value: "colour/002-man.png" });
 
 describe("register", () => {
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe("register", () => {
     })
     await flushPromises()
     expect(Auth.signUp).toBeCalledTimes(1);
-    expect(Auth.signUp).toBeCalledWith({ username: "devTest", password: "12345678", attributes: { email: "john.doe@ergosoft.co.uk", "custom:forename": "John", "custom:surname": "Doe", "custom:avatar": "colour/002-man.png"}});
+    expect(Auth.signUp).toBeCalledWith({ username: "devtest", password: "12345678", attributes: { email: "john.doe@ergosoft.co.uk", "custom:forename": "John", "custom:surname": "Doe", "custom:avatar": "colour/002-man.png"}});
     expect(promiseResult).toStrictEqual(new CustomAlert(201, "User registered successfully"));
   });
 
@@ -37,7 +37,7 @@ describe("register", () => {
     });
     await flushPromises()
     expect(Auth.signUp).toBeCalledTimes(1);
-    expect(Auth.signUp).toBeCalledWith({ username: "devTest", password: "12345678", attributes: { email: "john.doe@ergosoft.co.uk", "custom:forename": "John", "custom:surname": "Doe", "custom:avatar": "colour/002-man.png"}});
+    expect(Auth.signUp).toBeCalledWith({ username: "devtest", password: "12345678", attributes: { email: "john.doe@ergosoft.co.uk", "custom:forename": "John", "custom:surname": "Doe", "custom:avatar": "colour/002-man.png"}});
     expect(promiseResult).toStrictEqual(new CustomAlert(409, "Username already exists", err));
   });
 
@@ -52,7 +52,7 @@ describe("register", () => {
     });
     await flushPromises()
     expect(Auth.signUp).toBeCalledTimes(1);
-    expect(Auth.signUp).toBeCalledWith({ username: "devTest", password: "12345678", attributes: { email: "john.doe@ergosoft.co.uk", "custom:forename": "John", "custom:surname": "Doe", "custom:avatar": "colour/002-man.png"}});
+    expect(Auth.signUp).toBeCalledWith({ username: "devtest", password: "12345678", attributes: { email: "john.doe@ergosoft.co.uk", "custom:forename": "John", "custom:surname": "Doe", "custom:avatar": "colour/002-man.png"}});
     expect(promiseResult).toStrictEqual(new CustomAlert(400, "User registration failed", err));
   });
 });
@@ -64,20 +64,20 @@ describe("confirmRegister", () => {
 
   it("returns 200 with auth success", async () => {
     Auth.confirmSignUp = jest.fn().mockResolvedValue({ status: 200, message: "test confirm code"});
-    const result = AuthService.confirmRegister("devTest", "123456");
+    const result = AuthService.confirmRegister("devtest", "123456");
     let promiseResult: any;
     result.then(res => {
       promiseResult = res
     })
     await flushPromises()
     expect(Auth.confirmSignUp).toBeCalledTimes(1);
-    expect(Auth.confirmSignUp).toBeCalledWith("devTest", "123456");
+    expect(Auth.confirmSignUp).toBeCalledWith("devtest", "123456");
     expect(promiseResult).toStrictEqual(new CustomAlert(200, "Register confirmation successful"));
   });
 
   it("returns 403 with auth fail", async () => {
     Auth.confirmSignUp = jest.fn().mockRejectedValue({ code: "TestErrorCode", name: "testError", message: "CodeRejected" });
-    const result = AuthService.confirmRegister("devTest", "123456");
+    const result = AuthService.confirmRegister("devtest", "123456");
     let promiseResult: any;
     let err: any;
     result.then(res => {
@@ -86,7 +86,68 @@ describe("confirmRegister", () => {
     });
     await flushPromises()
     expect(Auth.confirmSignUp).toBeCalledTimes(1);
-    expect(Auth.confirmSignUp).toBeCalledWith("devTest", "123456");
+    expect(Auth.confirmSignUp).toBeCalledWith("devtest", "123456");
     expect(promiseResult).toStrictEqual(new CustomAlert(403, "Failed register confirmation", err));
+  });
+});
+
+describe("signIn", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns 200 with auth success, password empty, id set", async () => {
+    Auth.signIn = jest.fn().mockResolvedValue({
+      username: "devtest",
+      attributes: {
+        "custom:avatar": "colour/002-man.png",
+        "custom:forename": "John",
+        "custom:surname": "Doe",
+        email: "john.doe@ergosoft.co.uk",
+        email_verified: true,
+        sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
+      }
+    });
+    const result = AuthService.signIn("devTest", "12345678");
+    let promiseResult: any;
+    result.then(res => {
+      promiseResult = res
+    })
+    await flushPromises();
+    testUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g09");
+    testUser.password = "";
+    expect(Auth.signIn).toBeCalledTimes(1);
+    expect(Auth.signIn).toBeCalledWith("devTest", "12345678");
+    expect(promiseResult).toStrictEqual(new CustomAlert(200, "Login successful", undefined, testUser));
+  });
+
+  it("returns 401 with auth fail ___ user not confirmed", async () => {
+    Auth.signIn = jest.fn().mockRejectedValue({ code: "UserNotConfirmedException", name: "testError", message: "User not confirmed test" });
+    const result = AuthService.signIn("devTest", "12345678");
+    let promiseResult: any;
+    let err: any;
+    result.then(res => {
+      err = res.error
+      promiseResult = res
+    });
+    await flushPromises();
+    expect(Auth.signIn).toBeCalledTimes(1);
+    expect(Auth.signIn).toBeCalledWith("devTest", "12345678");
+    expect(promiseResult).toStrictEqual(new CustomAlert(401, "User not confirmed test", err));
+  });
+
+  it("returns 403 with auth fail ___ login failed", async () => {
+    Auth.signIn = jest.fn().mockRejectedValue({ code: "LoginError", name: "testError", message: "Login error test" });
+    const result = AuthService.signIn("devTest", "12345678");
+    let promiseResult: any;
+    let err: any;
+    result.then(res => {
+      err = res.error
+      promiseResult = res
+    });
+    await flushPromises();
+    expect(Auth.signIn).toBeCalledTimes(1);
+    expect(Auth.signIn).toBeCalledWith("devTest", "12345678");
+    expect(promiseResult).toStrictEqual(new CustomAlert(403, "Login failed. Check username and password are correct", err));
   });
 });
