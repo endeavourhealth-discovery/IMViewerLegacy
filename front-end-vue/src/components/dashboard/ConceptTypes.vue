@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import store from "@/store/index";
 import { mapState } from "vuex";
 import ReportService from "@/services/ReportService";
@@ -33,10 +33,11 @@ import { colorLighter } from "@/helpers/ColorMethods";
 const palette = require("../../../node_modules/google-palette");
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
-import { setTooltips, rescaleData } from "@/helpers/GraphRescale";
+import { setTooltips, rescaleData } from "@/helpers/ChartRescale";
 import { toSentenceCase } from "@/helpers/TextConverters";
+import { ChartOptions } from "@/models/charts/ChartOptions";
 
-@Options({
+export default defineComponent({
   name: "ConceptTypes",
   computed: mapState(["conceptTypes"]),
   props: ["chartOptions", "graphHeight"],
@@ -46,25 +47,24 @@ import { toSentenceCase } from "@/helpers/TextConverters";
       // set tooltip to use real data
       this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
     }
-  }
-})
-export default class ConceptTypes extends Vue {
-  chartOptions!: any;
-  updatedChartOptions: any = {};
-  realData: any = {};
-  chartConceptTypes: PieChartData = new PieChartData(
-    [
-      {
-        data: [],
-        backgroundColor: [],
-        hoverBackgroundColor: [],
-        borderRadius: 1
-      }
-    ],
-    []
-  );
-  conceptTypes!: PieChartData;
-
+  },
+  data() {
+    return {
+      updatedChartOptions: {} as ChartOptions,
+      realData: {} as number[],
+      chartConceptTypes: new PieChartData(
+        [
+          {
+            data: [],
+            backgroundColor: [],
+            hoverBackgroundColor: [],
+            borderRadius: 1
+          }
+        ],
+        []
+      ) as PieChartData
+    };
+  },
   mounted() {
     this.updatedChartOptions = { ...this.chartOptions };
     // chart type
@@ -104,7 +104,7 @@ export default class ConceptTypes extends Vue {
         );
       });
   }
-}
+});
 </script>
 
 <style scoped>

@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import store from "@/store/index";
 import { mapState } from "vuex";
 import ReportService from "@/services/ReportService";
@@ -33,9 +33,10 @@ import { colorLighter } from "@/helpers/ColorMethods";
 const palette = require("../../../node_modules/google-palette");
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
-import { setTooltips, rescaleData } from "@/helpers/GraphRescale";
+import { setTooltips, rescaleData } from "@/helpers/ChartRescale";
+import { ChartOptions } from "@/models/charts/ChartOptions";
 
-@Options({
+export default defineComponent({
   name: "ConceptSchemes",
   computed: mapState(["conceptSchemes"]),
   props: ["chartOptions", "graphHeight"],
@@ -45,25 +46,24 @@ import { setTooltips, rescaleData } from "@/helpers/GraphRescale";
       // set tooltip to use real data
       this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
     }
-  }
-})
-export default class ConceptSchemes extends Vue {
-  chartOptions!: any;
-  updatedChartOptions: any = {};
-  realData: any = {};
-  chartConceptSchemes: PieChartData = new PieChartData(
-    [
-      {
-        data: [],
-        backgroundColor: [],
-        hoverBackgroundColor: [],
-        borderRadius: 1
-      }
-    ],
-    []
-  );
-  conceptSchemes!: PieChartData;
-
+  },
+  data() {
+    return {
+      updatedChartOptions: {} as ChartOptions,
+      realData: {} as number[],
+      chartConceptSchemes: new PieChartData(
+        [
+          {
+            data: [],
+            backgroundColor: [],
+            hoverBackgroundColor: [],
+            borderRadius: 1
+          }
+        ],
+        []
+      ) as PieChartData
+    };
+  },
   mounted() {
     this.updatedChartOptions = { ...this.chartOptions };
     // chart scheme
@@ -100,7 +100,7 @@ export default class ConceptSchemes extends Vue {
         );
       });
   } // mounted end
-}
+});
 </script>
 
 <style scoped>

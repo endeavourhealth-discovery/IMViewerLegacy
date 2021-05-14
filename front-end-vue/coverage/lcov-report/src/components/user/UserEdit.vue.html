@@ -5,50 +5,50 @@
 <head>
     <title>Code coverage report for src/components/user/UserEdit.vue</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../../prettify.css" />
-    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="stylesheet" href="..\..\..\prettify.css" />
+    <link rel="stylesheet" href="..\..\..\base.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../../sort-arrow-sprite.png);
+            background-image: url(..\..\..\sort-arrow-sprite.png);
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/components/user</a> UserEdit.vue</h1>
+        <h1><a href="..\..\..\index.html">All files</a> / <a href="index.html">src/components/user</a> UserEdit.vue</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">38.04% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>35/92</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">37.88% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>25/66</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">42.86% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>12/28</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">38.04% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>35/92</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -564,7 +564,8 @@
 <a name='L506'></a><a href='#L506'>506</a>
 <a name='L507'></a><a href='#L507'>507</a>
 <a name='L508'></a><a href='#L508'>508</a>
-<a name='L509'></a><a href='#L509'>509</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L509'></a><a href='#L509'>509</a>
+<a name='L510'></a><a href='#L510'>510</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -874,18 +875,19 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1318,7 +1320,7 @@ export default defineComponent({
       showLastNameNotice: false,
       selectedAvatar: avatars[0],
       avatarOptions: avatars
-    }
+    };
   },
   mounted() {
     <span class="missing-if-branch" title="else path not taken" >E</span>if (this.currentUser &amp;&amp; this.isLoggedIn) {
@@ -1380,28 +1382,29 @@ export default defineComponent({
 <span class="cstat-no" title="statement not covered" >        updatedUser.</span>setId(this.currentUser.id);
 <span class="cstat-no" title="statement not covered" >        AuthService.u</span>pdateUser(updatedUser).then(<span class="fstat-no" title="function not covered" >res </span>=&gt; {
 <span class="cstat-no" title="statement not covered" >          if (res.status === 200) {</span>
-<span class="cstat-no" title="statement not covered" >            AuthService.c</span>hangePassword(this.passwordOld, this.passwordNew1).then(
-<span class="fstat-no" title="function not covered" >              res2 </span>=&gt; {
-<span class="cstat-no" title="statement not covered" >                if (res2.status === 200) {</span>
-<span class="cstat-no" title="statement not covered" >                  Swal.f</span>ire({
-                    icon: "success",
-                    title: "Success",
-                    text: "User details and password successfully updated"
-                  }).then(<span class="fstat-no" title="function not covered" >() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                    store.c</span>ommit("updateCurrentUser", res.user);
-<span class="cstat-no" title="statement not covered" >                    this.</span>$router.push({ name: "UserDetails" });
-                  });
-                } else {
-<span class="cstat-no" title="statement not covered" >                  Swal.f</span>ire({
-                    icon: "error",
-                    title: "Error",
-                    text:
-                      "Password update failed, but user details updated successfully. " +
-                      res2.message
-                  });
-                }
+<span class="cstat-no" title="statement not covered" >            AuthService.c</span>hangePassword(
+              this.passwordOld,
+              this.passwordNew1
+            ).then(<span class="fstat-no" title="function not covered" >res2 </span>=&gt; {
+<span class="cstat-no" title="statement not covered" >              if (res2.status === 200) {</span>
+<span class="cstat-no" title="statement not covered" >                Swal.f</span>ire({
+                  icon: "success",
+                  title: "Success",
+                  text: "User details and password successfully updated"
+                }).then(<span class="fstat-no" title="function not covered" >() =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                  store.c</span>ommit("updateCurrentUser", res.user);
+<span class="cstat-no" title="statement not covered" >                  this.</span>$router.push({ name: "UserDetails" });
+                });
+              } else {
+<span class="cstat-no" title="statement not covered" >                Swal.f</span>ire({
+                  icon: "error",
+                  title: "Error",
+                  text:
+                    "Password update failed, but user details updated successfully. " +
+                    res2.message
+                });
               }
-            );
+            });
           } else {
 <span class="cstat-no" title="statement not covered" >            Swal.f</span>ire({
               icon: "error",
@@ -1549,7 +1552,7 @@ export default defineComponent({
       }
     }
   }
-})
+});
 &lt;/script&gt;
 &nbsp;
 &lt;style scoped&gt;
@@ -1590,14 +1593,13 @@ export default defineComponent({
                 at Fri May 14 2021 12:32:52 GMT+0100 (British Summer Time)
             </div>
         </div>
-        <script src="../../../prettify.js"></script>
+        <script src="..\..\..\prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../../sorter.js"></script>
-        <script src="../../../block-navigation.js"></script>
+        <script src="..\..\..\sorter.js"></script>
+        <script src="..\..\..\block-navigation.js"></script>
     </body>
 </html>
-    

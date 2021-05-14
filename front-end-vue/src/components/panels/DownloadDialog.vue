@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    v-model:visible="showDialog"
+    :visible="showDialog"
     :modal="true"
     :closable="false"
     :maximizable="true"
@@ -25,7 +25,7 @@
       >
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!conceptAggregate.children?.length"
+            :disabled="!children?.length"
             id="children"
             :binary="true"
             value="Include children"
@@ -35,7 +35,7 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!hasProperties()"
+            :disabled="!props?.length"
             id="properties"
             :binary="true"
             value="Include properties"
@@ -45,7 +45,10 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!members?.included?.length && !members?.excluded?.length"
+            :disabled="
+              !$store.state.members?.included?.length &&
+                !$store.state.members?.excluded?.length
+            "
             id="members"
             :binary="true"
             value="Include members"
@@ -55,7 +58,7 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!conceptAggregate.parents?.length"
+            :disabled="!parents?.length"
             id="parents"
             :binary="true"
             value="Include parents"
@@ -74,7 +77,7 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!hasRoles()"
+            :disabled="!roles?.length"
             id="roles"
             :binary="true"
             value="Include roles"
@@ -104,111 +107,107 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import ConceptService from "@/services/ConceptService";
 import LoggerService from "@/services/LoggerService";
-import { mapState } from "vuex";
-import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
-import { Member } from "@/models/members/Member";
 import { IM } from "@/vocabulary/IM";
+import { defineComponent } from "@vue/runtime-core";
 
-@Options({
+export default defineComponent({
   name: "DownloadDialog",
-  props: ["concept", "showDialog"],
-  computed: mapState(["conceptAggregate", "members"])
-})
-export default class DownloadDialog extends Vue {
-  conceptAggregate!: ConceptAggregate;
-  members!: Member;
-  concept!: any;
-  includeChildren = true;
-  includeProperties = true;
-  includeMembers = true;
-  includeParents = true;
-  includeInactive = false;
-  includeRoles = false;
-  format = {
-    name: "Excel(.xlsx)",
-    value: "excel",
-    mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-  };
-  formatOptions = [
-    { name: "JSON", value: "json", mime: "application/json" },
-    {
-      name: "Excel(.xlsx)",
-      value: "excel",
-      mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  props: ["conceptIri", "showDialog"],
+  watch: {
+    async conceptIri(newValue) {
+      await this.init(newValue);
     }
-  ];
+  },
+  async mounted() {
+    await this.init(this.conceptIri);
+  },
 
-  updated() {
-    this.includeParents = !!this.conceptAggregate.parents?.length;
-    this.includeChildren = !!this.conceptAggregate.children?.length;
-    this.includeProperties = this.hasProperties();
-    this.includeRoles = this.hasRoles();
-    this.includeMembers =
-      !!this.members?.included?.length || !!this.members?.excluded?.length;
-  }
+  data() {
+    return {
+      concept: {},
+      parents: [] as any,
+      children: [] as any,
+      props: [],
+      roles: [],
+      members: {} as any,
+      includeChildren: true,
+      includeProperties: true,
+      includeMembers: true,
+      includeParents: true,
+      includeInactive: false,
+      includeRoles: false,
+      format: {
+        name: "Excel(.xlsx)",
+        value: "excel",
+        mime:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      },
+      formatOptions: [
+        { name: "JSON", value: "json", mime: "application/json" },
+        {
+          name: "Excel(.xlsx)",
+          value: "excel",
+          mime:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        }
+      ]
+    };
+  },
+  methods: {
+    closeDownloadDialog() {
+      this.$emit("closeDownloadDialog");
+    },
 
-  hasRoles() {
-    try {
-      const roles = this.conceptAggregate.graph.children.filter(
-        (child: any) => child.name === "Roles"
-      );
-      return !!roles[0].children.length;
-    } catch (error) {
-      return false;
+    downloadConcept() {
+      const modIri = this.conceptIri
+        .replace(/\//gi, "%2F")
+        .replace(/#/gi, "%23");
+
+      const url =
+        process.env.VUE_APP_API +
+        "api/concept/download?iri=" +
+        modIri +
+        "&format=" +
+        this.format.value +
+        "&children=" +
+        this.includeChildren +
+        "&properties=" +
+        this.includeProperties +
+        "&members=" +
+        this.includeMembers +
+        "&parents=" +
+        this.includeParents +
+        "&roles=" +
+        this.includeRoles +
+        "&inactive=" +
+        this.includeInactive;
+      const popup = window.open(url);
+      if (!popup) {
+        this.$toast.add(LoggerService.error("Download failed from server"));
+      } else {
+        this.$toast.add(LoggerService.success("Download will begin shortly"));
+      }
+      this.closeDownloadDialog();
+    },
+    async init(iri: string) {
+      this.concept = (await ConceptService.getConcept(iri)).data;
+      this.parents = (await ConceptService.getConceptParents(iri)).data;
+      this.children = (await ConceptService.getConceptChildren(iri)).data;
+      this.props = (await ConceptService.getConceptProperties(iri)).data;
+      this.roles = (await ConceptService.getConceptRoles(iri)).data;
+      this.members = (await ConceptService.getConceptMembers(iri, false)).data;
+
+      this.includeParents = !!this.parents.length;
+      this.includeChildren = !!this.children.length;
+      this.includeProperties = !!this.props.length;
+      this.includeRoles = !!this.roles.length;
+      this.includeMembers =
+        !!this.members?.included?.length || !!this.members.excluded?.length;
     }
   }
-
-  hasProperties() {
-    try {
-      const properties = this.conceptAggregate.graph.children.filter(
-        (child: any) => child.name === "Properties"
-      );
-      const direct = properties[0].children[0].children;
-      const inherited = properties[0].children[1].children;
-      return !!direct.length || !!inherited.length;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  closeDownloadDialog() {
-    this.$emit("closeDownloadDialog");
-  }
-
-  downloadConcept() {
-    const modIri = this.concept[IM.IRI]
-      .replace(/\//gi, "%2F")
-      .replace(/#/gi, "%23");
-
-    const url =
-      process.env.VUE_APP_API +
-      "api/concept/download?iri=" +
-      modIri +
-      "&format=" +
-      this.format.value +
-      "&children=" +
-      this.includeChildren +
-      "&properties=" +
-      this.includeProperties +
-      "&members=" +
-      this.includeMembers +
-      "&parents=" +
-      this.includeParents +
-      "&roles=" +
-      this.includeRoles +
-      "&inactive=" +
-      this.includeInactive;
-    const popup = window.open(url);
-    if (!popup) {
-      this.$toast.add(LoggerService.error("Download failed from server"));
-    } else {
-      this.$toast.add(LoggerService.success("Download will begin shortly"));
-    }
-    this.closeDownloadDialog();
-  }
-}
+});
 </script>
 
 <style scoped>

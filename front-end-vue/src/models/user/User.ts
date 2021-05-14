@@ -24,7 +24,7 @@ export class User {
     this.id = "";
   }
 
-  setId(id: string) {
+  setId(id: string): void {
     this.id = id;
   }
 }

@@ -110,11 +110,11 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import { mapState } from "vuex";
 import store from "@/store/index";
 
-@Options({
+export default defineComponent({
   name: "SnomedLicense",
   computed: mapState(["snomedLicenseAccepted"]),
   watch: {
@@ -125,24 +125,27 @@ import store from "@/store/index";
         this.showDialog = true;
       }
     }
-  }
-})
-export default class SnomedLicense extends Vue {
-  showDialog = true;
+  },
+  data() {
+    return {
+      showDialog: true
+    };
+  },
+  methods: {
+    submitDecline(): void {
+      window.location.href = "https://www.snomed.org/";
+    },
 
-  submitDecline() {
-    window.location.href = "https://www.snomed.org/";
-  }
-
-  submitAgree() {
-    store.commit("updateSnomedLicenseAccepted", "true");
-    if (store.state.historyCount === window.history.length) {
-      this.$router.push({ name: "Dashboard" });
-    } else {
-      this.$router.go(-1);
+    submitAgree(): void {
+      store.commit("updateSnomedLicenseAccepted", "true");
+      if (store.state.historyCount === window.history.length) {
+        this.$router.push({ name: "Dashboard" });
+      } else {
+        this.$router.go(-1);
+      }
     }
   }
-}
+});
 </script>
 
 <style scoped>

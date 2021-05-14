@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="p-d-flex p-flex-row p-jc-center"
-    v-if="$store.state.loading.get('usages')"
-  >
+  <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
     <div class="spinner">
       <ProgressSpinner />
     </div>
@@ -15,30 +12,50 @@
     emptyFilterMessage="No results found"
     v-model="selectedUsage"
     @change="onNodeSelect(selectedUsage)"
-    :options="$store.state.usages"
+    :options="usages"
     optionLabel="name"
   ></Listbox>
 </template>
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import ConceptService from "@/services/ConceptService";
+import { defineComponent } from "@vue/runtime-core";
 
-@Options({
+export default defineComponent({
   name: "UsedIn",
   components: {},
-  prop: {}
-})
-export default class UsedIn extends Vue {
-  selectedMappedFrom: any = {};
-  selectedMappedTo: any = {};
-  selectedUsage: any = {};
+  props: {
+    conceptIri: String
+  },
+  watch: {
+    async conceptIri(newValue) {
+      await this.getUsages(newValue);
+    }
+  },
+  async mounted() {
+    await this.getUsages(this.conceptIri!);
+  },
+  data() {
+    return {
+      selectedUsage: {},
+      usages: [],
+      loading: false
+    };
+  },
+  methods: {
+    async getUsages(iri: string) {
+      this.loading = true;
+      this.usages = (await ConceptService.getConceptUsages(iri)).data;
+      this.loading = false;
+    },
 
-  onNodeSelect(concept: any) {
-    this.$router.push({
-      name: "Concept",
-      params: { selectedIri: concept["@id"] }
-    });
+    onNodeSelect(concept: any) {
+      this.$router.push({
+        name: "Concept",
+        params: { selectedIri: concept["@id"] }
+      });
+    }
   }
-}
+});
 </script>
 
 <style scoped>

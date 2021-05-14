@@ -1,7 +1,7 @@
 <template>
   <Dialog
     :header="header"
-    v-model:visible="display"
+    v-model:visible="showDialog"
     :style="{ width: '50vw' }"
     :maximizable="true"
     :modal="true"
@@ -35,60 +35,69 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import ConceptService from "@/services/ConceptService";
 import Editor from "./Editor.vue";
 import { ConceptDto } from "@/models/ConceptDto";
 import LoggerService from "@/services/LoggerService";
 
-@Options({
+export default defineComponent({
   name: "EditDialog",
   components: {
     Editor
   },
-  props: ["concept", "definitionText", "display", "header"]
-})
-export default class EditorDialog extends Vue {
-  private updatedText = "";
-  private isValidSyntax = true;
-  private conceptDto = {} as ConceptDto;
-
-  updateValid(newIsValid: boolean) {
-    this.isValidSyntax = newIsValid;
-  }
-
-  updateConceptDto(newConceptDto: ConceptDto) {
-    this.conceptDto = newConceptDto;
-  }
-
-  updateText(newText: string) {
-    this.updatedText = newText;
-  }
-
-  get tooltipMessage() {
-    if (!this.isValidSyntax) {
-      return "Syntax is invalid";
+  props: ["concept", "definitionText", "display", "header"],
+  watch: {
+    display(newValue) {
+      this.showDialog = newValue;
     }
-    return "";
-  }
+  },
+  data() {
+    return {
+      updatedText: "",
+      isValidSyntax: true,
+      conceptDto: {} as ConceptDto,
+      showDialog: this.display
+    };
+  },
+  methods: {
+    updateValid(newIsValid: boolean): void {
+      this.isValidSyntax = newIsValid;
+    },
 
-  submit() {
-    this.conceptDto.definitionText = this.updatedText;
-    ConceptService.saveConcept(this.conceptDto)
-      .then(() => {
-        this.closeDialog();
-      })
-      .catch(err => {
-        this.$toast.add(
-          LoggerService.error("Concept save request failed", err)
-        );
-      });
-  }
+    updateConceptDto(newConceptDto: ConceptDto): void {
+      this.conceptDto = newConceptDto;
+    },
 
-  closeDialog() {
-    this.$emit("closeDialog");
+    updateText(newText: string): void {
+      this.updatedText = newText;
+    },
+
+    tooltipMessage(): string {
+      if (!this.isValidSyntax) {
+        return "Syntax is invalid";
+      }
+      return "";
+    },
+
+    submit(): void {
+      this.conceptDto.definitionText = this.updatedText;
+      ConceptService.saveConcept(this.conceptDto)
+        .then(() => {
+          this.closeDialog();
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Concept save request failed", err)
+          );
+        });
+    },
+
+    closeDialog(): void {
+      this.$emit("closeDialog");
+    }
   }
-}
+});
 </script>
 
 <style scoped></style>

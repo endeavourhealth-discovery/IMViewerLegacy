@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="p-d-flex p-flex-row p-jc-center"
-    v-if="$store.state.loading.get('mapped')"
-  >
+  <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
     <div class="spinner">
       <ProgressSpinner />
     </div>
@@ -14,33 +11,52 @@
     :filter="true"
     emptyMessage="No results found"
     emptyFilterMessage="No results found"
-    v-model="selectedMappedFrom"
-    @change="onNodeSelect(selectedMappedFrom)"
-    :options="$store.state.mapped"
+    v-model="selected"
+    @change="onNodeSelect(selected)"
+    :options="terms"
     optionLabel="name"
   >
   </Listbox>
 </template>
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "@vue/runtime-core";
 
-@Options({
-  name: "Mappings",
+export default defineComponent({
+  name: "Terms",
   components: {},
-  prop: {}
-})
-export default class Mappings extends Vue {
-  selectedMappedFrom: any = {};
-  selectedMappedTo: any = {};
-  selectedUsage: any = {};
-
-  onNodeSelect(concept: any) {
-    this.$router.push({
-      name: "Concept",
-      params: { selectedIri: concept["@id"] }
-    });
+  props: {
+    conceptIri: String
+  },
+  watch: {
+    async conceptIri(newValue) {
+      await this.getTerms(newValue);
+    }
+  },
+  async mounted() {
+    await this.getTerms(this.conceptIri!);
+  },
+  data() {
+    return {
+      selected: {},
+      loading: false,
+      terms: []
+    };
+  },
+  methods: {
+    async getTerms(iri: string) {
+      this.loading = true;
+      // TODO call to get the terms
+      this.loading = false;
+    },
+    onNodeSelect(concept: any) {
+      if (concept?.["@id"])
+        this.$router.push({
+          name: "Concept",
+          params: { selectedIri: concept["@id"] }
+        });
+    }
   }
-}
+});
 </script>
 
 <style scoped>

@@ -1,108 +1,177 @@
 <template>
-  <div id="container" class="definition"></div>
+  <div>
+    <div class="p-d-flex p-flex-row p-jc-start summary-container">
+      <div
+        class="left-side"
+        v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']"
+      >
+        <div class="p-d-flex p-flex-row p-jc-start p-ai-center">
+          <p>
+            <strong>Name:</strong>
+            {{ concept["http://www.w3.org/2000/01/rdf-schema#label"] }}
+          </p>
+        </div>
+        <p class="break-text">
+          <strong>Iri:</strong>
+          {{ concept["@id"] }}
+        </p>
+        <p>
+          <strong>Status: </strong>
+          <span v-if="concept['http://endhealth.info/im#status']">
+            {{ concept["http://endhealth.info/im#status"]["name"] }}
+          </span>
+        </p>
+        <p>
+          <strong>Types: </strong>
+          <span
+            v-if="concept['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']"
+          >
+            {{ conceptTypes }}
+          </span>
+        </p>
+      </div>
+      <div
+        class="right-side"
+        v-if="concept['http://www.w3.org/2000/01/rdf-schema#comment']"
+      >
+        <strong>Description:</strong>
+
+        <ScrollPanel style="height: 100px" class="custom">
+          <!-- div content injected by javascript -->
+          <div id="description"></div>
+        </ScrollPanel>
+      </div>
+    </div>
+    <!-- <Divider align="left">
+      <div class="p-d-inline-flex p-ai-center">
+        <b>Definitional properties</b>
+      </div>
+    </Divider>
+    <div>
+      <strong>is a: </strong>Hospital Encounter, takes place in care setting :
+      Accident and emergency
+    </div>
+    <div>
+      <strong>has sub types :</strong> (1) Accident and emergency discharge
+    </div>
+    <Divider align="left">
+      <div class="p-d-inline-flex p-ai-center">
+        <b>Data model properties</b>
+      </div>
+    </Divider>
+    <DataTable :value="data" responsiveLayout="scroll">
+      <Column
+        v-for="col of columns"
+        :field="col.field"
+        :header="col.header"
+        :key="col.field"
+      ></Column>
+    </DataTable> -->
+  </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import * as monaco from "monaco-editor";
-import LoggerService from "@/services/LoggerService";
-import {
-  DiscoveryLanguage,
-  DiscoveryLanguageId,
-  richLanguageConfiguration
-} from "@/discovery-syntax/DiscoveryLanguage";
-@Options({
+import { RDFS } from "@/vocabulary/RDFS";
+import { defineComponent } from "vue";
+import { RDF } from "@/vocabulary/RDF";
+
+export default defineComponent({
   name: "Definition",
   components: {},
-  props: ["definition", "resize"],
-  watch: {
-    async definition() {
-      const model = monaco.editor.getModels()[0];
-      model.setValue(this.filteredDefinition);
+  props: {
+    concept: {} as any
+  },
+  data() {
+    return {
+      columns: [
+        { field: "property", header: "Property" },
+        { field: "type", header: "Type" },
+        { field: "range", header: "Range" }
+      ],
+      data: [
+        {
+          property: "A&e department type",
+          type: "Class",
+          range: "Accident and emergency (setting)"
+        },
+        {
+          property: "Has arrival mode",
+          type: "Value set",
+          range: "Emergency care arrival value set"
+        }
+      ]
+    };
+  },
+  computed: {
+    conceptTypes(): string {
+      return this.concept[RDF.TYPE]
+        .map(function(type: any) {
+          return type.name;
+        })
+        .join(", ");
     },
-    async resize() {
-      this.destroyMonaco();
-      this.initEditor();
-    }
-  }
-})
-export default class Definition extends Vue {
-  definition!: string;
-  resize!: boolean;
 
-  get filteredDefinition() {
-    const lines = this.definition.split(";");
-    const filteredLines = lines.filter(
-      line => !line?.startsWith("\nName") && !line?.startsWith("\ndescription")
-    );
-    return filteredLines.join("");
-  }
-
-  editor = {};
-
-  initEditor() {
-    try {
-      monaco.languages.register({ id: DiscoveryLanguageId });
-      monaco.languages.onLanguage(DiscoveryLanguageId, () => {
-        monaco.languages.setMonarchTokensProvider(
-          DiscoveryLanguageId,
-          DiscoveryLanguage
-        );
-        monaco.languages.setLanguageConfiguration(
-          DiscoveryLanguageId,
-          richLanguageConfiguration
-        );
-      });
-      const html = document.documentElement;
-      const currentFontSize = parseFloat(
-        window.getComputedStyle(html, null).getPropertyValue("font-size")
+    descriptionHTML(): string {
+      const text = this.concept?.[RDFS.COMMENT]?.replaceAll(
+        "<p>",
+        "</p>\n<p class='description-p'>"
       );
-      const container = document.getElementById("container");
-      if (container) {
-        this.editor = monaco.editor.create(container, {
-          value: this.filteredDefinition,
-          language: "DiscoverySyntax",
-          readOnly: true,
-          lineNumbers: "off",
-          glyphMargin: false,
-          automaticLayout: true,
-          minimap: {
-            enabled: false
-          },
-          fontSize: currentFontSize
-        });
-      } else {
-        LoggerService.error(undefined, "monaco container not found");
+      return "<p class='description-p'>" + text + "</p>";
+    }
+  },
+  watch: {
+    descriptionHTML(newValue) {
+      const descContainer = document.getElementById("description");
+      if (descContainer) {
+        descContainer.innerHTML = newValue;
       }
-    } catch (error) {
-      this.$toast.add(
-        LoggerService.error("Monaco editor initialisation failed", error)
-      );
     }
   }
-
-  destroyMonaco() {
-    monaco.editor.getModels().forEach(model => model.dispose());
-    const container = document.getElementById("container");
-    if (container) {
-      container.removeAttribute("data-keybinding-context");
-      container.removeAttribute("data-mode-id");
-    }
-  }
-
-  mounted() {
-    this.initEditor();
-  }
-
-  beforeUnmount() {
-    this.destroyMonaco();
-  }
-}
+});
 </script>
 
-<style>
-.definition .monaco-editor .overflow-guard {
-  border: solid 1px #dee2e6;
-  border-radius: 3px;
+<style scoped>
+.summary-container {
+  width: 100%;
+  gap: 7px;
+}
+
+.left-side {
+  width: 50%;
+}
+
+.right-side {
+  width: 50%;
+}
+
+.custom .p-scrollpanel-wrapper {
+  border-right: 9px solid #f4f4f4;
+}
+
+.custom .p-scrollpanel-bar {
+  background-color: #1976d2 !important;
+  opacity: 1;
+  transition: background-color 0.3s;
+}
+
+.custom .p-scrollpanel-bar:hover {
+  background-color: #135ba1 !important;
+}
+
+p {
+  margin: 0;
+}
+
+#synonyms-button {
+  margin-left: 0.5em;
+}
+
+.break-text {
+  word-break: break-all;
+}
+
+.description {
+  height: 100%;
+  width: 100%;
 }
 </style>

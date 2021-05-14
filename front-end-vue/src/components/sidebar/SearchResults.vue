@@ -85,11 +85,11 @@
 <script lang="ts">
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { SearchResponse } from "@/models/search/SearchResponse";
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import { mapState } from "vuex";
 import { getIconFromType } from "../../helpers/ConceptTypeMethods";
 
-@Options({
+export default defineComponent({
   name: "SearchResults",
   components: {},
   computed: mapState(["searchResults"]),
@@ -97,38 +97,41 @@ import { getIconFromType } from "../../helpers/ConceptTypeMethods";
     searchResults(newValue) {
       this.results = newValue;
     }
-  }
-})
-export default class SearchResults extends Vue {
-  results: SearchResponse = new SearchResponse();
-  selectedResult = {} as ConceptSummary;
-  hoveredResult = {} as ConceptSummary | any;
+  },
+  data() {
+    return {
+      results: new SearchResponse() as SearchResponse,
+      selectedResult: {} as ConceptSummary,
+      hoveredResult: {} as ConceptSummary | any
+    };
+  },
+  methods: {
+    getPerspectiveByConceptType(conceptType: any): any {
+      return getIconFromType(conceptType.elements);
+    },
 
-  getPerspectiveByConceptType(conceptType: any): any {
-    return getIconFromType(conceptType.elements);
-  }
+    onNodeSelect(): void {
+      this.$router.push({
+        name: "Concept",
+        params: { selectedIri: this.selectedResult.iri }
+      });
+    },
 
-  onNodeSelect() {
-    this.$router.push({
-      name: "Concept",
-      params: { selectedIri: this.selectedResult.iri }
-    });
-  }
+    toggle(event: any, data: any): void {
+      this.hoveredResult = data;
+      const x = this.$refs.op as any;
+      x.toggle(event);
+    },
 
-  toggle(event: any, data: any) {
-    this.hoveredResult = data;
-    const x = this.$refs.op as any;
-    x.toggle(event);
+    getConceptTypes(concept: any): any {
+      return concept.conceptType.elements
+        .map(function(type: any) {
+          return type.name;
+        })
+        .join(", ");
+    }
   }
-
-  getConceptTypes(concept: any) {
-    return concept.conceptType.elements
-      .map(function(type: any) {
-        return type.name;
-      })
-      .join(", ");
-  }
-}
+});
 </script>
 
 <style scoped>

@@ -10,19 +10,20 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import MappingModule from "@/components/dashboard/MappingModule.vue";
-import WorkflowManager from "@/components/dashboard/WorkflowManager.vue";
+import { defineComponent } from "vue";
+// import MappingModule from "@/components/dashboard/MappingModule.vue";
+// import WorkflowManager from "@/components/dashboard/WorkflowManager.vue";
 import OntologyOverview from "@/components/dashboard/OntologyOverview.vue";
 import ConceptTypes from "@/components/dashboard/ConceptTypes.vue";
 import ConceptSchemes from "@/components/dashboard/ConceptSchemes.vue";
 import ConceptStatus from "@/components/dashboard/ConceptStatus.vue";
+import { ChartOptions } from "@/models/charts/ChartOptions";
 
-@Options({
+export default defineComponent({
   name: "Dashboard",
   components: {
-    "mapping-module": MappingModule,
-    "workflow-manager": WorkflowManager,
+    // "mapping-module": MappingModule,
+    // "workflow-manager": WorkflowManager,
     "ontology-overview": OntologyOverview,
     "concept-types": ConceptTypes,
     "concept-schemes": ConceptSchemes,
@@ -32,27 +33,27 @@ import ConceptStatus from "@/components/dashboard/ConceptStatus.vue";
     windowWidth(newValue) {
       this.setLegendOptions(newValue);
     }
-  }
-})
-export default class Dashboard extends Vue {
-  msg!: string;
-  chartOptions: any = {
-    legend: {
-      position: "right",
-      onHover: function(e: any) {
-        e.target.style.cursor = "pointer";
-      }
-    },
-    hover: {
-      onHover: function(e: any) {
-        e.target.style.cursor = "default";
-      }
-    }
-  };
-  windowHeight = 0;
-  windowWidth = 0;
-  graphHeight = 200;
-
+  },
+  data() {
+    return {
+      chartOptions: {
+        legend: {
+          position: "right",
+          onHover: function(e: any) {
+            e.target.style.cursor = "pointer";
+          }
+        },
+        hover: {
+          onHover: function(e: any) {
+            e.target.style.cursor = "default";
+          }
+        }
+      } as ChartOptions,
+      windowHeight: 0,
+      windowWidth: 0,
+      graphHeight: 200
+    };
+  },
   mounted() {
     this.$nextTick(() => {
       window.addEventListener("resize", this.onResize);
@@ -60,135 +61,135 @@ export default class Dashboard extends Vue {
 
     this.windowHeight = window.innerHeight;
     this.windowWidth = window.innerWidth;
-  } // mounted end
-
-  beforeDestroy() {
+  },
+  beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
-  }
+  },
+  methods: {
+    onResize(): void {
+      this.windowHeight = window.innerHeight;
+      this.windowWidth = window.innerWidth;
+    },
 
-  onResize() {
-    this.windowHeight = window.innerHeight;
-    this.windowWidth = window.innerWidth;
-  }
-
-  setLegendOptions(width: number) {
-    if (width > 1750) {
-      this.chartOptions = {
-        legend: {
-          position: "right",
-          labels: {
-            boxWidth: 40,
-            fontSize: 12
+    setLegendOptions(width: number): void {
+      if (width > 1750) {
+        this.chartOptions = {
+          legend: {
+            position: "right",
+            labels: {
+              boxWidth: 40,
+              fontSize: 12
+            },
+            onHover: function(e: any) {
+              e.target.style.cursor = "pointer";
+            }
           },
-          onHover: function(e: any) {
-            e.target.style.cursor = "pointer";
+          hover: {
+            onHover: function(e: any) {
+              e.target.style.cursor = "default";
+            }
           }
-        },
-        hover: {
-          onHover: function(e: any) {
-            e.target.style.cursor = "default";
-          }
-        }
-      };
-    } else if (width > 1300) {
-      this.chartOptions = {
-        legend: {
-          position: "bottom",
-          labels: {
-            boxWidth: 20,
-            fontSize: 10
+        };
+      } else if (width > 1300) {
+        this.chartOptions = {
+          legend: {
+            position: "bottom",
+            labels: {
+              boxWidth: 20,
+              fontSize: 10
+            },
+            onHover: function(e: any) {
+              e.target.style.cursor = "pointer";
+            }
           },
-          onHover: function(e: any) {
-            e.target.style.cursor = "pointer";
+          hover: {
+            onHover: function(e: any) {
+              e.target.style.cursor = "default";
+            }
           }
-        },
-        hover: {
-          onHover: function(e: any) {
-            e.target.style.cursor = "default";
-          }
-        }
-      };
-    } else if (width >= 1024) {
-      this.chartOptions = {
-        legend: {
-          position: "bottom",
-          labels: {
-            boxWidth: 10,
-            fontSize: 8
+        };
+      } else if (width >= 1024) {
+        this.chartOptions = {
+          legend: {
+            position: "bottom",
+            labels: {
+              boxWidth: 10,
+              fontSize: 8
+            },
+            onHover: function(e: any) {
+              e.target.style.cursor = "pointer";
+            }
           },
-          onHover: function(e: any) {
-            e.target.style.cursor = "pointer";
+          hover: {
+            onHover: function(e: any) {
+              e.target.style.cursor = "default";
+            }
           }
-        },
-        hover: {
-          onHover: function(e: any) {
-            e.target.style.cursor = "default";
-          }
-        }
-      };
-    } else if (width >= 892) {
-      this.chartOptions = {
-        legend: {
-          position: "right",
-          labels: {
-            boxWidth: 40,
-            fontSize: 8
+        };
+      } else if (width >= 892) {
+        this.chartOptions = {
+          legend: {
+            position: "right",
+            labels: {
+              boxWidth: 40,
+              fontSize: 8
+            },
+            onHover: function(e: any) {
+              e.target.style.cursor = "pointer";
+            }
           },
-          onHover: function(e: any) {
-            e.target.style.cursor = "pointer";
+          hover: {
+            onHover: function(e: any) {
+              e.target.style.cursor = "default";
+            }
           }
-        },
-        hover: {
-          onHover: function(e: any) {
-            e.target.style.cursor = "default";
-          }
-        }
-      };
-    } else if (width >= 557) {
-      this.chartOptions = {
-        legend: {
-          position: "bottom",
-          labels: {
-            boxWidth: 20,
-            fontSize: 6
+        };
+      } else if (width >= 557) {
+        this.chartOptions = {
+          legend: {
+            position: "bottom",
+            labels: {
+              boxWidth: 20,
+              fontSize: 6
+            },
+            onHover: function(e: any) {
+              e.target.style.cursor = "pointer";
+            }
           },
-          onHover: function(e: any) {
-            e.target.style.cursor = "pointer";
+          hover: {
+            onHover: function(e: any) {
+              e.target.style.cursor = "default";
+            }
           }
-        },
-        hover: {
-          onHover: function(e: any) {
-            e.target.style.cursor = "default";
-          }
-        }
-      };
-    } else if (width >= 0) {
-      this.chartOptions = {
-        legend: {
-          position: "bottom",
-          labels: {
-            boxWidth: 10,
-            fontSize: 4
+        };
+      } else if (width >= 0) {
+        this.chartOptions = {
+          legend: {
+            position: "bottom",
+            labels: {
+              boxWidth: 10,
+              fontSize: 4
+            },
+            onHover: function(e: any) {
+              e.target.style.cursor = "pointer";
+            }
           },
-          onHover: function(e: any) {
-            e.target.style.cursor = "pointer";
+          hover: {
+            onHover: function(e: any) {
+              e.target.style.cursor = "default";
+            }
           }
-        },
-        hover: {
-          onHover: function(e: any) {
-            e.target.style.cursor = "default";
+        };
+      } else {
+        this.chartOptions = {
+          legend: {
+            display: false
           }
-        }
-      };
-    } else {
-      this.chartOptions = {
-        legend: {
-          display: false
-        }
-      };
+        };
+      }
     }
   }
-}
+});
 </script>
 
 <style scoped>

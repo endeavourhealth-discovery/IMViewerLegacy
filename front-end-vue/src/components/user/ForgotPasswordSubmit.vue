@@ -153,7 +153,7 @@ export default defineComponent({
       passwordStrength: PasswordStrength.fail as PasswordStrength,
       passwordsMatch: false,
       showPassword2Notice: false
-    }
+    };
   },
   mounted() {
     if (this.registeredUsername && this.registeredUsername !== "") {
@@ -194,7 +194,8 @@ export default defineComponent({
             Swal.fire({
               icon: "error",
               title: "Code Expired",
-              text: "Password reset code has expired. Please request a new code",
+              text:
+                "Password reset code has expired. Please request a new code",
               showCancelButton: true,
               confirmButtonText: "Request new code"
             }).then(result => {

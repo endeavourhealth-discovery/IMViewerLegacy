@@ -51,14 +51,7 @@ describe("The Sidenav", () => {
     cy.get(".p-button-label")
       .contains("Agree")
       .click();
-    cy.contains("Home");
-  });
-
-  it("IM button successfully redirects to Home", () => {
-    cy.contains("Data model bound value sets").click();
-    cy.contains("Concepts");
-    cy.contains("IM").click();
-    cy.contains("Home");
+    cy.contains("Ontology overview");
   });
 
   it("Login button successfully redirects to Login page", () => {
@@ -66,8 +59,8 @@ describe("The Sidenav", () => {
     cy.contains("Login").click();
     cy.url().should("include", "/user/login");
     cy.contains("Login");
-    cy.contains("back").click();
-    cy.contains("Home");
+    cy.contains("Back").click();
+    cy.contains("Ontology overview");
   });
 
   it("Register button successfully redirects to Register page", () => {
@@ -75,7 +68,7 @@ describe("The Sidenav", () => {
     cy.contains("Register").click();
     cy.url().should("include", "/user/register");
     cy.contains("Register");
-    cy.contains("back").click();
-    cy.contains("Home");
+    cy.contains("Back").click();
+    cy.contains("Ontology overview");
   });
 });

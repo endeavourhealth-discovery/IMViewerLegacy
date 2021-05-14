@@ -64,80 +64,79 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import { mapState } from "vuex";
-import { User } from "@/models/user/User";
 
-@Options({
+export default defineComponent({
   name: "SideNav",
-  computed: mapState(["currentUser", "isLoggedIn"])
-})
-export default class SideNav extends Vue {
-  currentUser!: User;
-  isLoggedIn!: boolean;
-  $refs!: any;
-  userPopupBottom = 0;
+  computed: mapState(["currentUser", "isLoggedIn"]),
+  data() {
+    return {
+      userPopupBottom: 0,
+      loginItems: [
+        {
+          label: "Login",
+          icon: "pi pi-fw pi-user",
+          to: "/user/login"
+        },
+        {
+          label: "Register",
+          icon: "pi pi-fw pi-user-plus",
+          to: "/user/register"
+        }
+      ] as { label: string; icon: string; to: string }[],
 
-  isActive(item: string) {
-    if (this.$route.name == item) {
-      return true;
-    } else {
-      return false;
+      accountItems: [
+        {
+          label: "My account",
+          icon: "pi pi-fw pi-user",
+          to: "/user/my-account" //+ this.user.id
+        },
+        {
+          label: "Edit account",
+          icon: "pi pi-fw pi-user-edit",
+          to: "/user/my-account/edit"
+        },
+        {
+          label: "Change password",
+          icon: "pi pi-fw pi-lock",
+          to: "/user/my-account/password-edit"
+        },
+        {
+          label: "Logout",
+          icon: "pi pi-fw pi-lock-open",
+          to: "/user/logout" //+ this.user.id
+        }
+      ] as { label: string; icon: string; to: string }[]
+    };
+  },
+  methods: {
+    isActive(item: string): boolean {
+      if (this.$route.name == item) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    getItems(): { label: string; icon: string; to: string }[] {
+      if (this.isLoggedIn) {
+        return this.accountItems;
+      } else {
+        return this.loginItems;
+      }
+    },
+
+    toggle(event: any): void {
+      const menu = this.$refs.menu as any;
+      menu.toggle(event);
+    },
+
+    getUrl(item: string): string {
+      return require("@/assets/avatars/" + item);
     }
   }
-
-  getItems() {
-    if (this.isLoggedIn) {
-      return this.accountItems;
-    } else {
-      return this.loginItems;
-    }
-  }
-
-  loginItems: {label: string, icon: string, to: string}[] = [
-    {
-      label: "Login",
-      icon: "pi pi-fw pi-user",
-      to: "/user/login"
-    },
-    {
-      label: "Register",
-      icon: "pi pi-fw pi-user-plus",
-      to: "/user/register"
-    }
-  ];
-
-  accountItems: {label: string, icon: string, to: string}[] = [
-    {
-      label: "My account",
-      icon: "pi pi-fw pi-user",
-      to: "/user/my-account" //+ this.user.id
-    },
-    {
-      label: "Edit account",
-      icon: "pi pi-fw pi-user-edit",
-      to: "/user/my-account/edit"
-    },
-    {
-      label: "Change password",
-      icon: "pi pi-fw pi-lock",
-      to: "/user/my-account/password-edit"
-    },
-    {
-      label: "Logout",
-      icon: "pi pi-fw pi-lock-open",
-      to: "/user/logout" //+ this.user.id
-    }
-  ];
-
-  toggle(event: any) {
-    this.$refs.menu.toggle(event);
-  }
-
-  getUrl(item: string) {
-    return require("@/assets/avatars/" + item);
-  }
-}
+});
 </script>
 
 <style scoped>

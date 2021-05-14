@@ -45,44 +45,52 @@
   </DataTable>
 </template>
 <script lang="ts">
-import { mapState } from "vuex";
-import { Options, Vue } from "vue-class-component";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
-import GraphData from "@/models/GraphData";
+import { defineComponent } from "@vue/runtime-core";
+import ConceptService from "@/services/ConceptService";
 
-@Options({
+export default defineComponent({
   name: "PropertiesTable",
   components: {},
-  computed: mapState(["conceptAggregate"]),
+  props: {
+    conceptIri: String
+  },
   watch: {
-    async conceptAggregate(newValue) {
-      this.properties = this.getProperties(newValue.graph);
+    async conceptIri(newValue) {
+      this.properties = await this.getProperties(newValue);
+    }
+  },
+  async mounted() {
+    this.properties = await this.getProperties(this.conceptIri!);
+  },
+  data() {
+    return {
+      properties: [] as any[]
+    };
+  },
+  methods: {
+    navigate(iri: any) {
+      const currentRoute = this.$route.name as RouteRecordName | undefined;
+      if (iri)
+        this.$router.push({
+          name: currentRoute,
+          params: { selectedIri: iri }
+        });
+    },
+
+    async getProperties(iri: string) {
+      const graph = (await ConceptService.getConceptGraph(iri)).data;
+      const allProperties: any[] = [];
+      const properties = graph.children.filter(
+        (child: any) => child.name === "Properties"
+      );
+      properties[0].children.forEach((prop: any) => {
+        allProperties.push(...prop.children);
+      });
+      return allProperties;
     }
   }
-})
-export default class PropertiesTable extends Vue {
-  properties = [];
-
-  navigate(iri: any) {
-    const currentRoute = this.$route.name as RouteRecordName | undefined;
-    if (iri)
-      this.$router.push({
-        name: currentRoute,
-        params: { selectedIri: iri }
-      });
-  }
-
-  getProperties(graph: GraphData) {
-    const allProperties: any[] = [];
-    const properties = graph.children.filter(
-      (child: any) => child.name === "Properties"
-    );
-    properties[0].children.forEach((prop: any) => {
-      allProperties.push(...prop.children);
-    });
-    return allProperties;
-  }
-}
+});
 </script>
 
 <style scoped>
