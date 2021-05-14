@@ -151,3 +151,37 @@ describe("signIn", () => {
     expect(promiseResult).toStrictEqual(new CustomAlert(403, "Login failed. Check username and password are correct", err));
   });
 });
+
+describe("resendConfirmationCode", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns 200 with auth success", async () => {
+    Auth.resendSignUp = jest.fn().mockResolvedValue( { code: 200 });
+    const result = AuthService.resendConfirmationCode("devTest");
+    let promiseResult: any;
+    result.then(res => {
+      promiseResult = res
+    })
+    await flushPromises();
+    expect(Auth.resendSignUp).toBeCalledTimes(1);
+    expect(Auth.resendSignUp).toBeCalledWith("devTest");
+    expect(promiseResult).toStrictEqual(new CustomAlert(200, "Code resent successfully"));
+  });
+
+  it("returns 400 with auth fail", async () => {
+    Auth.resendSignUp = jest.fn().mockRejectedValue({ code: "Resend", name: "testError", message: "Resend error test" });
+    const result = AuthService.resendConfirmationCode("devTest");
+    let promiseResult: any;
+    let err: any;
+    result.then(res => {
+      err = res.error
+      promiseResult = res
+    });
+    await flushPromises();
+    expect(Auth.resendSignUp).toBeCalledTimes(1);
+    expect(Auth.resendSignUp).toBeCalledWith("devTest");
+    expect(promiseResult).toStrictEqual(new CustomAlert(400, "Error resending code", err));
+  });
+});
