@@ -50,20 +50,6 @@ export default defineComponent({
             );
           }
         });
-      store.dispatch("fetchConceptMapped", store.state.conceptIri).then(res => {
-        if (!res) {
-          this.$toast.add(
-            LoggerService.error("Concept mapped server request failed")
-          );
-        }
-      });
-      store.dispatch("fetchConceptUsages", store.state.conceptIri).then(res => {
-        if (!res) {
-          this.$toast.add(
-            LoggerService.error("Concept usages server request failed")
-          );
-        }
-      });
     }
   }
 });

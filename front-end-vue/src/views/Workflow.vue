@@ -3,10 +3,6 @@
   <div class="layout-main">
     <div class="home">
       <div class="p-grid">
-        <div class="p-col-12 p-d-flex p-flex-row">
-          <div class="header-grow"><Header /></div>
-        </div>
-
         <div class="p-col-3">
           <span class="p-input-icon-left" style="width: 100%">
             <i class="pi pi-search" aria-hidden="true" />
@@ -211,7 +207,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
-import Header from "@/components/home/Header.vue";
 // import SidebarControl from "@/components/sidebar/SidebarControl.vue";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 import { Filters } from "@/models/workflow/Filters";
@@ -220,8 +215,7 @@ import { WorkflowItem } from "@/models/workflow/WorkFlowItem";
 export default defineComponent({
   name: "Workflow",
   components: {
-    SideNav,
-    Header
+    SideNav
     // SidebarControl
   },
   data() {

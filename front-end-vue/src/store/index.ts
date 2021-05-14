@@ -8,7 +8,6 @@ import { avatars } from "@/models/user/Avatars";
 import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 import LoggerService from "@/services/LoggerService";
-import { Member } from "@/models/members/Member";
 import { CustomAlert } from "@/models/user/CustomAlert";
 import { IM } from "@/vocabulary/IM";
 
@@ -18,9 +17,6 @@ export default createStore({
     loading: new Map<string, boolean>(),
     conceptIri: "http://www.w3.org/2002/07/owl#Thing",
     conceptAggregate: {} as ConceptAggregate,
-    mapped: [],
-    usages: [],
-    members: {} as Member,
     history: [] as HistoryItem[],
     searchResults: [],
     currentUser: {} as User,
@@ -67,15 +63,6 @@ export default createStore({
     updateConceptAggregate(state, conceptAggregate) {
       state.conceptAggregate = conceptAggregate;
     },
-    updateConceptMapped(state, mapped) {
-      state.mapped = mapped;
-    },
-    updateConceptUsages(state, usages) {
-      state.usages = usages;
-    },
-    updateConceptMembers(state, members) {
-      state.members = members;
-    },
     updateHistory(state, historyItem) {
       state.history = state.history.filter(function(el) {
         return el.url !== historyItem.url;
@@ -113,7 +100,6 @@ export default createStore({
       let concept: any;
       let parents: Array<ConceptNode>;
       let children: Array<ConceptNode>;
-      let graph: any;
       let success = true;
       await Promise.all([
         ConceptService.getConcept(iri).then(res => {
@@ -124,81 +110,15 @@ export default createStore({
         }),
         ConceptService.getConceptChildren(iri).then(res => {
           children = res.data;
-        }),
-        ConceptService.getConceptGraph(iri).then(res => {
-          graph = res.data;
         })
       ])
         .then(() => {
-          const updated = new ConceptAggregate(
-            concept,
-            children,
-            parents,
-            graph
-          );
+          const updated = new ConceptAggregate(concept, children, parents);
           commit("updateConceptAggregate", updated);
         })
         .catch(err => {
           LoggerService.error(undefined, err);
           success = false;
-        });
-      return success;
-    },
-    async fetchConceptMapped({ commit }, iri) {
-      commit("updateLoading", { key: "mapped", value: true });
-      let mappedFrom: any;
-      let mappedTo: any;
-      let success = true;
-      await Promise.all([
-        ConceptService.getConceptMappedFrom(iri).then(res => {
-          mappedFrom = res.data;
-        }),
-        ConceptService.getConceptMappedTo(iri).then(res => {
-          mappedTo = res.data;
-        })
-      ])
-        .then(() => {
-          commit("updateConceptMapped", mappedFrom.concat(mappedTo));
-          commit("updateLoading", { key: "mapped", value: false });
-        })
-        .catch(err => {
-          success = false;
-          LoggerService.error(undefined, err);
-          commit("updateLoading", { key: "mapped", value: false });
-        });
-      return success;
-    },
-    async fetchConceptUsages({ commit }, iri) {
-      commit("updateLoading", { key: "usages", value: true });
-      let usages: any;
-      let success = true;
-      await ConceptService.getConceptUsages(iri)
-        .then(res => {
-          usages = res.data;
-          commit("updateConceptUsages", usages);
-          commit("updateLoading", { key: "usages", value: false });
-        })
-        .catch(err => {
-          LoggerService.error(undefined, err);
-          success = false;
-          commit("updateLoading", { key: "usages", value: false });
-        });
-      return success;
-    },
-    async fetchConceptMembers({ commit }, iri) {
-      commit("updateLoading", { key: "members", value: true });
-      let members: Member;
-      let success = true;
-      await ConceptService.getConceptMembers(iri, false)
-        .then(res => {
-          members = res.data;
-          commit("updateConceptMembers", members);
-          commit("updateLoading", { key: "members", value: false });
-        })
-        .catch(err => {
-          LoggerService.error(undefined, err);
-          success = false;
-          commit("updateLoading", { key: "members", value: false });
         });
       return success;
     },
