@@ -42,6 +42,7 @@ describe("ConfirmCode.vue with registeredUser", () => {
   let mockRouter: any;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     mockStore = {
       state: {registeredUsername: "testUser"},
       commit: jest.fn()
@@ -111,15 +112,37 @@ describe("ConfirmCode.vue with registeredUser", () => {
     await flushPromises();
     await wrapper.vm.$nextTick();
     expect(Auth.confirmSignUp).toBeCalledTimes(1);
-    expect(Auth.confirmSignUp).toBeCalledWith("testUser", "123456")
+    expect(Auth.confirmSignUp).toBeCalledWith("testUser", "123456");
   });
 
-  xit("opens an error popup on incorrect username/code", async() => {
-    wrapper.vm.code = "1234";
+  it("opens swal on correct username/code", async() => {
+    wrapper.vm.code = "123456";
     await wrapper.vm.$nextTick;
     wrapper.vm.handleSubmit();
+    await flushPromises();
     await wrapper.vm.$nextTick();
     expect(Swal.fire).toBeCalledTimes(1);
     expect(Swal.fire).toBeCalledWith({icon: "success", title: "Success", text: "Register confirmation successful", confirmButtonText: "Login" });
-  })
+  });
+
+  it("opens swal on incorrect username/code", async() => {
+    wrapper.vm.code = "1234";
+    await wrapper.vm.$nextTick;
+    wrapper.vm.handleSubmit();
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(Swal.fire).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledWith({icon: "warning", title: "Invalid Credentials", text: "Username or Confirmation Code incorrect." });
+  });
+
+  it("opens swal on authservice fail", async() => {
+    Auth.confirmSignUp = jest.fn().mockRejectedValue({ status: 403, message: "test"});
+    wrapper.vm.code = "123456";
+    await wrapper.vm.$nextTick;
+    wrapper.vm.handleSubmit();
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(Swal.fire).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledWith({icon: "error", title: "Error", text: "Failed register confirmation" });
+  });
 });

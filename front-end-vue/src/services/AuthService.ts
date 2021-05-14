@@ -30,7 +30,7 @@ export default {
       await Auth.confirmSignUp(username, code);
       return new CustomAlert(200, "Register confirmation successful");
     } catch (err) {
-      return new CustomAlert(403, "Failed  register confirmation", err);
+      return new CustomAlert(403, "Failed register confirmation", err);
     }
   },
 
