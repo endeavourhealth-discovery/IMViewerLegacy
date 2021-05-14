@@ -312,4 +312,60 @@ describe("updateUser", () => {
     expect(promiseResult).toStrictEqual(new CustomAlert(403, "Authentication error with server", err));
   });
 
+  describe("changePassword", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("returns 200 with auth success", async () => {
+      Auth.currentAuthenticatedUser = jest.fn().mockResolvedValueOnce({
+        username: "devtest",
+        attributes: {
+          "custom:avatar": "colour/002-man.png",
+          "custom:forename": "John",
+          "custom:surname": "Doe",
+          email: "john.doe@ergosoft.co.uk",
+          email_verified: true,
+          sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
+        }
+      });
+      Auth.changePassword = jest.fn().mockResolvedValue( { code: 200 });
+      const result = AuthService.changePassword("12345678", "87654321");
+      let promiseResult: any;
+      result.then(res => {
+        promiseResult = res
+      })
+      await flushPromises();
+      expect(Auth.currentAuthenticatedUser).toHaveBeenCalledTimes(1);
+      expect(Auth.changePassword).toHaveBeenCalledTimes(1);
+      expect(promiseResult).toStrictEqual(new CustomAlert(200, "Password successfully changed"));
+    });
+
+    it("returns 400 with auth fail", async () => {
+      Auth.currentAuthenticatedUser = jest.fn().mockResolvedValueOnce({
+        username: "devtest",
+        attributes: {
+          "custom:avatar": "colour/002-man.png",
+          "custom:forename": "John",
+          "custom:surname": "Doe",
+          email: "john.doe@ergosoft.co.uk",
+          email_verified: true,
+          sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
+        }
+      });
+      Auth.changePassword = jest.fn().mockRejectedValue( { code: "passwordChangeError", message: "Password change error" });
+      const result = AuthService.changePassword("12345678", "87654321");
+      let promiseResult: any;
+      let err: any;
+      result.then(res => {
+        err = res.error
+        promiseResult = res
+      });
+      await flushPromises();
+      expect(Auth.currentAuthenticatedUser).toHaveBeenCalledTimes(1);
+      expect(Auth.changePassword).toHaveBeenCalledTimes(1);
+      expect(promiseResult).toStrictEqual(new CustomAlert(400, "Password change error", err));
+    });
+  });
+
 });
