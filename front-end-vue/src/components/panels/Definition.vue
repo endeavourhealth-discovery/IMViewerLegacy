@@ -42,19 +42,20 @@
         </ScrollPanel>
       </div>
     </div>
-    <!-- <Divider align="left">
+    <Divider align="left">
       <div class="p-d-inline-flex p-ai-center">
         <b>Definitional properties</b>
       </div>
     </Divider>
     <div>
-      <strong>is a: </strong>Hospital Encounter, takes place in care setting :
-      Accident and emergency
-    </div>
-    <div>
-      <strong>has sub types :</strong> (1) Accident and emergency discharge
-    </div>
-    <Divider align="left">
+      <strong>is a: </strong>[{{ isA?.length }}]
+      <ul>
+        <li v-for="item in isA" :key="item">
+          {{ item.name || item["@id"] }}
+        </li>
+      </ul>
+
+      <!-- <Divider align="left">
       <div class="p-d-inline-flex p-ai-center">
         <b>Data model properties</b>
       </div>
@@ -67,6 +68,7 @@
         :key="col.field"
       ></Column>
     </DataTable> -->
+    </div>
   </div>
 </template>
 
@@ -74,35 +76,27 @@
 import { RDFS } from "@/vocabulary/RDFS";
 import { defineComponent } from "vue";
 import { RDF } from "@/vocabulary/RDF";
+import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
   name: "Definition",
   components: {},
   props: {
-    concept: {} as any
-  },
-  data() {
-    return {
-      columns: [
-        { field: "property", header: "Property" },
-        { field: "type", header: "Type" },
-        { field: "range", header: "Range" }
-      ],
-      data: [
-        {
-          property: "A&e department type",
-          type: "Class",
-          range: "Accident and emergency (setting)"
-        },
-        {
-          property: "Has arrival mode",
-          type: "Value set",
-          range: "Emergency care arrival value set"
-        }
-      ]
-    };
+    concept: {} as any,
   },
   computed: {
+    isA(): [] {
+      return this.concept[IM.IS_A];
+    },
+
+    // isA(): [] {
+    //   return this.concept[IM.IS_A];
+    // },
+
+    subClasses(): [] {
+      return this.concept[RDFS.SUBCLASS];
+    },
+
     conceptTypes(): string {
       return this.concept[RDF.TYPE]
         .map(function(type: any) {
@@ -117,7 +111,7 @@ export default defineComponent({
         "</p>\n<p class='description-p'>"
       );
       return "<p class='description-p'>" + text + "</p>";
-    }
+    },
   },
   watch: {
     descriptionHTML(newValue) {
@@ -125,8 +119,8 @@ export default defineComponent({
       if (descContainer) {
         descContainer.innerHTML = newValue;
       }
-    }
-  }
+    },
+  },
 });
 </script>
 

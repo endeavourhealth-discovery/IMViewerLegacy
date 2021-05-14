@@ -5,6 +5,8 @@ export class IM {
   public static CODE = IM.NAMESPACE + "code";
   public static SCHEME = IM.NAMESPACE + "scheme";
   public static STATUS = IM.NAMESPACE + "status";
+  public static IS_A = IM.NAMESPACE + "isA";
+  
 
   public static QUERY_SET = IM.NAMESPACE + "QuerySet";
   public static VALUE_SET = IM.NAMESPACE + "ValueSet";
