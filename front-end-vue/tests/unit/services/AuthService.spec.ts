@@ -185,3 +185,35 @@ describe("resendConfirmationCode", () => {
     expect(promiseResult).toStrictEqual(new CustomAlert(400, "Error resending code", err));
   });
 });
+
+describe("signOut", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns 200 with auth success", async () => {
+    Auth.signOut = jest.fn().mockResolvedValue( { code: 200 });
+    const result = AuthService.signOut();
+    let promiseResult: any;
+    result.then(res => {
+      promiseResult = res
+    })
+    await flushPromises();
+    expect(Auth.signOut).toBeCalledTimes(1);
+    expect(promiseResult).toStrictEqual(new CustomAlert(200, "Logged out successfully"));
+  });
+
+  it("returns 400 with auth fail", async () => {
+    Auth.signOut = jest.fn().mockRejectedValue({ code: "Logout", name: "testError", message: "Logout error test" });
+    const result = AuthService.signOut();
+    let promiseResult: any;
+    let err: any;
+    result.then(res => {
+      err = res.error
+      promiseResult = res
+    });
+    await flushPromises();
+    expect(Auth.signOut).toBeCalledTimes(1);
+    expect(promiseResult).toStrictEqual(new CustomAlert(400, "Error logging out from auth server", err));
+  });
+});
