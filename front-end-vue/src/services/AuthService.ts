@@ -102,6 +102,7 @@ export default {
           "",
           { value: updateResults.attributes["custom:avatar"] }
         );
+        updatedUser.setId(updateResults.attributes.sub);
         return new CustomAlert(
           200,
           "User updated successfully",
