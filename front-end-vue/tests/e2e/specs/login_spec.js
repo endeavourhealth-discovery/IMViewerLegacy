@@ -51,7 +51,6 @@ describe("The Login page", () => {
     cy.get(".p-button-label")
       .contains("Agree")
       .click();
-    cy.contains("Home");
     cy.get("#user-icon").click();
     cy.contains("Login").click();
   });

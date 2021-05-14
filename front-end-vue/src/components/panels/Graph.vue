@@ -26,6 +26,7 @@
 
 <script lang="ts">
 import * as d3 from "d3";
+import SvgPanZoom from "svg-pan-zoom";
 import svgPanZoom from "svg-pan-zoom";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { HierarchyNode } from "d3";
