@@ -142,6 +142,26 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
     expect(wrapper.vm.passwordsMatch).toBe(true);
   });
 
+  it("can set showpassword2notice ___ true", async() => {
+    wrapper.vm.newPassword1 = "12345678";
+    wrapper.vm.newPassword2 = "12345679";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setShowPassword2Notice();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.passwordsMatch).toBeFalsy();
+    expect(wrapper.vm.showPassword2Notice).toBeTruthy();
+  });
+
+  it("can set showpassword2notice ___ false", async() => {
+    wrapper.vm.newPassword1 = "12345678";
+    wrapper.vm.newPassword2 = "12345678";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setShowPassword2Notice();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.passwordsMatch).toBeTruthy();
+    expect(wrapper.vm.showPassword2Notice).toBeFalsy();
+  });
+
   it("calls authservice if all verified", async () => {
     wrapper.vm.newPassword1 = "12345678";
     wrapper.vm.newPassword2 = "12345678";
