@@ -185,7 +185,7 @@ export default defineComponent({
             Swal.fire({
               icon: "success",
               title: "Success",
-              text: "Password sucessfully reset",
+              text: "Password successfully reset",
               confirmButtonText: "Continue"
             }).then(() => {
               this.$router.push({ name: "Login" });
