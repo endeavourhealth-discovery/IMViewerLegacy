@@ -128,6 +128,18 @@ describe("ConfirmCode.vue with registeredUser", () => {
     expect(Swal.fire).toBeCalledWith({icon: "success", title: "Success", text: "Register confirmation successful", confirmButtonText: "Login" });
   });
 
+  it("updates the store on correct username/code and re-routes", async() => {
+    wrapper.vm.code = "123456";
+    await wrapper.vm.$nextTick;
+    wrapper.vm.handleSubmit();
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(mockStore.commit).toBeCalledTimes(1);
+    expect(mockStore.commit).toBeCalledWith("updateRegisteredUsername", "testUser");
+    expect(mockRouter.push).toBeCalledTimes(1);
+    expect(mockRouter.push).toBeCalledWith({ name: "Login" });
+  });
+
   it("opens swal on incorrect username/code", async() => {
     wrapper.vm.code = "1234";
     await wrapper.vm.$nextTick;

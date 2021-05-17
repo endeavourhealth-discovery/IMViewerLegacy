@@ -24,7 +24,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
@@ -38,14 +38,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>0/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
@@ -227,13 +227,9 @@
 <a name='L169'></a><a href='#L169'>169</a>
 <a name='L170'></a><a href='#L170'>170</a>
 <a name='L171'></a><a href='#L171'>171</a>
-<a name='L172'></a><a href='#L172'>172</a>
-<a name='L173'></a><a href='#L173'>173</a>
-<a name='L174'></a><a href='#L174'>174</a>
-<a name='L175'></a><a href='#L175'>175</a>
-<a name='L176'></a><a href='#L176'>176</a>
-<a name='L177'></a><a href='#L177'>177</a>
-<a name='L178'></a><a href='#L178'>178</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L172'></a><a href='#L172'>172</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -309,6 +305,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -317,6 +314,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -325,17 +323,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -454,19 +442,20 @@
         &lt;/ScrollPanel&gt;
       &lt;/div&gt;
     &lt;/div&gt;
-    &lt;!-- &lt;Divider align="left"&gt;
+    &lt;Divider align="left"&gt;
       &lt;div class="p-d-inline-flex p-ai-center"&gt;
         &lt;b&gt;Definitional properties&lt;/b&gt;
       &lt;/div&gt;
     &lt;/Divider&gt;
     &lt;div&gt;
-      &lt;strong&gt;is a: &lt;/strong&gt;Hospital Encounter, takes place in care setting :
-      Accident and emergency
-    &lt;/div&gt;
-    &lt;div&gt;
-      &lt;strong&gt;has sub types :&lt;/strong&gt; (1) Accident and emergency discharge
-    &lt;/div&gt;
-    &lt;Divider align="left"&gt;
+      &lt;strong&gt;is a: &lt;/strong&gt;[{{ isA?.length }}]
+      &lt;ul&gt;
+        &lt;li v-for="item in isA" :key="item"&gt;
+          {{ item.name || item["@id"] }}
+        &lt;/li&gt;
+      &lt;/ul&gt;
+&nbsp;
+      &lt;!-- &lt;Divider align="left"&gt;
       &lt;div class="p-d-inline-flex p-ai-center"&gt;
         &lt;b&gt;Data model properties&lt;/b&gt;
       &lt;/div&gt;
@@ -479,6 +468,7 @@
         :key="col.field"
       &gt;&lt;/Column&gt;
     &lt;/DataTable&gt; --&gt;
+    &lt;/div&gt;
   &lt;/div&gt;
 &lt;/template&gt;
 &nbsp;
@@ -486,35 +476,27 @@
 <span class="cstat-no" title="statement not covered" >import { RDFS } from "@/vocabulary/RDFS";</span>
 <span class="cstat-no" title="statement not covered" >import { defineComponent } from "vue";</span>
 <span class="cstat-no" title="statement not covered" >import { RDF } from "@/vocabulary/RDF";</span>
+<span class="cstat-no" title="statement not covered" >import { IM } from "@/vocabulary/IM";</span>
 &nbsp;
 export default <span class="cstat-no" title="statement not covered" >defineComponent({</span>
   name: "Definition",
   components: {},
   props: {
-    concept: {} as any
-  },
-  data<span class="fstat-no" title="function not covered" >() {</span>
-<span class="cstat-no" title="statement not covered" >    return {</span>
-      columns: [
-        { field: "property", header: "Property" },
-        { field: "type", header: "Type" },
-        { field: "range", header: "Range" }
-      ],
-      data: [
-        {
-          property: "A&amp;e department type",
-          type: "Class",
-          range: "Accident and emergency (setting)"
-        },
-        {
-          property: "Has arrival mode",
-          type: "Value set",
-          range: "Emergency care arrival value set"
-        }
-      ]
-    };
+    concept: {} as any,
   },
   computed: {
+<span class="fstat-no" title="function not covered" >    isA(</span>): [] {
+<span class="cstat-no" title="statement not covered" >      return t</span>his.concept[IM.IS_A];
+    },
+&nbsp;
+    // isA(): [] {
+    //   return this.concept[IM.IS_A];
+    // },
+&nbsp;
+<span class="fstat-no" title="function not covered" >    subClasses(</span>): [] {
+<span class="cstat-no" title="statement not covered" >      return t</span>his.concept[RDFS.SUBCLASS];
+    },
+&nbsp;
 <span class="fstat-no" title="function not covered" >    conceptTypes(</span>): string {
 <span class="cstat-no" title="statement not covered" >      return t</span>his.concept[RDF.TYPE]
         .map(<span class="fstat-no" title="function not covered" >function(t</span>ype: any) {
@@ -529,7 +511,7 @@ export default <span class="cstat-no" title="statement not covered" >defineCompo
         "&lt;/p&gt;\n&lt;p class='description-p'&gt;"
       );
 <span class="cstat-no" title="statement not covered" >      return "</span>&lt;p class='description-p'&gt;" + text + "&lt;/p&gt;";
-    }
+    },
   },
   watch: {
     descriptionHTML<span class="fstat-no" title="function not covered" >(n</span>ewValue) {
@@ -537,8 +519,8 @@ export default <span class="cstat-no" title="statement not covered" >defineCompo
 <span class="cstat-no" title="statement not covered" >      if (descContainer) {</span>
 <span class="cstat-no" title="statement not covered" >        descContainer.</span>innerHTML = newValue;
       }
-    }
-  }
+    },
+  },
 });
 &lt;/script&gt;
 &nbsp;
@@ -594,7 +576,7 @@ p {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Fri May 14 2021 16:39:35 GMT+0100 (British Summer Time)
+                at Mon May 17 2021 09:16:29 GMT+0100 (British Summer Time)
             </div>
         </div>
         <script src="../../../prettify.js"></script>
