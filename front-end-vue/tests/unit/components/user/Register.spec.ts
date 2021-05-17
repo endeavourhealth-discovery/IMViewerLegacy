@@ -1,4 +1,4 @@
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import Register from "@/components/user/Register.vue";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
@@ -11,11 +11,13 @@ import { PasswordStrength } from "@/models/user/PasswordStrength";
 import { avatars } from "@/models/user/Avatars";
 import AuthService from "@/services/AuthService";
 import Swal from "sweetalert2";
-import { CustomAlert } from "@/models/user/CustomAlert";
+import { User } from "@/models/user/User";
 
-AuthService.changePassword = jest.fn().mockResolvedValue({ status: 200, message: "Password change successful" });
+AuthService.register = jest.fn().mockResolvedValue({ status: 201, message: "Register successful" });
 
 Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
+
+const testUser = new User("DevTest", "John", "Doe", "devtest@ergo.co.uk", "12345678", avatars[0]);
 
 describe("register.vue empty", () => {
   let wrapper: any;
@@ -355,5 +357,113 @@ describe("register.vue prefilled", () => {
     expect(wrapper.vm.selectedAvatar).toStrictEqual({ value: "colour/003-man.png"});
   });
 
+  it("can check a keycode ___ correct", async() => {
+    await wrapper.vm.$nextTick();
+    wrapper.vm.checkKey({ keyCode: 13 });
+    await wrapper.vm.$nextTick();
+    expect(AuthService.register).toBeCalledTimes(1);
+  });
 
+  it("can check a keycode ___ incorrect", async() => {
+    await wrapper.vm.$nextTick();
+    wrapper.vm.checkKey({ keyCode: 12 });
+    await wrapper.vm.$nextTick();
+    expect(AuthService.register).toBeCalledTimes(0);
+  });
+
+  it("hits authservice if all verified", async() => {
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleSubmit();
+    await wrapper.vm.$nextTick();
+    expect(AuthService.register).toBeCalledTimes(1);
+    expect(AuthService.register).toBeCalledWith(testUser);
+  });
+
+  it("fires swal on auth success", async() => {
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleSubmit();
+    await wrapper.vm.$nextTick();
+    expect(Swal.fire).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledWith({
+      icon: "success",
+      title: "Success",
+      text: "Register successful",
+      showCancelButton: true,
+      confirmButtonText: "Continue"
+    });
+  });
+
+  it("fires emit on auth success", async() => {
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleSubmit();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(wrapper.emitted()).toBeTruthy();
+    expect(wrapper.emitted("userCreated")[0]).toStrictEqual([testUser]);
+  });
+
+  it("updates store and reroutes on auth success and swal confirmed", async() => {
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleSubmit();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(mockStore.commit).toBeCalledTimes(1);
+    expect(mockStore.commit).toBeCalledWith("updateRegisteredUsername", "DevTest");
+    expect(mockRouter.push).toBeCalledTimes(1);
+    expect(mockRouter.push).toBeCalledWith({ name: "ConfirmCode" });
+  });
+
+  it("clears form on auth success and swal cancelled", async() => {
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: false }));
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleSubmit();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(wrapper.vm.username).toBe("");
+  });
+
+  it("fires swal on auth success ___ 409", async() => {
+    AuthService.register = jest.fn().mockResolvedValue({ status: 409, message: "Username taken" });
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleSubmit();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(Swal.fire).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledWith({
+      icon: "error",
+      title: "Error",
+      text: "Username already taken. Please pick another username",
+      confirmButtonText: "Close"
+    });
+  });
+
+  it("fires swal on auth success ___ other", async() => {
+    AuthService.register = jest.fn().mockResolvedValue({ status: 400, message: "Register failed" });
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleSubmit();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(Swal.fire).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledWith({
+      icon: "error",
+      title: "Error",
+      text: "Register failed",
+      confirmButtonText: "Close"
+    });
+  });
+
+  it("fires swal on verified fail", async() => {
+    wrapper.vm.password1 = "1234";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleSubmit();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(Swal.fire).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledWith({
+      icon: "error",
+      title: "Error",
+      text: "User creation failed. Check input data.",
+      confirmButtonText: "Close"
+    });
+  });
 });

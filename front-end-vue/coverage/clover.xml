@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1621264950554" clover="3.2.0">
-  <project timestamp="1621264950555" name="All files">
-    <metrics statements="1105" coveredstatements="291" conditionals="548" coveredconditionals="112" methods="355" coveredmethods="87" elements="2008" coveredelements="490" complexity="0" loc="1105" ncloc="1105" packages="8" files="42" classes="42"/>
+<coverage generated="1621266909761" clover="3.2.0">
+  <project timestamp="1621266909761" name="All files">
+    <metrics statements="1105" coveredstatements="308" conditionals="548" coveredconditionals="122" methods="355" coveredmethods="91" elements="2008" coveredelements="521" complexity="0" loc="1105" ncloc="1105" packages="8" files="42" classes="42"/>
     <package name="src">
       <metrics statements="7" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <file name="App.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/App.vue">
@@ -722,7 +722,7 @@
       </file>
     </package>
     <package name="src.components.user">
-      <metrics statements="335" coveredstatements="233" conditionals="180" coveredconditionals="108" methods="118" coveredmethods="82"/>
+      <metrics statements="335" coveredstatements="250" conditionals="180" coveredconditionals="118" methods="118" coveredmethods="86"/>
       <file name="AvatarWithSelector.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/components/user/AvatarWithSelector.vue">
         <metrics statements="9" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="4"/>
         <line num="44" count="3" type="stmt"/>
@@ -730,10 +730,10 @@
         <line num="47" count="3" type="stmt"/>
         <line num="53" count="1" type="stmt"/>
         <line num="56" count="1" type="stmt"/>
-        <line num="60" count="51" type="stmt"/>
+        <line num="60" count="61" type="stmt"/>
         <line num="67" count="0" type="stmt"/>
         <line num="68" count="0" type="stmt"/>
-        <line num="72" count="53" type="stmt"/>
+        <line num="72" count="63" type="stmt"/>
       </file>
       <file name="ButtonBar.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/components/user/ButtonBar.vue">
         <metrics statements="6" coveredstatements="6" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
@@ -926,7 +926,7 @@
         <line num="120" count="0" type="stmt"/>
       </file>
       <file name="Register.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/components/user/Register.vue">
-        <metrics statements="63" coveredstatements="39" conditionals="31" coveredconditionals="11" methods="22" coveredmethods="11"/>
+        <metrics statements="63" coveredstatements="56" conditionals="31" coveredconditionals="21" methods="22" coveredmethods="15"/>
         <line num="177" count="1" type="stmt"/>
         <line num="178" count="1" type="stmt"/>
         <line num="179" count="1" type="stmt"/>
@@ -936,60 +936,60 @@
         <line num="190" count="1" type="stmt"/>
         <line num="191" count="1" type="stmt"/>
         <line num="193" count="1" type="stmt"/>
-        <line num="201" count="32" type="stmt"/>
-        <line num="204" count="33" type="stmt"/>
-        <line num="207" count="33" type="stmt"/>
-        <line num="210" count="32" type="stmt"/>
-        <line num="213" count="32" type="stmt"/>
-        <line num="216" count="35" type="stmt"/>
-        <line num="219" count="33" type="stmt"/>
-        <line num="224" count="30" type="stmt"/>
+        <line num="201" count="43" type="stmt"/>
+        <line num="204" count="44" type="stmt"/>
+        <line num="207" count="44" type="stmt"/>
+        <line num="210" count="43" type="stmt"/>
+        <line num="213" count="43" type="stmt"/>
+        <line num="216" count="47" type="stmt"/>
+        <line num="219" count="44" type="stmt"/>
+        <line num="224" count="40" type="stmt"/>
         <line num="251" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="255" count="0" type="stmt"/>
         <line num="259" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="263" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="267" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="271" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="274" count="0" type="stmt"/>
-        <line num="275" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="276" count="0" type="stmt"/>
-        <line num="284" count="0" type="stmt"/>
-        <line num="286" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="287" count="0" type="stmt"/>
-        <line num="294" count="0" type="stmt"/>
-        <line num="295" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="296" count="0" type="stmt"/>
-        <line num="297" count="0" type="stmt"/>
-        <line num="299" count="0" type="stmt"/>
-        <line num="302" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="303" count="0" type="stmt"/>
-        <line num="310" count="0" type="stmt"/>
+        <line num="274" count="9" type="stmt"/>
+        <line num="275" count="9" type="cond" truecount="2" falsecount="0"/>
+        <line num="276" count="8" type="stmt"/>
+        <line num="284" count="8" type="stmt"/>
+        <line num="286" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="287" count="6" type="stmt"/>
+        <line num="294" count="6" type="stmt"/>
+        <line num="295" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="296" count="5" type="stmt"/>
+        <line num="297" count="5" type="stmt"/>
+        <line num="299" count="1" type="stmt"/>
+        <line num="302" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="303" count="1" type="stmt"/>
+        <line num="310" count="1" type="stmt"/>
         <line num="319" count="0" type="stmt"/>
-        <line num="335" count="0" type="stmt"/>
-        <line num="345" count="1" type="stmt"/>
-        <line num="346" count="1" type="stmt"/>
-        <line num="347" count="1" type="stmt"/>
-        <line num="348" count="1" type="stmt"/>
-        <line num="349" count="1" type="stmt"/>
-        <line num="350" count="1" type="stmt"/>
-        <line num="351" count="1" type="stmt"/>
-        <line num="352" count="1" type="stmt"/>
-        <line num="353" count="1" type="stmt"/>
-        <line num="354" count="1" type="stmt"/>
-        <line num="355" count="1" type="stmt"/>
-        <line num="356" count="1" type="stmt"/>
-        <line num="357" count="1" type="stmt"/>
-        <line num="358" count="1" type="stmt"/>
-        <line num="359" count="1" type="stmt"/>
-        <line num="360" count="1" type="stmt"/>
-        <line num="361" count="1" type="stmt"/>
-        <line num="362" count="1" type="stmt"/>
-        <line num="366" count="126" type="cond" truecount="2" falsecount="0"/>
-        <line num="377" count="60" type="stmt"/>
-        <line num="379" count="66" type="stmt"/>
+        <line num="335" count="1" type="stmt"/>
+        <line num="345" count="2" type="stmt"/>
+        <line num="346" count="2" type="stmt"/>
+        <line num="347" count="2" type="stmt"/>
+        <line num="348" count="2" type="stmt"/>
+        <line num="349" count="2" type="stmt"/>
+        <line num="350" count="2" type="stmt"/>
+        <line num="351" count="2" type="stmt"/>
+        <line num="352" count="2" type="stmt"/>
+        <line num="353" count="2" type="stmt"/>
+        <line num="354" count="2" type="stmt"/>
+        <line num="355" count="2" type="stmt"/>
+        <line num="356" count="2" type="stmt"/>
+        <line num="357" count="2" type="stmt"/>
+        <line num="358" count="2" type="stmt"/>
+        <line num="359" count="2" type="stmt"/>
+        <line num="360" count="2" type="stmt"/>
+        <line num="361" count="2" type="stmt"/>
+        <line num="362" count="2" type="stmt"/>
+        <line num="366" count="168" type="cond" truecount="2" falsecount="0"/>
+        <line num="377" count="88" type="stmt"/>
+        <line num="379" count="80" type="stmt"/>
         <line num="384" count="2" type="stmt"/>
-        <line num="388" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="389" count="0" type="stmt"/>
+        <line num="388" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="389" count="1" type="stmt"/>
       </file>
       <file name="UserDetails.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/components/user/UserDetails.vue">
         <metrics statements="5" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
