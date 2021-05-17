@@ -50,25 +50,77 @@
     <div>
       <strong>is a: </strong>[{{ isA?.length }}]
       <ul>
-        <li v-for="item in isA" :key="item">
+        <li
+          class="link"
+          v-for="item in isA"
+          :key="item"
+          @click="navigate(item['@id'])"
+        >
           {{ item.name || item["@id"] }}
         </li>
       </ul>
-
-      <!-- <Divider align="left">
+    </div>
+    <Divider align="left">
       <div class="p-d-inline-flex p-ai-center">
         <b>Data model properties</b>
       </div>
     </Divider>
-    <DataTable :value="data" responsiveLayout="scroll">
-      <Column
-        v-for="col of columns"
-        :field="col.field"
-        :header="col.header"
-        :key="col.field"
-      ></Column>
-    </DataTable> -->
-    </div>
+    <DataTable
+      :value="properties"
+      :rowsPerPageOptions="[10, 25, 50]"
+      :paginator="properties?.length > 10 ? true : false"
+      :rows="10"
+      :scrollable="true"
+      scrollHeight="flex"
+      id="properties-table"
+    >
+      <template #empty>
+        No records found
+      </template>
+      <Column field="name" header="Property">
+        <template #body="slotProps">
+          <div
+            class="link capitalize-text"
+            @click="
+              navigate(
+                slotProps.data?.['http://www.w3.org/ns/shacl#path']?.['@id']
+              )
+            "
+          >
+            {{ slotProps.data?.["http://www.w3.org/ns/shacl#path"]?.["name"] }}
+          </div>
+        </template>
+      </Column>
+      <!-- <Column field="name" header="Type">
+        <template #body="slotProps">
+          <div>
+            {{ slotProps.data }}
+          </div>
+        </template>
+      </Column> -->
+      <Column field="name" header="Range">
+        <template #body="slotProps">
+          <div
+            class="link capitalize-text"
+            @click="
+              navigate(
+                slotProps.data?.['http://www.w3.org/ns/shacl#class']?.['@id'] ||
+                  slotProps.data?.['http://www.w3.org/ns/shacl#datatype']?.[
+                    '@id'
+                  ]
+              )
+            "
+          >
+            {{
+              slotProps.data?.["http://www.w3.org/ns/shacl#class"]?.["name"] ||
+                slotProps.data?.["http://www.w3.org/ns/shacl#datatype"]?.[
+                  "name"
+                ]
+            }}
+          </div>
+        </template>
+      </Column>
+    </DataTable>
   </div>
 </template>
 
@@ -77,21 +129,23 @@ import { RDFS } from "@/vocabulary/RDFS";
 import { defineComponent } from "vue";
 import { RDF } from "@/vocabulary/RDF";
 import { IM } from "@/vocabulary/IM";
+import { SHACL } from "@/vocabulary/SHACL";
+import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 
 export default defineComponent({
   name: "Definition",
   components: {},
   props: {
-    concept: {} as any,
+    concept: {} as any
   },
   computed: {
     isA(): [] {
       return this.concept[IM.IS_A];
     },
 
-    // isA(): [] {
-    //   return this.concept[IM.IS_A];
-    // },
+    properties(): [] {
+      return this.concept[SHACL.PROPERTY];
+    },
 
     subClasses(): [] {
       return this.concept[RDFS.SUBCLASS];
@@ -111,7 +165,7 @@ export default defineComponent({
         "</p>\n<p class='description-p'>"
       );
       return "<p class='description-p'>" + text + "</p>";
-    },
+    }
   },
   watch: {
     descriptionHTML(newValue) {
@@ -119,8 +173,18 @@ export default defineComponent({
       if (descContainer) {
         descContainer.innerHTML = newValue;
       }
-    },
+    }
   },
+  methods: {
+    navigate(iri: any) {
+      const currentRoute = this.$route.name as RouteRecordName | undefined;
+      if (iri)
+        this.$router.push({
+          name: currentRoute,
+          params: { selectedIri: iri }
+        });
+    }
+  }
 });
 </script>
 
@@ -167,5 +231,8 @@ p {
 .description {
   height: 100%;
   width: 100%;
+}
+.link {
+  cursor: pointer;
 }
 </style>
