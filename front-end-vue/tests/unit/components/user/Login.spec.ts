@@ -3,35 +3,37 @@ import Login from "@/components/user/Login.vue";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
-import { Auth } from "aws-amplify";
+import AuthService from "@/services/AuthService";
+import Swal from "sweetalert2";
+import { User } from "@/models/user/User";
 
-Auth.signIn = jest.fn().mockImplementation(() => {
-  return {
-    username: "devtest",
-    attributes: {
-      "custom:avatar": "colour/001-man.png",
-      "custom:forename": "Dev",
-      "custom:surname": "Test",
-      email: "dev.test@ergosoft.co.uk",
-      email_verified: true,
-      sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
-    }
-  }
-});
+const testUser = new User("devtest", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "colour/001-man.png"});
+
+testUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g09")
+
+AuthService.signIn = jest.fn().mockResolvedValue({ status: 200, message: "Password reset successful", user: testUser });
+
+Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
 
 describe("login.vue no registeredUser", () => {
   let wrapper: any;
   let mockStore: any;
+  let mockRouter: any;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     mockStore = {
       state: {registeredUsername: ""},
       commit: jest.fn()
     }
+    mockRouter = {
+      push: jest.fn(),
+      go: jest.fn()
+    }
     wrapper = mount(Login, {
       global: {
         components: { Card, Button, InputText },
-        mocks: { $store: mockStore }
+        mocks: { $store: mockStore, $router: mockRouter }
       }
     });
   });
@@ -49,16 +51,22 @@ describe("login.vue no registeredUser", () => {
 describe("login.vue with registeredUser", () => {
   let wrapper: any;
   let mockStore: any;
+  let mockRouter: any;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     mockStore = {
       state: {registeredUsername: "testUser"},
       commit: jest.fn()
     }
+    mockRouter = {
+      push: jest.fn(),
+      go: jest.fn()
+    }
     wrapper = mount(Login, {
       global: {
         components: { Card, Button, InputText },
-        mocks: { $store: mockStore }
+        mocks: { $store: mockStore, $router: mockRouter }
       }
     });
   });
@@ -72,12 +80,13 @@ describe("login.vue with registeredUser", () => {
     expect(userNameInput.value).toBe("testUser");
   });
 
-  it("hits the Auth service on handleSubmit", async () => {
+  it("hits the Authservice on handleSubmit", async () => {
     wrapper.vm.username = "Devtest";
     wrapper.vm.password = "12345678";
     wrapper.vm.handleSubmit();
     await wrapper.vm.$nextTick();
-    expect(Auth.signIn).toHaveBeenCalledTimes(1);
+    expect(AuthService.signIn).toBeCalledTimes(1);
+    expect(AuthService.signIn).toBeCalledWith("Devtest", "12345678");
   });
 
   it("updates the store on successful login", async () => {
@@ -85,11 +94,11 @@ describe("login.vue with registeredUser", () => {
     wrapper.vm.password = "12345678";
     wrapper.vm.handleSubmit();
     await wrapper.vm.$nextTick();
-    expect(Auth.signIn).toHaveReturned();
+    expect(AuthService.signIn).toHaveReturned();
     await flushPromises();
     expect(mockStore.commit).toHaveBeenCalledTimes(3);
     expect(mockStore.commit.mock.calls).toEqual([
-      ["updateCurrentUser", {"avatar": {"value": "colour/001-man.png"}, "email": "dev.test@ergosoft.co.uk", "firstName": "Dev", "id": "9gkej864-l39k-9u87-4lau-w7777b3m5g09", "lastName": "Test", "password": "", "username": "devtest"}],
+      ["updateCurrentUser", {"avatar": {"value": "colour/001-man.png"}, "email": "john.doe@ergosoft.co.uk", "firstName": "John", "id": "9gkej864-l39k-9u87-4lau-w7777b3m5g09", "lastName": "Doe", "password": "", "username": "devtest"}],
       ["updateRegisteredUsername", null],
       ["updateIsLoggedIn", true]
     ]);
