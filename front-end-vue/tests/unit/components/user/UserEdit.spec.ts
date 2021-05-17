@@ -1,4 +1,3 @@
-import store from "@/store/index";
 import { mount } from "@vue/test-utils";
 import UserEdit from "@/components/user/UserEdit.vue";
 import Card from "primevue/card";
@@ -11,61 +10,36 @@ import AvatarWithSelector from "@/components/user/AvatarWithSelector.vue";
 import { User } from "@/models/user/User";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 import { avatars } from "@/models/user/Avatars";
-import { Auth } from "aws-amplify";
+import AuthService from "@/services/AuthService";
+import Swal from "sweetalert2";
 
-describe("userEdit.vue no password edit", () => {
+const testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "colour/003-man.png" })
+
+AuthService.changePassword = jest.fn().mockResolvedValue({ status: 200, message: "Password change successful" });
+
+AuthService.updateUser = jest.fn().mockResolvedValue({ status: 200, message: "User Update successful", user: testUser });
+
+Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
+
+describe("userEdit.vue", () => {
   let wrapper: any;
-
-  Auth.currentAuthenticatedUser = jest.fn().mockImplementation(() => {
-    return {
-      username: "devtest",
-      attributes: {
-        "custom:avatar": "colour/001-man.png",
-        "custom:forename": "Dev",
-        "custom:surname": "Test",
-        email: "dev.test@ergosoft.co.uk",
-        email_verified: true,
-        sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
-      }
-    }
-  })
-
-  Auth.changePassword = jest.fn().mockImplementation(() => {
-    return { status: 200 }
-  })
-
-  Auth.updateUserAttributes = jest.fn().mockImplementation(() => {
-    return {
-      username: "devtestedited",
-      attributes: {
-        "custom:avatar": "colour/002-man.png",
-        "custom:forename": "Dev",
-        "custom:surname": "Test",
-        email: "dev.test@ergosoft.co.uk",
-        email_verified: true,
-        sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
-      }
-    }
-  })
+  let mockStore: any;
+  let mockRouter: any;
 
   beforeEach(() => {
-    const $router = { push: jest.fn() };
-    const $route = { name: jest.fn() };
-    const user = new User(
-      "testUser",
-      "John",
-      "Doe",
-      "john.doe@ergosoft.co.uk",
-      "",
-      avatars[0]
-    );
-    store.commit("updateCurrentUser", user);
-    store.commit("updateIsLoggedIn", true);
+    jest.clearAllMocks();
+    mockStore = {
+      state: {currentUser: testUser, isLoggedIn: true},
+      commit: jest.fn()
+    }
+    mockRouter = {
+      push: jest.fn(),
+      go: jest.fn()
+    }
     wrapper = mount(UserEdit, {
       global: {
-        plugins: [store],
         components: { Card, Button, InputText, InlineMessage, SelectButton, OverlayPanel, AvatarWithSelector },
-        mocks: { $router, $route }
+        mocks: { $store: mockStore, $router: mockRouter }
       }
     });
   });
