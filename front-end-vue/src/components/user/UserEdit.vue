@@ -174,7 +174,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import store from "@/store/index";
 import { mapState } from "vuex";
 import { User } from "@/models/user/User";
 import Swal from "sweetalert2";
@@ -316,7 +315,7 @@ export default defineComponent({
                   title: "Success",
                   text: "User details and password successfully updated"
                 }).then(() => {
-                  store.commit("updateCurrentUser", res.user);
+                  this.$store.commit("updateCurrentUser", res.user);
                   this.$router.push({ name: "UserDetails" });
                 });
               } else {
@@ -374,7 +373,7 @@ export default defineComponent({
               title: "Success",
               text: "Account details updated successfully"
             }).then(() => {
-              store.commit("updateCurrentUser", res.user);
+              this.$store.commit("updateCurrentUser", res.user);
               this.$router.push({ name: "UserDetails" });
             });
           } else {
