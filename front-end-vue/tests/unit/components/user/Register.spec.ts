@@ -1,4 +1,3 @@
-import store from "@/store/index";
 import { mount } from "@vue/test-utils";
 import Register from "@/components/user/Register.vue";
 import Card from "primevue/card";
@@ -10,26 +9,32 @@ import OverlayPanel from "primevue/overlaypanel";
 import AvatarWithSelector from "@/components/user/AvatarWithSelector.vue";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 import { avatars } from "@/models/user/Avatars";
-import { Auth } from "aws-amplify";
+import AuthService from "@/services/AuthService";
+import Swal from "sweetalert2";
+import { CustomAlert } from "@/models/user/CustomAlert";
+
+AuthService.changePassword = jest.fn().mockResolvedValue({ status: 200, message: "Password change successful" });
+
+Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
 
 describe("register.vue empty", () => {
   let wrapper: any;
-
-
-  Auth.signUp = jest.fn().mockImplementation(() => {
-    return {
-      status: 200
-    }
-  })
+  let mockStore: any;
+  let mockRouter: any;
 
   beforeEach(() => {
-    const $router = { push: jest.fn() };
-    const $route = { name: jest.fn() };
+    jest.clearAllMocks();
+    mockStore = {
+      commit: jest.fn(),
+    }
+    mockRouter = {
+      push: jest.fn(),
+      go: jest.fn()
+    }
     wrapper = mount(Register, {
       global: {
-        plugins: [store],
         components: { Card, Button, InputText, InlineMessage, SelectButton, OverlayPanel, AvatarWithSelector },
-        mocks: { $router, $route }
+        mocks: { $store: mockStore, $router: mockRouter }
       }
     });
   });
@@ -51,21 +56,22 @@ describe("register.vue empty", () => {
 
 describe("register.vue prefilled", () => {
   let wrapper: any;
-
-  Auth.signUp = jest.fn().mockImplementation(() => {
-    return {
-      status: 200
-    }
-  });
+  let mockStore: any;
+  let mockRouter: any;
 
   beforeEach(() => {
-    const $router = { push: jest.fn() };
-    const $route = { name: jest.fn() };
+    jest.clearAllMocks();
+    mockStore = {
+      commit: jest.fn()
+    }
+    mockRouter = {
+      push: jest.fn(),
+      go: jest.fn()
+    }
     wrapper = mount(Register, {
       global: {
-        plugins: [store],
-        components: { Card, Button, InputText, InlineMessage, OverlayPanel, SelectButton, AvatarWithSelector },
-        mocks: { $router, $route }
+        components: { Card, Button, InputText, InlineMessage, SelectButton, OverlayPanel, AvatarWithSelector },
+        mocks: { $store: mockStore, $router: mockRouter }
       }
     });
     wrapper.vm.username = "DevTest";
@@ -341,4 +347,13 @@ describe("register.vue prefilled", () => {
     const allVerifiedResult = wrapper.vm.allVerified();
     expect(allVerifiedResult).toBe(true);
   });
+
+  it("should updateAvatar", async() => {
+    expect(wrapper.vm.selectedAvatar).toStrictEqual(avatars[0]);
+    wrapper.vm.updateAvatar({ value: "colour/003-man.png" });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.selectedAvatar).toStrictEqual({ value: "colour/003-man.png"});
+  });
+
+
 });

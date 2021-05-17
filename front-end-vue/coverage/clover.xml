@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1621256036966" clover="3.2.0">
-  <project timestamp="1621256036966" name="All files">
-    <metrics statements="1105" coveredstatements="272" conditionals="548" coveredconditionals="95" methods="355" coveredmethods="77" elements="2008" coveredelements="444" complexity="0" loc="1105" ncloc="1105" packages="8" files="42" classes="42"/>
+<coverage generated="1621264950554" clover="3.2.0">
+  <project timestamp="1621264950555" name="All files">
+    <metrics statements="1105" coveredstatements="291" conditionals="548" coveredconditionals="112" methods="355" coveredmethods="87" elements="2008" coveredelements="490" complexity="0" loc="1105" ncloc="1105" packages="8" files="42" classes="42"/>
     <package name="src">
       <metrics statements="7" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <file name="App.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/App.vue">
@@ -722,18 +722,18 @@
       </file>
     </package>
     <package name="src.components.user">
-      <metrics statements="335" coveredstatements="214" conditionals="180" coveredconditionals="91" methods="118" coveredmethods="72"/>
+      <metrics statements="335" coveredstatements="233" conditionals="180" coveredconditionals="108" methods="118" coveredmethods="82"/>
       <file name="AvatarWithSelector.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/components/user/AvatarWithSelector.vue">
-        <metrics statements="9" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="2"/>
+        <metrics statements="9" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="4"/>
         <line num="44" count="3" type="stmt"/>
         <line num="45" count="3" type="stmt"/>
         <line num="47" count="3" type="stmt"/>
-        <line num="53" count="0" type="stmt"/>
-        <line num="56" count="0" type="stmt"/>
-        <line num="60" count="50" type="stmt"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="56" count="1" type="stmt"/>
+        <line num="60" count="51" type="stmt"/>
         <line num="67" count="0" type="stmt"/>
         <line num="68" count="0" type="stmt"/>
-        <line num="72" count="51" type="stmt"/>
+        <line num="72" count="53" type="stmt"/>
       </file>
       <file name="ButtonBar.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/components/user/ButtonBar.vue">
         <metrics statements="6" coveredstatements="6" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
@@ -873,7 +873,7 @@
         <line num="93" count="8" type="stmt"/>
       </file>
       <file name="PasswordEdit.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/components/user/PasswordEdit.vue">
-        <metrics statements="29" coveredstatements="13" conditionals="21" coveredconditionals="4" methods="12" coveredmethods="5"/>
+        <metrics statements="29" coveredstatements="29" conditionals="21" coveredconditionals="21" methods="12" coveredmethods="12"/>
         <line num="109" count="1" type="stmt"/>
         <line num="110" count="1" type="stmt"/>
         <line num="114" count="1" type="stmt"/>
@@ -881,28 +881,28 @@
         <line num="116" count="1" type="stmt"/>
         <line num="117" count="1" type="stmt"/>
         <line num="119" count="1" type="stmt"/>
-        <line num="125" count="0" type="stmt"/>
-        <line num="128" count="6" type="stmt"/>
-        <line num="131" count="2" type="stmt"/>
-        <line num="135" count="8" type="stmt"/>
-        <line num="147" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="150" count="0" type="stmt"/>
-        <line num="151" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="157" count="0" type="stmt"/>
-        <line num="159" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="160" count="0" type="stmt"/>
-        <line num="165" count="0" type="stmt"/>
-        <line num="168" count="0" type="stmt"/>
-        <line num="176" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="177" count="0" type="stmt"/>
-        <line num="183" count="0" type="stmt"/>
-        <line num="193" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="197" count="47" type="stmt"/>
-        <line num="201" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="202" count="0" type="stmt"/>
-        <line num="207" count="47" type="cond" truecount="1" falsecount="1"/>
-        <line num="212" count="0" type="stmt"/>
-        <line num="214" count="47" type="stmt"/>
+        <line num="125" count="12" type="stmt"/>
+        <line num="128" count="20" type="stmt"/>
+        <line num="131" count="14" type="stmt"/>
+        <line num="135" count="23" type="stmt"/>
+        <line num="147" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="150" count="7" type="stmt"/>
+        <line num="151" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="157" count="5" type="stmt"/>
+        <line num="159" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="160" count="3" type="stmt"/>
+        <line num="165" count="3" type="stmt"/>
+        <line num="168" count="2" type="stmt"/>
+        <line num="176" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="177" count="1" type="stmt"/>
+        <line num="183" count="1" type="stmt"/>
+        <line num="193" count="10" type="cond" truecount="2" falsecount="0"/>
+        <line num="197" count="64" type="stmt"/>
+        <line num="201" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="202" count="1" type="stmt"/>
+        <line num="207" count="65" type="cond" truecount="2" falsecount="0"/>
+        <line num="212" count="17" type="stmt"/>
+        <line num="214" count="48" type="stmt"/>
       </file>
       <file name="RecoverByEmail.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/components/user/RecoverByEmail.vue">
         <metrics statements="18" coveredstatements="0" conditionals="6" coveredconditionals="0" methods="7" coveredmethods="0"/>
@@ -926,7 +926,7 @@
         <line num="120" count="0" type="stmt"/>
       </file>
       <file name="Register.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/components/user/Register.vue">
-        <metrics statements="63" coveredstatements="38" conditionals="31" coveredconditionals="11" methods="22" coveredmethods="10"/>
+        <metrics statements="63" coveredstatements="39" conditionals="31" coveredconditionals="11" methods="22" coveredmethods="11"/>
         <line num="177" count="1" type="stmt"/>
         <line num="178" count="1" type="stmt"/>
         <line num="179" count="1" type="stmt"/>
@@ -936,14 +936,14 @@
         <line num="190" count="1" type="stmt"/>
         <line num="191" count="1" type="stmt"/>
         <line num="193" count="1" type="stmt"/>
-        <line num="201" count="31" type="stmt"/>
-        <line num="204" count="32" type="stmt"/>
-        <line num="207" count="32" type="stmt"/>
-        <line num="210" count="31" type="stmt"/>
-        <line num="213" count="31" type="stmt"/>
-        <line num="216" count="34" type="stmt"/>
-        <line num="219" count="32" type="stmt"/>
-        <line num="224" count="29" type="stmt"/>
+        <line num="201" count="32" type="stmt"/>
+        <line num="204" count="33" type="stmt"/>
+        <line num="207" count="33" type="stmt"/>
+        <line num="210" count="32" type="stmt"/>
+        <line num="213" count="32" type="stmt"/>
+        <line num="216" count="35" type="stmt"/>
+        <line num="219" count="33" type="stmt"/>
+        <line num="224" count="30" type="stmt"/>
         <line num="251" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="255" count="0" type="stmt"/>
         <line num="259" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -984,10 +984,10 @@
         <line num="360" count="1" type="stmt"/>
         <line num="361" count="1" type="stmt"/>
         <line num="362" count="1" type="stmt"/>
-        <line num="366" count="122" type="cond" truecount="2" falsecount="0"/>
-        <line num="377" count="57" type="stmt"/>
-        <line num="379" count="65" type="stmt"/>
-        <line num="384" count="0" type="stmt"/>
+        <line num="366" count="126" type="cond" truecount="2" falsecount="0"/>
+        <line num="377" count="60" type="stmt"/>
+        <line num="379" count="66" type="stmt"/>
+        <line num="384" count="2" type="stmt"/>
         <line num="388" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="389" count="0" type="stmt"/>
       </file>
