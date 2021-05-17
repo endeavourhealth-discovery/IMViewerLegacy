@@ -58,7 +58,7 @@
         >
           <template #option="slotProps">
             <div>
-              {{ slotProps.option.name }}
+              {{ slotProps.option.name || slotProps.option["@id"] }}
             </div>
           </template>
         </Listbox>
@@ -73,7 +73,7 @@
         >
           <template #option="slotProps">
             <div>
-              {{ slotProps.option.name }}
+              {{ slotProps.option.name || slotProps.option["@id"] }}
             </div>
           </template>
         </Listbox>
