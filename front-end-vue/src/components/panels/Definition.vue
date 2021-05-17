@@ -47,18 +47,37 @@
         <b>Definitional properties</b>
       </div>
     </Divider>
-    <div>
-      <strong>is a: </strong>[{{ isA?.length }}]
-      <ul>
-        <li
-          class="link"
-          v-for="item in isA"
-          :key="item"
-          @click="navigate(item['@id'])"
+    <div class="p-d-flex p-flex-row p-jc-start summary-container">
+      <div class="left-side">
+        <strong>is a: </strong>{{ isA?.length }}
+        <Listbox
+          :options="isA"
+          listStyle="height: 12rem;"
+          v-model="selected"
+          @change="navigate(selected['@id'])"
         >
-          {{ item.name || item["@id"] }}
-        </li>
-      </ul>
+          <template #option="slotProps">
+            <div>
+              {{ slotProps.option.name }}
+            </div>
+          </template>
+        </Listbox>
+      </div>
+      <div class="right-side">
+        <strong>has sub types: </strong>{{ children?.length }}
+        <Listbox
+          :options="children"
+          listStyle="height: 12rem;"
+          v-model="selected"
+          @change="navigate(selected['@id'])"
+        >
+          <template #option="slotProps">
+            <div>
+              {{ slotProps.option.name }}
+            </div>
+          </template>
+        </Listbox>
+      </div>
     </div>
     <Divider align="left">
       <div class="p-d-inline-flex p-ai-center">
@@ -72,7 +91,6 @@
       :rows="10"
       :scrollable="true"
       scrollHeight="flex"
-      id="properties-table"
     >
       <template #empty>
         No records found
@@ -131,6 +149,7 @@ import { RDF } from "@/vocabulary/RDF";
 import { IM } from "@/vocabulary/IM";
 import { SHACL } from "@/vocabulary/SHACL";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
+import ConceptService from "@/services/ConceptService";
 
 export default defineComponent({
   name: "Definition",
@@ -167,15 +186,28 @@ export default defineComponent({
       return "<p class='description-p'>" + text + "</p>";
     }
   },
+  data() {
+    return {
+      children: [],
+      selected: {}
+    };
+  },
   watch: {
     descriptionHTML(newValue) {
       const descContainer = document.getElementById("description");
       if (descContainer) {
         descContainer.innerHTML = newValue;
       }
+    },
+    async concept() {
+      this.children = await this.getChildren(this.concept[IM.IRI]);
     }
   },
   methods: {
+    async getChildren(iri: string) {
+      return (await ConceptService.getConceptChildren(iri)).data;
+    },
+
     navigate(iri: any) {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
       if (iri)
