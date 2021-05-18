@@ -13,7 +13,6 @@
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import SidebarControl from "@/components/sidebar/SidebarControl.vue";
-import store from "@/store/index";
 import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
@@ -25,25 +24,25 @@ export default defineComponent({
   emits: ["userPopupToggled"],
   async mounted() {
     // check for user and log them in if found or logout if not
-    await store.dispatch("authenticateCurrentUser");
+    await this.$store.dispatch("authenticateCurrentUser");
     this.updateRoute();
   },
   methods: {
     updateRoute(): void {
       if (this.$route.name === "Home" || this.$route.name === "Dashboard") {
-        store.commit(
+        this.$store.commit(
           "updateConceptIri",
           "http://endhealth.info/im#DiscoveryOntology"
         );
       } else if (this.$route.name === "Concept") {
-        store.commit(
+        this.$store.commit(
           "updateConceptIri",
           this.$route.params.selectedIri as string
         );
       }
-      store
-        .dispatch("fetchConceptAggregate", store.state.conceptIri)
-        .then(res => {
+      this.$store
+        .dispatch("fetchConceptAggregate", this.$store.state.conceptIri)
+        .then((res: any) => {
           if (!res) {
             this.$toast.add(
               LoggerService.error("Concept aggregate server request failed")
