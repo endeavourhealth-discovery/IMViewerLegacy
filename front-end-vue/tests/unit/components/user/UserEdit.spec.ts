@@ -13,15 +13,7 @@ import { avatars } from "@/models/user/Avatars";
 import AuthService from "@/services/AuthService";
 import Swal from "sweetalert2";
 
-const testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "colour/003-man.png" });
-
-testUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g09");
-
-AuthService.changePassword = jest.fn().mockResolvedValue({ status: 200, message: "Password change successful" });
-
-AuthService.updateUser = jest.fn().mockResolvedValue({ status: 200, message: "User Update successful", user: testUser });
-
-Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
+let testUser: User;
 
 describe("userEdit.vue", () => {
   let wrapper: any;
@@ -30,6 +22,16 @@ describe("userEdit.vue", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "colour/003-man.png" });
+
+    testUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g09");
+
+    AuthService.changePassword = jest.fn().mockResolvedValue({ status: 200, message: "Password change successful" });
+
+    AuthService.updateUser = jest.fn().mockResolvedValue({ status: 200, message: "User Update successful", user: testUser });
+
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
     mockStore = {
       state: {currentUser: testUser, isLoggedIn: true},
       commit: jest.fn()
@@ -269,16 +271,15 @@ describe("userEdit.vue", () => {
   });
 
   it("fetches from authservice if all verified _ no password", async() => {
-    testUser.firstName = "Johnny";
     wrapper.vm.firstName = "Johnny";
     await wrapper.vm.$nextTick();
     wrapper.vm.handleEditSubmit();
     expect(AuthService.updateUser).toBeCalledTimes(1);
+    testUser.firstName = "Johnny";
     expect(AuthService.updateUser).toBeCalledWith(testUser);
   });
 
   it("fires swal if all verified _ no password", async() => {
-    testUser.firstName = "Johnny";
     wrapper.vm.firstName = "Johnny";
     await wrapper.vm.$nextTick();
     wrapper.vm.handleEditSubmit();
@@ -292,7 +293,6 @@ describe("userEdit.vue", () => {
   });
 
   it("updates store and reroutes if all verified _ no password", async() => {
-    testUser.firstName = "Johnny";
     wrapper.vm.firstName = "Johnny";
     await wrapper.vm.$nextTick();
     wrapper.vm.handleEditSubmit();
@@ -305,7 +305,6 @@ describe("userEdit.vue", () => {
 
   it("fires swal if all verified _ no password __ not 200", async() => {
     AuthService.updateUser = jest.fn().mockResolvedValue({ status: 403, message: "User update failed" });
-    testUser.firstName = "Johnny";
     wrapper.vm.firstName = "Johnny";
     await wrapper.vm.$nextTick();
     wrapper.vm.handleEditSubmit();
@@ -316,5 +315,278 @@ describe("userEdit.vue", () => {
       title: "Error",
       text: "User update failed"
     });
+  });
+
+  it("fires swal if not verified", async() => {
+    AuthService.updateUser = jest.fn().mockResolvedValue({ status: 403, message: "User update failed" });
+    testUser.firstName = "Johnny";
+    wrapper.vm.firstName = "John(y";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleEditSubmit();
+    await flushPromises();
+    expect(Swal.fire).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledWith({
+      icon: "error",
+      title: "Error",
+      text: "Error with user form"
+    });
+  });
+
+  it("fetches from authservice.updateUser if all verified ___ password edit", async() => {
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "12345678";
+    wrapper.vm.passwordNew1 = "87654321";
+    wrapper.vm.passwordNew2 = "87654321";
+    testUser.firstName = "Johnny";
+    wrapper.vm.firstName = "Johnny";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleEditSubmit();
+    expect(AuthService.updateUser).toBeCalledTimes(1);
+    expect(AuthService.updateUser).toBeCalledWith(testUser);
+  });
+
+  it("fetches from authservice.changePassword 200 received ___ password edit", async() => {
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "12345678";
+    wrapper.vm.passwordNew1 = "87654321";
+    wrapper.vm.passwordNew2 = "87654321";
+    testUser.firstName = "Johnny";
+    testUser.password = "12345678";
+    wrapper.vm.firstName = "Johnny";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleEditSubmit();
+    await flushPromises();
+    expect(AuthService.updateUser).toBeCalledTimes(1);
+    expect(AuthService.changePassword).toBeCalledTimes(1);
+    expect(AuthService.changePassword).toBeCalledWith("12345678", "87654321");
+  });
+
+  it("fires swal if password 200 received ___ password edit", async() => {
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "12345678";
+    wrapper.vm.passwordNew1 = "87654321";
+    wrapper.vm.passwordNew2 = "87654321";
+    testUser.firstName = "Johnny";
+    testUser.password = "12345678";
+    wrapper.vm.firstName = "Johnny";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleEditSubmit();
+    await flushPromises();
+    expect(AuthService.changePassword).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledWith({
+      icon: "success",
+      title: "Success",
+      text: "User details and password successfully updated"
+    });
+  });
+
+  it("updates store and reroutes if password 200 received ___ password edit", async() => {
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "12345678";
+    wrapper.vm.passwordNew1 = "87654321";
+    wrapper.vm.passwordNew2 = "87654321";
+    testUser.firstName = "Johnny";
+    testUser.password = "12345678";
+    wrapper.vm.firstName = "Johnny";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleEditSubmit();
+    await flushPromises();
+    expect(mockStore.commit).toBeCalledTimes(1);
+    expect(mockStore.commit).toBeCalledWith("updateCurrentUser", testUser);
+    expect(mockRouter.push).toBeCalledTimes(1);
+    expect(mockRouter.push).toBeCalledWith({ name: "UserDetails" });
+  });
+
+  it("fires swal if password !200 received ___ password edit", async() => {
+    AuthService.changePassword = jest.fn().mockResolvedValue({ status: 403, message: "Password change failed" });
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "12345678";
+    wrapper.vm.passwordNew1 = "87654321";
+    wrapper.vm.passwordNew2 = "87654321";
+    testUser.firstName = "Johnny";
+    testUser.password = "12345678";
+    wrapper.vm.firstName = "Johnny";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleEditSubmit();
+    await flushPromises();
+    expect(AuthService.changePassword).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledWith({
+      icon: "error",
+      title: "Error",
+      text:
+        "Password update failed, but user details updated successfully. " +
+        "Password change failed"
+    });
+  });
+
+  it("fires swal if authservice user !200 received ___ password edit", async() => {
+    AuthService.updateUser = jest.fn().mockResolvedValue({ status: 403, message: "User update failed" });
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "12345678";
+    wrapper.vm.passwordNew1 = "87654321";
+    wrapper.vm.passwordNew2 = "87654321";
+    testUser.firstName = "Johnny";
+    testUser.password = "12345678";
+    wrapper.vm.firstName = "Johnny";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleEditSubmit();
+    await flushPromises();
+    expect(AuthService.updateUser).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledWith({
+      icon: "error",
+      title: "Error",
+      text: "User update failed"
+    });
+  });
+
+  it("fires swal if password form error ___ password edit", async() => {
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "12345678";
+    wrapper.vm.passwordNew1 = "8765432";
+    wrapper.vm.passwordNew2 = "8765432";
+    testUser.firstName = "Johnny";
+    testUser.password = "12345678";
+    wrapper.vm.firstName = "Johnny";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleEditSubmit();
+    await flushPromises();
+    expect(Swal.fire).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledWith({
+      icon: "error",
+      title: "Error",
+      text: "Authentication failed. Please check your current password."
+    });
+  });
+
+  it("fires swal if no changes", async() => {
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleEditSubmit();
+    await flushPromises();
+    expect(Swal.fire).toBeCalledTimes(1);
+    expect(Swal.fire).toBeCalledWith({
+      icon: "warning",
+      title: "Nothing to update",
+      text: "Your account details have not been updated."
+    });
+  });
+
+  it("can check if user fields are verified ___ true", () => {
+    expect(wrapper.vm.userFieldsVerified).toBeTruthy();
+  });
+
+  it("can check if user fields are verified ___ false", async() => {
+    wrapper.vm.email1 = "john.doe.ergosoft.co.uk";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.userFieldsVerified()).toBeFalsy();
+  });
+
+  it("can check if password fields are verified ___ true", async() => {
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "12345678";
+    wrapper.vm.passwordNew1 = "87654321";
+    wrapper.vm.passwordNew2 = "87654321";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.passwordFieldsVerified()).toBeTruthy();
+  });
+
+  it("can check if password different from original ___ true", async() => {
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "12345678";
+    wrapper.vm.passwordNew1 = "87654321";
+    wrapper.vm.passwordNew2 = "87654321";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.passwordDifferentFromOriginal()).toBeTruthy();
+  });
+
+  it("can check if password different from original ___ false", async() => {
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "87654321";
+    wrapper.vm.passwordNew1 = "87654321";
+    wrapper.vm.passwordNew2 = "87654321";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.passwordDifferentFromOriginal()).toBeFalsy();
+  });
+
+  it("can fire swal on reset form", async() => {
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "12345678";
+    wrapper.vm.passwordNew1 = "87654321";
+    wrapper.vm.passwordNew2 = "87654321";
+    wrapper.vm.firstName = "Bill";
+    wrapper.vm.lastName = "Williams";
+    wrapper.vm.email1 = "bill.williams@ergosoft.co.uk";
+    wrapper.vm.email2 = "bill.williams@ergosoft.co.uk";
+    wrapper.vm.selectedAvatar = { value: "colour/004-man.png" };
+    await wrapper.vm.$nextTick();
+    wrapper.vm.resetForm();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.firstName).toBe("John");
+    expect(wrapper.vm.lastName).toBe("Doe");
+    expect(wrapper.vm.email1).toBe("john.doe@ergosoft.co.uk");
+    expect(wrapper.vm.email2).toBe("john.doe@ergosoft.co.uk");
+    expect(wrapper.vm.selectedAvatar).toStrictEqual({ value: "colour/003-man.png" });
+    expect(wrapper.vm.email1Verified).toBe(true);
+    expect(wrapper.vm.emailsMatch).toBe(true);
+    expect(wrapper.vm.firstNameVerified).toBe(true);
+    expect(wrapper.vm.lastNameVerified).toBe(true);
+    expect(wrapper.vm.showEmail1Notice).toBe(false);
+    expect(wrapper.vm.showEmail2Notice).toBe(false);
+    expect(wrapper.vm.showPassword2Notice).toBe(false);
+    expect(wrapper.vm.showFirstNameNotice).toBe(false);
+    expect(wrapper.vm.showLastNameNotice).toBe(false);
+  });
+
+  it("can update avatar", async() => {
+    wrapper.vm.updateAvatar({ value: "colour/005-man.png" });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.selectedAvatar).toStrictEqual({ value: "colour/005-man.png" });
+  });
+
+  it("can set button disable ___ false __ no password", async() => {
+    wrapper.vm.firstName = "Johnny";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.setButtonDisabled()).toBeFalsy();
+  });
+
+  it("can set button disable ___ false __ password", async() => {
+    wrapper.vm.firstName = "Johnny";
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "12345678";
+    wrapper.vm.passwordNew1 = "87654321";
+    wrapper.vm.passwordNew2 = "87654321";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.setButtonDisabled()).toBeFalsy();
+  });
+
+  it("can set button disable ___ true __ password", async() => {
+    wrapper.vm.firstName = "Johnny";
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "12345678";
+    wrapper.vm.passwordNew1 = "8765432";
+    wrapper.vm.passwordNew2 = "87654321";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.setButtonDisabled()).toBeTruthy();
+  });
+
+  it("can set button disable ___ true __ no password", async() => {
+    wrapper.vm.firstName = "Johnny(";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.setButtonDisabled()).toBeTruthy();
+  });
+
+  it("can can check for changes ___ true", async() => {
+    wrapper.vm.firstName = "Johnny";
+    wrapper.vm.lastName = "Dorian";
+    wrapper.vm.email = "johnny.dorian@ergosoft.co.uk";
+    wrapper.vm.selectedAvatar = { value: "colour/005-man.png" };
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.checkForChanges()).toBeTruthy();
+  });
+
+  it("can can check for changes ___ false", async() => {
+    expect(wrapper.vm.checkForChanges()).toBeFalsy();
   });
 });

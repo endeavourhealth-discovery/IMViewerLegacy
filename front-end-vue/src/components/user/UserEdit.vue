@@ -295,7 +295,7 @@ export default defineComponent({
           this.firstName,
           this.lastName,
           this.email1,
-          this.passwordNew1,
+          "",
           this.selectedAvatar
         );
         updatedUser.setId(this.currentUser.id);
@@ -461,10 +461,7 @@ export default defineComponent({
         return false;
       } else if (
         this.userFieldsVerified() &&
-        this.showPasswordEdit &&
-        this.passwordsMatch &&
-        this.passwordStrength !== PasswordStrength.fail &&
-        this.passwordStrengthOld !== PasswordStrength.fail
+        this.passwordFieldsVerified()
       ) {
         return false;
       } else {
@@ -477,7 +474,7 @@ export default defineComponent({
         this.currentUser.firstName === this.firstName &&
         this.currentUser.lastName === this.lastName &&
         this.currentUser.email === this.email1 &&
-        this.currentUser.avatar === this.selectedAvatar
+        this.currentUser.avatar.value === this.selectedAvatar.value
       ) {
         return false;
       } else {
