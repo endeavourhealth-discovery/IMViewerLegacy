@@ -22,6 +22,12 @@
         "
         class="p-button-rounded p-button-text p-button-plain"
       />
+      <Button
+        class="p-button-rounded p-button-text p-button-plain"
+        disabled="true"
+      >
+        <div v-if="loading" class="spinner"></div
+      ></Button>
     </span>
 
     <Tree
@@ -73,6 +79,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false,
       searchResult: "",
       root: [] as TreeNode[],
       expandedKeys: {} as any,
@@ -154,6 +161,7 @@ export default defineComponent({
     },
 
     async expandChildren(node: TreeNode): Promise<void> {
+      this.loading = true;
       this.expandedKeys[node.key] = true;
       let children: any[] = [];
       await ConceptService.getConceptChildren(node.data)
@@ -181,6 +189,7 @@ export default defineComponent({
         );
         index++;
       });
+      this.loading = false;
     },
 
     async expandParents(): Promise<void> {
@@ -250,5 +259,42 @@ export default defineComponent({
 }
 .p-tree-toggler {
   min-width: 22px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border-color: currentColor;
+  border-style: solid;
+  border-radius: 99999px;
+  border-width: 2px;
+  border-left-color: transparent;
+  color: rgb(112, 169, 216);
+  opacity: 0;
+  animation-name: rotate, fadeIn;
+  animation-duration: 450ms, 600ms;
+  animation-timing-function: linear, ease;
+  animation-iteration-count: infinite, 1;
+  animation-delay: 600ms;
+  animation-fill-mode: forwards;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 </style>
