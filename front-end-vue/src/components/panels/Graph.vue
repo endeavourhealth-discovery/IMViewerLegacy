@@ -1,6 +1,6 @@
 <template>
   <div id="content">
-    <svg width="100%" height="600" id="svg">
+    <svg width="100%" height="600" id="svg" class="svg-pan-zoom_viewport">
       <g class="links"></g>
       <g class="nodes"></g>
     </svg>
@@ -26,7 +26,7 @@
 
 <script lang="ts">
 import * as d3 from "d3";
-import SvgPanZoom from "svg-pan-zoom";
+// import * as SvgPanZoom from "svg-pan-zoom";
 import svgPanZoom from "svg-pan-zoom";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { HierarchyNode } from "d3";
@@ -58,20 +58,18 @@ export default defineComponent({
       margin: {} as any,
       width: 660,
       height: 500,
-      panZoom: {} as SvgPanZoom.Instance,
+      panZoom: {} as any,
       windowHeight: window.innerHeight,
       windowWidth: window.innerWidth
     };
   },
   async mounted() {
-    await this.getGraph(this.conceptIri!);
-    this.initView();
-    this.initSvgPanZoom();
-
     this.margin = { top: 20, right: 90, bottom: 30, left: 90 };
     this.width = 660 - this.margin.left - this.margin.right;
     this.height = 500 - this.margin.top - this.margin.bottom;
-
+    await this.getGraph(this.conceptIri!);
+    this.initView();
+    this.initSvgPanZoom();
     window.addEventListener("resize", this.onResize);
   },
 
@@ -98,8 +96,10 @@ export default defineComponent({
     },
 
     zoomReset() {
-      this.panZoom.resetZoom();
-      this.panZoom.resetPan();
+      if (document.getElementById("svg")) {
+        this.panZoom.resetZoom();
+        this.panZoom.resetPan();
+      }
     },
 
     zoomOut() {
@@ -107,14 +107,17 @@ export default defineComponent({
     },
 
     initSvgPanZoom() {
-      // this.panZoom?.destroy();
-      this.panZoom = svgPanZoom("#svg", {
-        zoomEnabled: true,
-        fit: false,
-        center: true,
-        dblClickZoomEnabled: false,
-        mouseWheelZoomEnabled: false
-      });
+      this.panZoom = null;
+      const svgElement = document.getElementById("svg");
+      if (svgElement) {
+        this.panZoom = svgPanZoom("#svg", {
+          zoomEnabled: false,
+          fit: false,
+          center: true,
+          dblClickZoomEnabled: false,
+          mouseWheelZoomEnabled: false
+        });
+      }
     },
 
     eraseTree() {
@@ -143,21 +146,21 @@ export default defineComponent({
         .attr("class", "link")
         .attr("d", (d: any) => {
           return (
-            "M" +
+            " M " +
             (d.depth > 2 ? 1.5 * d.y : d.y) +
-            "," +
+            " , " +
             (isBig ? 6 * d.x : d.x) +
-            "C" +
+            " C " +
             (d.depth > 2 ? (d.y + d.parent.y) / 1.5 : (d.y + d.parent.y) / 2) +
-            "," +
+            " , " +
             (isBig ? 6 * d.x : d.x) +
             " " +
             (d.depth > 2 ? (d.y + d.parent.y) / 1.5 : (d.y + d.parent.y) / 2) +
-            "," +
+            " , " +
             (isBig ? 6 * d.parent.x : d.parent.x) +
             " " +
             (d.parent.depth > 2 ? 1.5 * d.parent.y : d.parent.y) +
-            "," +
+            " , " +
             (isBig ? 6 * d.parent.x : d.parent.x)
           );
         });
