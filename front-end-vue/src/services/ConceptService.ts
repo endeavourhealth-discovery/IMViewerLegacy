@@ -121,7 +121,8 @@ export default class ConceptService {
   }
 
   public static getConceptTermCodes(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/termCode", { params: { iri: iri } });
+    return axios.get(this.api + "api/concept/termCode", {
+      params: { iri: iri }
+    });
   }
-
 }

@@ -257,8 +257,13 @@ export default defineComponent({
   height: 95%;
   overflow: auto;
 }
-.p-tree-toggler {
-  min-width: 22px;
+.p-tree-toggler,
+.p-tree-toggler-icon {
+  min-width: 2rem;
+}
+
+.p-treenode-icon {
+  min-width: 1.25rem;
 }
 
 .spinner {

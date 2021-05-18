@@ -23,7 +23,9 @@ body {
 
 #popup-user {
   background-color: #3b3e47 !important;
-  bottom: calc(4rem + 45px) !important;
+  /* bottom setting when cog is visible */
+  /* bottom: calc(4rem + 45px) !important;  */
+  bottom: 20px !important;
   top: unset !important;
 }
 

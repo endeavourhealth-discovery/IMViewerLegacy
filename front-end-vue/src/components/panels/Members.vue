@@ -51,15 +51,17 @@ export default defineComponent({
   name: "Members",
   components: {},
   props: {
-    conceptIri: String,
+    conceptIri: String
   },
   watch: {
     async conceptIri(newValue) {
       await this.getMembers(newValue);
-    },
+    }
   },
   async mounted() {
-    await this.getMembers(this.conceptIri!);
+    if (this.conceptIri) {
+      await this.getMembers(this.conceptIri);
+    }
   },
 
   data() {
@@ -67,7 +69,7 @@ export default defineComponent({
       loading: false,
       members: [] as any,
       selectedIncludedMember: {},
-      combinedMembers: [] as any,
+      combinedMembers: [] as any
     };
   },
   methods: {
@@ -92,15 +94,15 @@ export default defineComponent({
     onNodeSelect(member: any) {
       this.$router.push({
         name: "Concept",
-        params: { selectedIri: member.concept["@id"] },
+        params: { selectedIri: member.concept["@id"] }
       });
     },
 
     toggle(event: any) {
       const x = this.$refs.menu as any;
       x.toggle(event);
-    },
-  },
+    }
+  }
 });
 </script>
 
