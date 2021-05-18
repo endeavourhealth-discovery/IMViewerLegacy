@@ -56,7 +56,7 @@
             aria-controls="overlay_menu"
           />
           <Menu ref="menu" :model="getItems()" :popup="true" id="popup-user" />
-          <i class="pi pi-cog settings-icon" aria-hidden="true"></i>
+          <!-- <i class="pi pi-cog settings-icon" aria-hidden="true"></i> -->
         </div>
       </div>
     </div>
