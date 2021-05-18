@@ -18,7 +18,7 @@ export default defineComponent({
   components: {
     ButtonBar: ButtonBar
   }
-})
+});
 </script>
 
 <style scoped>

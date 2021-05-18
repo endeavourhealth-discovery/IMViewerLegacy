@@ -286,10 +286,7 @@ export default defineComponent({
     },
 
     handleEditSubmit(): void {
-      if (
-        this.passwordFieldsVerified() &&
-        this.userFieldsVerified()
-      ) {
+      if (this.passwordFieldsVerified() && this.userFieldsVerified()) {
         const updatedUser = new User(
           this.username,
           this.firstName,
@@ -459,10 +456,7 @@ export default defineComponent({
         this.checkForChanges()
       ) {
         return false;
-      } else if (
-        this.userFieldsVerified() &&
-        this.passwordFieldsVerified()
-      ) {
+      } else if (this.userFieldsVerified() && this.passwordFieldsVerified()) {
         return false;
       } else {
         return true;

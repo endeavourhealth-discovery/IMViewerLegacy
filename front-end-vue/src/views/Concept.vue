@@ -132,7 +132,6 @@ export default defineComponent({
     });
 
     this.setContentHeight();
-
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
@@ -185,13 +184,23 @@ export default defineComponent({
       const content = document.getElementById("concept-content");
       const container = document.getElementsByClassName("concept-container")[0];
       const currentFontSize = parseFloat(
-        window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size")
+        window
+          .getComputedStyle(document.documentElement, null)
+          .getPropertyValue("font-size")
       );
       if (content && header && container && currentFontSize) {
-        content.style.minHeight = container.getBoundingClientRect().height - header.getBoundingClientRect().height - (2 * currentFontSize) - 1 + "px";
+        content.style.minHeight =
+          container.getBoundingClientRect().height -
+          header.getBoundingClientRect().height -
+          2 * currentFontSize -
+          1 +
+          "px";
       } else {
-        LoggerService.error("Content sizing error", "failed to get element(s) for concept content resizing");
-      };
+        LoggerService.error(
+          "Content sizing error",
+          "failed to get element(s) for concept content resizing"
+        );
+      }
     },
 
     async getConcept(iri: string) {

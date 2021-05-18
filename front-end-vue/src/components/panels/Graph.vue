@@ -67,7 +67,9 @@ export default defineComponent({
     this.margin = { top: 20, right: 90, bottom: 30, left: 90 };
     this.width = 660 - this.margin.left - this.margin.right;
     this.height = 500 - this.margin.top - this.margin.bottom;
-    await this.getGraph(this.conceptIri!);
+    if (this.conceptIri) {
+      await this.getGraph(this.conceptIri);
+    }
     this.initView();
     this.initSvgPanZoom();
     window.addEventListener("resize", this.onResize);

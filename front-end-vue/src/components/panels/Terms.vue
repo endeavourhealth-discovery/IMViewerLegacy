@@ -14,11 +14,13 @@
     scrollHeight="600px"
     class="p-datatable-sm"
   >
-    <Column field="scheme.name" header="Scheme" ></Column>
+    <Column field="scheme.name" header="Scheme"></Column>
     <Column field="term" header="Term" style="flex:0 0 75%"></Column>
-    <Column field="code" header="Code" ></Column>
-    <template #groupheader="slotProps" >
-      <span style="font-weight: 700; color:rgba(51,153,255,0.8)">Scheme : {{ slotProps.data.scheme.name }}</span>
+    <Column field="code" header="Code"></Column>
+    <template #groupheader="slotProps">
+      <span style="font-weight: 700; color:rgba(51,153,255,0.8)">
+        Scheme : {{ slotProps.data.scheme.name }}
+      </span>
     </template>
   </DataTable>
 </template>
@@ -38,7 +40,9 @@ export default defineComponent({
     }
   },
   async mounted() {
-    await this.getTerms(this.conceptIri!);
+    if (this.conceptIri) {
+      await this.getTerms(this.conceptIri);
+    }
   },
   data() {
     return {
