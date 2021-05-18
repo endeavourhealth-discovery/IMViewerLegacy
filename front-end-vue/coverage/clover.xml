@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1621332729558" clover="3.2.0">
-  <project timestamp="1621332729558" name="All files">
-    <metrics statements="1107" coveredstatements="364" conditionals="546" coveredconditionals="158" methods="356" coveredmethods="109" elements="2009" coveredelements="631" complexity="0" loc="1107" ncloc="1107" packages="8" files="42" classes="42"/>
+<coverage generated="1621333100747" clover="3.2.0">
+  <project timestamp="1621333100747" name="All files">
+    <metrics statements="1104" coveredstatements="361" conditionals="546" coveredconditionals="158" methods="355" coveredmethods="108" elements="2005" coveredelements="627" complexity="0" loc="1104" ncloc="1104" packages="8" files="42" classes="42"/>
     <package name="src">
-      <metrics statements="7" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <metrics statements="4" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
       <file name="App.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/App.vue">
-        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="9" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="15" count="2" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="17" count="1" type="stmt"/>
-        <line num="19" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
       </file>
       <file name="aws-exports.js" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/aws-exports.js">
         <metrics statements="1" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
