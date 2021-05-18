@@ -10,6 +10,7 @@ import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 import LoggerService from "@/services/LoggerService";
 import { CustomAlert } from "@/models/user/CustomAlert";
 import { IM } from "@/vocabulary/IM";
+import { ConceptSummary } from "@/models/search/ConceptSummary";
 
 export default createStore({
   // update stateType.ts when adding new state!
@@ -18,7 +19,7 @@ export default createStore({
     conceptIri: "http://www.w3.org/2002/07/owl#Thing",
     conceptAggregate: {} as ConceptAggregate,
     history: [] as HistoryItem[],
-    searchResults: [],
+    searchResults: [] as ConceptSummary[],
     currentUser: {} as User,
     registeredUsername: "" as string,
     isLoggedIn: false as boolean,
