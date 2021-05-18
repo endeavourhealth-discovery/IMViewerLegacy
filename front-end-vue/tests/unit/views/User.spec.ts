@@ -1,4 +1,3 @@
-import store from "@/store/index";
 import { shallowMount } from "@vue/test-utils";
 import User from "@/views/User.vue";
 import ButtonBar from "@/components/user/ButtonBar.vue";
@@ -9,7 +8,6 @@ describe("User.vue", () => {
   beforeEach(() => {
     wrapper = shallowMount(User, {
       global: {
-        plugins: [store],
         components: { ButtonBar },
         stubs: ["router-link", "router-view"]
       },

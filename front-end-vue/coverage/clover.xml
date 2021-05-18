@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1621332510546" clover="3.2.0">
-  <project timestamp="1621332510546" name="All files">
-    <metrics statements="1107" coveredstatements="364" conditionals="548" coveredconditionals="159" methods="356" coveredmethods="109" elements="2011" coveredelements="632" complexity="0" loc="1107" ncloc="1107" packages="8" files="42" classes="42"/>
+<coverage generated="1621332729558" clover="3.2.0">
+  <project timestamp="1621332729558" name="All files">
+    <metrics statements="1107" coveredstatements="364" conditionals="546" coveredconditionals="158" methods="356" coveredmethods="109" elements="2009" coveredelements="631" complexity="0" loc="1107" ncloc="1107" packages="8" files="42" classes="42"/>
     <package name="src">
       <metrics statements="7" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <file name="App.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/App.vue">
@@ -1098,7 +1098,7 @@
       </file>
     </package>
     <package name="src.views">
-      <metrics statements="141" coveredstatements="16" conditionals="60" coveredconditionals="4" methods="49" coveredmethods="3"/>
+      <metrics statements="141" coveredstatements="16" conditionals="58" coveredconditionals="3" methods="49" coveredmethods="3"/>
       <file name="Concept.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/views/Concept.vue">
         <metrics statements="42" coveredstatements="0" conditionals="28" coveredconditionals="0" methods="15" coveredmethods="0"/>
         <line num="66" count="0" type="stmt"/>
@@ -1226,10 +1226,10 @@
         <line num="144" count="0" type="stmt"/>
       </file>
       <file name="User.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/views/User.vue">
-        <metrics statements="3" coveredstatements="3" conditionals="2" coveredconditionals="1" methods="0" coveredmethods="0"/>
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="13" count="1" type="stmt"/>
         <line num="14" count="1" type="stmt"/>
-        <line num="22" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
       </file>
       <file name="Workflow.vue" path="/Users/matthewhutcheson/Documents/Ergosoft/IMViewer/front-end-vue/src/views/Workflow.vue">
         <metrics statements="24" coveredstatements="0" conditionals="6" coveredconditionals="0" methods="6" coveredmethods="0"/>
