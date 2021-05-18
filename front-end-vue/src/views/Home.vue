@@ -12,7 +12,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
-import SidebarControl from "@/components/sidebar/SidebarControl.vue";
+import SidebarControl from "@/components/home/SidebarControl.vue";
 import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({

@@ -1,6 +1,6 @@
 import { shallowMount } from "@vue/test-utils";
 import Home from "@/views/Home.vue";
-import SidebarControl from "@/components/sidebar/SidebarControl.vue";
+import SidebarControl from "@/components/home/SidebarControl.vue";
 import SideNav from "@/components/home/SideNav.vue";
 import Swal from "sweetalert2";
 import { User } from "@/models/user/User";
