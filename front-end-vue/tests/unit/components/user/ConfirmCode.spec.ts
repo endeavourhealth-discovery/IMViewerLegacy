@@ -4,16 +4,7 @@ import { mount, flushPromises } from "@vue/test-utils";
 import ConfirmCode from "@/components/user/ConfirmCode.vue";
 import InputText from "primevue/inputtext";
 import Swal from "sweetalert2";
-import { Auth } from "aws-amplify";
 import AuthService from "@/services/AuthService";
-
-Auth.confirmSignUp = jest.fn().mockResolvedValue({ status: 200, message: "test"});
-
-AuthService.confirmRegister = jest.fn().mockResolvedValue({ status: 200, message: "Register confirmation successful" });
-
-AuthService.resendConfirmationCode = jest.fn().mockResolvedValue({ status: 200, message: "Resend confirmation code successful" });
-
-Swal.fire = jest.fn().mockImplementation(() => Promise.resolve());
 
 describe("ConfirmCode.vue no registeredUser", () => {
   let wrapper: any;
@@ -48,6 +39,12 @@ describe("ConfirmCode.vue with registeredUser", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    AuthService.confirmRegister = jest.fn().mockResolvedValue({ status: 200, message: "Register confirmation successful" });
+
+    AuthService.resendConfirmationCode = jest.fn().mockResolvedValue({ status: 200, message: "Resend confirmation code successful" });
+
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve());
     mockStore = {
       state: {registeredUsername: "testUser"},
       commit: jest.fn()

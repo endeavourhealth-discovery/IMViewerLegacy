@@ -6,10 +6,6 @@ import InputText from "primevue/inputtext";
 import Swal from "sweetalert2";
 import AuthService from "@/services/AuthService";
 
-AuthService.forgotPassword = jest.fn().mockResolvedValue({ status: 200, message: "Password reset successful" });
-
-Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
-
 describe("ForgotPassword.vue", () => {
   let wrapper: any;
   let mockStore: any;
@@ -17,6 +13,9 @@ describe("ForgotPassword.vue", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    AuthService.forgotPassword = jest.fn().mockResolvedValue({ status: 200, message: "Password reset successful" });
+
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
     mockStore = {
       state: {registeredUsername: "testUser"},
       commit: jest.fn()

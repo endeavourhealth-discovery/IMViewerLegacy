@@ -8,10 +8,6 @@ import { PasswordStrength } from "@/models/user/PasswordStrength";
 import AuthService from "@/services/AuthService";
 import Swal from "sweetalert2";
 
-AuthService.forgotPasswordSubmit = jest.fn().mockResolvedValue({ status: 200, message: "Password reset successful" });
-
-Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
-
 describe("ForgotPasswordSubmit.vue no registeredUser", () => {
   let wrapper: any;
   let mockStore: any;
@@ -19,6 +15,9 @@ describe("ForgotPasswordSubmit.vue no registeredUser", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    AuthService.forgotPasswordSubmit = jest.fn().mockResolvedValue({ status: 200, message: "Password reset successful" });
+
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
     mockStore = {
       state: {registeredUsername: null},
       commit: jest.fn()
@@ -52,6 +51,9 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    AuthService.forgotPasswordSubmit = jest.fn().mockResolvedValue({ status: 200, message: "Password reset successful" });
+
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
     mockStore = {
       state: {registeredUsername: "testUser"},
       commit: jest.fn()

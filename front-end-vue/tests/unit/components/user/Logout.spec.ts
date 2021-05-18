@@ -6,29 +6,28 @@ import { User } from "@/models/user/User";
 import { avatars } from "@/models/user/Avatars";
 import AuthService from "@/services/AuthService";
 import Swal from "sweetalert2";
-import { faRestroom } from "@fortawesome/free-solid-svg-icons";
 import { CustomAlert } from "@/models/user/CustomAlert";
-
-const user = new User(
-  "testUser",
-  "John",
-  "Doe",
-  "john.doe@ergosoft.co.uk",
-  "",
-  avatars[0]
-);
-
-AuthService.signOut = jest.fn().mockResolvedValue({ status: 200, message: "Logout successful" });
-
-Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
 
 describe("Logout.vue", () => {
   let wrapper: any;
   let mockStore: any;
   let mockRouter: any;
+  let user: User;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    user = new User(
+      "testUser",
+      "John",
+      "Doe",
+      "john.doe@ergosoft.co.uk",
+      "",
+      avatars[0]
+    );
+
+    AuthService.signOut = jest.fn().mockResolvedValue({ status: 200, message: "Logout successful" });
+
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
     mockStore = {
       state: {currentUser: user, isLoggedIn: true},
       commit: jest.fn(),

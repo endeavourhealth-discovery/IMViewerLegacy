@@ -9,7 +9,6 @@ import OverlayPanel from "primevue/overlaypanel";
 import AvatarWithSelector from "@/components/user/AvatarWithSelector.vue";
 import { User } from "@/models/user/User";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
-import { avatars } from "@/models/user/Avatars";
 import AuthService from "@/services/AuthService";
 import Swal from "sweetalert2";
 

@@ -13,19 +13,19 @@ import AuthService from "@/services/AuthService";
 import Swal from "sweetalert2";
 import { User } from "@/models/user/User";
 
-AuthService.register = jest.fn().mockResolvedValue({ status: 201, message: "Register successful" });
-
-Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
-
-const testUser = new User("DevTest", "John", "Doe", "devtest@ergo.co.uk", "12345678", avatars[0]);
-
 describe("register.vue empty", () => {
   let wrapper: any;
   let mockStore: any;
   let mockRouter: any;
+  let testUser: User;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    AuthService.register = jest.fn().mockResolvedValue({ status: 201, message: "Register successful" });
+
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
+
+    testUser = new User("DevTest", "John", "Doe", "devtest@ergo.co.uk", "12345678", avatars[0]);
     mockStore = {
       commit: jest.fn(),
     }
@@ -60,9 +60,15 @@ describe("register.vue prefilled", () => {
   let wrapper: any;
   let mockStore: any;
   let mockRouter: any;
+  let testUser: User;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    AuthService.register = jest.fn().mockResolvedValue({ status: 201, message: "Register successful" });
+
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
+
+    testUser = new User("DevTest", "John", "Doe", "devtest@ergo.co.uk", "12345678", avatars[0]);
     mockStore = {
       commit: jest.fn()
     }

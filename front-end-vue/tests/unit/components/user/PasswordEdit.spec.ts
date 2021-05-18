@@ -11,10 +11,6 @@ import AuthService from "@/services/AuthService";
 import Swal from "sweetalert2";
 import { CustomAlert } from "@/models/user/CustomAlert";
 
-AuthService.changePassword = jest.fn().mockResolvedValue({ status: 200, message: "Password change successful" });
-
-Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
-
 describe("ForgotPasswordSubmit.vue with registeredUser", () => {
   let wrapper: any;
   let mockStore: any;
@@ -30,6 +26,9 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    AuthService.changePassword = jest.fn().mockResolvedValue({ status: 200, message: "Password change successful" });
+
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
     mockStore = {
       state: {currentUser: user, isLoggedIn: true},
       commit: jest.fn(),
