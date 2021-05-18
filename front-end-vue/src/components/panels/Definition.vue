@@ -35,11 +35,7 @@
         v-if="concept['http://www.w3.org/2000/01/rdf-schema#comment']"
       >
         <strong>Description:</strong>
-
-        <ScrollPanel style="height: 100px" class="custom">
-          <!-- div content injected by javascript -->
-          <div id="description"></div>
-        </ScrollPanel>
+        <Description :description="descriptionHTML" />
       </div>
     </div>
     <Divider align="left">
@@ -150,10 +146,11 @@ import { IM } from "@/vocabulary/IM";
 import { SHACL } from "@/vocabulary/SHACL";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import ConceptService from "@/services/ConceptService";
+import Description from "./Description.vue";
 
 export default defineComponent({
   name: "Definition",
-  components: {},
+  components: { Description },
   props: {
     concept: {} as any
   },
@@ -193,12 +190,6 @@ export default defineComponent({
     };
   },
   watch: {
-    descriptionHTML(newValue) {
-      const descContainer = document.getElementById("description");
-      if (descContainer) {
-        descContainer.innerHTML = newValue;
-      }
-    },
     async concept() {
       this.children = await this.getChildren(this.concept[IM.IRI]);
     }
