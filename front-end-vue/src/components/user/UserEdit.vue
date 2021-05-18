@@ -287,12 +287,8 @@ export default defineComponent({
 
     handleEditSubmit(): void {
       if (
-        this.showPasswordEdit &&
-        this.passwordsMatch &&
-        this.passwordStrength !== PasswordStrength.fail &&
-        this.passwordStrengthOld !== PasswordStrength.fail &&
-        this.passwordDifferentFromOriginal() &&
-        this.allVerified()
+        this.passwordFieldsVerified() &&
+        this.userFieldsVerified()
       ) {
         const updatedUser = new User(
           this.username,
@@ -356,7 +352,7 @@ export default defineComponent({
           title: "Nothing to update",
           text: "Your account details have not been updated."
         });
-      } else if (this.allVerified()) {
+      } else if (this.userFieldsVerified()) {
         const updatedUser = new User(
           this.username,
           this.firstName,
@@ -393,7 +389,7 @@ export default defineComponent({
       }
     },
 
-    allVerified(): boolean {
+    userFieldsVerified(): boolean {
       if (
         verifyIsEmail(this.email1) &&
         verifyIsEmail(this.email2) &&
@@ -401,6 +397,20 @@ export default defineComponent({
         verifyIsName(this.firstName) &&
         verifyIsName(this.lastName) &&
         "value" in this.selectedAvatar
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    passwordFieldsVerified(): boolean {
+      if (
+        this.showPasswordEdit &&
+        this.passwordsMatch &&
+        this.passwordStrength !== PasswordStrength.fail &&
+        this.passwordStrengthOld !== PasswordStrength.fail &&
+        this.passwordDifferentFromOriginal()
       ) {
         return true;
       } else {
@@ -444,13 +454,13 @@ export default defineComponent({
 
     setButtonDisabled(): boolean {
       if (
-        this.allVerified() &&
+        this.userFieldsVerified() &&
         !this.showPasswordEdit &&
         this.checkForChanges()
       ) {
         return false;
       } else if (
-        this.allVerified() &&
+        this.userFieldsVerified() &&
         this.showPasswordEdit &&
         this.passwordsMatch &&
         this.passwordStrength !== PasswordStrength.fail &&

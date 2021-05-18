@@ -9,7 +9,7 @@ import { User } from "@/models/user/User";
 
 const testUser = new User("devtest", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "colour/001-man.png"});
 
-testUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g09")
+testUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g09");
 
 AuthService.signIn = jest.fn().mockResolvedValue({ status: 200, message: "Login successful", user: testUser });
 
