@@ -6,17 +6,14 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import store from "@/store/index";
+import { defineComponent } from "vue";
 
-@Options({
-  name: "App"
-})
-export default class App extends Vue {
+export default defineComponent({
+  name: "App",
   mounted() {
-    store.commit("updateHistoryCount", window.history.length);
+    this.$store.commit("updateHistoryCount", window.history.length);
   }
-}
+});
 </script>
 
 <style>

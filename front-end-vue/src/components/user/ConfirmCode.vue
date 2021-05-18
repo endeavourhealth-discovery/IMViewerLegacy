@@ -145,7 +145,7 @@ export default defineComponent({
             Swal.fire({
               icon: "error",
               title: "Error",
-              text: "Error! Code resending failed. Please contact an admin."
+              text: "Code resending failed. Please contact an admin."
             });
           }
         })

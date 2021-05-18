@@ -101,14 +101,11 @@ export default defineComponent({
         .then(res => {
           if (res.status === 200 && res.user) {
             const loggedInUser = res.user;
-            if ("value" in loggedInUser.avatar) {
-              const result = avatars.find(
-                avatar => avatar.value === loggedInUser.avatar.value
-              );
-              if (!result) {
-                loggedInUser.avatar = avatars[0];
-              }
-            } else {
+            // check if avatar exists and replace lagacy images with default avatar on signin
+            const result = avatars.find(
+              avatar => avatar.value === loggedInUser.avatar.value
+            );
+            if (!result) {
               loggedInUser.avatar = avatars[0];
             }
             this.$store.commit("updateCurrentUser", loggedInUser);
@@ -121,31 +118,28 @@ export default defineComponent({
             }).then(() => {
               this.$router.push({ name: "Home" });
             });
+          } else if (res.status === 401) {
+            Swal.fire({
+              icon: "warning",
+              title: "User Unconfirmed",
+              text:
+                "Account has not been confirmed. Please confirm account to continue.",
+              showCloseButton: true,
+              showCancelButton: true,
+              confirmButtonText: "Confirm Account"
+            }).then(result => {
+              if (result.isConfirmed) {
+                this.$store.commit("updateRegisteredUsername", this.username);
+                this.$router.push({ name: "ConfirmCode" });
+              }
+            });
           } else {
-            console.log(res.message);
-            if (res.status === 401) {
-              Swal.fire({
-                icon: "warning",
-                title: "User Unconfirmed",
-                text:
-                  "Account has not been confirmed. Please confirm account to continue.",
-                showCloseButton: true,
-                showCancelButton: true,
-                confirmButtonText: "Confirm Account"
-              }).then(result => {
-                if (result.isConfirmed) {
-                  this.$store.commit("updateRegisteredUsername", this.username);
-                  this.$router.push({ name: "ConfirmCode" });
-                }
-              });
-            } else {
-              Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: res.message,
-                confirmButtonText: "Close"
-              });
-            }
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: res.message,
+              confirmButtonText: "Close"
+            });
           }
         })
         .catch(err => {

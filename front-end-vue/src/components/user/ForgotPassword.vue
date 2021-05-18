@@ -51,7 +51,6 @@
 import { defineComponent } from "vue";
 import Swal from "sweetalert2";
 import AuthService from "@/services/AuthService";
-import store from "@/store/index";
 
 export default defineComponent({
   name: "ForgotPassword",
@@ -75,13 +74,13 @@ export default defineComponent({
             if (res.status === 200) {
               Swal.fire({
                 icon: "success",
-                title: "Password reset!",
+                title: "Success",
                 text:
                   "Password has been reset for account: " +
                   this.username +
                   ". An email has been sent with a recovery code."
               }).then(() => {
-                store.commit("updateRegisteredUsername", this.username);
+                this.$store.commit("updateRegisteredUsername", this.username);
                 this.$router.push({ name: "ForgotPasswordSubmit" });
               });
             } else {

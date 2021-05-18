@@ -174,7 +174,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import store from "@/store/index";
 import { mapState } from "vuex";
 import { User } from "@/models/user/User";
 import Swal from "sweetalert2";
@@ -288,19 +287,15 @@ export default defineComponent({
 
     handleEditSubmit(): void {
       if (
-        this.showPasswordEdit &&
-        this.passwordsMatch &&
-        this.passwordStrength !== PasswordStrength.fail &&
-        this.passwordStrengthOld !== PasswordStrength.fail &&
-        this.passwordDifferentFromOriginal() &&
-        this.allVerified()
+        this.passwordFieldsVerified() &&
+        this.userFieldsVerified()
       ) {
         const updatedUser = new User(
           this.username,
           this.firstName,
           this.lastName,
           this.email1,
-          this.passwordNew1,
+          "",
           this.selectedAvatar
         );
         updatedUser.setId(this.currentUser.id);
@@ -316,7 +311,7 @@ export default defineComponent({
                   title: "Success",
                   text: "User details and password successfully updated"
                 }).then(() => {
-                  store.commit("updateCurrentUser", res.user);
+                  this.$store.commit("updateCurrentUser", res.user);
                   this.$router.push({ name: "UserDetails" });
                 });
               } else {
@@ -357,7 +352,7 @@ export default defineComponent({
           title: "Nothing to update",
           text: "Your account details have not been updated."
         });
-      } else if (this.allVerified()) {
+      } else if (this.userFieldsVerified()) {
         const updatedUser = new User(
           this.username,
           this.firstName,
@@ -374,7 +369,7 @@ export default defineComponent({
               title: "Success",
               text: "Account details updated successfully"
             }).then(() => {
-              store.commit("updateCurrentUser", res.user);
+              this.$store.commit("updateCurrentUser", res.user);
               this.$router.push({ name: "UserDetails" });
             });
           } else {
@@ -394,7 +389,7 @@ export default defineComponent({
       }
     },
 
-    allVerified(): boolean {
+    userFieldsVerified(): boolean {
       if (
         verifyIsEmail(this.email1) &&
         verifyIsEmail(this.email2) &&
@@ -402,6 +397,20 @@ export default defineComponent({
         verifyIsName(this.firstName) &&
         verifyIsName(this.lastName) &&
         "value" in this.selectedAvatar
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    passwordFieldsVerified(): boolean {
+      if (
+        this.showPasswordEdit &&
+        this.passwordsMatch &&
+        this.passwordStrength !== PasswordStrength.fail &&
+        this.passwordStrengthOld !== PasswordStrength.fail &&
+        this.passwordDifferentFromOriginal()
       ) {
         return true;
       } else {
@@ -445,17 +454,14 @@ export default defineComponent({
 
     setButtonDisabled(): boolean {
       if (
-        this.allVerified() &&
+        this.userFieldsVerified() &&
         !this.showPasswordEdit &&
         this.checkForChanges()
       ) {
         return false;
       } else if (
-        this.allVerified() &&
-        this.showPasswordEdit &&
-        this.passwordsMatch &&
-        this.passwordStrength !== PasswordStrength.fail &&
-        this.passwordStrengthOld !== PasswordStrength.fail
+        this.userFieldsVerified() &&
+        this.passwordFieldsVerified()
       ) {
         return false;
       } else {
@@ -468,7 +474,7 @@ export default defineComponent({
         this.currentUser.firstName === this.firstName &&
         this.currentUser.lastName === this.lastName &&
         this.currentUser.email === this.email1 &&
-        this.currentUser.avatar === this.selectedAvatar
+        this.currentUser.avatar.value === this.selectedAvatar.value
       ) {
         return false;
       } else {
