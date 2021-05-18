@@ -10,16 +10,15 @@
 </template>
 
 <script>
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import ButtonBar from "@/components/user/ButtonBar.vue";
 
-@Options({
+export default defineComponent({
   name: "User",
   components: {
     ButtonBar: ButtonBar
   }
 })
-export default class User extends Vue {}
 </script>
 
 <style scoped>
