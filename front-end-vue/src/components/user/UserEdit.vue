@@ -496,7 +496,6 @@ export default defineComponent({
 
 .user-edit-card {
   padding: 0 2em;
-  margin-bottom: 2em;
 }
 .email-check {
   color: #439446;

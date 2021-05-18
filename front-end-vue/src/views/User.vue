@@ -27,7 +27,7 @@ export default defineComponent({
   height: 90vh;
   /* overflow-y: auto; */
   margin-top: 10vh;
-  /* margin-bottom: 10vh; */
+  margin-bottom: 2em;
 }
 
 .card-button-container {
