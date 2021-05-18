@@ -4,34 +4,22 @@
     :rowsPerPageOptions="[10, 25, 50]"
     :paginator="terms.length > 10 ? true : false"
     :rows="10"
-    :scrollable="true"
-    scrollHeight="flex"
-    id="terms-table"
+    rowGroupMode="subheader"
+    groupRowsBy="scheme.name"
+    sortMode="single"
+    sortField="scheme.name"
+    :sortOrder="1"
+    scrollable
+    showGridlines
+    scrollHeight="600px"
+    class="p-datatable-sm"
   >
-    <template #empty>
-      No records found
+    <Column field="scheme.name" header="Scheme" ></Column>
+    <Column field="term" header="Term" style="flex:0 0 75%"></Column>
+    <Column field="code" header="Code" ></Column>
+    <template #groupheader="slotProps" >
+      <span style="font-weight: 700; color:rgba(51,153,255,0.8)">Scheme : {{ slotProps.data.scheme.name }}</span>
     </template>
-    <Column field="term" header="Term">
-      <template #body="slotProps">
-        <div class="link" @click="navigate(slotProps.data.term)">
-          {{ slotProps.data.term }}
-        </div>
-      </template>
-    </Column>
-    <Column field="code" header="Code">
-      <template #body="slotProps">
-        <div class="link" @click="navigate(slotProps.data.code)">
-          {{ slotProps.data.code }}
-        </div>
-      </template>
-    </Column>
-    <Column field="scheme" header="Scheme">
-      <template #body="slotProps">
-        <div class="link" @click="navigate(slotProps.data.scheme.name)">
-          {{ slotProps.data.scheme.name }}
-        </div>
-      </template>
-    </Column>
   </DataTable>
 </template>
 <script lang="ts">
