@@ -10,54 +10,56 @@
       <template #header>
         <PanelHeader :icon="icon" :header="header" />
       </template>
-      <div v-if="concept && isSet">
-        <TabView>
-          <TabPanel header="Definition">
-            <Definition :concept="concept" />
-          </TabPanel>
-          <TabPanel header="Terms">
-            <Terms :conceptIri="conceptIri" />
-          </TabPanel>
-          <TabPanel header="Used In">
-            <UsedIn :conceptIri="conceptIri" />
-          </TabPanel>
-          <TabPanel header="Members">
-            <Members :conceptIri="conceptIri" />
-          </TabPanel>
-        </TabView>
-      </div>
-      <div v-if="concept && !isSet">
-        <TabView>
-          <TabPanel header="Definition">
-            <Definition :concept="concept" />
-          </TabPanel>
-          <TabPanel header="Record structure">
-            <Properties :conceptIri="conceptIri" />
-          </TabPanel>
-          <TabPanel header="Terms">
-            <Terms :conceptIri="conceptIri" />
-          </TabPanel>
-          <TabPanel header="Used In">
-            <UsedIn :conceptIri="conceptIri" />
-          </TabPanel>
-          <TabPanel header="Graph">
-            <Graph :conceptIri="conceptIri" />
-          </TabPanel>
-        </TabView>
-      </div>
+      <div id="concept-content">
+        <div v-if="concept && isSet">
+          <TabView>
+            <TabPanel header="Definition">
+              <Definition :concept="concept" />
+            </TabPanel>
+            <TabPanel header="Terms">
+              <Terms :conceptIri="conceptIri" />
+            </TabPanel>
+            <TabPanel header="Used In">
+              <UsedIn :conceptIri="conceptIri" />
+            </TabPanel>
+            <TabPanel header="Members">
+              <Members :conceptIri="conceptIri" />
+            </TabPanel>
+          </TabView>
+        </div>
+        <div v-if="concept && !isSet">
+          <TabView>
+            <TabPanel header="Definition">
+              <Definition :concept="concept" />
+            </TabPanel>
+            <TabPanel header="Record structure">
+              <Properties :conceptIri="conceptIri" />
+            </TabPanel>
+            <TabPanel header="Terms">
+              <Terms :conceptIri="conceptIri" />
+            </TabPanel>
+            <TabPanel header="Used In">
+              <UsedIn :conceptIri="conceptIri" />
+            </TabPanel>
+            <TabPanel header="Graph">
+              <Graph :conceptIri="conceptIri" />
+            </TabPanel>
+          </TabView>
+        </div>
 
-      <EditDialog
-        @closeDialog="closeDialog"
-        :display="display"
-        :concept="editorConcept"
-        :header="dialogHeader"
-        :definitionText="editorDefinitionText"
-      />
-      <DownloadDialog
-        @closeDownloadDialog="closeDownloadDialog"
-        :showDialog="showDownloadDialog"
-        :conceptIri="conceptIri"
-      />
+        <EditDialog
+          @closeDialog="closeDialog"
+          :display="display"
+          :concept="editorConcept"
+          :header="dialogHeader"
+          :definitionText="editorDefinitionText"
+        />
+        <DownloadDialog
+          @closeDownloadDialog="closeDownloadDialog"
+          :showDialog="showDownloadDialog"
+          :conceptIri="conceptIri"
+        />
+      </div>
     </Panel>
   </div>
 </template>
@@ -78,6 +80,7 @@ import { RDF } from "@/vocabulary/RDF";
 import EditDialog from "@/components/edit/EditDialog.vue";
 import DownloadDialog from "@/components/panels/DownloadDialog.vue";
 import ConceptService from "@/services/ConceptService";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "Concept",
@@ -113,10 +116,26 @@ export default defineComponent({
       this.concept = await this.getConcept(newValue);
       this.icon = getIconFromType(this.concept?.[RDF.TYPE]);
       this.header = this.concept?.[RDFS.LABEL];
+    },
+    windowWidth() {
+      this.setContentHeight();
+    },
+    windowHeight() {
+      this.setContentHeight();
     }
   },
   async mounted() {
     await this.init();
+
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.onResize);
+    });
+
+    this.setContentHeight();
+
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.onResize);
   },
   data() {
     return {
@@ -128,6 +147,8 @@ export default defineComponent({
       icon: "",
       header: "",
       dialogHeader: "",
+      windowHeight: window.innerHeight,
+      windowWidth: window.innerWidth,
       items: [
         // {
         //   label: "Edit Concept",
@@ -154,6 +175,25 @@ export default defineComponent({
     };
   },
   methods: {
+    onResize(): void {
+      this.windowHeight = window.innerHeight;
+      this.windowWidth = window.innerWidth;
+    },
+
+    setContentHeight(): void {
+      const header = document.getElementsByClassName("p-panel-header")[0];
+      const content = document.getElementById("concept-content");
+      const container = document.getElementsByClassName("concept-container")[0];
+      const currentFontSize = parseFloat(
+        window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size")
+      );
+      if (content && header && container && currentFontSize) {
+        content.style.minHeight = container.getBoundingClientRect().height - header.getBoundingClientRect().height - (2 * currentFontSize) - 1 + "px";
+      } else {
+        LoggerService.error("Content sizing error", "failed to get element(s) for concept content resizing");
+      };
+    },
+
     async getConcept(iri: string) {
       return (await ConceptService.getConcept(iri)).data;
     },
@@ -197,11 +237,20 @@ export default defineComponent({
 </script>
 <style scoped>
 .concept-container {
-  /* height: calc(100vh - 123px); */
-
   grid-area: content;
-  height: 100%;
+  height: calc(100vh - 2rem);
   width: 100%;
   overflow-y: auto;
 }
+
+.p-panel {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  height: 100%;
+}
+
+/* #concept-content {
+  min-height: calc(100vh - 4rem - 60px);
+} */
 </style>
