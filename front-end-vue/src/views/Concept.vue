@@ -249,8 +249,4 @@ export default defineComponent({
   justify-content: flex-start;
   height: 100%;
 }
-
-/* #concept-content {
-  min-height: calc(100vh - 4rem - 60px);
-} */
 </style>
