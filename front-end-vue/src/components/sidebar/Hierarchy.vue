@@ -257,7 +257,8 @@ export default defineComponent({
   height: 95%;
   overflow: auto;
 }
-.p-tree-toggler, .p-tree-toggler-icon {
+.p-tree-toggler,
+.p-tree-toggler-icon {
   min-width: 2rem;
 }
 
