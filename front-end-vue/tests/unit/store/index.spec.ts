@@ -1,6 +1,10 @@
 import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
+import { User } from "@/models/user/User";
 import store from "@/store/index";
 import { IM } from "@/vocabulary/IM";
+import ConceptService from "@/services/ConceptService";
+import { flushPromises } from "@vue/test-utils";
+import LoggerService from "@/services/LoggerService";
 
 describe("state", () => {
   it("should start with the correct values", () => {
@@ -107,4 +111,126 @@ describe("mutations", () => {
     store.commit("updateSearchResults", testResult);
     expect(store.state.searchResults).toEqual(testResult);
   });
-})
+
+  it("can updateCurrentUser", () => {
+    const testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "colour/003-man.png" });
+    store.commit("updateCurrentUser", testUser);
+    expect(store.state.currentUser).toEqual(testUser);
+  });
+
+  it("can updateRegisteredUsername", () => {
+    const testUsername = "devTest";
+    store.commit("updateRegisteredUsername", "devTest");
+    expect(store.state.registeredUsername).toBe(testUsername);
+  });
+
+  it("can updateIsLoggedIn", () => {
+    const testBool = true;
+    store.commit("updateIsLoggedIn", testBool);
+    expect(store.state.isLoggedIn).toBe(true);
+  });
+
+  it("can updateSnomedLicenseAccepted", () => {
+    const testBool = "true";
+    store.commit("updateSnomedLicenseAccepted", testBool);
+    expect(store.state.snomedLicenseAccepted).toBe("true");
+  });
+
+  it("can updateHistoryCount", () => {
+    const testCount = 5;
+    store.commit("updateHistoryCount", testCount);
+    expect(store.state.historyCount).toBe(5);
+  });
+
+  it("can updateFilters", () => {
+    const testFilter = {
+      selectedStatus: ["testActive", "testDraft"],
+      selectedSchemes: [{ iri: "http://endhealth.info/im#test" }],
+      selectedTypes: ["testClass", "testProperty"]
+    };
+    store.commit("updateFilters", testFilter);
+    expect(store.state.filters).toEqual(testFilter);
+  });
+
+  it("can fetchConceptAggregate ___ pass", async() => {
+    const testConceptAggregate = new ConceptAggregate(
+      { "@id": "http://snomed.info/sct#298382003", name: "Scoliosis deformity of spine (disorder)" },
+      [{
+        iri: "childIri",
+        hasChildren: true,
+        name: "childName",
+        type: {elements: [{ iri: "test", name: "test" }]}
+      }],
+      [{
+        iri: "parentIri",
+        hasChildren: true,
+        name: "parentName",
+        type: {elements: [{ iri: "test1", name: "test2" }]}
+      }]
+    )
+    ConceptService.getConcept = jest.fn().mockResolvedValue({ data: { "@id": "http://snomed.info/sct#298382003", name: "Scoliosis deformity of spine (disorder)" }});
+    ConceptService.getConceptParents = jest.fn().mockResolvedValue({
+      data: [{
+        iri: "parentIri",
+        hasChildren: true,
+        name: "parentName",
+        type: {elements: [{ iri: "test1", name: "test2" }]}
+      }]
+    });
+    ConceptService.getConceptChildren = jest.fn().mockResolvedValue({
+      data:[{
+        iri: "childIri",
+        hasChildren: true,
+        name: "childName",
+        type: {elements: [{ iri: "test", name: "test" }]}
+      }]
+    });
+    const testIri = "http://snomed.info/sct#298382003";
+    let result = false;
+    await store.dispatch("fetchConceptAggregate", testIri).then(res => result = res);
+    await flushPromises();
+    expect(ConceptService.getConcept).toBeCalledTimes(1);
+    expect(ConceptService.getConcept).toBeCalledWith(testIri);
+    expect(ConceptService.getConceptParents).toBeCalledTimes(1);
+    expect(ConceptService.getConceptParents).toBeCalledWith(testIri);
+    expect(ConceptService.getConceptChildren).toBeCalledTimes(1);
+    expect(ConceptService.getConceptChildren).toBeCalledWith(testIri);
+    await flushPromises();
+    expect(result).toBe(true);
+    expect(store.state.conceptAggregate).toEqual(testConceptAggregate);
+  });
+
+  it("can fetchConceptAggregate ___ fail", async() => {
+    ConceptService.getConcept = jest.fn().mockRejectedValue({ status: 400 });
+    ConceptService.getConceptParents = jest.fn().mockResolvedValue({
+      data: [{
+        iri: "parentIri",
+        hasChildren: true,
+        name: "parentName",
+        type: {elements: [{ iri: "test1", name: "test2" }]}
+      }]
+    });
+    ConceptService.getConceptChildren = jest.fn().mockResolvedValue({
+      data:[{
+        iri: "childIri",
+        hasChildren: true,
+        name: "childName",
+        type: {elements: [{ iri: "test", name: "test" }]}
+      }]
+    });
+    LoggerService.error = jest.fn();
+    const testIri = "http://snomed.info/sct#298382003";
+    let result = false;
+    await store.dispatch("fetchConceptAggregate", testIri).then(res => result = res);
+    await flushPromises();
+    expect(ConceptService.getConcept).toBeCalledTimes(1);
+    expect(ConceptService.getConcept).toBeCalledWith(testIri);
+    expect(ConceptService.getConceptParents).toBeCalledTimes(1);
+    expect(ConceptService.getConceptParents).toBeCalledWith(testIri);
+    expect(ConceptService.getConceptChildren).toBeCalledTimes(1);
+    expect(ConceptService.getConceptChildren).toBeCalledWith(testIri);
+    await flushPromises();
+    expect(LoggerService.error).toBeCalledTimes(1);
+    expect(result).toBe(false);
+  });
+});

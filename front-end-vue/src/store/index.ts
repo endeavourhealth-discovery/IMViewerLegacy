@@ -17,7 +17,7 @@ export default createStore({
   // update stateType.ts when adding new state!
   state: {
     loading: new Map<string, boolean>(),
-    conceptIri: "http://www.w3.org/2002/07/owl#Thing",
+    conceptIri: "http://www.w3.org/2002/07/owl#Thing" as string,
     conceptAggregate: {} as ConceptAggregate,
     history: [] as HistoryItem[],
     searchResults: [] as ConceptSummary[],
