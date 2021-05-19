@@ -304,4 +304,33 @@ describe("mutations", () => {
     await flushPromises();
     expect(result).toEqual(new CustomAlert(400, "logout failed 400"));
   });
+
+  it("can authenticateCurrentUser___ 200 ___ avatar", async() => {
+    let testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "colour/003-man.png" });
+    testUser.setId("8901-test");
+    AuthService.getCurrentAuthenticatedUser = jest.fn().mockResolvedValue(new CustomAlert(200, "user authenticated", undefined, testUser));
+    let result = { authenticated: false };
+    await store.dispatch("authenticateCurrentUser").then(res => result = res);
+    await flushPromises();
+    expect(AuthService.getCurrentAuthenticatedUser).toBeCalledTimes(1);
+    await flushPromises();
+    expect(store.state.isLoggedIn).toBe(true);
+    expect(store.state.currentUser).toEqual(testUser);
+    expect(result.authenticated).toBe(true);
+  });
+
+  it("can authenticateCurrentUser___ 200 ___ no avatar", async() => {
+    let testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "http://testimage.jpg" });
+    testUser.setId("8901-test");
+    AuthService.getCurrentAuthenticatedUser = jest.fn().mockResolvedValue(new CustomAlert(200, "user authenticated", undefined, testUser));
+    let result = { authenticated: false };
+    await store.dispatch("authenticateCurrentUser").then(res => result = res);
+    await flushPromises();
+    expect(AuthService.getCurrentAuthenticatedUser).toBeCalledTimes(1);
+    await flushPromises();
+    expect(store.state.isLoggedIn).toBe(true);
+    testUser.avatar.value = "colour/001-man.png";
+    expect(store.state.currentUser).toEqual(testUser);
+    expect(result.authenticated).toBe(true);
+  });
 });

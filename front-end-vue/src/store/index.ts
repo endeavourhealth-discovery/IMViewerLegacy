@@ -169,14 +169,10 @@ export default createStore({
         if (res.status === 200 && res.user) {
           commit("updateIsLoggedIn", true);
           const loggedInUser = res.user;
-          if ("value" in loggedInUser.avatar) {
-            const result = avatars.find(
-              avatar => avatar.value === loggedInUser.avatar.value
-            );
-            if (!result) {
-              loggedInUser.avatar = avatars[0];
-            }
-          } else {
+          const foundAvatar = avatars.find(
+            avatar => avatar.value === loggedInUser.avatar.value
+          );
+          if (!foundAvatar) {
             loggedInUser.avatar = avatars[0];
           }
           commit("updateCurrentUser", loggedInUser);
