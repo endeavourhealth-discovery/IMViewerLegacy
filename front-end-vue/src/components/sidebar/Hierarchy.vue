@@ -175,8 +175,6 @@ export default defineComponent({
         });
       let index = 0;
 
-      node.children = [];
-
       children.forEach((child: any) => {
         node.children.push(
           this.createTreeNode(
