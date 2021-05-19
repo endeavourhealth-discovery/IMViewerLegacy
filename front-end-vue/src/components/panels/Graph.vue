@@ -114,7 +114,7 @@ export default defineComponent({
       if (svgElement) {
         this.panZoom = svgPanZoom("#svg", {
           zoomEnabled: false,
-          fit: false,
+          fit: true,
           center: true,
           dblClickZoomEnabled: false,
           mouseWheelZoomEnabled: false

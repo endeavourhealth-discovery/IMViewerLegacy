@@ -28,7 +28,7 @@
           </TabView>
         </div>
         <div v-if="concept && !isSet">
-          <TabView>
+          <TabView v-model:activeIndex="active">
             <TabPanel header="Definition">
               <Definition :concept="concept" />
             </TabPanel>
@@ -42,7 +42,9 @@
               <UsedIn :conceptIri="conceptIri" />
             </TabPanel>
             <TabPanel header="Graph">
-              <Graph :conceptIri="conceptIri" />
+              <div v-if="active === 4">
+                <Graph :conceptIri="conceptIri" />
+              </div>
             </TabPanel>
           </TabView>
         </div>
@@ -148,6 +150,7 @@ export default defineComponent({
       dialogHeader: "",
       windowHeight: window.innerHeight,
       windowWidth: window.innerWidth,
+      active: 0,
       items: [
         // {
         //   label: "Edit Concept",
