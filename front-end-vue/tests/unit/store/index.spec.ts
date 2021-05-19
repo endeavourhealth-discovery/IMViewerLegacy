@@ -6,6 +6,8 @@ import ConceptService from "@/services/ConceptService";
 import { flushPromises } from "@vue/test-utils";
 import LoggerService from "@/services/LoggerService";
 import { SearchRequest } from "@/models/search/SearchRequest";
+import AuthService from "@/services/AuthService";
+import { CustomAlert } from "@/models/user/CustomAlert";
 
 describe("state", () => {
   it("should start with the correct values", () => {
@@ -277,5 +279,29 @@ describe("mutations", () => {
     expect(LoggerService.error).toBeCalledTimes(1);
     expect(LoggerService.error).toBeCalledWith(undefined, { status: 400, message: "test fail" });
     expect(result).toBe("false");
+  });
+
+  it("can logoutCurrentUser ___ 200", async() => {
+    AuthService.signOut = jest.fn().mockResolvedValue(new CustomAlert(200, "logout successful"));
+    LoggerService.error = jest.fn();
+    let result = false;
+    await store.dispatch("logoutCurrentUser").then(res => result = res);
+    await flushPromises();
+    expect(AuthService.signOut).toBeCalledTimes(1);
+    await flushPromises();
+    expect(store.state.currentUser).toBe(null);
+    expect(store.state.isLoggedIn).toBe(false);
+    expect(result).toEqual(new CustomAlert(200, "logout successful"));
+  });
+
+  it("can logoutCurrentUser ___ 400", async() => {
+    AuthService.signOut = jest.fn().mockResolvedValue(new CustomAlert(400, "logout failed 400"));
+    LoggerService.error = jest.fn();
+    let result = false;
+    await store.dispatch("logoutCurrentUser").then(res => result = res);
+    await flushPromises();
+    expect(AuthService.signOut).toBeCalledTimes(1);
+    await flushPromises();
+    expect(result).toEqual(new CustomAlert(400, "logout failed 400"));
   });
 });
