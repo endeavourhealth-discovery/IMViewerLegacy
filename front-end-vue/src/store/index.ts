@@ -11,6 +11,7 @@ import LoggerService from "@/services/LoggerService";
 import { CustomAlert } from "@/models/user/CustomAlert";
 import { IM } from "@/vocabulary/IM";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
+import { ConceptReference } from "@/models/TTConcept/ConceptReference";
 
 export default createStore({
   // update stateType.ts when adding new state!
@@ -55,6 +56,10 @@ export default createStore({
         "Folder",
         "Legacy"
       ]
+    } as {
+      selectedStatus: string[];
+      selectedSchemes: ConceptReference[];
+      selectedTypes: string[];
     }
   },
   mutations: {
