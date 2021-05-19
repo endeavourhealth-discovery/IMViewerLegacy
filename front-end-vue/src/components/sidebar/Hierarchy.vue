@@ -176,18 +176,27 @@ export default defineComponent({
       let index = 0;
 
       children.forEach((child: any) => {
-        node.children.push(
-          this.createTreeNode(
-            child.name,
-            child["@id"],
-            child.type,
-            node.key + "-" + index,
-            child.hasChildren
-          )
-        );
-        index++;
+        if (!this.containsChild(node.children, child)) {
+          node.children.push(
+            this.createTreeNode(
+              child.name,
+              child["@id"],
+              child.type,
+              node.key + "-" + index,
+              child.hasChildren
+            )
+          );
+          index++;
+        }
       });
       this.loading = false;
+    },
+
+    containsChild(children: any[], child: any) {
+      if (children.some(e => e.data === child?.["@id"])) {
+        return true;
+      }
+      return false;
     },
 
     async expandParents(): Promise<void> {
