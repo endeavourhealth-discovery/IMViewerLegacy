@@ -385,8 +385,9 @@ export default defineComponent({
 
 .link {
   fill: none;
-  stroke: #ccc;
-  stroke-width: 2px;
+  opacity: 0.2;
+  stroke: black;
+  stroke-width: 1px;
 }
 
 #content {
