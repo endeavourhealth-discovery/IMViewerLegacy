@@ -333,4 +333,40 @@ describe("mutations", () => {
     expect(store.state.currentUser).toEqual(testUser);
     expect(result.authenticated).toBe(true);
   });
+
+  it("can authenticateCurrentUser___ 403 ___ logout 200", async() => {
+    AuthService.getCurrentAuthenticatedUser = jest.fn().mockResolvedValue(new CustomAlert(403, "user authenticated"));
+    AuthService.signOut = jest.fn().mockResolvedValue(new CustomAlert(200, "logout successful"))
+    LoggerService.info = jest.fn();
+    let result = { authenticated: false };
+    await store.dispatch("authenticateCurrentUser").then(res => result = res);
+    await flushPromises();
+    expect(AuthService.getCurrentAuthenticatedUser).toBeCalledTimes(1);
+    await flushPromises();
+    expect(AuthService.signOut).toBeCalledTimes(1);
+    await flushPromises();
+    expect(store.state.isLoggedIn).toBe(false);
+    expect(store.state.currentUser).toBe(null);
+    expect(result.authenticated).toBe(false);
+    expect(LoggerService.info).toBeCalledTimes(1);
+    expect(LoggerService.info).toBeCalledWith(undefined, "Force logout successful");
+  });
+
+  it("can authenticateCurrentUser___ 403 ___ logout 200", async() => {
+    AuthService.getCurrentAuthenticatedUser = jest.fn().mockResolvedValue(new CustomAlert(403, "user authenticated"));
+    AuthService.signOut = jest.fn().mockResolvedValue(new CustomAlert(400, "logout failed"))
+    LoggerService.error = jest.fn();
+    let result = { authenticated: false };
+    await store.dispatch("authenticateCurrentUser").then(res => result = res);
+    await flushPromises();
+    expect(AuthService.getCurrentAuthenticatedUser).toBeCalledTimes(1);
+    await flushPromises();
+    expect(AuthService.signOut).toBeCalledTimes(1);
+    await flushPromises();
+    expect(store.state.isLoggedIn).toBe(false);
+    expect(store.state.currentUser).toBe(null);
+    expect(result.authenticated).toBe(false);
+    expect(LoggerService.error).toBeCalledTimes(1);
+    expect(LoggerService.error).toBeCalledWith(undefined, "Force logout failed");
+  });
 });
