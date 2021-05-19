@@ -10,15 +10,17 @@ import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 import LoggerService from "@/services/LoggerService";
 import { CustomAlert } from "@/models/user/CustomAlert";
 import { IM } from "@/vocabulary/IM";
+import { ConceptSummary } from "@/models/search/ConceptSummary";
+import { ConceptReference } from "@/models/TTConcept/ConceptReference";
 
 export default createStore({
   // update stateType.ts when adding new state!
   state: {
     loading: new Map<string, boolean>(),
-    conceptIri: "http://www.w3.org/2002/07/owl#Thing",
+    conceptIri: "http://www.w3.org/2002/07/owl#Thing" as string,
     conceptAggregate: {} as ConceptAggregate,
     history: [] as HistoryItem[],
-    searchResults: [],
+    searchResults: [] as ConceptSummary[],
     currentUser: {} as User,
     registeredUsername: "" as string,
     isLoggedIn: false as boolean,
@@ -54,6 +56,10 @@ export default createStore({
         "Folder",
         "Legacy"
       ]
+    } as {
+      selectedStatus: string[];
+      selectedSchemes: ConceptReference[];
+      selectedTypes: string[];
     }
   },
   mutations: {
@@ -163,14 +169,10 @@ export default createStore({
         if (res.status === 200 && res.user) {
           commit("updateIsLoggedIn", true);
           const loggedInUser = res.user;
-          if ("value" in loggedInUser.avatar) {
-            const result = avatars.find(
-              avatar => avatar.value === loggedInUser.avatar.value
-            );
-            if (!result) {
-              loggedInUser.avatar = avatars[0];
-            }
-          } else {
+          const foundAvatar = avatars.find(
+            avatar => avatar.value === loggedInUser.avatar.value
+          );
+          if (!foundAvatar) {
             loggedInUser.avatar = avatars[0];
           }
           commit("updateCurrentUser", loggedInUser);

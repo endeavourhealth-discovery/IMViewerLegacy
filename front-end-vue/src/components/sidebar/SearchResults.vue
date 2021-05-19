@@ -58,24 +58,24 @@
         style="width: 100%; gap: 7px;"
       >
         <div class="left-side" style="width: 50%;" v-if="hoveredResult.name">
-          <p><strong>Name:</strong> {{ hoveredResult.name }}</p>
-          <p><strong>Iri:</strong> {{ hoveredResult.iri }}</p>
-          <p><strong>Code:</strong> {{ hoveredResult.code }}</p>
+          <p><strong>Name: </strong>{{ hoveredResult.name }}</p>
+          <p><strong>Iri: </strong>{{ hoveredResult.iri }}</p>
+          <p><strong>Code: </strong>{{ hoveredResult.code }}</p>
         </div>
         <div class="right-side" style="width: 50%;" v-if="hoveredResult.name">
           <p>
-            <strong>Status:</strong>
+            <strong>Status: </strong>
             <span v-if="hoveredResult.status">{{
               hoveredResult.status.name
             }}</span>
           </p>
           <p>
-            <strong>Scheme:</strong>
+            <strong>Scheme: </strong>
             <span v-if="hoveredResult.scheme">{{
               hoveredResult.scheme.name
             }}</span>
           </p>
-          <p><strong>Type:</strong> {{ getConceptTypes(hoveredResult) }}</p>
+          <p><strong>Type: </strong>{{ getConceptTypes(hoveredResult) }}</p>
         </div>
       </div>
     </OverlayPanel>

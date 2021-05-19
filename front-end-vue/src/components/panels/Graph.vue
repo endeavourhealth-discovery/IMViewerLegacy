@@ -140,8 +140,7 @@ export default defineComponent({
       const g = d3.selectAll("g");
 
       // add the links between the nodes
-      const link = g
-        .selectAll(".link")
+      g.selectAll(".link")
         .data(nodes.descendants().slice(1))
         .enter()
         .append("path")

@@ -17,7 +17,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import store from "@/store/index";
 import { HistoryItem } from "@/models/HistoryItem";
 
 export default defineComponent({
@@ -29,7 +28,7 @@ export default defineComponent({
   },
   methods: {
     history(): any {
-      const viewHistory = store.state.history.filter(obj => {
+      const viewHistory = this.$store.state.history.filter((obj: any) => {
         return !!obj.conceptName;
       });
       return viewHistory;
