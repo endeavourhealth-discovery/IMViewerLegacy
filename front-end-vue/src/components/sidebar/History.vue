@@ -28,7 +28,7 @@ export default defineComponent({
   },
   methods: {
     history(): any {
-      const viewHistory = this.$store.state.history.filter((obj :any) => {
+      const viewHistory = this.$store.state.history.filter((obj: any) => {
         return !!obj.conceptName;
       });
       return viewHistory;

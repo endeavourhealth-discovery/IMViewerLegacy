@@ -15,7 +15,7 @@ export default defineComponent({
     description: {} as any
   },
   watch: {
-    async description(newValue) {
+    async description() {
       this.init();
     }
   },
