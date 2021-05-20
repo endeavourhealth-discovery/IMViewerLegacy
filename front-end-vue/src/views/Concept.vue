@@ -2,10 +2,24 @@
   <div class="concept-container">
     <Panel>
       <template #icons>
-        <button class="p-panel-header-icon p-link p-mr-2" @click="toggle">
-          <span class="pi pi-cog"></span>
+        <button
+          class="p-panel-header-icon p-link p-mr-2"
+          @click="openDownloadDialog"
+        >
+          <span class="pi pi-download"></span>
         </button>
-        <Menu id="config_menu" ref="menu" :model="items" :popup="true" />
+        <button
+          class="p-panel-header-icon p-link p-mr-2"
+          @click="directToCreateRoute"
+        >
+          <span class="pi pi-plus-circle"></span>
+        </button>
+        <button
+          class="p-panel-header-icon p-link p-mr-2"
+          @click="directToEditRoute"
+        >
+          <span class="pi pi-pencil"></span>
+        </button>
       </template>
       <template #header>
         <PanelHeader :icon="icon" :header="header" />
@@ -140,19 +154,19 @@ export default defineComponent({
       dialogHeader: "",
       windowHeight: window.innerHeight,
       windowWidth: window.innerWidth,
-      active: 0,
-      items: [
-        {
-          label: "Download Concept",
-          icon: "pi pi-download",
-          command: () => {
-            this.openDownloadDialog();
-          }
-        }
-      ] as { label: string; icon: string; command: () => void }[]
+      active: 0
     };
   },
   methods: {
+    directToEditRoute() {
+      this.$router.push({
+        name: "Edit",
+        params: { iri: this.concept["@id"] }
+      });
+    },
+    directToCreateRoute() {
+      this.$router.push({ name: "Create" });
+    },
     onResize(): void {
       this.windowHeight = window.innerHeight;
       this.windowWidth = window.innerWidth;
@@ -190,11 +204,6 @@ export default defineComponent({
       this.concept = await this.getConcept(this.conceptIri);
       this.icon = getIconFromType(this.concept?.[RDF.TYPE]);
       this.header = this.concept?.[RDFS.LABEL];
-    },
-
-    toggle(event: any): void {
-      const x = this.$refs.menu as any;
-      x.toggle(event);
     },
 
     openDownloadDialog(): void {

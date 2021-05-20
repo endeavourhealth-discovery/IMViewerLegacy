@@ -44,6 +44,7 @@ import ColumnGroup from "primevue/columngroup"; //optional for column grouping
 import OrganizationChart from "primevue/organizationchart";
 import Textarea from "primevue/textarea";
 import Dropdown from "primevue/dropdown";
+import ConfirmDialog from "primevue/confirmdialog";
 import Tooltip from "primevue/tooltip";
 import Dialog from "primevue/dialog";
 import SplitButton from "primevue/splitbutton";
@@ -99,6 +100,7 @@ const app = createApp(App)
   .component("OrganizationChart", OrganizationChart)
   .component("Textarea", Textarea)
   .component("DropDown", Dropdown)
+  .component("ConfirmDialog", ConfirmDialog)
   .component("Dialog", Dialog)
   .component("SplitButton", SplitButton)
   .component("MultiSelect", MultiSelect)
