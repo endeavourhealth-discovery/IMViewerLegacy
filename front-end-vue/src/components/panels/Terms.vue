@@ -95,13 +95,22 @@ export default defineComponent({
           .getComputedStyle(document.documentElement, null)
           .getPropertyValue("font-size")
       );
+      const paginatorHeight = paginator.getBoundingClientRect().height === 0? currentFontSize * 3.7 : paginator.getBoundingClientRect().height;
       this.scrollHeight =
         container.getBoundingClientRect().height -
         header.getBoundingClientRect().height -
         nav.getBoundingClientRect().height -
-        paginator.getBoundingClientRect().height -
-        currentFontSize * 4 +
+        paginatorHeight -
+        currentFontSize * 4 -1 +
         "px";
+      console.log(this.scrollHeight)
+      console.log(container.getBoundingClientRect().height)
+      console.log(header.getBoundingClientRect().height)
+      console.log(nav.getBoundingClientRect().height)
+      console.log(paginator.getBoundingClientRect())
+      console.log(paginator.getBoundingClientRect().height)
+      console.log(currentFontSize)
+
     }
   }
 });
