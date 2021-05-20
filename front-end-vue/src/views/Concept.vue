@@ -48,14 +48,6 @@
             </TabPanel>
           </TabView>
         </div>
-
-        <EditDialog
-          @closeDialog="closeDialog"
-          :display="display"
-          :concept="editorConcept"
-          :header="dialogHeader"
-          :definitionText="editorDefinitionText"
-        />
         <DownloadDialog
           @closeDownloadDialog="closeDownloadDialog"
           :showDialog="showDownloadDialog"
@@ -79,7 +71,6 @@ import { getIconFromType, isValueSet } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";
-import EditDialog from "@/components/edit/EditDialog.vue";
 import DownloadDialog from "@/components/panels/DownloadDialog.vue";
 import ConceptService from "@/services/ConceptService";
 import LoggerService from "@/services/LoggerService";
@@ -94,7 +85,6 @@ export default defineComponent({
     UsedIn,
     Members,
     Definition,
-    EditDialog,
     DownloadDialog
   },
   computed: {
@@ -152,13 +142,6 @@ export default defineComponent({
       windowWidth: window.innerWidth,
       active: 0,
       items: [
-        // {
-        //   label: "Edit Concept",
-        //   icon: "pi pi-pencil",
-        //   command: () => {
-        //     this.openEditDialog();
-        //   }
-        // },
         {
           label: "Download Concept",
           icon: "pi pi-download",
@@ -166,13 +149,6 @@ export default defineComponent({
             this.openDownloadDialog();
           }
         }
-        // {
-        //   label: "Create New Concept",
-        //   icon: "pi pi-plus",
-        //   command: () => {
-        //     this.openAddDialog();
-        //   }
-        // }
       ] as { label: string; icon: string; command: () => void }[]
     };
   },
@@ -219,22 +195,6 @@ export default defineComponent({
     toggle(event: any): void {
       const x = this.$refs.menu as any;
       x.toggle(event);
-    },
-
-    closeDialog(): void {
-      this.display = false;
-    },
-
-    openAddDialog(): void {
-      this.editDialogView = false;
-      this.dialogHeader = "Create";
-      this.display = true;
-    },
-
-    openEditDialog(): void {
-      this.editDialogView = true;
-      this.display = true;
-      this.dialogHeader = "Edit";
     },
 
     openDownloadDialog(): void {

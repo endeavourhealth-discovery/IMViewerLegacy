@@ -1,86 +1,5 @@
 <template>
-  <TabView>
-    <TabPanel header="Form">
-      <div class="p-fluid editor-grid">
-        <div class="p-field float-label-container iri">
-          <span class="p-float-label">
-            <InputText
-              class="p-inputtext-sm"
-              v-model="conceptDto.iri"
-              type="text"
-              @input="updateConceptDto"
-            />
-            <label for="Iri">Iri</label>
-          </span>
-        </div>
-        <div class="p-field float-label-container name">
-          <span class="p-float-label">
-            <InputText
-              class="p-inputtext-sm"
-              v-model="conceptDto.name"
-              type="text"
-            />
-            <label for="Name">Name</label>
-          </span>
-        </div>
-        <div class="p-field float-label-container code">
-          <span class="p-float-label">
-            <InputText
-              class="p-inputtext-sm"
-              v-model="conceptDto.code"
-              type="text"
-            />
-            <label for="Name">Code</label>
-          </span>
-        </div>
-        <div class="p-field float-label-container description">
-          <span class="p-float-label">
-            <Textarea
-              class="p-inputtext-sm"
-              v-model="conceptDto.description"
-              rows="4"
-            />
-            <label for="address">Description</label>
-          </span>
-        </div>
-        <div class="p-field float-label-container version">
-          <span class="p-float-label">
-            <InputText
-              class="p-inputtext-sm"
-              v-model="conceptDto.version"
-              type="text"
-            />
-            <label for="Version">Version</label>
-          </span>
-        </div>
-        <div class="p-field float-label-container status">
-          <span class="p-float-label">
-            <Dropdown
-              class="p-inputtext-sm"
-              v-model="conceptDto.status"
-              :options="statusOptions"
-            />
-            <label>Status</label>
-          </span>
-        </div>
-        <div class="p-field float-label-container scheme">
-          <span class="p-float-label">
-            <Dropdown
-              class="p-inputtext-sm"
-              v-model="conceptDto.scheme"
-              optionValue="name"
-              :options="schemeOptions"
-              optionLabel="name"
-            />
-            <label>Scheme</label>
-          </span>
-        </div>
-      </div>
-    </TabPanel>
-    <TabPanel header="IMLang">
-      <div style="height:250px;" id="editor-container"></div>
-    </TabPanel>
-  </TabView>
+  <div style="height:250px;" id="editor-container"></div>
 </template>
 
 <script lang="ts">
@@ -101,15 +20,14 @@ import { getDiscoveryCompletionProvider } from "@/services/MonacoService";
 import { ConceptDto } from "@/models/ConceptDto";
 import ConceptService from "@/services/ConceptService";
 import { ConceptReference } from "@/models/ConceptReference";
-import Dropdown from "primevue/dropdown";
 import { ConceptStatus } from "@/models/ConceptStatus";
 import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 
 export default defineComponent({
-  name: "Editor",
-  components: { Dropdown },
+  name: "MonacoEditor",
+  components: {},
   props: ["definitionText", "concept"],
   emits: ["updateConceptDto", "updateText", "updateValid"],
   data() {
