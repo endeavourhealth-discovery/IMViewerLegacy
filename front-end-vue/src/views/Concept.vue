@@ -10,8 +10,8 @@
       <template #header>
         <PanelHeader :icon="icon" :header="header" />
       </template>
-      <div id="concept-content">
-        <div v-if="concept && isSet">
+      <div id="concept-content-dialogs-container">
+        <div v-if="concept && isSet" id="concept-panel-container">
           <TabView>
             <TabPanel header="Definition">
               <Definition :concept="concept" />
@@ -27,7 +27,7 @@
             </TabPanel>
           </TabView>
         </div>
-        <div v-if="concept && !isSet">
+        <div v-if="concept && !isSet" id="concept-panel-container">
           <TabView v-model:activeIndex="active">
             <TabPanel header="Definition">
               <Definition :concept="concept" />
@@ -184,7 +184,9 @@ export default defineComponent({
 
     setContentHeight(): void {
       const header = document.getElementsByClassName("p-panel-header")[0];
-      const content = document.getElementById("concept-content");
+      const content = document.getElementById(
+        "concept-content-dialogs-container"
+      );
       const container = document.getElementsByClassName("concept-container")[0];
       const currentFontSize = parseFloat(
         window
@@ -192,12 +194,13 @@ export default defineComponent({
           .getPropertyValue("font-size")
       );
       if (content && header && container && currentFontSize) {
-        content.style.minHeight =
+        const calcHeight =
           container.getBoundingClientRect().height -
           header.getBoundingClientRect().height -
           2 * currentFontSize -
           1 +
           "px";
+        content.style.minHeight = calcHeight;
       } else {
         LoggerService.error(
           "Content sizing error",
@@ -253,6 +256,10 @@ export default defineComponent({
   height: calc(100vh - 2rem);
   width: 100%;
   overflow-y: auto;
+}
+
+.p-tabview-panel {
+  min-height: 100%;
 }
 
 .p-panel {
