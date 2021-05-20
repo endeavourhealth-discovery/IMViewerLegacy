@@ -24,6 +24,8 @@ export default defineComponent({
   computed: mapState(["snomedLicenseAccepted"]),
   methods: {
     clickedBack(): void {
+      console.log(this.$store.state.historyCount)
+      console.log(window.history.length)
       if (this.$store.state.historyCount === window.history.length) {
         this.$router.push({ name: "Dashboard" });
       } else {

@@ -407,7 +407,7 @@ export default defineComponent({
 }
 
 .register-form {
-  max-width: 25em;
+  max-width: 32em;
 }
 
 .footer-link:hover {

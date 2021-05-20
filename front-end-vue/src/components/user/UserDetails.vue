@@ -94,7 +94,7 @@ export default defineComponent({
 }
 
 .user-details-form {
-  max-width: 25em;
+  width: 32em;
 }
 
 .user-details-card {
@@ -102,8 +102,8 @@ export default defineComponent({
 }
 
 #selected-avatar {
-  margin-block-start: 1em;
-  width: 150px;
+  margin: 1.5rem;
+  width: 10rem;
   border: 1px solid lightgray;
   border-radius: 50%;
 }

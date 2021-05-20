@@ -22,7 +22,7 @@
           class="p-fluid p-d-flex p-flex-column p-jc-start password-edit-form"
         >
           <div v-if="currentUser.username" class="p-field">
-            <label for="userName">User</label>
+            <label for="userName">Username</label>
             <InputText
               class="p-text-capitalize"
               id="username"
@@ -228,12 +228,12 @@ export default defineComponent({
 }
 
 .password-edit-form {
-  max-width: 25em;
+  max-width: 32em;
 }
 
 .avatar-icon {
-  margin-block-start: 1em;
-  width: 150px;
+  margin-block-start: 0.5rem;
+  width: 10rem;
   border: 1px solid lightgray;
   border-radius: 50%;
 }

@@ -129,7 +129,7 @@
               New passwords do not match
             </InlineMessage>
           </div>
-          <div class="p-d-flex p-flex-column p-jc-start p-ai-center">
+          <div class="p-d-flex p-flex-row p-jc-between p-ai-center">
             <Button
               v-if="!showPasswordEdit"
               class="password-edit p-button-secondary"
@@ -154,7 +154,7 @@
               v-if="setButtonDisabled()"
               class="user-edit"
               type="submit"
-              label="Update Account"
+              label="Update account"
               disabled
               v-on:click.prevent="handleEditSubmit"
             />
@@ -162,7 +162,7 @@
               v-else
               class="user-edit"
               type="submit"
-              label="Update Account"
+              label="Update account"
               v-on:click.prevent="handleEditSubmit"
             />
           </div>
@@ -491,7 +491,7 @@ export default defineComponent({
 }
 
 .user-edit-form {
-  max-width: 25em;
+  max-width: 32em;
 }
 
 .user-edit-card {
