@@ -89,8 +89,7 @@ export default defineComponent({
 }
 
 #selected-avatar {
-  margin-block-start: 0.5em;
-  width: 15rem;
+  width: 10rem;
   border: 1px solid lightgray;
   border-radius: 50%;
 }

@@ -15,7 +15,7 @@
           <div class="p-field">
             <div
               v-if="isLoggedIn"
-              class="p-d-flex p-flex-column p-ai-center p-text-capitalize"
+              class="p-d-flex p-flex-row p-ai-center p-text-capitalize"
             >
               <img
                 v-if="isLoggedIn"
@@ -27,7 +27,6 @@
                 aria-haspopup="true"
                 aria-controls="overlay_menu"
               />
-              <br />
               <p id="username-display">{{ currentUser.username }}</p>
             </div>
             <div v-if="!isLoggedIn" class="p-text-left p-text-capitalize">
@@ -111,9 +110,10 @@ export default defineComponent({
 }
 
 .avatar-icon {
-  width: 60px;
+  width: 3rem;
   border: 1px solid lightgray;
   border-radius: 50%;
+  margin-right: 0.5rem;
 }
 
 .icon-header {
