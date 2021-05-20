@@ -112,7 +112,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
-import store from "@/store/index";
 
 export default defineComponent({
   name: "SnomedLicense",
@@ -137,8 +136,8 @@ export default defineComponent({
     },
 
     submitAgree(): void {
-      store.commit("updateSnomedLicenseAccepted", "true");
-      if (store.state.historyCount === window.history.length) {
+      this.$store.commit("updateSnomedLicenseAccepted", "true");
+      if (this.$store.state.historyCount === window.history.length) {
         this.$router.push({ name: "Dashboard" });
       } else {
         this.$router.go(-1);
