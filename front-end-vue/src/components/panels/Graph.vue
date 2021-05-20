@@ -47,6 +47,7 @@ export default defineComponent({
   },
   watch: {
     async conceptIri(newValue) {
+      this.panZoom.destroy();
       await this.getGraph(newValue);
       this.initView();
       this.initSvgPanZoom();
@@ -86,11 +87,12 @@ export default defineComponent({
     },
 
     onResize() {
+      this.panZoom.destroy();
       this.windowHeight = window.innerHeight;
       this.windowWidth = window.innerWidth;
+      this.initView();
       this.initSvgPanZoom();
       this.zoomReset();
-      this.initView();
     },
 
     zoomIn() {
