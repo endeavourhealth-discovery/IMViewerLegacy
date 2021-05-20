@@ -24,10 +24,9 @@ export default defineComponent({
 <style scoped>
 .user-container {
   width: 100%;
-  height: 90vh;
+  height: 95vh;
   /* overflow-y: auto; */
-  margin-top: 10vh;
-  margin-bottom: 2em;
+  margin-top: 5vh;
 }
 
 .card-button-container {

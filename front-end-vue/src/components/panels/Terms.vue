@@ -11,7 +11,7 @@
     :sortOrder="1"
     scrollable
     showGridlines
-    scrollHeight="600px"
+    :scrollHeight="scrollHeight"
     class="p-datatable-sm"
   >
     <Column field="scheme.name" header="Scheme"></Column>
@@ -40,18 +40,29 @@ export default defineComponent({
     }
   },
   async mounted() {
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.onResize);
+    });
     if (this.conceptIri) {
       await this.getTerms(this.conceptIri);
     }
+    this.setScrollHeight();
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.onResize);
   },
   data() {
     return {
       selected: {},
       loading: false,
-      terms: []
+      terms: [],
+      scrollHeight: ""
     };
   },
   methods: {
+    onResize(): void {
+      this.setScrollHeight();
+    },
     async getTerms(iri: string) {
       this.loading = true;
       // TODO call to get the terms
@@ -59,11 +70,43 @@ export default defineComponent({
       this.loading = false;
     },
     onNodeSelect(concept: any) {
-      if (concept?.["@id"])
+      if (concept?.["@id"]) {
         this.$router.push({
           name: "Concept",
           params: { selectedIri: concept["@id"] }
         });
+      }
+    },
+    setScrollHeight(): void {
+      const container = document.getElementsByClassName(
+        "concept-container"
+      )[0] as HTMLElement;
+      const header = document.getElementsByClassName(
+        "p-panel-header"
+      )[0] as HTMLElement;
+      const nav = document.getElementsByClassName(
+        "p-tabview-nav"
+      )[1] as HTMLElement;
+      const paginator = document.getElementsByClassName(
+        "p-paginator"
+      )[1] as HTMLElement;
+      const currentFontSize = parseFloat(
+        window
+          .getComputedStyle(document.documentElement, null)
+          .getPropertyValue("font-size")
+      );
+      const paginatorHeight =
+        paginator.getBoundingClientRect().height === 0
+          ? currentFontSize * 3.7
+          : paginator.getBoundingClientRect().height;
+      this.scrollHeight =
+        container.getBoundingClientRect().height -
+        header.getBoundingClientRect().height -
+        nav.getBoundingClientRect().height -
+        paginatorHeight -
+        currentFontSize * 4 -
+        1 +
+        "px";
     }
   }
 });

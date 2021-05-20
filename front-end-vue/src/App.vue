@@ -69,7 +69,7 @@ body {
 }
 
 /* Settings specifically for dealing with 300% scaling */
-@media (-webkit-device-pixel-ratio: 3) {
+/* @media (-webkit-device-pixel-ratio: 3) {
   .p-component {
     font-size: 0.7rem !important;
   }
@@ -117,7 +117,7 @@ body {
       width: 115px;
     }
   }
-}
+} */
 
 .swal2-container .swal2-popup .swal2-actions {
   justify-content: flex-end;

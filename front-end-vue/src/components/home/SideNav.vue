@@ -176,7 +176,7 @@ export default defineComponent({
 .user-icon,
 .settings-icon {
   width: 100%;
-  font-size: 4rem;
+  /* font-size: 4rem; */
   color: lightgray;
   padding: 5px;
   cursor: pointer;
@@ -187,7 +187,7 @@ export default defineComponent({
 }
 
 .avatar-icon {
-  width: 4rem;
+  /* width: 4rem; */
   border: 1px solid lightgray;
   border-radius: 50%;
   cursor: pointer;
@@ -199,5 +199,25 @@ export default defineComponent({
   color: lightgray;
   font-weight: bold;
   cursor: pointer;
+}
+
+@media screen and (max-width: 1439px) {
+  .im-logo, .user-icon, .sidebutton {
+    font-size: 5vw;
+  }
+
+  .avatar-icon {
+    width: 5vw;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .im-logo, .user-icon, .sidebutton {
+    font-size: 60px;
+  }
+
+  .avatar-icon {
+    width: 60px;
+  }
 }
 </style>
