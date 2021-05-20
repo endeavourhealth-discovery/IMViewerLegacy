@@ -71,6 +71,7 @@ export default defineComponent({
         this.chartConceptSchemes.datasets[0].data = rescaleData(
           this.chartConceptSchemes.datasets[0].data
         );
+        // set chart background and hover colours
         this.setChartColours(res.data);
         this.$store.commit("updateLoading", {
           key: "reportScheme",
@@ -92,8 +93,8 @@ export default defineComponent({
       data: { count: number; iri: string; label: string }[]
     ): void {
       const colourCount = Object.keys(data).length;
-      const dataColours = palette("tol-rainbow", colourCount);
-      const dataColoursWithHash = dataColours.map(
+      const backgroundColours = palette("tol-rainbow", colourCount);
+      const backgroundColoursWithHash = backgroundColours.map(
         (color: string) => "#" + color
       );
       const hoverColours = palette("tol-rainbow", colourCount);
@@ -103,7 +104,7 @@ export default defineComponent({
       const hoverColoursLightened = hoverColoursWithHash.map((color: string) =>
         colorLighter(color)
       );
-      this.chartConceptSchemes.datasets[0].backgroundColor = dataColoursWithHash;
+      this.chartConceptSchemes.datasets[0].backgroundColor = backgroundColoursWithHash;
       this.chartConceptSchemes.datasets[0].hoverBackgroundColor = hoverColoursLightened;
     }
   }
