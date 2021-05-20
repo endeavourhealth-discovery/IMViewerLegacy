@@ -72,27 +72,39 @@ export default defineComponent({
           this.chartConceptSchemes.datasets[0].data
         );
         this.setChartColours(res.data);
-        this.$store.commit("updateLoading", { key: "reportScheme", value: false });
+        this.$store.commit("updateLoading", {
+          key: "reportScheme",
+          value: false
+        });
       })
       .catch(err => {
-        this.$store.commit("updateLoading", { key: "reportScheme", value: false });
+        this.$store.commit("updateLoading", {
+          key: "reportScheme",
+          value: false
+        });
         this.$toast.add(
           LoggerService.error("Concept schemes server request failed", err)
         );
       });
   }, // mounted end
   methods: {
-    setChartColours(data: { count: number, iri: string, label: string}[]): void {
-        const colourCount = Object.keys(data).length;
-        const dataColours = palette("tol-rainbow", colourCount);
-        const dataColoursWithHash = dataColours.map((color: string) => "#" + color);
-        const hoverColours = palette("tol-rainbow", colourCount);
-        const hoverColoursWithHash = hoverColours.map((color: string) => "#" + color);
-        const hoverColoursLightened = hoverColoursWithHash.map((color: string) =>
-          colorLighter(color)
-        );
-        this.chartConceptSchemes.datasets[0].backgroundColor = dataColoursWithHash;
-        this.chartConceptSchemes.datasets[0].hoverBackgroundColor = hoverColoursLightened;
+    setChartColours(
+      data: { count: number; iri: string; label: string }[]
+    ): void {
+      const colourCount = Object.keys(data).length;
+      const dataColours = palette("tol-rainbow", colourCount);
+      const dataColoursWithHash = dataColours.map(
+        (color: string) => "#" + color
+      );
+      const hoverColours = palette("tol-rainbow", colourCount);
+      const hoverColoursWithHash = hoverColours.map(
+        (color: string) => "#" + color
+      );
+      const hoverColoursLightened = hoverColoursWithHash.map((color: string) =>
+        colorLighter(color)
+      );
+      this.chartConceptSchemes.datasets[0].backgroundColor = dataColoursWithHash;
+      this.chartConceptSchemes.datasets[0].hoverBackgroundColor = hoverColoursLightened;
     }
   }
 });
