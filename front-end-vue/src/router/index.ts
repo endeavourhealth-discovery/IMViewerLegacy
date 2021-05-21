@@ -4,6 +4,7 @@ import Dashboard from "../views/Dashboard.vue";
 import Datamodel from "../views/Concept.vue";
 import Workflow from "../views/Workflow.vue";
 import User from "../views/User.vue";
+import Editor from "../views/Editor.vue";
 import Login from "../components/user/Login.vue";
 import Register from "../components/user/Register.vue";
 import UserDetails from "../components/user/UserDetails.vue";
@@ -115,6 +116,26 @@ const routes: Array<RouteRecordRaw> = [
         }
       }
     ]
+  },
+  {
+    path: "/editor",
+    name: "Editor",
+    component: Editor,
+    children: [
+      {
+        path: "/editor",
+        name: "Create",
+        component: Editor
+      },
+      {
+        path: "/editor/:iri",
+        name: "Edit",
+        component: Editor
+      }
+    ],
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: "/workflow",

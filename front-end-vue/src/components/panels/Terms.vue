@@ -96,13 +96,13 @@ export default defineComponent({
           .getPropertyValue("font-size")
       );
       const paginatorHeight =
-        paginator.getBoundingClientRect().height === 0
+        paginator?.getBoundingClientRect().height === 0
           ? currentFontSize * 3.7
-          : paginator.getBoundingClientRect().height;
+          : paginator?.getBoundingClientRect().height;
       this.scrollHeight =
-        container.getBoundingClientRect().height -
-        header.getBoundingClientRect().height -
-        nav.getBoundingClientRect().height -
+        container?.getBoundingClientRect().height -
+        header?.getBoundingClientRect().height -
+        nav?.getBoundingClientRect().height -
         paginatorHeight -
         currentFontSize * 4 -
         1 +
