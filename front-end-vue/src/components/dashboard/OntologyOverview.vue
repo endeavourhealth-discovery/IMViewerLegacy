@@ -32,7 +32,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { mapState } from "vuex";
 import ReportService from "@/services/ReportService";
 import LoggerService from "@/services/LoggerService";
 import { toSentenceCase } from "@/helpers/TextConverters";
