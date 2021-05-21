@@ -26,7 +26,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { mapState } from "vuex";
 import ReportService from "@/services/ReportService";
 import { colorLighter } from "@/helpers/ColorMethods";
 const palette = require("../../../node_modules/google-palette");
@@ -37,7 +36,6 @@ import { ChartOptions } from "@/models/charts/ChartOptions";
 
 export default defineComponent({
   name: "ConceptStatus",
-  computed: mapState(["conceptStatus"]),
   props: ["chartOptions", "graphHeight"],
   data() {
     return {
