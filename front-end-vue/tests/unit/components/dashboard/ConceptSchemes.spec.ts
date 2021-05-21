@@ -152,6 +152,7 @@ describe("ConceptSchemes.vue", () => {
       },
       {
           "iri": "http://endhealth.info/im#ODS_code",
+          "label": "ODS code",
           "count": 145
       }
     ];
@@ -199,6 +200,7 @@ describe("ConceptSchemes.vue", () => {
       },
       {
           "iri": "http://endhealth.info/im#ODS_code",
+          "label": "ODS code",
           "count": 145
       }
     ];
