@@ -73,7 +73,10 @@ export default defineComponent({
         );
         // set chart background and hover colours
         this.setChartColours(res.data);
-        this.$store.commit("updateLoading", { key: "reportStatus", value: false });
+        this.$store.commit("updateLoading", {
+          key: "reportStatus",
+          value: false
+        });
       })
       .catch(err => {
         this.$store.commit("updateLoading", {

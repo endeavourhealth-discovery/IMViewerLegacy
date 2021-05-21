@@ -76,10 +76,16 @@ export default defineComponent({
           this.chartConceptTypes.datasets[0].data
         );
         this.setChartColours(res.data);
-        this.$store.commit("updateLoading", { key: "reportType", value: false });
+        this.$store.commit("updateLoading", {
+          key: "reportType",
+          value: false
+        });
       })
       .catch(err => {
-        this.$store.commit("updateLoading", { key: "reportType", value: false });
+        this.$store.commit("updateLoading", {
+          key: "reportType",
+          value: false
+        });
         this.$toast.add(
           LoggerService.error("Concept types server request failed", err)
         );
