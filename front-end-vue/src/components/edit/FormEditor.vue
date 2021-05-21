@@ -1,5 +1,4 @@
 <template>
-  <ConfirmDialog></ConfirmDialog>
   <Card>
     <template #content>
       <div class="p-fluid editor-grid">
@@ -82,7 +81,7 @@
         icon="pi pi-times"
         label="Cancel"
         class="p-button-secondary"
-        @click="cancel"
+        @click="$router.go(-1)"
       />
       <Button
         icon="pi pi-check"
@@ -101,11 +100,10 @@ import ConceptService from "@/services/ConceptService";
 import { defineComponent } from "@vue/runtime-core";
 import Dropdown from "primevue/dropdown";
 import Card from "primevue/card";
-import ConfirmDialog from "primevue/confirmdialog";
 
 export default defineComponent({
   name: "FormEditor",
-  components: { Dropdown, Card, ConfirmDialog },
+  components: { Dropdown, Card },
   props: {
     concept: {} as any
   },
@@ -127,17 +125,6 @@ export default defineComponent({
     this.schemeOptions = (await ConceptService.getSchemeOptions()).data;
   },
   methods: {
-    cancel() {
-      this.$confirm.require({
-        message:
-          "All unsaved changes will be lost. Are you sure you want to proceed?",
-        header: "Confirmation",
-        icon: "pi pi-exclamation-triangle",
-        accept: () => {
-          this.$router.go(-1);
-        }
-      });
-    },
     submit() {
       //   console.log(this.conceptDto);
     }

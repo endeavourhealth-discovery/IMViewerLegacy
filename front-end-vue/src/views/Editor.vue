@@ -1,5 +1,6 @@
 <template>
   <SideNav />
+  <ConfirmDialog></ConfirmDialog>
   <div class="edit-panel">
     <Panel header="Editor">
       <TabView>
@@ -20,13 +21,26 @@ import SideNav from "@/components/home/SideNav.vue";
 import FormEditor from "@/components/edit/FormEditor.vue";
 import ConceptService from "@/services/ConceptService";
 // import MonacoEditor from "@/components/edit/MonacoEditor.vue";
+import ConfirmDialog from "primevue/confirmdialog";
 
 export default defineComponent({
   name: "Edit",
   components: {
     SideNav,
     // MonacoEditor,
+    ConfirmDialog,
     FormEditor
+  },
+  beforeRouteLeave(to, from, next) {
+    this.$confirm.require({
+      message:
+        "All unsaved changes will be lost. Are you sure you want to proceed?",
+      header: "Confirmation",
+      icon: "pi pi-exclamation-triangle",
+      accept: () => {
+        next();
+      }
+    });
   },
   data() {
     return {
