@@ -26,8 +26,7 @@
         class="p-button-rounded p-button-text p-button-plain"
         disabled="true"
       >
-        <div v-if="loading" class="spinner"></div
-      ></Button>
+      </Button>
     </span>
 
     <Tree
@@ -39,6 +38,13 @@
       @node-expand="expandChildren"
       class="tree-root"
     >
+      <template #default="slotProps">
+        <span v-if="!slotProps.node.loading">
+          <i :class="'fas fa-fw ' + slotProps.node.typeIcon" :style="'color:' + slotProps.node.color"></i>
+        </span>
+        <ProgressSpinner v-if="slotProps.node.loading"/>
+        {{slotProps.node.label}}
+      </template>
     </Tree>
   </div>
 </template>
@@ -52,7 +58,7 @@ import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";
 import { IM } from "@/vocabulary/IM";
 import LoggerService from "@/services/LoggerService";
-import { getIconFromType } from "@/helpers/ConceptTypeMethods";
+import { getColourFromType, getIconFromType } from '@/helpers/ConceptTypeMethods';
 import { TreeNode } from "@/models/TreeNode";
 
 export default defineComponent({
@@ -79,7 +85,6 @@ export default defineComponent({
   },
   data() {
     return {
-      loading: false,
       searchResult: "",
       root: [] as TreeNode[],
       expandedKeys: {} as any,
@@ -141,9 +146,11 @@ export default defineComponent({
       const node: TreeNode = {
         key: level,
         label: conceptName,
-        icon: getIconFromType(conceptTypes),
+        typeIcon: getIconFromType(conceptTypes),
+        color: getColourFromType(conceptTypes),
         data: conceptIri,
         leaf: !hasChildren,
+        loading: false,
         children: []
       };
       return node;
@@ -161,7 +168,7 @@ export default defineComponent({
     },
 
     async expandChildren(node: TreeNode): Promise<void> {
-      this.loading = true;
+      node.loading = true;
       this.expandedKeys[node.key] = true;
       let children: any[] = [];
       await ConceptService.getConceptChildren(node.data)
@@ -189,7 +196,7 @@ export default defineComponent({
           index++;
         }
       });
-      this.loading = false;
+      node.loading = false;
     },
 
     containsChild(children: any[], child: any) {
@@ -260,6 +267,11 @@ export default defineComponent({
   padding: 0rem !important;
   transition: box-shadow 3600s 3600s !important;
 }
+
+.p-tree-toggler {
+  margin-right: 0 !important;
+}
+
 .tree-root {
   height: 95%;
   overflow: auto;
@@ -269,44 +281,8 @@ export default defineComponent({
   min-width: 2rem;
 }
 
-.p-treenode-icon {
-  min-width: 1.25rem;
-}
-
-.spinner {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border-color: currentColor;
-  border-style: solid;
-  border-radius: 99999px;
-  border-width: 2px;
-  border-left-color: transparent;
-  color: rgb(112, 169, 216);
-  opacity: 0;
-  animation-name: rotate, fadeIn;
-  animation-duration: 450ms, 600ms;
-  animation-timing-function: linear, ease;
-  animation-iteration-count: infinite, 1;
-  animation-delay: 600ms;
-  animation-fill-mode: forwards;
-}
-
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+.p-progress-spinner {
+  width: 1.25em !important;
+  height: 1.25em !important;
 }
 </style>

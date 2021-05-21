@@ -1,19 +1,7 @@
 <template>
   <div>
-    <div v-if="icon.includes('sitemap')">
-      <i class="fas fa-fw fa-sitemap" />
-      {{ header }}
-    </div>
-    <div v-if="icon.includes('tasks')">
-      <i class="fas fa-fw fa-tasks" />
-      {{ header }}
-    </div>
-    <div v-if="icon.includes('folder')">
-      <i class="fas fa-fw fa-folder" />
-      {{ header }}
-    </div>
-    <div v-if="icon.includes('lightbulb')">
-      <i class="fas fa-fw fa-lightbulb" />
+    <div :key="icon">
+      <i :class="icon" :style="color"/>
       {{ header }}
     </div>
   </div>
@@ -21,10 +9,25 @@
 
 <script>
 import { defineComponent } from "@vue/runtime-core";
+import {getColourFromType, getIconFromType} from "@/helpers/ConceptTypeMethods";
 
 export default defineComponent({
   name: "PanelHeader",
-  props: ["icon", "header"]
+  props: ["type", "header"],
+  data() {
+    return {
+      icon: '',
+      color: ''
+    }
+  },
+  watch: {
+    type(newValue) {
+      if (newValue) {
+        this.color = 'color: ' + getColourFromType(newValue);
+        this.icon = getIconFromType(newValue);
+      }
+    }
+  }
 });
 </script>
 
