@@ -202,7 +202,9 @@ export default defineComponent({
 }
 
 @media screen and (max-width: 1439px) {
-  .im-logo, .user-icon, .sidebutton {
+  .im-logo,
+  .user-icon,
+  .sidebutton {
     font-size: 5vw;
   }
 
@@ -212,7 +214,9 @@ export default defineComponent({
 }
 
 @media screen and (min-width: 1440px) {
-  .im-logo, .user-icon, .sidebutton {
+  .im-logo,
+  .user-icon,
+  .sidebutton {
     font-size: 60px;
   }
 
