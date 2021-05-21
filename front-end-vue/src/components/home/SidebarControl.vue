@@ -57,7 +57,6 @@ import Filters from "@/components/sidebar/Filters.vue";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
 import { ConceptStatus } from "@/models/ConceptStatus";
-import store from "@/store/index";
 import { ConceptType } from "@/models/search/ConceptType";
 import LoggerService from "@/services/LoggerService";
 import axios from "axios";
@@ -93,15 +92,15 @@ export default defineComponent({
 
     async search(): Promise<void> {
       if (this.searchTerm.length > 2) {
-        store.commit("updateLoading", { key: "searchResults", value: true });
+        this.$store.commit("updateLoading", { key: "searchResults", value: true });
         this.active = 2;
         const searchRequest = new SearchRequest();
         searchRequest.termFilter = this.searchTerm;
         searchRequest.sortBy = SortBy.Usage;
         searchRequest.page = 1;
         searchRequest.size = 100;
-        searchRequest.schemeFilter = store.state.filters.selectedSchemes.map(
-          s => s.iri
+        searchRequest.schemeFilter = this.$store.state.filters.selectedSchemes.map(
+          (scheme: any) => scheme.iri
         );
         searchRequest.markIfDescendentOf = [
           ":DiscoveryCommonDataModel",
@@ -110,7 +109,7 @@ export default defineComponent({
         ];
 
         searchRequest.statusFilter = [];
-        store.state.filters.selectedStatus.forEach(status => {
+        this.$store.state.filters.selectedStatus.forEach((status: any) => {
           if (status == "Active") {
             searchRequest.statusFilter.push(ConceptStatus.Active);
           }
@@ -123,7 +122,7 @@ export default defineComponent({
         });
 
         searchRequest.typeFilter = [];
-        store.state.filters.selectedTypes.forEach(type => {
+        this.$store.state.filters.selectedTypes.forEach((type: any) => {
           if (type == "Class") {
             searchRequest.typeFilter.push(ConceptType.Class);
           }
@@ -160,14 +159,14 @@ export default defineComponent({
         }
         const axiosSource = axios.CancelToken.source();
         this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
-        store
+        this.$store
           .dispatch("fetchSearchResults", {
             searchRequest: searchRequest,
             cancelToken: axiosSource.token
           })
-          .then(res => {
+          .then((res: string) => {
             if (res === "false") {
-              store.commit("updateLoading", {
+              this.$store.commit("updateLoading", {
                 key: "searchResults",
                 value: false
               });
@@ -175,7 +174,7 @@ export default defineComponent({
                 LoggerService.error("Search results server request failed")
               );
             } else if (res === "true") {
-              store.commit("updateLoading", {
+              this.$store.commit("updateLoading", {
                 key: "searchResults",
                 value: false
               });
