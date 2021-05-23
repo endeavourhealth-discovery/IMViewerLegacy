@@ -49,17 +49,17 @@ export function getIconFromType(conceptTypes: any): string {
 
 const palette = require("../../node_modules/google-palette");
 export function getColourFromType(conceptTypes: any): string {
-    const bgs = palette("tol-rainbow", 4);
-    const bgsFixed = bgs.map((color: string) => "#" + color);
+  const bgs = palette("tol-rainbow", 4);
+  const bgsFixed = bgs.map((color: string) => "#" + color);
 
-    if (isRecordModel(conceptTypes?.elements || conceptTypes))
-        return bgsFixed[0];
+  if (isRecordModel(conceptTypes?.elements || conceptTypes))
+    return bgsFixed[0];
 
-    if (isValueSet(conceptTypes?.elements || conceptTypes))
-        return bgsFixed[1];
+  if (isValueSet(conceptTypes?.elements || conceptTypes))
+    return bgsFixed[1];
 
-    if (isFolder(conceptTypes?.elements || conceptTypes))
-        return bgsFixed[2];
+  if (isFolder(conceptTypes?.elements || conceptTypes))
+    return bgsFixed[2];
 
-    return bgsFixed[3];
+  return bgsFixed[3];
 }
