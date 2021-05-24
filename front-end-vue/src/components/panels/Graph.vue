@@ -168,11 +168,11 @@ export default defineComponent({
       const g = d3.selectAll("g");
 
       // add the links between the nodes
-      g.selectAll(".link")
+      g.selectAll(".node_link")
         .data(nodes.descendants().slice(1))
         .enter()
         .append("path")
-        .attr("class", "link")
+        .attr("class", "node_link")
         .attr("d", (d: any) => {
           return (
             " M " +
@@ -411,7 +411,7 @@ export default defineComponent({
   font: 12px sans-serif;
 }
 
-.link {
+.node_link {
   fill: none;
   opacity: 0.15;
   stroke: black;
