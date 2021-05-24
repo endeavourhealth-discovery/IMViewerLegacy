@@ -13,6 +13,7 @@
     showGridlines
     :scrollHeight="scrollHeight"
     class="p-datatable-sm"
+    id="terms-table"
   >
     <Column field="scheme.name" header="Scheme"></Column>
     <Column field="term" header="Term" style="flex:0 0 75%"></Column>
@@ -87,7 +88,8 @@ export default defineComponent({
       const nav = document.getElementsByClassName(
         "p-tabview-nav"
       )[1] as HTMLElement;
-      const paginator = document.getElementsByClassName(
+      const terms = document.getElementById("terms-table") as HTMLElement;
+      const paginator = terms.getElementsByClassName(
         "p-paginator"
       )[1] as HTMLElement;
       const currentFontSize = parseFloat(
