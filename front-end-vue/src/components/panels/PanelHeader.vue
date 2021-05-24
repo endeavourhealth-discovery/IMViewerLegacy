@@ -9,21 +9,24 @@
 
 <script>
 import { defineComponent } from "@vue/runtime-core";
-import {getColourFromType, getIconFromType} from "@/helpers/ConceptTypeMethods";
+import {
+  getColourFromType,
+  getIconFromType
+} from "@/helpers/ConceptTypeMethods";
 
 export default defineComponent({
   name: "PanelHeader",
   props: ["type", "header"],
   data() {
     return {
-      icon: '',
-      color: ''
-    }
+      icon: "",
+      color: ""
+    };
   },
   watch: {
     type(newValue) {
       if (newValue) {
-        this.color = 'color: ' + getColourFromType(newValue);
+        this.color = "color: " + getColourFromType(newValue);
         this.icon = getIconFromType(newValue);
       }
     }

@@ -40,10 +40,14 @@
     >
       <template #default="slotProps">
         <span v-if="!slotProps.node.loading">
-          <i :class="'fas fa-fw ' + slotProps.node.typeIcon" :style="'color:' + slotProps.node.color" aria-hidden="true"></i>
+          <i
+            :class="'fas fa-fw ' + slotProps.node.typeIcon"
+            :style="'color:' + slotProps.node.color"
+            aria-hidden="true"
+          />
         </span>
-        <ProgressSpinner v-if="slotProps.node.loading"/>
-        {{slotProps.node.label}}
+        <ProgressSpinner v-if="slotProps.node.loading" />
+        {{ slotProps.node.label }}
       </template>
     </Tree>
   </div>
@@ -58,7 +62,10 @@ import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";
 import { IM } from "@/vocabulary/IM";
 import LoggerService from "@/services/LoggerService";
-import { getColourFromType, getIconFromType } from '@/helpers/ConceptTypeMethods';
+import {
+  getColourFromType,
+  getIconFromType
+} from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
 
 export default defineComponent({
