@@ -35,6 +35,7 @@
               <i
                 :class="getPerspectiveByConceptType(slotProps.data.conceptType)"
                 class="result-icon"
+                :style="getColorByConceptType(slotProps.data.conceptType)"
                 aria-hidden="true"
               />
             </div>
@@ -87,7 +88,7 @@ import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { SearchResponse } from "@/models/search/SearchResponse";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
-import { getIconFromType } from "../../helpers/ConceptTypeMethods";
+import {getColourFromType, getIconFromType} from '../../helpers/ConceptTypeMethods';
 
 export default defineComponent({
   name: "SearchResults",
@@ -109,7 +110,9 @@ export default defineComponent({
     getPerspectiveByConceptType(conceptType: any): any {
       return getIconFromType(conceptType.elements);
     },
-
+    getColorByConceptType(conceptType: any): any {
+      return 'color:' + getColourFromType(conceptType.elements);
+    },
     onNodeSelect(): void {
       this.$router.push({
         name: "Concept",

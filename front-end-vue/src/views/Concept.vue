@@ -22,7 +22,7 @@
         </button>
       </template>
       <template #header>
-        <PanelHeader :icon="icon" :header="header" />
+        <PanelHeader :type="type" :header="header" />
       </template>
       <div id="concept-content-dialogs-container">
         <div v-if="concept && isSet" id="concept-panel-container">
@@ -120,7 +120,7 @@ export default defineComponent({
   watch: {
     async conceptIri(newValue) {
       this.concept = await this.getConcept(newValue);
-      this.icon = getIconFromType(this.concept?.[RDF.TYPE]);
+      this.type = this.concept?.[RDF.TYPE];
       this.header = this.concept?.[RDFS.LABEL];
     },
     windowWidth() {
@@ -149,7 +149,7 @@ export default defineComponent({
       concept: {} as any,
       definitionText: "",
       display: false,
-      icon: "",
+      type: "",
       header: "",
       dialogHeader: "",
       windowHeight: window.innerHeight,
@@ -205,7 +205,7 @@ export default defineComponent({
 
     async init() {
       this.concept = await this.getConcept(this.conceptIri);
-      this.icon = getIconFromType(this.concept?.[RDF.TYPE]);
+      this.type = this.concept?.[RDF.TYPE];
       this.header = this.concept?.[RDFS.LABEL];
     },
 
