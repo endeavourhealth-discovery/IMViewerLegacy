@@ -40,7 +40,7 @@
     </div>
     <Divider align="left">
       <div class="p-d-inline-flex p-ai-center">
-        <b>Definitional properties</b>
+        <strong>Definitional properties</strong>
       </div>
     </Divider>
     <div class="p-d-flex p-flex-row p-jc-start summary-container">
@@ -77,7 +77,7 @@
     </div>
     <Divider align="left">
       <div class="p-d-inline-flex p-ai-center">
-        <b>Data model properties</b>
+        <strong>Data model properties</strong>
       </div>
     </Divider>
     <DataTable
