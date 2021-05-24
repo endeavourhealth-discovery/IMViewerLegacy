@@ -11,7 +11,7 @@
         @click="expandParents"
         class="p-button-text p-button-plain"
       />
-      <Button
+      <!-- <Button
         icon="pi pi-refresh"
         @click="
           refreshTree(
@@ -21,20 +21,10 @@
           )
         "
         class="p-button-rounded p-button-text p-button-plain"
-      />
+      /> -->
       <Button
         icon="pi pi-home"
-        @click="
-          $store.commit(
-            'updateConceptIri',
-            'http://endhealth.info/im#DiscoveryOntology'
-          );
-          $store.dispatch(
-            'fetchConceptAggregate',
-            'http://endhealth.info/im#DiscoveryOntology'
-          );
-          $router.push({ name: 'Dashboard' });
-        "
+        @click="resetConcept"
         class="p-button-rounded p-button-text p-button-plain"
       >
       </Button>
@@ -81,9 +71,8 @@ import { TreeNode } from "@/models/TreeNode";
 
 export default defineComponent({
   name: "Hierarchy",
-  props: ["active"],
   components: {},
-  computed: mapState(["conceptAggregate"]),
+  computed: mapState(["conceptAggregate", "focusTree"]),
   watch: {
     conceptAggregate(newValue) {
       this.createTree(newValue.concept, newValue.parents, newValue.children);
@@ -101,13 +90,11 @@ export default defineComponent({
         } as HistoryItem);
       }
     },
-    active(newValue, oldValue) {
-      if (newValue === 0 && oldValue !== 0) {
-        this.refreshTree(
-          this.conceptAggregate.concept,
-          this.conceptAggregate.parents,
-          this.conceptAggregate.children
-        );
+    focusTree(newValue) {
+      if (newValue === true) {
+        this.refreshTree(this.conceptAggregate.concept, this.conceptAggregate.parents, this.conceptAggregate.children);
+        this.$store.commit("focusTree", false);
+        this.$emit("showTree");
       }
     }
   },
@@ -281,6 +268,19 @@ export default defineComponent({
             LoggerService.error("Concept children server request failed", err)
           );
         });
+    },
+
+    resetConcept(): void {
+      this.parentLabel = "";
+      this.$store.commit(
+        "updateConceptIri",
+        "http://endhealth.info/im#DiscoveryOntology"
+      );
+      this.$store.dispatch(
+        "fetchConceptAggregate",
+        "http://endhealth.info/im#DiscoveryOntology"
+      );
+      this.$router.push({ name: "Dashboard" });
     }
   }
 });

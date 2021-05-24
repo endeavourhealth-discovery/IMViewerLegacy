@@ -4,6 +4,12 @@
       <template #icons>
         <button
           class="p-panel-header-icon p-link p-mr-2"
+          @click="focusTree"
+        >
+          <i class="fas fa-search-location" aria-hidden="true"></i>
+        </button>
+        <button
+          class="p-panel-header-icon p-link p-mr-2"
           @click="openDownloadDialog"
         >
           <span class="pi pi-download"></span>
@@ -158,13 +164,16 @@ export default defineComponent({
     };
   },
   methods: {
-    directToEditRoute() {
+    focusTree(): void {
+      this.$store.commit("updateFocusTree", true);
+    },
+    directToEditRoute(): void {
       this.$router.push({
         name: "Edit",
         params: { iri: this.concept["@id"] }
       });
     },
-    directToCreateRoute() {
+    directToCreateRoute(): void {
       this.$router.push({ name: "Create" });
     },
     onResize(): void {

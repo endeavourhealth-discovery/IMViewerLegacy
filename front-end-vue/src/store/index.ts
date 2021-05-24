@@ -28,6 +28,7 @@ export default createStore({
       "snomedLicenseAccepted"
     ) as string,
     historyCount: 0 as number,
+    focusTree: false as boolean,
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
@@ -99,6 +100,9 @@ export default createStore({
     },
     updateHistoryCount(state, count) {
       state.historyCount = count;
+    },
+    updateFocusTree(state, bool) {
+      state.focusTree = bool;
     }
   },
   actions: {
