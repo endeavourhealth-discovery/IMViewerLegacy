@@ -5,7 +5,7 @@
     :paginator="properties.length > 10 ? true : false"
     :rows="10"
     :scrollable="true"
-    scrollHeight="flex"
+    :scrollHeight="scrollHeight"
     id="properties-table"
   >
     <template #empty>
@@ -50,7 +50,7 @@ import { defineComponent } from "@vue/runtime-core";
 import ConceptService from "@/services/ConceptService";
 
 export default defineComponent({
-  name: "PropertiesTable",
+  name: "Properties",
   components: {},
   props: {
     conceptIri: String
@@ -61,14 +61,27 @@ export default defineComponent({
     }
   },
   async mounted() {
-    this.properties = await this.getProperties(this.conceptIri!);
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.onResize);
+    });
+    if (this.conceptIri) {
+      this.properties = await this.getProperties(this.conceptIri);
+    }
+    this.setScrollHeight();
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.onResize);
   },
   data() {
     return {
-      properties: [] as any[]
+      properties: [] as any[],
+      scrollHeight: ""
     };
   },
   methods: {
+    onResize(): void {
+      this.setScrollHeight();
+    },
     navigate(iri: any) {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
       if (iri)
@@ -88,6 +101,39 @@ export default defineComponent({
         allProperties.push(...prop.children);
       });
       return allProperties;
+    },
+
+    setScrollHeight(): void {
+      const container = document.getElementsByClassName(
+        "concept-container"
+      )[0] as HTMLElement;
+      const header = document.getElementsByClassName(
+        "p-panel-header"
+      )[0] as HTMLElement;
+      const nav = document.getElementsByClassName(
+        "p-tabview-nav"
+      )[1] as HTMLElement;
+      const properties = document.getElementById("properties-table") as HTMLElement;
+      const paginator = properties.getElementsByClassName(
+        "p-paginator"
+      )[0] as HTMLElement;
+      const currentFontSize = parseFloat(
+        window
+          .getComputedStyle(document.documentElement, null)
+          .getPropertyValue("font-size")
+      );
+      const paginatorHeight =
+        paginator?.getBoundingClientRect().height === 0
+          ? currentFontSize * 3.7
+          : paginator?.getBoundingClientRect().height;
+      this.scrollHeight =
+        container?.getBoundingClientRect().height -
+        header?.getBoundingClientRect().height -
+        nav?.getBoundingClientRect().height -
+        paginatorHeight -
+        currentFontSize * 4 -
+        1 +
+        "px";
     }
   }
 });
