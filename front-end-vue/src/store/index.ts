@@ -29,6 +29,7 @@ export default createStore({
     ) as string,
     historyCount: 0 as number,
     focusTree: false as boolean,
+    treeLocked: false as boolean,
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
@@ -103,6 +104,9 @@ export default createStore({
     },
     updateFocusTree(state, bool) {
       state.focusTree = bool;
+    },
+    updateTreeLocked(state, bool) {
+      state.treeLocked = bool;
     }
   },
   actions: {

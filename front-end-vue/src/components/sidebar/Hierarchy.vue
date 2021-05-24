@@ -15,7 +15,20 @@
         icon="pi pi-home"
         @click="resetConcept"
         class="p-button-rounded p-button-text p-button-plain"
+      />
+      <Button v-if="$store.state.treeLocked"
+        class="p-button-rounded p-button-text p-button-plain"
+        @click="toggleTreeLocked(false)"
+        v-tooltip.right="'Toggle hierarchy tree updates on concept select'"
       >
+        <i class="fas fa-link"></i>
+      </Button>
+      <Button v-else
+        class="p-button-rounded p-button-text p-button-plain"
+        @click="toggleTreeLocked(true)"
+        v-tooltip.right="'Toggle hierarchy tree updates on concept select'"
+      >
+        <i class="fas fa-unlink"></i>
       </Button>
     </div>
 
@@ -270,6 +283,10 @@ export default defineComponent({
         "http://endhealth.info/im#DiscoveryOntology"
       );
       this.$router.push({ name: "Dashboard" });
+    },
+
+    toggleTreeLocked(value: boolean): void {
+      this.$store.commit("updateTreeLocked", value);
     }
   }
 });
