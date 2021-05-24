@@ -71,8 +71,7 @@ export default defineComponent({
       debounce: 0,
       request: null as any,
       windowHeight: 0,
-      windowWidth: 0,
-      headerHeight: 0
+      windowWidth: 0
     };
   },
   mounted() {
@@ -92,7 +91,10 @@ export default defineComponent({
 
     async search(): Promise<void> {
       if (this.searchTerm.length > 2) {
-        this.$store.commit("updateLoading", { key: "searchResults", value: true });
+        this.$store.commit("updateLoading", {
+          key: "searchResults",
+          value: true
+        });
         this.active = 2;
         const searchRequest = new SearchRequest();
         searchRequest.termFilter = this.searchTerm;
@@ -199,14 +201,10 @@ export default defineComponent({
       const currentFontSize = parseFloat(
         window.getComputedStyle(html, null).getPropertyValue("font-size")
       );
-      const header = document.getElementById("header-home");
-      if (header) {
-        this.headerHeight = header.getBoundingClientRect().height;
-      }
       const sidebar = document.getElementById("side-bar");
       if (sidebar) {
         sidebar.style.maxHeight =
-          this.windowHeight - this.headerHeight - currentFontSize * 2 + "px";
+          this.windowHeight - currentFontSize * 2 + "px";
       }
       const fixedSidebar = document.getElementById("side-bar");
       const searchBar = document.getElementById("search-bar");
