@@ -5,8 +5,6 @@ import { HistoryItem } from "../models/HistoryItem";
 import { User } from "../models/user/User";
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
-import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
-import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 import LoggerService from "@/services/LoggerService";
 import { CustomAlert } from "@/models/user/CustomAlert";
 import { IM } from "@/vocabulary/IM";
@@ -20,7 +18,6 @@ export default createStore({
     loading: new Map<string, boolean>(),
     cancelSource: axios.CancelToken.source(),
     conceptIri: "http://www.w3.org/2002/07/owl#Thing" as string,
-    conceptAggregate: {} as ConceptAggregate,
     history: [] as HistoryItem[],
     searchResults: [] as ConceptSummary[],
     currentUser: {} as User,
@@ -71,9 +68,6 @@ export default createStore({
     updateCancelSource(state) {
       state.cancelSource = axios.CancelToken.source();
     },
-    updateConceptAggregate(state, conceptAggregate) {
-      state.conceptAggregate = conceptAggregate;
-    },
     updateHistory(state, historyItem) {
       state.history = state.history.filter(function(el) {
         return el.url !== historyItem.url;
@@ -107,32 +101,6 @@ export default createStore({
     }
   },
   actions: {
-    async fetchConceptAggregate({ commit }, iri) {
-      let concept: any;
-      let parents: Array<ConceptNode>;
-      let children: Array<ConceptNode>;
-      let success = true;
-      await Promise.all([
-        ConceptService.getConcept(iri).then(res => {
-          concept = res.data;
-        }),
-        ConceptService.getConceptParents(iri).then(res => {
-          parents = res.data;
-        }),
-        ConceptService.getConceptChildren(iri).then(res => {
-          children = res.data;
-        })
-      ])
-        .then(() => {
-          const updated = new ConceptAggregate(concept, children, parents);
-          commit("updateConceptAggregate", updated);
-        })
-        .catch(err => {
-          LoggerService.error(undefined, err);
-          success = false;
-        });
-      return success;
-    },
     async fetchSearchResults(
       { commit },
       data: { searchRequest: SearchRequest; cancelToken: any }

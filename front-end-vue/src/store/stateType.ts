@@ -8,7 +8,6 @@ export interface State {
   loading: Map<string, boolean>;
   cancelSource: CancelTokenSource;
   conceptIri: "http://www.w3.org/2002/07/owl#Thing";
-  conceptAggregate: ConceptAggregate;
   mapped: [];
   usages: [];
   members: Member;

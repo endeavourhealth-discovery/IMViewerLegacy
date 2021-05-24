@@ -13,7 +13,6 @@
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import SidebarControl from "@/components/home/SidebarControl.vue";
-import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "Home",
@@ -40,15 +39,6 @@ export default defineComponent({
           this.$route.params.selectedIri as string
         );
       }
-      this.$store
-        .dispatch("fetchConceptAggregate", this.$store.state.conceptIri)
-        .then((res: any) => {
-          if (!res) {
-            this.$toast.add(
-              LoggerService.error("Concept aggregate server request failed")
-            );
-          }
-        });
     }
   }
 });

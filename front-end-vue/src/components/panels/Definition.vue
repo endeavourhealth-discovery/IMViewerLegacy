@@ -185,7 +185,7 @@ export default defineComponent({
   },
   async mounted() {
     this.$store.commit("updateCancelSource");
-    await this.getChildren(this.concept[IM.IRI]);
+    if (this.concept?.[IM.IRI]) await this.getChildren(this.concept[IM.IRI]);
   },
   data() {
     return {

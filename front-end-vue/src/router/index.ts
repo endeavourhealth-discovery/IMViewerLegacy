@@ -160,7 +160,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (to.name?.toString() == "Concept") {
     store.commit("updateConceptIri", to.params.selectedIri as string);
-    store.dispatch("fetchConceptAggregate", store.state.conceptIri);
   }
   if (to.matched.some(record => record.meta.requiresAuth)) {
     store.dispatch("authenticateCurrentUser").then(res => {

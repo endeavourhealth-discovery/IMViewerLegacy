@@ -71,10 +71,15 @@ import { TreeNode } from "@/models/TreeNode";
 export default defineComponent({
   name: "Hierarchy",
   components: {},
-  computed: mapState(["conceptAggregate"]),
+  computed: mapState(["conceptIri"]),
   watch: {
-    conceptAggregate(newValue) {
-      this.createTree(newValue.concept, newValue.parents, newValue.children);
+    async conceptIri(newValue) {
+      await this.getConceptAggregate(newValue);
+      this.createTree(
+        this.conceptAggregate.concept,
+        this.conceptAggregate.parents,
+        this.conceptAggregate.children
+      );
       if (this.$route.fullPath === "/") {
         this.$store.commit("updateHistory", {
           url: this.$route.fullPath,
@@ -84,7 +89,7 @@ export default defineComponent({
       } else {
         this.$store.commit("updateHistory", {
           url: this.$route.fullPath,
-          conceptName: newValue.concept[RDFS.LABEL],
+          conceptName: newValue.concept?.[RDFS.LABEL],
           view: this.$route.name
         } as HistoryItem);
       }
@@ -93,13 +98,48 @@ export default defineComponent({
   data() {
     return {
       searchResult: "",
+      conceptAggregate: {} as any,
       root: [] as TreeNode[],
       expandedKeys: {} as any,
       selectedKey: {} as any,
       parentLabel: ""
     };
   },
+  async mounted() {
+    await this.getConceptAggregate(this.conceptIri);
+    this.createTree(
+      this.conceptAggregate.concept,
+      this.conceptAggregate.parents,
+      this.conceptAggregate.children
+    );
+    if (this.$route.fullPath === "/") {
+      this.$store.commit("updateHistory", {
+        url: this.$route.fullPath,
+        conceptName: "Home",
+        view: this.$route.name
+      } as HistoryItem);
+    } else {
+      this.$store.commit("updateHistory", {
+        url: this.$route.fullPath,
+        conceptName: this.conceptAggregate.concept?.[RDFS.LABEL],
+        view: this.$route.name
+      } as HistoryItem);
+    }
+  },
   methods: {
+    async getConceptAggregate(iri: string) {
+      await Promise.all([
+        ConceptService.getConcept(iri).then(res => {
+          this.conceptAggregate.concept = res.data;
+        }),
+        ConceptService.getConceptParents(iri).then(res => {
+          this.conceptAggregate.parents = res.data;
+        }),
+        ConceptService.getConceptChildren(iri).then(res => {
+          this.conceptAggregate.children = res.data;
+        })
+      ]);
+    },
     createTree(concept: any, parentHierarchy: any, children: any): void {
       if (this.root.length == 0) {
         this.refreshTree(concept, parentHierarchy, children);
