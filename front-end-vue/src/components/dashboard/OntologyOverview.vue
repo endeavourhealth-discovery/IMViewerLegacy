@@ -32,15 +32,12 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import store from "@/store/index";
-import { mapState } from "vuex";
 import ReportService from "@/services/ReportService";
 import LoggerService from "@/services/LoggerService";
 import { toSentenceCase } from "@/helpers/TextConverters";
 
 export default defineComponent({
   name: "OntologyOverview",
-  computed: mapState(["ontologyOverview"]),
   props: [],
   data() {
     return {
@@ -49,20 +46,20 @@ export default defineComponent({
   },
   mounted() {
     // table data
-    store.commit("updateLoading", { key: "reportCategory", value: true });
+    this.$store.commit("updateLoading", { key: "reportCategory", value: true });
     ReportService.getConceptCategoryReport()
       .then(res => {
         this.tableData = res.data;
         this.tableData.map((row: { count: number; label: string }) => {
           row.label = toSentenceCase(row.label);
         });
-        store.commit("updateLoading", {
+        this.$store.commit("updateLoading", {
           key: "reportCategory",
           value: false
         });
       })
       .catch(err => {
-        store.commit("updateLoading", {
+        this.$store.commit("updateLoading", {
           key: "reportCategory",
           value: false
         });
