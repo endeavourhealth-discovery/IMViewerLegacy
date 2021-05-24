@@ -24,11 +24,13 @@
                   v-if="slotProps.option.included"
                   class="pi pi-plus"
                   style="fontSize: 0.7rem"
+                  aria-hidden="true"
                 ></i>
                 <i
                   v-if="!slotProps.option.included"
                   class="pi pi-minus"
                   style="fontSize: 0.7rem"
+                  aria-hidden="true"
                 ></i>
                 {{
                   slotProps.option.member?.concept.name ||

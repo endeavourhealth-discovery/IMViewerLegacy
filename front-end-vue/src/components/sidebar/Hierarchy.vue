@@ -40,7 +40,7 @@
     >
       <template #default="slotProps">
         <span v-if="!slotProps.node.loading">
-          <i :class="'fas fa-fw ' + slotProps.node.typeIcon" :style="'color:' + slotProps.node.color"></i>
+          <i :class="'fas fa-fw ' + slotProps.node.typeIcon" :style="'color:' + slotProps.node.color" aria-hidden="true"></i>
         </span>
         <ProgressSpinner v-if="slotProps.node.loading"/>
         {{slotProps.node.label}}

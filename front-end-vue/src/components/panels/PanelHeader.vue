@@ -1,7 +1,7 @@
 <template>
   <div>
     <div :key="icon">
-      <i :class="icon" :style="color"/>
+      <i :class="icon" :style="color" aria-hidden="true" />
       {{ header }}
     </div>
   </div>
