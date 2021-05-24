@@ -3,7 +3,7 @@
     class="p-d-flex p-flex-column p-jc-start"
     id="hierarchy-tree-bar-container"
   >
-    <span class="p-buttonset" id="hierarchy-selected-bar">
+    <div class="p-d-flex p-flex-row p-jc-start" id="hierarchy-selected-bar">
       <Button
         :label="parentLabel"
         :disabled="parentLabel === ''"
@@ -23,11 +23,22 @@
         class="p-button-rounded p-button-text p-button-plain"
       />
       <Button
+        icon="pi pi-home"
+        @click="
+          $store.commit(
+            'updateConceptIri',
+            'http://endhealth.info/im#DiscoveryOntology'
+          );
+          $store.dispatch(
+            'fetchConceptAggregate',
+            'http://endhealth.info/im#DiscoveryOntology'
+          );
+          $router.push({ name: 'Dashboard' });
+        "
         class="p-button-rounded p-button-text p-button-plain"
-        disabled="true"
       >
       </Button>
-    </span>
+    </div>
 
     <Tree
       :value="root"
@@ -70,6 +81,7 @@ import { TreeNode } from "@/models/TreeNode";
 
 export default defineComponent({
   name: "Hierarchy",
+  props: ["active"],
   components: {},
   computed: mapState(["conceptAggregate"]),
   watch: {
@@ -87,6 +99,15 @@ export default defineComponent({
           conceptName: newValue.concept[RDFS.LABEL],
           view: this.$route.name
         } as HistoryItem);
+      }
+    },
+    active(newValue, oldValue) {
+      if (newValue === 0 && oldValue !== 0) {
+        this.refreshTree(
+          this.conceptAggregate.concept,
+          this.conceptAggregate.parents,
+          this.conceptAggregate.children
+        );
       }
     }
   },
