@@ -5,6 +5,7 @@
         <button
           class="p-panel-header-icon p-link p-mr-2"
           @click="focusTree"
+          v-tooltip.left="'Focus tree to this concept'"
         >
           <i class="fas fa-search-location" aria-hidden="true"></i>
         </button>

@@ -11,17 +11,6 @@
         @click="expandParents"
         class="p-button-text p-button-plain"
       />
-      <!-- <Button
-        icon="pi pi-refresh"
-        @click="
-          refreshTree(
-            conceptAggregate.concept,
-            conceptAggregate.parents,
-            conceptAggregate.children
-          )
-        "
-        class="p-button-rounded p-button-text p-button-plain"
-      /> -->
       <Button
         icon="pi pi-home"
         @click="resetConcept"
