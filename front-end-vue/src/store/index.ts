@@ -12,11 +12,13 @@ import { CustomAlert } from "@/models/user/CustomAlert";
 import { IM } from "@/vocabulary/IM";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { ConceptReference } from "@/models/TTConcept/ConceptReference";
+import axios from "axios";
 
 export default createStore({
   // update stateType.ts when adding new state!
   state: {
     loading: new Map<string, boolean>(),
+    cancelSource: axios.CancelToken.source(),
     conceptIri: "http://www.w3.org/2002/07/owl#Thing" as string,
     conceptAggregate: {} as ConceptAggregate,
     history: [] as HistoryItem[],
@@ -65,6 +67,9 @@ export default createStore({
   mutations: {
     updateConceptIri(state, conceptIri) {
       state.conceptIri = conceptIri;
+    },
+    updateCancelSource(state) {
+      state.cancelSource = axios.CancelToken.source();
     },
     updateConceptAggregate(state, conceptAggregate) {
       state.conceptAggregate = conceptAggregate;

@@ -42,10 +42,12 @@ export default class ConceptService {
   }
 
   public static async getConceptChildren(
-    iri: string
+    iri: string,
+    cancelToken?: CancelToken
   ): Promise<AxiosResponse<any>> {
     return axios.get<ConceptNode[]>(this.api + "api/concept/children", {
-      params: { iri: iri }
+      params: { iri: iri },
+      cancelToken: cancelToken
     });
   }
 
@@ -89,6 +91,7 @@ export default class ConceptService {
   }
 
   public static async getSchemeOptions(): Promise<AxiosResponse<any>> {
+    const CancelToken = axios.CancelToken;
     return this.getConceptChildren("http://endhealth.info/im#551000252107");
   }
 
