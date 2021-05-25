@@ -21,6 +21,8 @@ describe("state", () => {
     expect(store.state.isLoggedIn).toBeFalsy();
     expect(store.state.snomedLicenseAccepted).toBeNull();
     expect(store.state.historyCount).toBe(0);
+    expect(store.state.focusTree).toBe(false);
+    expect(store.state.treeLocked).toBe(true);
     expect(store.state.filters).toEqual({
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
@@ -122,6 +124,18 @@ describe("mutations", () => {
     const testCount = 5;
     store.commit("updateHistoryCount", testCount);
     expect(store.state.historyCount).toBe(5);
+  });
+
+  it("can update focusTree", () => {
+    const testBool = true;
+    store.commit("updateFocusTree", testBool);
+    expect(store.state.focusTree).toBe(true);
+  });
+
+  it("can update treeLocked", () => {
+    const testBool = false;
+    store.commit("updateTreeLocked", testBool);
+    expect(store.state.treeLocked).toBe(false);
   });
 
   it("can updateFilters", () => {
