@@ -6,7 +6,7 @@
         class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center"
       >
         <div>
-          <p class="im-logo" @click="$router.push({ name: 'Dashboard' })">IM</p>
+          <img class="im-logo" src="../../assets/logos/Logo-object.png" @click="$router.push({ name: 'Dashboard' })" />
         </div>
         <!-- <div id="center-icons">
           <div v-bind:class="{ active: isActive('Home') }">
@@ -195,14 +195,13 @@ export default defineComponent({
 
 .im-logo {
   text-align: center;
-  font-size: 4rem;
+  /* font-size: 4rem; */
   color: lightgray;
   font-weight: bold;
   cursor: pointer;
 }
 
 @media screen and (max-width: 1439px) {
-  .im-logo,
   .user-icon,
   .sidebutton {
     font-size: 5vw;
@@ -211,10 +210,13 @@ export default defineComponent({
   .avatar-icon {
     width: 5vw;
   }
+
+  .im-logo {
+    width: 7vw;
+  }
 }
 
 @media screen and (min-width: 1440px) {
-  .im-logo,
   .user-icon,
   .sidebutton {
     font-size: 60px;
@@ -222,6 +224,10 @@ export default defineComponent({
 
   .avatar-icon {
     width: 60px;
+  }
+
+  .im-logo {
+    width: 100px;
   }
 }
 </style>
