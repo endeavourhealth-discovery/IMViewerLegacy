@@ -1,11 +1,15 @@
 <template>
-  <side-nav />
+  <SideNav />
   <div class="layout-main">
-    <div class="home">
-      <div class="p-grid">
-        <SidebarWorkflow :selectedWorkflow="selectedWorkflow" :workflows="workflows" />
-        <WorkflowManager :selectedWorkflow="selectedWorkflow" :workflows="workflows" />
-      </div>
+    <div class="main-grid">
+      <SidebarWorkflow
+        :selectedWorkflow="selectedWorkflow"
+        :workflows="workflows"
+      />
+      <WorkflowManager
+        :selectedWorkflow="selectedWorkflow"
+        :workflows="workflows"
+      />
     </div>
   </div>
 </template>
@@ -33,15 +37,21 @@ export default defineComponent({
       workflows: [
         { name: "Create New Concept Workflow", value: "createWorkflow" },
         { name: "Update Concept Workflow", value: "updateWorkflow" }
-      ] as { name: string; value: string }[],
+      ] as { name: string; value: string }[]
     };
-  },
-
-
+  }
 });
 </script>
 
 <style>
+.main-grid {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "sidebar-workflow workflow-content";
+  column-gap: 7px;
+}
 .p-timeline-event {
   min-width: 200px;
 }

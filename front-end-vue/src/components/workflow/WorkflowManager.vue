@@ -1,13 +1,7 @@
 <template>
-  <div
-    class="p-col-9"
-    style="height: calc(100vh - 123px); overflow: auto"
-  >
+  <div id="workflow-manager-container">
     <div class="p-grid">
-      <div
-        class="p-col-12"
-        v-if="selectedWorkflow.value == 'createWorkflow'"
-      >
+      <div class="p-col-12" v-if="selectedWorkflow.value == 'createWorkflow'">
         <Panel header="Create Concept Workflow" :toggleable="true">
           <DataTable
             :value="createTable"
@@ -21,10 +15,9 @@
           >
             <template #header>
               <div class="p-d-flex p-jc-between">
-                <span
-                  >All tasks currently in the Create Concept
-                  Workflow</span
-                >
+                <span>
+                  All tasks currently in the Create Concept Workflow
+                </span>
                 <span class="p-input-icon-left">
                   <i class="pi pi-search" aria-hidden="true" />
                   <InputText
@@ -57,9 +50,7 @@
                     </div>
                     <div
                       class="p-grid"
-                      v-if="
-                        slotProps.item.step == 3 && slotProps.item.active
-                      "
+                      v-if="slotProps.item.step == 3 && slotProps.item.active"
                     >
                       <div class="p-col-4">
                         <Button label="Approve" />
@@ -79,10 +70,7 @@
         </Panel>
       </div>
 
-      <div
-        class="p-col-12"
-        v-if="selectedWorkflow.value == 'updateWorkflow'"
-      >
+      <div class="p-col-12" v-if="selectedWorkflow.value == 'updateWorkflow'">
         <Panel header="Update Concept Workflow" :toggleable="true">
           <DataTable
             :value="updateTable"
@@ -96,10 +84,9 @@
           >
             <template #header>
               <div class="p-d-flex p-jc-between">
-                <span
-                  >All tasks currently in the Update Concept
-                  Workflow</span
-                >
+                <span>
+                  All tasks currently in the Update Concept Workflow
+                </span>
                 <span class="p-input-icon-left">
                   <i class="pi pi-search" aria-hidden="true" />
                   <InputText
@@ -131,9 +118,7 @@
                     </div>
                     <div
                       class="p-grid"
-                      v-if="
-                        slotProps.item.step == 3 && slotProps.item.active
-                      "
+                      v-if="slotProps.item.step == 3 && slotProps.item.active"
                     >
                       <div class="p-col-4">
                         <Button label="Approve" />
@@ -277,7 +262,7 @@ export default defineComponent({
           active: false
         }
       ] as WorkflowItem[]
-    }
+    };
   },
   mounted() {
     this.generateCreateTable();
@@ -341,9 +326,14 @@ export default defineComponent({
       return customWorkFlow;
     }
   }
-})
+});
 </script>
 
 <style scoped>
-
+#workflow-manager-container {
+  grid-area: workflow-content;
+  height: calc(100vh - 2rem);
+  width: 100%;
+  overflow-y: auto;
+}
 </style>
