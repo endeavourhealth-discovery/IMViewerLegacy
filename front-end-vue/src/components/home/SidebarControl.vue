@@ -22,7 +22,7 @@
           <i class="fas fa-project-diagram icon-header" aria-hidden="true" />
           <span>Hierarchy</span>
         </template>
-        <Hierarchy />
+        <Hierarchy @showTree="active = 0" :active="active" />
       </TabPanel>
       <TabPanel>
         <template #header>
