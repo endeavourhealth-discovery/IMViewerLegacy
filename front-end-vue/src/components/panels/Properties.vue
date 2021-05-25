@@ -13,33 +13,46 @@
     </template>
     <Column field="name" header="Name">
       <template #body="slotProps">
-        <div class="link capitalize-text" @click="navigate(slotProps.data.iri)">
-          {{ slotProps.data.name }}
+        <div
+          class="link capitalize-text"
+          @click="navigate(slotProps.data.property?.iri)"
+        >
+          {{ slotProps.data.property?.name }}
         </div>
       </template>
     </Column>
-    <Column field="valueTypeName" header="Type">
+    <Column field="type" header="Type">
       <template #body="slotProps">
-        <div class="link" @click="navigate(slotProps.data.valueTypeIri)">
-          {{ slotProps.data.valueTypeName || slotProps.data.valueTypeIri }}
+        <div class="link" @click="navigate(slotProps.data.type.iri)">
+          {{ slotProps.data.type?.name || slotProps.data.type?.iri }}
         </div>
       </template>
     </Column>
-    <Column field="inheritedFromName" header="Inherited From">
+    <Column field="inherited" header="Inherited From">
       <template #body="slotProps">
         <div
-          v-if="slotProps.data.inheritedFromName"
+          v-if="slotProps.data.inherited?.name"
           class="link"
-          @click="navigate(slotProps.data.inheritedFromIri)"
+          @click="navigate(slotProps.data.inherited?.iri)"
         >
-          {{ slotProps.data.inheritedFromName }}
+          {{ slotProps.data.inherited?.name }}
         </div>
         <div v-else>-</div>
       </template>
     </Column>
-    <Column field="quantificationType" header="Cardinality">
+    <Column field="cardinality" header="Cardinality">
       <template #body="slotProps">
-        {{ `${slotProps.data.min || 0} : ${slotProps.data.max || "*"}` }}
+        <div v-if="slotProps.data.cardinality">
+          {{
+            `${slotProps.data.cardinality.minExclusive ||
+              slotProps.data.cardinality.minInclusive ||
+              0} : 
+            ${slotProps.data.cardinality.maxExclusive ||
+              slotProps.data.cardinality.maxInclusive ||
+              "*"}`
+          }}
+        </div>
+        <div v-else>-</div>
       </template>
     </Column>
   </DataTable>
@@ -92,15 +105,7 @@ export default defineComponent({
     },
 
     async getProperties(iri: string) {
-      const graph = (await ConceptService.getConceptGraph(iri)).data;
-      const allProperties: any[] = [];
-      const properties = graph.children.filter(
-        (child: any) => child.name === "Properties"
-      );
-      properties[0].children.forEach((prop: any) => {
-        allProperties.push(...prop.children);
-      });
-      return allProperties;
+      return (await ConceptService.getRecordStructure(iri)).data;
     },
 
     setScrollHeight(): void {
@@ -113,7 +118,9 @@ export default defineComponent({
       const nav = document.getElementsByClassName(
         "p-tabview-nav"
       )[1] as HTMLElement;
-      const properties = document.getElementById("properties-table") as HTMLElement;
+      const properties = document.getElementById(
+        "properties-table"
+      ) as HTMLElement;
       const paginator = properties.getElementsByClassName(
         "p-paginator"
       )[0] as HTMLElement;
