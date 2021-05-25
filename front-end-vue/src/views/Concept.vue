@@ -38,41 +38,40 @@
         <div v-if="concept && isSet" id="concept-panel-container">
           <TabView>
             <TabPanel header="Definition">
-              <Definition :concept="concept" />
+              <Definition :concept="concept" v-if="active === 0" />
             </TabPanel>
             <TabPanel header="Terms">
-              <Terms :conceptIri="conceptIri" />
+              <Terms :conceptIri="conceptIri" v-if="active === 1" />
             </TabPanel>
             <TabPanel header="Used In">
-              <UsedIn :conceptIri="conceptIri" />
+              <UsedIn :conceptIri="conceptIri" v-if="active === 2" />
             </TabPanel>
             <TabPanel header="Members">
-              <Members :conceptIri="conceptIri" />
+              <Members :conceptIri="conceptIri" v-if="active === 3" />
             </TabPanel>
           </TabView>
         </div>
         <div v-if="concept && !isSet" id="concept-panel-container">
           <TabView v-model:activeIndex="active">
             <TabPanel header="Definition">
-              <Definition :concept="concept" />
+              <Definition :concept="concept" v-if="active === 0" />
             </TabPanel>
             <TabPanel header="Record structure">
-              <Properties :conceptIri="conceptIri" />
+              <Properties :conceptIri="conceptIri" v-if="active === 1" />
             </TabPanel>
             <TabPanel header="Terms">
-              <Terms :conceptIri="conceptIri" />
+              <Terms :conceptIri="conceptIri" v-if="active === 2" />
             </TabPanel>
             <TabPanel header="Used In">
-              <UsedIn :conceptIri="conceptIri" />
+              <UsedIn :conceptIri="conceptIri" v-if="active === 3" />
             </TabPanel>
             <TabPanel header="Graph">
-              <div v-if="active === 4">
-                <Graph :conceptIri="conceptIri" />
-              </div>
+              <Graph :conceptIri="conceptIri" v-if="active === 4" />
             </TabPanel>
           </TabView>
         </div>
         <DownloadDialog
+          v-if="showDownloadDialog"
           @closeDownloadDialog="closeDownloadDialog"
           :showDialog="showDownloadDialog"
           :conceptIri="conceptIri"
@@ -91,7 +90,7 @@ import Definition from "../components/panels/Definition.vue";
 import UsedIn from "../components/panels/UsedIn.vue";
 import Members from "../components/panels/Members.vue";
 import PanelHeader from "../components/panels/PanelHeader.vue";
-import { getIconFromType, isValueSet } from "@/helpers/ConceptTypeMethods";
+import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";
@@ -112,14 +111,6 @@ export default defineComponent({
     DownloadDialog
   },
   computed: {
-    editorConcept(): any {
-      return this.editDialogView ? this.concept : {};
-    },
-
-    editorDefinitionText(): any {
-      return this.editDialogView ? this.definitionText : "type ";
-    },
-
     isSet(): any {
       const conceptTypeElements = this?.concept?.[RDF.TYPE];
       return isValueSet(conceptTypeElements);

@@ -109,7 +109,6 @@
 <script lang="ts">
 import ConceptService from "@/services/ConceptService";
 import LoggerService from "@/services/LoggerService";
-import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({

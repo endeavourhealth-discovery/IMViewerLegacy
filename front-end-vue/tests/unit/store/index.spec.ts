@@ -14,7 +14,6 @@ describe("state", () => {
     const test = new Map<string, boolean>();
     expect(store.state.loading).toEqual(test);
     expect(store.state.conceptIri).toBe("http://www.w3.org/2002/07/owl#Thing");
-    expect(store.state.conceptAggregate).toEqual({});
     expect(store.state.history).toEqual([]);
     expect(store.state.searchResults).toEqual([]);
     expect(store.state.currentUser).toEqual({});
@@ -59,26 +58,6 @@ describe("mutations", () => {
     const testConceptIri = "http://www.endhealth.info/im#test";
     store.commit("updateConceptIri", testConceptIri);
     expect(store.state.conceptIri).toEqual(testConceptIri);
-  });
-
-  it("can updateConceptAggregate", () => {
-    const testConceptAggregate = new ConceptAggregate(
-      {"@id": "http://endhealth.info/im#testConcept"},
-      [{
-        iri: "childIri",
-        hasChildren: true,
-        name: "childName",
-        type: {elements: [{ iri: "test", name: "test" }]}
-      }],
-      [{
-        iri: "parentIri",
-        hasChildren: true,
-        name: "parentName",
-        type: {elements: [{ iri: "test1", name: "test2" }]}
-      }]
-    )
-    store.commit("updateConceptAggregate", testConceptAggregate);
-    expect(store.state.conceptAggregate).toEqual(testConceptAggregate);
   });
 
   it("can updateHistory", () => {
@@ -153,88 +132,6 @@ describe("mutations", () => {
     };
     store.commit("updateFilters", testFilter);
     expect(store.state.filters).toEqual(testFilter);
-  });
-
-  it("can fetchConceptAggregate ___ pass", async() => {
-    const testConceptAggregate = new ConceptAggregate(
-      { "@id": "http://snomed.info/sct#298382003", name: "Scoliosis deformity of spine (disorder)" },
-      [{
-        iri: "childIri",
-        hasChildren: true,
-        name: "childName",
-        type: {elements: [{ iri: "test", name: "test" }]}
-      }],
-      [{
-        iri: "parentIri",
-        hasChildren: true,
-        name: "parentName",
-        type: {elements: [{ iri: "test1", name: "test2" }]}
-      }]
-    )
-    ConceptService.getConcept = jest.fn().mockResolvedValue({ data: { "@id": "http://snomed.info/sct#298382003", name: "Scoliosis deformity of spine (disorder)" }});
-    ConceptService.getConceptParents = jest.fn().mockResolvedValue({
-      data: [{
-        iri: "parentIri",
-        hasChildren: true,
-        name: "parentName",
-        type: {elements: [{ iri: "test1", name: "test2" }]}
-      }]
-    });
-    ConceptService.getConceptChildren = jest.fn().mockResolvedValue({
-      data:[{
-        iri: "childIri",
-        hasChildren: true,
-        name: "childName",
-        type: {elements: [{ iri: "test", name: "test" }]}
-      }]
-    });
-    const testIri = "http://snomed.info/sct#298382003";
-    let result = false;
-    await store.dispatch("fetchConceptAggregate", testIri).then(res => result = res);
-    await flushPromises();
-    expect(ConceptService.getConcept).toBeCalledTimes(1);
-    expect(ConceptService.getConcept).toBeCalledWith(testIri);
-    expect(ConceptService.getConceptParents).toBeCalledTimes(1);
-    expect(ConceptService.getConceptParents).toBeCalledWith(testIri);
-    expect(ConceptService.getConceptChildren).toBeCalledTimes(1);
-    expect(ConceptService.getConceptChildren).toBeCalledWith(testIri);
-    await flushPromises();
-    expect(result).toBe(true);
-    expect(store.state.conceptAggregate).toEqual(testConceptAggregate);
-  });
-
-  it("can fetchConceptAggregate ___ fail", async() => {
-    ConceptService.getConcept = jest.fn().mockRejectedValue({ status: 400 });
-    ConceptService.getConceptParents = jest.fn().mockResolvedValue({
-      data: [{
-        iri: "parentIri",
-        hasChildren: true,
-        name: "parentName",
-        type: {elements: [{ iri: "test1", name: "test2" }]}
-      }]
-    });
-    ConceptService.getConceptChildren = jest.fn().mockResolvedValue({
-      data:[{
-        iri: "childIri",
-        hasChildren: true,
-        name: "childName",
-        type: {elements: [{ iri: "test", name: "test" }]}
-      }]
-    });
-    LoggerService.error = jest.fn();
-    const testIri = "http://snomed.info/sct#298382003";
-    let result = false;
-    await store.dispatch("fetchConceptAggregate", testIri).then(res => result = res);
-    await flushPromises();
-    expect(ConceptService.getConcept).toBeCalledTimes(1);
-    expect(ConceptService.getConcept).toBeCalledWith(testIri);
-    expect(ConceptService.getConceptParents).toBeCalledTimes(1);
-    expect(ConceptService.getConceptParents).toBeCalledWith(testIri);
-    expect(ConceptService.getConceptChildren).toBeCalledTimes(1);
-    expect(ConceptService.getConceptChildren).toBeCalledWith(testIri);
-    await flushPromises();
-    expect(LoggerService.error).toBeCalledTimes(1);
-    expect(result).toBe(false);
   });
 
   it("can fetchSearchResults ___ pass", async() => {

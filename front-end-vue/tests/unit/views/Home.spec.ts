@@ -42,7 +42,7 @@ describe("Home.vue ___ route = Home", () => {
   });
 
   it("should dispatch store authenticated user on mount", () => {
-    expect(mockStore.dispatch).toHaveBeenCalledTimes(2);
+    expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
     expect(mockStore.dispatch).toBeCalledWith("authenticateCurrentUser");
   });
 
@@ -54,8 +54,7 @@ describe("Home.vue ___ route = Home", () => {
       "updateConceptIri",
       "http://endhealth.info/im#DiscoveryOntology"
     );
-    expect(mockStore.dispatch).toBeCalledTimes(3);
-    expect(mockStore.dispatch).toBeCalledWith("fetchConceptAggregate", "test Iri");
+    expect(mockStore.dispatch).toBeCalledTimes(1);
   });
 
   it("should updateRoute ___ Concept", async() => {
@@ -67,18 +66,14 @@ describe("Home.vue ___ route = Home", () => {
       "updateConceptIri",
       "test Iri"
     );
-    expect(mockStore.dispatch).toBeCalledTimes(3);
-    expect(mockStore.dispatch).toBeCalledWith("fetchConceptAggregate", "test Iri");
+    expect(mockStore.dispatch).toBeCalledTimes(1);
   });
 
   it("should fire toast message on failed store dispatch", async() => {
     mockStore.dispatch = jest.fn().mockResolvedValue(false);
     wrapper.vm.updateRoute();
     await wrapper.vm.$nextTick();
-    expect(mockToast.add).toBeCalledTimes(1);
-    expect(mockToast.add).toBeCalledWith(
-      LoggerService.error("Concept aggregate server request failed")
-    );
+    expect(mockToast.add).toBeCalledTimes(0);
   });
 });
 

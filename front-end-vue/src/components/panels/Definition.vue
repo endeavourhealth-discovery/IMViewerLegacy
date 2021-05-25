@@ -183,6 +183,10 @@ export default defineComponent({
       return "<p class='description-p'>" + text + "</p>";
     }
   },
+  async mounted() {
+    this.$store.commit("updateCancelSource");
+    if (this.concept?.[IM.IRI]) await this.getChildren(this.concept[IM.IRI]);
+  },
   data() {
     return {
       children: [],
@@ -190,13 +194,25 @@ export default defineComponent({
     };
   },
   watch: {
-    async concept() {
-      this.children = await this.getChildren(this.concept[IM.IRI]);
+    async concept(newValue) {
+      this.$store.state.cancelSource.cancel("Cancel");
+      this.$store.commit("updateCancelSource");
+      this.children = [];
+      await this.getChildren(newValue[IM.IRI]);
     }
   },
   methods: {
     async getChildren(iri: string) {
-      return (await ConceptService.getConceptChildren(iri)).data;
+      try {
+        this.children = (
+          await ConceptService.getConceptChildren(
+            iri,
+            this.$store.state.cancelSource.token
+          )
+        ).data;
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     navigate(iri: any) {

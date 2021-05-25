@@ -56,10 +56,10 @@ export function getColourFromType(conceptTypes: any): string {
     return bgsFixed[0];
 
   if (isValueSet(conceptTypes?.elements || conceptTypes))
-    return bgsFixed[1];
+    return bgsFixed[3];
 
   if (isFolder(conceptTypes?.elements || conceptTypes))
-    return bgsFixed[2];
+    return bgsFixed[1];
 
-  return bgsFixed[3];
+  return bgsFixed[2];
 }
