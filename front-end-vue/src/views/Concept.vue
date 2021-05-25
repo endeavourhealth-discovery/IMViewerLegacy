@@ -14,21 +14,21 @@
           @click="openDownloadDialog"
           v-tooltip.bottom="'Download concept'"
         >
-          <span class="pi pi-download"></span>
+          <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
         </button>
         <button
           class="p-panel-header-icon p-link p-mr-2"
           @click="directToCreateRoute"
           v-tooltip.bottom="'Create new concept'"
         >
-          <span class="pi pi-plus-circle"></span>
+          <i class="fas fa-plus-circle" aria-hidden="true"></i>
         </button>
         <button
           class="p-panel-header-icon p-link p-mr-2"
           @click="directToEditRoute"
           v-tooltip.bottom="'Edit concept'"
         >
-          <span class="pi pi-pencil"></span>
+          <i class="fas fa-edit" aria-hidden="true"></i>
         </button>
       </template>
       <template #header>

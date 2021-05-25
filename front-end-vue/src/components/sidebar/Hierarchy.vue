@@ -15,14 +15,16 @@
         icon="pi pi-home"
         @click="resetConcept"
         class="p-button-rounded p-button-text p-button-plain"
-      />
+      >
+        <i class="fas fa-home" aria-hidden="true"></i>
+      </Button>
       <Button
         v-if="$store.state.treeLocked"
         class="p-button-rounded p-button-text p-button-plain"
         @click="toggleTreeLocked(false)"
         v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
       >
-        <i class="fas fa-link"></i>
+        <i class="fas fa-link" aria-hidden="true"></i>
       </Button>
       <Button
         v-else
