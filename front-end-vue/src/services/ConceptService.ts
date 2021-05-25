@@ -134,4 +134,14 @@ export default class ConceptService {
       params: { iri: iri }
     });
   }
+
+  public static getDefinitionSubTypes(
+    iri: string,
+    cancelToken?: CancelToken
+  ): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/concept/definitionSubTypes", {
+      params: { iri: iri },
+      cancelToken: cancelToken
+    });
+  }
 }

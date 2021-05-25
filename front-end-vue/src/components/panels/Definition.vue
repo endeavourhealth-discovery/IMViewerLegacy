@@ -200,7 +200,7 @@ export default defineComponent({
     async getChildren(iri: string) {
       try {
         this.children = (
-          await ConceptService.getConceptChildren(
+          await ConceptService.getDefinitionSubTypes(
             iri,
             this.$store.state.cancelSource.token
           )
