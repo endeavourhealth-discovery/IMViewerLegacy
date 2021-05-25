@@ -3,47 +3,7 @@
   <div class="layout-main">
     <div class="home">
       <div class="p-grid">
-        <div class="p-col-3">
-          <span class="p-input-icon-left" style="width: 100%">
-            <i class="pi pi-search" aria-hidden="true" />
-            <InputText
-              type="text"
-              v-model="searchTerm"
-              @input="this.active = 2"
-              @change="search()"
-              placeholder="Search"
-              class="p-inputtext-lg"
-              autoWidth="false"
-              style="width: 100%"
-            />
-          </span>
-          <TabView class="sidemenu" v-model:activeIndex="active">
-            <TabPanel>
-              <template #header>
-                <i
-                  class="fas fa-project-diagram"
-                  style="padding: 1px;"
-                  aria-hidden="true"
-                />
-                <span>Workflows</span>
-              </template>
-
-              <Listbox
-                v-model="selectedWorkflow"
-                :options="workflows"
-                optionLabel="name"
-              >
-                <template #option="slotProps">
-                  <div>
-                    <span>{{ slotProps.option.name }}</span>
-                    <Divider />
-                  </div>
-                </template>
-              </Listbox>
-            </TabPanel>
-          </TabView>
-        </div>
-
+        <SidebarWorkflow :selectedWorkflow="selectedWorkflow" :workflows="workflows" />
         <div
           class="p-col-9"
           style="height: calc(100vh - 123px); overflow: auto"
@@ -211,12 +171,13 @@ import SideNav from "@/components/home/SideNav.vue";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 import { Filters } from "@/models/workflow/Filters";
 import { WorkflowItem } from "@/models/workflow/WorkFlowItem";
+import SidebarWorkflow from "@/components/workflow/SidebarWorkflow.vue";
 
 export default defineComponent({
   name: "Workflow",
   components: {
-    SideNav
-    // SidebarControl
+    SideNav,
+    SidebarWorkflow
   },
   data() {
     return {
@@ -384,7 +345,7 @@ export default defineComponent({
 
     generateWorkflow(workflow: WorkflowItem[], step: number): WorkflowItem[] {
       const customWorkFlow: WorkflowItem[] = [];
-      console.log(workflow);
+      // console.log(workflow);
 
       workflow.forEach((item: WorkflowItem) => {
         if (item.step == step) {
