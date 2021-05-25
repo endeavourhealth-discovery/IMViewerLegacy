@@ -95,42 +95,19 @@
         <template #body="slotProps">
           <div
             class="link capitalize-text"
-            @click="
-              navigate(
-                slotProps.data?.['http://www.w3.org/ns/shacl#path']?.['@id']
-              )
-            "
+            @click="navigate(slotProps.data?.property?.['@id'])"
           >
-            {{ slotProps.data?.["http://www.w3.org/ns/shacl#path"]?.["name"] }}
+            {{ slotProps.data?.property?.name }}
           </div>
         </template>
       </Column>
-      <!-- <Column field="name" header="Type">
-        <template #body="slotProps">
-          <div>
-            {{ slotProps.data }}
-          </div>
-        </template>
-      </Column> -->
       <Column field="name" header="Range">
         <template #body="slotProps">
           <div
             class="link capitalize-text"
-            @click="
-              navigate(
-                slotProps.data?.['http://www.w3.org/ns/shacl#class']?.['@id'] ||
-                  slotProps.data?.['http://www.w3.org/ns/shacl#datatype']?.[
-                    '@id'
-                  ]
-              )
-            "
+            @click="navigate(slotProps.data?.range?.['@id'])"
           >
-            {{
-              slotProps.data?.["http://www.w3.org/ns/shacl#class"]?.["name"] ||
-                slotProps.data?.["http://www.w3.org/ns/shacl#datatype"]?.[
-                  "name"
-                ]
-            }}
+            {{ slotProps.data?.range?.name }}
           </div>
         </template>
       </Column>
@@ -147,6 +124,7 @@ import { SHACL } from "@/vocabulary/SHACL";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import ConceptService from "@/services/ConceptService";
 import Description from "./Description.vue";
+import { OWL } from "@/vocabulary/OWL";
 
 export default defineComponent({
   name: "Definition",
@@ -160,7 +138,24 @@ export default defineComponent({
     },
 
     properties(): [] {
-      return this.concept[SHACL.PROPERTY];
+      const roles = this.concept?.[IM.ROLE_GROUP]?.map(
+        (x: { [x: string]: any }) => {
+          return {
+            property: x?.[OWL.ON_PROPERTY],
+            range: x?.[OWL.SOME_VALUES_FROM]
+          };
+        }
+      );
+      const properties = this.concept?.[SHACL.PROPERTY]?.map(
+        (x: { [x: string]: any }) => {
+          return {
+            property: x?.[SHACL.PATH],
+            range: x?.[SHACL.CLASS] || x?.[SHACL.DATATYPE]
+          };
+        }
+      );
+      if (roles && properties) return properties?.concat(roles);
+      return roles || properties;
     },
 
     subClasses(): [] {
