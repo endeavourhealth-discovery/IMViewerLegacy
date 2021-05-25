@@ -23,6 +23,10 @@ const APP_TITLE = "Information Model";
 
 const routes: Array<RouteRecordRaw> = [
   {
+    path: "/concept/http%3A%2F%2Fwww.w3.org%2F2002%2F07%2Fowl%23Thing",
+    redirect: "/"
+  },
+  {
     path: "/user",
     name: "User",
     component: User,
