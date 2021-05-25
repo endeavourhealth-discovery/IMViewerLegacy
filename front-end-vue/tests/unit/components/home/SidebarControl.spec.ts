@@ -33,6 +33,18 @@ describe("SidebarControl.vue", () => {
               iri: "http://endhealth.info/im#TermOnlyCodeScheme",
               name: "Term based code"
             }
+          ],
+          selectedTypes: [
+            "Class",
+            "ObjectProperty",
+            "DataProperty",
+            "DataType",
+            "Annotation",
+            "Individual",
+            "Record",
+            "ValueSet",
+            "Folder",
+            "Legacy"
           ]
         }
       },

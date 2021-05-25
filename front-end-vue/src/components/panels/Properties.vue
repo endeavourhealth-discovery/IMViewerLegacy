@@ -113,7 +113,9 @@ export default defineComponent({
       const nav = document.getElementsByClassName(
         "p-tabview-nav"
       )[1] as HTMLElement;
-      const properties = document.getElementById("properties-table") as HTMLElement;
+      const properties = document.getElementById(
+        "properties-table"
+      ) as HTMLElement;
       const paginator = properties.getElementsByClassName(
         "p-paginator"
       )[0] as HTMLElement;

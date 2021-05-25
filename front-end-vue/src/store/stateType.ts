@@ -18,6 +18,8 @@ export interface State {
   isLoggedIn: boolean;
   snomedLicenseAccepted: string;
   historyCount: number;
+  focusTree: boolean;
+  treeLocked: boolean;
   filters: {
     selectedStatus: string[];
     selectedSchemes: { iri: string; name: string }[];

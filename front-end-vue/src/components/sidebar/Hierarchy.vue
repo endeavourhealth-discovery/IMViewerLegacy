@@ -3,7 +3,7 @@
     class="p-d-flex p-flex-column p-jc-start"
     id="hierarchy-tree-bar-container"
   >
-    <span class="p-buttonset" id="hierarchy-selected-bar">
+    <div class="p-d-flex p-flex-row p-jc-start" id="hierarchy-selected-bar">
       <Button
         :label="parentLabel"
         :disabled="parentLabel === ''"
@@ -12,22 +12,29 @@
         class="p-button-text p-button-plain"
       />
       <Button
-        icon="pi pi-refresh"
-        @click="
-          refreshTree(
-            conceptAggregate.concept,
-            conceptAggregate.parents,
-            conceptAggregate.children
-          )
-        "
+        icon="pi pi-home"
+        @click="resetConcept"
         class="p-button-rounded p-button-text p-button-plain"
-      />
-      <Button
-        class="p-button-rounded p-button-text p-button-plain"
-        disabled="true"
       >
+        <i class="fas fa-home" aria-hidden="true"></i>
       </Button>
-    </span>
+      <Button
+        v-if="$store.state.treeLocked"
+        class="p-button-rounded p-button-text p-button-plain"
+        @click="toggleTreeLocked(false)"
+        v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
+      >
+        <i class="fas fa-link" aria-hidden="true"></i>
+      </Button>
+      <Button
+        v-else
+        class="p-button-rounded p-button-text p-button-plain"
+        @click="toggleTreeLocked(true)"
+        v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
+      >
+        <i class="fas fa-unlink"></i>
+      </Button>
+    </div>
 
     <Tree
       :value="root"
@@ -71,7 +78,8 @@ import { TreeNode } from "@/models/TreeNode";
 export default defineComponent({
   name: "Hierarchy",
   components: {},
-  computed: mapState(["conceptIri"]),
+  props: ["active"],
+  computed: mapState(["conceptIri", "focusTree", "treeLocked"]),
   watch: {
     async conceptIri(newValue) {
       await this.getConceptAggregate(newValue);
@@ -92,6 +100,35 @@ export default defineComponent({
           conceptName: newValue.concept?.[RDFS.LABEL],
           view: this.$route.name
         } as HistoryItem);
+      }
+    },
+    focusTree(newValue) {
+      if (newValue === true) {
+        this.refreshTree(
+          this.conceptAggregate.concept,
+          this.conceptAggregate.parents,
+          this.conceptAggregate.children
+        );
+        this.$store.commit("focusTree", false);
+        this.$emit("showTree");
+      }
+    },
+    active(newValue, oldValue) {
+      if (!this.treeLocked && newValue === 0 && oldValue !== 0) {
+        this.refreshTree(
+          this.conceptAggregate.concept,
+          this.conceptAggregate.parents,
+          this.conceptAggregate.children
+        );
+      }
+    },
+    treeLocked(newValue) {
+      if (!newValue) {
+        this.refreshTree(
+          this.conceptAggregate.concept,
+          this.conceptAggregate.parents,
+          this.conceptAggregate.children
+        );
       }
     }
   },
@@ -300,6 +337,23 @@ export default defineComponent({
             LoggerService.error("Concept children server request failed", err)
           );
         });
+    },
+
+    resetConcept(): void {
+      this.parentLabel = "";
+      this.$store.commit(
+        "updateConceptIri",
+        "http://endhealth.info/im#DiscoveryOntology"
+      );
+      this.$store.dispatch(
+        "fetchConceptAggregate",
+        "http://endhealth.info/im#DiscoveryOntology"
+      );
+      this.$router.push({ name: "Dashboard" });
+    },
+
+    toggleTreeLocked(value: boolean): void {
+      this.$store.commit("updateTreeLocked", value);
     }
   }
 });
