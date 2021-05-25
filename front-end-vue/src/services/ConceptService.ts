@@ -128,4 +128,10 @@ export default class ConceptService {
       params: { iri: iri }
     });
   }
+
+  public static getRecordStructure(iri: string): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/concept/recordStructure", {
+      params: { iri: iri }
+    });
+  }
 }
