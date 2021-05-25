@@ -29,7 +29,7 @@ export default createStore({
     ) as string,
     historyCount: 0 as number,
     focusTree: false as boolean,
-    treeLocked: false as boolean,
+    treeLocked: true as boolean,
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [

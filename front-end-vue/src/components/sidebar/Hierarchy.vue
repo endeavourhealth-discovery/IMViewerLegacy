@@ -16,17 +16,19 @@
         @click="resetConcept"
         class="p-button-rounded p-button-text p-button-plain"
       />
-      <Button v-if="$store.state.treeLocked"
+      <Button
+        v-if="$store.state.treeLocked"
         class="p-button-rounded p-button-text p-button-plain"
         @click="toggleTreeLocked(false)"
-        v-tooltip.right="'Toggle hierarchy tree updates on concept select'"
+        v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
       >
         <i class="fas fa-link"></i>
       </Button>
-      <Button v-else
+      <Button
+        v-else
         class="p-button-rounded p-button-text p-button-plain"
         @click="toggleTreeLocked(true)"
-        v-tooltip.right="'Toggle hierarchy tree updates on concept select'"
+        v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
       >
         <i class="fas fa-unlink"></i>
       </Button>
@@ -74,7 +76,8 @@ import { TreeNode } from "@/models/TreeNode";
 export default defineComponent({
   name: "Hierarchy",
   components: {},
-  computed: mapState(["conceptAggregate", "focusTree"]),
+  props: ["active"],
+  computed: mapState(["conceptAggregate", "focusTree", "treeLocked"]),
   watch: {
     conceptAggregate(newValue) {
       this.createTree(newValue.concept, newValue.parents, newValue.children);
@@ -94,9 +97,31 @@ export default defineComponent({
     },
     focusTree(newValue) {
       if (newValue === true) {
-        this.refreshTree(this.conceptAggregate.concept, this.conceptAggregate.parents, this.conceptAggregate.children);
+        this.refreshTree(
+          this.conceptAggregate.concept,
+          this.conceptAggregate.parents,
+          this.conceptAggregate.children
+        );
         this.$store.commit("focusTree", false);
         this.$emit("showTree");
+      }
+    },
+    active(newValue, oldValue) {
+      if (!this.treeLocked && newValue === 0 && oldValue !== 0) {
+        this.refreshTree(
+          this.conceptAggregate.concept,
+          this.conceptAggregate.parents,
+          this.conceptAggregate.children
+        );
+      }
+    },
+    treeLocked(newValue) {
+      if (!newValue) {
+        this.refreshTree(
+          this.conceptAggregate.concept,
+          this.conceptAggregate.parents,
+          this.conceptAggregate.children
+        );
       }
     }
   },

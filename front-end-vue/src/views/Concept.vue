@@ -5,25 +5,28 @@
         <button
           class="p-panel-header-icon p-link p-mr-2"
           @click="focusTree"
-          v-tooltip.left="'Focus tree to this concept'"
+          v-tooltip.left="'Focus hierarchy tree to this concept'"
         >
           <i class="fas fa-search-location" aria-hidden="true"></i>
         </button>
         <button
           class="p-panel-header-icon p-link p-mr-2"
           @click="openDownloadDialog"
+          v-tooltip.bottom="'Download concept'"
         >
           <span class="pi pi-download"></span>
         </button>
         <button
           class="p-panel-header-icon p-link p-mr-2"
           @click="directToCreateRoute"
+          v-tooltip.bottom="'Create new concept'"
         >
           <span class="pi pi-plus-circle"></span>
         </button>
         <button
           class="p-panel-header-icon p-link p-mr-2"
           @click="directToEditRoute"
+          v-tooltip.bottom="'Edit concept'"
         >
           <span class="pi pi-pencil"></span>
         </button>
