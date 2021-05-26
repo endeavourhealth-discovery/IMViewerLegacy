@@ -345,10 +345,6 @@ export default defineComponent({
         "updateConceptIri",
         "http://endhealth.info/im#DiscoveryOntology"
       );
-      this.$store.dispatch(
-        "fetchConceptAggregate",
-        "http://endhealth.info/im#DiscoveryOntology"
-      );
       this.$router.push({ name: "Dashboard" });
     },
 
