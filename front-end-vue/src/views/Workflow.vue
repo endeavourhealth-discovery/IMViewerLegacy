@@ -17,7 +17,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
-// import SidebarControl from "@/components/sidebar/SidebarControl.vue";
 import SidebarWorkflow from "@/components/workflow/SidebarWorkflow.vue";
 import WorkflowManager from "@/components/workflow/WorkflowManager.vue";
 

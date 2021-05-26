@@ -12,13 +12,14 @@
         autoWidth="false"
       />
     </span>
-    <TabView id="workflow-sidemenu" class="sidemenu" v-model:activeIndex="active">
+    <TabView
+      id="workflow-sidemenu"
+      class="sidemenu"
+      v-model:activeIndex="active"
+    >
       <TabPanel>
         <template #header>
-          <i
-            class="fas fa-project-diagram icon-header"
-            aria-hidden="true"
-          />
+          <i class="fas fa-project-diagram icon-header" aria-hidden="true" />
           <span>Workflows</span>
         </template>
 
@@ -67,8 +68,10 @@ export default defineComponent({
       const searchBar = document.getElementById("workflow-searchbar");
       const sideMenu = document.getElementById("workflow-sidemenu");
       if (sidebar && searchBar && sideMenu) {
-        sideMenu.style.maxHeight = sidebar.offsetHeight - searchBar.offsetHeight + "px";
-        sideMenu.style.minHeight = sidebar.offsetHeight - searchBar.offsetHeight + "px";
+        sideMenu.style.maxHeight =
+          sidebar.offsetHeight - searchBar.offsetHeight + "px";
+        sideMenu.style.minHeight =
+          sidebar.offsetHeight - searchBar.offsetHeight + "px";
       }
     }
   }
