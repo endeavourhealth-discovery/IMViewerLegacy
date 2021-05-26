@@ -121,6 +121,9 @@
         dataType="date"
         filterField="createdDate"
       >
+        <template #body="{data}">
+          {{ formatDate(data.createdDate) }}
+        </template>
         <template #filter="{filterModel}">
           <Calendar
             v-model="filterModel.value"
@@ -135,6 +138,9 @@
         filterField="updatedDate"
         dataType="date"
       >
+        <template #body="{data}">
+          {{ formatDate(data.updatedDate) }}
+        </template>
         <template #filter="{filterModel}">
           <Calendar
             v-model="filterModel.value"
@@ -277,8 +283,8 @@ export default defineComponent({
           status: currentStep == 4 ? "Complete" : "In Progress",
           workflow: this.generateWorkflow(this.createWorkflow, currentStep),
           author: "user " + Math.floor(Math.random() * 100) + 1,
-          createdDate: new Date().toDateString(),
-          updatedDate: new Date().toDateString()
+          createdDate: new Date(),
+          updatedDate: new Date()
         });
         x--;
       }
@@ -360,6 +366,10 @@ export default defineComponent({
           constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
         }
       } as Filters;
+    },
+
+    formatDate(value: Date): string {
+      return value.toLocaleDateString("en-UK");
     }
   }
 });
