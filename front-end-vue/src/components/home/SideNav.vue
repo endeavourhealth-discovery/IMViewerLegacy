@@ -6,7 +6,7 @@
         class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center"
       >
         <div>
-          <img class="im-logo" src="../../assets/logos/Logo-object.png" @click="$router.push({ name: 'Dashboard' })" />
+          <img class="im-logo" src="../../assets/logos/Logo-object-empty.png" @click="$router.push({ name: 'Dashboard' })" />
         </div>
         <!-- <div id="center-icons">
           <div v-bind:class="{ active: isActive('Home') }">
