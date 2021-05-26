@@ -79,9 +79,9 @@ export default defineComponent({
       }
     },
     setScrollHeight(): void {
-      const container = document.getElementsByClassName(
+      const container = document.getElementById(
         "concept-container"
-      )[0] as HTMLElement;
+      ) as HTMLElement;
       const header = document.getElementsByClassName(
         "p-panel-header"
       )[0] as HTMLElement;

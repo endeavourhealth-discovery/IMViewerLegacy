@@ -1,141 +1,145 @@
 <template>
   <div id="workflow-manager-container">
-    <div v-if="selectedWorkflow.value == 'createWorkflow'">
-      <Panel header="Create Concept Workflow" :toggleable="true">
-        <DataTable
-          :value="createTable"
-          class="p-datatable-sm"
-          :paginator="true"
-          :rows="10"
-          v-model:expandedRows="expandedRows"
-          dataKey="taskId"
-          stripedRows
-          v-model:filters="filters1"
-        >
-          <template #header>
-            <div class="p-d-flex p-jc-between">
-              <span>
-                All tasks currently in the Create Concept Workflow
-              </span>
-              <span class="p-input-icon-left">
-                <i class="pi pi-search" aria-hidden="true" />
-                <InputText
-                  v-model="filters1['global'].value"
-                  placeholder="Keyword Search"
-                />
-              </span>
-            </div>
-          </template>
+    <Panel
+      v-if="selectedWorkflow.value == 'createWorkflow'"
+      header="Create Concept Workflow"
+      :toggleable="true"
+    >
+      <DataTable
+        :value="createTable"
+        class="p-datatable-sm"
+        :paginator="true"
+        :rows="10"
+        v-model:expandedRows="expandedRows"
+        dataKey="taskId"
+        stripedRows
+        v-model:filters="filters1"
+      >
+        <template #header>
+          <div class="p-d-flex p-jc-between">
+            <span>
+              All tasks currently in the Create Concept Workflow
+            </span>
+            <span class="p-input-icon-left">
+              <i class="pi pi-search" aria-hidden="true" />
+              <InputText
+                v-model="filters1['global'].value"
+                placeholder="Keyword Search"
+              />
+            </span>
+          </div>
+        </template>
 
-          <!-- <template #header> Ontology Data </template> -->
-          <Column :expander="true" headerStyle="width: 3rem" />
-          <Column field="taskId" header="Task Id"></Column>
-          <Column field="currentStep" header="Current Step"></Column>
-          <Column field="status" header="Status"></Column>
-          <Column field="author" header="Author"></Column>
-          <Column field="createdDate" header="Created Date"></Column>
-          <Column field="updatedDate" header="Updated Date"></Column>
+        <!-- <template #header> Ontology Data </template> -->
+        <Column :expander="true" headerStyle="width: 3rem" />
+        <Column field="taskId" header="Task Id"></Column>
+        <Column field="currentStep" header="Current Step"></Column>
+        <Column field="status" header="Status"></Column>
+        <Column field="author" header="Author"></Column>
+        <Column field="createdDate" header="Created Date"></Column>
+        <Column field="updatedDate" header="Updated Date"></Column>
 
-          <template #expansion="slotProps">
-            <div class="orders-subtable" style="width: 100%">
-              <Timeline
-                :value="slotProps.data.workflow"
-                layout="horizontal"
-                align="bottom"
-              >
-                <template #opposite="slotProps">
-                  <div v-if="slotProps.item.active">
-                    Current task: {{ slotProps.item.active }}
+        <template #expansion="slotProps">
+          <div class="orders-subtable" style="width: 100%">
+            <Timeline
+              :value="slotProps.data.workflow"
+              layout="horizontal"
+              align="bottom"
+            >
+              <template #opposite="slotProps">
+                <div v-if="slotProps.item.active">
+                  Current task: {{ slotProps.item.active }}
+                </div>
+                <div
+                  class="p-grid"
+                  v-if="slotProps.item.step == 3 && slotProps.item.active"
+                >
+                  <div class="p-col-4">
+                    <Button label="Approve" />
                   </div>
-                  <div
-                    class="p-grid"
-                    v-if="slotProps.item.step == 3 && slotProps.item.active"
-                  >
-                    <div class="p-col-4">
-                      <Button label="Approve" />
-                    </div>
-                    <div class="p-col-4">
-                      <Button label="Deny" class="p-button-secondary" />
-                    </div>
+                  <div class="p-col-4">
+                    <Button label="Deny" class="p-button-secondary" />
                   </div>
-                </template>
-                <template #content="slotProps">
-                  {{ slotProps.item.taskName }}
-                </template>
-              </Timeline>
-            </div>
-          </template>
-        </DataTable>
-      </Panel>
-    </div>
+                </div>
+              </template>
+              <template #content="slotProps">
+                {{ slotProps.item.taskName }}
+              </template>
+            </Timeline>
+          </div>
+        </template>
+      </DataTable>
+    </Panel>
 
-    <div v-if="selectedWorkflow.value == 'updateWorkflow'">
-      <Panel header="Update Concept Workflow" :toggleable="true">
-        <DataTable
-          :value="updateTable"
-          class="p-datatable-sm"
-          :paginator="true"
-          :rows="10"
-          v-model:expandedRows="expandedRows2"
-          dataKey="taskId"
-          stripedRows
-          v-model:filters="filters2"
-        >
-          <template #header>
-            <div class="p-d-flex p-jc-between">
-              <span>
-                All tasks currently in the Update Concept Workflow
-              </span>
-              <span class="p-input-icon-left">
-                <i class="pi pi-search" aria-hidden="true" />
-                <InputText
-                  v-model="filters2['global'].value"
-                  placeholder="Keyword Search"
-                />
-              </span>
-            </div>
-          </template>
-          <!-- <template #header> Ontology Data </template> -->
-          <Column :expander="true" headerStyle="width: 3rem" />
-          <Column field="taskId" header="Task Id"></Column>
-          <Column field="currentStep" header="Current Step"></Column>
-          <Column field="status" header="Status"></Column>
-          <Column field="author" header="Author"></Column>
-          <Column field="createdDate" header="Created Date"></Column>
-          <Column field="updatedDate" header="Updated Date"></Column>
+    <Panel
+      v-if="selectedWorkflow.value == 'updateWorkflow'"
+      header="Update Concept Workflow"
+      :toggleable="true"
+    >
+      <DataTable
+        :value="updateTable"
+        class="p-datatable-sm"
+        :paginator="true"
+        :rows="10"
+        v-model:expandedRows="expandedRows2"
+        dataKey="taskId"
+        stripedRows
+        v-model:filters="filters2"
+      >
+        <template #header>
+          <div class="p-d-flex p-jc-between">
+            <span>
+              All tasks currently in the Update Concept Workflow
+            </span>
+            <span class="p-input-icon-left">
+              <i class="pi pi-search" aria-hidden="true" />
+              <InputText
+                v-model="filters2['global'].value"
+                placeholder="Keyword Search"
+              />
+            </span>
+          </div>
+        </template>
+        <!-- <template #header> Ontology Data </template> -->
+        <Column :expander="true" headerStyle="width: 3rem" />
+        <Column field="taskId" header="Task Id"></Column>
+        <Column field="currentStep" header="Current Step"></Column>
+        <Column field="status" header="Status"></Column>
+        <Column field="author" header="Author"></Column>
+        <Column field="createdDate" header="Created Date"></Column>
+        <Column field="updatedDate" header="Updated Date"></Column>
 
-          <template #expansion="slotProps">
-            <div class="orders-subtable" style="width: 100%">
-              <Timeline
-                :value="slotProps.data.workflow"
-                layout="horizontal"
-                align="bottom"
-              >
-                <template #opposite="slotProps">
-                  <div v-if="slotProps.item.active">
-                    Current task: {{ slotProps.item.active }}
+        <template #expansion="slotProps">
+          <div class="orders-subtable" style="width: 100%">
+            <Timeline
+              :value="slotProps.data.workflow"
+              layout="horizontal"
+              align="bottom"
+            >
+              <template #opposite="slotProps">
+                <div v-if="slotProps.item.active">
+                  Current task: {{ slotProps.item.active }}
+                </div>
+                <div
+                  class="p-grid"
+                  v-if="slotProps.item.step == 3 && slotProps.item.active"
+                >
+                  <div class="p-col-4">
+                    <Button label="Approve" />
                   </div>
-                  <div
-                    class="p-grid"
-                    v-if="slotProps.item.step == 3 && slotProps.item.active"
-                  >
-                    <div class="p-col-4">
-                      <Button label="Approve" />
-                    </div>
-                    <div class="p-col-4">
-                      <Button label="Deny" class="p-button-secondary" />
-                    </div>
+                  <div class="p-col-4">
+                    <Button label="Deny" class="p-button-secondary" />
                   </div>
-                </template>
-                <template #content="slotProps">
-                  {{ slotProps.item.taskName }}
-                </template>
-              </Timeline>
-            </div>
-          </template>
-        </DataTable>
-      </Panel>
-    </div>
+                </div>
+              </template>
+              <template #content="slotProps">
+                {{ slotProps.item.taskName }}
+              </template>
+            </Timeline>
+          </div>
+        </template>
+      </DataTable>
+    </Panel>
   </div>
 </template>
 
@@ -144,6 +148,7 @@ import { defineComponent } from "vue";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 import { Filters } from "@/models/workflow/Filters";
 import { WorkflowItem } from "@/models/workflow/WorkFlowItem";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "WorkflowManager",
@@ -263,8 +268,16 @@ export default defineComponent({
     };
   },
   mounted() {
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.setContentHeight);
+    });
+
+    this.setContentHeight();
     this.generateCreateTable();
     this.generateUpdateTable();
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.setContentHeight);
   },
   methods: {
     generateCreateTable(): void {
@@ -322,6 +335,26 @@ export default defineComponent({
       });
 
       return customWorkFlow;
+    },
+
+    setContentHeight(): void {
+      const container = document.getElementById("workflow-manager-container") as HTMLElement;
+      const header = container.getElementsByClassName("p-panel-header")[0] as HTMLElement;
+      const content = container.getElementsByClassName(
+        "p-panel-content"
+      )[0] as HTMLElement;
+      if (content && header && container) {
+        const calcHeight =
+          container.getBoundingClientRect().height -
+          header.getBoundingClientRect().height +
+          "px";
+        content.style.minHeight = calcHeight;
+      } else {
+        LoggerService.error(
+          "Content sizing error",
+          "failed to get element(s) for concept content resizing"
+        );
+      }
     }
   }
 });
@@ -333,5 +366,9 @@ export default defineComponent({
   height: calc(100vh - 2rem);
   width: 100%;
   overflow-y: auto;
+}
+
+.p-panel {
+  min-height: 100%;
 }
 </style>

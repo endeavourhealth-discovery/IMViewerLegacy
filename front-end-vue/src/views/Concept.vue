@@ -1,5 +1,5 @@
 <template>
-  <div class="concept-container">
+  <div id="concept-container">
     <Panel>
       <template #icons>
         <button
@@ -177,11 +177,11 @@ export default defineComponent({
     },
 
     setContentHeight(): void {
-      const header = document.getElementsByClassName("p-panel-header")[0];
+      const container = document.getElementById("concept-container") as HTMLElement;
+      const header = container.getElementsByClassName("p-panel-header")[0] as HTMLElement;
       const content = document.getElementById(
         "concept-content-dialogs-container"
-      );
-      const container = document.getElementsByClassName("concept-container")[0];
+      ) as HTMLElement;
       const currentFontSize = parseFloat(
         window
           .getComputedStyle(document.documentElement, null)
@@ -224,7 +224,7 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-.concept-container {
+#concept-container {
   grid-area: content;
   height: calc(100vh - 2rem);
   width: 100%;
