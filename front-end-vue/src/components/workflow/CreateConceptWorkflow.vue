@@ -75,7 +75,7 @@ import { Filters } from "@/models/workflow/Filters";
 
 export default defineComponent({
   name: "CreateConceptWorkflow",
-  props: ["selectedWorkflow", "workflows"],
+  props: ["selectedWorkflow"],
   data() {
     return {
       createTable: [] as any,

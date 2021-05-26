@@ -23,7 +23,11 @@
           <span>Workflows</span>
         </template>
 
-        <Listbox v-model="workflow" :options="workflows" optionLabel="name">
+        <Listbox
+          v-model="selectedWorkflow"
+          :options="workflows"
+          optionLabel="name"
+        >
           <template #option="slotProps">
             <div>
               <span>{{ slotProps.option.name }}</span>
@@ -41,11 +45,14 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "SidebarWorkflow",
-  props: ["selectedWorkflow", "workflows"],
+  emits: ["workflow-selected"],
+  watch: {
+    selectedWorkflow(newValue) {
+      this.$emit("workflow-selected", newValue);
+    }
+  },
   mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.onResize);
-    });
+    window.addEventListener("resize", this.onResize);
 
     this.setContainerHeights();
   },
@@ -56,7 +63,14 @@ export default defineComponent({
     return {
       searchTerm: "",
       active: 0,
-      workflow: this.selectedWorkflow
+      selectedWorkflow: {
+        name: "Create New Concept Workflow",
+        value: "createWorkflow"
+      } as { name: string; value: string },
+      workflows: [
+        { name: "Create New Concept Workflow", value: "createWorkflow" },
+        { name: "Update Concept Workflow", value: "updateWorkflow" }
+      ] as { name: string; value: string }[]
     };
   },
   methods: {

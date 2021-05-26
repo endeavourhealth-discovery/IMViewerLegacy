@@ -2,14 +2,8 @@
   <SideNav />
   <div class="layout-main">
     <div class="main-grid">
-      <SidebarWorkflow
-        :selectedWorkflow="selectedWorkflow"
-        :workflows="workflows"
-      />
-      <WorkflowManager
-        :selectedWorkflow="selectedWorkflow"
-        :workflows="workflows"
-      />
+      <SidebarWorkflow @workflow-selected="onWorkflowSelected" />
+      <WorkflowManager :selectedWorkflow="selectedWorkflow" />
     </div>
   </div>
 </template>
@@ -32,12 +26,13 @@ export default defineComponent({
       selectedWorkflow: {
         name: "Create New Concept Workflow",
         value: "createWorkflow"
-      } as { name: string; value: string },
-      workflows: [
-        { name: "Create New Concept Workflow", value: "createWorkflow" },
-        { name: "Update Concept Workflow", value: "updateWorkflow" }
-      ] as { name: string; value: string }[]
+      }
     };
+  },
+  methods: {
+    onWorkflowSelected(workflow: { name: string; value: string }): void {
+      this.selectedWorkflow = workflow;
+    }
   }
 });
 </script>

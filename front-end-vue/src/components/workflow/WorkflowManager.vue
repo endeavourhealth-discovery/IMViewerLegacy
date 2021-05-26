@@ -3,12 +3,10 @@
     <CreateConceptWorkflow
       v-if="selectedWorkflow.value == 'createWorkflow'"
       :selectedWorkflow="selectedWorkflow"
-      :workflows="workflows"
     />
     <UpdateConceptWorkflow
       v-if="selectedWorkflow.value == 'updateWorkflow'"
       :selectedWorkflow="selectedWorkflow"
-      :workflows="workflows"
     />
   </div>
 </template>
@@ -21,7 +19,7 @@ import UpdateConceptWorkflow from "@/components/workflow/UpdateConceptWorkflow.v
 
 export default defineComponent({
   name: "WorkflowManager",
-  props: ["selectedWorkflow", "workflows"],
+  props: ["selectedWorkflow"],
   components: { CreateConceptWorkflow, UpdateConceptWorkflow },
   mounted() {
     this.$nextTick(() => {

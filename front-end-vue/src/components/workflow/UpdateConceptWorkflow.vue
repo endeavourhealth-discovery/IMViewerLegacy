@@ -74,7 +74,7 @@ import { WorkflowItem } from "@/models/workflow/WorkFlowItem";
 
 export default defineComponent({
   name: "UpdateConceptWorkflow",
-  props: ["selectedWorkflow", "workflows"],
+  props: ["selectedWorkflow"],
   data() {
     return {
       updateTable: [] as any,
