@@ -36,7 +36,7 @@
       </template>
       <div id="concept-content-dialogs-container">
         <div v-if="concept && isSet" id="concept-panel-container">
-          <TabView>
+          <TabView v-model:activeIndex="active">
             <TabPanel header="Definition">
               <Definition :concept="concept" v-if="active === 0" />
             </TabPanel>
