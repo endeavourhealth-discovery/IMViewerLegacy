@@ -50,11 +50,11 @@
           :options="isA"
           listStyle="height: 12rem;"
           v-model="selected"
-          @change="navigate(selected['@id'])"
+          @change="navigate(selected?.['@id'])"
         >
           <template #option="slotProps">
             <div>
-              {{ slotProps.option.name || slotProps.option["@id"] }}
+              {{ slotProps.option?.name || slotProps.option?.["@id"] }}
             </div>
           </template>
         </Listbox>
@@ -134,7 +134,10 @@ export default defineComponent({
   },
   computed: {
     isA(): [] {
-      return this.concept[IM.IS_A];
+      if (this.concept[IM.IS_CONTAINED_IN] && this.concept[IM.IS_A]) {
+        return this.concept[IM.IS_CONTAINED_IN].concat(this.concept[IM.IS_A]);
+      }
+      return this.concept[IM.IS_A] || this.concept[IM.IS_CONTAINED_IN];
     },
 
     properties(): [] {

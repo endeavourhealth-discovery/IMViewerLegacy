@@ -7,6 +7,7 @@ export class IM {
   public static STATUS = IM.NAMESPACE + "status";
   public static IS_A = IM.NAMESPACE + "isA";
   public static ROLE_GROUP = IM.NAMESPACE + "roleGroup";
+  public static IS_CONTAINED_IN = IM.NAMESPACE + "isContainedIn";
 
   public static QUERY_SET = IM.NAMESPACE + "QuerySet";
   public static VALUE_SET = IM.NAMESPACE + "ValueSet";
