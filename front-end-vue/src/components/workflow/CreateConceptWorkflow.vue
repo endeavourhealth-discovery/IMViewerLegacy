@@ -9,30 +9,78 @@
       dataKey="taskId"
       stripedRows
       v-model:filters="filters"
+      filterDisplay="menu"
+      :globalFilterFields="['taskId', 'currentStep', 'status', 'author', 'createdDate', 'updatedDate']"
     >
       <template #header>
         <div class="p-d-flex p-jc-between">
           <span>
             All tasks currently in the Create Concept Workflow
           </span>
-          <span class="p-input-icon-left">
-            <i class="pi pi-search" aria-hidden="true" />
-            <InputText
-              v-model="filters['global'].value"
-              placeholder="Keyword Search"
-            />
-          </span>
+          <div id="button-search-container">
+            <Button type="button" icon="pi pi-filter-slash" label="Clear" class="p-button-outlined" @click="clearFilters" />
+            <span class="p-input-icon-left">
+              <i class="pi pi-search" aria-hidden="true" />
+              <InputText
+                v-model="filters['global'].value"
+                placeholder="Keyword Search"
+              />
+            </span>
+          </div>
+
         </div>
+      </template>
+
+      <template #loading>
+        <!-- add spinner here -->
       </template>
 
       <!-- <template #header> Ontology Data </template> -->
       <Column :expander="true" headerStyle="width: 3rem" />
-      <Column field="taskId" header="Task Id"></Column>
-      <Column field="currentStep" header="Current Step"></Column>
-      <Column field="status" header="Status"></Column>
-      <Column field="author" header="Author"></Column>
-      <Column field="createdDate" header="Created Date"></Column>
-      <Column field="updatedDate" header="Updated Date"></Column>
+      <Column field="taskId" header="Task Id" filterField="taskId">
+        <template #filter="{filterModel}">
+          <InputText type="text" v-model="filterModel.value" class="p-column-filter" placeholder="Search by task id" />
+        </template>
+      </Column>
+      <Column field="currentStep" header="Current Step" filterField="currentStep" :showFilterMatchModes="false">
+        <template #filter="{filterModel}">
+          <div class="p-text-bold">Step picker</div>
+          <MultiSelect v-model="filterModel.value" :options="stepOptions" optionLabel="step" placeholder="Any" class="p-column-filter">
+            <template #options="slotProps">
+              <div class="p-multiselect-representative-option">
+                <span>{{ slotProps.option.step }}</span>
+              </div>
+            </template>
+          </MultiSelect>
+        </template>
+      </Column>
+      <Column field="status" header="Status" filterField="status" :showFilterMatchModes="false">
+        <template #filter="{filterModel}">
+          <div class="p-text-bold">Status picker</div>
+          <MultiSelect v-model="filterModel.value" :options="statusOptions" optionLabel="status" placeholder="Any" class="p-column-filter">
+            <template #options="slotProps">
+              <div class="p-multiselect-representative-option">
+                <span>{{ slotProps.option.status }}</span>
+              </div>
+            </template>
+          </MultiSelect>
+        </template>
+      </Column>
+      <Column field="author" header="Author" filterField="author">
+        <template #filter="{filterModel}">
+          <InputText type="text" v-model="filterModel.value" class="p-column-filter" placeholder="Search by author" />
+        </template>
+      </Column>
+      <Column field="createdDate" header="Created Date" dataType="date" filterField="createdDate" >
+        <template #filter="{filterModel}">
+          <Calendar v-model="filterModel.value" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy" />
+        </template>
+      </Column>
+      <Column field="updatedDate" header="Updated Date" filterField="updatedDate" dataType="date" >
+        <template #filter="{filterModel}">
+          <Calendar v-model="filterModel.value" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy" />
+        </template>
+      </Column>
 
       <template #expansion="slotProps">
         <div class="orders-subtable" style="width: 100%">
@@ -108,31 +156,34 @@ export default defineComponent({
       ] as WorkflowItem[],
       filters: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        name: {
+        taskId: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }]
+        },
+        currentStep: {
+           value: null,
+           matchMode: FilterMatchMode.IN
+        },
+        status: {
+           value: null,
+           matchMode: FilterMatchMode.IN
+        },
+        author: {
           operator: FilterOperator.AND,
           constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
         },
-        "country.name": {
-          operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
-        },
-        representative: { value: null, matchMode: FilterMatchMode.IN },
-        date: {
+        createdDate: {
           operator: FilterOperator.AND,
           constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
         },
-        balance: {
+        updatedDate: {
           operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
+          constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
         },
-        status: {
-          operator: FilterOperator.OR,
-          constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
-        },
-        activity: { value: null, matchMode: FilterMatchMode.BETWEEN },
-        verified: { value: null, matchMode: FilterMatchMode.EQUALS }
       } as Filters,
-      expandedRows: []
+      expandedRows: [],
+      stepOptions: [{step:1}, {step:2}, {step:3}, {step:4}, {step:5}] as {step: number}[],
+      statusOptions: [{status: "In Progress"}, {status: "Complete"}] as {status: string}[]
     };
   },
   mounted() {
@@ -205,6 +256,40 @@ export default defineComponent({
           "failed to get element(s) for concept content resizing"
         );
       }
+    },
+
+    clearFilters() {
+      this.initFilters();
+    },
+
+    initFilters() {
+      this.filters = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        taskId: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }]
+        },
+        currentStep: {
+          value: null,
+          matchMode: FilterMatchMode.IN
+        },
+        status: {
+          value: null,
+          matchMode: FilterMatchMode.IN
+        },
+        author: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
+        },
+        createdDate: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
+        },
+        updatedDate: {
+          operator: FilterOperator.OR,
+          constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
+        },
+      } as Filters
     }
   }
 });

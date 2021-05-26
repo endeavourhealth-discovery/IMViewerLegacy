@@ -65,6 +65,7 @@ import SelectButton from "primevue/selectbutton";
 import ToastService from "primevue/toastservice";
 import Toast from "primevue/toast";
 import Checkbox from "primevue/checkbox";
+import Calendar from "primevue/calendar";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
@@ -117,6 +118,7 @@ const app = createApp(App)
   .component("Timeline", Timeline)
   .component("SelectButton", SelectButton)
   .component("Toast", Toast)
-  .component("Checkbox", Checkbox);
+  .component("Checkbox", Checkbox)
+  .component("Calendar", Calendar);
 
 app.mount("#app");

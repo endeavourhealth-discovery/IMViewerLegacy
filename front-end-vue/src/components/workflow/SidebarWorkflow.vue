@@ -48,7 +48,9 @@ export default defineComponent({
   emits: ["workflow-selected"],
   watch: {
     selectedWorkflow(newValue) {
-      this.$emit("workflow-selected", newValue);
+      if (newValue) {
+        this.$emit("workflow-selected", newValue);
+      }
     }
   },
   mounted() {

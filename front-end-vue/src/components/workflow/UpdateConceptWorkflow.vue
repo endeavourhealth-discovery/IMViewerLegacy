@@ -82,29 +82,27 @@ export default defineComponent({
       expandedRows: [],
       filters: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        name: {
+        taskId: {
           operator: FilterOperator.AND,
           constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
         },
-        "country.name": {
+        currentStep: {
           operator: FilterOperator.AND,
           constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
         },
-        representative: { value: null, matchMode: FilterMatchMode.IN },
-        date: {
+        status: { value: null, matchMode: FilterMatchMode.IN },
+        author: {
           operator: FilterOperator.AND,
           constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
         },
-        balance: {
+        createdDate: {
           operator: FilterOperator.AND,
           constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
         },
-        status: {
+        updatedDate: {
           operator: FilterOperator.OR,
           constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
-        },
-        activity: { value: null, matchMode: FilterMatchMode.BETWEEN },
-        verified: { value: null, matchMode: FilterMatchMode.EQUALS }
+        }
       } as Filters,
 
       updateWorkflow: [

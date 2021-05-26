@@ -1,5 +1,5 @@
 <template>
-  <div id="workflow-manager-container">
+  <div v-if="selectedWorkflow" id="workflow-manager-container">
     <CreateConceptWorkflow
       v-if="selectedWorkflow.value == 'createWorkflow'"
       :selectedWorkflow="selectedWorkflow"
