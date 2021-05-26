@@ -71,6 +71,7 @@ import { defineComponent } from "vue";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 import { Filters } from "@/models/workflow/Filters";
 import { WorkflowItem } from "@/models/workflow/WorkFlowItem";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "UpdateConceptWorkflow",
@@ -135,6 +136,9 @@ export default defineComponent({
     };
   },
   mounted() {
+    window.addEventListener("resize", this.setContentHeight);
+
+    this.setContentHeight();
     this.generateUpdateTable();
   },
   methods: {
@@ -171,6 +175,30 @@ export default defineComponent({
         }
       });
       return customWorkFlow;
+    },
+
+    setContentHeight(): void {
+      const container = document.getElementById(
+        "workflow-manager-container"
+      ) as HTMLElement;
+      const header = container.getElementsByClassName(
+        "p-panel-header"
+      )[0] as HTMLElement;
+      const content = container.getElementsByClassName(
+        "p-panel-content"
+      )[0] as HTMLElement;
+      if (content && header && container) {
+        const calcHeight =
+          container.getBoundingClientRect().height -
+          header.getBoundingClientRect().height +
+          "px";
+        content.style.minHeight = calcHeight;
+      } else {
+        LoggerService.error(
+          "Content sizing error",
+          "failed to get element(s) for concept content resizing"
+        );
+      }
     }
   }
 });
