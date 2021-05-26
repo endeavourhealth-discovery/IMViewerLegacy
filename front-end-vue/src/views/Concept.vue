@@ -177,8 +177,12 @@ export default defineComponent({
     },
 
     setContentHeight(): void {
-      const container = document.getElementById("concept-container") as HTMLElement;
-      const header = container.getElementsByClassName("p-panel-header")[0] as HTMLElement;
+      const container = document.getElementById(
+        "concept-container"
+      ) as HTMLElement;
+      const header = container.getElementsByClassName(
+        "p-panel-header"
+      )[0] as HTMLElement;
       const content = document.getElementById(
         "concept-content-dialogs-container"
       ) as HTMLElement;

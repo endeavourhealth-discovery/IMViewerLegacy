@@ -1,7 +1,7 @@
 <template>
-  <Panel header="Create Concept Workflow" :toggleable="true">
+  <Panel header="Update Concept Workflow" :toggleable="true">
     <DataTable
-      :value="createTable"
+      :value="updateTable"
       class="p-datatable-sm"
       :paginator="true"
       :rows="10"
@@ -13,7 +13,7 @@
       <template #header>
         <div class="p-d-flex p-jc-between">
           <span>
-            All tasks currently in the Create Concept Workflow
+            All tasks currently in the Update Concept Workflow
           </span>
           <span class="p-input-icon-left">
             <i class="pi pi-search" aria-hidden="true" />
@@ -24,7 +24,6 @@
           </span>
         </div>
       </template>
-
       <!-- <template #header> Ontology Data </template> -->
       <Column :expander="true" headerStyle="width: 3rem" />
       <Column field="taskId" header="Task Id"></Column>
@@ -69,42 +68,17 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { WorkflowItem } from "@/models/workflow/WorkFlowItem";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 import { Filters } from "@/models/workflow/Filters";
+import { WorkflowItem } from "@/models/workflow/WorkFlowItem";
 
 export default defineComponent({
-  name: "CreateConceptWorkflow",
+  name: "UpdateConceptWorkflow",
   props: ["selectedWorkflow", "workflows"],
   data() {
     return {
-      createTable: [] as any,
-      createWorkflow: [
-        {
-          taskName: "Request to create new Concept",
-          step: 1,
-          automated: false,
-          active: false
-        },
-        {
-          taskName: "Create definition for new Draft Concept",
-          step: 2,
-          automated: false,
-          active: false
-        },
-        {
-          taskName: "Approve/Deny definition for Concept",
-          step: 3,
-          automated: false,
-          active: false
-        },
-        {
-          taskName: "Change concept status to Active",
-          step: 4,
-          automated: true,
-          active: false
-        }
-      ] as WorkflowItem[],
+      updateTable: [] as any,
+      expandedRows: [],
       filters: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         name: {
@@ -131,23 +105,48 @@ export default defineComponent({
         activity: { value: null, matchMode: FilterMatchMode.BETWEEN },
         verified: { value: null, matchMode: FilterMatchMode.EQUALS }
       } as Filters,
-      expandedRows: []
+
+      updateWorkflow: [
+        {
+          taskName: "Request to change existing Concept",
+          step: 1,
+          automated: false,
+          active: false
+        },
+        {
+          taskName: "Create definition for updated Concept as Draft",
+          step: 2,
+          automated: false,
+          active: false
+        },
+        {
+          taskName: "Approve/Deny new definition for Concept",
+          step: 3,
+          automated: false,
+          active: false
+        },
+        {
+          taskName: "Replace concept definition and archive old concept",
+          step: 4,
+          automated: true,
+          active: false
+        }
+      ] as WorkflowItem[]
     };
   },
   mounted() {
-    this.generateCreateTable();
+    this.generateUpdateTable();
   },
   methods: {
-    generateCreateTable(): void {
+    generateUpdateTable(): void {
       let x = 100;
-
       while (x > 0) {
         const currentStep = Math.floor(Math.random() * 4) + 1;
-        this.createTable.push({
-          taskId: "Define concept " + Math.floor(Math.random() * 100) + 1,
+        this.updateTable.push({
+          taskId: "Update Concept " + Math.floor(Math.random() * 100) + 1,
           currentStep: currentStep,
           status: currentStep == 4 ? "Complete" : "In Progress",
-          workflow: this.generateWorkflow(this.createWorkflow, currentStep),
+          workflow: this.generateWorkflow(this.updateWorkflow, currentStep),
           author: "user " + Math.floor(Math.random() * 100) + 1,
           createdDate: new Date().toDateString(),
           updatedDate: new Date().toDateString()
@@ -159,7 +158,6 @@ export default defineComponent({
     generateWorkflow(workflow: WorkflowItem[], step: number): WorkflowItem[] {
       const customWorkFlow: WorkflowItem[] = [];
       // console.log(workflow);
-
       workflow.forEach((item: WorkflowItem) => {
         if (item.step == step) {
           customWorkFlow.push({
@@ -172,7 +170,6 @@ export default defineComponent({
           customWorkFlow.push(item);
         }
       });
-
       return customWorkFlow;
     }
   }
