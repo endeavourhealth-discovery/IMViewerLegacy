@@ -133,11 +133,29 @@ export default defineComponent({
     concept: {} as any
   },
   computed: {
-    isA(): [] {
-      if (this.concept[IM.IS_CONTAINED_IN] && this.concept[IM.IS_A]) {
+    isA(): any[] {
+      if (!this.concept[IM.IS_CONTAINED_IN] && !this.concept[IM.IS_A]) {
+        return [];
+      }
+      if (!this.concept[IM.IS_CONTAINED_IN] && this.concept[IM.IS_A]) {
+        return this.concept[IM.IS_A];
+      }
+      if (
+        this.concept[IM.IS_CONTAINED_IN] instanceof Array &&
+        this.concept[IM.IS_A]
+      ) {
         return this.concept[IM.IS_CONTAINED_IN].concat(this.concept[IM.IS_A]);
       }
-      return this.concept[IM.IS_A] || this.concept[IM.IS_CONTAINED_IN];
+      if (
+        this.concept[IM.IS_CONTAINED_IN] instanceof Array &&
+        !this.concept[IM.IS_A]
+      ) {
+        return this.concept[IM.IS_CONTAINED_IN];
+      }
+      const isA: any[] = [];
+      isA.push(this.concept[IM.IS_CONTAINED_IN]);
+      isA.concat(this.concept[IM.IS_A]);
+      return isA;
     },
 
     properties(): [] {
