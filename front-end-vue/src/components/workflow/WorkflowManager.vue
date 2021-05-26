@@ -20,7 +20,7 @@ import UpdateConceptWorkflow from "@/components/workflow/UpdateConceptWorkflow.v
 export default defineComponent({
   name: "WorkflowManager",
   props: ["selectedWorkflow"],
-  components: { CreateConceptWorkflow, UpdateConceptWorkflow },
+  components: { CreateConceptWorkflow, UpdateConceptWorkflow }
 });
 </script>
 

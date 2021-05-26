@@ -10,7 +10,14 @@
       stripedRows
       v-model:filters="filters"
       filterDisplay="menu"
-      :globalFilterFields="['taskId', 'currentStep', 'status', 'author', 'createdDate', 'updatedDate']"
+      :globalFilterFields="[
+        'taskId',
+        'currentStep',
+        'status',
+        'author',
+        'createdDate',
+        'updatedDate'
+      ]"
     >
       <template #header>
         <div class="p-d-flex p-jc-between">
@@ -18,8 +25,14 @@
             All tasks currently in the Create Concept Workflow
           </span>
           <div id="button-search-container">
-            <Button type="button" icon="pi pi-filter-slash" label="Clear" class="p-button-outlined" @click="clearFilters" />
-            <span class="p-input-icon-left">
+            <Button
+              type="button"
+              icon="pi pi-filter-slash"
+              label="Clear"
+              class="p-button-outlined"
+              @click="clearFilters"
+            />
+            <span id="workflow-table-search" class="p-input-icon-left">
               <i class="pi pi-search" aria-hidden="true" />
               <InputText
                 v-model="filters['global'].value"
@@ -27,7 +40,6 @@
               />
             </span>
           </div>
-
         </div>
       </template>
 
@@ -39,13 +51,29 @@
       <Column :expander="true" headerStyle="width: 3rem" />
       <Column field="taskId" header="Task Id" filterField="taskId">
         <template #filter="{filterModel}">
-          <InputText type="text" v-model="filterModel.value" class="p-column-filter" placeholder="Search by task id" />
+          <InputText
+            type="text"
+            v-model="filterModel.value"
+            class="p-column-filter"
+            placeholder="Search by task id"
+          />
         </template>
       </Column>
-      <Column field="currentStep" header="Current Step" filterField="currentStep" :showFilterMatchModes="false">
+      <Column
+        field="currentStep"
+        header="Current Step"
+        filterField="currentStep"
+        :showFilterMatchModes="false"
+      >
         <template #filter="{filterModel}">
           <div class="p-text-bold">Step picker</div>
-          <MultiSelect v-model="filterModel.value" :options="stepOptions" optionLabel="step" placeholder="Any" class="p-column-filter">
+          <MultiSelect
+            v-model="filterModel.value"
+            :options="stepOptions"
+            optionLabel="step"
+            placeholder="Any"
+            class="p-column-filter"
+          >
             <template #options="slotProps">
               <div class="p-multiselect-representative-option">
                 <span>{{ slotProps.option.step }}</span>
@@ -54,10 +82,21 @@
           </MultiSelect>
         </template>
       </Column>
-      <Column field="status" header="Status" filterField="status" :showFilterMatchModes="false">
+      <Column
+        field="status"
+        header="Status"
+        filterField="status"
+        :showFilterMatchModes="false"
+      >
         <template #filter="{filterModel}">
           <div class="p-text-bold">Status picker</div>
-          <MultiSelect v-model="filterModel.value" :options="statusOptions" optionLabel="status" placeholder="Any" class="p-column-filter">
+          <MultiSelect
+            v-model="filterModel.value"
+            :options="statusOptions"
+            optionLabel="status"
+            placeholder="Any"
+            class="p-column-filter"
+          >
             <template #options="slotProps">
               <div class="p-multiselect-representative-option">
                 <span>{{ slotProps.option.status }}</span>
@@ -68,17 +107,40 @@
       </Column>
       <Column field="author" header="Author" filterField="author">
         <template #filter="{filterModel}">
-          <InputText type="text" v-model="filterModel.value" class="p-column-filter" placeholder="Search by author" />
+          <InputText
+            type="text"
+            v-model="filterModel.value"
+            class="p-column-filter"
+            placeholder="Search by author"
+          />
         </template>
       </Column>
-      <Column field="createdDate" header="Created Date" dataType="date" filterField="createdDate" >
+      <Column
+        field="createdDate"
+        header="Created Date"
+        dataType="date"
+        filterField="createdDate"
+      >
         <template #filter="{filterModel}">
-          <Calendar v-model="filterModel.value" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy" />
+          <Calendar
+            v-model="filterModel.value"
+            dateFormat="dd/mm/yy"
+            placeholder="dd/mm/yyyy"
+          />
         </template>
       </Column>
-      <Column field="updatedDate" header="Updated Date" filterField="updatedDate" dataType="date" >
+      <Column
+        field="updatedDate"
+        header="Updated Date"
+        filterField="updatedDate"
+        dataType="date"
+      >
         <template #filter="{filterModel}">
-          <Calendar v-model="filterModel.value" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy" />
+          <Calendar
+            v-model="filterModel.value"
+            dateFormat="dd/mm/yy"
+            placeholder="dd/mm/yyyy"
+          />
         </template>
       </Column>
 
@@ -161,12 +223,12 @@ export default defineComponent({
           constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }]
         },
         currentStep: {
-           value: null,
-           matchMode: FilterMatchMode.IN
+          value: null,
+          matchMode: FilterMatchMode.IN
         },
         status: {
-           value: null,
-           matchMode: FilterMatchMode.IN
+          value: null,
+          matchMode: FilterMatchMode.IN
         },
         author: {
           operator: FilterOperator.AND,
@@ -179,11 +241,19 @@ export default defineComponent({
         updatedDate: {
           operator: FilterOperator.AND,
           constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
-        },
+        }
       } as Filters,
       expandedRows: [],
-      stepOptions: [{step:1}, {step:2}, {step:3}, {step:4}, {step:5}] as {step: number}[],
-      statusOptions: [{status: "In Progress"}, {status: "Complete"}] as {status: string}[]
+      stepOptions: [
+        { step: 1 },
+        { step: 2 },
+        { step: 3 },
+        { step: 4 },
+        { step: 5 }
+      ] as { step: number }[],
+      statusOptions: [{ status: "In Progress" }, { status: "Complete" }] as {
+        status: string;
+      }[]
     };
   },
   mounted() {
@@ -288,11 +358,15 @@ export default defineComponent({
         updatedDate: {
           operator: FilterOperator.OR,
           constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
-        },
-      } as Filters
+        }
+      } as Filters;
     }
   }
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+#workflow-table-search {
+  margin-left: 1rem;
+}
+</style>
