@@ -1,5 +1,5 @@
 <template>
-  <Panel header="Create Concept Workflow" :toggleable="true">
+  <Panel :header="selectedWorkflow.name" :toggleable="true">
     <DataTable
       :value="createTable"
       class="p-datatable-sm"
@@ -20,10 +20,7 @@
       ]"
     >
       <template #header>
-        <div class="p-d-flex p-jc-between">
-          <span>
-            All tasks currently in the Create Concept Workflow
-          </span>
+        <div class="p-d-flex p-jc-end">
           <div id="button-search-container">
             <Button
               type="button"
@@ -191,37 +188,12 @@ import { Filters } from "@/models/workflow/Filters";
 import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
-  name: "CreateConceptWorkflow",
-  props: ["selectedWorkflow"],
+  name: "WorkflowTablePanel",
+  props: ["selectedWorkflow", "workflowProgressOptions", "tableData"],
   data() {
     return {
-      createTable: [] as any,
-      createWorkflow: [
-        {
-          taskName: "Request to create new Concept",
-          step: 1,
-          automated: false,
-          active: false
-        },
-        {
-          taskName: "Create definition for new Draft Concept",
-          step: 2,
-          automated: false,
-          active: false
-        },
-        {
-          taskName: "Approve/Deny definition for Concept",
-          step: 3,
-          automated: false,
-          active: false
-        },
-        {
-          taskName: "Change concept status to Active",
-          step: 4,
-          automated: true,
-          active: false
-        }
-      ] as WorkflowItem[],
+      createTable: this.tableData,
+
       filters: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         taskId: {
@@ -266,50 +238,11 @@ export default defineComponent({
     window.addEventListener("resize", this.setContentHeight);
 
     this.setContentHeight();
-    this.generateCreateTable();
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.setContentHeight);
   },
   methods: {
-    generateCreateTable(): void {
-      let x = 100;
-
-      while (x > 0) {
-        const currentStep = Math.floor(Math.random() * 4) + 1;
-        this.createTable.push({
-          taskId: "Define concept " + Math.floor(Math.random() * 100) + 1,
-          currentStep: currentStep,
-          status: currentStep == 4 ? "Complete" : "In Progress",
-          workflow: this.generateWorkflow(this.createWorkflow, currentStep),
-          author: "user " + Math.floor(Math.random() * 100) + 1,
-          createdDate: new Date(),
-          updatedDate: new Date()
-        });
-        x--;
-      }
-    },
-
-    generateWorkflow(workflow: WorkflowItem[], step: number): WorkflowItem[] {
-      const customWorkFlow: WorkflowItem[] = [];
-      // console.log(workflow);
-
-      workflow.forEach((item: WorkflowItem) => {
-        if (item.step == step) {
-          customWorkFlow.push({
-            taskName: item.taskName,
-            step: item.step,
-            automated: item.automated,
-            active: true
-          });
-        } else {
-          customWorkFlow.push(item);
-        }
-      });
-
-      return customWorkFlow;
-    },
-
     setContentHeight(): void {
       const container = document.getElementById(
         "workflow-manager-container"
