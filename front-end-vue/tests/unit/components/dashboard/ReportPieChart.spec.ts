@@ -199,7 +199,7 @@ describe("ReportPieChart.vue", () => {
       }
     };
     wrapper = shallowMount(ReportPieChart, {
-      props: { chartOptions: testChartOptions, graphHeight: 200, iri: "im:test" },
+      props: { chartOptions: testChartOptions, graphHeight: 200, iri: "im:Test" },
       global: {
         components: { Card, Chart, ProgressSpinner },
         mocks: { $store: mockStore, $toast: mockToast }
@@ -209,8 +209,8 @@ describe("ReportPieChart.vue", () => {
 
   it("sets the store loading over mount", async() => {
     expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateLoading", { key: "reportType_im:test", value: true });
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", { key: "reportType", value: false })
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateLoading", { key: "reportPie_im:Test", value: true });
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", { key: "reportPie_im:Test", value: false })
   });
 
   it("calls the report service on mount", () => {
@@ -219,81 +219,83 @@ describe("ReportPieChart.vue", () => {
 
   it("processes api return into realData, updatedChartOptions and chartConceptTypes", async() => {
     const testChartConceptType = {
-      "datasets":[{
-        "data":[
-          680296.4437499999,
-          67607.09999999999,
-          6338.165625,
-          6338.165625,
-          6338.165625,
-          6338.165625,
-          6338.165625,
-          6338.165625,
-          6338.165625,
-          6338.165625,
-          6338.165625,
-          6338.165625,
-          6338.165625,
-          6338.165625,
-          6338.165625,
-          6338.165625
+        "datasets": [
+            {
+                "backgroundColor": [
+                    "#781c81BB",
+                    "#4d1f82BB",
+                    "#403e95BB",
+                    "#4063b0BB",
+                    "#4684c2BB",
+                    "#519cb8BB",
+                    "#62ac9aBB",
+                    "#77b77bBB",
+                    "#90bc62BB",
+                    "#abbe51BB",
+                    "#c3ba45BB",
+                    "#d7af3dBB",
+                    "#e39a36BB",
+                    "#e77830BB",
+                    "#e34d28BB",
+                    "#d92120BB"
+                ],
+                "borderRadius": 1,
+                "data": [
+                    680405.1187499999,
+                    67617.9,
+                    6339.178124999999,
+                    6339.178124999999,
+                    6339.178124999999,
+                    6339.178124999999,
+                    6339.178124999999,
+                    6339.178124999999,
+                    6339.178124999999,
+                    6339.178124999999,
+                    6339.178124999999,
+                    6339.178124999999,
+                    6339.178124999999,
+                    6339.178124999999,
+                    6339.178124999999,
+                    6339.178124999999
+                ],
+                "hoverBackgroundColor": [
+                    "#781c81",
+                    "#4d1f82",
+                    "#403e95",
+                    "#4063b0",
+                    "#4684c2",
+                    "#519cb8",
+                    "#62ac9a",
+                    "#77b77b",
+                    "#90bc62",
+                    "#abbe51",
+                    "#c3ba45",
+                    "#d7af3d",
+                    "#e39a36",
+                    "#e77830",
+                    "#e34d28",
+                    "#d92120"
+                ]
+            }
         ],
-        "backgroundColor":[
-          "#781c81",
-          "#4d1f82",
-          "#403e95",
-          "#4063b0",
-          "#4684c2",
-          "#519cb8",
-          "#62ac9a",
-          "#77b77b",
-          "#90bc62",
-          "#abbe51",
-          "#c3ba45",
-          "#d7af3d",
-          "#e39a36",
-          "#e77830",
-          "#e34d28",
-          "#d92120"
-        ],
-        "hoverBackgroundColor":[
-          "#bc8ec0",
-          "#a68fc1",
-          "#a09fca",
-          "#a0b1d8",
-          "#a3c2e1",
-          "#a8cedc",
-          "#b1d6cd",
-          "#bbdbbd",
-          "#c8deb1",
-          "#d5dfa8",
-          "#e1dda2",
-          "#ebd79e",
-          "#f1cd9b",
-          "#f3bc98",
-          "#f1a694",
-          "#ec9090"
-        ],
-        "borderRadius":1,
-      }],
-      "labels":[
-        "Class",
-        "Legacy concept",
-        "Object property",
-        "Set",
-        "Record type",
-        "Data property",
-        "Query set",
-        "Functional property",
-        "Annotation property",
-        "Transitive property",
-        "Symmetric property",
-        "Value set",
-        "Folder",
-        "Reflexive property",
-        "Query template",
-        "Node shape"
-      ]
+        "labels": [
+            "Class",
+            "Legacy concept",
+            "Object property",
+            "Set",
+            "Node shape",
+            "Record type",
+            "Data property",
+            "Undefined",
+            "Functional property",
+            "Annotation property",
+            "Symmetric property",
+            "Transitive property",
+            "Folder",
+            "Value set",
+            "Reflexive property",
+            "Query template"
+        ]
     };
     const testChartOptions = {
       legend: {
@@ -316,7 +318,24 @@ describe("ReportPieChart.vue", () => {
       }
     };
     expect(wrapper.vm.chartConceptTypes).toEqual(testChartConceptType);
-    expect(wrapper.vm.realData).toStrictEqual({"0":1030270,"1":93282,"2":1813,"3":1122,"4":94,"5":68,"6":45,"7":26,"8":23,"9":11,"10":11,"11":8,"12":8,"13":2,"14":1,"15":1});
+    expect(wrapper.vm.realData).toStrictEqual({
+        "0": 1030354,
+        "1": 93282,
+        "2": 1811,
+        "3": 1122,
+        "4": 99,
+        "5": 94,
+        "6": 68,
+        "7": 45,
+        "8": 26,
+        "9": 23,
+        "10": 11,
+        "11": 11,
+        "12": 8,
+        "13": 8,
+        "14": 2,
+        "15": 1
+    });
     expect(wrapper.vm.updatedChartOptions.toString()).toEqual(testChartOptions.toString()
     );
   });
@@ -500,12 +519,15 @@ describe("ReportPieChart.vue", () => {
     wrapper.vm.setChartColours(mockRes);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.chartConceptTypes).toEqual({
-      datasets:[{
-        "data":[],
-        "backgroundColor":["#781c81","#4d1f82","#403e95","#4063b0","#4684c2","#519cb8","#62ac9a","#77b77b","#90bc62","#abbe51","#c3ba45","#d7af3d","#e39a36","#e77830","#e34d28","#d92120"],
-        "hoverBackgroundColor":["#bc8ec0","#a68fc1","#a09fca","#a0b1d8","#a3c2e1","#a8cedc","#b1d6cd","#bbdbbd","#c8deb1","#d5dfa8","#e1dda2","#ebd79e","#f1cd9b","#f3bc98","#f1a694","#ec9090"],"borderRadius":1
-      }],
-      labels: []
+        "datasets": [
+            {
+                "backgroundColor": [],
+                "borderRadius": 1,
+                "data": [],
+                "hoverBackgroundColor": []
+            }
+        ],
+        "labels": []
     });
   })
 });
@@ -552,7 +574,7 @@ describe("service fail", () => {
   it("fires a toast message on service error and stops loading", () => {
     expect(IndividualService.getIndividual).toHaveBeenCalledTimes(1);
     expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", { key: "reportType_im:test", value: false });
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", { key: "reportPie_im:test", value: false });
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Concept type server request failed", testError));
     expect(LoggerService.error).toHaveBeenCalledTimes(2);

@@ -8,13 +8,13 @@
       <template #content>
         <div
           class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container"
-          v-if="$store.state.loading.get('reportType_' + iri)"
+          v-if="$store.state.loading.get('reportPie_' + iri)"
         >
           <ProgressSpinner />
         </div>
         <Chart
             :key="'pie'+iri"
-          v-if="!$store.state.loading.get('reportType_' + iri)"
+          v-if="!$store.state.loading.get('reportPie_' + iri)"
           type="pie"
           :data="chartConceptTypes"
           :options="updatedChartOptions"
@@ -63,7 +63,7 @@ export default defineComponent({
   mounted() {
     this.updatedChartOptions = { ...this.chartOptions };
     // chart type
-    this.$store.commit("updateLoading", { key: "reportType_" + this.iri, value: true });
+    this.$store.commit("updateLoading", { key: "reportPie_" + this.iri, value: true });
     IndividualService.getIndividual(this.iri)
       .then(res => {
         this.name = res.data[RDFS.LABEL]["@value"];
@@ -84,13 +84,13 @@ export default defineComponent({
         );
         this.setChartColours(res.data[IM.STATS_REPORT_ENTRY].length);
         this.$store.commit("updateLoading", {
-          key: "reportType_" + this.iri,
+          key: "reportPie_" + this.iri,
           value: false
         });
       })
       .catch(err => {
         this.$store.commit("updateLoading", {
-          key: "reportType_" + this.iri,
+          key: "reportPie_" + this.iri,
           value: false
         });
         this.$toast.add(

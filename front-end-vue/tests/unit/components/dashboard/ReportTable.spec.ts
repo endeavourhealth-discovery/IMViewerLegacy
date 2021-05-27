@@ -14,7 +14,7 @@ describe("ReportTable.vue", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    IndividualService.getConceptCategoryReport = jest.fn().mockResolvedValue({
+    IndividualService.getIndividual = jest.fn().mockResolvedValue({
       status: 200,
       data: {
           "@id": "http://endhealth.info/im#ontologyOverview",
@@ -68,6 +68,7 @@ describe("ReportTable.vue", () => {
       add: jest.fn()
     };
     wrapper = shallowMount(ReportTable, {
+      props: { iri: "im:Test" },
       global: {
         components: { Card, DataTable, ProgressSpinner, Column },
         mocks: { $store: mockStore, $toast: mockToast }
@@ -77,16 +78,12 @@ describe("ReportTable.vue", () => {
 
   it("sets loading for mounted", () => {
     expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateLoading", { key: "reportCategory", value: true });
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", { key: "reportCategory", value: false });
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1,"updateLoading", { key: "reportTable_im:Test", value: true });
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", { key: "reportTable_im:Test", value: false });
   });
 
-  it("calls reportService.getConceptCategoryReport", () => {
-    expect(IndividualService.getConceptCategoryReport).toHaveBeenCalledTimes(1);
-  });
-
-  it("updates tableData from service call", () => {
-    expect(wrapper.vm.tableData).toEqual([{"label":"Value sets","count":8},{"label":"Data models","count":1975},{"label":"Ontology","count":1123680},{"label":"Total","count":1125663}]);
+  it("calls IndividualService.getIndividual", () => {
+    expect(IndividualService.getIndividual).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -99,7 +96,7 @@ describe("service fail", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     testError = new Error("deliberate test error");
-    IndividualService.getConceptCategoryReport = jest.fn().mockRejectedValue({
+    IndividualService.getIndividual = jest.fn().mockRejectedValue({
       status: 400,
       error: testError
     });

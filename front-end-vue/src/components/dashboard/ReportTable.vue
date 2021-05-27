@@ -7,7 +7,7 @@
       </template>
       <template #content>
         <DataTable
-          v-if="!$store.state.loading.get('reportCategory')"
+          v-if="!$store.state.loading.get('reportTable_' + iri)"
           :value="tableData"
           class="p-datatable-sm"
           :scrollable="true"
@@ -21,7 +21,7 @@
         </DataTable>
         <div
           class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container"
-          v-if="$store.state.loading.get('reportCategory')"
+          v-if="$store.state.loading.get('reportTable_' + iri)"
         >
           <ProgressSpinner />
         </div>
@@ -49,7 +49,7 @@ export default defineComponent({
   },
   mounted() {
     // table data
-    this.$store.commit("updateLoading", { key: "reportCategory", value: true });
+    this.$store.commit("updateLoading", { key: "reportTable_" + this.iri, value: true });
     IndividualService.getIndividual(this.iri)
       .then(res => {
         this.tableData = [];
@@ -63,13 +63,13 @@ export default defineComponent({
         }
 
         this.$store.commit("updateLoading", {
-          key: "reportCategory",
+          key: "reportTable_" + this.iri,
           value: false
         });
       })
       .catch(err => {
         this.$store.commit("updateLoading", {
-          key: "reportCategory",
+          key: "reportTable_" + this.iri,
           value: false
         });
         this.$toast.add(
