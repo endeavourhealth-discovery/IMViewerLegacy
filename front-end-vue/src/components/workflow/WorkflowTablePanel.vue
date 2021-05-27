@@ -1,9 +1,11 @@
 <template>
-  <Panel :header="selectedWorkflow.name" :toggleable="true">
     <DataTable
-      :value="createTable"
+      :value="tableData"
       class="p-datatable-sm"
       :paginator="true"
+      :scrollable="true"
+      scrollHeight="flex"
+      :rowsPerPageOptions="[10, 25, 50]"
       :rows="10"
       v-model:expandedRows="expandedRows"
       dataKey="taskId"
@@ -20,7 +22,10 @@
       ]"
     >
       <template #header>
-        <div class="p-d-flex p-jc-end">
+        <div class="p-d-flex p-jc-between p-ai-center">
+          <div class="p-d-flex p-ai-center">
+            <p id="workflow-table-header-text" >{{ selectedWorkflow.name }}</p>
+          </div>
           <div id="button-search-container">
             <Button
               type="button"
@@ -177,23 +182,18 @@
         </div>
       </template>
     </DataTable>
-  </Panel>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { WorkflowItem } from "@/models/workflow/WorkFlowItem";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 import { Filters } from "@/models/workflow/Filters";
-import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "WorkflowTablePanel",
   props: ["selectedWorkflow", "workflowProgressOptions", "tableData"],
   data() {
     return {
-      createTable: this.tableData,
-
       filters: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         taskId: {
@@ -234,39 +234,7 @@ export default defineComponent({
       }[]
     };
   },
-  mounted() {
-    window.addEventListener("resize", this.setContentHeight);
-
-    this.setContentHeight();
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.setContentHeight);
-  },
   methods: {
-    setContentHeight(): void {
-      const container = document.getElementById(
-        "workflow-manager-container"
-      ) as HTMLElement;
-      const header = container.getElementsByClassName(
-        "p-panel-header"
-      )[0] as HTMLElement;
-      const content = container.getElementsByClassName(
-        "p-panel-content"
-      )[0] as HTMLElement;
-      if (content && header && container) {
-        const calcHeight =
-          container.getBoundingClientRect().height -
-          header.getBoundingClientRect().height +
-          "px";
-        content.style.minHeight = calcHeight;
-      } else {
-        LoggerService.error(
-          "Content sizing error",
-          "failed to get element(s) for concept content resizing"
-        );
-      }
-    },
-
     clearFilters() {
       this.initFilters();
     },
@@ -311,5 +279,9 @@ export default defineComponent({
 <style scoped>
 #workflow-table-search {
   margin-left: 1rem;
+}
+
+.p-datatable {
+  border: solid #dee2e6 1px;
 }
 </style>

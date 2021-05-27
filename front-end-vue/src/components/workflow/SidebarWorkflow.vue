@@ -1,6 +1,12 @@
 <template>
-  <div id="sidebar-workflow-container">
-    <span id="workflow-searchbar" class="p-input-icon-left">
+  <Panel id="sidebar-workflow-container" header="Options">
+    <!-- <template #title>
+      Workflow Options
+    </template>
+    <template #content> -->
+      <Menu id="sidebar-workflow-menu" :model="menuItems" />
+    <!-- </template> -->
+    <!-- <span id="workflow-searchbar" class="p-input-icon-left">
       <i class="pi pi-search" aria-hidden="true" />
       <InputText
         type="text"
@@ -36,8 +42,8 @@
           </template>
         </Listbox>
       </TabPanel>
-    </TabView>
-  </div>
+    </TabView> -->
+  </Panel>
 </template>
 
 <script lang="ts">
@@ -54,42 +60,106 @@ export default defineComponent({
     }
   },
   mounted() {
-    window.addEventListener("resize", this.onResize);
+  //   window.addEventListener("resize", this.onResize);
 
-    this.setContainerHeights();
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.onResize);
+  //   this.setContainerHeights();
+  // },
+  // beforeUnmount() {
+  //   window.removeEventListener("resize", this.onResize);
   },
   data() {
     return {
-      searchTerm: "",
-      active: 0,
+      // searchTerm: "",
+      // active: 0,
       selectedWorkflow: {
-        name: "Create New Concept Workflow",
-        value: "createWorkflow"
+        name: "All workflow items",
+        value: "allItems"
       } as { name: string; value: string },
-      workflows: [
-        { name: "Create New Concept Workflow", value: "createWorkflow" },
-        { name: "Update Concept Workflow", value: "updateWorkflow" }
-      ] as { name: string; value: string }[]
+      menuItems: [
+        {
+          label: "All",
+          icon: "pi pi-minus",
+          command: () => {
+            this.setSelectedItem("allItems");
+          }
+        },
+        {
+          label: "Concepts",
+          icon: "pi pi-minus",
+          items: [
+            {
+              label: "New",
+              icon: "pi pi-minus",
+              command: () => {
+                this.setSelectedItem("conceptNew");
+              }
+            },
+            {
+              label: "Updated",
+              icon: "pi pi-minus",
+              command: () => {
+                this.setSelectedItem("conceptUpdated");
+              }
+            }
+          ]
+        },
+        {
+          label: "Value sets",
+          icon: "pi pi-minus",
+          items: [
+            {
+              label: "New",
+              icon: "pi pi-minus",
+              command: () => {
+                this.setSelectedItem("valueSetNew");
+              }
+            },
+            {
+              label: "Updated",
+              icon: "pi pi-minus",
+              command: () => {
+                this.setSelectedItem("valueSetUpdated");
+              }
+            }
+          ]
+        }
+      ],
+      // workflows: [
+      //   { name: "New concept workflow items", value: "conceptNew" },
+      //   { name: "Updated concept workflow items", value: "conceptUpdated" }
+      // ] as { name: string; value: string }[]
     };
   },
   methods: {
-    onResize(): void {
-      this.setContainerHeights();
-    },
-    setContainerHeights(): void {
-      const sidebar = document.getElementById("sidebar-workflow-container");
-      const searchBar = document.getElementById("workflow-searchbar");
-      const sideMenu = document.getElementById("workflow-sidemenu");
-      if (sidebar && searchBar && sideMenu) {
-        sideMenu.style.maxHeight =
-          sidebar.offsetHeight - searchBar.offsetHeight + "px";
-        sideMenu.style.minHeight =
-          sidebar.offsetHeight - searchBar.offsetHeight + "px";
+    // onResize(): void {
+    //   this.setContainerHeights();
+    // },
+
+    setSelectedItem(option: string): void {
+      switch(option) {
+        case "allItems":
+          this.selectedWorkflow = { name: "All workflow items", value: option };
+          break;
+        case "conceptNew":
+          this.selectedWorkflow = { name: "New concept workflow items", value: option };
+          break;
+        case "conceptUpdated":
+          this.selectedWorkflow = { name: "Updated concept workflow items", value: option };
+          break;
       }
-    }
+    },
+
+    // setContainerHeights(): void {
+    //   const sidebar = document.getElementById("sidebar-workflow-container");
+    //   const searchBar = document.getElementById("workflow-searchbar");
+    //   const sideMenu = document.getElementById("workflow-sidemenu");
+    //   if (sidebar && searchBar && sideMenu) {
+    //     sideMenu.style.maxHeight =
+    //       sidebar.offsetHeight - searchBar.offsetHeight + "px";
+    //     sideMenu.style.minHeight =
+    //       sidebar.offsetHeight - searchBar.offsetHeight + "px";
+    //   }
+    // }
   }
 });
 </script>
@@ -98,10 +168,13 @@ export default defineComponent({
 #sidebar-workflow-container {
   grid-area: sidebar-workflow;
   height: calc(100vh - 2rem);
-  width: 30vw;
+  width: fit-content;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
 }
 
-#workflow-sidemenu {
+/* #workflow-sidemenu {
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
@@ -122,5 +195,5 @@ export default defineComponent({
 
 .icon-header {
   margin: 0 4px 0 0;
-}
+} */
 </style>
