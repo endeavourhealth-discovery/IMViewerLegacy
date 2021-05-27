@@ -17,7 +17,7 @@ export default createStore({
   state: {
     loading: new Map<string, boolean>(),
     cancelSource: axios.CancelToken.source(),
-    conceptIri: "http://www.w3.org/2002/07/owl#Thing" as string,
+    conceptIri: "http://endhealth.info/im#DiscoveryOntology" as string,
     history: [] as HistoryItem[],
     searchResults: [] as ConceptSummary[],
     currentUser: {} as User,
