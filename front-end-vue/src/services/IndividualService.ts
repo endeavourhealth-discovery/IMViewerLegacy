@@ -1,10 +1,10 @@
 import axios, { AxiosResponse } from "axios";
 
-export default class ReportService {
+export default class IndividualService {
   static api = process.env.VUE_APP_API;
 
-  public static async getConceptTypeReport(): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/report/concept/type");
+  public static async getIndividual(iri: string): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/individual", { params: { iri: iri } });
   }
 
   public static async getConceptSchemeReport(): Promise<AxiosResponse<any>> {

@@ -32,13 +32,16 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import ReportService from "@/services/ReportService";
+import IndividualService from "@/services/IndividualService";
 import LoggerService from "@/services/LoggerService";
 import { toSentenceCase } from "@/helpers/TextConverters";
+import {IM} from '@/vocabulary/IM';
+import {RDFS} from '@/vocabulary/RDFS';
+import {OWL} from '@/vocabulary/OWL';
 
 export default defineComponent({
   name: "OntologyOverview",
-  props: [],
+  props: ["iri"],
   data() {
     return {
       tableData: [] as any
@@ -47,12 +50,18 @@ export default defineComponent({
   mounted() {
     // table data
     this.$store.commit("updateLoading", { key: "reportCategory", value: true });
-    ReportService.getConceptCategoryReport()
+    IndividualService.getIndividual(this.iri)
       .then(res => {
-        this.tableData = res.data;
-        this.tableData.map((row: { count: number; label: string }) => {
-          row.label = toSentenceCase(row.label);
-        });
+        this.tableData = [];
+
+        for(const entry of res.data[IM.STATS_REPORT_ENTRY]) {
+          this.tableData.push({
+                label: entry[RDFS.LABEL]["@value"],
+                count: +entry[OWL.HAS_VALUE]["@value"]
+              }
+          );
+        }
+
         this.$store.commit("updateLoading", {
           key: "reportCategory",
           value: false

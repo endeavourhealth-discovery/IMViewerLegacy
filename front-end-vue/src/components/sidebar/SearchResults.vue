@@ -108,10 +108,10 @@ export default defineComponent({
   },
   methods: {
     getPerspectiveByConceptType(conceptType: any): any {
-      return getIconFromType(conceptType.elements);
+      return getIconFromType(conceptType);
     },
     getColorByConceptType(conceptType: any): any {
-      return 'color:' + getColourFromType(conceptType.elements);
+      return 'color:' + getColourFromType(conceptType);
     },
     onNodeSelect(): void {
       this.$router.push({
@@ -127,7 +127,7 @@ export default defineComponent({
     },
 
     getConceptTypes(concept: any): any {
-      return concept.conceptType.elements
+      return concept.conceptType
         .map(function(type: any) {
           return type.name;
         })

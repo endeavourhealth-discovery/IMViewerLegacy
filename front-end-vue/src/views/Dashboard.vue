@@ -1,33 +1,23 @@
 <template>
   <div class="dashboard-container">
-    <!-- <mapping-module />
-    <workflow-manager /> -->
-    <ontology-overview />
-    <concept-types :chartOptions="chartOptions" :graphHeight="graphHeight" />
-    <concept-schemes :chartOptions="chartOptions" :graphHeight="graphHeight" />
-    <concept-status :chartOptions="chartOptions" :graphHeight="graphHeight" />
+    <report-table key="conceptCategory" iri="http://endhealth.info/im#ontologyOverview" />
+    <report-pie-chart key="conceptTypes" :chartOptions="chartOptions" :graphHeight="graphHeight" iri="http://endhealth.info/im#ontologyConceptTypes" />
+    <report-pie-chart key="conceptSchemes" :chartOptions="chartOptions" :graphHeight="graphHeight" iri="http://endhealth.info/im#ontologyConceptSchemes" />
+    <report-pie-chart key="conceptStatus" :chartOptions="chartOptions" :graphHeight="graphHeight" iri="http://endhealth.info/im#ontologyConceptStatus" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-// import MappingModule from "@/components/dashboard/MappingModule.vue";
-// import WorkflowManager from "@/components/dashboard/WorkflowManager.vue";
-import OntologyOverview from "@/components/dashboard/OntologyOverview.vue";
-import ConceptTypes from "@/components/dashboard/ConceptTypes.vue";
-import ConceptSchemes from "@/components/dashboard/ConceptSchemes.vue";
-import ConceptStatus from "@/components/dashboard/ConceptStatus.vue";
+import ReportTable from "@/components/dashboard/ReportTable.vue";
+import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
 import { ChartOptions } from "@/models/charts/ChartOptions";
 
 export default defineComponent({
   name: "Dashboard",
   components: {
-    // "mapping-module": MappingModule,
-    // "workflow-manager": WorkflowManager,
-    "ontology-overview": OntologyOverview,
-    "concept-types": ConceptTypes,
-    "concept-schemes": ConceptSchemes,
-    "concept-status": ConceptStatus
+    "report-table": ReportTable,
+    "report-pie-chart": ReportPieChart
   },
   watch: {
     windowWidth(newValue) {

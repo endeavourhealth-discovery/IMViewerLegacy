@@ -1,21 +1,22 @@
 <template>
   <div class="dashcard-container">
     <Card class="dashcard dash-pie">
-      <template #title> Ontology concept schemes </template>
+      <template #title> {{ name }} </template>
       <template #subtitle>
-        A brief overview of the schemes of data stored in the Ontology
+        {{ description }}
       </template>
       <template #content>
         <div
           class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container"
-          v-if="$store.state.loading.get('reportScheme')"
+          v-if="$store.state.loading.get('reportType_' + iri)"
         >
           <ProgressSpinner />
         </div>
         <Chart
-          v-if="!$store.state.loading.get('reportScheme')"
+            :key="'pie'+iri"
+          v-if="!$store.state.loading.get('reportType_' + iri)"
           type="pie"
-          :data="chartConceptSchemes"
+          :data="chartConceptTypes"
           :options="updatedChartOptions"
           :height="graphHeight"
         />
@@ -26,22 +27,27 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import ReportService from "@/services/ReportService";
-import { colorLighter } from "@/helpers/ColorMethods";
+import IndividualService from "@/services/IndividualService";
 const palette = require("../../../node_modules/google-palette");
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
 import { setTooltips, rescaleData } from "@/helpers/ChartRescale";
+import { toSentenceCase } from "@/helpers/TextConverters";
 import { ChartOptions } from "@/models/charts/ChartOptions";
+import {IM} from '@/vocabulary/IM';
+import {RDFS} from '@/vocabulary/RDFS';
+import {OWL} from '@/vocabulary/OWL';
 
 export default defineComponent({
-  name: "ConceptSchemes",
-  props: ["chartOptions", "graphHeight"],
-  data() {
+  name: "ReportPieChart",
+  props: ["chartOptions", "graphHeight", "iri"],
+  data: () => {
     return {
+      name: "" as string,
+      description: "" as string,
       updatedChartOptions: {} as ChartOptions,
       realData: {} as number[],
-      chartConceptSchemes: new PieChartData(
+      chartConceptTypes: new PieChartData(
         [
           {
             data: [],
@@ -56,56 +62,47 @@ export default defineComponent({
   },
   mounted() {
     this.updatedChartOptions = { ...this.chartOptions };
-    // chart scheme
-    this.$store.commit("updateLoading", { key: "reportScheme", value: true });
-    ReportService.getConceptSchemeReport()
+    // chart type
+    this.$store.commit("updateLoading", { key: "reportType_" + this.iri, value: true });
+    IndividualService.getIndividual(this.iri)
       .then(res => {
-        for (const schema of res.data) {
-          this.chartConceptSchemes.labels.push(schema.label);
-          this.chartConceptSchemes.datasets[0].data.push(schema.count);
+        this.name = res.data[RDFS.LABEL]["@value"];
+        this.description = res.data[RDFS.COMMENT]["@value"];
+        for (const entry of res.data[IM.STATS_REPORT_ENTRY]) {
+          this.chartConceptTypes.labels.push(entry[RDFS.LABEL]["@value"]);
+          this.chartConceptTypes.datasets[0].data.push(+entry[OWL.HAS_VALUE]["@value"]);
         }
-        this.realData = { ...this.chartConceptSchemes.datasets[0].data };
+        this.chartConceptTypes.labels = this.chartConceptTypes.labels.map(
+          label => toSentenceCase(label)
+        );
+        this.realData = { ...this.chartConceptTypes.datasets[0].data };
         // set tooltip to use real data
         this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
         // refactor data to a minimum graph size (1%) if less than min
-        this.chartConceptSchemes.datasets[0].data = rescaleData(
-          this.chartConceptSchemes.datasets[0].data
+        this.chartConceptTypes.datasets[0].data = rescaleData(
+          this.chartConceptTypes.datasets[0].data
         );
-        // set chart background and hover colours
-        this.setChartColours(res.data);
+        this.setChartColours(res.data[IM.STATS_REPORT_ENTRY].length);
         this.$store.commit("updateLoading", {
-          key: "reportScheme",
+          key: "reportType_" + this.iri,
           value: false
         });
       })
       .catch(err => {
         this.$store.commit("updateLoading", {
-          key: "reportScheme",
+          key: "reportType_" + this.iri,
           value: false
         });
         this.$toast.add(
-          LoggerService.error("Concept schemes server request failed", err)
+          LoggerService.error("Concept types server request failed", err)
         );
       });
   }, // mounted end
   methods: {
-    setChartColours(
-      data: { count: number; iri: string; label: string }[]
-    ): void {
-      const colourCount = Object.keys(data).length;
-      const backgroundColours = palette("tol-rainbow", colourCount);
-      const backgroundColoursWithHash = backgroundColours.map(
-        (color: string) => "#" + color
-      );
-      const hoverColours = palette("tol-rainbow", colourCount);
-      const hoverColoursWithHash = hoverColours.map(
-        (color: string) => "#" + color
-      );
-      const hoverColoursLightened = hoverColoursWithHash.map((color: string) =>
-        colorLighter(color)
-      );
-      this.chartConceptSchemes.datasets[0].backgroundColor = backgroundColoursWithHash;
-      this.chartConceptSchemes.datasets[0].hoverBackgroundColor = hoverColoursLightened;
+    setChartColours(colourCount: number): void {
+      const colours = palette("tol-rainbow", colourCount);
+      this.chartConceptTypes.datasets[0].backgroundColor = colours.map((color: string) => "#" + color + "BB");
+      this.chartConceptTypes.datasets[0].hoverBackgroundColor = colours.map((color: string) => "#" + color);
     }
   }
 });
@@ -113,11 +110,9 @@ export default defineComponent({
 
 <style scoped>
 .dashcard-container {
-  grid-area: schemes;
   height: 100%;
   width: 100%;
 }
-
 @media screen and (min-width: 1440px) {
   .dashcard-container {
     max-width: calc(35vw - 57.5px - 21px);
@@ -141,11 +136,13 @@ export default defineComponent({
   width: 100%;
 }
 
-/* .p-chart {
+.p-chart {
   height: fit-content;
-} */
+  width: 100%;
+}
 
 .loading-container {
+  width: 100%;
   height: 100%;
 }
 </style>

@@ -19,7 +19,7 @@
     >
       <TabPanel>
         <template #header>
-          <i class="fas fa-project-diagram icon-header" aria-hidden="true" />
+          <i class="fas fa-sitemap icon-header" aria-hidden="true" />
           <span>Hierarchy</span>
         </template>
         <Hierarchy @showTree="active = 0" :active="active" />

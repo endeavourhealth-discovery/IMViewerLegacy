@@ -7,7 +7,7 @@
           @click="focusTree"
           v-tooltip.left="'Focus hierarchy tree to this concept'"
         >
-          <i class="fas fa-search-location" aria-hidden="true"></i>
+          <i class="fas fa-sitemap" aria-hidden="true"></i>
         </button>
         <button
           class="p-panel-header-icon p-link p-mr-2"
@@ -28,7 +28,7 @@
           @click="directToEditRoute"
           v-tooltip.bottom="'Edit concept'"
         >
-          <i class="fas fa-edit" aria-hidden="true"></i>
+          <i class="fas fa-pencil-alt" aria-hidden="true"></i>
         </button>
       </template>
       <template #header>

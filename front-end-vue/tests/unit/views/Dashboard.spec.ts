@@ -1,9 +1,7 @@
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import Dashboard from "@/views/Dashboard.vue";
-import OntologyOverview from "@/components/dashboard/OntologyOverview.vue";
-import ConceptTypes from "@/components/dashboard/ConceptTypes.vue";
-import ConceptSchemes from "@/components/dashboard/ConceptSchemes.vue";
-import ConceptStatus from "@/components/dashboard/ConceptStatus.vue";
+import ReportTable from "@/components/dashboard/ReportTable.vue";
+import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
 
 describe("Dashboard.vue", () => {
   let wrapper: any;
@@ -11,7 +9,7 @@ describe("Dashboard.vue", () => {
   beforeEach(() => {
     wrapper = shallowMount(Dashboard, {
       global: {
-        components: { OntologyOverview, ConceptSchemes, ConceptStatus, ConceptTypes }
+        components: { ReportTable, ReportPieChart }
       }
     });
   });

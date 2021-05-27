@@ -1,104 +1,183 @@
 import { shallowMount } from "@vue/test-utils";
-import ConceptTypes from "@/components/dashboard/ConceptTypes.vue";
+import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
 import Card from "primevue/card";
 import Chart from "primevue/chart";
 import ProgressSpinner from "primevue/progressspinner";
-import ReportService from "@/services/ReportService";
+import IndividualService from "@/services/IndividualService";
 import LoggerService from "@/services/LoggerService";
 import { ChartOptions } from "@/models/charts/ChartOptions";
 import { PieChartData } from "@/models/charts/PieChartData";
 
-describe("ConceptSchemes.vue", () => {
+describe("ReportPieChart.vue", () => {
   let wrapper: any;
   let mockStore: any;
   let mockToast: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    ReportService.getConceptTypeReport = jest.fn().mockResolvedValue({
+    IndividualService.getIndividual = jest.fn().mockResolvedValue({
       status: 200,
-      data: [
-        {
-            "iri": "http://www.w3.org/2002/07/owl#Class",
-            "label": "Class",
-            "count": 1030270
-        },
-        {
-            "iri": "http://endhealth.info/im#LegacyConcept",
-            "label": "Legacy Concept",
-            "count": 93282
-        },
-        {
-            "iri": "http://www.w3.org/2002/07/owl#ObjectProperty",
-            "label": "Object Property",
-            "count": 1813
-        },
-        {
-            "iri": "http://endhealth.info/im#Set",
-            "label": "Set",
-            "count": 1122
-        },
-        {
-            "iri": "http://endhealth.info/im#RecordType",
-            "label": "Record Type",
-            "count": 94
-        },
-        {
-            "iri": "http://www.w3.org/2002/07/owl#DataProperty",
-            "label": "Data Property",
-            "count": 68
-        },
-        {
-            "iri": "http://endhealth.info/im#QuerySet",
-            "label": "Query set",
-            "count": 45
-        },
-        {
-            "iri": "http://www.w3.org/2002/07/owl#FunctionalProperty",
-            "label": "Functional Property",
-            "count": 26
-        },
-        {
-            "iri": "http://www.w3.org/2002/07/owl#AnnotationProperty",
-            "label": "Annotation Property",
-            "count": 23
-        },
-        {
-            "iri": "http://www.w3.org/2002/07/owl#TransitiveProperty",
-            "label": "Transitive Property",
-            "count": 11
-        },
-        {
-            "iri": "http://www.w3.org/2002/07/owl#SymmetricProperty",
-            "label": "Symmetric Property",
-            "count": 11
-        },
-        {
-            "iri": "http://endhealth.info/im#ValueSet",
-            "label": "Value Set",
-            "count": 8
-        },
-        {
-            "iri": "http://endhealth.info/im#Folder",
-            "label": "Folder",
-            "count": 8
-        },
-        {
-            "iri": "http://www.w3.org/2002/07/owl#ReflexiveProperty",
-            "label": "Reflexive Property",
-            "count": 2
-        },
-        {
-            "iri": "http://endhealth.info/im#QueryTemplate",
-            "label": "Query Template",
-            "count": 1
-        },
-        {
-            "iri": "http://www.w3.org/ns/shacl#NodeShape",
-            "label": "Node Shape",
-            "count": 1
-        }
-      ]
+      data: {
+          "@id": "http://endhealth.info/im#ontologyConceptTypes",
+          "http://endhealth.info/im#hasStatsReportEntry": [{
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "1030354",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Class",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "93282",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Legacy concept",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "1811",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Object property",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "1122",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Set",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "99",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Node shape",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "94",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Record type",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "68",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Data property",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "45",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "undefined",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "26",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Functional property",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "23",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Annotation property",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "11",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Symmetric property",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "11",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Transitive property",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "8",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Folder",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "8",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Value set",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "2",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Reflexive property",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }, {
+              "http://www.w3.org/2002/07/owl#hasValue": {
+                  "@value": "1",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              "http://www.w3.org/2000/01/rdf-schema#label": {
+                  "@value": "Query template",
+                  "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+          }
+          ],
+          "http://www.w3.org/2000/01/rdf-schema#comment": {
+              "@value": "A brief overview of the types of data stored in the Ontology",
+              "@type": "http://www.w3.org/2001/XMLSchema#string"
+          },
+          "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
+              "@id": "http://endhealth.info/im#statsReport",
+              "name": "Statistics Report"
+          },
+          "http://www.w3.org/2000/01/rdf-schema#label": {
+              "@value": "Ontology concept types",
+              "@type": "http://www.w3.org/2001/XMLSchema#string"
+          }
+      }
     });
     mockStore = {
       commit: jest.fn()
@@ -119,8 +198,8 @@ describe("ConceptSchemes.vue", () => {
         }
       }
     };
-    wrapper = shallowMount(ConceptTypes, {
-      props: { chartOptions: testChartOptions, graphHeight: 200 },
+    wrapper = shallowMount(ReportPieChart, {
+      props: { chartOptions: testChartOptions, graphHeight: 200, iri: "im:test" },
       global: {
         components: { Card, Chart, ProgressSpinner },
         mocks: { $store: mockStore, $toast: mockToast }
@@ -130,12 +209,12 @@ describe("ConceptSchemes.vue", () => {
 
   it("sets the store loading over mount", async() => {
     expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateLoading", { key: "reportType", value: true });
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateLoading", { key: "reportType_im:test", value: true });
     expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", { key: "reportType", value: false })
   });
 
   it("calls the report service on mount", () => {
-    expect(ReportService.getConceptTypeReport).toBeCalledTimes(1);
+    expect(IndividualService.getIndividual).toBeCalledTimes(1);
   });
 
   it("processes api return into realData, updatedChartOptions and chartConceptTypes", async() => {
@@ -440,7 +519,7 @@ describe("service fail", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     testError = new Error("concept status deliberate test error")
-    ReportService.getConceptTypeReport = jest.fn().mockRejectedValue({ status: 400, error: testError });
+    IndividualService.getIndividual = jest.fn().mockRejectedValue({ status: 400, error: testError });
     mockStore = {
       commit: jest.fn()
     };
@@ -461,8 +540,8 @@ describe("service fail", () => {
         }
       }
     };
-    wrapper = shallowMount(ConceptTypes, {
-      props: { chartOptions: testChartOptions, graphHeight: 200 },
+    wrapper = shallowMount(ReportPieChart, {
+      props: { chartOptions: testChartOptions, graphHeight: 200, iri: "im:test" },
       global: {
         components: { Card, Chart, ProgressSpinner },
         mocks: { $store: mockStore, $toast: mockToast }
@@ -471,9 +550,9 @@ describe("service fail", () => {
   });
 
   it("fires a toast message on service error and stops loading", () => {
-    expect(ReportService.getConceptTypeReport).toHaveBeenCalledTimes(1);
+    expect(IndividualService.getIndividual).toHaveBeenCalledTimes(1);
     expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", { key: "reportType", value: false });
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", { key: "reportType_im:test", value: false });
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Concept type server request failed", testError));
     expect(LoggerService.error).toHaveBeenCalledTimes(2);

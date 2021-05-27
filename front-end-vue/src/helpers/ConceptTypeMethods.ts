@@ -21,14 +21,19 @@ export function isValueSet(conceptTypeElements: any): boolean {
 export function isRecordModel(conceptTypeElements: any): boolean {
   return conceptTypeElements?.some((e: any) => {
     return (
-      e.iri === OWL.OBJECT_PROPERTY ||
-      e.iri === IM.DATA_PROPERTY ||
       e.iri === IM.RECORD_TYPE ||
-      e[IM.IRI] === OWL.OBJECT_PROPERTY ||
-      e[IM.IRI] === IM.DATA_PROPERTY ||
       e[IM.IRI] === IM.RECORD_TYPE
     );
   });
+}
+
+export function isProperty(conceptTypeElements: any): boolean {
+    return conceptTypeElements?.some((e: any) => {
+        return (
+            e[IM.IRI] === OWL.OBJECT_PROPERTY ||
+            e[IM.IRI] === IM.DATA_PROPERTY
+        );
+    });
 }
 
 export function isFolder(conceptTypeElements: any): boolean {
@@ -39,7 +44,11 @@ export function isFolder(conceptTypeElements: any): boolean {
 
 export function getIconFromType(conceptTypes: any): string {
   if (isRecordModel(conceptTypes?.elements || conceptTypes)) {
-    return "fas fa-fw fa-sitemap";
+    return "fas fa-fw fa-project-diagram";
+  }
+
+  if (isProperty(conceptTypes?.elements || conceptTypes)) {
+      return "far fa-fw fa-edit";
   }
 
   if (isValueSet(conceptTypes?.elements || conceptTypes)) {
@@ -50,19 +59,22 @@ export function getIconFromType(conceptTypes: any): string {
     return "fas fa-fw fa-folder";
   }
 
-  return "fas fa-fw fa-lightbulb";
+  return "far fa-fw fa-lightbulb";
 }
 
 const palette = require("../../node_modules/google-palette");
 export function getColourFromType(conceptTypes: any): string {
-  const bgs = palette("tol-rainbow", 4);
-  const bgsFixed = bgs.map((color: string) => "#" + color);
+  const bgs = palette("tol-rainbow", 5);
+  const bgsFixed = bgs.map((color: string) => "#" + color + "88");
 
   if (isRecordModel(conceptTypes?.elements || conceptTypes)) return bgsFixed[0];
 
-  if (isValueSet(conceptTypes?.elements || conceptTypes)) return bgsFixed[3];
+  if (isProperty(conceptTypes?.elements || conceptTypes))
+      return bgsFixed[4];
+
+  if (isValueSet(conceptTypes?.elements || conceptTypes)) return bgsFixed[2];
 
   if (isFolder(conceptTypes?.elements || conceptTypes)) return bgsFixed[1];
 
-  return bgsFixed[2];
+  return bgsFixed[3];
 }

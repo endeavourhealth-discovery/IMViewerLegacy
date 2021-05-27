@@ -28,4 +28,6 @@ export class IM {
   public static CODE_SCHEME_TERMS = IM.NAMESPACE + "TermOnlyCodeScheme";
   public static CODE_SCHEME_ODS = IM.NAMESPACE + "ODSCodeScheme";
   public static DISCOVERY_CODE = IM.NAMESPACE + "DiscoveryCodeScheme";
+
+  public static STATS_REPORT_ENTRY = IM.NAMESPACE + "hasStatsReportEntry";
 }
