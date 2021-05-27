@@ -109,7 +109,7 @@ export default defineComponent({
           this.conceptAggregate.parents,
           this.conceptAggregate.children
         );
-        this.$store.commit("focusTree", false);
+        this.$store.commit("updateFocusTree", false);
         this.$emit("showTree");
       }
     },
