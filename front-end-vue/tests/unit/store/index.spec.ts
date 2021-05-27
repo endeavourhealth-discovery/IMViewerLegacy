@@ -13,7 +13,7 @@ describe("state", () => {
   it("should start with the correct values", () => {
     const test = new Map<string, boolean>();
     expect(store.state.loading).toEqual(test);
-    expect(store.state.conceptIri).toBe("http://www.w3.org/2002/07/owl#Thing");
+    expect(store.state.conceptIri).toBe("http://endhealth.info/im#DiscoveryOntology");
     expect(store.state.history).toEqual([]);
     expect(store.state.searchResults).toEqual([]);
     expect(store.state.currentUser).toEqual({});
