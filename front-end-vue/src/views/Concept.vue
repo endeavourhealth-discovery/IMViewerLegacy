@@ -112,7 +112,7 @@ export default defineComponent({
   },
   computed: {
     isSet(): any {
-      const conceptTypeElements = this?.concept?.[RDF.TYPE];
+      const conceptTypeElements = this?.concept?.types;
       return isValueSet(conceptTypeElements);
     },
 
