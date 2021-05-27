@@ -92,8 +92,6 @@ import Members from "../components/panels/Members.vue";
 import PanelHeader from "../components/panels/PanelHeader.vue";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
-import { RDFS } from "@/vocabulary/RDFS";
-import { RDF } from "@/vocabulary/RDF";
 import DownloadDialog from "@/components/panels/DownloadDialog.vue";
 import ConceptService from "@/services/ConceptService";
 import LoggerService from "@/services/LoggerService";
