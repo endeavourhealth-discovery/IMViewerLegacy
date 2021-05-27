@@ -32,7 +32,7 @@
         </button>
       </template>
       <template #header>
-        <PanelHeader :type="type" :header="header" />
+        <PanelHeader :types="types" :header="header" />
       </template>
       <div id="concept-content-dialogs-container">
         <div v-if="concept && isSet" id="concept-panel-container">
@@ -121,8 +121,8 @@ export default defineComponent({
   watch: {
     async conceptIri(newValue) {
       this.concept = await this.getConcept(newValue);
-      this.type = this.concept?.[RDF.TYPE];
-      this.header = this.concept?.[RDFS.LABEL];
+      this.types = this.concept.types;
+      this.header = this.concept.name;
     },
     windowWidth() {
       this.setContentHeight();
@@ -150,7 +150,7 @@ export default defineComponent({
       concept: {} as any,
       definitionText: "",
       display: false,
-      type: "",
+      types: [],
       header: "",
       dialogHeader: "",
       windowHeight: window.innerHeight,
@@ -204,13 +204,13 @@ export default defineComponent({
     },
 
     async getConcept(iri: string) {
-      return (await ConceptService.getConcept(iri)).data;
+      return (await ConceptService.getConceptDefinitionDto(iri)).data;
     },
 
     async init() {
       this.concept = await this.getConcept(this.conceptIri);
-      this.type = this.concept?.[RDF.TYPE];
-      this.header = this.concept?.[RDFS.LABEL];
+      this.types = this.concept?.types;
+      this.header = this.concept?.name;
     },
 
     openDownloadDialog(): void {

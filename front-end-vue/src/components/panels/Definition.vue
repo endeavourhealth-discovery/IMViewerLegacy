@@ -1,39 +1,27 @@
 <template>
   <div>
     <div class="p-d-flex p-flex-row p-jc-start summary-container">
-      <div
-        class="left-side"
-        v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']"
-      >
+      <div class="left-side" v-if="concept">
         <div class="p-d-flex p-flex-row p-jc-start p-ai-center">
           <p>
             <strong>Name:</strong>
-            {{ concept["http://www.w3.org/2000/01/rdf-schema#label"] }}
+            {{ concept.name }}
           </p>
         </div>
         <p class="break-text">
           <strong>Iri:</strong>
-          {{ concept["@id"] }}
+          {{ concept.iri }}
         </p>
         <p>
           <strong>Status: </strong>
-          <span v-if="concept['http://endhealth.info/im#status']">
-            {{ concept["http://endhealth.info/im#status"]["name"] }}
-          </span>
+          {{ concept.status }}
         </p>
         <p>
           <strong>Types: </strong>
-          <span
-            v-if="concept['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']"
-          >
-            {{ conceptTypes }}
-          </span>
+          {{ conceptTypes }}
         </p>
       </div>
-      <div
-        class="right-side"
-        v-if="concept['http://www.w3.org/2000/01/rdf-schema#comment']"
-      >
+      <div class="right-side" v-if="concept.description">
         <strong>Description:</strong>
         <Description :description="descriptionHTML" />
       </div>
@@ -45,9 +33,9 @@
     </Divider>
     <div class="p-d-flex p-flex-row p-jc-start summary-container">
       <div class="left-side">
-        <strong>is a: </strong>{{ isA?.length }}
+        <strong>is a: </strong>{{ parents.length }}
         <Listbox
-          :options="isA"
+          :options="parents"
           listStyle="height: 12rem;"
           v-model="selected"
           @change="navigate(selected?.['@id'])"
@@ -116,15 +104,10 @@
 </template>
 
 <script lang="ts">
-import { RDFS } from "@/vocabulary/RDFS";
 import { defineComponent } from "vue";
-import { RDF } from "@/vocabulary/RDF";
-import { IM } from "@/vocabulary/IM";
-import { SHACL } from "@/vocabulary/SHACL";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import ConceptService from "@/services/ConceptService";
 import Description from "./Description.vue";
-import { OWL } from "@/vocabulary/OWL";
 
 export default defineComponent({
   name: "Definition",
@@ -133,66 +116,16 @@ export default defineComponent({
     concept: {} as any
   },
   computed: {
-    isA(): any[] {
-      if (!this.concept[IM.IS_CONTAINED_IN] && !this.concept[IM.IS_A]) {
-        return [];
-      }
-      if (!this.concept[IM.IS_CONTAINED_IN] && this.concept[IM.IS_A]) {
-        return this.concept[IM.IS_A];
-      }
-      if (
-        this.concept[IM.IS_CONTAINED_IN] instanceof Array &&
-        this.concept[IM.IS_A]
-      ) {
-        return this.concept[IM.IS_CONTAINED_IN].concat(this.concept[IM.IS_A]);
-      }
-      if (
-        this.concept[IM.IS_CONTAINED_IN] instanceof Array &&
-        !this.concept[IM.IS_A]
-      ) {
-        return this.concept[IM.IS_CONTAINED_IN];
-      }
-      const isA: any[] = [];
-      isA.push(this.concept[IM.IS_CONTAINED_IN]);
-      isA.concat(this.concept[IM.IS_A]);
-      return isA;
-    },
-
-    properties(): [] {
-      const roles = this.concept?.[IM.ROLE_GROUP]?.map(
-        (x: { [x: string]: any }) => {
-          return {
-            property: x?.[OWL.ON_PROPERTY],
-            range: x?.[OWL.SOME_VALUES_FROM]
-          };
-        }
-      );
-      const properties = this.concept?.[SHACL.PROPERTY]?.map(
-        (x: { [x: string]: any }) => {
-          return {
-            property: x?.[SHACL.PATH],
-            range: x?.[SHACL.CLASS] || x?.[SHACL.DATATYPE]
-          };
-        }
-      );
-      if (roles && properties) return properties?.concat(roles);
-      return roles || properties;
-    },
-
-    subClasses(): [] {
-      return this.concept[RDFS.SUBCLASS];
-    },
-
     conceptTypes(): string {
-      return this.concept[RDF.TYPE]
-        .map(function(type: any) {
+      return this.concept?.types
+        ?.map(function(type: any) {
           return type.name;
         })
         .join(", ");
     },
 
     descriptionHTML(): string {
-      const text = this.concept?.[RDFS.COMMENT]?.replaceAll(
+      const text = this.concept.description?.replaceAll(
         "<p>",
         "</p>\n<p class='description-p'>"
       );
@@ -200,34 +133,35 @@ export default defineComponent({
     }
   },
   async mounted() {
-    this.$store.commit("updateCancelSource");
-    if (this.concept?.[IM.IRI]) await this.getChildren(this.concept[IM.IRI]);
+    await this.init();
   },
   data() {
     return {
       children: [],
+      parents: [],
+      properties: [],
       selected: {}
     };
   },
   watch: {
-    async concept(newValue) {
+    async concept() {
       this.$store.state.cancelSource.cancel("Cancel");
-      this.$store.commit("updateCancelSource");
-      this.children = [];
-      await this.getChildren(newValue[IM.IRI]);
+      await this.init();
     }
   },
   methods: {
-    async getChildren(iri: string) {
-      try {
+    async init() {
+      this.$store.commit("updateCancelSource");
+      if (this.concept.iri) {
         this.children = (
           await ConceptService.getDefinitionSubTypes(
-            iri,
+            this.concept.iri,
             this.$store.state.cancelSource.token
           )
         ).data;
-      } catch (error) {
-        console.log(error);
+        this.parents = (
+          await ConceptService.getConceptParents(this.concept.iri)
+        ).data;
       }
     },
 

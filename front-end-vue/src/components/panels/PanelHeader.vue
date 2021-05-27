@@ -16,7 +16,7 @@ import {
 
 export default defineComponent({
   name: "PanelHeader",
-  props: ["type", "header"],
+  props: ["types", "header"],
   data() {
     return {
       icon: "",
@@ -24,7 +24,7 @@ export default defineComponent({
     };
   },
   watch: {
-    type(newValue) {
+    types(newValue) {
       if (newValue) {
         this.color = "color: " + getColourFromType(newValue);
         this.icon = getIconFromType(newValue);

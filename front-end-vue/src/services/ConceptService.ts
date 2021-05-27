@@ -21,6 +21,14 @@ export default class ConceptService {
     });
   }
 
+  public static async getConceptDefinitionDto(
+    iri: string
+  ): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/concept/definition", {
+      params: { iri: iri }
+    });
+  }
+
   public static async getConceptImLang(
     iri: string
   ): Promise<AxiosResponse<any>> {
