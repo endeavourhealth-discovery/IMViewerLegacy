@@ -1,9 +1,27 @@
 <template>
   <div class="dashboard-container">
-    <report-table key="conceptCategory" iri="http://endhealth.info/im#ontologyOverview" />
-    <report-pie-chart key="conceptTypes" :chartOptions="chartOptions" :graphHeight="graphHeight" iri="http://endhealth.info/im#ontologyConceptTypes" />
-    <report-pie-chart key="conceptSchemes" :chartOptions="chartOptions" :graphHeight="graphHeight" iri="http://endhealth.info/im#ontologyConceptSchemes" />
-    <report-pie-chart key="conceptStatus" :chartOptions="chartOptions" :graphHeight="graphHeight" iri="http://endhealth.info/im#ontologyConceptStatus" />
+    <report-table
+      key="conceptCategory"
+      iri="http://endhealth.info/im#ontologyOverview"
+    />
+    <report-pie-chart
+      key="conceptTypes"
+      :chartOptions="chartOptions"
+      :graphHeight="graphHeight"
+      iri="http://endhealth.info/im#ontologyConceptTypes"
+    />
+    <report-pie-chart
+      key="conceptSchemes"
+      :chartOptions="chartOptions"
+      :graphHeight="graphHeight"
+      iri="http://endhealth.info/im#ontologyConceptSchemes"
+    />
+    <report-pie-chart
+      key="conceptStatus"
+      :chartOptions="chartOptions"
+      :graphHeight="graphHeight"
+      iri="http://endhealth.info/im#ontologyConceptStatus"
+    />
   </div>
 </template>
 

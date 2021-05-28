@@ -341,6 +341,7 @@ export default defineComponent({
 
     resetConcept(): void {
       this.parentLabel = "";
+      this.selectedKey = {};
       this.$store.commit(
         "updateConceptIri",
         "http://endhealth.info/im#DiscoveryOntology"

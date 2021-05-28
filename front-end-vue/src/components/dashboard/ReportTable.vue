@@ -34,10 +34,9 @@
 import { defineComponent } from "vue";
 import IndividualService from "@/services/IndividualService";
 import LoggerService from "@/services/LoggerService";
-import { toSentenceCase } from "@/helpers/TextConverters";
-import {IM} from '@/vocabulary/IM';
-import {RDFS} from '@/vocabulary/RDFS';
-import {OWL} from '@/vocabulary/OWL';
+import { IM } from "@/vocabulary/IM";
+import { RDFS } from "@/vocabulary/RDFS";
+import { OWL } from "@/vocabulary/OWL";
 
 export default defineComponent({
   name: "OntologyOverview",
@@ -49,17 +48,19 @@ export default defineComponent({
   },
   mounted() {
     // table data
-    this.$store.commit("updateLoading", { key: "reportTable_" + this.iri, value: true });
+    this.$store.commit("updateLoading", {
+      key: "reportTable_" + this.iri,
+      value: true
+    });
     IndividualService.getIndividual(this.iri)
       .then(res => {
         this.tableData = [];
 
-        for(const entry of res.data[IM.STATS_REPORT_ENTRY]) {
+        for (const entry of res.data[IM.STATS_REPORT_ENTRY]) {
           this.tableData.push({
-                label: entry[RDFS.LABEL]["@value"],
-                count: +entry[OWL.HAS_VALUE]["@value"]
-              }
-          );
+            label: entry[RDFS.LABEL]["@value"],
+            count: +entry[OWL.HAS_VALUE]["@value"]
+          });
         }
 
         this.$store.commit("updateLoading", {

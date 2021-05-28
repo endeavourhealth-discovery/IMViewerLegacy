@@ -32,7 +32,9 @@ export default defineComponent({
     }
   },
   async mounted() {
-    await this.getUsages(this.conceptIri!);
+    if (this.conceptIri) {
+      await this.getUsages(this.conceptIri);
+    }
   },
   data() {
     return {
