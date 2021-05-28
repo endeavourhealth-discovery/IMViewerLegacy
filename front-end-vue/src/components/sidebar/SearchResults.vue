@@ -88,7 +88,10 @@ import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { SearchResponse } from "@/models/search/SearchResponse";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
-import {getColourFromType, getIconFromType} from '../../helpers/ConceptTypeMethods';
+import {
+  getColourFromType,
+  getIconFromType
+} from "../../helpers/ConceptTypeMethods";
 
 export default defineComponent({
   name: "SearchResults",
@@ -111,7 +114,7 @@ export default defineComponent({
       return getIconFromType(conceptType);
     },
     getColorByConceptType(conceptType: any): any {
-      return 'color:' + getColourFromType(conceptType);
+      return "color:" + getColourFromType(conceptType);
     },
     onNodeSelect(): void {
       this.$router.push({

@@ -20,20 +20,14 @@ export function isValueSet(conceptTypeElements: any): boolean {
 
 export function isRecordModel(conceptTypeElements: any): boolean {
   return conceptTypeElements?.some((e: any) => {
-    return (
-      e.iri === IM.RECORD_TYPE ||
-      e[IM.IRI] === IM.RECORD_TYPE
-    );
+    return e.iri === IM.RECORD_TYPE || e[IM.IRI] === IM.RECORD_TYPE;
   });
 }
 
 export function isProperty(conceptTypeElements: any): boolean {
-    return conceptTypeElements?.some((e: any) => {
-        return (
-            e[IM.IRI] === OWL.OBJECT_PROPERTY ||
-            e[IM.IRI] === IM.DATA_PROPERTY
-        );
-    });
+  return conceptTypeElements?.some((e: any) => {
+    return e[IM.IRI] === OWL.OBJECT_PROPERTY || e[IM.IRI] === IM.DATA_PROPERTY;
+  });
 }
 
 export function isFolder(conceptTypeElements: any): boolean {
@@ -48,7 +42,7 @@ export function getIconFromType(conceptTypes: any): string {
   }
 
   if (isProperty(conceptTypes?.elements || conceptTypes)) {
-      return "far fa-fw fa-edit";
+    return "far fa-fw fa-edit";
   }
 
   if (isValueSet(conceptTypes?.elements || conceptTypes)) {
@@ -67,14 +61,21 @@ export function getColourFromType(conceptTypes: any): string {
   const bgs = palette("tol-rainbow", 5);
   const bgsFixed = bgs.map((color: string) => "#" + color + "88");
 
-  if (isRecordModel(conceptTypes?.elements || conceptTypes)) return bgsFixed[0];
+  if (isRecordModel(conceptTypes?.elements || conceptTypes)) {
+    return bgsFixed[0];
+  }
 
-  if (isProperty(conceptTypes?.elements || conceptTypes))
-      return bgsFixed[4];
+  if (isProperty(conceptTypes?.elements || conceptTypes)) {
+    return bgsFixed[4];
+  }
 
-  if (isValueSet(conceptTypes?.elements || conceptTypes)) return bgsFixed[2];
+  if (isValueSet(conceptTypes?.elements || conceptTypes)) {
+    return bgsFixed[2];
+  }
 
-  if (isFolder(conceptTypes?.elements || conceptTypes)) return bgsFixed[1];
+  if (isFolder(conceptTypes?.elements || conceptTypes)) {
+    return bgsFixed[1];
+  }
 
   return bgsFixed[3];
 }
