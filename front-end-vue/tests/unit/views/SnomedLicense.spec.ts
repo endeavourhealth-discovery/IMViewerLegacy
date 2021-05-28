@@ -2,6 +2,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import SnomedLicense from "@/views/SnomedLicense.vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
+import PrimeVue from 'primevue/config';
 
 describe("SnomedLicense.vue", () => {
   let wrapper: any;
@@ -19,7 +20,8 @@ describe("SnomedLicense.vue", () => {
     };
     wrapper = mount(SnomedLicense, {
       global: {
-        components: { Dialog, Button },
+          plugins: [PrimeVue],
+          components: { Dialog, Button },
         mocks: { $store: mockStore, $router: mockRouter },
       }
     });
