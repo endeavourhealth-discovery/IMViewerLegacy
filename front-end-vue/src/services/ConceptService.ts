@@ -4,6 +4,15 @@ import axios, { AxiosResponse, CancelToken } from "axios";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 
 export default class ConceptService {
+  public static async getDataModelProperties(
+    iri: string,
+    cancelToken: CancelToken
+  ): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/concept/dataModelProperties", {
+      params: { iri: iri },
+      cancelToken: cancelToken
+    });
+  }
   static api = process.env.VUE_APP_API;
 
   public static async advancedSearch(

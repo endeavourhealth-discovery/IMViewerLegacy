@@ -83,7 +83,7 @@
         <template #body="slotProps">
           <div
             class="link capitalize-text"
-            @click="navigate(slotProps.data?.property?.['@id'])"
+            @click="navigate(slotProps.data?.property?.iri)"
           >
             {{ slotProps.data?.property?.name }}
           </div>
@@ -93,7 +93,7 @@
         <template #body="slotProps">
           <div
             class="link capitalize-text"
-            @click="navigate(slotProps.data?.range?.['@id'])"
+            @click="navigate(slotProps.data?.range?.iri)"
           >
             {{ slotProps.data?.range?.name }}
           </div>
@@ -151,6 +151,9 @@ export default defineComponent({
   },
   methods: {
     async init() {
+      this.children = [];
+      this.parents = [];
+      this.properties = [];
       this.$store.commit("updateCancelSource");
       if (this.concept.iri) {
         this.children = (
@@ -161,6 +164,12 @@ export default defineComponent({
         ).data;
         this.parents = (
           await ConceptService.getConceptParents(this.concept.iri)
+        ).data;
+        this.properties = (
+          await ConceptService.getDataModelProperties(
+            this.concept.iri,
+            this.$store.state.cancelSource.token
+          )
         ).data;
       }
     },
