@@ -3,7 +3,7 @@ import { User } from "@/models/user/User";
 import { CustomAlert } from "@/models/user/CustomAlert";
 
 export default {
-  async register(userToRegister: User) {
+  async register(userToRegister: User): Promise<CustomAlert> {
     try {
       await Auth.signUp({
         username: userToRegister.username,
@@ -17,7 +17,6 @@ export default {
       });
       return new CustomAlert(201, "User registered successfully");
     } catch (err) {
-      console.error(err);
       if (err.code === "UsernameExistsException") {
         return new CustomAlert(409, "Username already exists", err);
       } else {
@@ -26,17 +25,16 @@ export default {
     }
   },
 
-  async confirmRegister(username: string, code: string) {
+  async confirmRegister(username: string, code: string): Promise<CustomAlert> {
     try {
       await Auth.confirmSignUp(username, code);
       return new CustomAlert(200, "Register confirmation successful");
     } catch (err) {
-      console.error(err);
-      return new CustomAlert(403, "Failed  register confirmation", err);
+      return new CustomAlert(403, "Failed register confirmation", err);
     }
   },
 
-  async signIn(username: string, password: string) {
+  async signIn(username: string, password: string): Promise<CustomAlert> {
     try {
       const user = await Auth.signIn(username, password);
       const signedInUser = new User(
@@ -50,7 +48,6 @@ export default {
       signedInUser.setId(user.attributes.sub);
       return new CustomAlert(200, "Login successful", undefined, signedInUser);
     } catch (err) {
-      console.error(err);
       if (err.code === "UserNotConfirmedException") {
         return new CustomAlert(401, err.message, err); //message: "User is not confirmed."
       }
@@ -62,17 +59,16 @@ export default {
     }
   },
 
-  async resendConfirmationCode(username: string) {
+  async resendConfirmationCode(username: string): Promise<CustomAlert> {
     try {
       await Auth.resendSignUp(username);
       return new CustomAlert(200, "Code resent successfully");
     } catch (err) {
-      console.error(err);
       return new CustomAlert(400, "Error resending code", err);
     }
   },
 
-  async signOut() {
+  async signOut(): Promise<CustomAlert> {
     try {
       await Auth.signOut({ global: true });
       return new CustomAlert(200, "Logged out successfully");
@@ -81,11 +77,16 @@ export default {
     }
   },
 
-  async updateUser(userToUpdate: User) {
+  async updateUser(userToUpdate: User): Promise<CustomAlert> {
     try {
       const user = await Auth.currentAuthenticatedUser();
       if (user.attributes.sub === userToUpdate.id) {
-        const atts: object = {
+        const atts: {
+          email: string;
+          "custom:forename": string;
+          "custom:surname": string;
+          "custom:avatar": string;
+        } = {
           email: userToUpdate.email,
           "custom:forename": userToUpdate.firstName,
           "custom:surname": userToUpdate.lastName,
@@ -101,6 +102,7 @@ export default {
           "",
           { value: updateResults.attributes["custom:avatar"] }
         );
+        updatedUser.setId(updateResults.attributes.sub);
         return new CustomAlert(
           200,
           "User updated successfully",
@@ -111,28 +113,28 @@ export default {
         return new CustomAlert(403, "Authentication error with server");
       }
     } catch (err) {
-      console.error(err);
       return new CustomAlert(500, "Error authenticating current user", err);
     }
   },
 
-  async changePassword(oldPassword: string, newPassword: string) {
+  async changePassword(
+    oldPassword: string,
+    newPassword: string
+  ): Promise<CustomAlert> {
     try {
       const user = await Auth.currentAuthenticatedUser();
       await Auth.changePassword(user, oldPassword, newPassword);
       return new CustomAlert(200, "Password successfully changed");
     } catch (err) {
-      console.error(err);
-      return new CustomAlert(400, "Error updating password with server", err);
+      return new CustomAlert(400, err.message, err);
     }
   },
 
-  async forgotPassword(username: string) {
+  async forgotPassword(username: string): Promise<CustomAlert> {
     try {
       await Auth.forgotPassword(username);
       return new CustomAlert(200, "Password reset request sent to server");
     } catch (err) {
-      console.error(err);
       return new CustomAlert(400, "Error resetting password from server", err);
     }
   },
@@ -141,12 +143,11 @@ export default {
     username: string,
     code: string,
     newPassword: string
-  ) {
+  ): Promise<CustomAlert> {
     try {
       await Auth.forgotPasswordSubmit(username, code, newPassword);
       return new CustomAlert(200, "Password reset successfully");
     } catch (err) {
-      console.error(err);
       if (err.code === "ExpiredCodeException") {
         return new CustomAlert(403, "Code has expired", err);
       }
@@ -158,17 +159,16 @@ export default {
     }
   },
 
-  async forgotUsername(email: string) {
+  async forgotUsername(email: string): Promise<CustomAlert> {
     try {
       await Auth.verifyCurrentUserAttribute(email);
       return new CustomAlert(200, "Account recovery code sent");
     } catch (err) {
-      console.error(err);
       return new CustomAlert(400, "Error submitting email", err);
     }
   },
 
-  async getCurrentAuthenticatedUser() {
+  async getCurrentAuthenticatedUser(): Promise<CustomAlert> {
     try {
       const cognitoUser = await Auth.currentAuthenticatedUser();
       const authenticatedUser = new User(
@@ -187,13 +187,12 @@ export default {
         authenticatedUser
       );
     } catch (err) {
-      console.error(err);
       return new CustomAlert(403, "Error authenticating current user", err);
     }
   }
 
   // currently not a feature with AWS Auth
-  // async forgotUsernameSubmit(email: string, code: string){
+  // async forgotUsernameSubmit(email: string, code: string): Promise<CustomAlert> {
   //   try {
   //     await Auth.(email, code); // finish this if ever becomes a feature
   //     return new CustomAlert(200, "Account recovered successfully");

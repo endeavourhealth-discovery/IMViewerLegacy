@@ -1,7 +1,8 @@
+.npmrc
 .DS_Store
 node_modules
 /dist
-
+/coverage
 
 # local env files
 .env.local

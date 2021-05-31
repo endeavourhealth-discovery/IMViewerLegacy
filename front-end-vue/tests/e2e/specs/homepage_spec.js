@@ -63,7 +63,6 @@ describe("The Home Page", () => {
     cy.get(".p-button-label")
       .contains("Agree")
       .click();
-    cy.contains("Home");
-    cy.contains("Ontology Overview");
+    cy.contains("Ontology overview");
   });
 });

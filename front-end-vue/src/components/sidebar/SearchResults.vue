@@ -35,6 +35,7 @@
               <i
                 :class="getPerspectiveByConceptType(slotProps.data.conceptType)"
                 class="result-icon"
+                :style="getColorByConceptType(slotProps.data.conceptType)"
                 aria-hidden="true"
               />
             </div>
@@ -58,24 +59,24 @@
         style="width: 100%; gap: 7px;"
       >
         <div class="left-side" style="width: 50%;" v-if="hoveredResult.name">
-          <p><strong>Name:</strong> {{ hoveredResult.name }}</p>
-          <p><strong>Iri:</strong> {{ hoveredResult.iri }}</p>
-          <p><strong>Code:</strong> {{ hoveredResult.code }}</p>
+          <p><strong>Name: </strong>{{ hoveredResult.name }}</p>
+          <p><strong>Iri: </strong>{{ hoveredResult.iri }}</p>
+          <p><strong>Code: </strong>{{ hoveredResult.code }}</p>
         </div>
         <div class="right-side" style="width: 50%;" v-if="hoveredResult.name">
           <p>
-            <strong>Status:</strong>
+            <strong>Status: </strong>
             <span v-if="hoveredResult.status">{{
               hoveredResult.status.name
             }}</span>
           </p>
           <p>
-            <strong>Scheme:</strong>
+            <strong>Scheme: </strong>
             <span v-if="hoveredResult.scheme">{{
               hoveredResult.scheme.name
             }}</span>
           </p>
-          <p><strong>Type:</strong> {{ getConceptTypes(hoveredResult) }}</p>
+          <p><strong>Type: </strong>{{ getConceptTypes(hoveredResult) }}</p>
         </div>
       </div>
     </OverlayPanel>
@@ -85,11 +86,14 @@
 <script lang="ts">
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { SearchResponse } from "@/models/search/SearchResponse";
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import { mapState } from "vuex";
-import { getIconFromType } from "../../helpers/ConceptTypeMethods";
+import {
+  getColourFromType,
+  getIconFromType
+} from "../../helpers/ConceptTypeMethods";
 
-@Options({
+export default defineComponent({
   name: "SearchResults",
   components: {},
   computed: mapState(["searchResults"]),
@@ -97,38 +101,43 @@ import { getIconFromType } from "../../helpers/ConceptTypeMethods";
     searchResults(newValue) {
       this.results = newValue;
     }
-  }
-})
-export default class SearchResults extends Vue {
-  results: SearchResponse = new SearchResponse();
-  selectedResult = {} as ConceptSummary;
-  hoveredResult = {} as ConceptSummary | any;
+  },
+  data() {
+    return {
+      results: new SearchResponse() as SearchResponse,
+      selectedResult: {} as ConceptSummary,
+      hoveredResult: {} as ConceptSummary | any
+    };
+  },
+  methods: {
+    getPerspectiveByConceptType(conceptType: any): any {
+      return getIconFromType(conceptType);
+    },
+    getColorByConceptType(conceptType: any): any {
+      return "color:" + getColourFromType(conceptType);
+    },
+    onNodeSelect(): void {
+      this.$router.push({
+        name: "Concept",
+        params: { selectedIri: this.selectedResult.iri }
+      });
+    },
 
-  getPerspectiveByConceptType(conceptType: any): any {
-    return getIconFromType(conceptType.elements);
-  }
+    toggle(event: any, data: any): void {
+      this.hoveredResult = data;
+      const x = this.$refs.op as any;
+      x.toggle(event);
+    },
 
-  onNodeSelect() {
-    this.$router.push({
-      name: "Concept",
-      params: { selectedIri: this.selectedResult.iri }
-    });
+    getConceptTypes(concept: any): any {
+      return concept.conceptType
+        .map(function(type: any) {
+          return type.name;
+        })
+        .join(", ");
+    }
   }
-
-  toggle(event: any, data: any) {
-    this.hoveredResult = data;
-    const x = this.$refs.op as any;
-    x.toggle(event);
-  }
-
-  getConceptTypes(concept: any) {
-    return concept.conceptType.elements
-      .map(function(type: any) {
-        return type.name;
-      })
-      .join(", ");
-  }
-}
+});
 </script>
 
 <style scoped>

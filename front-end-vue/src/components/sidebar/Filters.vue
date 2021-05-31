@@ -9,7 +9,7 @@
         placeholder="Select Status"
         display="chip"
       />
-      <label for="status">Select Status:</label>
+      <label for="status">Select status:</label>
     </span>
   </div>
 
@@ -24,7 +24,7 @@
         placeholder="Select Schemes"
         display="chip"
       />
-      <label for="scheme">Select Scheme:</label>
+      <label for="scheme">Select scheme:</label>
     </span>
   </div>
 
@@ -38,82 +38,85 @@
         placeholder="Select Concept Type"
         display="chip"
       />
-      <label for="scheme">Select Concept Type:</label>
+      <label for="scheme">Select concept type:</label>
     </span>
   </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { IM } from "@/vocabulary/IM";
+import { defineComponent } from "vue";
 
-@Options({
+export default defineComponent({
   name: "Filters",
   components: {},
-  props: ["search"]
-})
-export default class Filters extends Vue {
-  statusOptions = ["Active", "Draft", "Inactive"];
-  schemeOptions = [
-    {
-      iri: "http://endhealth.info/im#891081000252108",
-      name: "Barts Cerner code"
-    },
-    {
-      iri: "http://endhealth.info/im#891051000252101",
-      name: "CTV3 Code"
-    },
-    {
-      iri: "http://endhealth.info/im#891071000252105",
-      name: "Discovery code"
-    },
-    {
-      iri: "http://endhealth.info/im#891031000252107",
-      name: "EMIS local code"
-    },
-    {
-      iri: "http://endhealth.info/im#581000252100",
-      name: "Homerton Cerner code"
-    },
-    {
-      iri: "http://endhealth.info/im#891021000252109",
-      name: "ICD10 code"
-    },
-    {
-      iri: "http://endhealth.info/im#891041000252103",
-      name: "OPCS4 code"
-    },
-    {
-      iri: "http://endhealth.info/im#891141000252104",
-      name: "Read 2 code"
-    },
-    {
-      iri: "http://endhealth.info/im#891101000252101",
-      name: "Snomed-CT code"
-    },
-    {
-      iri: "http://endhealth.info/im#631000252102",
-      name: "TPP local codes"
-    },
-    {
-      iri: "http://endhealth.info/im#891111000252103",
-      name: "Term based code"
-    }
-  ];
-  typeOptions = [
-    "Class",
-    "ObjectProperty",
-    "DataProperty",
-    "DataType",
-    "Annotation",
-    "Individual",
-    "Record",
-    "ValueSet",
-    "Folder",
-    "Term",
-    "Legacy",
-    "CategoryGroup"
-  ];
-}
+  props: ["search"],
+  data() {
+    return {
+      statusOptions: ["Active", "Draft", "Inactive"] as string[],
+      schemeOptions: [
+        {
+          iri: IM.CODE_SCHEME_BARTS,
+          name: "Barts Cerner code"
+        },
+        {
+          iri: IM.CODE_SCHEME_CTV3,
+          name: "CTV3 Code"
+        },
+        {
+          iri: IM.DISCOVERY_CODE,
+          name: "Discovery code"
+        },
+        {
+          iri: IM.CODE_SCHEME_EMIS,
+          name: "EMIS local code"
+        },
+        {
+          iri: "http://endhealth.info/im#581000252100",
+          name: "Homerton Cerner code"
+        },
+        {
+          iri: IM.CODE_SCHEME_ICD10,
+          name: "ICD10 code"
+        },
+        {
+          iri: IM.CODE_SCHEME_OPCS4,
+          name: "OPCS4 code"
+        },
+        {
+          iri: IM.CODE_SCHEME_READ,
+          name: "Read 2 code"
+        },
+        {
+          iri: IM.CODE_SCHEME_SNOMED,
+          name: "Snomed-CT code"
+        },
+        {
+          iri: "http://endhealth.info/im#631000252102",
+          name: "TPP local codes"
+        },
+        {
+          iri: IM.CODE_SCHEME_TERMS,
+          name: "Term based code"
+        }
+      ] as { iri: string; name: string }[],
+      typeOptions: [
+        "Class",
+        "ObjectProperty",
+        "DataProperty",
+        "DataType",
+        "Annotation",
+        "Individual",
+        "Record",
+        "ValueSet",
+        "Folder",
+        "Term",
+        "Legacy",
+        "CategoryGroup"
+      ] as string[]
+    };
+  }
+});
 </script>
 
 <style scoped>

@@ -4,6 +4,7 @@ import Dashboard from "../views/Dashboard.vue";
 import Datamodel from "../views/Concept.vue";
 import Workflow from "../views/Workflow.vue";
 import User from "../views/User.vue";
+import Editor from "../views/Editor.vue";
 import Login from "../components/user/Login.vue";
 import Register from "../components/user/Register.vue";
 import UserDetails from "../components/user/UserDetails.vue";
@@ -21,6 +22,10 @@ import { nextTick } from "vue";
 const APP_TITLE = "Information Model";
 
 const routes: Array<RouteRecordRaw> = [
+  {
+    path: "/concept/http%3A%2F%2Fwww.w3.org%2F2002%2F07%2Fowl%23Thing",
+    redirect: "/"
+  },
   {
     path: "/user",
     name: "User",
@@ -117,6 +122,26 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
+    path: "/editor",
+    name: "Editor",
+    component: Editor,
+    children: [
+      {
+        path: "/editor",
+        name: "Create",
+        component: Editor
+      },
+      {
+        path: "/editor/:iri",
+        name: "Edit",
+        component: Editor
+      }
+    ],
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
     path: "/workflow",
     name: "Workflow",
     component: Workflow,
@@ -139,10 +164,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (to.name?.toString() == "Concept") {
     store.commit("updateConceptIri", to.params.selectedIri as string);
-    store.dispatch("fetchConceptAggregate", store.state.conceptIri);
-    store.dispatch("fetchConceptMapped", store.state.conceptIri);
-    store.dispatch("fetchConceptUsages", store.state.conceptIri);
-    store.dispatch("fetchConceptMembers", store.state.conceptIri);
   }
   if (to.matched.some(record => record.meta.requiresAuth)) {
     store.dispatch("authenticateCurrentUser").then(res => {

@@ -6,12 +6,12 @@ import PrimeVue from "primevue/config";
 
 // Font Awesome
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { library, dom } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
-import { dom } from "@fortawesome/fontawesome-svg-core";
+import { far } from "@fortawesome/free-regular-svg-icons";
 dom.watch();
 
-library.add(fas);
+library.add(fas, far);
 
 import "primevue/resources/themes/saga-blue/theme.css"; //theme
 
@@ -44,6 +44,7 @@ import ColumnGroup from "primevue/columngroup"; //optional for column grouping
 import OrganizationChart from "primevue/organizationchart";
 import Textarea from "primevue/textarea";
 import Dropdown from "primevue/dropdown";
+import ConfirmDialog from "primevue/confirmdialog";
 import Tooltip from "primevue/tooltip";
 import Dialog from "primevue/dialog";
 import SplitButton from "primevue/splitbutton";
@@ -71,7 +72,7 @@ import awsconfig from "./aws-exports";
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
 
-createApp(App)
+const app = createApp(App)
   .use(store)
   .use(router)
   .use(PrimeVue, { ripple: true })
@@ -99,6 +100,7 @@ createApp(App)
   .component("OrganizationChart", OrganizationChart)
   .component("Textarea", Textarea)
   .component("DropDown", Dropdown)
+  .component("ConfirmDialog", ConfirmDialog)
   .component("Dialog", Dialog)
   .component("SplitButton", SplitButton)
   .component("MultiSelect", MultiSelect)
@@ -115,5 +117,6 @@ createApp(App)
   .component("Timeline", Timeline)
   .component("SelectButton", SelectButton)
   .component("Toast", Toast)
-  .component("Checkbox", Checkbox)
-  .mount("#app");
+  .component("Checkbox", Checkbox);
+
+app.mount("#app");

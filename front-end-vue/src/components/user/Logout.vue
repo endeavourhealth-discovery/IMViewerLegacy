@@ -15,7 +15,7 @@
           <div class="p-field">
             <div
               v-if="isLoggedIn"
-              class="p-d-flex p-flex-column p-ai-center p-text-capitalize"
+              class="p-d-flex p-flex-row p-ai-center p-text-capitalize"
             >
               <img
                 v-if="isLoggedIn"
@@ -27,7 +27,6 @@
                 aria-haspopup="true"
                 aria-controls="overlay_menu"
               />
-              <br />
               <p id="username-display">{{ currentUser.username }}</p>
             </div>
             <div v-if="!isLoggedIn" class="p-text-left p-text-capitalize">
@@ -49,50 +48,51 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import store from "@/store/index";
+import { defineComponent } from "vue";
 import { mapState } from "vuex";
 import Swal from "sweetalert2";
+import { CustomAlert } from "@/models/user/CustomAlert";
 
-@Options({
+export default defineComponent({
   name: "Logout",
-  computed: mapState(["currentUser", "isLoggedIn"])
-})
-export default class Logout extends Vue {
-  handleSubmit() {
-    Swal.fire({
-      icon: "warning",
-      title: "Are you sure?",
-      text: "Confirm logout request",
-      showCancelButton: true,
-      confirmButtonText: "Logout"
-    }).then(result => {
-      if (result.isConfirmed) {
-        store.dispatch("logoutCurrentUser").then(res => {
-          if (res.status === 200) {
-            Swal.fire({
-              icon: "success",
-              title: "Success",
-              text: res.message
-            }).then(() => {
-              this.$router.push({ name: "Home" });
-            });
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: res.message
-            });
-          }
-        });
-      }
-    });
-  }
+  computed: mapState(["currentUser", "isLoggedIn"]),
+  methods: {
+    handleSubmit(): void {
+      Swal.fire({
+        icon: "warning",
+        title: "Are you sure?",
+        text: "Confirm logout request",
+        showCancelButton: true,
+        confirmButtonText: "Logout",
+        reverseButtons: true
+      }).then(result => {
+        if (result.isConfirmed) {
+          this.$store.dispatch("logoutCurrentUser").then((res: CustomAlert) => {
+            if (res.status === 200) {
+              Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: res.message
+              }).then(() => {
+                this.$router.push({ name: "Home" });
+              });
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: res.message
+              });
+            }
+          });
+        }
+      });
+    },
 
-  getUrl(item: string) {
-    return require("@/assets/avatars/" + item);
+    getUrl(item: string): string {
+      return require("@/assets/avatars/" + item);
+    }
   }
-}
+});
 </script>
 
 <style scoped>
@@ -110,13 +110,14 @@ export default class Logout extends Vue {
 }
 
 .avatar-icon {
-  width: 60px;
+  width: 3rem;
   border: 1px solid lightgray;
   border-radius: 50%;
+  margin-right: 0.5rem;
 }
 
 .icon-header {
-  font-size: 50px;
+  font-size: 5rem;
   margin-top: 1em;
 }
 </style>

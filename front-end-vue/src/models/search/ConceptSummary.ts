@@ -3,10 +3,11 @@ import { ConceptReference } from "@/models/ConceptReference";
 export class ConceptSummary {
   name = "";
   iri = "";
-  scheme: ConceptReference = {} as ConceptReference;
+  scheme = {} as ConceptReference;
   code = "";
-  conceptType: any;
+  conceptType = {} as { elements: ConceptReference[]};
   isDescendentOf: ConceptReference[] = [];
   weighting = 0;
   match = "";
+  status = {} as ConceptReference
 }

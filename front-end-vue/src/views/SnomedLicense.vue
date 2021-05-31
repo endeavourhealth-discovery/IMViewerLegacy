@@ -110,42 +110,41 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import { mapState } from "vuex";
-import store from "@/store/index";
 
-@Options({
+export default defineComponent({
   name: "SnomedLicense",
   computed: mapState(["snomedLicenseAccepted"]),
   watch: {
-    snomedLicenseAccepted: {
-      immediate: true,
-      handler(newValue) {
-        if (newValue === "true") {
-          this.showDialog = false;
-        } else {
-          this.showDialog = true;
-        }
+    snomedLicenseAccepted(newValue) {
+      if (newValue === "true") {
+        this.showDialog = false;
+      } else {
+        this.showDialog = true;
+      }
+    }
+  },
+  data() {
+    return {
+      showDialog: true
+    };
+  },
+  methods: {
+    submitDecline(): void {
+      window.location.href = "https://www.snomed.org/";
+    },
+
+    submitAgree(): void {
+      this.$store.commit("updateSnomedLicenseAccepted", "true");
+      if (this.$store.state.historyCount === window.history.length) {
+        this.$router.push({ name: "Dashboard" });
+      } else {
+        this.$router.go(-1);
       }
     }
   }
-})
-export default class SnomedLicense extends Vue {
-  showDialog = true;
-
-  submitDecline() {
-    window.location.href = "https://www.snomed.org/";
-  }
-
-  submitAgree() {
-    store.commit("updateSnomedLicenseAccepted", "true");
-    if (store.state.historyCount === window.history.length) {
-      this.$router.push({ name: "Dashboard" });
-    } else {
-      this.$router.go(-1);
-    }
-  }
-}
+});
 </script>
 
 <style scoped>

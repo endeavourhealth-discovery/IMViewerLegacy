@@ -3,7 +3,7 @@
     class="p-d-flex p-flex-column p-jc-start"
     id="hierarchy-tree-bar-container"
   >
-    <span class="p-buttonset" id="hierarchy-selected-bar">
+    <div class="p-d-flex p-flex-row p-jc-start" id="hierarchy-selected-bar">
       <Button
         :label="parentLabel"
         :disabled="parentLabel === ''"
@@ -12,17 +12,29 @@
         class="p-button-text p-button-plain"
       />
       <Button
-        icon="pi pi-refresh"
-        @click="
-          refreshTree(
-            conceptAggregate.concept,
-            conceptAggregate.parents,
-            conceptAggregate.children
-          )
-        "
+        icon="pi pi-home"
+        @click="resetConcept"
         class="p-button-rounded p-button-text p-button-plain"
-      />
-    </span>
+      >
+        <i class="fas fa-home" aria-hidden="true"></i>
+      </Button>
+      <Button
+        v-if="$store.state.treeLocked"
+        class="p-button-rounded p-button-text p-button-plain"
+        @click="toggleTreeLocked(false)"
+        v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
+      >
+        <i class="fas fa-link" aria-hidden="true"></i>
+      </Button>
+      <Button
+        v-else
+        class="p-button-rounded p-button-text p-button-plain"
+        @click="toggleTreeLocked(true)"
+        v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
+      >
+        <i class="fas fa-unlink"></i>
+      </Button>
+    </div>
 
     <Tree
       :value="root"
@@ -33,37 +45,49 @@
       @node-expand="expandChildren"
       class="tree-root"
     >
+      <template #default="slotProps">
+        <span v-if="!slotProps.node.loading">
+          <i
+            :class="'fas fa-fw ' + slotProps.node.typeIcon"
+            :style="'color:' + slotProps.node.color"
+            aria-hidden="true"
+          />
+        </span>
+        <ProgressSpinner v-if="slotProps.node.loading" />
+        {{ slotProps.node.label }}
+      </template>
     </Tree>
   </div>
 </template>
 
 <script lang="ts">
 import { HistoryItem } from "@/models/HistoryItem";
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import { mapState } from "vuex";
 import ConceptService from "@/services/ConceptService";
 import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";
 import { IM } from "@/vocabulary/IM";
 import LoggerService from "@/services/LoggerService";
-import { getIconFromType } from "@/helpers/ConceptTypeMethods";
+import {
+  getColourFromType,
+  getIconFromType
+} from "@/helpers/ConceptTypeMethods";
+import { TreeNode } from "@/models/TreeNode";
 
-interface TreeNode {
-  key: string;
-  label: string;
-  data: string;
-  icon: string;
-  leaf: boolean;
-  children: Array<TreeNode>;
-}
-
-@Options({
+export default defineComponent({
   name: "Hierarchy",
   components: {},
-  computed: mapState(["conceptAggregate"]),
+  props: ["active"],
+  computed: mapState(["conceptIri", "focusTree", "treeLocked"]),
   watch: {
-    conceptAggregate(newValue) {
-      this.createTree(newValue.concept, newValue.parents, newValue.children);
+    async conceptIri(newValue) {
+      await this.getConceptAggregate(newValue);
+      this.createTree(
+        this.conceptAggregate.concept,
+        this.conceptAggregate.parents,
+        this.conceptAggregate.children
+      );
       if (this.$route.fullPath === "/") {
         this.$store.commit("updateHistory", {
           url: this.$route.fullPath,
@@ -73,171 +97,263 @@ interface TreeNode {
       } else {
         this.$store.commit("updateHistory", {
           url: this.$route.fullPath,
-          conceptName: newValue.concept[RDFS.LABEL],
+          conceptName: newValue.concept?.[RDFS.LABEL],
           view: this.$route.name
         } as HistoryItem);
       }
-    }
-  }
-})
-export default class Hierarchy extends Vue {
-  searchResult = "";
-  root: Array<TreeNode> = [];
-  expandedKeys: any = {};
-  selectedKey: any = {};
-  parentLabel = "";
-
-  createTree(concept: any, parentHierarchy: any, children: any) {
-    if (this.root.length == 0) {
-      this.refreshTree(concept, parentHierarchy, children);
-    } else if (concept[IM.IRI] === IM.NAMESPACE + "DiscoveryOntology") {
-      this.refreshTree(concept, parentHierarchy, children);
-    }
-  }
-
-  refreshTree(concept: any, parentHierarchy: any, children: any) {
-    this.expandedKeys = {};
-    const selectedConcept = this.createTreeNode(
-      concept[RDFS.LABEL],
-      concept[IM.IRI],
-      concept[RDF.TYPE],
-      concept[RDFS.LABEL],
-      concept.hasChildren
-    );
-
-    children.forEach((child: any) => {
-      if (child.name) {
-        //remove this to return all OWL children
-        selectedConcept.children.push(
-          this.createTreeNode(
-            child.name,
-            child["@id"],
-            child.type,
-            child.name,
-            child.hasChildren
-          )
+    },
+    focusTree(newValue) {
+      if (newValue === true) {
+        this.refreshTree(
+          this.conceptAggregate.concept,
+          this.conceptAggregate.parents,
+          this.conceptAggregate.children
+        );
+        this.$store.commit("updateFocusTree", false);
+        this.$emit("showTree");
+      }
+    },
+    active(newValue, oldValue) {
+      if (!this.treeLocked && newValue === 0 && oldValue !== 0) {
+        this.refreshTree(
+          this.conceptAggregate.concept,
+          this.conceptAggregate.parents,
+          this.conceptAggregate.children
         );
       }
-    });
-    this.root = [];
-
-    if (parentHierarchy.length) {
-      this.parentLabel = parentHierarchy[0].name;
+    },
+    treeLocked(newValue) {
+      if (!newValue) {
+        this.refreshTree(
+          this.conceptAggregate.concept,
+          this.conceptAggregate.parents,
+          this.conceptAggregate.children
+        );
+      }
     }
-
-    this.root.push(selectedConcept);
-    this.expandedKeys[selectedConcept.key] = true;
-    this.selectedKey[selectedConcept.key] = true;
-  }
-
-  createTreeNode(
-    conceptName: any,
-    conceptIri: any,
-    conceptTypes: any,
-    level: any,
-    hasChildren: boolean
-  ) {
-    const node: TreeNode = {
-      key: level,
-      label: conceptName,
-      icon: getIconFromType(conceptTypes),
-      data: conceptIri,
-      leaf: !hasChildren,
-      children: []
+  },
+  data() {
+    return {
+      searchResult: "",
+      conceptAggregate: {} as any,
+      root: [] as TreeNode[],
+      expandedKeys: {} as any,
+      selectedKey: {} as any,
+      parentLabel: ""
     };
-    return node;
-  }
-
-  onNodeSelect(node: any) {
-    if (node.label === "Discovery ontology") {
-      this.$router.push({ name: "Dashboard" });
+  },
+  async mounted() {
+    await this.getConceptAggregate(this.conceptIri);
+    this.createTree(
+      this.conceptAggregate.concept,
+      this.conceptAggregate.parents,
+      this.conceptAggregate.children
+    );
+    if (this.$route.fullPath === "/") {
+      this.$store.commit("updateHistory", {
+        url: this.$route.fullPath,
+        conceptName: "Home",
+        view: this.$route.name
+      } as HistoryItem);
     } else {
-      this.$router.push({
-        name: "Concept",
-        params: { selectedIri: node.data }
+      this.$store.commit("updateHistory", {
+        url: this.$route.fullPath,
+        conceptName: this.conceptAggregate.concept?.[RDFS.LABEL],
+        view: this.$route.name
+      } as HistoryItem);
+    }
+  },
+  methods: {
+    async getConceptAggregate(iri: string) {
+      await Promise.all([
+        ConceptService.getConcept(iri).then(res => {
+          this.conceptAggregate.concept = res.data;
+        }),
+        ConceptService.getConceptParents(iri).then(res => {
+          this.conceptAggregate.parents = res.data;
+        }),
+        ConceptService.getConceptChildren(iri).then(res => {
+          this.conceptAggregate.children = res.data;
+        })
+      ]);
+    },
+    createTree(concept: any, parentHierarchy: any, children: any): void {
+      if (this.root.length == 0) {
+        this.refreshTree(concept, parentHierarchy, children);
+      } else if (concept[IM.IRI] === IM.NAMESPACE + "DiscoveryOntology") {
+        this.refreshTree(concept, parentHierarchy, children);
+      }
+    },
+
+    refreshTree(concept: any, parentHierarchy: any, children: any): void {
+      this.expandedKeys = {};
+      const selectedConcept = this.createTreeNode(
+        concept[RDFS.LABEL],
+        concept[IM.IRI],
+        concept[RDF.TYPE],
+        concept[RDFS.LABEL],
+        concept.hasChildren
+      );
+
+      children.forEach((child: any) => {
+        if (child.name) {
+          //remove this to return all OWL children
+          selectedConcept.children.push(
+            this.createTreeNode(
+              child.name,
+              child["@id"],
+              child.type,
+              child.name,
+              child.hasChildren
+            )
+          );
+        }
       });
+      this.root = [];
+
+      if (parentHierarchy.length) {
+        this.parentLabel = parentHierarchy[0].name;
+      }
+
+      this.root.push(selectedConcept);
+      this.expandedKeys[selectedConcept.key] = true;
+      this.selectedKey[selectedConcept.key] = true;
+    },
+
+    createTreeNode(
+      conceptName: any,
+      conceptIri: any,
+      conceptTypes: any,
+      level: any,
+      hasChildren: boolean
+    ): TreeNode {
+      const node: TreeNode = {
+        key: level,
+        label: conceptName,
+        typeIcon: getIconFromType(conceptTypes),
+        color: getColourFromType(conceptTypes),
+        data: conceptIri,
+        leaf: !hasChildren,
+        loading: false,
+        children: []
+      };
+      return node;
+    },
+
+    onNodeSelect(node: any): void {
+      if (node.label === "Discovery ontology") {
+        this.$router.push({ name: "Dashboard" });
+      } else {
+        this.$router.push({
+          name: "Concept",
+          params: { selectedIri: node.data }
+        });
+      }
+    },
+
+    async expandChildren(node: TreeNode): Promise<void> {
+      node.loading = true;
+      this.expandedKeys[node.key] = true;
+      let children: any[] = [];
+      await ConceptService.getConceptChildren(node.data)
+        .then(res => {
+          children = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Concept children server request failed", err)
+          );
+        });
+      let index = 0;
+
+      children.forEach((child: any) => {
+        if (!this.containsChild(node.children, child)) {
+          node.children.push(
+            this.createTreeNode(
+              child.name,
+              child["@id"],
+              child.type,
+              node.key + "-" + index,
+              child.hasChildren
+            )
+          );
+          index++;
+        }
+      });
+      node.loading = false;
+    },
+
+    containsChild(children: any[], child: any) {
+      if (children.some(e => e.data === child?.["@id"])) {
+        return true;
+      }
+      return false;
+    },
+
+    async expandParents(): Promise<void> {
+      this.expandedKeys[this.root[0].key] = true;
+
+      let parents: any[] = [];
+      const parentsNodes: any[] = [];
+      await ConceptService.getConceptParents(this.root[0].data)
+        .then(res => {
+          parents = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Concept children server request failed", err)
+          );
+        });
+
+      parents.forEach((parent: any) => {
+        parentsNodes.push(
+          this.createTreeNode(
+            parent.name,
+            parent["@id"],
+            parent.type,
+            parent.name,
+            true
+          )
+        );
+      });
+
+      parentsNodes.forEach((parentNode: TreeNode) => {
+        parentNode.children.push(this.root[0]);
+        this.expandedKeys[parentNode.key] = true;
+      });
+
+      this.root = parentsNodes;
+
+      await ConceptService.getConceptParents(this.root[0].data)
+        .then(res => {
+          if (res.data[0]) {
+            this.parentLabel = res.data[0].name;
+          } else {
+            this.parentLabel = "";
+          }
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Concept children server request failed", err)
+          );
+        });
+    },
+
+    resetConcept(): void {
+      this.parentLabel = "";
+      this.selectedKey = {};
+      this.$store.commit(
+        "updateConceptIri",
+        "http://endhealth.info/im#DiscoveryOntology"
+      );
+      this.$router.push({ name: "Dashboard" });
+    },
+
+    toggleTreeLocked(value: boolean): void {
+      this.$store.commit("updateTreeLocked", value);
     }
   }
-
-  async expandChildren(node: TreeNode) {
-    this.expandedKeys[node.key] = true;
-    let children: any[] = [];
-    await ConceptService.getConceptChildren(node.data)
-      .then(res => {
-        children = res.data;
-      })
-      .catch(err => {
-        this.$toast.add(
-          LoggerService.error("Concept children server request failed", err)
-        );
-      });
-    let index = 0;
-
-    node.children = [];
-
-    children.forEach((child: any) => {
-      node.children.push(
-        this.createTreeNode(
-          child.name,
-          child["@id"],
-          child.type,
-          node.key + "-" + index,
-          child.hasChildren
-        )
-      );
-      index++;
-    });
-  }
-
-  async expandParents() {
-    this.expandedKeys[this.root[0].key] = true;
-
-    let parents: any[] = [];
-    const parentsNodes: any[] = [];
-    await ConceptService.getConceptParents(this.root[0].data)
-      .then(res => {
-        parents = res.data;
-      })
-      .catch(err => {
-        this.$toast.add(
-          LoggerService.error("Concept children server request failed", err)
-        );
-      });
-
-    parents.forEach((parent: any) => {
-      parentsNodes.push(
-        this.createTreeNode(
-          parent.name,
-          parent["@id"],
-          parent.type,
-          parent.name,
-          true
-        )
-      );
-    });
-
-    parentsNodes.forEach((parentNode: TreeNode) => {
-      parentNode.children.push(this.root[0]);
-      this.expandedKeys[parentNode.key] = true;
-    });
-
-    this.root = parentsNodes;
-
-    await ConceptService.getConceptParents(this.root[0].data)
-      .then(res => {
-        if (res.data[0]) {
-          this.parentLabel = res.data[0].name;
-        } else {
-          this.parentLabel = "";
-        }
-      })
-      .catch(err => {
-        this.$toast.add(
-          LoggerService.error("Concept children server request failed", err)
-        );
-      });
-  }
-}
+});
 </script>
 
 <style>
@@ -249,11 +365,22 @@ export default class Hierarchy extends Vue {
   padding: 0rem !important;
   transition: box-shadow 3600s 3600s !important;
 }
+
+.p-tree-toggler {
+  margin-right: 0 !important;
+}
+
 .tree-root {
   height: 95%;
   overflow: auto;
 }
-.p-tree-toggler {
-  min-width: 22px;
+.p-tree-toggler,
+.p-tree-toggler-icon {
+  min-width: 2rem;
+}
+
+.p-progress-spinner {
+  width: 1.25em !important;
+  height: 1.25em !important;
 }
 </style>

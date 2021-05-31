@@ -5,6 +5,9 @@ export class IM {
   public static CODE = IM.NAMESPACE + "code";
   public static SCHEME = IM.NAMESPACE + "scheme";
   public static STATUS = IM.NAMESPACE + "status";
+  public static IS_A = IM.NAMESPACE + "isA";
+  public static ROLE_GROUP = IM.NAMESPACE + "roleGroup";
+  public static IS_CONTAINED_IN = IM.NAMESPACE + "isContainedIn";
 
   public static QUERY_SET = IM.NAMESPACE + "QuerySet";
   public static VALUE_SET = IM.NAMESPACE + "ValueSet";
@@ -12,4 +15,19 @@ export class IM {
   public static RECORD_TYPE = IM.NAMESPACE + "RecordType";
   public static FOLDER = IM.NAMESPACE + "Folder";
   public static DATA_PROPERTY = IM.NAMESPACE + "DataProperty";
+
+  // code schemes
+  public static CODE_SCHEME_SNOMED = IM.NAMESPACE + "SnomedCodeScheme";
+  public static CODE_SCHEME_READ = IM.NAMESPACE + "Read2CodeScheme";
+  public static CODE_SCHEME_ICD10 = IM.NAMESPACE + "ICD10CodeScheme";
+  public static CODE_SCHEME_OPCS4 = IM.NAMESPACE + "OPSC49CodeScheme";
+  public static CODE_SCHEME_EMIS = IM.NAMESPACE + "EMISCodeScheme";
+  public static CODE_SCHEME_BARTS = IM.NAMESPACE + "BartsCernerCodeScheme";
+  public static CODE_SCHEME_VISION = IM.NAMESPACE + "VisionCodeScheme";
+  public static CODE_SCHEME_CTV3 = IM.NAMESPACE + "CTV3TPPCodeScheme";
+  public static CODE_SCHEME_TERMS = IM.NAMESPACE + "TermOnlyCodeScheme";
+  public static CODE_SCHEME_ODS = IM.NAMESPACE + "ODSCodeScheme";
+  public static DISCOVERY_CODE = IM.NAMESPACE + "DiscoveryCodeScheme";
+
+  public static STATS_REPORT_ENTRY = IM.NAMESPACE + "hasStatsReportEntry";
 }

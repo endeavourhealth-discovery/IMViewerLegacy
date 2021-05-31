@@ -5,23 +5,21 @@ import { HistoryItem } from "../models/HistoryItem";
 import { User } from "../models/user/User";
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
-import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
-import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 import LoggerService from "@/services/LoggerService";
-import { PieChartData } from "@/models/charts/PieChartData";
-import { ConceptRole } from "@/models/TTConcept/ConceptRole";
-import { Member } from "@/models/members/Member";
+import { CustomAlert } from "@/models/user/CustomAlert";
+import { IM } from "@/vocabulary/IM";
+import { ConceptSummary } from "@/models/search/ConceptSummary";
+import { ConceptReference } from "@/models/TTConcept/ConceptReference";
+import axios from "axios";
 
 export default createStore({
+  // update stateType.ts when adding new state!
   state: {
     loading: new Map<string, boolean>(),
-    conceptIri: "http://www.w3.org/2002/07/owl#Thing",
-    conceptAggregate: {} as ConceptAggregate,
-    mapped: [],
-    usages: [],
-    members: {} as Member,
+    cancelSource: axios.CancelToken.source(),
+    conceptIri: "http://endhealth.info/im#DiscoveryOntology",
     history: [] as HistoryItem[],
-    searchResults: [],
+    searchResults: [] as ConceptSummary[],
     currentUser: {} as User,
     registeredUsername: "" as string,
     isLoggedIn: false as boolean,
@@ -29,24 +27,21 @@ export default createStore({
       "snomedLicenseAccepted"
     ) as string,
     historyCount: 0 as number,
-    // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
-    ontologyOverview: [],
-    conceptTypes: {} as PieChartData,
-    conceptSchemes: {} as PieChartData,
-    conceptStatus: {} as PieChartData,
+    focusTree: false as boolean,
+    treeLocked: true as boolean,
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
         {
-          iri: "http://endhealth.info/im#891071000252105",
+          iri: IM.DISCOVERY_CODE,
           name: "Discovery code"
         },
         {
-          iri: "http://endhealth.info/im#891101000252101",
+          iri: IM.CODE_SCHEME_SNOMED,
           name: "Snomed-CT code"
         },
         {
-          iri: "http://endhealth.info/im#891111000252103",
+          iri: IM.CODE_SCHEME_TERMS,
           name: "Term based code"
         }
       ],
@@ -62,23 +57,18 @@ export default createStore({
         "Folder",
         "Legacy"
       ]
+    } as {
+      selectedStatus: string[];
+      selectedSchemes: ConceptReference[];
+      selectedTypes: string[];
     }
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
       state.conceptIri = conceptIri;
     },
-    updateConceptAggregate(state, conceptAggregate) {
-      state.conceptAggregate = conceptAggregate;
-    },
-    updateConceptMapped(state, mapped) {
-      state.mapped = mapped;
-    },
-    updateConceptUsages(state, usages) {
-      state.usages = usages;
-    },
-    updateConceptMembers(state, members) {
-      state.members = members;
+    updateCancelSource(state) {
+      state.cancelSource = axios.CancelToken.source();
     },
     updateHistory(state, historyItem) {
       state.history = state.history.filter(function(el) {
@@ -111,111 +101,14 @@ export default createStore({
     updateHistoryCount(state, count) {
       state.historyCount = count;
     },
-    // strip out ontologyOverview, conceptTypes/Status/Schemes when server caching is complete
-    updateOntologyOverview(state, tableData) {
-      state.ontologyOverview = tableData;
+    updateFocusTree(state, bool) {
+      state.focusTree = bool;
     },
-    updateConceptTypes(state, chartConceptTypes) {
-      state.conceptTypes = chartConceptTypes;
-    },
-    updateConceptSchemes(state, chartConceptSchemes) {
-      state.conceptSchemes = chartConceptSchemes;
-    },
-    updateConceptStatus(state, chartConceptStatus) {
-      state.conceptStatus = chartConceptStatus;
+    updateTreeLocked(state, bool) {
+      state.treeLocked = bool;
     }
   },
   actions: {
-    async fetchConceptAggregate({ commit }, iri) {
-      let concept: any;
-      let parents: Array<ConceptNode>;
-      let children: Array<ConceptNode>;
-      let graph: any;
-      let success = true;
-      await Promise.all([
-        ConceptService.getConcept(iri).then(res => {
-          concept = res.data;
-        }),
-        ConceptService.getConceptParents(iri).then(res => {
-          parents = res.data;
-        }),
-        ConceptService.getConceptChildren(iri).then(res => {
-          children = res.data;
-        }),
-        ConceptService.getConceptGraph(iri).then(res => {
-          graph = res.data;
-        }),
-      ])
-        .then(() => {
-          const updated = new ConceptAggregate(
-            concept,
-            children,
-            parents,
-            graph
-          );
-          commit("updateConceptAggregate", updated);
-        })
-        .catch(err => {
-          LoggerService.error(undefined, err);
-          success = false;
-        });
-      return success;
-    },
-    async fetchConceptMapped({ commit }, iri) {
-      commit("updateLoading", { key: "mapped", value: true });
-      let mappedFrom: any;
-      let mappedTo: any;
-      let success = true;
-      await Promise.all([
-        ConceptService.getConceptMappedFrom(iri).then(res => {
-          mappedFrom = res.data;
-        }),
-        ConceptService.getConceptMappedTo(iri).then(res => {
-          mappedTo = res.data;
-        })
-      ])
-        .then(() => {
-          commit("updateConceptMapped", mappedFrom.concat(mappedTo));
-          commit("updateLoading", { key: "mapped", value: false });
-        })
-        .catch(err => {
-          success = false;
-          LoggerService.error(undefined, err);
-          commit("updateLoading", { key: "mapped", value: false });
-        });
-      return success;
-    },
-    async fetchConceptUsages({ commit }, iri) {
-      commit("updateLoading", { key: "usages", value: true });
-      let usages: any;
-      let success = true;
-      await ConceptService.getConceptUsages(iri)
-        .then(res => {
-          usages = res.data;
-          commit("updateConceptUsages", usages);
-          commit("updateLoading", { key: "usages", value: false });
-        })
-        .catch(err => {
-          LoggerService.error(undefined, err);
-          success = false;
-          commit("updateLoading", { key: "usages", value: false });
-        });
-      return success;
-    },
-    async fetchConceptMembers({ commit }, iri) {
-      commit("updateLoading", { key: "members", value: true });
-      let members: Member;
-      await ConceptService.getConceptMembers(iri, false)
-        .then(res => {
-          members = res.data;
-          commit("updateConceptMembers", members);
-          commit("updateLoading", { key: "members", value: false });
-        })
-        .catch(err => {
-          LoggerService.error(undefined, err);
-          commit("updateLoading", { key: "members", value: false });
-        });
-    },
     async fetchSearchResults(
       { commit },
       data: { searchRequest: SearchRequest; cancelToken: any }
@@ -239,49 +132,43 @@ export default createStore({
       return success;
     },
     async logoutCurrentUser({ commit }) {
-      try {
-        const res = await AuthService.signOut();
+      let result = new CustomAlert(500, "Logout (store) failed");
+      await AuthService.signOut().then(res => {
         if (res.status === 200) {
           commit("updateCurrentUser", null);
           commit("updateIsLoggedIn", false);
-          return res;
+          result = res;
         } else {
-          LoggerService.error(undefined, res.error);
-          return res;
+          result = res;
         }
-      } catch (err) {
-        LoggerService.error(undefined, err);
-        return { status: 500, error: err, message: "Logout (store) failed" };
-      }
+      });
+      return result;
     },
     async authenticateCurrentUser({ commit, dispatch }) {
-      try {
-        const res = await AuthService.getCurrentAuthenticatedUser();
+      const result = { authenticated: false };
+      await AuthService.getCurrentAuthenticatedUser().then(res => {
         if (res.status === 200 && res.user) {
           commit("updateIsLoggedIn", true);
           const loggedInUser = res.user;
-          if ("value" in loggedInUser.avatar) {
-            const result = avatars.find(
-              avatar => avatar.value === loggedInUser.avatar.value
-            );
-            if (!result) {
-              loggedInUser.avatar = avatars[0];
-            }
-          } else {
+          const foundAvatar = avatars.find(
+            avatar => avatar.value === loggedInUser.avatar.value
+          );
+          if (!foundAvatar) {
             loggedInUser.avatar = avatars[0];
           }
           commit("updateCurrentUser", loggedInUser);
-          return { authenticated: true };
+          result.authenticated = true;
         } else {
-          LoggerService.error(undefined, res.error);
-          dispatch("logoutCurrentUser");
-          return { authenticated: false };
+          dispatch("logoutCurrentUser").then(res => {
+            if (res.status === 200) {
+              LoggerService.info(undefined, "Force logout successful");
+            } else {
+              LoggerService.error(undefined, "Force logout failed");
+            }
+          });
         }
-      } catch (err) {
-        LoggerService.error(undefined, err);
-        dispatch("logoutCurrentUser");
-        return { authenticated: false };
-      }
+      });
+      return result;
     }
   },
   modules: {}

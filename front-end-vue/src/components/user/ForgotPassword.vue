@@ -48,52 +48,54 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import Swal from "sweetalert2";
 import AuthService from "@/services/AuthService";
-import store from "@/store/index";
 
-@Options({
-  name: "ForgotPassword"
-})
-export default class ForgotPassword extends Vue {
-  username = "";
-
-  handleSubmit() {
-    Swal.fire({
-      icon: "warning",
-      title: "Warning",
-      text: "Reset password for account: " + this.username,
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      confirmButtonText: "Reset Password"
-    }).then(result => {
-      if (result.isConfirmed) {
-        AuthService.forgotPassword(this.username).then(res => {
-          if (res.status === 200) {
-            Swal.fire({
-              icon: "success",
-              title: "Password reset!",
-              text:
-                "Password has been reset for account: " +
-                this.username +
-                ". An email has been sent with a recovery code."
-            }).then(() => {
-              store.commit("updateRegisteredUsername", this.username);
-              this.$router.push({ name: "ForgotPasswordSubmit" });
-            });
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: res.message + ". Check username is correct."
-            });
-          }
-        });
-      }
-    });
+export default defineComponent({
+  name: "ForgotPassword",
+  data() {
+    return {
+      username: ""
+    };
+  },
+  methods: {
+    handleSubmit(): void {
+      Swal.fire({
+        icon: "warning",
+        title: "Warning",
+        text: "Reset password for account: " + this.username,
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "Reset Password"
+      }).then(result => {
+        if (result.isConfirmed) {
+          AuthService.forgotPassword(this.username).then(res => {
+            if (res.status === 200) {
+              Swal.fire({
+                icon: "success",
+                title: "Success",
+                text:
+                  "Password has been reset for account: " +
+                  this.username +
+                  ". An email has been sent with a recovery code."
+              }).then(() => {
+                this.$store.commit("updateRegisteredUsername", this.username);
+                this.$router.push({ name: "ForgotPasswordSubmit" });
+              });
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: res.message + ". Check username is correct."
+              });
+            }
+          });
+        }
+      });
+    }
   }
-}
+});
 </script>
 
 <style scoped>
@@ -114,7 +116,7 @@ export default class ForgotPassword extends Vue {
 }
 
 .icon-header {
-  font-size: 50px;
+  font-size: 5rem;
   margin-top: 1em;
 }
 </style>

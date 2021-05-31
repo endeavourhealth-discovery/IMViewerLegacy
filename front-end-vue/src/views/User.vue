@@ -10,25 +10,23 @@
 </template>
 
 <script>
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import ButtonBar from "@/components/user/ButtonBar.vue";
 
-@Options({
+export default defineComponent({
   name: "User",
   components: {
     ButtonBar: ButtonBar
   }
-})
-export default class User extends Vue {}
+});
 </script>
 
 <style scoped>
 .user-container {
   width: 100%;
-  height: 90vh;
+  height: 95vh;
   /* overflow-y: auto; */
-  margin-top: 10vh;
-  /* margin-bottom: 10vh; */
+  margin-top: 5vh;
 }
 
 .card-button-container {

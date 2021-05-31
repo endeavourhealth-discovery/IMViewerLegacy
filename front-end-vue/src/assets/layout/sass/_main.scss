@@ -2,19 +2,29 @@
     box-sizing: border-box;
 }
 
-@media screen and (max-width: 1440px) {
-    html {
-        height: 100%;
-        font-size: $fontSize;
-    }
+$min_width: 320px;
+$max_width: 1440px;
+$min_font: 10px;
+$max-font: 14.4px;
+
+html {
+    @include fluid-type($min_width, $max_width, $min_font, $max-font);
+    height: 100%;
 }
 
-@media screen and (min-width: 1441px) {
-    html {
-        height: 100%;
-        font-size: 14.4px;;
-    }
-}
+// @media screen and (max-width: 1440px) {
+//     html {
+//         height: 100%;
+//         font-size: $fontSize;
+//     }
+// }
+
+// @media screen and (min-width: 1441px) {
+//     html {
+//         height: 100%;
+//         font-size: 14.4px;;
+//     }
+// }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";

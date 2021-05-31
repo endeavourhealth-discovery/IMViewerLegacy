@@ -11,7 +11,7 @@
         />
       </template>
       <template #title>
-        My Account Details
+        My account details
       </template>
       <template #content>
         <div
@@ -28,7 +28,7 @@
             />
           </div>
           <div class="p-field">
-            <label for="firstName">First Name</label>
+            <label for="firstName">First name</label>
             <InputText
               id="firstName"
               type="text"
@@ -37,7 +37,7 @@
             />
           </div>
           <div class="p-field">
-            <label for="lastName">Last Name</label>
+            <label for="lastName">Last name</label>
             <InputText
               id="lastName"
               type="text"
@@ -46,7 +46,7 @@
             />
           </div>
           <div class="p-field">
-            <label for="email">Email Address</label>
+            <label for="email">Email address</label>
             <InputText
               id="email"
               type="text"
@@ -69,27 +69,23 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import { mapState } from "vuex";
-import { User } from "@/models/user/User";
 
-@Options({
+export default defineComponent({
   name: "UserDetails",
   components: {},
-  computed: mapState(["currentUser", "isLoggedIn"])
-})
-export default class UserDetails extends Vue {
-  currentUser!: User;
-  isLoggedIn!: boolean;
+  computed: mapState(["currentUser", "isLoggedIn"]),
+  methods: {
+    handleEditClicked(): void {
+      this.$router.push({ name: "UserEdit" });
+    },
 
-  handleEditClicked() {
-    this.$router.push({ name: "UserEdit" });
+    getUrl(item: string): string {
+      return require("@/assets/avatars/" + item);
+    }
   }
-
-  getUrl(item: string) {
-    return require("@/assets/avatars/" + item);
-  }
-}
+});
 </script>
 
 <style scoped>
@@ -98,7 +94,7 @@ export default class UserDetails extends Vue {
 }
 
 .user-details-form {
-  max-width: 25em;
+  width: 32em;
 }
 
 .user-details-card {
@@ -106,8 +102,8 @@ export default class UserDetails extends Vue {
 }
 
 #selected-avatar {
-  margin-block-start: 1em;
-  width: 150px;
+  margin: 1.5rem;
+  width: 10rem;
   border: 1px solid lightgray;
   border-radius: 50%;
 }

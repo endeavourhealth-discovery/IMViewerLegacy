@@ -6,17 +6,14 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import store from "@/store/index";
+import { defineComponent } from "vue";
 
-@Options({
-  name: "App"
-})
-export default class App extends Vue {
+export default defineComponent({
+  name: "App",
   mounted() {
-    store.commit("updateHistoryCount", window.history.length);
+    this.$store.commit("updateHistoryCount", window.history.length);
   }
-}
+});
 </script>
 
 <style>
@@ -26,7 +23,9 @@ body {
 
 #popup-user {
   background-color: #3b3e47 !important;
-  bottom: calc(4rem + 45px) !important;
+  /* bottom setting when cog is visible */
+  /* bottom: calc(4rem + 45px) !important;  */
+  bottom: 20px !important;
   top: unset !important;
 }
 
@@ -70,7 +69,7 @@ body {
 }
 
 /* Settings specifically for dealing with 300% scaling */
-@media (-webkit-device-pixel-ratio: 3) {
+/* @media (-webkit-device-pixel-ratio: 3) {
   .p-component {
     font-size: 0.7rem !important;
   }
@@ -118,5 +117,9 @@ body {
       width: 115px;
     }
   }
+} */
+
+.swal2-container .swal2-popup .swal2-actions {
+  justify-content: flex-end;
 }
 </style>

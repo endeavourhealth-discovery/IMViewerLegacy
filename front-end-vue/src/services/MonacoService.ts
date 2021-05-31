@@ -3,16 +3,18 @@ import ITextModel = monaco.editor.ITextModel;
 import CompletionList = monaco.languages.CompletionList;
 import CompletionItem = monaco.languages.CompletionItem;
 import Position = monaco.Position;
-import ErrorListener, {
-  Error
-} from "../discovery-syntax/DiscoveryErrorListener";
+import ErrorListener from "../discovery-syntax/DiscoveryErrorListener";
 import { ANTLRInputStream, CommonTokenStream } from "antlr4ts";
 import { DiscoverySyntaxLexer } from "../discovery-syntax/DiscoverySyntaxLexer";
 import { CandidatesCollection, CodeCompletionCore } from "antlr4-c3";
 import { DiscoverySyntaxParser } from "../discovery-syntax/DiscoverySyntaxParser";
 import SuggestionService from "../services/SuggestionService";
 
-function buildCompletionItem(label: string, value: string, range: any) {
+function buildCompletionItem(
+  label: string,
+  value: string,
+  range: any
+): { label: string; kind: any; insertText: string; range: any } {
   return {
     label,
     kind: monaco.languages.CompletionItemKind.Function,
@@ -22,7 +24,7 @@ function buildCompletionItem(label: string, value: string, range: any) {
   };
 }
 
-function getParser(text: string) {
+function getParser(text: string): any {
   const inputStream = new ANTLRInputStream(text);
   const lexer = new DiscoverySyntaxLexer(inputStream);
   lexer.removeErrorListeners();
@@ -32,8 +34,8 @@ function getParser(text: string) {
   const parser = new DiscoverySyntaxParser(tokenStream);
   parser.removeErrorListeners();
   parser.addErrorListener(todoLangErrorListener);
-  const ast = parser.concept();
-  const errors: Error[] = todoLangErrorListener.getErrors();
+  parser.concept();
+  todoLangErrorListener.getErrors();
   return parser;
 }
 
@@ -42,7 +44,7 @@ async function getSuggestions(
   position: Position,
   parser: DiscoverySyntaxParser,
   candidates: CandidatesCollection
-) {
+): Promise<any> {
   const word = model.getWordUntilPosition(position);
   const suggestions: CompletionItem[] = [];
   const range = {
@@ -97,7 +99,7 @@ async function getSuggestions(
   return { suggestions };
 }
 
-export function getDiscoveryCompletionProvider() {
+export function getDiscoveryCompletionProvider(): any {
   return {
     provideCompletionItems(
       model: ITextModel,

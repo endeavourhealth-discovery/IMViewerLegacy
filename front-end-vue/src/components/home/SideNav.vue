@@ -6,7 +6,11 @@
         class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center"
       >
         <div>
-          <p class="im-logo" @click="$router.push({ name: 'Dashboard' })">IM</p>
+          <img
+            class="im-logo"
+            src="../../assets/logos/Logo-object-empty.png"
+            @click="$router.push({ name: 'Dashboard' })"
+          />
         </div>
         <!-- <div id="center-icons">
           <div v-bind:class="{ active: isActive('Home') }">
@@ -56,7 +60,7 @@
             aria-controls="overlay_menu"
           />
           <Menu ref="menu" :model="getItems()" :popup="true" id="popup-user" />
-          <i class="pi pi-cog settings-icon" aria-hidden="true"></i>
+          <!-- <i class="pi pi-cog settings-icon" aria-hidden="true"></i> -->
         </div>
       </div>
     </div>
@@ -64,80 +68,79 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import { mapState } from "vuex";
-import { User } from "@/models/user/User";
 
-@Options({
+export default defineComponent({
   name: "SideNav",
-  computed: mapState(["currentUser", "isLoggedIn"])
-})
-export default class SideNav extends Vue {
-  currentUser!: User;
-  isLoggedIn!: boolean;
-  $refs!: any;
-  userPopupBottom = 0;
+  computed: mapState(["currentUser", "isLoggedIn"]),
+  data() {
+    return {
+      userPopupBottom: 0,
+      loginItems: [
+        {
+          label: "Login",
+          icon: "pi pi-fw pi-user",
+          to: "/user/login"
+        },
+        {
+          label: "Register",
+          icon: "pi pi-fw pi-user-plus",
+          to: "/user/register"
+        }
+      ] as { label: string; icon: string; to: string }[],
 
-  isActive(item: string) {
-    if (this.$route.name == item) {
-      return true;
-    } else {
-      return false;
+      accountItems: [
+        {
+          label: "My account",
+          icon: "pi pi-fw pi-user",
+          to: "/user/my-account" //+ this.user.id
+        },
+        {
+          label: "Edit account",
+          icon: "pi pi-fw pi-user-edit",
+          to: "/user/my-account/edit"
+        },
+        {
+          label: "Change password",
+          icon: "pi pi-fw pi-lock",
+          to: "/user/my-account/password-edit"
+        },
+        {
+          label: "Logout",
+          icon: "pi pi-fw pi-lock-open",
+          to: "/user/logout" //+ this.user.id
+        }
+      ] as { label: string; icon: string; to: string }[]
+    };
+  },
+  methods: {
+    isActive(item: string): boolean {
+      if (this.$route.name == item) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    getItems(): { label: string; icon: string; to: string }[] {
+      if (this.isLoggedIn) {
+        return this.accountItems;
+      } else {
+        return this.loginItems;
+      }
+    },
+
+    toggle(event: any): void {
+      const menu = this.$refs.menu as any;
+      menu.toggle(event);
+    },
+
+    getUrl(item: string): string {
+      return require("@/assets/avatars/" + item);
     }
   }
-
-  getItems() {
-    if (this.isLoggedIn) {
-      return this.accountItems;
-    } else {
-      return this.loginItems;
-    }
-  }
-
-  loginItems: [{}, {}] = [
-    {
-      label: "Login",
-      icon: "pi pi-fw pi-user",
-      to: "/user/login"
-    },
-    {
-      label: "Register",
-      icon: "pi pi-fw pi-user-plus",
-      to: "/user/register"
-    }
-  ];
-
-  accountItems: [{}, {}, {}, {}] = [
-    {
-      label: "My Account",
-      icon: "pi pi-fw pi-user",
-      to: "/user/my-account" //+ this.user.id
-    },
-    {
-      label: "Edit Account",
-      icon: "pi pi-fw pi-user-edit",
-      to: "/user/my-account/edit"
-    },
-    {
-      label: "Change Password",
-      icon: "pi pi-fw pi-lock",
-      to: "/user/my-account/password-edit"
-    },
-    {
-      label: "Logout",
-      icon: "pi pi-fw pi-lock-open",
-      to: "/user/logout" //+ this.user.id
-    }
-  ];
-
-  toggle(event: any) {
-    this.$refs.menu.toggle(event);
-  }
-
-  getUrl(item: string) {
-    return require("@/assets/avatars/" + item);
-  }
-}
+});
 </script>
 
 <style scoped>
@@ -177,7 +180,7 @@ export default class SideNav extends Vue {
 .user-icon,
 .settings-icon {
   width: 100%;
-  font-size: 4rem;
+  /* font-size: 4rem; */
   color: lightgray;
   padding: 5px;
   cursor: pointer;
@@ -188,7 +191,7 @@ export default class SideNav extends Vue {
 }
 
 .avatar-icon {
-  width: 4rem;
+  /* width: 4rem; */
   border: 1px solid lightgray;
   border-radius: 50%;
   cursor: pointer;
@@ -196,9 +199,39 @@ export default class SideNav extends Vue {
 
 .im-logo {
   text-align: center;
-  font-size: 4rem;
+  /* font-size: 4rem; */
   color: lightgray;
   font-weight: bold;
   cursor: pointer;
+}
+
+@media screen and (max-width: 1439px) {
+  .user-icon,
+  .sidebutton {
+    font-size: 5vw;
+  }
+
+  .avatar-icon {
+    width: 5vw;
+  }
+
+  .im-logo {
+    width: 7vw;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .user-icon,
+  .sidebutton {
+    font-size: 60px;
+  }
+
+  .avatar-icon {
+    width: 60px;
+  }
+
+  .im-logo {
+    width: 100px;
+  }
 }
 </style>

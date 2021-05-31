@@ -41,42 +41,38 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
 import { avatars } from "@/models/user/Avatars";
+import { defineComponent } from "vue";
 
-@Options({
+export default defineComponent({
   name: "AvatarWithSelector",
   props: ["selectedAvatar"],
   emits: ["avatarSelected"],
   watch: {
-    selectedAvatar: {
-      immediate: true,
-      handler(newValue) {
-        this.newAvatar = newValue;
-      }
+    selectedAvatar(newValue) {
+      this.newAvatar = newValue;
     },
-    newAvatar: {
-      immediate: true,
-      handler(newValue) {
-        this.$emit("avatarSelected", newValue);
-      }
+    newAvatar(newValue) {
+      this.$emit("avatarSelected", newValue);
+    }
+  },
+  data() {
+    return {
+      avatarOptions: avatars,
+      newAvatar: this.selectedAvatar
+    };
+  },
+  methods: {
+    toggleAvatarSelect(event: any): void {
+      const x = this.$refs.avatar as any;
+      x.toggle(event);
+    },
+
+    getUrl(item: string): string {
+      return require("@/assets/avatars/" + item);
     }
   }
-})
-export default class AvatarWithSelector extends Vue {
-  avatarOptions = avatars;
-  selectedAvatar!: { value: string };
-  newAvatar = this.selectedAvatar;
-
-  toggleAvatarSelect(event: any) {
-    const x = this.$refs.avatar as any;
-    x.toggle(event);
-  }
-
-  getUrl(item: string) {
-    return require("@/assets/avatars/" + item);
-  }
-}
+});
 </script>
 
 <style scoped>
@@ -93,8 +89,7 @@ export default class AvatarWithSelector extends Vue {
 }
 
 #selected-avatar {
-  margin-block-start: 0.5em;
-  width: 150px;
+  width: 10rem;
   border: 1px solid lightgray;
   border-radius: 50%;
 }

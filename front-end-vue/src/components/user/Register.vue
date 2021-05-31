@@ -20,13 +20,13 @@
             v-model="username"
             v-on:blur="setShowUsernameNotice"
           />
-          <InlineMessage v-if="showUsernameNotice" severity="error"
-            >Username contains unexpected characters. A-Z, 0-9 and
-            hyphen/underscore(-_) only allowed e.g."John-Doe2"</InlineMessage
-          >
+          <InlineMessage v-if="showUsernameNotice" severity="error">
+            Username contains unexpected characters. A-Z, 0-9 and
+            hyphen/underscore(-_) only allowed e.g."John-Doe2"
+          </InlineMessage>
         </div>
         <div class="p-field">
-          <label for="fieldEmail1">Email Address</label>
+          <label for="fieldEmail1">Email address</label>
           <div class="p-d-flex p-flex-row p-ai-center">
             <InputText
               id="fieldEmail1"
@@ -49,7 +49,7 @@
           </div>
         </div>
         <div class="p-field">
-          <label for="fieldEmail2">Confirm Email Address</label>
+          <label for="fieldEmail2">Confirm email address</label>
           <InputText
             id="fieldEmail2"
             type="text"
@@ -57,12 +57,12 @@
             v-model="email2"
             v-on:blur="setShowEmail2Notice"
           />
-          <InlineMessage v-if="showEmail2Notice" severity="error"
-            >Email addresses do not match!</InlineMessage
-          >
+          <InlineMessage v-if="showEmail2Notice" severity="error">
+            Email addresses do not match!
+          </InlineMessage>
         </div>
         <div class="p-field">
-          <label for="fieldFirstName">First Name</label>
+          <label for="fieldFirstName">First name</label>
           <InputText
             id="fieldFirstName"
             type="text"
@@ -70,13 +70,13 @@
             v-model="firstName"
             v-on:blur="setShowFirstNameNotice"
           />
-          <InlineMessage v-if="showFirstNameNotice" severity="error"
-            >First name contains unexpected characters. A-Z and hyphens only
-            allowed e.g."Mary-Anne"</InlineMessage
-          >
+          <InlineMessage v-if="showFirstNameNotice" severity="error">
+            First name contains unexpected characters. A-Z and hyphens only
+            allowed e.g."Mary-Anne"
+          </InlineMessage>
         </div>
         <div class="p-field">
-          <label for="fieldLastName">Last Name</label>
+          <label for="fieldLastName">Last name</label>
           <InputText
             id="fieldLastName"
             type="text"
@@ -84,10 +84,10 @@
             v-model="lastName"
             v-on:blur="setShowLastNameNotice"
           />
-          <InlineMessage v-if="showLastNameNotice" severity="error"
-            >Last name contains unexpected characters. A-Z, apostropies and
-            hyphens only allowed e.g."O'Keith-Smith"</InlineMessage
-          >
+          <InlineMessage v-if="showLastNameNotice" severity="error">
+            Last name contains unexpected characters. A-Z, apostropies and
+            hyphens only allowed e.g."O'Keith-Smith"
+          </InlineMessage>
         </div>
         <div class="p-field">
           <label for="fieldPassword1">Password</label>
@@ -98,28 +98,35 @@
             aria-describedby="password-help"
             v-model="password1"
           />
-          <InlineMessage v-if="passwordStrength === 'strong'" severity="success"
-            >Password Strength: Strong</InlineMessage
+          <InlineMessage
+            v-if="passwordStrength === 'strong'"
+            severity="success"
           >
-          <InlineMessage v-if="passwordStrength === 'medium'" severity="success"
-            >Password Strength: Medium</InlineMessage
+            Password strength: Strong
+          </InlineMessage>
+          <InlineMessage
+            v-if="passwordStrength === 'medium'"
+            severity="success"
           >
-          <InlineMessage v-if="passwordStrength === 'weak'" severity="warn"
-            >Password Strength: Weak</InlineMessage
-          >
+            Password strength: Medium
+          </InlineMessage>
+          <InlineMessage v-if="passwordStrength === 'weak'" severity="warn">
+            Password strength: Weak
+          </InlineMessage>
           <InlineMessage
             v-if="passwordStrength === 'fail' && password1 !== ''"
             severity="error"
-            >Invalid Password</InlineMessage
           >
-          <small id="password-help"
-            >Password min length 8 characters. Improve password strength with a
-            mixture of UPPERCASE, lowercase, numbers and special characters
-            [!@#$%^&*].</small
-          >
+            Invalid password
+          </InlineMessage>
+          <small id="password-help">
+            Password must be a minimum length of 8 characters. Improve password
+            strength with a mixture of UPPERCASE, lowercase, numbers and special
+            characters [!@#$%^&*].
+          </small>
         </div>
         <div class="p-field">
-          <label for="fieldPassword2">Confirm Password</label>
+          <label for="fieldPassword2">Confirm password</label>
           <InputText
             id="fieldPassword2"
             type="password"
@@ -128,39 +135,46 @@
             v-on:blur="setShowPassword2Notice"
             @keyup="checkKey"
           />
-          <InlineMessage v-if="showPassword2Notice" severity="error"
-            >Passwords do not match!</InlineMessage
-          >
+          <InlineMessage v-if="showPassword2Notice" severity="error">
+            Passwords do not match!
+          </InlineMessage>
         </div>
         <div class="p-d-flex p-flex-row p-jc-center">
           <!-- <ConfirmDialogue></ConfirmDialogue> -->
           <Button
+            v-if="!allVerified()"
             class="user-submit"
             type="submit"
-            label="Submit"
+            label="Register"
+            disabled
+            v-on:click.prevent="handleSubmit"
+          />
+          <Button
+            v-else
+            class="user-submit"
+            type="submit"
+            label="Register"
             v-on:click.prevent="handleSubmit"
           />
         </div>
       </div>
     </template>
     <template #footer>
-      <span
-        >Already have an account?
+      <span>
+        Already have an account?
         <a
           id="login-link"
           class="footer-link"
           @click="$router.push({ name: 'Login' })"
           >Login here</a
-        ></span
-      >
+        >
+      </span>
     </template>
   </Card>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
 import { User } from "@/models/user/User";
-import store from "@/store/index";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 import Swal from "sweetalert2";
 import {
@@ -174,224 +188,209 @@ import {
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
 import AvatarWithSelector from "./AvatarWithSelector.vue";
+import { defineComponent } from "vue";
 
-@Options({
+export default defineComponent({
   name: "Register",
   components: {
     "avatar-with-selector": AvatarWithSelector
   },
   emits: ["userCreated"],
   watch: {
-    username: {
-      immediate: true,
-      handler(newValue) {
-        this.usernameVerified = verifyIsUsername(newValue);
-      }
+    username(newValue) {
+      this.usernameVerified = verifyIsUsername(newValue);
     },
-    email1: {
-      immediate: true,
-      handler(newValue) {
-        this.email1Verified = verifyIsEmail(newValue);
-      }
+    email1(newValue) {
+      this.email1Verified = verifyIsEmail(newValue);
     },
-    email2: {
-      immediate: true,
-      handler(newValue) {
-        this.emailsMatch = verifyEmailsMatch(this.email1, newValue);
-      }
+    email2(newValue) {
+      this.emailsMatch = verifyEmailsMatch(this.email1, newValue);
     },
-    firstName: {
-      immediate: true,
-      handler(newValue) {
-        this.firstNameVerified = verifyIsName(newValue);
-      }
+    firstName(newValue) {
+      this.firstNameVerified = verifyIsName(newValue);
     },
-    lastName: {
-      immediate: true,
-      handler(newValue) {
-        this.lastNameVerified = verifyIsName(newValue);
-      }
+    lastName(newValue) {
+      this.lastNameVerified = verifyIsName(newValue);
     },
-    password1: {
-      immediate: true,
-      handler(newValue) {
-        this.passwordStrength = checkPasswordStrength(newValue);
-      }
+    password1(newValue) {
+      this.passwordStrength = checkPasswordStrength(newValue);
     },
-    password2: {
-      immediate: true,
-      handler(newValue) {
-        this.passwordsMatch = verifyPasswordsMatch(this.password1, newValue);
-      }
+    password2(newValue) {
+      this.passwordsMatch = verifyPasswordsMatch(this.password1, newValue);
     }
-  }
-})
-export default class Register extends Vue {
-  username = "";
-  usernameVerified = false;
-  email1 = "";
-  email1Verified = false;
-  email2 = "";
-  emailsMatch = false;
-  firstName = "";
-  firstNameVerified = false;
-  lastName = "";
-  lastNameVerified = false;
-  password1 = "";
-  password2 = "";
-  passwordStrength: PasswordStrength = PasswordStrength.fail;
-  passwordsMatch = false;
-  showEmail1Notice = false;
-  showEmail2Notice = false;
-  showPassword2Notice = false;
-  showUsernameNotice = false;
-  showFirstNameNotice = false;
-  showLastNameNotice = false;
-  selectedAvatar = avatars[0];
+  },
 
-  setShowUsernameNotice() {
-    this.showUsernameNotice = this.usernameVerified ? false : true;
-  }
+  data() {
+    return {
+      username: "",
+      usernameVerified: false,
+      email1: "",
+      email1Verified: false,
+      email2: "",
+      emailsMatch: false,
+      firstName: "",
+      firstNameVerified: false,
+      lastName: "",
+      lastNameVerified: false,
+      password1: "",
+      password2: "",
+      passwordStrength: PasswordStrength.fail as PasswordStrength,
+      passwordsMatch: false,
+      showEmail1Notice: false,
+      showEmail2Notice: false,
+      showPassword2Notice: false,
+      showUsernameNotice: false,
+      showFirstNameNotice: false,
+      showLastNameNotice: false,
+      selectedAvatar: avatars[0] as { value: string }
+    };
+  },
 
-  setShowEmail1Notice(result: boolean) {
-    this.showEmail1Notice = result;
-  }
+  methods: {
+    setShowUsernameNotice(): void {
+      this.showUsernameNotice = this.usernameVerified ? false : true;
+    },
 
-  setShowEmail2Notice() {
-    this.showEmail2Notice = this.emailsMatch ? false : true;
-  }
+    setShowEmail1Notice(result: boolean): void {
+      this.showEmail1Notice = result;
+    },
 
-  setShowPassword2Notice() {
-    this.showPassword2Notice = this.passwordsMatch ? false : true;
-  }
+    setShowEmail2Notice(): void {
+      this.showEmail2Notice = this.emailsMatch ? false : true;
+    },
 
-  setShowFirstNameNotice() {
-    this.showFirstNameNotice = this.firstNameVerified ? false : true;
-  }
+    setShowPassword2Notice(): void {
+      this.showPassword2Notice = this.passwordsMatch ? false : true;
+    },
 
-  setShowLastNameNotice() {
-    this.showLastNameNotice = this.lastNameVerified ? false : true;
-  }
+    setShowFirstNameNotice(): void {
+      this.showFirstNameNotice = this.firstNameVerified ? false : true;
+    },
 
-  handleSubmit() {
-    if (this.allVerified()) {
-      const user = new User(
-        this.username,
-        this.firstName,
-        this.lastName,
-        this.email1.toLowerCase(),
-        this.password1,
-        this.selectedAvatar
-      );
-      AuthService.register(user)
-        .then(res => {
-          if (res.status === 201) {
-            Swal.fire({
-              icon: "success",
-              title: "Success",
-              text: res.message,
-              showCancelButton: true,
-              confirmButtonText: "Continue"
-            }).then(result => {
-              this.$emit("userCreated", user);
-              if (result.isConfirmed) {
-                store.commit("updateRegisteredUsername", this.username);
-                this.$router.push({ name: "ConfirmCode" });
-              } else {
-                this.clearForm();
-              }
-            });
-          } else if (res.status === 409) {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: "Username already taken. Please pick another username",
-              confirmButtonText: "Close"
-            });
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: res.message,
-              confirmButtonText: "Close"
-            });
-          }
-        })
-        .catch(err => {
-          console.error(err);
+    setShowLastNameNotice(): void {
+      this.showLastNameNotice = this.lastNameVerified ? false : true;
+    },
+
+    handleSubmit(): void {
+      if (this.allVerified()) {
+        const user = new User(
+          this.username,
+          this.firstName,
+          this.lastName,
+          this.email1.toLowerCase(),
+          this.password1,
+          this.selectedAvatar
+        );
+        AuthService.register(user)
+          .then(res => {
+            if (res.status === 201) {
+              Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: res.message,
+                showCancelButton: true,
+                confirmButtonText: "Continue"
+              }).then(result => {
+                this.$emit("userCreated", user);
+                if (result.isConfirmed) {
+                  this.$store.commit("updateRegisteredUsername", this.username);
+                  this.$router.push({ name: "ConfirmCode" });
+                } else {
+                  this.clearForm();
+                }
+              });
+            } else if (res.status === 409) {
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Username already taken. Please pick another username",
+                confirmButtonText: "Close"
+              });
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: res.message,
+                confirmButtonText: "Close"
+              });
+            }
+          })
+          .catch(err => {
+            console.error(err);
+          });
+        // this.$confirm.require({
+        //   message: "User created successfully!",
+        //   header: "Success",
+        //   icon: "pi pi-check",
+        //   acceptLabel: "Login",
+        //   rejectLabel: "Close",
+        //   accept: () => {
+        //     this.$router.push({name: "Login"});
+        //   },
+        //   reject: () => {
+        //     this.$confirm.close();
+        //   } // prime vue version -- ugly...
+        // })
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "User creation failed. Check input data.",
+          confirmButtonText: "Close"
         });
-      // this.$confirm.require({
-      //   message: "User created successfully!",
-      //   header: "Success",
-      //   icon: "pi pi-check",
-      //   acceptLabel: "Login",
-      //   rejectLabel: "Close",
-      //   accept: () => {
-      //     this.$router.push({name: "Login"});
-      //   },
-      //   reject: () => {
-      //     this.$confirm.close();
-      //   } // prime vue version -- ugly...
-      // })
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "User creation failed. Check input data.",
-        confirmButtonText: "Close"
-      });
+      }
+    },
+
+    clearForm(): void {
+      this.username = "";
+      this.usernameVerified = false;
+      this.email1 = "";
+      this.email1Verified = false;
+      this.email2 = "";
+      this.emailsMatch = false;
+      this.firstName = "";
+      this.lastName = "";
+      this.password1 = "";
+      this.password2 = "";
+      this.passwordStrength = PasswordStrength.fail;
+      this.passwordsMatch = false;
+      this.showEmail1Notice = false;
+      this.showEmail2Notice = false;
+      this.showPassword2Notice = false;
+      this.showFirstNameNotice = false;
+      this.showLastNameNotice = false;
+      this.selectedAvatar = avatars[0];
+    },
+
+    allVerified(): boolean {
+      if (
+        verifyIsUsername(this.username) &&
+        verifyIsEmail(this.email1) &&
+        verifyIsEmail(this.email2) &&
+        verifyEmailsMatch(this.email1, this.email2) &&
+        verifyPasswordsMatch(this.password1, this.password2) &&
+        this.passwordStrength !== PasswordStrength.fail &&
+        verifyIsName(this.firstName) &&
+        verifyIsName(this.lastName) &&
+        "value" in this.selectedAvatar
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    updateAvatar(newValue: { value: string }): void {
+      this.selectedAvatar = newValue;
+    },
+
+    checkKey(event: any): void {
+      if (event.keyCode === 13) {
+        this.handleSubmit();
+      }
     }
   }
-
-  clearForm() {
-    this.username = "";
-    this.usernameVerified = false;
-    this.email1 = "";
-    this.email1Verified = false;
-    this.email2 = "";
-    this.emailsMatch = false;
-    this.firstName = "";
-    this.lastName = "";
-    this.password1 = "";
-    this.password2 = "";
-    this.passwordStrength = PasswordStrength.fail;
-    this.passwordsMatch = false;
-    this.showEmail1Notice = false;
-    this.showEmail2Notice = false;
-    this.showPassword2Notice = false;
-    this.showFirstNameNotice = false;
-    this.showLastNameNotice = false;
-    this.selectedAvatar = avatars[0];
-  }
-
-  allVerified() {
-    if (
-      verifyIsUsername(this.username) &&
-      verifyIsEmail(this.email1) &&
-      verifyIsEmail(this.email2) &&
-      verifyEmailsMatch(this.email1, this.email2) &&
-      verifyPasswordsMatch(this.password1, this.password2) &&
-      this.passwordStrength !== PasswordStrength.fail &&
-      verifyIsName(this.firstName) &&
-      verifyIsName(this.lastName) &&
-      "value" in this.selectedAvatar
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  updateAvatar(newValue: { value: string }) {
-    this.selectedAvatar = newValue;
-  }
-
-  checkKey(event: any) {
-    if (event.keyCode === 13) {
-      this.handleSubmit();
-    }
-  }
-}
+});
 </script>
 
 <style scoped>
@@ -400,7 +399,6 @@ export default class Register extends Vue {
 }
 
 #password-help {
-  color: red;
   overflow-wrap: break-word;
 }
 
@@ -409,7 +407,7 @@ export default class Register extends Vue {
 }
 
 .register-form {
-  max-width: 25em;
+  max-width: 32em;
 }
 
 .footer-link:hover {

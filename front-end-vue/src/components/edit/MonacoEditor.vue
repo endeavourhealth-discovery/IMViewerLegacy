@@ -1,0 +1,237 @@
+<template>
+  <div style="height:250px;" id="editor-container"></div>
+</template>
+
+<script lang="ts">
+import ErrorListener, {
+  Error
+} from "@/discovery-syntax/DiscoveryErrorListener";
+import {
+  DiscoveryLanguage,
+  DiscoveryLanguageId,
+  richLanguageConfiguration
+} from "@/discovery-syntax/DiscoveryLanguage";
+import { DiscoverySyntaxLexer } from "@/discovery-syntax/DiscoverySyntaxLexer";
+import { DiscoverySyntaxParser } from "@/discovery-syntax/DiscoverySyntaxParser";
+import { ANTLRInputStream, CommonTokenStream } from "antlr4ts";
+import { defineComponent } from "vue";
+import * as monaco from "monaco-editor";
+import { getDiscoveryCompletionProvider } from "@/services/MonacoService";
+import { ConceptDto } from "@/models/ConceptDto";
+import ConceptService from "@/services/ConceptService";
+import { ConceptReference } from "@/models/ConceptReference";
+import { ConceptStatus } from "@/models/ConceptStatus";
+import LoggerService from "@/services/LoggerService";
+import { IM } from "@/vocabulary/IM";
+import { RDFS } from "@/vocabulary/RDFS";
+
+export default defineComponent({
+  name: "MonacoEditor",
+  components: {},
+  props: ["definitionText", "concept"],
+  emits: ["updateConceptDto", "updateText", "updateValid"],
+  data() {
+    return {
+      editorText: this.definitionText,
+      conceptDto: {} as ConceptDto,
+      schemeOptions: [] as ConceptReference[],
+      statusOptions: Object.keys(ConceptStatus).filter(f =>
+        isNaN(Number(f))
+      ) as any
+    };
+  },
+  async mounted() {
+    this.initMonaco();
+    this.validate();
+    await ConceptService.getSchemeOptions()
+      .then(res => {
+        this.schemeOptions = res.data;
+      })
+      .catch(err => {
+        this.$toast.add(
+          LoggerService.error("Scheme options server request failed", err)
+        );
+      });
+    this.conceptDto = new ConceptDto(
+      this.concept[IM.IRI],
+      this.concept[RDFS.LABEL],
+      this.concept[RDFS.COMMENT],
+      this.concept[IM.CODE],
+      this.concept[IM.SCHEME].name,
+      this.concept[IM.STATUS].name,
+      undefined,
+      this.definitionText
+    );
+  },
+  beforeUnmount() {
+    const editor = document.getElementById("editor-container");
+    const model = monaco.editor.getModels()[1];
+    model.dispose();
+    while (editor?.firstChild) {
+      const childNode = editor?.lastChild;
+      if (childNode) editor.removeChild(childNode);
+    }
+    editor?.removeAttribute("context");
+  },
+  methods: {
+    updateConceptDto(): void {
+      this.$emit("updateConceptDto", this.conceptDto);
+    },
+
+    initMonaco(): void {
+      monaco.languages.register({ id: DiscoveryLanguageId });
+      monaco.languages.onLanguage(DiscoveryLanguageId, () => {
+        monaco.languages.setMonarchTokensProvider(
+          DiscoveryLanguageId,
+          DiscoveryLanguage
+        );
+        monaco.languages.setLanguageConfiguration(
+          DiscoveryLanguageId,
+          richLanguageConfiguration
+        );
+        monaco.languages.registerCompletionItemProvider(
+          DiscoveryLanguageId,
+          getDiscoveryCompletionProvider()
+        );
+      });
+
+      const editor = document.getElementById("editor-container");
+
+      if (editor) {
+        monaco.editor.create(editor, {
+          value: this.definitionText,
+          language: "DiscoverySyntax",
+          wordWrap: "wordWrapColumn",
+          wordWrapColumn: this.wordWrapColumn(),
+          automaticLayout: true
+        });
+
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const that = this;
+        const model = monaco.editor.getModels()[1];
+        model.onDidChangeContent(() => {
+          this.$emit("updateText", model.getValue());
+          that.editorText = model.getValue();
+          that.validate();
+        });
+      }
+    },
+
+    isValidSyntax(): boolean {
+      let validation;
+      try {
+        validation = this.parse(this.definitionText);
+        return !!this.editorText && !validation.errors.length;
+      } catch (error) {
+        return false;
+      }
+    },
+
+    validate(): void {
+      const ret = this.parse(this.editorText);
+      const isValid = !!this.editorText && !ret.errors.length;
+      this.$emit("updateValid", isValid);
+      const model = monaco.editor.getModels()[0];
+      monaco.editor.setModelMarkers(
+        model,
+        DiscoveryLanguageId,
+        ret.errors.map(e => this.toDiagnostics(e))
+      );
+    },
+
+    parse(code: string): { errors: Error[] } {
+      const inputStream = new ANTLRInputStream(code);
+      const lexer = new DiscoverySyntaxLexer(inputStream);
+      lexer.removeErrorListeners();
+      const todoLangErrorListener = new ErrorListener();
+      lexer.addErrorListener(todoLangErrorListener);
+      const tokenStream = new CommonTokenStream(lexer);
+      const parser = new DiscoverySyntaxParser(tokenStream);
+      parser.removeErrorListeners();
+      parser.addErrorListener(todoLangErrorListener);
+      const errors: Error[] = todoLangErrorListener.getErrors();
+      return { errors };
+    },
+
+    toDiagnostics(error: Error): monaco.editor.IMarkerData {
+      return {
+        ...error,
+        severity: monaco.MarkerSeverity.Error
+      };
+    },
+
+    wordWrapColumn() {
+      const width =
+        document.getElementById("editor-container")?.clientWidth ||
+        window.innerWidth ||
+        document.documentElement.clientWidth ||
+        document.body.clientWidth;
+      return width < 700 ? 60 : 120;
+    }
+  }
+});
+</script>
+
+<style scoped>
+.p-tabview {
+  padding-top: 3px;
+}
+
+.editor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: auto;
+  grid-template-areas:
+    "iri name code"
+    "description description description"
+    "version status scheme"
+    "imlang imlang imlang";
+  column-gap: 7px;
+}
+
+.iri {
+  grid-area: iri;
+}
+
+.name {
+  grid-area: name;
+}
+
+.code {
+  grid-area: code;
+}
+
+.description {
+  grid-area: description;
+}
+
+.version {
+  grid-area: version;
+}
+
+.status {
+  grid-area: status;
+}
+
+.scheme {
+  grid-area: scheme;
+}
+
+.imlang-container {
+  grid-area: imlang;
+}
+
+.p-field {
+  height: fit-content;
+}
+
+#container {
+  /* height: calc(100vh - 500px); */
+  height: 100%;
+  width: 100%;
+}
+
+.float-label-container {
+  margin-top: 1.5rem;
+}
+</style>
