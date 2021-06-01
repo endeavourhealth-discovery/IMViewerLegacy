@@ -68,6 +68,9 @@
             <TabPanel header="Graph">
               <Graph :conceptIri="conceptIri" v-if="active === 4" />
             </TabPanel>
+            <TabPanel header="Complex Mappings">
+              <ComplexMappings :conceptIri="conceptIri" v-if="active === 5" />
+            </TabPanel>
           </TabView>
         </div>
         <DownloadDialog
@@ -90,6 +93,7 @@ import Definition from "../components/panels/Definition.vue";
 import UsedIn from "../components/panels/UsedIn.vue";
 import Members from "../components/panels/Members.vue";
 import PanelHeader from "../components/panels/PanelHeader.vue";
+import ComplexMappings from "../components/panels/ComplexMappings.vue";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/panels/DownloadDialog.vue";
@@ -106,7 +110,8 @@ export default defineComponent({
     UsedIn,
     Members,
     Definition,
-    DownloadDialog
+    DownloadDialog,
+    ComplexMappings
   },
   computed: {
     isSet(): any {
