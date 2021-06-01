@@ -92,7 +92,7 @@ export default defineComponent({
       return result;
     },
 
-    createTree(concept: any, parentHierarchy: any, children: any): void {
+    async createTree(concept: any, parentHierarchy: any, children: any): Promise<void> {
       this.expandedKeys = {};
       const selectedConcept = this.createTreeNode(
         concept[RDFS.LABEL],
@@ -118,35 +118,17 @@ export default defineComponent({
       this.expandedKeys[0] = true;
       let count = 0;
 
-      while(this.root[0] && this.root[0].key !== "Discovery ontology") {
+      while(count < 3 && this.root[0] && this.root[0].key !== "Discovery ontology") {
         const rootCopy = [...this.root];
         console.log("root copy")
         console.log(rootCopy)
         this.root = [];
-        rootCopy.forEach(async (node: any) => {
-          let parents: any;
-          await this.getNodeParents(node.data).then(res => {
-            parents = res;
-          });
-          console.log("parents")
-          console.log(parents.length)
-          if (parents.length) {
-            parents.forEach((parent: any) => {
-              const parentNode = this.createTreeNode(
-                parent.name,
-                parent["@id"],
-                parent.type,
-                parent.name,
-                parent.hasChildren
-              );
-              parentNode.children = rootCopy;
-              this.root.push(parentNode);
-            });
-          }
-          });
+
+        await this.parentNodeGenerator(rootCopy);
+
         count++
-        this.expandedKeys[count] = true;
-        console.log("loop end");
+        // this.expandedKeys[count] = true;
+        console.log("loop end" + count);
         console.log(this.root);
       }
 
@@ -286,6 +268,33 @@ export default defineComponent({
       });
 
       this.root = parentNodes;
+    },
+
+    async parentNodeGenerator(rootCopy: any) {
+      for (const node of rootCopy) {
+        let parents: any;
+        await this.getNodeParents(node.data).then(res => {
+          parents = res;
+          console.log(parents);
+        });
+        if (parents.length) {
+          parents.forEach((parent: any) => {
+            if (!(parent.name in this.expandedKeys)) {
+              const parentNode = this.createTreeNode(
+                parent.name,
+                parent["@id"],
+                parent.type,
+                parent.name,
+                parent.hasChildren
+              );
+              parentNode.children = rootCopy;
+              console.log(parentNode);
+              this.root.push(parentNode);
+              this.expandedKeys[parentNode.key] = true;
+            }
+          });
+        }
+      }
     }
   }
 });

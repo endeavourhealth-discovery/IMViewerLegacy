@@ -86,7 +86,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Properties from "../components/panels/Properties.vue";
+import Properties from "../components/concept/Properties.vue";
 import Graph from "../components/concept/Graph.vue";
 import Terms from "../components/concept/Terms.vue";
 import Definition from "../components/concept/Definition.vue";
