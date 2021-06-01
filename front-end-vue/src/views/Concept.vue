@@ -16,7 +16,7 @@
         >
           <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
         </button>
-        <button
+<!--        <button
           class="p-panel-header-icon p-link p-mr-2"
           @click="directToCreateRoute"
           v-tooltip.bottom="'Create new concept'"
@@ -29,7 +29,7 @@
           v-tooltip.bottom="'Edit concept'"
         >
           <i class="fas fa-pencil-alt" aria-hidden="true"></i>
-        </button>
+        </button>-->
       </template>
       <template #header>
         <PanelHeader :types="types" :header="header" />
