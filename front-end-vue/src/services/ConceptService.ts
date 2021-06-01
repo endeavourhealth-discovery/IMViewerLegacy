@@ -161,4 +161,10 @@ export default class ConceptService {
       cancelToken: cancelToken
     });
   }
+
+  public static getComplexMappings(iri: string): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/concept/complexMappings", {
+      params: { iri: iri }
+    });
+  }
 }
