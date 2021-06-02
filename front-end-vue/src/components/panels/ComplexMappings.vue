@@ -173,4 +173,8 @@ table {
 td, th {
   overflow-wrap: break-word;
 }
+
+.p-organizationchart {
+  overflow: auto;
+}
 </style>
