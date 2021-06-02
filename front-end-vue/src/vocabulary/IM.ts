@@ -16,6 +16,7 @@ export class IM {
   public static MATCHED_TO = IM.NAMESPACE + "matchedTo";
   public static MAP_PRIORITY = IM.NAMESPACE + "mapPriority";
   public static ASSURANCE_LEVEL = IM.NAMESPACE + "assuranceLevel";
+  public static COMBINATION_OF = IM.NAMESPACE + "combinationOf";
 
   public static QUERY_SET = IM.NAMESPACE + "QuerySet";
   public static VALUE_SET = IM.NAMESPACE + "ValueSet";

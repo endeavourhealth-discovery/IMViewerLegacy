@@ -1,11 +1,17 @@
 <template>
   <span v-if="!mappings.length">None</span>
   <OrganizationChart v-else :value="data">
-    <template #root="slotProps">
+    <template #oneOf="slotProps">
+      <span>{{ slotProps.node.data.label }}</span>
+    </template>
+    <template #comboOf="slotProps">
       <span>{{ slotProps.node.data.label }}</span>
     </template>
     <template #childList="slotProps">
       <p v-for="label in slotProps.node.data.labels" :key="label">{{ label }}</p>
+    </template>
+    <template #default>
+      <p class="p-text-centered">None</p>
     </template>
   </OrganizationChart>
 </template>
@@ -28,16 +34,7 @@ export default defineComponent({
   data() {
     return {
       mappings: [] as any[],
-      data: {
-        key: "0",
-        data: {label: "Hi"},
-        children: [
-          {
-            key: "0_0",
-            data: {labels: ["Child hi!"]}
-          }
-        ]
-      } as { key: string, type: string, data: { label: string }, children: { key: string, type: string, data: { labels: string[] } }[] }
+      data: {} as any
     };
   },
   async mounted() {
@@ -45,39 +42,79 @@ export default defineComponent({
     this.createChartStructure();
   },
   methods: {
-    async getMappings() {
+    async getMappings(): Promise<void> {
       await ConceptService.getComplexMappings(this.conceptIri)
         .then(res => {
           this.mappings = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Complex mapping request failed", err)
-          )
+          // this.$toast.add(
+          //   LoggerService.error("Complex mapping request failed", err)
+          // )
+          this.data = {}
         });
     },
 
-    createChartStructure() {
-      let counter1 = 0;
-      let counter2 = 0;
+    createChartStructure(): void {
+      let counters = { 1: 0 } as any;
+      let data = {} as any;
       this.mappings.forEach(mapping => {
+        counters[2] = 0;
         if (IM.ONE_OF in mapping) {
-          this.data = {
-            key: "" + counter1,
-            type: "root",
-            data: { label: "One of" },
-            children: [{ key: "" + counter1 + "_" + counter2, type: "childList", data: {labels: []}}]
+          if (counters[1] === 0) {
+            data = {
+              key: "" + counters[1],
+              type: "oneOf",
+              data: { label: "One of" },
+              children: [{ key: "" + counters[1] + "_" + counters[2], type: "childList", data: {labels: []}}]
+            };
           }
+          mapping[IM.ONE_OF].forEach((map: any) => {
+            data.children[counters[1]].data.labels.push(
+              map[IM.MATCHED_TO]["@id"]
+            )
+            counters[2]++;
+          });
+        } else if (IM.COMBINATION_OF in  mapping) {
+          if (counters[1] === 0) {
+            data = {
+              key: "" + counters[1],
+              type: "comboOf",
+              data: { label: "Combination of" },
+              children: []
+            };
+          }
+          mapping[IM.COMBINATION_OF].forEach((map: any) => {
+            if (IM.ONE_OF in map) {
+              counters[3] = 0;
+              data.children[counters[2]] = {
+                key: "" + counters[1] + "_" + counters[2],
+                type: "oneOf",
+                data: { label: "One of" },
+                children: [{ key: "" + counters[1] + "_" + counters[2] + "_" + counters[3], type: "childList", data: { labels: [] } }]
+              }
+              map[IM.ONE_OF].forEach((child: any) => {
+                data.children[counters[2]].children[counters[3]].data.labels.push(child[IM.MATCHED_TO]["@id"]);
+              })
+              counters[3]++
+            } else if (IM.MATCHED_TO in map) {
+              data.children[counters[2]] = {
+                key: "" + counters[1] + "_" + counters[2],
+                type: "childList",
+                data: { labels: [map[IM.MATCHED_TO]["@id"]] },
+              }
+            }
+            counters[2]++
+          })
         }
-        mapping[IM.ONE_OF].forEach((map: any) => {
-          this.data.children[0].data.labels.push(
-            map[IM.MATCHED_TO]["@id"]
-          )
-          counter2++;
-        });
-        counter1++;
+        counters[1]++;
       })
-    }
+      this.data = data;
+    },
+
+    // setRoot(mapping: any): void {
+    //   if ()
+    // }
   }
 });
 </script>
