@@ -9,6 +9,15 @@ export class IM {
   public static ROLE_GROUP = IM.NAMESPACE + "roleGroup";
   public static IS_CONTAINED_IN = IM.NAMESPACE + "isContainedIn";
 
+  // mapping
+  public static HAS_MAP = IM.NAMESPACE + "hasMap";
+  public static ONE_OF = IM.NAMESPACE + "oneOf";
+  public static MAP_ADVICE = IM.NAMESPACE + "mapAdvice";
+  public static MATCHED_TO = IM.NAMESPACE + "matchedTo";
+  public static MAP_PRIORITY = IM.NAMESPACE + "mapPriority";
+  public static ASSURANCE_LEVEL = IM.NAMESPACE + "assuranceLevel";
+  public static COMBINATION_OF = IM.NAMESPACE + "combinationOf";
+
   public static QUERY_SET = IM.NAMESPACE + "QuerySet";
   public static VALUE_SET = IM.NAMESPACE + "ValueSet";
   public static SET = IM.NAMESPACE + "Set";
