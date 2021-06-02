@@ -306,19 +306,21 @@ export default defineComponent({
     },
 
     setTreeHeight(): void {
-      const conceptContainer = document.getElementById("concept-content-dialogs-container") as HTMLElement;
-      const header = conceptContainer.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
+      const conceptContainer = document.getElementsByClassName("concept-container")[0] as HTMLElement;
+      const header = conceptContainer.getElementsByClassName("p-panel-header")[0] as HTMLElement;
+      const nav = conceptContainer.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
       const tree = conceptContainer.getElementsByClassName("p-tree")[0] as HTMLElement;
       const currentFontSize = parseFloat(
         window
           .getComputedStyle(document.documentElement, null)
           .getPropertyValue("font-size")
       );
-      if (tree && header && conceptContainer && currentFontSize) {
+      if (tree && header && nav && conceptContainer && currentFontSize) {
         const calcHeight =
           conceptContainer.getBoundingClientRect().height -
           header.getBoundingClientRect().height -
-          2* currentFontSize -
+          nav.getBoundingClientRect().height -
+          4 * currentFontSize -
           1 +
           "px";
         tree.style.maxHeight = calcHeight;
