@@ -1,6 +1,5 @@
 <template>
-  <span v-if="!mappings.length">None</span>
-  <OrganizationChart v-else :value="data">
+  <OrganizationChart :value="data">
     <template #oneOf="slotProps">
       <span>{{ slotProps.node.data.label }}</span>
     </template>
@@ -8,7 +7,11 @@
       <span>{{ slotProps.node.data.label }}</span>
     </template>
     <template #childList="slotProps">
-      <p v-for="label in slotProps.node.data.labels" :key="label">{{ label }}</p>
+      <div v-for="label in slotProps.node.data.labels" :key="label">
+        <p>{{ label.matchedTo }}</p>
+        <!-- <p>Priority: {{ label.priority }}</p>
+        <p>{{ label.assuranceLevel }}</p> -->
+      </div>
     </template>
     <template #default>
       <p class="p-text-centered">None</p>
@@ -51,7 +54,8 @@ export default defineComponent({
           // this.$toast.add(
           //   LoggerService.error("Complex mapping request failed", err)
           // )
-          this.data = {}
+          this.mappings = [];
+          this.data = {};
         });
     },
 
@@ -70,9 +74,12 @@ export default defineComponent({
             };
           }
           mapping[IM.ONE_OF].forEach((map: any) => {
-            data.children[counters[1]].data.labels.push(
-              map[IM.MATCHED_TO]["@id"]
-            )
+            data.children[counters[1]].data.labels.push({
+              matchedTo: map[IM.MATCHED_TO]["@id"],
+              priority: map[IM.MAP_PRIORITY]["@value"],
+              assuranceLevel: map[IM.ASSURANCE_LEVEL]["@id"],
+              mapAdvice: map[IM.MAP_ADVICE]
+            })
             counters[2]++;
           });
         } else if (IM.COMBINATION_OF in  mapping) {
@@ -94,14 +101,24 @@ export default defineComponent({
                 children: [{ key: "" + counters[1] + "_" + counters[2] + "_" + counters[3], type: "childList", data: { labels: [] } }]
               }
               map[IM.ONE_OF].forEach((child: any) => {
-                data.children[counters[2]].children[counters[3]].data.labels.push(child[IM.MATCHED_TO]["@id"]);
+                data.children[counters[2]].children[counters[3]].data.labels.push({
+                  matchedTo: child[IM.MATCHED_TO]["@id"],
+                  priority: child[IM.MAP_PRIORITY]["@value"],
+                  assuranceLevel: child[IM.ASSURANCE_LEVEL]["@id"],
+                  mapAdvice: child[IM.MAP_ADVICE]
+                });
               })
               counters[3]++
             } else if (IM.MATCHED_TO in map) {
               data.children[counters[2]] = {
                 key: "" + counters[1] + "_" + counters[2],
                 type: "childList",
-                data: { labels: [map[IM.MATCHED_TO]["@id"]] },
+                data: { labels: [{
+                  matchedTo: map[IM.MATCHED_TO]["@id"],
+                  priority: map[IM.MAP_PRIORITY]["@value"],
+                  assuranceLevel: map[IM.ASSURANCE_LEVEL]["@id"],
+                  mapAdvice: map[IM.MAP_ADVICE]
+                }] },
               }
             }
             counters[2]++
@@ -110,11 +127,7 @@ export default defineComponent({
         counters[1]++;
       })
       this.data = data;
-    },
-
-    // setRoot(mapping: any): void {
-    //   if ()
-    // }
+    }
   }
 });
 </script>
