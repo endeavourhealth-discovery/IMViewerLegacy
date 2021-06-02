@@ -54,12 +54,20 @@ export default defineComponent({
     }
   },
   async mounted() {
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.setTreeHeight);
+    });
+    this.setTreeHeight();
+
     await this.getConceptAggregate(this.conceptIri);
     this.createTree(
       this.conceptAggregate.concept,
       this.conceptAggregate.parents,
       this.conceptAggregate.children
     );
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.setTreeHeight);
   },
   methods: {
     async getConceptAggregate(iri: string): Promise<void> {
@@ -120,16 +128,16 @@ export default defineComponent({
 
       while(count < 3 && this.root[0] && this.root[0].key !== "Discovery ontology") {
         const rootCopy = [...this.root];
-        console.log("root copy")
-        console.log(rootCopy)
+        // console.log("root copy")
+        // console.log(rootCopy)
         this.root = [];
 
         await this.parentNodeGenerator(rootCopy);
 
         count++
         // this.expandedKeys[count] = true;
-        console.log("loop end" + count);
-        console.log(this.root);
+        // console.log("loop end" + count);
+        // console.log(this.root);
       }
 
       // if(parentHierarchy.length) {
@@ -275,7 +283,7 @@ export default defineComponent({
         let parents: any;
         await this.getNodeParents(node.data).then(res => {
           parents = res;
-          console.log(parents);
+          // console.log(parents);
         });
         if (parents.length) {
           parents.forEach((parent: any) => {
@@ -288,12 +296,32 @@ export default defineComponent({
                 parent.hasChildren
               );
               parentNode.children = rootCopy;
-              console.log(parentNode);
+              // console.log(parentNode);
               this.root.push(parentNode);
               this.expandedKeys[parentNode.key] = true;
             }
           });
         }
+      }
+    },
+
+    setTreeHeight(): void {
+      const conceptContainer = document.getElementById("concept-content-dialogs-container") as HTMLElement;
+      const header = conceptContainer.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
+      const tree = conceptContainer.getElementsByClassName("p-tree")[0] as HTMLElement;
+      const currentFontSize = parseFloat(
+        window
+          .getComputedStyle(document.documentElement, null)
+          .getPropertyValue("font-size")
+      );
+      if (tree && header && conceptContainer && currentFontSize) {
+        const calcHeight =
+          conceptContainer.getBoundingClientRect().height -
+          header.getBoundingClientRect().height -
+          2* currentFontSize -
+          1 +
+          "px";
+        tree.style.maxHeight = calcHeight;
       }
     }
   }
@@ -301,5 +329,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
+.tree-root {
+  overflow: auto;
+}
 </style>
