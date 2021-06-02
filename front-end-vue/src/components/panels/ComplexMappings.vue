@@ -7,11 +7,23 @@
       <span>{{ slotProps.node.data.label }}</span>
     </template>
     <template #childList="slotProps">
-      <div v-for="label in slotProps.node.data.labels" :key="label">
-        <p>{{ label.matchedTo }}</p>
-        <!-- <p>Priority: {{ label.priority }}</p>
-        <p>{{ label.assuranceLevel }}</p> -->
-      </div>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Iri</th>
+            <th scope="col">Priority</th>
+            <th scope="col">Assurance level</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="label in slotProps.node.data.labels" :key="label">
+            <td>{{ label.matchedTo }}</td>
+            <td>{{ label.priority }}</td>
+            <td v-if="label.assuranceLevel = 'http://endhealth.info/im#NationallyAssuredUK'">UK nationally assured</td>
+            <td v-else>{{ label.assuranceLevel }}</td>
+          </tr>
+        </tbody>
+      </table>
     </template>
     <template #default>
       <p class="p-text-centered">None</p>
@@ -133,5 +145,28 @@ export default defineComponent({
 </script>
 
 <style scoped>
+td,
+th {
+  border: 1px solid lightgray;
+  padding: 0.5rem;
+}
 
+td,
+th {
+  text-align: left;
+}
+
+tr:nth-child(even) {
+  background-color: #F8F9FA;
+}
+
+th[scope="col"] {
+  background-color: #F8F9FA;
+  color: #495057;
+}
+
+table {
+  border-collapse: collapse;
+  border: 2px solid rgb(200, 200, 200);
+}
 </style>

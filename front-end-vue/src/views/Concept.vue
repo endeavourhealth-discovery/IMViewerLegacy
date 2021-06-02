@@ -62,14 +62,14 @@
             <TabPanel header="Terms">
               <Terms :conceptIri="conceptIri" v-if="active === 2" />
             </TabPanel>
+            <TabPanel header="Maps">
+              <ComplexMappings :conceptIri="conceptIri" v-if="active === 3" />
+            </TabPanel>
             <TabPanel header="Used In">
-              <UsedIn :conceptIri="conceptIri" v-if="active === 3" />
+              <UsedIn :conceptIri="conceptIri" v-if="active === 4" />
             </TabPanel>
             <TabPanel header="Graph">
-              <Graph :conceptIri="conceptIri" v-if="active === 4" />
-            </TabPanel>
-            <TabPanel header="Complex Mappings">
-              <ComplexMappings :conceptIri="conceptIri" v-if="active === 5" />
+              <Graph :conceptIri="conceptIri" v-if="active === 5" />
             </TabPanel>
           </TabView>
         </div>
