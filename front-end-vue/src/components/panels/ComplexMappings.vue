@@ -169,4 +169,8 @@ table {
   border-collapse: collapse;
   border: 2px solid rgb(200, 200, 200);
 }
+
+td, th {
+  overflow-wrap: break-word;
+}
 </style>
