@@ -19,9 +19,9 @@
       :scrollable="true"
       removableSort
       :paginator="true"
-      paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
       :rowsPerPageOptions="[15, 25, 50]"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+      currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
       :rows="15"
     >
       <Column field="name" header="Results">

@@ -12,6 +12,8 @@
     scrollable
     showGridlines
     :scrollHeight="scrollHeight"
+    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+    currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
     class="p-datatable-sm"
     id="terms-table"
   >

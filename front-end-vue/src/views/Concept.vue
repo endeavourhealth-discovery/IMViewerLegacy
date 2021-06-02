@@ -43,7 +43,7 @@
             <TabPanel header="Terms">
               <Terms :conceptIri="conceptIri" v-if="active === 1" />
             </TabPanel>
-            <TabPanel header="Used In">
+            <TabPanel header="Used in">
               <UsedIn :conceptIri="conceptIri" v-if="active === 2" />
             </TabPanel>
             <TabPanel header="Members">
