@@ -1,5 +1,11 @@
 <template>
-  <OrganizationChart :value="data">
+  <div
+    class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container"
+    v-if="$store.state.loading.get('mappings')"
+  >
+    <ProgressSpinner />
+  </div>
+  <OrganizationChart v-else :value="data">
     <template #oneOf="slotProps">
       <span>{{ slotProps.node.data.label }}</span>
     </template>
@@ -7,23 +13,11 @@
       <span>{{ slotProps.node.data.label }}</span>
     </template>
     <template #childList="slotProps">
-      <!-- <div
-        v-for="label in slotProps.node.data.labels"
-        :key="label.matchedTo"
-      >
-        <p
-          @mouseenter="toggle($event, label)"
-          @mouseleave="toggle($event, label)"
-        >
-          {{ label.matchedTo }}
-        </p>
-      </div> -->
       <table>
         <thead>
           <tr>
             <th scope="col">Name</th>
             <th scope="col">Priority</th>
-            <!-- <th scope="col">Assurance level</th> -->
           </tr>
         </thead>
         <tbody>
@@ -72,8 +66,16 @@ export default defineComponent({
   props: ["conceptIri"],
   watch: {
     async conceptIri() {
+      this.$store.commit("updateLoading", {
+        key: "mappings",
+        value: true
+      });
       await this.getMappings();
       this.createChartStructure();
+      this.$store.commit("updateLoading", {
+        key: "mappings",
+        value: false
+      });
     }
   },
   data() {
@@ -84,8 +86,16 @@ export default defineComponent({
     };
   },
   async mounted() {
+    this.$store.commit("updateLoading", {
+      key: "mappings",
+      value: true
+    });
     await this.getMappings();
     this.createChartStructure();
+    this.$store.commit("updateLoading", {
+      key: "mappings",
+      value: false
+    });
   },
   methods: {
     async getMappings(): Promise<void> {
