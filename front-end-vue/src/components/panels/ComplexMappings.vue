@@ -94,6 +94,7 @@ export default defineComponent({
             })
             counters[2]++;
           });
+          data.children[counters[1]].data.labels.sort(this.byPriority);
         } else if (IM.COMBINATION_OF in  mapping) {
           if (counters[1] === 0) {
             data = {
@@ -120,6 +121,7 @@ export default defineComponent({
                   mapAdvice: child[IM.MAP_ADVICE]
                 });
               })
+              data.children[counters[2]].children[counters[3]].data.labels.sort(this.byPriority);
               counters[3]++
             } else if (IM.MATCHED_TO in map) {
               data.children[counters[2]] = {
@@ -132,6 +134,7 @@ export default defineComponent({
                   mapAdvice: map[IM.MAP_ADVICE]
                 }] },
               }
+              data.children[counters[2]].data.labels.sort(this.byPriority);
             }
             counters[2]++
           })
@@ -139,6 +142,16 @@ export default defineComponent({
         counters[1]++;
       })
       this.data = data;
+    },
+
+    byPriority(a: any, b: any): number {
+      if (a.priority < b.priority) {
+        return -1;
+      } else if (a.priority > a.priority) {
+        return 1;
+      } else {
+        return 0;
+      }
     }
   }
 });
