@@ -21,7 +21,7 @@
       <table>
         <thead>
           <tr>
-            <th scope="col">Iri</th>
+            <th scope="col">Code</th>
             <th scope="col">Priority</th>
             <!-- <th scope="col">Assurance level</th> -->
           </tr>
@@ -33,7 +33,7 @@
             @mouseenter="toggle($event, label)"
             @mouseleave="toggle($event, label)"
           >
-            <td>{{ label.matchedTo }}</td>
+            <td>{{ label.matchedTo.substring(label.matchedTo.lastIndexOf("/") + 1) }}</td>
             <td>{{ label.priority }}</td>
             <!-- <td v-if="label.assuranceLevel = 'http://endhealth.info/im#NationallyAssuredUK'">UK nationally assured</td>
             <td v-else>{{ label.assuranceLevel }}</td> -->
