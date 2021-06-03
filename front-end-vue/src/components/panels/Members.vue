@@ -8,7 +8,7 @@
       </div>
       <Listbox
         v-else
-        listStyle="height:300px"
+        listStyle="height: calc(100vh - 245px)"
         :filter="true"
         emptyMessage="No results found"
         emptyFilterMessage="No results found"
