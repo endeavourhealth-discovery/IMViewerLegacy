@@ -33,14 +33,8 @@
             @mouseenter="toggle($event, label)"
             @mouseleave="toggle($event, label)"
           >
-            <td>
-              {{
-                label.name
-              }}
-            </td>
+            <td>{{ label.name }}</td>
             <td>{{ label.priority }}</td>
-            <!-- <td v-if="label.assuranceLevel = 'http://endhealth.info/im#NationallyAssuredUK'">UK nationally assured</td>
-            <td v-else>{{ label.assuranceLevel }}</td> -->
           </tr>
         </tbody>
       </table>
@@ -51,30 +45,20 @@
   </OrganizationChart>
 
   <OverlayPanel ref="opMap" id="overlay-panel-maps">
-    <table>
-      <thead>
-        <tr>
-          <th scope="col">Iri</th>
-          <th scope="col">Priority</th>
-          <th scope="col">Assurance level</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{{ hoveredResult.iri }}</td>
-          <td>{{ hoveredResult.priority }}</td>
-          <td
-            v-if="
-              (hoveredResult.assuranceLevel =
-                'http://endhealth.info/im#NationallyAssuredUK')
-            "
-          >
-            UK nationally assured
-          </td>
-          <td v-else>{{ hoveredResult.assuranceLevel }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="p-d-flex p-flex-column p-jc-start map-overlay">
+      <p><strong>Name: </strong>{{ hoveredResult.name }}</p>
+      <p><strong>Iri: </strong>{{ hoveredResult.iri }}</p>
+      <p><strong>Priority: </strong>{{ hoveredResult.priority }}</p>
+      <p
+        v-if="
+          (hoveredResult.assuranceLevel =
+            'http://endhealth.info/im#NationallyAssuredUK')
+        "
+      >
+        <strong>Assurance level: </strong>
+        {{ hoveredResult.assuranceLevel }}
+      </p>
+    </div>
   </OverlayPanel>
 </template>
 
