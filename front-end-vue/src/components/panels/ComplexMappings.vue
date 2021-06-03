@@ -1,5 +1,11 @@
 <template>
-  <OrganizationChart :value="data">
+  <div
+    class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container"
+    v-if="$store.state.loading.get('mappings')"
+  >
+    <ProgressSpinner />
+  </div>
+  <OrganizationChart v-else :value="data">
     <template #oneOf="slotProps">
       <span>{{ slotProps.node.data.label }}</span>
     </template>
@@ -72,8 +78,16 @@ export default defineComponent({
   props: ["conceptIri"],
   watch: {
     async conceptIri() {
+      this.$store.commit("updateLoading", {
+        key: "mappings",
+        value: true
+      });
       await this.getMappings();
       this.createChartStructure();
+      this.$store.commit("updateLoading", {
+        key: "mappings",
+        value: false
+      });
     }
   },
   data() {
@@ -84,8 +98,16 @@ export default defineComponent({
     };
   },
   async mounted() {
-    await this.getMappings();
-    this.createChartStructure();
+      this.$store.commit("updateLoading", {
+        key: "mappings",
+        value: true
+      });
+      await this.getMappings();
+      this.createChartStructure();
+      this.$store.commit("updateLoading", {
+        key: "mappings",
+        value: false
+      });
   },
   methods: {
     async getMappings(): Promise<void> {
