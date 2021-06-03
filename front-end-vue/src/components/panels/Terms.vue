@@ -1,9 +1,9 @@
 <template>
   <DataTable
     :value="terms"
-    :rowsPerPageOptions="[10, 25, 50]"
-    :paginator="terms.length > 10 ? true : false"
-    :rows="10"
+    :rowsPerPageOptions="[18, 25, 50]"
+    :paginator="terms.length > 18 ? true : false"
+    :rows="18"
     rowGroupMode="subheader"
     groupRowsBy="scheme.name"
     sortMode="single"
