@@ -7,20 +7,36 @@
       <span>{{ slotProps.node.data.label }}</span>
     </template>
     <template #childList="slotProps">
+      <!-- <div
+        v-for="label in slotProps.node.data.labels"
+        :key="label.matchedTo"
+      >
+        <p
+          @mouseenter="toggle($event, label)"
+          @mouseleave="toggle($event, label)"
+        >
+          {{ label.matchedTo }}
+        </p>
+      </div> -->
       <table>
         <thead>
           <tr>
             <th scope="col">Iri</th>
             <th scope="col">Priority</th>
-            <th scope="col">Assurance level</th>
+            <!-- <th scope="col">Assurance level</th> -->
           </tr>
         </thead>
         <tbody>
-          <tr v-for="label in slotProps.node.data.labels" :key="label">
+          <tr
+            v-for="label in slotProps.node.data.labels"
+            :key="label"
+            @mouseenter="toggle($event, label)"
+            @mouseleave="toggle($event, label)"
+          >
             <td>{{ label.matchedTo }}</td>
             <td>{{ label.priority }}</td>
-            <td v-if="label.assuranceLevel = 'http://endhealth.info/im#NationallyAssuredUK'">UK nationally assured</td>
-            <td v-else>{{ label.assuranceLevel }}</td>
+            <!-- <td v-if="label.assuranceLevel = 'http://endhealth.info/im#NationallyAssuredUK'">UK nationally assured</td>
+            <td v-else>{{ label.assuranceLevel }}</td> -->
           </tr>
         </tbody>
       </table>
@@ -29,6 +45,29 @@
       <p class="p-text-centered">None</p>
     </template>
   </OrganizationChart>
+
+  <OverlayPanel
+    ref="opMap"
+    id="overlay-panel-maps"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Iri</th>
+          <th scope="col">Priority</th>
+          <th scope="col">Assurance level</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ hoveredResult.matchedTo }}</td>
+          <td>{{ hoveredResult.priority }}</td>
+          <td v-if="hoveredResult.assuranceLevel = 'http://endhealth.info/im#NationallyAssuredUK'">UK nationally assured</td>
+          <td v-else>{{ hoveredResult.assuranceLevel }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </OverlayPanel>
 </template>
 
 <script lang="ts">
@@ -49,7 +88,8 @@ export default defineComponent({
   data() {
     return {
       mappings: [] as any[],
-      data: {} as any
+      data: {} as any,
+      hoveredResult: {} as any
     };
   },
   async mounted() {
@@ -152,6 +192,12 @@ export default defineComponent({
       } else {
         return 0;
       }
+    },
+
+    toggle(event: any, data: any): void {
+      this.hoveredResult = data;
+      const x = this.$refs.opMap as any;
+      x.toggle(event);
     }
   }
 });
