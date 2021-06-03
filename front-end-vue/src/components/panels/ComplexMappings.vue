@@ -33,7 +33,11 @@
             @mouseenter="toggle($event, label)"
             @mouseleave="toggle($event, label)"
           >
-            <td>{{ label.matchedTo.substring(label.matchedTo.lastIndexOf("/") + 1) }}</td>
+            <td>
+              {{
+                label.matchedTo.substring(label.matchedTo.lastIndexOf("/") + 1)
+              }}
+            </td>
             <td>{{ label.priority }}</td>
             <!-- <td v-if="label.assuranceLevel = 'http://endhealth.info/im#NationallyAssuredUK'">UK nationally assured</td>
             <td v-else>{{ label.assuranceLevel }}</td> -->
@@ -46,10 +50,7 @@
     </template>
   </OrganizationChart>
 
-  <OverlayPanel
-    ref="opMap"
-    id="overlay-panel-maps"
-  >
+  <OverlayPanel ref="opMap" id="overlay-panel-maps">
     <table>
       <thead>
         <tr>
@@ -62,7 +63,14 @@
         <tr>
           <td>{{ hoveredResult.matchedTo }}</td>
           <td>{{ hoveredResult.priority }}</td>
-          <td v-if="hoveredResult.assuranceLevel = 'http://endhealth.info/im#NationallyAssuredUK'">UK nationally assured</td>
+          <td
+            v-if="
+              (hoveredResult.assuranceLevel =
+                'http://endhealth.info/im#NationallyAssuredUK')
+            "
+          >
+            UK nationally assured
+          </td>
           <td v-else>{{ hoveredResult.assuranceLevel }}</td>
         </tr>
       </tbody>
@@ -72,7 +80,6 @@
 
 <script lang="ts">
 import ConceptService from "@/services/ConceptService";
-import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
 
@@ -102,10 +109,7 @@ export default defineComponent({
         .then(res => {
           this.mappings = res.data;
         })
-        .catch(err => {
-          // this.$toast.add(
-          //   LoggerService.error("Complex mapping request failed", err)
-          // )
+        .catch(() => {
           this.mappings = [];
           this.data = {};
         });
@@ -122,7 +126,13 @@ export default defineComponent({
               key: "" + counters[1],
               type: "oneOf",
               data: { label: "One of" },
-              children: [{ key: "" + counters[1] + "_" + counters[2], type: "childList", data: {labels: []}}]
+              children: [
+                {
+                  key: "" + counters[1] + "_" + counters[2],
+                  type: "childList",
+                  data: { labels: [] }
+                }
+              ]
             };
           }
           mapping[IM.ONE_OF].forEach((map: any) => {
@@ -131,11 +141,11 @@ export default defineComponent({
               priority: map[IM.MAP_PRIORITY]["@value"],
               assuranceLevel: map[IM.ASSURANCE_LEVEL]["@id"],
               mapAdvice: map[IM.MAP_ADVICE]
-            })
+            });
             counters[2]++;
           });
           data.children[counters[1]].data.labels.sort(this.byPriority);
-        } else if (IM.COMBINATION_OF in  mapping) {
+        } else if (IM.COMBINATION_OF in mapping) {
           if (counters[1] === 0) {
             data = {
               key: "" + counters[1],
@@ -151,36 +161,51 @@ export default defineComponent({
                 key: "" + counters[1] + "_" + counters[2],
                 type: "oneOf",
                 data: { label: "One of" },
-                children: [{ key: "" + counters[1] + "_" + counters[2] + "_" + counters[3], type: "childList", data: { labels: [] } }]
-              }
+                children: [
+                  {
+                    key:
+                      "" + counters[1] + "_" + counters[2] + "_" + counters[3],
+                    type: "childList",
+                    data: { labels: [] }
+                  }
+                ]
+              };
               map[IM.ONE_OF].forEach((child: any) => {
-                data.children[counters[2]].children[counters[3]].data.labels.push({
+                data.children[counters[2]].children[
+                  counters[3]
+                ].data.labels.push({
                   matchedTo: child[IM.MATCHED_TO]["@id"],
                   priority: child[IM.MAP_PRIORITY]["@value"],
                   assuranceLevel: child[IM.ASSURANCE_LEVEL]["@id"],
                   mapAdvice: child[IM.MAP_ADVICE]
                 });
-              })
-              data.children[counters[2]].children[counters[3]].data.labels.sort(this.byPriority);
-              counters[3]++
+              });
+              data.children[counters[2]].children[counters[3]].data.labels.sort(
+                this.byPriority
+              );
+              counters[3]++;
             } else if (IM.MATCHED_TO in map) {
               data.children[counters[2]] = {
                 key: "" + counters[1] + "_" + counters[2],
                 type: "childList",
-                data: { labels: [{
-                  matchedTo: map[IM.MATCHED_TO]["@id"],
-                  priority: map[IM.MAP_PRIORITY]["@value"],
-                  assuranceLevel: map[IM.ASSURANCE_LEVEL]["@id"],
-                  mapAdvice: map[IM.MAP_ADVICE]
-                }] },
-              }
+                data: {
+                  labels: [
+                    {
+                      matchedTo: map[IM.MATCHED_TO]["@id"],
+                      priority: map[IM.MAP_PRIORITY]["@value"],
+                      assuranceLevel: map[IM.ASSURANCE_LEVEL]["@id"],
+                      mapAdvice: map[IM.MAP_ADVICE]
+                    }
+                  ]
+                }
+              };
               data.children[counters[2]].data.labels.sort(this.byPriority);
             }
-            counters[2]++
-          })
+            counters[2]++;
+          });
         }
         counters[1]++;
-      })
+      });
       this.data = data;
     },
 
@@ -216,11 +241,11 @@ th {
 }
 
 tr:nth-child(even) {
-  background-color: #F8F9FA;
+  background-color: #f8f9fa;
 }
 
 th[scope="col"] {
-  background-color: #F8F9FA;
+  background-color: #f8f9fa;
   color: #495057;
 }
 
@@ -229,7 +254,8 @@ table {
   border: 2px solid rgb(200, 200, 200);
 }
 
-td, th {
+td,
+th {
   overflow-wrap: break-word;
 }
 
