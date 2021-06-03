@@ -371,7 +371,7 @@ export default defineComponent({
 }
 
 .tree-root {
-  height: 95%;
+  height: 100%;
   overflow: auto;
 }
 .p-tree-toggler,
