@@ -21,7 +21,7 @@
       <table>
         <thead>
           <tr>
-            <th scope="col">Code</th>
+            <th scope="col">Name</th>
             <th scope="col">Priority</th>
             <!-- <th scope="col">Assurance level</th> -->
           </tr>
@@ -35,7 +35,7 @@
           >
             <td>
               {{
-                label.matchedTo.substring(label.matchedTo.lastIndexOf("/") + 1)
+                label.name
               }}
             </td>
             <td>{{ label.priority }}</td>
@@ -61,7 +61,7 @@
       </thead>
       <tbody>
         <tr>
-          <td>{{ hoveredResult.matchedTo }}</td>
+          <td>{{ hoveredResult.iri }}</td>
           <td>{{ hoveredResult.priority }}</td>
           <td
             v-if="
@@ -137,7 +137,8 @@ export default defineComponent({
           }
           mapping[IM.ONE_OF].forEach((map: any) => {
             data.children[counters[1]].data.labels.push({
-              matchedTo: map[IM.MATCHED_TO]["@id"],
+              name: map[IM.MATCHED_TO].name,
+              iri: map[IM.MATCHED_TO]["@id"],
               priority: map[IM.MAP_PRIORITY]["@value"],
               assuranceLevel: map[IM.ASSURANCE_LEVEL]["@id"],
               mapAdvice: map[IM.MAP_ADVICE]
@@ -174,7 +175,8 @@ export default defineComponent({
                 data.children[counters[2]].children[
                   counters[3]
                 ].data.labels.push({
-                  matchedTo: child[IM.MATCHED_TO]["@id"],
+                  name: child[IM.MATCHED_TO].name,
+                  iri: child[IM.MATCHED_TO]["@id"],
                   priority: child[IM.MAP_PRIORITY]["@value"],
                   assuranceLevel: child[IM.ASSURANCE_LEVEL]["@id"],
                   mapAdvice: child[IM.MAP_ADVICE]
@@ -191,7 +193,8 @@ export default defineComponent({
                 data: {
                   labels: [
                     {
-                      matchedTo: map[IM.MATCHED_TO]["@id"],
+                      name: map[IM.MATCHED_TO].name,
+                      iri: map[IM.MATCHED_TO]["@id"],
                       priority: map[IM.MAP_PRIORITY]["@value"],
                       assuranceLevel: map[IM.ASSURANCE_LEVEL]["@id"],
                       mapAdvice: map[IM.MAP_ADVICE]
