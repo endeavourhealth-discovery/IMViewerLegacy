@@ -43,12 +43,7 @@
       <p><strong>Name: </strong>{{ hoveredResult.name }}</p>
       <p><strong>Iri: </strong>{{ hoveredResult.iri }}</p>
       <p><strong>Priority: </strong>{{ hoveredResult.priority }}</p>
-      <p
-        v-if="
-          (hoveredResult.assuranceLevel =
-            'http://endhealth.info/im#NationallyAssuredUK')
-        "
-      >
+      <p>
         <strong>Assurance level: </strong>
         {{ hoveredResult.assuranceLevel }}
       </p>
@@ -134,7 +129,7 @@ export default defineComponent({
               name: map[IM.MATCHED_TO].name,
               iri: map[IM.MATCHED_TO]["@id"],
               priority: map[IM.MAP_PRIORITY]["@value"],
-              assuranceLevel: map[IM.ASSURANCE_LEVEL]["@id"],
+              assuranceLevel: map[IM.ASSURANCE_LEVEL].name,
               mapAdvice: map[IM.MAP_ADVICE]
             });
             counters[2]++;
@@ -172,7 +167,7 @@ export default defineComponent({
                   name: child[IM.MATCHED_TO].name,
                   iri: child[IM.MATCHED_TO]["@id"],
                   priority: child[IM.MAP_PRIORITY]["@value"],
-                  assuranceLevel: child[IM.ASSURANCE_LEVEL]["@id"],
+                  assuranceLevel: child[IM.ASSURANCE_LEVEL].name,
                   mapAdvice: child[IM.MAP_ADVICE]
                 });
               });
@@ -190,7 +185,7 @@ export default defineComponent({
                       name: map[IM.MATCHED_TO].name,
                       iri: map[IM.MATCHED_TO]["@id"],
                       priority: map[IM.MAP_PRIORITY]["@value"],
-                      assuranceLevel: map[IM.ASSURANCE_LEVEL]["@id"],
+                      assuranceLevel: map[IM.ASSURANCE_LEVEL].name,
                       mapAdvice: map[IM.MAP_ADVICE]
                     }
                   ]
