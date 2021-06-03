@@ -17,6 +17,8 @@ export class IM {
   public static MAP_PRIORITY = IM.NAMESPACE + "mapPriority";
   public static ASSURANCE_LEVEL = IM.NAMESPACE + "assuranceLevel";
   public static COMBINATION_OF = IM.NAMESPACE + "combinationOf";
+  //maps assurance levels
+  public static NATIONALLY_ASSURED_UK = IM.NAMESPACE + "NationallyAssuredUK";
 
   public static QUERY_SET = IM.NAMESPACE + "QuerySet";
   public static VALUE_SET = IM.NAMESPACE + "ValueSet";
