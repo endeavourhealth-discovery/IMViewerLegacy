@@ -1,7 +1,7 @@
 <template>
   <DataTable
     :value="terms"
-    :rowsPerPageOptions="[rows, rows*2, rows*4]"
+    :rowsPerPageOptions="[rows, rows * 2, rows * 4]"
     :paginator="terms.length > rows ? true : false"
     :rows="rows"
     rowGroupMode="subheader"
@@ -144,8 +144,19 @@ export default defineComponent({
           .getComputedStyle(document.documentElement, null)
           .getPropertyValue("font-size")
       );
-      const schemeCount = terms.getElementsByClassName("p-rowgroup-header").length;
-      const maxRows = Math.floor((container.getBoundingClientRect().height - header.getBoundingClientRect().height - nav.getBoundingClientRect().height - paginator.getBoundingClientRect().height - currentFontSize * 4) / row.getBoundingClientRect().height) - 1 - schemeCount;
+      const schemeCount = terms.getElementsByClassName("p-rowgroup-header")
+        .length;
+      const maxRows =
+        Math.floor(
+          (container.getBoundingClientRect().height -
+            header.getBoundingClientRect().height -
+            nav.getBoundingClientRect().height -
+            paginator.getBoundingClientRect().height -
+            currentFontSize * 4) /
+            row.getBoundingClientRect().height
+        ) -
+        1 -
+        schemeCount;
       this.rows = maxRows;
     }
   }
