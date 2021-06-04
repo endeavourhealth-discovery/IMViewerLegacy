@@ -32,7 +32,6 @@ const palette = require("../../../node_modules/google-palette");
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
 import { setTooltips, rescaleData } from "@/helpers/ChartRescale";
-import { toSentenceCase } from "@/helpers/TextConverters";
 import { ChartOptions } from "@/models/charts/ChartOptions";
 import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
@@ -80,9 +79,6 @@ export default defineComponent({
             +entry[OWL.HAS_VALUE]["@value"]
           );
         }
-        this.chartConceptTypes.labels = this.chartConceptTypes.labels.map(
-          label => toSentenceCase(label)
-        );
         this.realData = { ...this.chartConceptTypes.datasets[0].data };
         // set tooltip to use real data
         this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
