@@ -18,8 +18,8 @@
     id="terms-table"
   >
     <Column field="scheme.name" header="Scheme"></Column>
-    <Column field="term" header="Term" style="flex:0 0 75%"></Column>
-    <Column field="code" header="Code"></Column>
+    <Column field="term" header="Term" style="flex: 0 0 75%"></Column>
+    <Column field="code" header="Code" style="flex: 0 0 25%"></Column>
     <template #groupheader="slotProps">
       <span style="font-weight: 700; color:rgba(51,153,255,0.8)">
         Scheme : {{ slotProps.data.scheme.name }}
@@ -65,6 +65,7 @@ export default defineComponent({
   methods: {
     onResize(): void {
       this.setScrollHeight();
+      this.setTableWidth();
     },
     async getTerms(iri: string) {
       this.loading = true;
@@ -111,21 +112,17 @@ export default defineComponent({
         currentFontSize * 4 -
         1 +
         "px";
+    },
+
+    setTableWidth(): void {
+      const container = document.getElementById("terms-table") as HTMLElement;
+      const table = container.getElementsByClassName("p-datatable-table")[0] as HTMLElement;
+      table.style.width = "100%";
     }
   }
 });
 </script>
 
 <style scoped>
-.usage-mapping-container {
-  width: 100%;
-}
 
-.mapping-container {
-  width: 50%;
-}
-
-.usage-container {
-  width: 50%;
-}
 </style>
