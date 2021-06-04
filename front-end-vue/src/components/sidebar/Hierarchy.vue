@@ -180,7 +180,10 @@ export default defineComponent({
         })
       ]).catch(err => {
         this.$toast.add(
-          LoggerService.error("Hierarchy tree concept aggregate fetch failed", err)
+          LoggerService.error(
+            "Hierarchy tree concept aggregate fetch failed",
+            err
+          )
         );
       });
     },

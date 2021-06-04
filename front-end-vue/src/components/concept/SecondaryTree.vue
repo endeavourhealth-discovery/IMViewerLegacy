@@ -14,10 +14,7 @@
         class="p-button-text p-button-plain"
       />
     </div>
-    <div
-      class="p-d-flex p-flex-row p-jc-start"
-      id="secondary-tree-parents-bar"
-    >
+    <div class="p-d-flex p-flex-row p-jc-start" id="secondary-tree-parents-bar">
       <Button
         :label="currentParent?.name"
         :disabled="!currentParent"
@@ -51,7 +48,10 @@
 </template>
 
 <script lang="ts">
-import { getIconFromType, getColourFromType } from "@/helpers/ConceptTypeMethods";
+import {
+  getIconFromType,
+  getColourFromType
+} from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
 import ConceptService from "@/services/ConceptService";
 import { IM } from "@/vocabulary/IM";
@@ -80,10 +80,18 @@ export default defineComponent({
       root: [] as any,
       expandedKeys: {} as any,
       selectedKey: {} as any,
-      currentParent: {} as { name: string; iri: string; listPosition: number } | null,
-      alternateParents: [] as { name: string; iri: string, listPosition: number }[],
+      currentParent: {} as {
+        name: string;
+        iri: string;
+        listPosition: number;
+      } | null,
+      alternateParents: [] as {
+        name: string;
+        iri: string;
+        listPosition: number;
+      }[],
       parentPosition: 0
-    }
+    };
   },
   async mounted() {
     this.$nextTick(() => {
@@ -116,12 +124,20 @@ export default defineComponent({
         })
       ]).catch(err => {
         this.$toast.add(
-          LoggerService.error("Secondary tree selected concept aggregate fetch failed", err)
+          LoggerService.error(
+            "Secondary tree selected concept aggregate fetch failed",
+            err
+          )
         );
       });
     },
 
-    async createTree(concept: any, parentHierarchy: any, children: any, parentPosition: number): Promise<void> {
+    async createTree(
+      concept: any,
+      parentHierarchy: any,
+      children: any,
+      parentPosition: number
+    ): Promise<void> {
       this.alternateParents = [];
       this.expandedKeys = {};
       const selectedConcept = this.createTreeNode(
@@ -149,9 +165,17 @@ export default defineComponent({
       if (parentHierarchy.length) {
         for (let i = 0; i < parentHierarchy.length; i++) {
           if (i === parentPosition) {
-            this.currentParent = { name: parentHierarchy[parentPosition].name, iri: parentHierarchy[parentPosition]["@id"], listPosition: i };
+            this.currentParent = {
+              name: parentHierarchy[parentPosition].name,
+              iri: parentHierarchy[parentPosition]["@id"],
+              listPosition: i
+            };
           } else {
-            this.alternateParents.push({ name: parentHierarchy[i].name, iri: parentHierarchy[i]["@id"], listPosition: i })
+            this.alternateParents.push({
+              name: parentHierarchy[i].name,
+              iri: parentHierarchy[i]["@id"],
+              listPosition: i
+            });
           }
         }
       }
@@ -203,7 +227,7 @@ export default defineComponent({
         .catch(err => {
           this.$toast.add(
             LoggerService.error("Concept children server request failed", err)
-          )
+          );
         });
       let index = 0;
 
@@ -242,7 +266,10 @@ export default defineComponent({
         })
         .catch(err => {
           this.$toast.add(
-            LoggerService.error("Concept parents server request failed or here", err)
+            LoggerService.error(
+              "Concept parents server request failed or here",
+              err
+            )
           );
         });
 
@@ -267,14 +294,24 @@ export default defineComponent({
         .then(res => {
           this.alternateParents = [];
           if (res.data.length) {
-            if (res.data[0].name === "http://endhealth.info/im#DiscoveryOntology") {
+            if (
+              res.data[0].name === "http://endhealth.info/im#DiscoveryOntology"
+            ) {
               this.currentParent = null;
             }
-            for (let i = 0; i < res.data.length; i++ ) {
+            for (let i = 0; i < res.data.length; i++) {
               if (i === parentPosition) {
-                this.currentParent = { name: res.data[parentPosition].name, iri: res.data[i]["@id"], listPosition: i };
+                this.currentParent = {
+                  name: res.data[parentPosition].name,
+                  iri: res.data[i]["@id"],
+                  listPosition: i
+                };
               } else {
-                this.alternateParents.push({ name: res.data[i].name, iri: res.data[i]["@id"], listPosition: i });
+                this.alternateParents.push({
+                  name: res.data[i].name,
+                  iri: res.data[i]["@id"],
+                  listPosition: i
+                });
               }
             }
           } else {
@@ -283,7 +320,10 @@ export default defineComponent({
         })
         .catch(err => {
           this.$toast.add(
-            LoggerService.error("Concept parents server request failed here", err)
+            LoggerService.error(
+              "Concept parents server request failed here",
+              err
+            )
           );
         });
       this.setTreeHeight();
@@ -300,18 +340,38 @@ export default defineComponent({
     },
 
     setTreeHeight(): void {
-      const conceptContainer = document.getElementsByClassName("concept-container")[0] as HTMLElement;
-      const header = conceptContainer.getElementsByClassName("p-panel-header")[0] as HTMLElement;
-      const nav = conceptContainer.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
-      const tree = conceptContainer.getElementsByClassName("p-tree")[0] as HTMLElement;
+      const conceptContainer = document.getElementsByClassName(
+        "concept-container"
+      )[0] as HTMLElement;
+      const header = conceptContainer.getElementsByClassName(
+        "p-panel-header"
+      )[0] as HTMLElement;
+      const nav = conceptContainer.getElementsByClassName(
+        "p-tabview-nav"
+      )[0] as HTMLElement;
+      const tree = conceptContainer.getElementsByClassName(
+        "p-tree"
+      )[0] as HTMLElement;
       const currentFontSize = parseFloat(
         window
           .getComputedStyle(document.documentElement, null)
           .getPropertyValue("font-size")
       );
-      const parentBar = document.getElementById("secondary-tree-parents-bar") as HTMLElement;
-      const altParentsContainer = document.getElementById("alternate-parents-container") as HTMLElement;
-      if (tree && header && nav && conceptContainer && currentFontSize && parentBar && altParentsContainer) {
+      const parentBar = document.getElementById(
+        "secondary-tree-parents-bar"
+      ) as HTMLElement;
+      const altParentsContainer = document.getElementById(
+        "alternate-parents-container"
+      ) as HTMLElement;
+      if (
+        tree &&
+        header &&
+        nav &&
+        conceptContainer &&
+        currentFontSize &&
+        parentBar &&
+        altParentsContainer
+      ) {
         const calcHeight =
           conceptContainer.getBoundingClientRect().height -
           header.getBoundingClientRect().height -
