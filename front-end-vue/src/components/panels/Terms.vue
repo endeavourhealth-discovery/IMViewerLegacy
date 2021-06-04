@@ -1,9 +1,9 @@
 <template>
   <DataTable
     :value="terms"
-    :rowsPerPageOptions="[18, 25, 50]"
-    :paginator="terms.length > 18 ? true : false"
-    :rows="18"
+    :rowsPerPageOptions="[rows, 25, 50]"
+    :paginator="terms.length > rows ? true : false"
+    :rows="rows"
     rowGroupMode="subheader"
     groupRowsBy="scheme.name"
     sortMode="single"
@@ -34,6 +34,11 @@ import ConceptService from "@/services/ConceptService";
 export default defineComponent({
   name: "Terms",
   components: {},
+  computed: {
+    rows() {
+      return Math.floor(window.innerHeight / 55);
+    }
+  },
   props: {
     conceptIri: String
   },
