@@ -1,7 +1,7 @@
 <template>
   <DataTable
     :value="terms"
-    :rowsPerPageOptions="[rows, 25, 50]"
+    :rowsPerPageOptions="[rows, rows * 2, rows * 4]"
     :paginator="terms.length > rows ? true : false"
     :rows="rows"
     rowGroupMode="subheader"
@@ -18,8 +18,8 @@
     id="terms-table"
   >
     <Column field="scheme.name" header="Scheme"></Column>
-    <Column field="term" header="Term" style="flex:0 0 75%"></Column>
-    <Column field="code" header="Code"></Column>
+    <Column field="term" header="Term" style="flex: 0 0 75%"></Column>
+    <Column field="code" header="Code" style="flex: 0 0 25%"></Column>
     <template #groupheader="slotProps">
       <span style="font-weight: 700; color:rgba(51,153,255,0.8)">
         Scheme : {{ slotProps.data.scheme.name }}
@@ -34,11 +34,6 @@ import ConceptService from "@/services/ConceptService";
 export default defineComponent({
   name: "Terms",
   components: {},
-  computed: {
-    rows() {
-      return Math.floor(window.innerHeight / 55);
-    }
-  },
   props: {
     conceptIri: String
   },
@@ -54,7 +49,7 @@ export default defineComponent({
     if (this.conceptIri) {
       await this.getTerms(this.conceptIri);
     }
-    this.setScrollHeight();
+    this.onResize();
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
@@ -64,12 +59,15 @@ export default defineComponent({
       selected: {},
       loading: false,
       terms: [],
-      scrollHeight: ""
+      scrollHeight: "",
+      rows: 25
     };
   },
   methods: {
     onResize(): void {
       this.setScrollHeight();
+      this.setTableWidth();
+      this.setTableRows();
     },
     async getTerms(iri: string) {
       this.loading = true;
@@ -89,16 +87,16 @@ export default defineComponent({
       const container = document.getElementsByClassName(
         "concept-container"
       )[0] as HTMLElement;
-      const header = document.getElementsByClassName(
+      const header = container.getElementsByClassName(
         "p-panel-header"
       )[0] as HTMLElement;
-      const nav = document.getElementsByClassName(
+      const nav = container.getElementsByClassName(
         "p-tabview-nav"
-      )[1] as HTMLElement;
+      )[0] as HTMLElement;
       const terms = document.getElementById("terms-table") as HTMLElement;
       const paginator = terms.getElementsByClassName(
         "p-paginator"
-      )[1] as HTMLElement;
+      )[0] as HTMLElement;
       const currentFontSize = parseFloat(
         window
           .getComputedStyle(document.documentElement, null)
@@ -116,21 +114,53 @@ export default defineComponent({
         currentFontSize * 4 -
         1 +
         "px";
+    },
+
+    setTableWidth(): void {
+      const container = document.getElementById("terms-table") as HTMLElement;
+      const table = container.getElementsByClassName(
+        "p-datatable-table"
+      )[0] as HTMLElement;
+      table.style.width = "100%";
+    },
+
+    setTableRows(): void {
+      const container = document.getElementsByClassName(
+        "concept-container"
+      )[0] as HTMLElement;
+      const header = container.getElementsByClassName(
+        "p-panel-header"
+      )[0] as HTMLElement;
+      const nav = container.getElementsByClassName(
+        "p-tabview-nav"
+      )[0] as HTMLElement;
+      const terms = document.getElementById("terms-table") as HTMLElement;
+      const row = terms.getElementsByTagName("td")[0] as HTMLElement;
+      const paginator = terms.getElementsByClassName(
+        "p-paginator"
+      )[0] as HTMLElement;
+      const currentFontSize = parseFloat(
+        window
+          .getComputedStyle(document.documentElement, null)
+          .getPropertyValue("font-size")
+      );
+      const schemeCount = terms.getElementsByClassName("p-rowgroup-header")
+        .length;
+      const maxRows =
+        Math.floor(
+          (container.getBoundingClientRect().height -
+            header.getBoundingClientRect().height -
+            nav.getBoundingClientRect().height -
+            paginator.getBoundingClientRect().height -
+            currentFontSize * 4) /
+            row.getBoundingClientRect().height
+        ) -
+        1 -
+        schemeCount;
+      this.rows = maxRows;
     }
   }
 });
 </script>
 
-<style scoped>
-.usage-mapping-container {
-  width: 100%;
-}
-
-.mapping-container {
-  width: 50%;
-}
-
-.usage-container {
-  width: 50%;
-}
-</style>
+<style scoped></style>
