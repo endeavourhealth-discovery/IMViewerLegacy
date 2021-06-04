@@ -19,8 +19,8 @@
       id="secondary-tree-parents-bar"
     >
       <Button
-        :label="currentParent.name"
-        :disabled="currentParent.name === ''"
+        :label="currentParent?.name"
+        :disabled="!currentParent"
         icon="pi pi-chevron-up"
         @click="expandParents(parentPosition)"
         class="p-button-text p-button-plain"
@@ -267,6 +267,9 @@ export default defineComponent({
         .then(res => {
           this.alternateParents = [];
           if (res.data.length) {
+            if (res.data[0].name === "http://endhealth.info/im#DiscoveryOntology") {
+              this.currentParent = null;
+            }
             for (let i = 0; i < res.data.length; i++ ) {
               if (i === parentPosition) {
                 this.currentParent = { name: res.data[parentPosition].name, iri: res.data[i]["@id"], listPosition: i };
@@ -307,6 +310,13 @@ export default defineComponent({
       );
       const parentBar = document.getElementById("secondary-tree-parents-bar") as HTMLElement;
       const altParentsContainer = document.getElementById("alternate-parents-container") as HTMLElement;
+      console.log(conceptContainer)
+      console.log(header)
+      console.log(nav)
+      console.log(tree)
+      console.log(currentFontSize)
+      console.log(parentBar)
+      console.log(altParentsContainer)
       if (tree && header && nav && conceptContainer && currentFontSize && parentBar && altParentsContainer) {
         const calcHeight =
           conceptContainer.getBoundingClientRect().height -
@@ -314,8 +324,8 @@ export default defineComponent({
           nav.getBoundingClientRect().height -
           altParentsContainer.getBoundingClientRect().height -
           parentBar.getBoundingClientRect().height -
-          4 * currentFontSize -
-          1 +
+          6 * currentFontSize -
+          7 +
           "px";
         tree.style.maxHeight = calcHeight;
       }
