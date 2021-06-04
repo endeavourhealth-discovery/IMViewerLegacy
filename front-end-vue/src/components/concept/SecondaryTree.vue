@@ -286,6 +286,7 @@ export default defineComponent({
             LoggerService.error("Concept parents server request failed here", err)
           );
         });
+      this.setTreeHeight();
     },
 
     selectAltParent(parent: any): void {
@@ -310,13 +311,6 @@ export default defineComponent({
       );
       const parentBar = document.getElementById("secondary-tree-parents-bar") as HTMLElement;
       const altParentsContainer = document.getElementById("alternate-parents-container") as HTMLElement;
-      console.log(conceptContainer)
-      console.log(header)
-      console.log(nav)
-      console.log(tree)
-      console.log(currentFontSize)
-      console.log(parentBar)
-      console.log(altParentsContainer)
       if (tree && header && nav && conceptContainer && currentFontSize && parentBar && altParentsContainer) {
         const calcHeight =
           conceptContainer.getBoundingClientRect().height -
