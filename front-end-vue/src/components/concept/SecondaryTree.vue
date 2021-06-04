@@ -1,25 +1,53 @@
 <template>
-  <Tree
-    :value="root"
-    selectionMode="single"
-    v-model:selectionKeys="selectedKey"
-    :expandedKeys="expandedKeys"
-    @node-select="onNodeSelect"
-    @node-expand="expandChildren"
-    class="tree-root"
+  <div
+    class="p-d-flex p-flex-column p-jc-start"
+    id="secondary-tree-bar-container"
   >
-    <template #default="slotProps">
-      <span v-if="!slotProps.node.loading">
-        <i
-          :class="'fas fa-fw' + slotProps.node.typeIcon"
-          :style="'color:' + slotProps.node.color"
-          aria-hidden="true"
-        />
-      </span>
-      <ProgressSpinner v-if="slotProps.node.loading" />
-      {{ slotProps.node.label }}
-    </template>
-  </Tree>
+    <div id="alternate-parents-container">
+      <Button
+        v-for="altParent in alternateParents"
+        :key="altParent['@id']"
+        :label="altParent.name"
+        :disabled="altParent.name === ''"
+        icon="pi pi-arrow-circle-down"
+        @click="selectAltParent(altParent)"
+        class="p-button-text p-button-plain"
+      />
+    </div>
+    <div
+      class="p-d-flex p-flex-row p-jc-start"
+      id="secondary-tree-parents-bar"
+    >
+      <Button
+        :label="currentParent.name"
+        :disabled="currentParent.name === ''"
+        icon="pi pi-chevron-up"
+        @click="expandParents(parentPosition)"
+        class="p-button-text p-button-plain"
+      />
+    </div>
+    <Tree
+      :value="root"
+      selectionMode="single"
+      v-model:selectionKeys="selectedKey"
+      :expandedKeys="expandedKeys"
+      @node-select="onNodeSelect"
+      @node-expand="expandChildren"
+      class="tree-root"
+    >
+      <template #default="slotProps">
+        <span v-if="!slotProps.node.loading">
+          <i
+            :class="'fas fa-fw' + slotProps.node.typeIcon"
+            :style="'color:' + slotProps.node.color"
+            aria-hidden="true"
+          />
+        </span>
+        <ProgressSpinner v-if="slotProps.node.loading" />
+        {{ slotProps.node.label }}
+      </template>
+    </Tree>
+  </div>
 </template>
 
 <script lang="ts">
@@ -41,7 +69,8 @@ export default defineComponent({
       this.createTree(
         this.conceptAggregate.concept,
         this.conceptAggregate.parents,
-        this.conceptAggregate.children
+        this.conceptAggregate.children,
+        this.parentPosition
       );
     }
   },
@@ -51,6 +80,9 @@ export default defineComponent({
       root: [] as any,
       expandedKeys: {} as any,
       selectedKey: {} as any,
+      currentParent: {} as { name: string; iri: string; listPosition: number } | null,
+      alternateParents: [] as { name: string; iri: string, listPosition: number }[],
+      parentPosition: 0
     }
   },
   async mounted() {
@@ -63,7 +95,8 @@ export default defineComponent({
     this.createTree(
       this.conceptAggregate.concept,
       this.conceptAggregate.parents,
-      this.conceptAggregate.children
+      this.conceptAggregate.children,
+      0
     );
   },
   beforeUnmount() {
@@ -88,19 +121,8 @@ export default defineComponent({
       });
     },
 
-    async getNodeParents(iri: string): Promise<any[] | void> {
-      let result: any;
-      await ConceptService.getConceptParents(iri).then(res => {
-        result = res.data;
-      }).catch(err => {
-        this.$toast.add(
-          LoggerService.error("Secondary tree node parents fetch failed", err)
-        );
-      });
-      return result;
-    },
-
-    async createTree(concept: any, parentHierarchy: any, children: any): Promise<void> {
+    async createTree(concept: any, parentHierarchy: any, children: any, parentPosition: number): Promise<void> {
+      this.alternateParents = [];
       this.expandedKeys = {};
       const selectedConcept = this.createTreeNode(
         concept[RDFS.LABEL],
@@ -122,59 +144,21 @@ export default defineComponent({
         );
       });
 
-      this.root.push(selectedConcept);
-      this.expandedKeys[0] = true;
-      let count = 0;
+      this.root = [];
 
-      while(count < 3 && this.root[0] && this.root[0].key !== "Discovery ontology") {
-        const rootCopy = [...this.root];
-        // console.log("root copy")
-        // console.log(rootCopy)
-        this.root = [];
-
-        await this.parentNodeGenerator(rootCopy);
-
-        count++
-        // this.expandedKeys[count] = true;
-        // console.log("loop end" + count);
-        // console.log(this.root);
+      if (parentHierarchy.length) {
+        for (let i = 0; i < parentHierarchy.length; i++) {
+          if (i === parentPosition) {
+            this.currentParent = { name: parentHierarchy[parentPosition].name, iri: parentHierarchy[parentPosition]["@id"], listPosition: i };
+          } else {
+            this.alternateParents.push({ name: parentHierarchy[i].name, iri: parentHierarchy[i]["@id"], listPosition: i })
+          }
+        }
       }
 
-      // if(parentHierarchy.length) {
-      //   const rootCopy = [...this.root]
-      //   this.root = [];
-      //   parentHierarchy.forEach((parent: any) => {
-      //     const parentNode = this.createTreeNode(
-      //       parent.name,
-      //       parent["@id"],
-      //       parent.type,
-      //       parent.name,
-      //       parent.hasChildren
-      //     )
-      //   })
-      //   rootCopy.forEach((item: any) => {
-      //     item.children.push(rootCopy)
-      //   })
-      //   this.root.push(rootCopy);
-      // } else {
-      //   this.root.push(selectedConcept);
-      // }
-
-      // if (parentHierarchy.length) {
-      //   const parent = this.createTreeNode(
-      //     parentHierarchy[0].name,
-      //     parentHierarchy[0]["@id"],
-      //     parentHierarchy[0].type,
-      //     "0",
-      //     parentHierarchy[0].hasChildren
-      //   );
-      //   parent.children.push(selectedConcept);
-      //   this.root.push(parent);
-      // } else {
-      //   this.root.push(selectedConcept);
-      // }
-      // this.expandedKeys[0] = true;
-      // this.expandedKeys[1] = true;
+      this.root.push(selectedConcept);
+      this.expandedKeys[selectedConcept.key] = true;
+      this.selectedKey[selectedConcept.key] = true;
     },
 
     createTreeNode(
@@ -198,10 +182,14 @@ export default defineComponent({
     },
 
     onNodeSelect(node: any): void {
-      this.$router.push({
-        name: "Concept",
-        params: { selectedIri: node.data }
-      });
+      if (node.label === "Discovery ontology") {
+        this.$router.push({ name: "Dashboard" });
+      } else {
+        this.$router.push({
+          name: "Concept",
+          params: { selectedIri: node.data }
+        });
+      }
     },
 
     async expandChildren(node: TreeNode): Promise<void> {
@@ -243,65 +231,67 @@ export default defineComponent({
       return false;
     },
 
-    async expandParents(): Promise<void> {
+    async expandParents(parentPosition: number): Promise<void> {
       this.expandedKeys[this.root[0].key] = true;
 
       let parents: any[] = [];
-      const parentNodes: any[] = [];
+      let parentNode = {} as TreeNode;
       await ConceptService.getConceptParents(this.root[0].data)
         .then(res => {
           parents = res.data;
         })
         .catch(err => {
           this.$toast.add(
-            LoggerService.error("Concept children server request failed", err)
+            LoggerService.error("Concept parents server request failed or here", err)
           );
         });
 
-      parents.forEach((parent: any) => {
-        parentNodes.push(
-          this.createTreeNode(
-            parent.name,
-            parent["@id"],
-            parent.type,
-            parent.name,
+      for (let i = 0; i < parents.length; i++) {
+        if (i === parentPosition) {
+          parentNode = this.createTreeNode(
+            parents[i].name,
+            parents[i]["@id"],
+            parents[i].type,
+            parents[i].name,
             true
-          )
-        );
-      });
+          );
+          parentNode.children.push(this.root[0]);
+          this.expandedKeys[parentNode.key] = true;
+        }
+      }
 
-      parentNodes.forEach((parentNode: TreeNode) => {
-        parentNode.children.push(this.root[0]);
-        this.expandedKeys[parentNode.key] = true;
-      });
+      this.root = [];
+      this.root.push(parentNode);
 
-      this.root = parentNodes;
+      await ConceptService.getConceptParents(this.root[0].data)
+        .then(res => {
+          this.alternateParents = [];
+          if (res.data.length) {
+            for (let i = 0; i < res.data.length; i++ ) {
+              if (i === parentPosition) {
+                this.currentParent = { name: res.data[parentPosition].name, iri: res.data[i]["@id"], listPosition: i };
+              } else {
+                this.alternateParents.push({ name: res.data[i].name, iri: res.data[i]["@id"], listPosition: i });
+              }
+            }
+          } else {
+            this.currentParent = null;
+          }
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Concept parents server request failed here", err)
+          );
+        });
     },
 
-    async parentNodeGenerator(rootCopy: any) {
-      for (const node of rootCopy) {
-        let parents: any;
-        await this.getNodeParents(node.data).then(res => {
-          parents = res;
-          // console.log(parents);
-        });
-        if (parents.length) {
-          parents.forEach((parent: any) => {
-            if (!(parent.name in this.expandedKeys)) {
-              const parentNode = this.createTreeNode(
-                parent.name,
-                parent["@id"],
-                parent.type,
-                parent.name,
-                parent.hasChildren
-              );
-              parentNode.children = rootCopy;
-              // console.log(parentNode);
-              this.root.push(parentNode);
-              this.expandedKeys[parentNode.key] = true;
-            }
-          });
-        }
+    selectAltParent(parent: any): void {
+      if (this.currentParent) {
+        const index = this.alternateParents.indexOf(parent);
+        this.alternateParents.splice(index, 1);
+        this.alternateParents.push(this.currentParent);
+        this.parentPosition = parent.listPosition;
+        this.currentParent = parent;
       }
     },
 
@@ -315,11 +305,15 @@ export default defineComponent({
           .getComputedStyle(document.documentElement, null)
           .getPropertyValue("font-size")
       );
-      if (tree && header && nav && conceptContainer && currentFontSize) {
+      const parentBar = document.getElementById("secondary-tree-parents-bar") as HTMLElement;
+      const altParentsContainer = document.getElementById("alternate-parents-container") as HTMLElement;
+      if (tree && header && nav && conceptContainer && currentFontSize && parentBar && altParentsContainer) {
         const calcHeight =
           conceptContainer.getBoundingClientRect().height -
           header.getBoundingClientRect().height -
           nav.getBoundingClientRect().height -
+          altParentsContainer.getBoundingClientRect().height -
+          parentBar.getBoundingClientRect().height -
           4 * currentFontSize -
           1 +
           "px";
