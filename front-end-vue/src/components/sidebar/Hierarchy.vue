@@ -178,7 +178,14 @@ export default defineComponent({
         ConceptService.getConceptChildren(iri).then(res => {
           this.conceptAggregate.children = res.data;
         })
-      ]);
+      ]).catch(err => {
+        this.$toast.add(
+          LoggerService.error(
+            "Hierarchy tree concept aggregate fetch failed",
+            err
+          )
+        );
+      });
     },
     createTree(concept: any, parentHierarchy: any, children: any): void {
       if (this.root.length == 0) {
@@ -337,7 +344,7 @@ export default defineComponent({
         })
         .catch(err => {
           this.$toast.add(
-            LoggerService.error("Concept children server request failed", err)
+            LoggerService.error("Concept parents server request failed", err)
           );
         });
     },
