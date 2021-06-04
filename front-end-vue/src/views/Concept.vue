@@ -89,15 +89,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-<<<<<<< HEAD
-import Properties from "../components/concept/Properties.vue";
-import Graph from "../components/concept/Graph.vue";
-import Terms from "../components/concept/Terms.vue";
-import Definition from "../components/concept/Definition.vue";
-import UsedIn from "../components/concept/UsedIn.vue";
-import Members from "../components/concept/Members.vue";
-import PanelHeader from "../components/concept/PanelHeader.vue";
-=======
 import Properties from "../components/panels/Properties.vue";
 import Graph from "../components/panels/Graph.vue";
 import Terms from "../components/panels/Terms.vue";
@@ -106,7 +97,6 @@ import UsedIn from "../components/panels/UsedIn.vue";
 import Members from "../components/panels/Members.vue";
 import PanelHeader from "../components/panels/PanelHeader.vue";
 import ComplexMappings from "../components/panels/ComplexMappings.vue";
->>>>>>> develop
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
@@ -125,11 +115,8 @@ export default defineComponent({
     Members,
     Definition,
     DownloadDialog,
-<<<<<<< HEAD
-    SecondaryTree
-=======
+    SecondaryTree,
     ComplexMappings
->>>>>>> develop
   },
   computed: {
     isSet(): any {
