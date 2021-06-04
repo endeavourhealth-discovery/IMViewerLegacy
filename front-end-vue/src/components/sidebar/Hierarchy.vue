@@ -35,7 +35,7 @@
         @click="toggleTreeLocked(true)"
         v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
       >
-        <i class="fas fa-unlink"></i>
+        <i class="fas fa-unlink" aria-hidden="true"></i>
       </Button>
     </div>
 

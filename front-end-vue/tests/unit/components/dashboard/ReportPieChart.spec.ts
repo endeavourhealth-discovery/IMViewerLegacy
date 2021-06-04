@@ -88,7 +88,7 @@ describe("ReportPieChart.vue", () => {
                   "@type": "http://www.w3.org/2001/XMLSchema#string"
               },
               "http://www.w3.org/2000/01/rdf-schema#label": {
-                  "@value": "undefined",
+                  "@value": "Query set",
                   "@type": "http://www.w3.org/2001/XMLSchema#string"
               }
           }, {
@@ -286,7 +286,7 @@ describe("ReportPieChart.vue", () => {
             "Node shape",
             "Record type",
             "Data property",
-            "Undefined",
+            "Query set",
             "Functional property",
             "Annotation property",
             "Symmetric property",

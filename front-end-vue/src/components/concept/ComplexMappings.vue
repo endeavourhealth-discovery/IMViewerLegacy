@@ -13,7 +13,7 @@
       <span>{{ slotProps.node.data.label }}</span>
     </template>
     <template #childList="slotProps">
-      <table>
+      <table aria-label="Concept map children">
         <thead>
           <tr>
             <th scope="col">Name</th>

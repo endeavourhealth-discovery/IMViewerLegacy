@@ -9,6 +9,7 @@
           <img
             class="im-logo"
             src="../../assets/logos/Logo-object-empty.png"
+            alt="IM logo"
             @click="$router.push({ name: 'Dashboard' })"
           />
         </div>
