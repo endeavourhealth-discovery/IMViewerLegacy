@@ -3,7 +3,10 @@
     class="p-d-flex p-flex-column p-jc-start"
     id="hierarchy-tree-bar-container"
   >
-    <div class="p-d-flex p-flex-row p-jc-start" id="hierarchy-selected-bar">
+    <div
+      class="p-d-flex p-flex-row p-jc-start p-ai-center"
+      id="hierarchy-selected-bar"
+    >
       <Button
         :label="parentLabel"
         :disabled="parentLabel === ''"
@@ -375,7 +378,7 @@ export default defineComponent({
 }
 
 .tree-root {
-  height: 95%;
+  height: 100%;
   overflow: auto;
 }
 .p-tree-toggler,

@@ -43,7 +43,7 @@
             <TabPanel header="Terms">
               <Terms :conceptIri="conceptIri" v-if="active === 1" />
             </TabPanel>
-            <TabPanel header="Used In">
+            <TabPanel header="Used in">
               <UsedIn :conceptIri="conceptIri" v-if="active === 2" />
             </TabPanel>
             <TabPanel header="Members">
@@ -62,11 +62,14 @@
             <TabPanel header="Terms">
               <Terms :conceptIri="conceptIri" v-if="active === 2" />
             </TabPanel>
+            <TabPanel header="Maps">
+              <ComplexMappings :conceptIri="conceptIri" v-if="active === 3" />
+            </TabPanel>
             <TabPanel header="Used In">
-              <UsedIn :conceptIri="conceptIri" v-if="active === 3" />
+              <UsedIn :conceptIri="conceptIri" v-if="active === 4" />
             </TabPanel>
             <TabPanel header="Graph">
-              <Graph :conceptIri="conceptIri" v-if="active === 4" />
+              <Graph :conceptIri="conceptIri" v-if="active === 5" />
             </TabPanel>
             <TabPanel header="Hierarchy position">
               <SecondaryTree :conceptIri="conceptIri" v-if="active === 5" />
@@ -86,6 +89,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+<<<<<<< HEAD
 import Properties from "../components/concept/Properties.vue";
 import Graph from "../components/concept/Graph.vue";
 import Terms from "../components/concept/Terms.vue";
@@ -93,6 +97,16 @@ import Definition from "../components/concept/Definition.vue";
 import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
+=======
+import Properties from "../components/panels/Properties.vue";
+import Graph from "../components/panels/Graph.vue";
+import Terms from "../components/panels/Terms.vue";
+import Definition from "../components/panels/Definition.vue";
+import UsedIn from "../components/panels/UsedIn.vue";
+import Members from "../components/panels/Members.vue";
+import PanelHeader from "../components/panels/PanelHeader.vue";
+import ComplexMappings from "../components/panels/ComplexMappings.vue";
+>>>>>>> develop
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
@@ -111,7 +125,11 @@ export default defineComponent({
     Members,
     Definition,
     DownloadDialog,
+<<<<<<< HEAD
     SecondaryTree
+=======
+    ComplexMappings
+>>>>>>> develop
   },
   computed: {
     isSet(): any {
