@@ -19,7 +19,7 @@ describe("SidebarControl.vue", () => {
     mockStore = {
       state: {
         filters: {
-          selectedStatus: ["Active", "Draft"],
+          selectedStatus: ["Active", "Draft", "Inactive"],
           selectedSchemes: [
             {
               iri: "http://endhealth.info/im#DiscoveryCodeScheme",
