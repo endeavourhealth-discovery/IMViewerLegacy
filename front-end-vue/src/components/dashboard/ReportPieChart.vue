@@ -60,13 +60,16 @@ export default defineComponent({
       ) as PieChartData
     };
   },
-  mounted() {
-    this.updatedChartOptions = { ...this.chartOptions };
-    // chart type
+  beforeCreate() {
     this.$store.commit("updateLoading", {
       key: "reportPie_" + this.iri,
       value: true
     });
+  },
+  mounted() {
+    this.updatedChartOptions = { ...this.chartOptions };
+    // chart type
+
     IndividualService.getIndividual(this.iri)
       .then(res => {
         this.name = res.data[RDFS.LABEL]["@value"];
