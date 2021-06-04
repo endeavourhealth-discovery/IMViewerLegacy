@@ -1,9 +1,9 @@
 <template>
   <DataTable
     :value="terms"
-    :rowsPerPageOptions="[18, 25, 50]"
-    :paginator="terms.length > 18 ? true : false"
-    :rows="18"
+    :rowsPerPageOptions="[25, 50, 100]"
+    :paginator="terms.length > 25 ? true : false"
+    :rows="25"
     rowGroupMode="subheader"
     groupRowsBy="scheme.name"
     sortMode="single"
@@ -85,16 +85,16 @@ export default defineComponent({
       const container = document.getElementsByClassName(
         "concept-container"
       )[0] as HTMLElement;
-      const header = document.getElementsByClassName(
+      const header = container.getElementsByClassName(
         "p-panel-header"
       )[0] as HTMLElement;
-      const nav = document.getElementsByClassName(
+      const nav = container.getElementsByClassName(
         "p-tabview-nav"
-      )[1] as HTMLElement;
+      )[0] as HTMLElement;
       const terms = document.getElementById("terms-table") as HTMLElement;
       const paginator = terms.getElementsByClassName(
         "p-paginator"
-      )[1] as HTMLElement;
+      )[0] as HTMLElement;
       const currentFontSize = parseFloat(
         window
           .getComputedStyle(document.documentElement, null)
@@ -116,13 +116,13 @@ export default defineComponent({
 
     setTableWidth(): void {
       const container = document.getElementById("terms-table") as HTMLElement;
-      const table = container.getElementsByClassName("p-datatable-table")[0] as HTMLElement;
+      const table = container.getElementsByClassName(
+        "p-datatable-table"
+      )[0] as HTMLElement;
       table.style.width = "100%";
     }
   }
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
