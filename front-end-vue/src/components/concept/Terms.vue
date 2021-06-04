@@ -1,9 +1,9 @@
 <template>
   <DataTable
     :value="terms"
-    :rowsPerPageOptions="[25, 50, 100]"
-    :paginator="terms.length > 25 ? true : false"
-    :rows="25"
+    :rowsPerPageOptions="[rows, rows*2, rows*4]"
+    :paginator="terms.length > rows ? true : false"
+    :rows="rows"
     rowGroupMode="subheader"
     groupRowsBy="scheme.name"
     sortMode="single"
@@ -49,7 +49,7 @@ export default defineComponent({
     if (this.conceptIri) {
       await this.getTerms(this.conceptIri);
     }
-    this.setScrollHeight();
+    this.onResize();
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
@@ -59,13 +59,15 @@ export default defineComponent({
       selected: {},
       loading: false,
       terms: [],
-      scrollHeight: ""
+      scrollHeight: "",
+      rows: 25
     };
   },
   methods: {
     onResize(): void {
       this.setScrollHeight();
       this.setTableWidth();
+      this.setTableRows();
     },
     async getTerms(iri: string) {
       this.loading = true;
@@ -120,6 +122,31 @@ export default defineComponent({
         "p-datatable-table"
       )[0] as HTMLElement;
       table.style.width = "100%";
+    },
+
+    setTableRows(): void {
+      const container = document.getElementsByClassName(
+        "concept-container"
+      )[0] as HTMLElement;
+      const header = container.getElementsByClassName(
+        "p-panel-header"
+      )[0] as HTMLElement;
+      const nav = container.getElementsByClassName(
+        "p-tabview-nav"
+      )[0] as HTMLElement;
+      const terms = document.getElementById("terms-table") as HTMLElement;
+      const row = terms.getElementsByTagName("td")[0] as HTMLElement;
+      const paginator = terms.getElementsByClassName(
+        "p-paginator"
+      )[0] as HTMLElement;
+      const currentFontSize = parseFloat(
+        window
+          .getComputedStyle(document.documentElement, null)
+          .getPropertyValue("font-size")
+      );
+      const schemeCount = terms.getElementsByClassName("p-rowgroup-header").length;
+      const maxRows = Math.floor((container.getBoundingClientRect().height - header.getBoundingClientRect().height - nav.getBoundingClientRect().height - paginator.getBoundingClientRect().height - currentFontSize * 4) / row.getBoundingClientRect().height) - 1 - schemeCount;
+      this.rows = maxRows;
     }
   }
 });
