@@ -16,7 +16,7 @@
         >
           <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
         </button>
-<!--        <button
+        <!--<button
           class="p-panel-header-icon p-link p-mr-2"
           @click="directToCreateRoute"
           v-tooltip.bottom="'Create new concept'"
@@ -71,6 +71,9 @@
             <TabPanel header="Graph">
               <Graph :conceptIri="conceptIri" v-if="active === 5" />
             </TabPanel>
+            <TabPanel header="Hierarchy position">
+              <SecondaryTree :conceptIri="conceptIri" v-if="active === 6" />
+            </TabPanel>
           </TabView>
         </div>
         <DownloadDialog
@@ -86,19 +89,20 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Properties from "../components/panels/Properties.vue";
-import Graph from "../components/panels/Graph.vue";
-import Terms from "../components/panels/Terms.vue";
-import Definition from "../components/panels/Definition.vue";
-import UsedIn from "../components/panels/UsedIn.vue";
-import Members from "../components/panels/Members.vue";
-import PanelHeader from "../components/panels/PanelHeader.vue";
-import ComplexMappings from "../components/panels/ComplexMappings.vue";
+import Properties from "../components/concept/Properties.vue";
+import Graph from "../components/concept/Graph.vue";
+import Terms from "../components/concept/Terms.vue";
+import Definition from "../components/concept/Definition.vue";
+import UsedIn from "../components/concept/UsedIn.vue";
+import Members from "../components/concept/Members.vue";
+import PanelHeader from "../components/concept/PanelHeader.vue";
+import ComplexMappings from "../components/concept/ComplexMappings.vue";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
-import DownloadDialog from "@/components/panels/DownloadDialog.vue";
+import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import ConceptService from "@/services/ConceptService";
 import LoggerService from "@/services/LoggerService";
+import SecondaryTree from "../components/concept/SecondaryTree.vue";
 
 export default defineComponent({
   name: "Concept",
@@ -111,6 +115,7 @@ export default defineComponent({
     Members,
     Definition,
     DownloadDialog,
+    SecondaryTree,
     ComplexMappings
   },
   computed: {
