@@ -15,9 +15,6 @@ describe("SidebarControl.vue", () => {
   let mockToast: any;
   let testError: Error;
   jest.useFakeTimers();
-  let docSpy: any;
-  const mockElement = document.createElement("div");
-  mockElement.style.height = 100 + "px";
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -59,8 +56,6 @@ describe("SidebarControl.vue", () => {
     mockToast = {
       add: jest.fn()
     };
-    docSpy = jest.spyOn(document, "getElementById");
-    docSpy.mockReturnValue(mockElement);
     wrapper = shallowMount(SidebarControl, {
       global: {
         components: { InputText, TabPanel, TabView, Hierarchy, History, SearchResults, Filters },
@@ -155,6 +150,14 @@ describe("SidebarControl.vue", () => {
   });
 
   it("sets container size", async() => {
+    Element.prototype.getBoundingClientRect = jest.fn(() => {
+      return { height: 100, width: 0, top: 0, bottom: 0, right: 0, x: 0, y: 0, left: 0, toJSON: jest.fn() }
+    });
+    let docSpy: any;
+    const mockElement = document.createElement("div");
+    mockElement.style.height = 100 + "px";
+    docSpy = jest.spyOn(document, "getElementById");
+    docSpy.mockReturnValue(mockElement);
     wrapper.vm.setContainerHeights();
     await wrapper.vm.$nextTick();
     expect(mockElement.style.maxHeight).toBeTruthy();
