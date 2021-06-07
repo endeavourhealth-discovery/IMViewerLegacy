@@ -65,6 +65,9 @@ export default defineComponent({
   props: ["conceptIri"],
   watch: {
     async conceptIri(newValue) {
+      this.selectedKey = {};
+      this.alternateParents = [];
+      this.expandedKeys = {};
       await this.getConceptAggregate(newValue);
       this.createTree(
         this.conceptAggregate.concept,
@@ -138,8 +141,6 @@ export default defineComponent({
       children: any,
       parentPosition: number
     ): Promise<void> {
-      this.alternateParents = [];
-      this.expandedKeys = {};
       const selectedConcept = this.createTreeNode(
         concept[RDFS.LABEL],
         concept[IM.IRI],
@@ -181,7 +182,9 @@ export default defineComponent({
       }
 
       this.root.push(selectedConcept);
-      this.expandedKeys[selectedConcept.key] = true;
+      if (!(selectedConcept.key in this.expandedKeys)) {
+        this.expandedKeys[selectedConcept.key] = true;
+      }
       this.selectedKey[selectedConcept.key] = true;
     },
 
@@ -205,20 +208,32 @@ export default defineComponent({
       return node;
     },
 
-    onNodeSelect(node: any): void {
-      if (node.label === "Discovery ontology") {
-        this.$router.push({ name: "Dashboard" });
-      } else {
-        this.$router.push({
-          name: "Concept",
-          params: { selectedIri: node.data }
-        });
-      }
+    async onNodeSelect(node: any): Promise<void> {
+      console.log(node);
+      this.alternateParents = [];
+      await this.getConceptAggregate(node.data);
+      this.createTree(
+        this.conceptAggregate.concept,
+        this.conceptAggregate.parents,
+        this.conceptAggregate.children,
+        0
+      );
+
+      // if (node.label === "Discovery ontology") {
+      //   this.$router.push({ name: "Dashboard" });
+      // } else {
+      //   this.$router.push({
+      //     name: "Concept",
+      //     params: { selectedIri: node.data }
+      //   });
+      // }
     },
 
     async expandChildren(node: TreeNode): Promise<void> {
       node.loading = true;
-      this.expandedKeys[node.key] = true;
+      if (!(node.key in this.expandedKeys)) {
+        this.expandedKeys[node.key] = true;
+      }
       let children: any[] = [];
       await ConceptService.getConceptChildren(node.data)
         .then(res => {
@@ -256,7 +271,9 @@ export default defineComponent({
     },
 
     async expandParents(parentPosition: number): Promise<void> {
-      this.expandedKeys[this.root[0].key] = true;
+      if (!(this.root[0].key in this.expandedKeys)) {
+        this.expandedKeys[this.root[0].key] = true;
+      }
 
       let parents: any[] = [];
       let parentNode = {} as TreeNode;
@@ -283,7 +300,9 @@ export default defineComponent({
             true
           );
           parentNode.children.push(this.root[0]);
-          this.expandedKeys[parentNode.key] = true;
+          if (!(parentNode.key in this.expandedKeys)) {
+            this.expandedKeys[parentNode.key] = true;
+          }
         }
       }
 
