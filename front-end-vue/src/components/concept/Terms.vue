@@ -30,6 +30,7 @@
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
 import ConceptService from "@/services/ConceptService";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "Terms",
@@ -146,8 +147,8 @@ export default defineComponent({
       );
       const schemeCount = terms.getElementsByClassName("p-rowgroup-header")
         .length;
-        let maxRows = 25;
-      if (paginator) {
+      let maxRows = 25;
+      if (paginator && container && header && nav && row && currentFontSize) {
         maxRows =
           Math.floor(
             (container.getBoundingClientRect().height -
@@ -159,7 +160,7 @@ export default defineComponent({
           ) -
           1 -
           schemeCount;
-      } else {
+      } else if (container && header && nav && row && currentFontSize) {
         maxRows =
           Math.floor(
             (container.getBoundingClientRect().height -
@@ -170,6 +171,10 @@ export default defineComponent({
           ) -
           1 -
           schemeCount;
+      } else {
+        LoggerService.error(
+          "Error setting terms table rows. Element selecting failed."
+        );
       }
       this.rows = maxRows;
     }
