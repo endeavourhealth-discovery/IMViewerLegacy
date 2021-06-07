@@ -202,7 +202,6 @@ export default defineComponent({
         window.getComputedStyle(html, null).getPropertyValue("font-size")
       );
       const sidebar = document.getElementById("side-bar") as HTMLElement;
-      console.log(sidebar);
       if (sidebar) {
         sidebar.style.maxHeight =
           this.windowHeight - currentFontSize * 2 + "px";
@@ -212,7 +211,9 @@ export default defineComponent({
       const sideMenu = document.getElementById("side-menu") as HTMLElement;
       if (searchBar && fixedSidebar && sideMenu) {
         sideMenu.style.maxHeight =
-          fixedSidebar.getBoundingClientRect().height - searchBar.getBoundingClientRect().height + "px";
+          fixedSidebar.getBoundingClientRect().height -
+          searchBar.getBoundingClientRect().height +
+          "px";
       }
     }
   }
