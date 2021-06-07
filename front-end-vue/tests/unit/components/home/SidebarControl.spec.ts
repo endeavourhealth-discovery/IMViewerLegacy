@@ -1,4 +1,4 @@
-import { shallowMount } from "@vue/test-utils";
+import { flushPromises, shallowMount } from "@vue/test-utils";
 import SidebarControl from "@/components/home/SidebarControl.vue";
 import InputText from "primevue/inputtext";
 import TabView from "primevue/tabview";
@@ -7,12 +7,14 @@ import Hierarchy from "@/components/sidebar/Hierarchy.vue";
 import History from "@/components/sidebar/History.vue";
 import SearchResults from "@/components/sidebar/SearchResults.vue";
 import Filters from "@/components/sidebar/Filters.vue";
+import LoggerService from "@/services/LoggerService";
 
 describe("SidebarControl.vue", () => {
   let wrapper: any;
   let mockStore: any;
   let mockToast: any;
   let testError: Error;
+  jest.useFakeTimers();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -49,7 +51,7 @@ describe("SidebarControl.vue", () => {
         }
       },
       commit: jest.fn(),
-      dispatch: jest.fn().mockResolvedValue(true)
+      dispatch: jest.fn().mockResolvedValue("true")
     };
     mockToast = {
       add: jest.fn()
@@ -95,4 +97,55 @@ describe("SidebarControl.vue", () => {
     expect(wrapper.vm.active).toBe(2);
     expect(mockStore.commit).toHaveBeenCalled();
   });
+
+  it("cancels existing requests on new search", async() => {
+    wrapper.vm.searchTerm = "sco";
+    wrapper.vm.search();
+    await wrapper.vm.$nextTick();
+    const spy = jest.spyOn(wrapper.vm.request, "cancel");
+    wrapper.vm.searchTerm = "pul";
+    wrapper.vm.search();
+    await wrapper.vm.$nextTick();
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.mockReset();
+  });
+
+  it("updated loading on dispatch success", async() => {
+    wrapper.vm.searchTerm = "sco";
+    wrapper.vm.search();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", {
+      key: "searchResults",
+      value: false
+    });
+    expect(mockToast.add).not.toHaveBeenCalled();
+  });
+
+  it("updated loading and fire toast on dispatch fail", async() => {
+    mockStore.dispatch = jest.fn().mockResolvedValue("false")
+    wrapper.vm.searchTerm = "sco";
+    wrapper.vm.search();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", {
+      key: "searchResults",
+      value: false
+    });
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Search results server request failed"));
+  });
+
+  it("debounces", async() => {
+    const spy = jest.spyOn(wrapper.vm, "search")
+    wrapper.vm.debounceForSearch();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.debounce).toBeGreaterThan(0);
+    expect(spy).not.toHaveBeenCalled();
+    jest.runAllTimers();
+    expect(spy).toHaveBeenCalledTimes(1);
+  })
 });
