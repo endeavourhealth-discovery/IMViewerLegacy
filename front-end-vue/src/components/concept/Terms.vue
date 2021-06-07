@@ -146,17 +146,31 @@ export default defineComponent({
       );
       const schemeCount = terms.getElementsByClassName("p-rowgroup-header")
         .length;
-      const maxRows =
-        Math.floor(
-          (container.getBoundingClientRect().height -
-            header.getBoundingClientRect().height -
-            nav.getBoundingClientRect().height -
-            paginator.getBoundingClientRect().height -
-            currentFontSize * 4) /
-            row.getBoundingClientRect().height
-        ) -
-        1 -
-        schemeCount;
+        let maxRows = 25;
+      if (paginator) {
+        maxRows =
+          Math.floor(
+            (container.getBoundingClientRect().height -
+              header.getBoundingClientRect().height -
+              nav.getBoundingClientRect().height -
+              paginator.getBoundingClientRect().height -
+              currentFontSize * 4) /
+              row.getBoundingClientRect().height
+          ) -
+          1 -
+          schemeCount;
+      } else {
+        maxRows =
+          Math.floor(
+            (container.getBoundingClientRect().height -
+              header.getBoundingClientRect().height -
+              nav.getBoundingClientRect().height -
+              currentFontSize * 4) /
+              row.getBoundingClientRect().height
+          ) -
+          1 -
+          schemeCount;
+      }
       this.rows = maxRows;
     }
   }
