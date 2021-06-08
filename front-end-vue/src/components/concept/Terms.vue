@@ -17,9 +17,13 @@
     class="p-datatable-sm"
     id="terms-table"
   >
-    <Column field="scheme.name" header="Scheme"></Column>
-    <Column field="term" header="Term" style="flex: 0 0 75%"></Column>
-    <Column field="code" header="Code" style="flex: 0 0 25%"></Column>
+    <Column field="scheme.name" header="Scheme" />
+    <Column field="term" header="Term" style="flex: 0 0 65%" />
+    <Column
+      field="code"
+      header="Code"
+      style="flex: 0 0 35%; word-break: break-all;"
+    />
     <template #groupheader="slotProps">
       <span style="font-weight: 700; color:rgba(51,153,255,0.8)">
         Scheme : {{ slotProps.data.scheme.name }}
@@ -136,7 +140,7 @@ export default defineComponent({
         "p-tabview-nav"
       )[0] as HTMLElement;
       const terms = document.getElementById("terms-table") as HTMLElement;
-      const row = terms.getElementsByTagName("td")[0] as HTMLElement;
+      const row = terms.getElementsByTagName("tr")[0] as HTMLElement;
       const paginator = terms.getElementsByClassName(
         "p-paginator"
       )[0] as HTMLElement;
