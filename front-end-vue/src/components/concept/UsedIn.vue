@@ -72,9 +72,7 @@ export default defineComponent({
       const header = conceptContainer.getElementsByClassName(
         "p-panel-header"
       )[0];
-      const nav = conceptContainer.getElementsByClassName(
-        "p-tabview-nav"
-      )[0];
+      const nav = conceptContainer.getElementsByClassName("p-tabview-nav")[0];
       const listHeader = conceptContainer.getElementsByClassName(
         "p-listbox-header"
       )[0] as HTMLElement;
@@ -83,10 +81,6 @@ export default defineComponent({
           .getComputedStyle(document.documentElement, null)
           .getPropertyValue("font-size")
       );
-      console.log(conceptContainer)
-      console.log(header)
-      console.log(nav)
-      console.log(listHeader)
       if (conceptContainer && header && nav && listHeader && currentFontSize) {
         const newHeight =
           conceptContainer.getBoundingClientRect().height -
@@ -94,10 +88,8 @@ export default defineComponent({
           nav.getBoundingClientRect().height -
           listHeader.getBoundingClientRect().height -
           currentFontSize * 4 -
-          1;
-        this.listHeight =
-          "height: " + newHeight
-          "px;"
+          7;
+        this.listHeight = "height: " + newHeight + "px;";
       }
     }
   }
