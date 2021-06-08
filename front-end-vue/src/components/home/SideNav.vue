@@ -10,7 +10,13 @@
             class="im-logo"
             src="../../assets/logos/Logo-object-empty.png"
             alt="IM logo"
-            @click="$router.push({ name: 'Dashboard' })"
+            @click="
+              $store.commit(
+                'updateConceptIri',
+                'http://endhealth.info/im#DiscoveryOntology'
+              );
+              $router.push({ name: 'Dashboard' });
+            "
           />
         </div>
         <!-- <div id="center-icons">
