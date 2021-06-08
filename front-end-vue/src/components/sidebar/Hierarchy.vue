@@ -92,6 +92,7 @@ export default defineComponent({
         this.conceptAggregate.children
       );
       if (this.$route.fullPath === "/") {
+        this.resetConcept();
         this.$store.commit("updateHistory", {
           url: this.$route.fullPath,
           conceptName: "Home",
