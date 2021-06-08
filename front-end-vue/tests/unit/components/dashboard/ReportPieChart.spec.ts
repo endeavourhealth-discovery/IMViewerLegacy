@@ -185,21 +185,8 @@ describe("ReportPieChart.vue", () => {
     mockToast = {
       add: jest.fn()
     };
-    const testChartOptions = {
-      legend: {
-        position: "right",
-        onHover: function(e: any) {
-          e.target.style.cursor = "pointer";
-        }
-      },
-      hover: {
-        onHover: function(e: any) {
-          e.target.style.cursor = "default";
-        }
-      }
-    };
     wrapper = shallowMount(ReportPieChart, {
-      props: { chartOptions: testChartOptions, graphHeight: 200, iri: "im:Test" },
+      props: { iri: "im:Test" },
       global: {
         components: { Card, Chart, ProgressSpinner },
         mocks: { $store: mockStore, $toast: mockToast }
@@ -217,7 +204,7 @@ describe("ReportPieChart.vue", () => {
     expect(IndividualService.getIndividual).toBeCalledTimes(1);
   });
 
-  it("processes api return into realData, updatedChartOptions and chartConceptTypes", async() => {
+  it("processes api return into realData, chartOptions and chartConceptTypes", async() => {
     const testChartConceptType = {
         "datasets": [
             {
@@ -336,7 +323,7 @@ describe("ReportPieChart.vue", () => {
         "14": 2,
         "15": 1
     });
-    expect(wrapper.vm.updatedChartOptions.toString()).toEqual(testChartOptions.toString()
+    expect(wrapper.vm.chartOptions.toString()).toEqual(testChartOptions.toString()
     );
   });
 
@@ -549,21 +536,8 @@ describe("service fail", () => {
       add: jest.fn()
     };
     LoggerService.error = jest.fn()
-    const testChartOptions = {
-      legend: {
-        position: "right",
-        onHover: function(e: any) {
-          e.target.style.cursor = "pointer";
-        }
-      },
-      hover: {
-        onHover: function(e: any) {
-          e.target.style.cursor = "default";
-        }
-      }
-    };
     wrapper = shallowMount(ReportPieChart, {
-      props: { chartOptions: testChartOptions, graphHeight: 200, iri: "im:test" },
+      props: { iri: "im:test" },
       global: {
         components: { Card, Chart, ProgressSpinner },
         mocks: { $store: mockStore, $toast: mockToast }
@@ -579,5 +553,161 @@ describe("service fail", () => {
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Concept type server request failed", testError));
     expect(LoggerService.error).toHaveBeenCalledTimes(2);
     expect(LoggerService.error).toHaveBeenLastCalledWith("Concept type server request failed", testError);
+  });
+
+  it("setsLegendOptions ___ width > 1750", async() => {
+    global.innerWidth = 1760;
+    const testOptions = {
+      legend: {
+        position: "right",
+        labels: {
+          boxWidth: 40,
+          fontSize: 12
+        },
+        onHover: function(e: any) {
+          e.target.style.cursor = "pointer";
+        }
+      },
+      hover: {
+        onHover: function(e: any) {
+          e.target.style.cursor = "default";
+        }
+      }
+    };
+    wrapper.vm.setLegendOptions();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.chartOptions.toString()).toEqual(testOptions.toString());
+  });
+
+  it("setsLegendOptions ___ width > 1300", async() => {
+    global.innerWidth = 1310;
+    const testOptions = {
+      legend: {
+        position: "bottom",
+        labels: {
+          boxWidth: 20,
+          fontSize: 10
+        },
+        onHover: function(e: any) {
+          e.target.style.cursor = "pointer";
+        }
+      },
+      hover: {
+        onHover: function(e: any) {
+          e.target.style.cursor = "default";
+        }
+      }
+    };
+    wrapper.vm.setLegendOptions();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.chartOptions.toString()).toEqual(testOptions.toString());
+  });
+
+  it("setsLegendOptions ___ width >= 1024", async() => {
+    global.innerWidth = 1024;
+    const testOptions = {
+      legend: {
+        position: "bottom",
+        labels: {
+          boxWidth: 10,
+          fontSize: 8
+        },
+        onHover: function(e: any) {
+          e.target.style.cursor = "pointer";
+        }
+      },
+      hover: {
+        onHover: function(e: any) {
+          e.target.style.cursor = "default";
+        }
+      }
+    };
+    wrapper.vm.setLegendOptions();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.chartOptions.toString()).toEqual(testOptions.toString());
+  });
+
+  it("setsLegendOptions ___ width >= 892", async() => {
+    global.innerWidth = 892;
+    const testOptions = {
+      legend: {
+        position: "right",
+        labels: {
+          boxWidth: 40,
+          fontSize: 8
+        },
+        onHover: function(e: any) {
+          e.target.style.cursor = "pointer";
+        }
+      },
+      hover: {
+        onHover: function(e: any) {
+          e.target.style.cursor = "default";
+        }
+      }
+    };
+    wrapper.vm.setLegendOptions(892);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.chartOptions.toString()).toEqual(testOptions.toString());
+  });
+
+  it("setsLegendOptions ___ width >= 557", async() => {
+    global.innerWidth = 557;
+    const testOptions = {
+      legend: {
+        position: "bottom",
+        labels: {
+          boxWidth: 20,
+          fontSize: 6
+        },
+        onHover: function(e: any) {
+          e.target.style.cursor = "pointer";
+        }
+      },
+      hover: {
+        onHover: function(e: any) {
+          e.target.style.cursor = "default";
+        }
+      }
+    };
+    wrapper.vm.setLegendOptions();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.chartOptions.toString()).toEqual(testOptions.toString());
+  });
+
+  it("setsLegendOptions ___ width >= 0", async() => {
+      global.innerWidth = 0;
+    const testOptions = {
+      legend: {
+        position: "bottom",
+        labels: {
+          boxWidth: 10,
+          fontSize: 4
+        },
+        onHover: function(e: any) {
+          e.target.style.cursor = "pointer";
+        }
+      },
+      hover: {
+        onHover: function(e: any) {
+          e.target.style.cursor = "default";
+        }
+      }
+    };
+    wrapper.vm.setLegendOptions();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.chartOptions.toString()).toEqual(testOptions.toString());
+  });
+
+  it("setsLegendOptions ___ width other", async() => {
+    global.innerWidth = -1;
+    const testOptions = {
+      legend: {
+        display: false
+      }
+    };
+    wrapper.vm.setLegendOptions(-1);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.chartOptions.toString()).toEqual(testOptions.toString());
   });
 })
