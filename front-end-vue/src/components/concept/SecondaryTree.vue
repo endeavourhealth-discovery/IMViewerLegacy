@@ -164,19 +164,28 @@ export default defineComponent({
       this.root = [];
 
       if (parentHierarchy.length) {
-        for (let i = 0; i < parentHierarchy.length; i++) {
-          if (i === parentPosition) {
-            this.currentParent = {
+        if (parentHierarchy.length === 1) {
+          this.currentParent = {
               name: parentHierarchy[parentPosition].name,
               iri: parentHierarchy[parentPosition]["@id"],
-              listPosition: i
-            };
-          } else {
-            this.alternateParents.push({
-              name: parentHierarchy[i].name,
-              iri: parentHierarchy[i]["@id"],
-              listPosition: i
-            });
+              listPosition: 0
+          };
+          this.alternateParents = [];
+        } else {
+          for (let i = 0; i < parentHierarchy.length; i++) {
+            if (i === parentPosition) {
+              this.currentParent = {
+                name: parentHierarchy[parentPosition].name,
+                iri: parentHierarchy[parentPosition]["@id"],
+                listPosition: i
+              };
+            } else {
+              this.alternateParents.push({
+                name: parentHierarchy[i].name,
+                iri: parentHierarchy[i]["@id"],
+                listPosition: i
+              });
+            }
           }
         }
       }
@@ -209,7 +218,6 @@ export default defineComponent({
     },
 
     async onNodeSelect(node: any): Promise<void> {
-      console.log(node);
       this.alternateParents = [];
       await this.getConceptAggregate(node.data);
       this.createTree(
@@ -284,12 +292,11 @@ export default defineComponent({
         .catch(err => {
           this.$toast.add(
             LoggerService.error(
-              "Concept parents server request failed or here",
+              "Concept parents server request failed during parent expand stage 1",
               err
             )
           );
         });
-
       for (let i = 0; i < parents.length; i++) {
         if (i === parentPosition) {
           parentNode = this.createTreeNode(
@@ -309,6 +316,8 @@ export default defineComponent({
       this.root = [];
       this.root.push(parentNode);
 
+      // console.log(this.root[0].data)
+
       await ConceptService.getConceptParents(this.root[0].data)
         .then(res => {
           this.alternateParents = [];
@@ -317,30 +326,40 @@ export default defineComponent({
               res.data[0].name === "http://endhealth.info/im#DiscoveryOntology"
             ) {
               this.currentParent = null;
-            }
-            for (let i = 0; i < res.data.length; i++) {
-              if (i === parentPosition) {
-                this.currentParent = {
-                  name: res.data[parentPosition].name,
-                  iri: res.data[i]["@id"],
-                  listPosition: i
-                };
-              } else {
-                this.alternateParents.push({
-                  name: res.data[i].name,
-                  iri: res.data[i]["@id"],
-                  listPosition: i
-                });
+            } else if (res.data.length === 1) {
+              this.parentPosition = 0;
+              this.currentParent = {
+                name: res.data[0].name,
+                iri: res.data[0]["@id"],
+                listPosition: 0
+              };
+              this.alternateParents = [];
+            } else {
+              for (let i = 0; i < res.data.length; i++) {
+                if (i === parentPosition) {
+                  this.currentParent = {
+                    name: res.data[parentPosition].name,
+                    iri: res.data[i]["@id"],
+                    listPosition: i
+                  };
+                } else {
+                  this.alternateParents.push({
+                    name: res.data[i].name,
+                    iri: res.data[i]["@id"],
+                    listPosition: i
+                  });
+                }
               }
             }
           } else {
             this.currentParent = null;
+            this.alternateParents = [];
           }
         })
         .catch(err => {
           this.$toast.add(
             LoggerService.error(
-              "Concept parents server request failed here",
+              "Concept parents server request failed during parent expand stage 2",
               err
             )
           );
