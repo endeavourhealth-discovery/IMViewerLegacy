@@ -1,27 +1,9 @@
 <template>
   <div class="dashboard-container">
-    <report-table
-      key="conceptCategory"
-      iri="http://endhealth.info/im#ontologyOverview"
-    />
-    <report-pie-chart
-      key="conceptTypes"
-      :chartOptions="chartOptions"
-      :graphHeight="graphHeight"
-      iri="http://endhealth.info/im#ontologyConceptTypes"
-    />
-    <report-pie-chart
-      key="conceptSchemes"
-      :chartOptions="chartOptions"
-      :graphHeight="graphHeight"
-      iri="http://endhealth.info/im#ontologyConceptSchemes"
-    />
-    <report-pie-chart
-      key="conceptStatus"
-      :chartOptions="chartOptions"
-      :graphHeight="graphHeight"
-      iri="http://endhealth.info/im#ontologyConceptStatus"
-    />
+    <report-table :key="cardsData[0].key" :iri="cardsData[0].iri" />
+    <report-pie-chart :key="cardsData[1].key" :iri="cardsData[1].iri" />
+    <report-pie-chart :key="cardsData[2].key" :iri="cardsData[2].iri" />
+    <report-pie-chart :key="cardsData[3].key" :iri="cardsData[3].iri" />
   </div>
 </template>
 
@@ -29,7 +11,6 @@
 import { defineComponent } from "vue";
 import ReportTable from "@/components/dashboard/ReportTable.vue";
 import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
-import { ChartOptions } from "@/models/charts/ChartOptions";
 
 export default defineComponent({
   name: "Dashboard",
@@ -37,165 +18,27 @@ export default defineComponent({
     "report-table": ReportTable,
     "report-pie-chart": ReportPieChart
   },
-  watch: {
-    windowWidth(newValue) {
-      this.setLegendOptions(newValue);
-    }
-  },
   data() {
     return {
-      chartOptions: {
-        legend: {
-          position: "right",
-          onHover: function(e: any) {
-            e.target.style.cursor = "pointer";
-          }
+      cardsData: [
+        {
+          key: "conceptCategory",
+          iri: "http://endhealth.info/im#ontologyOverview"
         },
-        hover: {
-          onHover: function(e: any) {
-            e.target.style.cursor = "default";
-          }
+        {
+          key: "conceptTypes",
+          iri: "http://endhealth.info/im#ontologyConceptTypes"
+        },
+        {
+          key: "conceptSchemes",
+          iri: "http://endhealth.info/im#ontologyConceptSchemes"
+        },
+        {
+          key: "conceptStatus",
+          iri: "http://endhealth.info/im#ontologyConceptStatus"
         }
-      } as ChartOptions,
-      windowHeight: 0,
-      windowWidth: 0,
-      graphHeight: 200
+      ]
     };
-  },
-  mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.onResize);
-    });
-
-    this.windowHeight = window.innerHeight;
-    this.windowWidth = window.innerWidth;
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.onResize);
-  },
-  methods: {
-    onResize(): void {
-      this.windowHeight = window.innerHeight;
-      this.windowWidth = window.innerWidth;
-    },
-
-    setLegendOptions(width: number): void {
-      if (width > 1750) {
-        this.chartOptions = {
-          legend: {
-            position: "right",
-            labels: {
-              boxWidth: 40,
-              fontSize: 12
-            },
-            onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
-            }
-          }
-        };
-      } else if (width > 1300) {
-        this.chartOptions = {
-          legend: {
-            position: "bottom",
-            labels: {
-              boxWidth: 20,
-              fontSize: 10
-            },
-            onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
-            }
-          }
-        };
-      } else if (width >= 1024) {
-        this.chartOptions = {
-          legend: {
-            position: "bottom",
-            labels: {
-              boxWidth: 10,
-              fontSize: 8
-            },
-            onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
-            }
-          }
-        };
-      } else if (width >= 892) {
-        this.chartOptions = {
-          legend: {
-            position: "right",
-            labels: {
-              boxWidth: 40,
-              fontSize: 8
-            },
-            onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
-            }
-          }
-        };
-      } else if (width >= 557) {
-        this.chartOptions = {
-          legend: {
-            position: "bottom",
-            labels: {
-              boxWidth: 20,
-              fontSize: 6
-            },
-            onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
-            }
-          }
-        };
-      } else if (width >= 0) {
-        this.chartOptions = {
-          legend: {
-            position: "bottom",
-            labels: {
-              boxWidth: 10,
-              fontSize: 4
-            },
-            onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
-            }
-          }
-        };
-      } else {
-        this.chartOptions = {
-          legend: {
-            display: false
-          }
-        };
-      }
-    }
   }
 });
 </script>
