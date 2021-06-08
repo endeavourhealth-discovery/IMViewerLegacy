@@ -10,13 +10,7 @@
             class="im-logo"
             src="../../assets/logos/Logo-object-empty.png"
             alt="IM logo"
-            @click="
-              $store.commit(
-                'updateConceptIri',
-                'http://endhealth.info/im#DiscoveryOntology'
-              );
-              $router.push({ name: 'Dashboard' });
-            "
+            @click="resetToHome"
           />
         </div>
         <!-- <div id="center-icons">
@@ -145,6 +139,14 @@ export default defineComponent({
 
     getUrl(item: string): string {
       return require("@/assets/avatars/" + item);
+    },
+
+    resetToHome(): void {
+      this.$store.commit(
+        "updateConceptIri",
+        "http://endhealth.info/im#DiscoveryOntology"
+      );
+      this.$router.push({ name: "Dashboard" });
     }
   }
 });
