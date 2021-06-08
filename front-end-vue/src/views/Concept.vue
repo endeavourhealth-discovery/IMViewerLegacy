@@ -56,23 +56,20 @@
             <TabPanel header="Definition">
               <Definition :concept="concept" v-if="active === 0" />
             </TabPanel>
-            <TabPanel header="Record structure">
-              <Properties :conceptIri="conceptIri" v-if="active === 1" />
-            </TabPanel>
             <TabPanel header="Terms">
-              <Terms :conceptIri="conceptIri" v-if="active === 2" />
+              <Terms :conceptIri="conceptIri" v-if="active === 1" />
             </TabPanel>
             <TabPanel header="Maps">
-              <ComplexMappings :conceptIri="conceptIri" v-if="active === 3" />
+              <ComplexMappings :conceptIri="conceptIri" v-if="active === 2" />
             </TabPanel>
             <TabPanel header="Used In">
-              <UsedIn :conceptIri="conceptIri" v-if="active === 4" />
+              <UsedIn :conceptIri="conceptIri" v-if="active === 3" />
             </TabPanel>
             <TabPanel header="Graph">
-              <Graph :conceptIri="conceptIri" v-if="active === 5" />
+              <Graph :conceptIri="conceptIri" v-if="active === 4" />
             </TabPanel>
             <TabPanel header="Hierarchy position">
-              <SecondaryTree :conceptIri="conceptIri" v-if="active === 6" />
+              <SecondaryTree :conceptIri="conceptIri" v-if="active === 5" />
             </TabPanel>
           </TabView>
         </div>
@@ -89,7 +86,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Properties from "../components/concept/Properties.vue";
 import Graph from "../components/concept/Graph.vue";
 import Terms from "../components/concept/Terms.vue";
 import Definition from "../components/concept/Definition.vue";
@@ -108,7 +104,6 @@ export default defineComponent({
   name: "Concept",
   components: {
     PanelHeader,
-    Properties,
     Graph,
     Terms,
     UsedIn,

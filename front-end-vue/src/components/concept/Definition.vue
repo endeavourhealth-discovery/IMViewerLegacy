@@ -65,41 +65,10 @@
     </div>
     <Divider align="left">
       <div class="p-d-inline-flex p-ai-center">
-        <strong>Data model properties</strong>
+        <strong>Structure properties</strong>
       </div>
     </Divider>
-    <DataTable
-      :value="properties"
-      :rowsPerPageOptions="[10, 25, 50]"
-      :paginator="properties?.length > 10 ? true : false"
-      :rows="10"
-      :scrollable="true"
-      scrollHeight="flex"
-    >
-      <template #empty>
-        No records found
-      </template>
-      <Column field="name" header="Property">
-        <template #body="slotProps">
-          <div
-            class="link capitalize-text"
-            @click="navigate(slotProps.data?.property?.iri)"
-          >
-            {{ slotProps.data?.property?.name }}
-          </div>
-        </template>
-      </Column>
-      <Column field="name" header="Range">
-        <template #body="slotProps">
-          <div
-            class="link capitalize-text"
-            @click="navigate(slotProps.data?.range?.iri)"
-          >
-            {{ slotProps.data?.range?.name }}
-          </div>
-        </template>
-      </Column>
-    </DataTable>
+    <Properties :conceptIri="concept.iri" />
   </div>
 </template>
 
@@ -108,10 +77,11 @@ import { defineComponent } from "vue";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import ConceptService from "@/services/ConceptService";
 import Description from "./Description.vue";
+import Properties from "./Properties.vue";
 
 export default defineComponent({
   name: "Definition",
-  components: { Description },
+  components: { Description, Properties },
   props: {
     concept: {} as any
   },
