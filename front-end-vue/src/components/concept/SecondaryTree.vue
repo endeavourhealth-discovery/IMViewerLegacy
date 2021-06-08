@@ -65,6 +65,9 @@ export default defineComponent({
   props: ["conceptIri"],
   watch: {
     async conceptIri(newValue) {
+      this.selectedKey = {};
+      this.alternateParents = [];
+      this.expandedKeys = {};
       await this.getConceptAggregate(newValue);
       this.createTree(
         this.conceptAggregate.concept,
@@ -138,8 +141,6 @@ export default defineComponent({
       children: any,
       parentPosition: number
     ): Promise<void> {
-      this.alternateParents = [];
-      this.expandedKeys = {};
       const selectedConcept = this.createTreeNode(
         concept[RDFS.LABEL],
         concept[IM.IRI],
@@ -163,25 +164,36 @@ export default defineComponent({
       this.root = [];
 
       if (parentHierarchy.length) {
-        for (let i = 0; i < parentHierarchy.length; i++) {
-          if (i === parentPosition) {
-            this.currentParent = {
-              name: parentHierarchy[parentPosition].name,
-              iri: parentHierarchy[parentPosition]["@id"],
-              listPosition: i
-            };
-          } else {
-            this.alternateParents.push({
-              name: parentHierarchy[i].name,
-              iri: parentHierarchy[i]["@id"],
-              listPosition: i
-            });
+        if (parentHierarchy.length === 1) {
+          this.currentParent = {
+            name: parentHierarchy[parentPosition].name,
+            iri: parentHierarchy[parentPosition]["@id"],
+            listPosition: 0
+          };
+          this.alternateParents = [];
+        } else {
+          for (let i = 0; i < parentHierarchy.length; i++) {
+            if (i === parentPosition) {
+              this.currentParent = {
+                name: parentHierarchy[parentPosition].name,
+                iri: parentHierarchy[parentPosition]["@id"],
+                listPosition: i
+              };
+            } else {
+              this.alternateParents.push({
+                name: parentHierarchy[i].name,
+                iri: parentHierarchy[i]["@id"],
+                listPosition: i
+              });
+            }
           }
         }
       }
 
       this.root.push(selectedConcept);
-      this.expandedKeys[selectedConcept.key] = true;
+      if (!(selectedConcept.key in this.expandedKeys)) {
+        this.expandedKeys[selectedConcept.key] = true;
+      }
       this.selectedKey[selectedConcept.key] = true;
     },
 
@@ -205,20 +217,22 @@ export default defineComponent({
       return node;
     },
 
-    onNodeSelect(node: any): void {
-      if (node.label === "Discovery ontology") {
-        this.$router.push({ name: "Dashboard" });
-      } else {
-        this.$router.push({
-          name: "Concept",
-          params: { selectedIri: node.data }
-        });
-      }
+    async onNodeSelect(node: any): Promise<void> {
+      this.alternateParents = [];
+      await this.getConceptAggregate(node.data);
+      this.createTree(
+        this.conceptAggregate.concept,
+        this.conceptAggregate.parents,
+        this.conceptAggregate.children,
+        0
+      );
     },
 
     async expandChildren(node: TreeNode): Promise<void> {
       node.loading = true;
-      this.expandedKeys[node.key] = true;
+      if (!(node.key in this.expandedKeys)) {
+        this.expandedKeys[node.key] = true;
+      }
       let children: any[] = [];
       await ConceptService.getConceptChildren(node.data)
         .then(res => {
@@ -256,7 +270,9 @@ export default defineComponent({
     },
 
     async expandParents(parentPosition: number): Promise<void> {
-      this.expandedKeys[this.root[0].key] = true;
+      if (!(this.root[0].key in this.expandedKeys)) {
+        this.expandedKeys[this.root[0].key] = true;
+      }
 
       let parents: any[] = [];
       let parentNode = {} as TreeNode;
@@ -267,12 +283,11 @@ export default defineComponent({
         .catch(err => {
           this.$toast.add(
             LoggerService.error(
-              "Concept parents server request failed or here",
+              "Concept parents server request failed during parent expand stage 1",
               err
             )
           );
         });
-
       for (let i = 0; i < parents.length; i++) {
         if (i === parentPosition) {
           parentNode = this.createTreeNode(
@@ -283,12 +298,16 @@ export default defineComponent({
             true
           );
           parentNode.children.push(this.root[0]);
-          this.expandedKeys[parentNode.key] = true;
+          if (!(parentNode.key in this.expandedKeys)) {
+            this.expandedKeys[parentNode.key] = true;
+          }
         }
       }
 
       this.root = [];
       this.root.push(parentNode);
+
+      // console.log(this.root[0].data)
 
       await ConceptService.getConceptParents(this.root[0].data)
         .then(res => {
@@ -298,30 +317,40 @@ export default defineComponent({
               res.data[0].name === "http://endhealth.info/im#DiscoveryOntology"
             ) {
               this.currentParent = null;
-            }
-            for (let i = 0; i < res.data.length; i++) {
-              if (i === parentPosition) {
-                this.currentParent = {
-                  name: res.data[parentPosition].name,
-                  iri: res.data[i]["@id"],
-                  listPosition: i
-                };
-              } else {
-                this.alternateParents.push({
-                  name: res.data[i].name,
-                  iri: res.data[i]["@id"],
-                  listPosition: i
-                });
+            } else if (res.data.length === 1) {
+              this.parentPosition = 0;
+              this.currentParent = {
+                name: res.data[0].name,
+                iri: res.data[0]["@id"],
+                listPosition: 0
+              };
+              this.alternateParents = [];
+            } else {
+              for (let i = 0; i < res.data.length; i++) {
+                if (i === parentPosition) {
+                  this.currentParent = {
+                    name: res.data[parentPosition].name,
+                    iri: res.data[i]["@id"],
+                    listPosition: i
+                  };
+                } else {
+                  this.alternateParents.push({
+                    name: res.data[i].name,
+                    iri: res.data[i]["@id"],
+                    listPosition: i
+                  });
+                }
               }
             }
           } else {
             this.currentParent = null;
+            this.alternateParents = [];
           }
         })
         .catch(err => {
           this.$toast.add(
             LoggerService.error(
-              "Concept parents server request failed here",
+              "Concept parents server request failed during parent expand stage 2",
               err
             )
           );
