@@ -166,9 +166,9 @@ export default defineComponent({
       if (parentHierarchy.length) {
         if (parentHierarchy.length === 1) {
           this.currentParent = {
-              name: parentHierarchy[parentPosition].name,
-              iri: parentHierarchy[parentPosition]["@id"],
-              listPosition: 0
+            name: parentHierarchy[parentPosition].name,
+            iri: parentHierarchy[parentPosition]["@id"],
+            listPosition: 0
           };
           this.alternateParents = [];
         } else {
@@ -226,15 +226,6 @@ export default defineComponent({
         this.conceptAggregate.children,
         0
       );
-
-      // if (node.label === "Discovery ontology") {
-      //   this.$router.push({ name: "Dashboard" });
-      // } else {
-      //   this.$router.push({
-      //     name: "Concept",
-      //     params: { selectedIri: node.data }
-      //   });
-      // }
     },
 
     async expandChildren(node: TreeNode): Promise<void> {
