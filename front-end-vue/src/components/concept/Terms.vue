@@ -76,8 +76,15 @@ export default defineComponent({
     },
     async getTerms(iri: string) {
       this.loading = true;
-      // TODO call to get the terms
-      this.terms = (await ConceptService.getConceptTermCodes(iri)).data;
+      await ConceptService.getConceptTermCodes(iri)
+        .then(res => {
+          this.terms = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Concept term codes server request failed", err)
+          );
+        });
       this.loading = false;
     },
     onNodeSelect(concept: any) {
