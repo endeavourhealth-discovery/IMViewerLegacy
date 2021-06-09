@@ -546,6 +546,7 @@ describe("service fail", () => {
   });
 
   it("fires a toast message on service error and stops loading", () => {
+    console.error = jest.fn();
     expect(IndividualService.getIndividual).toHaveBeenCalledTimes(1);
     expect(mockStore.commit).toHaveBeenCalledTimes(2);
     expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", { key: "reportPie_im:test", value: false });

@@ -150,6 +150,7 @@ describe("ConfirmCode.vue with registeredUser", () => {
   });
 
   it("opens swal on authservice fail", async() => {
+    console.error = jest.fn();
     AuthService.confirmRegister = jest.fn().mockRejectedValue({ status: 403, message: "Failed register confirmation", error: "deliberate test error" })
     // Auth.confirmSignUp = jest.fn().mockRejectedValue({ status: 403, message: "test"});
     wrapper.vm.code = "123456";
@@ -162,6 +163,7 @@ describe("ConfirmCode.vue with registeredUser", () => {
   });
 
   it("opens swal on auth code fail", async() => {
+    console.error = jest.fn();
     AuthService.confirmRegister = jest.fn().mockResolvedValue({ status: 403, message: "Failed register confirmation", error: "deliberate test error" });
     // Auth.confirmSignUp = jest.fn().mockRejectedValue({ status: 403, message: "test"});
     wrapper.vm.code = "123456";
@@ -188,6 +190,7 @@ describe("ConfirmCode.vue with registeredUser", () => {
   });
 
   it("fires swal with failed resend of code ___ auth status incorrect", async() => {
+    console.error = jest.fn();
     AuthService.resendConfirmationCode = jest.fn().mockResolvedValue({ status: 403, message: "Failed code resend", error: "deliberate test error" });
     wrapper.vm.requestCode(wrapper.vm.username);
     await wrapper.vm.$nextTick();
@@ -196,6 +199,7 @@ describe("ConfirmCode.vue with registeredUser", () => {
   });
 
   it("fires swal with failed resend of code ___ auth error", async() => {
+    console.error = jest.fn();
     AuthService.resendConfirmationCode = jest.fn().mockRejectedValue({ status: 403, message: "Failed code resend", error: "deliberate test error" });
     wrapper.vm.requestCode(wrapper.vm.username);
     await wrapper.vm.$nextTick();

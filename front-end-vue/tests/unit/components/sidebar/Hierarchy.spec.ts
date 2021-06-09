@@ -91,12 +91,30 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
   });
 
   it("fires a toast on conceptAggregate fetch error", async() => {
-    ConceptService.getConceptChildren = jest.fn().mockRejectedValue({ code: 400, error: new Error("Test error") });
+    ConceptService.getConceptChildren = jest.fn().mockRejectedValue({ code: 400, error: "Test error" });
+    console.error = jest.fn();
     wrapper.vm.getConceptAggregate();
     await wrapper.vm.$nextTick();
     await flushPromises();
     expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Hierarchy tree concept aggregate fetch failed", new Error("Test error")));
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Hierarchy tree concept aggregate fetch failed", "Test error"));
+    expect(console.error).toHaveBeenCalledTimes(2);
+    jest.clearAllMocks();
+  });
+
+  it("handles conceptIri changes", async() => {
+    wrapper.vm.getConceptAggregate = jest.fn();
+    wrapper.vm.createTree = jest.fn();
+    wrapper.vm.resetConcept = jest.fn();
+    wrapper.vm.$options.watch.conceptIri.call(wrapper.vm, "http://endhealth.info/im#DiscoveryOntology");
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.getConceptAggregate).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.getConceptAggregate).toHaveBeenCalledWith("http://endhealth.info/im#DiscoveryOntology");
+    expect(wrapper.vm.createTree).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.resetConcept).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateHistory", {"conceptName": "Home", "url": "/", "view": "Dashboard"});
+    jest.clearAllMocks();
   });
 });
 
@@ -156,5 +174,19 @@ describe("Hierarchy.vue ___ Concept", () => {
       conceptName: "Scoliosis deformity of spine (disorder)",
       view: "Concept"
     });
+  });
+
+  it("handles conceptIri changes ___ not home", async() => {
+    wrapper.vm.getConceptAggregate = jest.fn();
+    wrapper.vm.createTree = jest.fn();
+    wrapper.vm.resetConcept = jest.fn();
+    wrapper.vm.conceptAggregate = {"children":[],"concept":{
+      "@id":"http://snomed.info/sct#298382003",
+      "http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis deformity of spine (disorder)"},"parents":[]}
+    wrapper.vm.$options.watch.conceptIri.call(wrapper.vm, "http://snomed.info/sct#298382003");
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(mockStore.commit).toHaveBeenCalled();
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateHistory", {"conceptName": "Scoliosis deformity of spine (disorder)", "url": "/concept/http:%2F%2Fsnomed.info%2Fsct%23298382003", "view": "Concept"});
   });
 });

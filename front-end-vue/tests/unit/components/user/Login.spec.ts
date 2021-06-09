@@ -180,6 +180,7 @@ describe("login.vue with registeredUser", () => {
   });
 
   it("fires swal on authservice error", async() => {
+    console.error = jest.fn();
     AuthService.signIn = jest.fn().mockRejectedValue({ status: 400, message: "Login failed", error: "deliberate test error" });
     wrapper.vm.username = "Devtest";
     wrapper.vm.password = "12345678";
