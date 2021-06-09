@@ -79,6 +79,20 @@ describe("SearchResults.vue", () => {
       name: "Concept",
       params: { selectedIri: "http://snomed.info/sct#298382003"}
     });
+  });
 
-  })
+  it("can get concept types from concept", () => {
+    const testConcept = {
+      "name":"Scoliosis deformity of spine (disorder)",
+      "iri":"http://snomed.info/sct#298382003",
+      "code":"298382003",
+      "status":{"name":"Active","@id":"http://endhealth.info/im#Active"},
+      "scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"},
+      "conceptType":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}, {"name":"Instance","@id":""}],
+      "isDescendentOf":[],
+      "weighting":0,
+      "match":"Scoliosis"
+    };
+    expect(wrapper.vm.getConceptTypes(testConcept)).toBe("Class, Instance");
+  });
 });
