@@ -91,12 +91,26 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
   });
 
   it("fires a toast on conceptAggregate fetch error", async() => {
-    ConceptService.getConceptChildren = jest.fn().mockRejectedValue({ code: 400, error: new Error("Test error") });
+    ConceptService.getConceptChildren = jest.fn().mockRejectedValue({ code: 400, error: "Test error" });
+    console.error = jest.fn();
     wrapper.vm.getConceptAggregate();
     await wrapper.vm.$nextTick();
     await flushPromises();
     expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Hierarchy tree concept aggregate fetch failed", new Error("Test error")));
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Hierarchy tree concept aggregate fetch failed", "Test error"));
+    expect(console.error).toHaveBeenCalledTimes(2);
+    jest.clearAllMocks();
+  });
+
+  it("handles conceptIri changes", async() => {
+    wrapper.vm.getConceptAggregate = jest.fn();
+    wrapper.vm.createTree = jest.fn();
+    wrapper.vm.resetConcept = jest.fn();
+    wrapper.vm.$options.watch.conceptIri.call(wrapper.vm, "http://snomed.info/sct#298382003");
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.getConceptAggregate).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.getConceptAggregate).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    jest.clearAllMocks();
   });
 });
 

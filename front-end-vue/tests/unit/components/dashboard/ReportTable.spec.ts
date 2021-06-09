@@ -116,6 +116,7 @@ describe("service fail", () => {
   });
 
   it("launches a toast on service call error", () => {
+    console.error = jest.fn();
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(LoggerService.error).toHaveBeenCalledTimes(1);
     expect(LoggerService.error).toHaveBeenLastCalledWith("Ontology Overview server request failed", { status: 400, error: testError });
