@@ -95,4 +95,11 @@ describe("SearchResults.vue", () => {
     };
     expect(wrapper.vm.getConceptTypes(testConcept)).toBe("Class, Instance");
   });
+
+  it("updates results on store update", async() => {
+    const testResult = {"name":"Acquired scoliosis (disorder)","iri":"http://snomed.info/sct#111266001","code":"111266001","status":{"name":"Active","@id":"http://endhealth.info/im#Active"},"scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"},"conceptType":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isDescendentOf":[],"weighting":9,"match":"Acquired scoliosis"};
+    wrapper.vm.$options.watch.searchResults.call(wrapper.vm, testResult);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.results).toStrictEqual(testResult);
+  });
 });
