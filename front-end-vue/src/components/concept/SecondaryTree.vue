@@ -3,14 +3,17 @@
     class="p-d-flex p-flex-column p-jc-start"
     id="secondary-tree-bar-container"
   >
-    <div id="alternate-parents-container">
+    <div
+      id="alternate-parents-container"
+      class="p-d-flex p-flex-column p-jc-start p-ai-start"
+    >
       <Button
         v-for="altParent in alternateParents"
         :key="altParent['@id']"
         :label="altParent.name"
         :disabled="altParent.name === ''"
-        icon="pi pi-arrow-circle-down"
-        @click="selectAltParent(altParent)"
+        icon="pi pi-chevron-up"
+        @click="expandParents(altParent.listPosition)"
         class="p-button-text p-button-plain"
       />
     </div>
@@ -100,7 +103,6 @@ export default defineComponent({
     this.$nextTick(() => {
       window.addEventListener("resize", this.setTreeHeight);
     });
-    this.setTreeHeight();
 
     await this.getConceptAggregate(this.conceptIri);
     this.createTree(
@@ -195,6 +197,7 @@ export default defineComponent({
         this.expandedKeys[selectedConcept.key] = true;
       }
       this.selectedKey[selectedConcept.key] = true;
+      this.setTreeHeight();
     },
 
     createTreeNode(
@@ -259,6 +262,7 @@ export default defineComponent({
           index++;
         }
       });
+      this.setTreeHeight();
       node.loading = false;
     },
 
@@ -307,8 +311,6 @@ export default defineComponent({
       this.root = [];
       this.root.push(parentNode);
 
-      // console.log(this.root[0].data)
-
       await ConceptService.getConceptParents(this.root[0].data)
         .then(res => {
           this.alternateParents = [];
@@ -326,6 +328,7 @@ export default defineComponent({
               };
               this.alternateParents = [];
             } else {
+              this.alternateParents = [];
               for (let i = 0; i < res.data.length; i++) {
                 if (i === parentPosition) {
                   this.currentParent = {
@@ -356,16 +359,6 @@ export default defineComponent({
           );
         });
       this.setTreeHeight();
-    },
-
-    selectAltParent(parent: any): void {
-      if (this.currentParent) {
-        const index = this.alternateParents.indexOf(parent);
-        this.alternateParents.splice(index, 1);
-        this.alternateParents.push(this.currentParent);
-        this.parentPosition = parent.listPosition;
-        this.currentParent = parent;
-      }
     },
 
     setTreeHeight(): void {
@@ -407,7 +400,7 @@ export default defineComponent({
           nav.getBoundingClientRect().height -
           altParentsContainer.getBoundingClientRect().height -
           parentBar.getBoundingClientRect().height -
-          6 * currentFontSize -
+          4 * currentFontSize -
           7 +
           "px";
         tree.style.maxHeight = calcHeight;
@@ -420,5 +413,11 @@ export default defineComponent({
 <style scoped>
 .tree-root {
   overflow: auto;
+  border: 0;
+  padding-top: 0;
+}
+
+#secondary-tree-bar-container {
+  border: 1px solid #dee2e6;
 }
 </style>
