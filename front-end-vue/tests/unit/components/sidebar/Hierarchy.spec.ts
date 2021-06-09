@@ -5,6 +5,7 @@ import Tree from "primevue/tree";
 import ProgressSpinner from "primevue/progressspinner";
 import ConceptService from "@/services/ConceptService";
 import Tooltip from "primevue/tooltip";
+import LoggerService from "@/services/LoggerService";
 
 describe("Hierarchy.vue ___ DiscoveryOntology", () => {
   let wrapper: any;
@@ -87,6 +88,15 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
       conceptName: "Home",
       view: "Dashboard"
     });
+  });
+
+  it("fires a toast on conceptAggregate fetch error", async() => {
+    ConceptService.getConceptChildren = jest.fn().mockRejectedValue({ code: 400, error: new Error("Test error") });
+    wrapper.vm.getConceptAggregate();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Hierarchy tree concept aggregate fetch failed", new Error("Test error")));
   });
 });
 
