@@ -1,9 +1,9 @@
 <template>
   <DataTable
     :value="terms"
-    :rowsPerPageOptions="[rows, rows * 2, rows * 4]"
+    :rowsPerPageOptions="[25, 50, 100]"
     :paginator="terms.length > rows ? true : false"
-    :rows="rows"
+    :rows="25"
     rowGroupMode="subheader"
     groupRowsBy="scheme.name"
     sortMode="single"
@@ -70,9 +70,9 @@ export default defineComponent({
   },
   methods: {
     onResize(): void {
-      this.setScrollHeight();
       this.setTableWidth();
       this.setTableRows();
+      this.setScrollHeight();
     },
     async getTerms(iri: string) {
       this.loading = true;
@@ -114,18 +114,24 @@ export default defineComponent({
           .getComputedStyle(document.documentElement, null)
           .getPropertyValue("font-size")
       );
-      const paginatorHeight =
-        paginator?.getBoundingClientRect().height === 0
-          ? currentFontSize * 3.7
-          : paginator?.getBoundingClientRect().height;
-      this.scrollHeight =
-        container?.getBoundingClientRect().height -
-        header?.getBoundingClientRect().height -
-        nav?.getBoundingClientRect().height -
-        paginatorHeight -
-        currentFontSize * 4 -
-        1 +
-        "px";
+      if (paginator && currentFontSize && container && header && nav) {
+        this.scrollHeight =
+          container.getBoundingClientRect().height -
+          header.getBoundingClientRect().height -
+          nav.getBoundingClientRect().height -
+          paginator.getBoundingClientRect().height -
+          currentFontSize * 4 -
+          1 +
+          "px";
+      } else if (currentFontSize && container && header && nav) {
+        this.scrollHeight =
+          container.getBoundingClientRect().height -
+          header.getBoundingClientRect().height -
+          nav.getBoundingClientRect().height -
+          currentFontSize * 8 -
+          1 +
+          "px";
+      }
     },
 
     setTableWidth(): void {
