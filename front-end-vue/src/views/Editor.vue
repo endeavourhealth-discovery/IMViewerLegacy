@@ -1,14 +1,18 @@
 <template>
   <SideNav />
   <ConfirmDialog></ConfirmDialog>
-  <div class="edit-panel">
+  <div id="edit-panel">
     <Panel header="Editor">
-      <TabView>
+      <TabView v-model:activeIndex="active">
         <TabPanel header="Form">
-          <FormEditor :concept="concept" />
+          <FormEditor v-if="active === 0" :concept="concept" />
         </TabPanel>
         <TabPanel header="IMLang">
-          <MonacoEditor />
+          <!-- <MonacoEditor v-if="active === 1" /> -->
+          <p>Monoco Editor placeholder</p>
+        </TabPanel>
+        <TabPanel v-if="hasMembers" header="Members">
+          <MemberEditor v-if="active === 2" :concept="concept" />
         </TabPanel>
       </TabView>
     </Panel>
@@ -22,14 +26,17 @@ import FormEditor from "@/components/edit/FormEditor.vue";
 import ConceptService from "@/services/ConceptService";
 // import MonacoEditor from "@/components/edit/MonacoEditor.vue";
 import ConfirmDialog from "primevue/confirmdialog";
+import MemberEditor from "@/components/edit/MemberEditor.vue";
+import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
-  name: "Edit",
+  name: "Editor",
   components: {
     SideNav,
     // MonacoEditor,
     ConfirmDialog,
-    FormEditor
+    FormEditor,
+    MemberEditor
   },
   beforeRouteLeave(to, from, next) {
     this.$confirm.require({
@@ -42,9 +49,15 @@ export default defineComponent({
       }
     });
   },
+  computed: {
+    hasMembers(): any {
+      return IM.HAS_MEMBERS in this.concept ? true : false;
+    }
+  },
   data() {
     return {
-      concept: {} as any
+      concept: {} as any,
+      active: 0
     };
   },
   async mounted() {
@@ -57,7 +70,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.edit-panel {
+#edit-panel {
   grid-area: content;
   margin: 1rem;
   height: calc(100vh - 2rem);

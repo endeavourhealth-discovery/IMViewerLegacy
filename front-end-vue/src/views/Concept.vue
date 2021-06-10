@@ -16,14 +16,6 @@
         >
           <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
         </button>
-        <button
-          v-if="isSet"
-          class="p-panel-header-icon p-link p-mr-2"
-          @click="directToMemberEdit"
-          v-tooltip.bottom="'Edit valueset members'"
-        >
-          <i class="fas fa-random" aria-hidden="true"></i>
-        </button>
         <!--<button
           class="p-panel-header-icon p-link p-mr-2"
           @click="directToCreateRoute"
@@ -183,10 +175,6 @@ export default defineComponent({
 
     directToCreateRoute(): void {
       this.$router.push({ name: "Create" });
-    },
-
-    directToMemberEdit(): void {
-      this.$router.push({ name: "MemberEdit" });
     },
 
     onResize(): void {

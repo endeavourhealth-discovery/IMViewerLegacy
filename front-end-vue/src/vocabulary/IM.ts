@@ -22,6 +22,7 @@ export class IM {
 
   public static QUERY_SET = IM.NAMESPACE + "QuerySet";
   public static VALUE_SET = IM.NAMESPACE + "ValueSet";
+  public static HAS_MEMBERS = IM.NAMESPACE + "hasMembers";
   public static SET = IM.NAMESPACE + "Set";
   public static RECORD_TYPE = IM.NAMESPACE + "RecordType";
   public static FOLDER = IM.NAMESPACE + "Folder";
