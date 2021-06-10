@@ -143,6 +143,7 @@ export default defineComponent({
 
 .p-card {
   box-shadow: unset;
+  height: 100%;
 }
 
 .editor-grid {
@@ -155,7 +156,7 @@ export default defineComponent({
     "version status scheme"
     "imlang imlang imlang";
   column-gap: 7px;
-  height: calc(100vh - 20rem);
+  height: 100%;
 }
 
 .iri {

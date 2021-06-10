@@ -2,7 +2,12 @@
   <div v-if="loading">
     <ProgressSpinner />
   </div>
-  <PickList v-if="data && !loading" v-model="data" dataKey="code" :listStyle="listHeight">
+  <PickList
+    v-if="data && !loading"
+    v-model="data"
+    dataKey="code"
+    :listStyle="listHeight"
+  >
     <template #sourceHeader>
       Included
     </template>
@@ -27,11 +32,11 @@ export default defineComponent({
   props: ["concept"],
   async mounted() {
     this.$nextTick(() => {
-      window.addEventListener("resize", this.setListHeight)
+      window.addEventListener("resize", this.setListHeight);
     });
     if ("@id" in this.concept) {
       await this.getMembers(this.concept["@id"]);
-    };
+    }
     this.setListHeight();
   },
   beforeUnmount() {
@@ -40,7 +45,7 @@ export default defineComponent({
   data() {
     return {
       members: [] as any,
-      data: [[],[]] as any,
+      data: [[], []] as any,
       listHeight: "",
       loading: false
     };
@@ -59,36 +64,38 @@ export default defineComponent({
             LoggerService.error("Members server request failed", err)
           );
         });
-        this.loading = false;
+      this.loading = false;
     },
 
     setListHeight(): void {
-      const container = document.getElementById("edit-panel") as HTMLElement;
-      const header = container.getElementsByClassName("p-panel-header")[0] as HTMLElement;
-      const nav = container.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
-      // const pickList = container.getElementsByClassName("p-picklist")[0] as HTMLElement;
-      const pickListHeader = container.getElementsByClassName("p-picklist-header")[0] as HTMLElement;
-      if (container && header && nav && currentFontSize && pickListHeader) {
+      const container = document.getElementsByClassName(
+        "panel-content"
+      )[2] as HTMLElement;
+      const pickListHeader = document.getElementsByClassName(
+        "p-picklist-header"
+      )[0] as HTMLElement;
+      if (container && pickListHeader) {
         const optimumHeight =
           container.getBoundingClientRect().height -
-          header.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
           pickListHeader.getBoundingClientRect().height -
-          currentFontSize * 4 -
           1;
-        this.listHeight = "height: " + optimumHeight + "px; max-height: " + optimumHeight + "px;"
+        this.listHeight =
+          "height: " +
+          optimumHeight +
+          "px; max-height: " +
+          optimumHeight +
+          "px;";
       }
       this.removeOrderButtons();
     },
 
     removeOrderButtons(): void {
-      const sourceOrderButtons = document.getElementsByClassName("p-picklist-source-controls")[0] as HTMLElement;
-      const targetOrderButtons = document.getElementsByClassName("p-picklist-target-controls")[0] as HTMLElement;
+      const sourceOrderButtons = document.getElementsByClassName(
+        "p-picklist-source-controls"
+      )[0] as HTMLElement;
+      const targetOrderButtons = document.getElementsByClassName(
+        "p-picklist-target-controls"
+      )[0] as HTMLElement;
       if (sourceOrderButtons) {
         sourceOrderButtons.remove();
       }
@@ -101,7 +108,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  .member-name {
-    word-wrap: break-word;
-  }
+.member-name {
+  word-wrap: break-word;
+}
 </style>
