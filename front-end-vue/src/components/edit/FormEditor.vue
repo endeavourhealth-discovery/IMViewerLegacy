@@ -76,20 +76,6 @@
         </div>
       </div>
     </template>
-    <template #footer>
-      <Button
-        icon="pi pi-times"
-        label="Cancel"
-        class="p-button-secondary"
-        @click="$router.go(-1)"
-      />
-      <Button
-        icon="pi pi-check"
-        label="Save"
-        class="save-button"
-        @click="submit"
-      />
-    </template>
   </Card>
 </template>
 

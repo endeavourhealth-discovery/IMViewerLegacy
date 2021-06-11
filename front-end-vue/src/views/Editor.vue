@@ -34,6 +34,20 @@
         </TabPanel>
       </TabView>
     </Panel>
+    <div class="button-bar p-d-flex p-flex-row p-jc-end" id="editor-button-bar">
+      <Button
+        icon="pi pi-times"
+        label="Cancel"
+        class="p-button-secondary"
+        @click="$router.go(-1)"
+      />
+      <Button
+        icon="pi pi-check"
+        label="Save"
+        class="save-button"
+        @click="submit"
+      />
+    </div>
   </div>
 </template>
 
@@ -93,6 +107,10 @@ export default defineComponent({
     window.removeEventListener("resize", this.setContentHeight);
   },
   methods: {
+    submit(): void {
+      console.log("submit");
+    },
+
     setContentHeight(): void {
       const container = document.getElementById(
         "editor-main-container"
@@ -103,17 +121,35 @@ export default defineComponent({
       const nav = container.getElementsByClassName(
         "p-tabview-nav"
       )[0] as HTMLElement;
+      const buttonBar = container.getElementsByClassName(
+        "button-bar"
+      )[0] as HTMLElement;
+      const content = container.getElementsByClassName("p-panel-content")[
+        this.active
+      ] as HTMLElement;
       const currentFontSize = parseFloat(
         window
           .getComputedStyle(document.documentElement, null)
           .getPropertyValue("font-size")
       );
-      if (container && header && nav && currentFontSize) {
+      if (
+        container &&
+        header &&
+        nav &&
+        currentFontSize &&
+        buttonBar &&
+        content
+      ) {
+        header.style.border = "none";
+        header.style.borderBottom = "1px solid #dee2e6";
+        content.style.border = "none";
+        content.style.paddingBottom = "0";
         const height =
           container.getBoundingClientRect().height -
           header.getBoundingClientRect().height -
           nav.getBoundingClientRect().height -
-          currentFontSize * 4 -
+          buttonBar.getBoundingClientRect().height -
+          currentFontSize * 3 -
           1;
         this.contentHeight = "height: " + height + "px;";
       }
@@ -129,9 +165,15 @@ export default defineComponent({
   width: 100%;
   overflow-y: auto;
   background-color: #ffffff;
+  border: 1px solid #dee2e6;
 }
 
 .placeholder {
   height: 100%;
+}
+
+#editor-button-bar {
+  padding: 0 2rem 1rem 0;
+  gap: 0.5rem;
 }
 </style>
