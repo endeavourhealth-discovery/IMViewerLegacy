@@ -6,12 +6,15 @@
     <ProgressSpinner />
   </div>
   <PickList
-    v-if="data && !loading"
+    v-else
     v-model="data"
     dataKey="code"
     :listStyle="listHeight"
     :responsive="false"
     @move-to-target="membersUpdated"
+    @move-to-source="membersUpdated"
+    @move-all-to-target="membersUpdated"
+    @move-all-to-source="membersUpdated"
   >
     <template #sourceHeader>
       Included
@@ -34,7 +37,7 @@ import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "MemberEditor",
-  props: ["iri", "contentHeight"],
+  props: ["iri", "contentHeight", "updatedMembers"],
   emits: ["members-updated"],
   watch: {
     contentHeight() {
@@ -44,8 +47,8 @@ export default defineComponent({
   async mounted() {
     if (this.iri) {
       await this.getMembers(this.iri);
+      this.setListHeight();
     }
-    this.setListHeight();
   },
   data() {
     return {
@@ -58,17 +61,26 @@ export default defineComponent({
   methods: {
     async getMembers(iri: string): Promise<void> {
       this.loading = true;
-      await ConceptService.getConceptMembers(iri, false)
-        .then(res => {
-          this.members = res.data;
-          this.data[0] = this.members.included;
-          this.data[1] = this.members.excluded;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Members server request failed", err)
-          );
-        });
+      if (
+        "included" in this.updatedMembers ||
+        "excluded" in this.updatedMembers
+      ) {
+        this.members = JSON.parse(JSON.stringify(this.updatedMembers));
+        this.data[0] = this.members.included;
+        this.data[1] = this.members.excluded;
+      } else {
+        await ConceptService.getConceptMembers(iri, false)
+          .then(res => {
+            this.members = res.data;
+            this.data[0] = this.members.included;
+            this.data[1] = this.members.excluded;
+          })
+          .catch(err => {
+            this.$toast.add(
+              LoggerService.error("Members server request failed", err)
+            );
+          });
+      }
       this.loading = false;
     },
 

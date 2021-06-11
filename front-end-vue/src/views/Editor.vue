@@ -33,6 +33,7 @@
               v-if="active === 2"
               :iri="iri"
               :contentHeight="contentHeight"
+              :updatedMembers="membersUpdated"
               @members-updated="updateMembers"
             />
           </div>
@@ -76,15 +77,17 @@ export default defineComponent({
     MemberEditor
   },
   beforeRouteLeave(to, from, next) {
-    this.$confirm.require({
-      message:
-        "All unsaved changes will be lost. Are you sure you want to proceed?",
-      header: "Confirmation",
-      icon: "pi pi-exclamation-triangle",
-      accept: () => {
-        next();
-      }
-    });
+    if (this.checkForChanges()) {
+      this.$confirm.require({
+        message:
+          "All unsaved changes will be lost. Are you sure you want to proceed?",
+        header: "Confirmation",
+        icon: "pi pi-exclamation-triangle",
+        accept: () => {
+          next();
+        }
+      });
+    }
   },
   computed: {
     hasMembers(): any {
@@ -125,6 +128,14 @@ export default defineComponent({
 
     updateMembers(data: any) {
       this.membersUpdated = data;
+    },
+
+    checkForChanges() {
+      if (this.membersUpdated === {}) {
+        return false;
+      } else {
+        return true;
+      }
     },
 
     setContentHeight(): void {
