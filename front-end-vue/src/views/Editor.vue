@@ -66,6 +66,7 @@ import ConceptService from "@/services/ConceptService";
 import ConfirmDialog from "primevue/confirmdialog";
 import MemberEditor from "@/components/edit/MemberEditor.vue";
 import { IM } from "@/vocabulary/IM";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "Editor",
@@ -111,13 +112,32 @@ export default defineComponent({
       window.addEventListener("resize", this.setContentHeight);
     });
     if (this.iri) {
-      this.conceptOriginal = (await ConceptService.getConcept(this.iri)).data;
-    }
-    if (this.hasMembers && this.iri) {
-      this.membersOriginal = (
+      await ConceptService.getConcept(this.iri)
+        .then(res => {
+          this.conceptOriginal = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Editor get concept request failed", err)
+          );
+        });
+
+      if (this.hasMembers) {
         await ConceptService.getConceptMembers(this.iri, false)
-      ).data;
+          .then(res => {
+            this.membersOriginal = res.data;
+          })
+          .catch(err => {
+            this.$toast.add(
+              LoggerService.error(
+                "Editor get concept members request failed",
+                err
+              )
+            );
+          });
+      }
     }
+
     this.setContentHeight();
   },
   beforeUnmount() {
