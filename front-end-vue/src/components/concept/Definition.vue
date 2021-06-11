@@ -33,9 +33,9 @@
     </Divider>
     <div class="p-d-flex p-flex-row p-jc-start summary-container">
       <div class="left-side">
-        <strong>is a: </strong>{{ parents.length }}
+        <strong>is a: </strong>{{ concept.isa?.length }}
         <Listbox
-          :options="parents"
+          :options="concept.isa"
           listStyle="height: 12rem;"
           v-model="selected"
           @change="navigate(selected?.['@id'])"
@@ -48,9 +48,9 @@
         </Listbox>
       </div>
       <div class="right-side">
-        <strong>has sub types: </strong>{{ children?.length }}
+        <strong>has sub types: </strong>{{ concept.subtypes?.length }}
         <Listbox
-          :options="children"
+          :options="concept.subtypes"
           listStyle="height: 12rem;"
           v-model="selected"
           @change="navigate(selected.iri)"
@@ -75,7 +75,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
-import ConceptService from "@/services/ConceptService";
 import Description from "./Description.vue";
 import Properties from "./Properties.vue";
 
@@ -102,48 +101,12 @@ export default defineComponent({
       return "<p class='description-p'>" + text + "</p>";
     }
   },
-  async mounted() {
-    await this.init();
-  },
   data() {
     return {
-      children: [],
-      parents: [],
-      properties: [],
       selected: {}
     };
   },
-  watch: {
-    async concept() {
-      this.$store.state.cancelSource.cancel("Cancel");
-      await this.init();
-    }
-  },
   methods: {
-    async init() {
-      this.children = [];
-      this.parents = [];
-      this.properties = [];
-      this.$store.commit("updateCancelSource");
-      if (this.concept.iri) {
-        this.children = (
-          await ConceptService.getDefinitionSubTypes(
-            this.concept.iri,
-            this.$store.state.cancelSource.token
-          )
-        ).data;
-        this.parents = (
-          await ConceptService.getConceptParents(this.concept.iri)
-        ).data;
-        this.properties = (
-          await ConceptService.getDataModelProperties(
-            this.concept.iri,
-            this.$store.state.cancelSource.token
-          )
-        ).data;
-      }
-    },
-
     navigate(iri: any) {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
       if (iri)
