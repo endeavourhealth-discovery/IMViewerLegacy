@@ -40,16 +40,17 @@
             />
           </div>
         </div> -->
-        <div class="footer user-settings ">
-          <i
+        <div class="footer user-settings">
+          <span
             v-if="!isLoggedIn"
             id="user-icon"
-            class="pi pi-users user-icon"
             @click="toggle"
             aria-haspopup="true"
             aria-controls="overlay_menu"
             aria-hidden="true"
-          ></i>
+          >
+            <i class="fas fa-fw fa-3x fa-users" style="color: lightgrey"></i>
+          </span>
           <img
             v-if="isLoggedIn"
             id="user-icon"
@@ -81,12 +82,12 @@ export default defineComponent({
       loginItems: [
         {
           label: "Login",
-          icon: "pi pi-fw pi-user",
+          icon: "fa fa-fw fa-user",
           to: "/user/login"
         },
         {
           label: "Register",
-          icon: "pi pi-fw pi-user-plus",
+          icon: "fa fa-fw fa-user-plus",
           to: "/user/register"
         }
       ] as { label: string; icon: string; to: string }[],
@@ -94,22 +95,22 @@ export default defineComponent({
       accountItems: [
         {
           label: "My account",
-          icon: "pi pi-fw pi-user",
+          icon: "fa fa-fw fa-user",
           to: "/user/my-account" //+ this.user.id
         },
         {
           label: "Edit account",
-          icon: "pi pi-fw pi-user-edit",
+          icon: "fa fa-fw fa-user-edit",
           to: "/user/my-account/edit"
         },
         {
           label: "Change password",
-          icon: "pi pi-fw pi-lock",
+          icon: "fa fa-fw fa-user-lock",
           to: "/user/my-account/password-edit"
         },
         {
           label: "Logout",
-          icon: "pi pi-fw pi-lock-open",
+          icon: "fa fa-fw fa-sign-out-alt",
           to: "/user/logout" //+ this.user.id
         }
       ] as { label: string; icon: string; to: string }[]
@@ -183,6 +184,7 @@ export default defineComponent({
 }
 
 .user-settings {
+  cursor: pointer;
   text-align: center;
 }
 
