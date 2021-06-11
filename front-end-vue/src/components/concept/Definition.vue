@@ -38,7 +38,7 @@
           :options="concept.isa"
           listStyle="height: 12rem;"
           v-model="selected"
-          @change="navigate(selected?.['@id'])"
+          @change="navigate(selected.iri)"
         >
           <template #option="slotProps">
             <div>
