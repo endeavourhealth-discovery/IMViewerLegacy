@@ -61,10 +61,7 @@ export default defineComponent({
   methods: {
     async getMembers(iri: string): Promise<void> {
       this.loading = true;
-      if (
-        "included" in this.updatedMembers ||
-        "excluded" in this.updatedMembers
-      ) {
+      if (this.updatedMembers) {
         this.members = JSON.parse(JSON.stringify(this.updatedMembers));
         this.data[0] = this.members.included;
         this.data[1] = this.members.excluded;

@@ -87,6 +87,8 @@ export default defineComponent({
           next();
         }
       });
+    } else {
+      next();
     }
   },
   computed: {
@@ -99,7 +101,7 @@ export default defineComponent({
       iri: this.$route.params.iri?.toString(),
       conceptOriginal: {} as any,
       membersOriginal: {} as any,
-      membersUpdated: {} as any,
+      membersUpdated: null as any,
       active: 0,
       contentHeight: ""
     };
@@ -131,7 +133,7 @@ export default defineComponent({
     },
 
     checkForChanges() {
-      if (this.membersUpdated === {}) {
+      if (!this.membersUpdated) {
         return false;
       } else {
         return true;
