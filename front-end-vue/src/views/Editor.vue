@@ -29,7 +29,11 @@
             id="member-editor-container"
             :style="contentHeight"
           >
-            <MemberEditor v-if="active === 2" :concept="concept" />
+            <MemberEditor
+              v-if="active === 2"
+              :concept="concept"
+              :contentHeight="contentHeight"
+            />
           </div>
         </TabPanel>
       </TabView>
@@ -124,9 +128,9 @@ export default defineComponent({
       const buttonBar = container.getElementsByClassName(
         "button-bar"
       )[0] as HTMLElement;
-      const content = container.getElementsByClassName("p-panel-content")[
-        this.active
-      ] as HTMLElement;
+      const content = container.getElementsByClassName(
+        "p-panel-content"
+      )[0] as HTMLElement;
       const currentFontSize = parseFloat(
         window
           .getComputedStyle(document.documentElement, null)
@@ -150,7 +154,7 @@ export default defineComponent({
           nav.getBoundingClientRect().height -
           buttonBar.getBoundingClientRect().height -
           currentFontSize * 3 -
-          1;
+          2;
         this.contentHeight = "height: " + height + "px;";
       }
     }

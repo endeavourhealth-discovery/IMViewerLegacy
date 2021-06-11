@@ -10,6 +10,7 @@
     v-model="data"
     dataKey="code"
     :listStyle="listHeight"
+    :responsive="false"
   >
     <template #sourceHeader>
       Included
@@ -32,18 +33,17 @@ import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "MemberEditor",
-  props: ["concept"],
+  props: ["concept", "contentHeight"],
+  watch: {
+    contentHeight() {
+      this.setListHeight();
+    }
+  },
   async mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.setListHeight);
-    });
     if ("@id" in this.concept) {
       await this.getMembers(this.concept["@id"]);
     }
     this.setListHeight();
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.setListHeight);
   },
   data() {
     return {
@@ -74,7 +74,7 @@ export default defineComponent({
       const container = document.getElementById(
         "member-editor-container"
       ) as HTMLElement;
-      const pickListHeader = document.getElementsByClassName(
+      const pickListHeader = container.getElementsByClassName(
         "p-picklist-header"
       )[0] as HTMLElement;
       if (container && pickListHeader) {
