@@ -5,18 +5,30 @@
     <Panel header="Editor">
       <TabView v-model:activeIndex="active">
         <TabPanel header="Form">
-          <div class="panel-content" :style="contentHeight">
+          <div
+            class="panel-content"
+            id="form-editor-container"
+            :style="contentHeight"
+          >
             <FormEditor v-if="active === 0" :concept="concept" />
           </div>
         </TabPanel>
         <TabPanel header="IMLang">
-          <div class="panel-content" :style="contentHeight">
+          <div
+            class="panel-content"
+            id="monaco-editor-container"
+            :style="contentHeight"
+          >
             <!-- <MonacoEditor v-if="active === 1" /> -->
             <p class="placeholder">Monoco Editor placeholder</p>
           </div>
         </TabPanel>
         <TabPanel v-if="hasMembers" header="Members">
-          <div class="panel-content" :style="contentHeight">
+          <div
+            class="panel-content"
+            id="member-editor-container"
+            :style="contentHeight"
+          >
             <MemberEditor v-if="active === 2" :concept="concept" />
           </div>
         </TabPanel>
@@ -101,7 +113,8 @@ export default defineComponent({
           container.getBoundingClientRect().height -
           header.getBoundingClientRect().height -
           nav.getBoundingClientRect().height -
-          currentFontSize * 4;
+          currentFontSize * 4 -
+          1;
         this.contentHeight = "height: " + height + "px;";
       }
     }

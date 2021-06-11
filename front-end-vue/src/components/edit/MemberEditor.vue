@@ -1,5 +1,8 @@
 <template>
-  <div v-if="loading">
+  <div
+    class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center"
+    v-if="loading"
+  >
     <ProgressSpinner />
   </div>
   <PickList
@@ -68,9 +71,9 @@ export default defineComponent({
     },
 
     setListHeight(): void {
-      const container = document.getElementsByClassName(
-        "panel-content"
-      )[2] as HTMLElement;
+      const container = document.getElementById(
+        "member-editor-container"
+      ) as HTMLElement;
       const pickListHeader = document.getElementsByClassName(
         "p-picklist-header"
       )[0] as HTMLElement;
@@ -78,7 +81,7 @@ export default defineComponent({
         const optimumHeight =
           container.getBoundingClientRect().height -
           pickListHeader.getBoundingClientRect().height -
-          1;
+          4;
         this.listHeight =
           "height: " +
           optimumHeight +
@@ -90,7 +93,10 @@ export default defineComponent({
     },
 
     removeOrderButtons(): void {
-      const sourceOrderButtons = document.getElementsByClassName(
+      const container = document.getElementById(
+        "member-editor-container"
+      ) as HTMLElement;
+      const sourceOrderButtons = container.getElementsByClassName(
         "p-picklist-source-controls"
       )[0] as HTMLElement;
       const targetOrderButtons = document.getElementsByClassName(
@@ -110,5 +116,9 @@ export default defineComponent({
 <style scoped>
 .member-name {
   word-wrap: break-word;
+}
+
+.loading-container {
+  height: 100%;
 }
 </style>
