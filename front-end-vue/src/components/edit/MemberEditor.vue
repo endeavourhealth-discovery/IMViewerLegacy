@@ -11,6 +11,7 @@
     dataKey="code"
     :listStyle="listHeight"
     :responsive="false"
+    @move-to-target="membersUpdated"
   >
     <template #sourceHeader>
       Included
@@ -33,15 +34,16 @@ import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "MemberEditor",
-  props: ["concept", "contentHeight"],
+  props: ["iri", "contentHeight"],
+  emits: ["members-updated"],
   watch: {
     contentHeight() {
       this.setListHeight();
     }
   },
   async mounted() {
-    if ("@id" in this.concept) {
-      await this.getMembers(this.concept["@id"]);
+    if (this.iri) {
+      await this.getMembers(this.iri);
     }
     this.setListHeight();
   },
@@ -108,6 +110,14 @@ export default defineComponent({
       if (targetOrderButtons) {
         targetOrderButtons.remove();
       }
+    },
+
+    membersUpdated(): void {
+      this.$emit("members-updated", {
+        included: this.data[0],
+        excluded: this.data[1],
+        valueSet: this.members.valueSet
+      });
     }
   }
 });

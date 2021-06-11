@@ -90,14 +90,7 @@ import Card from "primevue/card";
 export default defineComponent({
   name: "FormEditor",
   components: { Dropdown, Card },
-  props: {
-    concept: {} as any
-  },
-  watch: {
-    concept() {
-      this.conceptDto.iri = this.concept["@id"];
-    }
-  },
+  props: ["iri"],
   data() {
     return {
       conceptDto: {} as any,
@@ -108,6 +101,7 @@ export default defineComponent({
     };
   },
   async mounted() {
+    this.conceptDto.iri = this.iri;
     this.schemeOptions = (await ConceptService.getSchemeOptions()).data;
   },
   methods: {

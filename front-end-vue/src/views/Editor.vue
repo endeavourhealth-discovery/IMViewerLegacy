@@ -10,7 +10,7 @@
             id="form-editor-container"
             :style="contentHeight"
           >
-            <FormEditor v-if="active === 0" :concept="concept" />
+            <FormEditor v-if="active === 0" :iri="iri" />
           </div>
         </TabPanel>
         <TabPanel header="IMLang">
@@ -31,8 +31,9 @@
           >
             <MemberEditor
               v-if="active === 2"
-              :concept="concept"
+              :iri="iri"
               :contentHeight="contentHeight"
+              @members-updated="updateMembers"
             />
           </div>
         </TabPanel>
@@ -87,12 +88,15 @@ export default defineComponent({
   },
   computed: {
     hasMembers(): any {
-      return IM.HAS_MEMBERS in this.concept ? true : false;
+      return IM.HAS_MEMBERS in this.conceptOriginal ? true : false;
     }
   },
   data() {
     return {
-      concept: {} as any,
+      iri: this.$route.params.iri?.toString(),
+      conceptOriginal: {} as any,
+      membersOriginal: {} as any,
+      membersUpdated: {} as any,
       active: 0,
       contentHeight: ""
     };
@@ -101,9 +105,13 @@ export default defineComponent({
     this.$nextTick(() => {
       window.addEventListener("resize", this.setContentHeight);
     });
-    const iri = this.$route.params.iri?.toString();
-    if (iri) {
-      this.concept = (await ConceptService.getConcept(iri)).data;
+    if (this.iri) {
+      this.conceptOriginal = (await ConceptService.getConcept(this.iri)).data;
+    }
+    if (this.hasMembers && this.iri) {
+      this.membersOriginal = (
+        await ConceptService.getConceptMembers(this.iri, false)
+      ).data;
     }
     this.setContentHeight();
   },
@@ -113,6 +121,10 @@ export default defineComponent({
   methods: {
     submit(): void {
       console.log("submit");
+    },
+
+    updateMembers(data: any) {
+      this.membersUpdated = data;
     },
 
     setContentHeight(): void {
