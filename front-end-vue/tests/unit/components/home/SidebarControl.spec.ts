@@ -1,4 +1,4 @@
-import { shallowMount } from "@vue/test-utils";
+import { flushPromises, shallowMount } from "@vue/test-utils";
 import SidebarControl from "@/components/home/SidebarControl.vue";
 import InputText from "primevue/inputtext";
 import TabView from "primevue/tabview";
@@ -7,19 +7,21 @@ import Hierarchy from "@/components/sidebar/Hierarchy.vue";
 import History from "@/components/sidebar/History.vue";
 import SearchResults from "@/components/sidebar/SearchResults.vue";
 import Filters from "@/components/sidebar/Filters.vue";
+import LoggerService from "@/services/LoggerService";
 
 describe("SidebarControl.vue", () => {
   let wrapper: any;
   let mockStore: any;
   let mockToast: any;
   let testError: Error;
+  jest.useFakeTimers();
 
   beforeEach(() => {
     jest.clearAllMocks();
     mockStore = {
       state: {
         filters: {
-          selectedStatus: ["Active", "Draft"],
+          selectedStatus: ["Active", "Draft", "Inactive"],
           selectedSchemes: [
             {
               iri: "http://endhealth.info/im#DiscoveryCodeScheme",
@@ -49,7 +51,7 @@ describe("SidebarControl.vue", () => {
         }
       },
       commit: jest.fn(),
-      dispatch: jest.fn().mockResolvedValue(true)
+      dispatch: jest.fn().mockResolvedValue("true")
     };
     mockToast = {
       add: jest.fn()
@@ -95,4 +97,69 @@ describe("SidebarControl.vue", () => {
     expect(wrapper.vm.active).toBe(2);
     expect(mockStore.commit).toHaveBeenCalled();
   });
+
+  it("cancels existing requests on new search", async() => {
+    wrapper.vm.searchTerm = "sco";
+    wrapper.vm.search();
+    await wrapper.vm.$nextTick();
+    const spy = jest.spyOn(wrapper.vm.request, "cancel");
+    wrapper.vm.searchTerm = "pul";
+    wrapper.vm.search();
+    await wrapper.vm.$nextTick();
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.mockReset();
+  });
+
+  it("updated loading on dispatch success", async() => {
+    wrapper.vm.searchTerm = "sco";
+    wrapper.vm.search();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", {
+      key: "searchResults",
+      value: false
+    });
+    expect(mockToast.add).not.toHaveBeenCalled();
+  });
+
+  it("updated loading and fire toast on dispatch fail", async() => {
+    mockStore.dispatch = jest.fn().mockResolvedValue("false")
+    wrapper.vm.searchTerm = "sco";
+    wrapper.vm.search();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", {
+      key: "searchResults",
+      value: false
+    });
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Search results server request failed"));
+  });
+
+  it("debounces", async() => {
+    const spy = jest.spyOn(wrapper.vm, "search")
+    wrapper.vm.debounceForSearch();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.debounce).toBeGreaterThan(0);
+    expect(spy).not.toHaveBeenCalled();
+    jest.runAllTimers();
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it("sets container size", async() => {
+    Element.prototype.getBoundingClientRect = jest.fn(() => {
+      return { height: 100, width: 0, top: 0, bottom: 0, right: 0, x: 0, y: 0, left: 0, toJSON: jest.fn() }
+    });
+    let docSpy: any;
+    const mockElement = document.createElement("div");
+    mockElement.style.height = 100 + "px";
+    docSpy = jest.spyOn(document, "getElementById");
+    docSpy.mockReturnValue(mockElement);
+    wrapper.vm.setContainerHeights();
+    await wrapper.vm.$nextTick();
+    expect(mockElement.style.maxHeight).toBeTruthy();
+  })
 });

@@ -108,7 +108,6 @@ export default class ConceptService {
   }
 
   public static async getSchemeOptions(): Promise<AxiosResponse<any>> {
-    const CancelToken = axios.CancelToken;
     return this.getConceptChildren("http://endhealth.info/im#551000252107");
   }
 

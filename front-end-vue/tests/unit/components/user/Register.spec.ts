@@ -472,4 +472,131 @@ describe("register.vue prefilled", () => {
       confirmButtonText: "Close"
     });
   });
+
+  it("can setShowUsernameNotice ___ false", async() => {
+    wrapper.vm.setShowUsernameNotice();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showUsernameNotice).toBe(false);
+  });
+
+  it("can setShowUsernameNotice ___ true", async() => {
+    wrapper.vm.username = "Big Bob";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setShowUsernameNotice();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showUsernameNotice).toBe(true);
+  });
+
+  it("can setShowEmail1Notice ___ false", async() => {
+    wrapper.vm.setShowEmail1Notice(false);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showEmail1Notice).toBe(false);
+  });
+
+  it("can setShowEmail1Notice ___ true", async() => {
+    wrapper.vm.setShowEmail1Notice(true);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showEmail1Notice).toBe(true);
+  });
+
+  it("can setShowEmail2Notice ___ false", async() => {
+    wrapper.vm.setShowEmail2Notice();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showEmail2Notice).toBe(false);
+  });
+
+  it("can setShowEmail2Notice ___ true", async() => {
+    wrapper.vm.email2 = "test@ergo.co.uk";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setShowEmail2Notice();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showEmail2Notice).toBe(true);
+  });
+
+  it("can setShowPassword2Notice ___ false", async() => {
+    wrapper.vm.setShowPassword2Notice();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showPassword2Notice).toBe(false);
+  });
+
+  it("can setShowPassword2Notice ___ true", async() => {
+    wrapper.vm.password2 = "abcdefghi";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setShowPassword2Notice();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showPassword2Notice).toBe(true);
+  });
+
+  it("can setShowFirstNameNotice ___ false", async() => {
+    wrapper.vm.setShowFirstNameNotice();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showFirstNameNotice).toBe(false);
+  });
+
+  it("can setShowFirstNameNotice ___ true", async() => {
+    wrapper.vm.firstName = "$%B0b";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setShowFirstNameNotice();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showFirstNameNotice).toBe(true);
+  });
+
+  it("can setShowLastNameNotice ___ false", async() => {
+    wrapper.vm.setShowLastNameNotice();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showLastNameNotice).toBe(false);
+  });
+
+  it("can setShowLastNameNotice ___ true", async() => {
+    wrapper.vm.lastName = "$%B0b";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setShowLastNameNotice();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showLastNameNotice).toBe(true);
+  });
 });
+
+describe("AuthService fail", () => {
+  let wrapper: any;
+  let mockStore: any;
+  let mockRouter: any;
+  let testUser: User;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    AuthService.register = jest.fn().mockRejectedValue({ status: 500, message: "Register test failed" });
+    console.error = jest.fn();
+
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
+
+    testUser = new User("DevTest", "John", "Doe", "devtest@ergo.co.uk", "12345678", avatars[0]);
+    mockStore = {
+      commit: jest.fn()
+    }
+    mockRouter = {
+      push: jest.fn(),
+      go: jest.fn()
+    }
+    wrapper = mount(Register, {
+      global: {
+        components: { Card, Button, InputText, InlineMessage, SelectButton, OverlayPanel, AvatarWithSelector },
+        mocks: { $store: mockStore, $router: mockRouter }
+      }
+    });
+    wrapper.vm.username = "DevTest";
+    wrapper.vm.email1 = "devtest@ergo.co.uk";
+    wrapper.vm.email2 = "devtest@ergo.co.uk";
+    wrapper.vm.password1 = "12345678";
+    wrapper.vm.password2 = "12345678";
+    wrapper.vm.firstName = "John";
+    wrapper.vm.lastName = "Doe";
+    wrapper.vm.selectedAvatar = avatars[0]
+  });
+  it("logs AuthService error to console", async() => {
+    wrapper.vm.handleSubmit();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(console.error).toHaveBeenCalledTimes(1);
+    expect(console.error).toHaveBeenCalledWith({ status: 500, message: "Register test failed" });
+  })
+})

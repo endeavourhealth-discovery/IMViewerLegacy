@@ -201,17 +201,19 @@ export default defineComponent({
       const currentFontSize = parseFloat(
         window.getComputedStyle(html, null).getPropertyValue("font-size")
       );
-      const sidebar = document.getElementById("side-bar");
+      const sidebar = document.getElementById("side-bar") as HTMLElement;
       if (sidebar) {
         sidebar.style.maxHeight =
           this.windowHeight - currentFontSize * 2 + "px";
       }
-      const fixedSidebar = document.getElementById("side-bar");
-      const searchBar = document.getElementById("search-bar");
-      const sideMenu = document.getElementById("side-menu");
+      const fixedSidebar = document.getElementById("side-bar") as HTMLElement;
+      const searchBar = document.getElementById("search-bar") as HTMLElement;
+      const sideMenu = document.getElementById("side-menu") as HTMLElement;
       if (searchBar && fixedSidebar && sideMenu) {
         sideMenu.style.maxHeight =
-          fixedSidebar.offsetHeight - searchBar.offsetHeight + "px";
+          fixedSidebar.getBoundingClientRect().height -
+          searchBar.getBoundingClientRect().height +
+          "px";
       }
     }
   }

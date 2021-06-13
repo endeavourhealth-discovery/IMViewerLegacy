@@ -6,7 +6,7 @@
   </div>
   <Listbox
     v-else
-    listStyle="height: calc(100vh - 245px)"
+    :listStyle="listHeight"
     :filter="true"
     emptyMessage="No results found"
     emptyFilterMessage="No results found"
@@ -32,15 +32,23 @@ export default defineComponent({
     }
   },
   async mounted() {
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.setListboxHeight);
+    });
+    this.setListboxHeight();
     if (this.conceptIri) {
       await this.getUsages(this.conceptIri);
     }
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.setListboxHeight);
   },
   data() {
     return {
       selectedUsage: {},
       usages: [],
-      loading: false
+      loading: false,
+      listHeight: ""
     };
   },
   methods: {
@@ -55,6 +63,34 @@ export default defineComponent({
         name: "Concept",
         params: { selectedIri: concept["@id"] }
       });
+    },
+
+    setListboxHeight(): void {
+      const conceptContainer = document.getElementsByClassName(
+        "concept-container"
+      )[0] as HTMLElement;
+      const header = conceptContainer.getElementsByClassName(
+        "p-panel-header"
+      )[0];
+      const nav = conceptContainer.getElementsByClassName("p-tabview-nav")[0];
+      const listHeader = conceptContainer.getElementsByClassName(
+        "p-listbox-header"
+      )[0] as HTMLElement;
+      const currentFontSize = parseFloat(
+        window
+          .getComputedStyle(document.documentElement, null)
+          .getPropertyValue("font-size")
+      );
+      if (conceptContainer && header && nav && listHeader && currentFontSize) {
+        const newHeight =
+          conceptContainer.getBoundingClientRect().height -
+          header.getBoundingClientRect().height -
+          nav.getBoundingClientRect().height -
+          listHeader.getBoundingClientRect().height -
+          currentFontSize * 4 -
+          7;
+        this.listHeight = "height: " + newHeight + "px;";
+      }
     }
   }
 });

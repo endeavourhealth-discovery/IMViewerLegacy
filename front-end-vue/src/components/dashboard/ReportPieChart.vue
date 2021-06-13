@@ -17,7 +17,7 @@
           v-if="!$store.state.loading.get('reportPie_' + iri)"
           type="pie"
           :data="chartConceptTypes"
-          :options="updatedChartOptions"
+          :options="chartOptions"
           :height="graphHeight"
         />
       </template>
@@ -32,7 +32,6 @@ const palette = require("../../../node_modules/google-palette");
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
 import { setTooltips, rescaleData } from "@/helpers/ChartRescale";
-import { toSentenceCase } from "@/helpers/TextConverters";
 import { ChartOptions } from "@/models/charts/ChartOptions";
 import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
@@ -40,12 +39,24 @@ import { OWL } from "@/vocabulary/OWL";
 
 export default defineComponent({
   name: "ReportPieChart",
-  props: ["chartOptions", "graphHeight", "iri"],
+  props: ["iri"],
   data: () => {
     return {
       name: "" as string,
       description: "" as string,
-      updatedChartOptions: {} as ChartOptions,
+      chartOptions: {
+        legend: {
+          position: "right",
+          onHover: function(e: any) {
+            e.target.style.cursor = "pointer";
+          }
+        },
+        hover: {
+          onHover: function(e: any) {
+            e.target.style.cursor = "default";
+          }
+        }
+      } as ChartOptions,
       realData: {} as number[],
       chartConceptTypes: new PieChartData(
         [
@@ -57,7 +68,8 @@ export default defineComponent({
           }
         ],
         []
-      ) as PieChartData
+      ) as PieChartData,
+      graphHeight: 200
     };
   },
   beforeCreate() {
@@ -66,47 +78,52 @@ export default defineComponent({
       value: true
     });
   },
-  mounted() {
-    this.updatedChartOptions = { ...this.chartOptions };
-    // chart type
-
-    IndividualService.getIndividual(this.iri)
-      .then(res => {
-        this.name = res.data[RDFS.LABEL]["@value"];
-        this.description = res.data[RDFS.COMMENT]["@value"];
-        for (const entry of res.data[IM.STATS_REPORT_ENTRY]) {
-          this.chartConceptTypes.labels.push(entry[RDFS.LABEL]["@value"]);
-          this.chartConceptTypes.datasets[0].data.push(
-            +entry[OWL.HAS_VALUE]["@value"]
-          );
-        }
-        this.chartConceptTypes.labels = this.chartConceptTypes.labels.map(
-          label => toSentenceCase(label)
-        );
-        this.realData = { ...this.chartConceptTypes.datasets[0].data };
-        // set tooltip to use real data
-        this.updatedChartOptions["tooltips"] = setTooltips(this.realData);
-        // refactor data to a minimum graph size (1%) if less than min
-        this.chartConceptTypes.datasets[0].data = rescaleData(
-          this.chartConceptTypes.datasets[0].data
-        );
-        this.setChartColours(res.data[IM.STATS_REPORT_ENTRY].length);
-        this.$store.commit("updateLoading", {
-          key: "reportPie_" + this.iri,
-          value: false
-        });
-      })
-      .catch(err => {
-        this.$store.commit("updateLoading", {
-          key: "reportPie_" + this.iri,
-          value: false
-        });
-        this.$toast.add(
-          LoggerService.error("Concept types server request failed", err)
-        );
-      });
-  }, // mounted end
+  async mounted() {
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.setLegendOptions);
+    });
+    await this.setChartData();
+    this.setLegendOptions();
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.setLegendOptions);
+  },
   methods: {
+    async setChartData(): Promise<void> {
+      await IndividualService.getIndividual(this.iri)
+        .then(res => {
+          this.name = res.data[RDFS.LABEL]["@value"];
+          this.description = res.data[RDFS.COMMENT]["@value"];
+          for (const entry of res.data[IM.STATS_REPORT_ENTRY]) {
+            this.chartConceptTypes.labels.push(entry[RDFS.LABEL]["@value"]);
+            this.chartConceptTypes.datasets[0].data.push(
+              +entry[OWL.HAS_VALUE]["@value"]
+            );
+          }
+          this.realData = { ...this.chartConceptTypes.datasets[0].data };
+          // set tooltip to use real data
+          this.chartOptions["tooltips"] = setTooltips(this.realData);
+          // refactor data to a minimum graph size (1%) if less than min
+          this.chartConceptTypes.datasets[0].data = rescaleData(
+            this.chartConceptTypes.datasets[0].data
+          );
+          this.setChartColours(res.data[IM.STATS_REPORT_ENTRY].length);
+          this.$store.commit("updateLoading", {
+            key: "reportPie_" + this.iri,
+            value: false
+          });
+        })
+        .catch(err => {
+          this.$store.commit("updateLoading", {
+            key: "reportPie_" + this.iri,
+            value: false
+          });
+          this.$toast.add(
+            LoggerService.error("Concept types server request failed", err)
+          );
+        });
+    },
+
     setChartColours(colourCount: number): void {
       const colours = palette("tol-rainbow", colourCount);
       this.chartConceptTypes.datasets[0].backgroundColor = colours.map(
@@ -115,6 +132,125 @@ export default defineComponent({
       this.chartConceptTypes.datasets[0].hoverBackgroundColor = colours.map(
         (color: string) => "#" + color
       );
+    },
+
+    setLegendOptions(): void {
+      const width = window.innerWidth;
+      if (width > 1750) {
+        this.chartOptions = {
+          legend: {
+            position: "right",
+            labels: {
+              boxWidth: 40,
+              fontSize: 12
+            },
+            onHover: function(e: any) {
+              e.target.style.cursor = "pointer";
+            }
+          },
+          hover: {
+            onHover: function(e: any) {
+              e.target.style.cursor = "default";
+            }
+          }
+        };
+      } else if (width > 1300) {
+        this.chartOptions = {
+          legend: {
+            position: "bottom",
+            labels: {
+              boxWidth: 20,
+              fontSize: 10
+            },
+            onHover: function(e: any) {
+              e.target.style.cursor = "pointer";
+            }
+          },
+          hover: {
+            onHover: function(e: any) {
+              e.target.style.cursor = "default";
+            }
+          }
+        };
+      } else if (width >= 1024) {
+        this.chartOptions = {
+          legend: {
+            position: "bottom",
+            labels: {
+              boxWidth: 10,
+              fontSize: 8
+            },
+            onHover: function(e: any) {
+              e.target.style.cursor = "pointer";
+            }
+          },
+          hover: {
+            onHover: function(e: any) {
+              e.target.style.cursor = "default";
+            }
+          }
+        };
+      } else if (width >= 892) {
+        this.chartOptions = {
+          legend: {
+            position: "right",
+            labels: {
+              boxWidth: 40,
+              fontSize: 8
+            },
+            onHover: function(e: any) {
+              e.target.style.cursor = "pointer";
+            }
+          },
+          hover: {
+            onHover: function(e: any) {
+              e.target.style.cursor = "default";
+            }
+          }
+        };
+      } else if (width >= 557) {
+        this.chartOptions = {
+          legend: {
+            position: "bottom",
+            labels: {
+              boxWidth: 20,
+              fontSize: 6
+            },
+            onHover: function(e: any) {
+              e.target.style.cursor = "pointer";
+            }
+          },
+          hover: {
+            onHover: function(e: any) {
+              e.target.style.cursor = "default";
+            }
+          }
+        };
+      } else if (width >= 0) {
+        this.chartOptions = {
+          legend: {
+            position: "bottom",
+            labels: {
+              boxWidth: 10,
+              fontSize: 4
+            },
+            onHover: function(e: any) {
+              e.target.style.cursor = "pointer";
+            }
+          },
+          hover: {
+            onHover: function(e: any) {
+              e.target.style.cursor = "default";
+            }
+          }
+        };
+      } else {
+        this.chartOptions = {
+          legend: {
+            display: false
+          }
+        };
+      }
     }
   }
 });

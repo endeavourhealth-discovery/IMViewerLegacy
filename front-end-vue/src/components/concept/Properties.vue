@@ -1,9 +1,8 @@
 <template>
   <DataTable
     :value="properties"
-    :rowsPerPageOptions="[10, 25, 50]"
-    :paginator="properties.length > 10 ? true : false"
-    :rows="10"
+    :paginator="properties.length > 5 ? true : false"
+    :rows="5"
     :scrollable="true"
     :scrollHeight="scrollHeight"
     id="properties-table"
@@ -160,6 +159,6 @@ div.link {
 }
 
 #properties-table {
-  height: 604px;
+  height: 381px;
 }
 </style>

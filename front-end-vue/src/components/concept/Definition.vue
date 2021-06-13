@@ -33,12 +33,12 @@
     </Divider>
     <div class="p-d-flex p-flex-row p-jc-start summary-container">
       <div class="left-side">
-        <strong>is a: </strong>{{ parents.length }}
+        <strong>is a: </strong>{{ concept.isa?.length }}
         <Listbox
-          :options="parents"
+          :options="concept.isa"
           listStyle="height: 12rem;"
           v-model="selected"
-          @change="navigate(selected?.['@id'])"
+          @change="navigate(selected.iri)"
         >
           <template #option="slotProps">
             <div>
@@ -48,9 +48,9 @@
         </Listbox>
       </div>
       <div class="right-side">
-        <strong>has sub types: </strong>{{ children?.length }}
+        <strong>has sub types: </strong>{{ concept.subtypes?.length }}
         <Listbox
-          :options="children"
+          :options="concept.subtypes"
           listStyle="height: 12rem;"
           v-model="selected"
           @change="navigate(selected.iri)"
@@ -65,53 +65,22 @@
     </div>
     <Divider align="left">
       <div class="p-d-inline-flex p-ai-center">
-        <strong>Data model properties</strong>
+        <strong>Structure properties</strong>
       </div>
     </Divider>
-    <DataTable
-      :value="properties"
-      :rowsPerPageOptions="[10, 25, 50]"
-      :paginator="properties?.length > 10 ? true : false"
-      :rows="10"
-      :scrollable="true"
-      scrollHeight="flex"
-    >
-      <template #empty>
-        No records found
-      </template>
-      <Column field="name" header="Property">
-        <template #body="slotProps">
-          <div
-            class="link capitalize-text"
-            @click="navigate(slotProps.data?.property?.iri)"
-          >
-            {{ slotProps.data?.property?.name }}
-          </div>
-        </template>
-      </Column>
-      <Column field="name" header="Range">
-        <template #body="slotProps">
-          <div
-            class="link capitalize-text"
-            @click="navigate(slotProps.data?.range?.iri)"
-          >
-            {{ slotProps.data?.range?.name }}
-          </div>
-        </template>
-      </Column>
-    </DataTable>
+    <Properties :conceptIri="concept.iri" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
-import ConceptService from "@/services/ConceptService";
 import Description from "./Description.vue";
+import Properties from "./Properties.vue";
 
 export default defineComponent({
   name: "Definition",
-  components: { Description },
+  components: { Description, Properties },
   props: {
     concept: {} as any
   },
@@ -132,48 +101,12 @@ export default defineComponent({
       return "<p class='description-p'>" + text + "</p>";
     }
   },
-  async mounted() {
-    await this.init();
-  },
   data() {
     return {
-      children: [],
-      parents: [],
-      properties: [],
       selected: {}
     };
   },
-  watch: {
-    async concept() {
-      this.$store.state.cancelSource.cancel("Cancel");
-      await this.init();
-    }
-  },
   methods: {
-    async init() {
-      this.children = [];
-      this.parents = [];
-      this.properties = [];
-      this.$store.commit("updateCancelSource");
-      if (this.concept.iri) {
-        this.children = (
-          await ConceptService.getDefinitionSubTypes(
-            this.concept.iri,
-            this.$store.state.cancelSource.token
-          )
-        ).data;
-        this.parents = (
-          await ConceptService.getConceptParents(this.concept.iri)
-        ).data;
-        this.properties = (
-          await ConceptService.getDataModelProperties(
-            this.concept.iri,
-            this.$store.state.cancelSource.token
-          )
-        ).data;
-      }
-    },
-
     navigate(iri: any) {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
       if (iri)

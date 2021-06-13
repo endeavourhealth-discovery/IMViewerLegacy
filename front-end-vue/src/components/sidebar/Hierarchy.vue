@@ -35,7 +35,7 @@
         @click="toggleTreeLocked(true)"
         v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
       >
-        <i class="fas fa-unlink"></i>
+        <i class="fas fa-unlink" aria-hidden="true"></i>
       </Button>
     </div>
 
@@ -92,6 +92,7 @@ export default defineComponent({
         this.conceptAggregate.children
       );
       if (this.$route.fullPath === "/") {
+        this.resetConcept();
         this.$store.commit("updateHistory", {
           url: this.$route.fullPath,
           conceptName: "Home",
@@ -100,7 +101,7 @@ export default defineComponent({
       } else {
         this.$store.commit("updateHistory", {
           url: this.$route.fullPath,
-          conceptName: newValue.concept?.[RDFS.LABEL],
+          conceptName: this.conceptAggregate.concept?.[RDFS.LABEL],
           view: this.$route.name
         } as HistoryItem);
       }
@@ -178,7 +179,14 @@ export default defineComponent({
         ConceptService.getConceptChildren(iri).then(res => {
           this.conceptAggregate.children = res.data;
         })
-      ]);
+      ]).catch(err => {
+        this.$toast.add(
+          LoggerService.error(
+            "Hierarchy tree concept aggregate fetch failed",
+            err
+          )
+        );
+      });
     },
     createTree(concept: any, parentHierarchy: any, children: any): void {
       if (this.root.length == 0) {
@@ -337,7 +345,7 @@ export default defineComponent({
         })
         .catch(err => {
           this.$toast.add(
-            LoggerService.error("Concept children server request failed", err)
+            LoggerService.error("Concept parents server request failed", err)
           );
         });
     },

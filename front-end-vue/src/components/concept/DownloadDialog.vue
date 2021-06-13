@@ -25,11 +25,11 @@
       >
         <div class="checkbox-label">
           <Checkbox
-              :disabled="!parents?.length"
-              id="parents"
-              :binary="true"
-              value="Include parents"
-              v-model="includeParents"
+            :disabled="!parents?.length"
+            id="parents"
+            :binary="true"
+            value="Include parents"
+            v-model="includeParents"
           />
           <label class="label" for="parents">Include parents</label>
         </div>
@@ -55,24 +55,24 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-              :disabled="
+            :disabled="
               !$store.state.members?.included?.length &&
                 !$store.state.members?.excluded?.length
             "
-              id="members"
-              :binary="true"
-              value="Include members"
-              v-model="includeMembers"
+            id="members"
+            :binary="true"
+            value="Include members"
+            v-model="includeMembers"
           />
           <label class="label" for="members">Include members</label>
         </div>
         <div class="checkbox-label">
           <Checkbox
-              :disabled="!includeMembers"
-              id="expandMembers"
-              :binary="true"
-              value="Expand members"
-              v-model="expandMembers"
+            :disabled="!includeMembers"
+            id="expandMembers"
+            :binary="true"
+            value="Expand members"
+            v-model="expandMembers"
           />
           <label class="label" for="expandMembers">Expand members</label>
         </div>
@@ -185,10 +185,10 @@ export default defineComponent({
         this.includeChildren +
         "&properties=" +
         this.includeProperties +
-          "&members=" +
-          this.includeMembers +
-          "&expandMembers=" +
-          this.expandMembers +
+        "&members=" +
+        this.includeMembers +
+        "&expandMembers=" +
+        this.expandMembers +
         "&parents=" +
         this.includeParents +
         "&roles=" +
@@ -209,7 +209,9 @@ export default defineComponent({
       this.children = (await ConceptService.getConceptChildren(iri)).data;
       this.props = (await ConceptService.getConceptProperties(iri)).data;
       this.roles = (await ConceptService.getConceptRoles(iri)).data;
-      this.members = (await ConceptService.getConceptMembers(iri, this.expandMembers)).data;
+      this.members = (
+        await ConceptService.getConceptMembers(iri, this.expandMembers)
+      ).data;
 
       this.includeParents = !!this.parents.length;
       this.includeChildren = !!this.children.length;
