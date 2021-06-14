@@ -14,7 +14,7 @@
           />
         </div>
 
-<!--
+        <!--
         <div id="center-icons" style="color: grey">
           <div v-bind:class="{ active: isActive(['Dashboard', 'Concept']) }" @click="$router.push({ name: 'Dashboard' })">
             <font-awesome-icon
@@ -133,7 +133,7 @@ export default defineComponent({
   },
   methods: {
     isActive(items: any[]): boolean {
-      return (items.indexOf(this.$route.name) >= 0);
+      return items.indexOf(this.$route.name) >= 0;
     },
 
     getItems(): { label: string; icon: string; to: string }[] {

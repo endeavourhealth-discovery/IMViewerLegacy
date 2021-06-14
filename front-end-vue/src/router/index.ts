@@ -150,14 +150,14 @@ const routes: Array<RouteRecordRaw> = [
       requiresLicense: true
     }
   },
-    {
-        path: "/uprn",
-        name: "UPRN",
-        component: UPRN,
-        meta: {
-            requiresLicense: true
-        }
-    },
+  {
+    path: "/uprn",
+    name: "UPRN",
+    component: UPRN,
+    meta: {
+      requiresLicense: true
+    }
+  },
   {
     path: "/snomedLicense",
     name: "License",
