@@ -1,5 +1,11 @@
 <template>
-  <Card>
+  <div
+    class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center"
+    v-if="loading"
+  >
+    <ProgressSpinner />
+  </div>
+  <Card v-if="!loading">
     <template #content>
       <div class="p-fluid editor-grid">
         <div class="p-field float-label-container iri">
@@ -86,27 +92,46 @@ import ConceptService from "@/services/ConceptService";
 import { defineComponent } from "@vue/runtime-core";
 import Dropdown from "primevue/dropdown";
 import Card from "primevue/card";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "FormEditor",
   components: { Dropdown, Card },
-  props: ["iri"],
+  props: ["iri", "conceptUpdated"],
   data() {
     return {
       conceptDto: {} as any,
       schemeOptions: [] as ConceptReference[],
       statusOptions: Object.keys(ConceptStatus).filter(f =>
         isNaN(Number(f))
-      ) as any
+      ) as any,
+      loading: false
     };
   },
   async mounted() {
-    this.conceptDto.iri = this.iri;
+    this.getConcept();
     this.schemeOptions = (await ConceptService.getSchemeOptions()).data;
   },
   methods: {
-    submit() {
-      //   console.log(this.conceptDto);
+    async getConcept(): Promise<void> {
+      this.loading = true;
+      if (this.conceptUpdated) {
+        this.conceptDto = JSON.parse(JSON.stringify(this.conceptUpdated));
+      } else {
+        await ConceptService.getConceptDefinitionDto(this.iri)
+          .then(res => {
+            this.conceptDto = res.data;
+          })
+          .catch(err => {
+            this.$toast.add(
+              LoggerService.error(
+                "Editable concept fetch failed from server",
+                err
+              )
+            );
+          });
+      }
+      this.loading = false;
     }
   }
 });

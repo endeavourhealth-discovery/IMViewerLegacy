@@ -10,7 +10,11 @@
             id="form-editor-container"
             :style="contentHeight"
           >
-            <FormEditor v-if="active === 0" :iri="iri" />
+            <FormEditor
+              v-if="active === 0"
+              :iri="iri"
+              :conceptUpdated="conceptUpdated"
+            />
           </div>
         </TabPanel>
         <TabPanel header="IMLang">
@@ -94,13 +98,15 @@ export default defineComponent({
   },
   computed: {
     hasMembers(): any {
-      return IM.HAS_MEMBERS in this.conceptOriginal ? true : false;
+      return IM.HAS_MEMBERS in this.concept ? true : false;
     }
   },
   data() {
     return {
       iri: this.$route.params.iri?.toString(),
+      concept: {} as any,
       conceptOriginal: {} as any,
+      conceptUpdated: null as any,
       membersOriginal: {} as any,
       membersUpdated: null as any,
       active: 0,
@@ -113,6 +119,16 @@ export default defineComponent({
     });
     if (this.iri) {
       await ConceptService.getConcept(this.iri)
+        .then(res => {
+          this.concept = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Editor get concept request failed", err)
+          );
+        });
+
+      await ConceptService.getConceptDefinitionDto(this.iri)
         .then(res => {
           this.conceptOriginal = res.data;
         })
