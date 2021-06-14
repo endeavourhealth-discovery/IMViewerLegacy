@@ -1,5 +1,5 @@
 <template>
-  <div class="concept-container">
+  <div id="concept-main-container">
     <Panel>
       <template #icons>
         <button
@@ -38,38 +38,98 @@
         <div v-if="concept && isSet" id="concept-panel-container">
           <TabView v-model:activeIndex="active">
             <TabPanel header="Definition">
-              <Definition :concept="concept" v-if="active === 0" />
+              <div
+                class="concept-panel-content"
+                id="definiton-container"
+                :style="contentHeight"
+              >
+                <Definition :concept="concept" v-if="active === 0" />
+              </div>
             </TabPanel>
             <TabPanel header="Terms">
-              <Terms :conceptIri="conceptIri" v-if="active === 1" />
+              <div
+                class="concept-panel-content"
+                id="terms-container"
+                :style="contentHeight"
+              >
+                <Terms :conceptIri="conceptIri" v-if="active === 1" />
+              </div>
             </TabPanel>
             <TabPanel header="Used in">
-              <UsedIn :conceptIri="conceptIri" v-if="active === 2" />
+              <div
+                class="concept-panel-content"
+                id="usedin-container"
+                :style="contentHeight"
+              >
+                <UsedIn :conceptIri="conceptIri" v-if="active === 2" />
+              </div>
             </TabPanel>
             <TabPanel header="Members">
-              <Members :conceptIri="conceptIri" v-if="active === 3" />
+              <div
+                class="concept-panel-content"
+                id="members-container"
+                :style="contentHeight"
+              >
+                <Members :conceptIri="conceptIri" v-if="active === 3" />
+              </div>
             </TabPanel>
           </TabView>
         </div>
         <div v-if="concept && !isSet" id="concept-panel-container">
           <TabView v-model:activeIndex="active">
             <TabPanel header="Definition">
-              <Definition :concept="concept" v-if="active === 0" />
+              <div
+                class="concept-panel-content"
+                id="definiton-container"
+                :style="contentHeight"
+              >
+                <Definition :concept="concept" v-if="active === 0" />
+              </div>
             </TabPanel>
             <TabPanel header="Terms">
-              <Terms :conceptIri="conceptIri" v-if="active === 1" />
+              <div
+                class="concept-panel-content"
+                id="terms-container"
+                :style="contentHeight"
+              >
+                <Terms :conceptIri="conceptIri" v-if="active === 1" />
+              </div>
             </TabPanel>
             <TabPanel header="Maps">
-              <ComplexMappings :conceptIri="conceptIri" v-if="active === 2" />
+              <div
+                class="concept-panel-content"
+                id="complex-mappings-container"
+                :style="contentHeight"
+              >
+                <ComplexMappings :conceptIri="conceptIri" v-if="active === 2" />
+              </div>
             </TabPanel>
             <TabPanel header="Used In">
-              <UsedIn :conceptIri="conceptIri" v-if="active === 3" />
+              <div
+                class="concept-panel-content"
+                id="usedin-container"
+                :style="contentHeight"
+              >
+                <UsedIn :conceptIri="conceptIri" v-if="active === 3" />
+              </div>
             </TabPanel>
             <TabPanel header="Graph">
-              <Graph :conceptIri="conceptIri" v-if="active === 4" />
+              <div
+                class="concept-panel-content"
+                id="graph-container"
+                :style="contentHeight"
+              >
+                <Graph :conceptIri="conceptIri" v-if="active === 4" />
+              </div>
             </TabPanel>
             <TabPanel header="Hierarchy position">
-              <SecondaryTree :conceptIri="conceptIri" v-if="active === 5" />
+              <div
+                class="concept-panel-content"
+                id="secondary-tree-container"
+                :style="contentHeight"
+              >
+                <SecondaryTree :conceptIri="conceptIri" v-if="active === 5" />
+              </div>
             </TabPanel>
           </TabView>
         </div>
@@ -126,12 +186,6 @@ export default defineComponent({
       this.concept = await this.getConcept(newValue);
       this.types = this.concept.types;
       this.header = this.concept.name;
-    },
-    windowWidth() {
-      this.setContentHeight();
-    },
-    windowHeight() {
-      this.setContentHeight();
     }
   },
   async mounted() {
@@ -156,9 +210,8 @@ export default defineComponent({
       types: [],
       header: "",
       dialogHeader: "",
-      windowHeight: window.innerHeight,
-      windowWidth: window.innerWidth,
-      active: 0
+      active: 0,
+      contentHeight: ""
     };
   },
   methods: {
@@ -178,29 +231,33 @@ export default defineComponent({
     },
 
     onResize(): void {
-      this.windowHeight = window.innerHeight;
-      this.windowWidth = window.innerWidth;
+      this.setContentHeight();
     },
 
     setContentHeight(): void {
-      const header = document.getElementsByClassName("p-panel-header")[0];
-      const content = document.getElementById(
-        "concept-content-dialogs-container"
-      );
-      const container = document.getElementsByClassName("concept-container")[0];
+      const container = document.getElementById(
+        "concept-main-container"
+      ) as HTMLElement;
+      const header = container.getElementsByClassName(
+        "p-panel-header"
+      )[0] as HTMLElement;
+      const nav = container.getElementsByClassName(
+        "p-tabview-nav"
+      )[0] as HTMLElement;
       const currentFontSize = parseFloat(
         window
           .getComputedStyle(document.documentElement, null)
           .getPropertyValue("font-size")
       );
-      if (content && header && container && currentFontSize) {
+      if (header && container && currentFontSize) {
         const calcHeight =
           container.getBoundingClientRect().height -
           header.getBoundingClientRect().height -
-          2 * currentFontSize -
-          1 +
-          "px";
-        content.style.minHeight = calcHeight;
+          nav.getBoundingClientRect().height -
+          4 * currentFontSize -
+          1;
+        this.contentHeight =
+          "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
       } else {
         LoggerService.error(
           "Content sizing error",
@@ -230,7 +287,7 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-.concept-container {
+#concept-main-container {
   grid-area: content;
   height: calc(100vh - 2rem);
   width: 100%;
@@ -246,5 +303,10 @@ export default defineComponent({
   flex-flow: column nowrap;
   justify-content: flex-start;
   height: 100%;
+}
+
+.concept-panel-content {
+  overflow: auto;
+  background-color: #ffffff;
 }
 </style>

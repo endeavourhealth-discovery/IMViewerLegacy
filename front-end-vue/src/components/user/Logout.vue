@@ -2,7 +2,7 @@
   <div class="p-d-flex p-flex-row p-ai-center">
     <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center logout-card">
       <template #header>
-        <i class="pi pi-fw pi-unlock icon-header" aria-hidden="true" />
+        <i class="fa fa-fw fa-sign-out-alt icon-header" aria-hidden="true" />
       </template>
       <template #title>
         Logout

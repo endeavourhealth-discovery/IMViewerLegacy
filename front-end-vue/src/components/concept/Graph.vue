@@ -1,6 +1,6 @@
 <template>
   <div id="content">
-    <svg width="100%" :height="height" id="svg" class="svg-pan-zoom_viewport">
+    <svg width="100%" height="100%" id="svg" class="svg-pan-zoom_viewport">
       <g class="links"></g>
       <g class="nodes"></g>
     </svg>
@@ -56,18 +56,13 @@ export default defineComponent({
   data() {
     return {
       graph: {} as GraphData,
-      margin: {} as any,
       width: 660,
       height: 500,
-      panZoom: {} as any,
-      windowHeight: window.innerHeight,
-      windowWidth: window.innerWidth
+      panZoom: {} as any
     };
   },
   async mounted() {
-    this.margin = { top: 20, right: 90, bottom: 30, left: 90 };
-    this.width = 660 - this.margin.left - this.margin.right;
-    this.setHeight();
+    this.setWidthAndHeight();
     if (this.conceptIri) {
       await this.getGraph(this.conceptIri);
     }
@@ -88,37 +83,10 @@ export default defineComponent({
 
     onResize() {
       this.panZoom.destroy();
-      this.windowHeight = window.innerHeight;
-      this.windowWidth = window.innerWidth;
-      this.setHeight();
+      this.setWidthAndHeight();
       this.initView();
       this.initSvgPanZoom();
       this.zoomReset();
-    },
-
-    setHeight() {
-      const container = document.getElementsByClassName(
-        "concept-container"
-      )[0] as HTMLElement;
-      const header = document.getElementsByClassName(
-        "p-panel-header"
-      )[0] as HTMLElement;
-      const nav = document.getElementsByClassName(
-        "p-tabview-nav"
-      )[1] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
-      if (container && header && nav && currentFontSize) {
-        this.height =
-          container.getBoundingClientRect().height -
-          header.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
-          currentFontSize * 4.5 -
-          1;
-      }
     },
 
     zoomIn() {
@@ -380,6 +348,14 @@ export default defineComponent({
           name: currentRoute,
           params: { selectedIri: event.srcElement.id }
         });
+    },
+
+    setWidthAndHeight(): void {
+      const container = document.getElementById(
+        "graph-container"
+      ) as HTMLElement;
+      this.width = container.getBoundingClientRect().width;
+      this.height = container.getBoundingClientRect().height;
     }
   }
 });
@@ -421,6 +397,8 @@ export default defineComponent({
 #content {
   position: relative;
   border: 1px solid lightgray;
+  width: 100%;
+  height: 100%;
 }
 
 #controls {

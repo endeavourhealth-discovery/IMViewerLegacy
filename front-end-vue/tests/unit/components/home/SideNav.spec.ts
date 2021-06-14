@@ -38,34 +38,34 @@ describe("SideNav.spec ___ not logged in", () => {
     expect(wrapper.vm.loginItems).toStrictEqual([
       {
         label: "Login",
-        icon: "pi pi-fw pi-user",
+        icon: "fa fa-fw fa-user",
         to: "/user/login"
       },
       {
         label: "Register",
-        icon: "pi pi-fw pi-user-plus",
+        icon: "fa fa-fw fa-user-plus",
         to: "/user/register"
       }
     ]);
     expect(wrapper.vm.accountItems).toStrictEqual([
       {
         label: "My account",
-        icon: "pi pi-fw pi-user",
+        icon: "fa fa-fw fa-user",
         to: "/user/my-account" //+ this.user.id
       },
       {
         label: "Edit account",
-        icon: "pi pi-fw pi-user-edit",
+        icon: "fa fa-fw fa-user-edit",
         to: "/user/my-account/edit"
       },
       {
         label: "Change password",
-        icon: "pi pi-fw pi-lock",
+        icon: "fa fa-fw fa-user-lock",
         to: "/user/my-account/password-edit"
       },
       {
         label: "Logout",
-        icon: "pi pi-fw pi-lock-open",
+        icon: "fa fa-fw fa-sign-out-alt",
         to: "/user/logout" //+ this.user.id
       }
     ]);
@@ -83,12 +83,12 @@ describe("SideNav.spec ___ not logged in", () => {
     expect(wrapper.vm.getItems()).toStrictEqual([
       {
         label: "Login",
-        icon: "pi pi-fw pi-user",
+        icon: "fa fa-fw fa-user",
         to: "/user/login"
       },
       {
         label: "Register",
-        icon: "pi pi-fw pi-user-plus",
+        icon: "fa fa-fw fa-user-plus",
         to: "/user/register"
       }
     ]);
@@ -149,22 +149,22 @@ describe("SideNav.spec ___ logged in", () => {
     expect(wrapper.vm.getItems()).toStrictEqual([
       {
         label: "My account",
-        icon: "pi pi-fw pi-user",
+        icon: "fa fa-fw fa-user",
         to: "/user/my-account" //+ this.user.id
       },
       {
         label: "Edit account",
-        icon: "pi pi-fw pi-user-edit",
+        icon: "fa fa-fw fa-user-edit",
         to: "/user/my-account/edit"
       },
       {
         label: "Change password",
-        icon: "pi pi-fw pi-lock",
+        icon: "fa fa-fw fa-user-lock",
         to: "/user/my-account/password-edit"
       },
       {
         label: "Logout",
-        icon: "pi pi-fw pi-lock-open",
+        icon: "fa fa-fw fa-sign-out-alt",
         to: "/user/logout" //+ this.user.id
       }
     ]);

@@ -1,9 +1,9 @@
 <template>
   <DataTable
     :value="terms"
-    :rowsPerPageOptions="[rows, rows * 2, rows * 4]"
+    :rowsPerPageOptions="[25, 50, 100]"
     :paginator="terms.length > rows ? true : false"
-    :rows="rows"
+    :rows="25"
     rowGroupMode="subheader"
     groupRowsBy="scheme.name"
     sortMode="single"
@@ -70,9 +70,9 @@ export default defineComponent({
   },
   methods: {
     onResize(): void {
-      this.setScrollHeight();
       this.setTableWidth();
       this.setTableRows();
+      this.setScrollHeight();
     },
     async getTerms(iri: string) {
       this.loading = true;
@@ -96,40 +96,28 @@ export default defineComponent({
       }
     },
     setScrollHeight(): void {
-      const container = document.getElementsByClassName(
-        "concept-container"
-      )[0] as HTMLElement;
-      const header = container.getElementsByClassName(
-        "p-panel-header"
-      )[0] as HTMLElement;
-      const nav = container.getElementsByClassName(
-        "p-tabview-nav"
-      )[0] as HTMLElement;
+      const container = document.getElementById(
+        "terms-container"
+      ) as HTMLElement;
       const terms = document.getElementById("terms-table") as HTMLElement;
       const paginator = terms.getElementsByClassName(
         "p-paginator"
       )[0] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
-      const paginatorHeight =
-        paginator?.getBoundingClientRect().height === 0
-          ? currentFontSize * 3.7
-          : paginator?.getBoundingClientRect().height;
-      this.scrollHeight =
-        container?.getBoundingClientRect().height -
-        header?.getBoundingClientRect().height -
-        nav?.getBoundingClientRect().height -
-        paginatorHeight -
-        currentFontSize * 4 -
-        1 +
-        "px";
+      if (paginator && container) {
+        this.scrollHeight =
+          container.getBoundingClientRect().height -
+          paginator.getBoundingClientRect().height -
+          1 +
+          "px";
+      } else if (container) {
+        this.scrollHeight = container.getBoundingClientRect().height - 1 + "px";
+      }
     },
 
     setTableWidth(): void {
-      const container = document.getElementById("terms-table") as HTMLElement;
+      const container = document.getElementById(
+        "terms-container"
+      ) as HTMLElement;
       const table = container.getElementsByClassName(
         "p-datatable-table"
       )[0] as HTMLElement;
@@ -138,13 +126,7 @@ export default defineComponent({
 
     setTableRows(): void {
       const container = document.getElementsByClassName(
-        "concept-container"
-      )[0] as HTMLElement;
-      const header = container.getElementsByClassName(
-        "p-panel-header"
-      )[0] as HTMLElement;
-      const nav = container.getElementsByClassName(
-        "p-tabview-nav"
+        "concept-panel-content"
       )[0] as HTMLElement;
       const terms = document.getElementById("terms-table") as HTMLElement;
       const row = terms.getElementsByTagName("tr")[0] as HTMLElement;
@@ -159,25 +141,20 @@ export default defineComponent({
       const schemeCount = terms.getElementsByClassName("p-rowgroup-header")
         .length;
       let maxRows = 25;
-      if (paginator && container && header && nav && row && currentFontSize) {
+      if (paginator && container && row && currentFontSize) {
         maxRows =
           Math.floor(
             (container.getBoundingClientRect().height -
-              header.getBoundingClientRect().height -
-              nav.getBoundingClientRect().height -
               paginator.getBoundingClientRect().height -
               currentFontSize * 4) /
               row.getBoundingClientRect().height
           ) -
           1 -
           schemeCount;
-      } else if (container && header && nav && row && currentFontSize) {
+      } else if (container && row && currentFontSize) {
         maxRows =
           Math.floor(
-            (container.getBoundingClientRect().height -
-              header.getBoundingClientRect().height -
-              nav.getBoundingClientRect().height -
-              currentFontSize * 4) /
+            (container.getBoundingClientRect().height - currentFontSize * 4) /
               row.getBoundingClientRect().height
           ) -
           1 -

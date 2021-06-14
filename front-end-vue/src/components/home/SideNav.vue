@@ -13,43 +13,59 @@
             @click="resetToHome"
           />
         </div>
-        <!-- <div id="center-icons">
-          <div v-bind:class="{ active: isActive('Home') }">
+
+        <!--
+        <div id="center-icons" style="color: grey">
+          <div v-bind:class="{ active: isActive(['Dashboard', 'Concept']) }" @click="$router.push({ name: 'Dashboard' })">
             <font-awesome-icon
               class="sidebutton"
-              :icon="['fas', 'home']"
-              size="4x"
-              style="color: lightgrey; padding: 5px"
-              @click="$router.push({ name: 'Dashboard' })"
+              :icon="['fas', 'book']"
+              style="padding: 5px"
+              fixed-width
             />
+            <div>Ontology</div>
           </div>
-          <div v-bind:class="{ active: isActive('Workflow') }">
+          <div v-bind:class="{ active: isActive(['UPRN']) }" @click="$router.push({ name: 'UPRN' })">
+            <font-awesome-icon
+                class="sidebutton"
+                :icon="['fas', 'map-marked-alt']"
+                style="padding: 5px"
+                fixed-width
+            />
+            <div>UPRN</div>
+          </div>
+          <div v-bind:class="{ active: isActive('Workflow') }" class="disabled">
             <font-awesome-icon
               class="sidebutton"
               :icon="['fas', 'tasks']"
               size="4x"
-              style="color: lightgrey; padding: 5px"
+              style="padding: 5px"
             />
+            <div>Workflow</div>
           </div>
-          <div v-bind:class="{ active: isActive('Mapping') }">
+          <div v-bind:class="{ active: isActive('Mapping') }" class="disabled">
             <font-awesome-icon
               class="sidebutton"
               :icon="['fas', 'map']"
               size="4x"
-              style="color: lightgrey; padding: 5px"
+              style="padding: 5px"
             />
+            <div>Mapping</div>
           </div>
-        </div> -->
-        <div class="footer user-settings ">
-          <i
+        </div>
+
+        -->
+        <div class="footer user-settings">
+          <span
             v-if="!isLoggedIn"
             id="user-icon"
-            class="pi pi-users user-icon"
             @click="toggle"
             aria-haspopup="true"
             aria-controls="overlay_menu"
             aria-hidden="true"
-          ></i>
+          >
+            <i class="fas fa-fw fa-3x fa-users" style="color: lightgrey"></i>
+          </span>
           <img
             v-if="isLoggedIn"
             id="user-icon"
@@ -81,12 +97,12 @@ export default defineComponent({
       loginItems: [
         {
           label: "Login",
-          icon: "pi pi-fw pi-user",
+          icon: "fa fa-fw fa-user",
           to: "/user/login"
         },
         {
           label: "Register",
-          icon: "pi pi-fw pi-user-plus",
+          icon: "fa fa-fw fa-user-plus",
           to: "/user/register"
         }
       ] as { label: string; icon: string; to: string }[],
@@ -94,34 +110,30 @@ export default defineComponent({
       accountItems: [
         {
           label: "My account",
-          icon: "pi pi-fw pi-user",
+          icon: "fa fa-fw fa-user",
           to: "/user/my-account" //+ this.user.id
         },
         {
           label: "Edit account",
-          icon: "pi pi-fw pi-user-edit",
+          icon: "fa fa-fw fa-user-edit",
           to: "/user/my-account/edit"
         },
         {
           label: "Change password",
-          icon: "pi pi-fw pi-lock",
+          icon: "fa fa-fw fa-user-lock",
           to: "/user/my-account/password-edit"
         },
         {
           label: "Logout",
-          icon: "pi pi-fw pi-lock-open",
+          icon: "fa fa-fw fa-sign-out-alt",
           to: "/user/logout" //+ this.user.id
         }
       ] as { label: string; icon: string; to: string }[]
     };
   },
   methods: {
-    isActive(item: string): boolean {
-      if (this.$route.name == item) {
-        return true;
-      } else {
-        return false;
-      }
+    isActive(items: any[]): boolean {
+      return items.indexOf(this.$route.name) >= 0;
     },
 
     getItems(): { label: string; icon: string; to: string }[] {
@@ -133,6 +145,7 @@ export default defineComponent({
     },
 
     toggle(event: any): void {
+      console.log("Toggle");
       const menu = this.$refs.menu as any;
       menu.toggle(event);
     },
@@ -162,6 +175,27 @@ export default defineComponent({
   height: 100%;
 }
 
+#center-icons {
+  text-align: center;
+  width: 100%;
+}
+
+#center-icons div {
+  width: 100%;
+  padding-right: 5px;
+  border-right: 0;
+  margin-bottom: 20px;
+}
+
+#center-icons .active {
+  padding-right: 0;
+  border-right: 5px solid lightgrey;
+}
+
+.disabled * {
+  cursor: not-allowed !important;
+}
+
 @media screen and (max-width: 1439px) {
   .layout-menu-container {
     width: 8vw;
@@ -179,11 +213,17 @@ export default defineComponent({
 }
 
 .layout-sidebar .active .sidebutton {
-  color: grey !important;
+  color: lightgrey !important;
+}
+
+.layout-sidebar .active div {
+  color: lightgrey !important;
 }
 
 .user-settings {
+  cursor: pointer;
   text-align: center;
+  margin-top: auto;
 }
 
 .user-icon,
@@ -212,12 +252,13 @@ export default defineComponent({
   color: lightgray;
   font-weight: bold;
   cursor: pointer;
+  margin-bottom: 1rem;
 }
 
 @media screen and (max-width: 1439px) {
   .user-icon,
   .sidebutton {
-    font-size: 5vw;
+    font-size: 4vw;
   }
 
   .avatar-icon {
@@ -232,7 +273,7 @@ export default defineComponent({
 @media screen and (min-width: 1440px) {
   .user-icon,
   .sidebutton {
-    font-size: 60px;
+    font-size: 40px;
   }
 
   .avatar-icon {
