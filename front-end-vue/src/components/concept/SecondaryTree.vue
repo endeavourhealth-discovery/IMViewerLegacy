@@ -36,7 +36,11 @@
       class="tree-root"
     >
       <template #default="slotProps">
-        <span v-if="!slotProps.node.loading">
+        <span
+          v-if="!slotProps.node.loading"
+          @mouseenter="toggle($event, slotProps.node)"
+          @mouseleave="toggle($event, slotProps.node)"
+        >
           <i
             :class="'fas fa-fw' + slotProps.node.typeIcon"
             :style="'color:' + slotProps.node.color"
@@ -47,6 +51,24 @@
         {{ slotProps.node.label }}
       </template>
     </Tree>
+
+    <OverlayPanel
+      ref="altTreeOP"
+      id="secondary_tree_overlay_panel"
+      style="width: 700px"
+      :breakpoints="{ '960px': '75vw' }"
+    >
+      <div
+        v-if="hoveredResult.data"
+        class="p-d-flex p-flex-row p-jc-start result-overlay"
+        style="width: 100%; gap: 7px;"
+      >
+        <div>
+          <p><strong>Name: </strong>{{ hoveredResult.label }}</p>
+          <p><strong>Iri: </strong>{{ hoveredResult.data }}</p>
+        </div>
+      </div>
+    </OverlayPanel>
   </div>
 </template>
 
@@ -62,6 +84,7 @@ import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
 import { defineComponent } from "vue";
 import LoggerService from "@/services/LoggerService";
+import { ConceptSummary } from "@/models/search/ConceptSummary";
 
 export default defineComponent({
   name: "SecondaryTree",
@@ -96,7 +119,8 @@ export default defineComponent({
         iri: string;
         listPosition: number;
       }[],
-      parentPosition: 0
+      parentPosition: 0,
+      hoveredResult: {} as ConceptSummary | any
     };
   },
   async mounted() {
@@ -349,6 +373,12 @@ export default defineComponent({
             )
           );
         });
+    },
+
+    async toggle(event: any, data: any): Promise<void> {
+      this.hoveredResult = data;
+      const x = this.$refs.altTreeOP as any;
+      x.toggle(event);
     }
   }
 });
