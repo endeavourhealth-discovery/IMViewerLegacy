@@ -8,7 +8,7 @@
       </div>
       <Listbox
         v-else
-        listStyle="height: calc(100vh - 245px)"
+        :listStyle="listHeight"
         :filter="true"
         emptyMessage="No results found"
         emptyFilterMessage="No results found"
@@ -61,17 +61,26 @@ export default defineComponent({
     }
   },
   async mounted() {
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.setListboxHeight);
+    });
+
+    this.setListboxHeight();
+
     if (this.conceptIri) {
       await this.getMembers(this.conceptIri);
     }
   },
-
+  beforeUnmount() {
+    window.removeEventListener("resize", this.setListboxHeight);
+  },
   data() {
     return {
       loading: false,
       members: [] as any,
       selectedIncludedMember: {},
-      combinedMembers: [] as any
+      combinedMembers: [] as any,
+      listHeight: ""
     };
   },
   methods: {
@@ -103,6 +112,22 @@ export default defineComponent({
     toggle(event: any) {
       const x = this.$refs.menu as any;
       x.toggle(event);
+    },
+
+    setListboxHeight(): void {
+      const container = document.getElementById(
+        "members-container"
+      ) as HTMLElement;
+      const listHeader = container.getElementsByClassName(
+        "p-listbox-header"
+      )[0] as HTMLElement;
+      if (container && listHeader) {
+        const newHeight =
+          container.getBoundingClientRect().height -
+          listHeader.getBoundingClientRect().height -
+          7;
+        this.listHeight = "height: " + newHeight + "px;";
+      }
     }
   }
 });
@@ -114,9 +139,11 @@ export default defineComponent({
 }
 .members-container {
   width: 100%;
+  height: 100%;
 }
 .included-container {
   width: 100%;
+  height: 100%;
 }
 .excluded-container {
   width: 50%;
