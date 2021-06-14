@@ -76,7 +76,7 @@ export default defineComponent({
         const newHeight =
           container.getBoundingClientRect().height -
           listHeader.getBoundingClientRect().height -
-          7;
+          2;
         this.listHeight = "height: " + newHeight + "px;";
       }
     }
