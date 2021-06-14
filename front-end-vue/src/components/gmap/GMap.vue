@@ -3,8 +3,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
-import {defineComponent} from "@vue/runtime-core";
+import { ref, onMounted, defineComponent } from "vue";
 
 export default defineComponent({
   name: "GMap",
@@ -17,7 +16,7 @@ export default defineComponent({
   data() {
     return {
       infowindow: null
-    }
+    };
   },
   watch: {
     pin(newValue) {
@@ -26,17 +25,17 @@ export default defineComponent({
       }
 
       if (newValue) {
-        let latlong = newValue || {lat: 53.6242957, lng: -1.8826361};
+        let latlong = newValue || { lat: 53.6242957, lng: -1.8826361 };
 
         this.map.setCenter(latlong);
 
         window.marker = new window.google.maps.Marker({
           position: latlong,
-          map: this.map,
+          map: this.map
         });
 
         this.infowindow = new window.google.maps.InfoWindow({
-          content: newValue.info,
+          content: newValue.info
         });
 
         this.infowindow.open(this.map, window.marker);
@@ -58,8 +57,8 @@ export default defineComponent({
       // create the script element to load
       const googleMapScript = document.createElement("SCRIPT");
       googleMapScript.setAttribute(
-          "src",
-          `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap`
+        "src",
+        `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap`
       );
       googleMapScript.setAttribute("defer", "");
       googleMapScript.setAttribute("async", "");
@@ -74,7 +73,7 @@ export default defineComponent({
         mapTypeId: props.mapType || "hybrid",
         zoom: props.zoom || 8,
         disableDefaultUI: props.disableUI || false,
-        center: {lat: 53.6242957, lng: -1.8826361}
+        center: { lat: 53.6242957, lng: -1.8826361 }
       });
     };
 
