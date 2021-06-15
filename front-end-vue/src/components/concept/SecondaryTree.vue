@@ -36,19 +36,22 @@
       class="tree-root"
     >
       <template #default="slotProps">
-        <span
-          v-if="!slotProps.node.loading"
+        <div
           @mouseenter="toggle($event, slotProps.node)"
           @mouseleave="toggle($event, slotProps.node)"
         >
-          <i
-            :class="'fas fa-fw' + slotProps.node.typeIcon"
-            :style="'color:' + slotProps.node.color"
-            aria-hidden="true"
-          />
-        </span>
-        <ProgressSpinner v-if="slotProps.node.loading" />
-        {{ slotProps.node.label }}
+          <span
+            v-if="!slotProps.node.loading"
+          >
+            <i
+              :class="'fas fa-fw' + slotProps.node.typeIcon"
+              :style="'color:' + slotProps.node.color"
+              aria-hidden="true"
+            />
+          </span>
+          <ProgressSpinner v-if="slotProps.node.loading" />
+          {{ slotProps.node.label }}
+        </div>
       </template>
     </Tree>
 
@@ -63,9 +66,25 @@
         class="p-d-flex p-flex-row p-jc-start result-overlay"
         style="width: 100%; gap: 7px;"
       >
-        <div>
-          <p><strong>Name: </strong>{{ hoveredResult.label }}</p>
-          <p><strong>Iri: </strong>{{ hoveredResult.data }}</p>
+        <div class="left-side" style="width: 50%;" v-if="hoveredResult.name">
+          <p><strong>Name: </strong>{{ hoveredResult.name }}</p>
+          <p><strong>Iri: </strong>{{ hoveredResult.iri }}</p>
+          <p v-if="hoveredResult.code"><strong>Code: </strong>{{ hoveredResult.code }}</p>
+        </div>
+        <div class="right-side" style="width: 50%;" v-if="hoveredResult.name">
+          <p>
+            <strong>Status: </strong>
+            <span v-if="hoveredResult.status">{{
+              hoveredResult.status.name
+            }}</span>
+          </p>
+          <p>
+            <strong>Scheme: </strong>
+            <span v-if="hoveredResult.scheme">{{
+              hoveredResult.scheme.name
+            }}</span>
+          </p>
+          <p><strong>Type: </strong>{{ getConceptTypes(hoveredResult.types) }}</p>
         </div>
       </div>
     </OverlayPanel>
@@ -375,10 +394,25 @@ export default defineComponent({
         });
     },
 
-    async toggle(event: any, data: any): Promise<void> {
-      this.hoveredResult = data;
-      const x = this.$refs.altTreeOP as any;
-      x.toggle(event);
+    toggle(event: any, data: any): void {
+      if (event.type === "mouseenter") {
+        ConceptService.getConceptDefinitionDto(data.data).then(res => {
+          this.hoveredResult = res.data;
+          const x = this.$refs.altTreeOP as any;
+          x.toggle(event);
+        });
+      } else {
+        const x = this.$refs.altTreeOP as any;
+        x.toggle(event);
+      }
+    },
+
+    getConceptTypes(concept: any): any {
+      return concept
+        .map(function(type: any) {
+          return type.name;
+        })
+        .join(", ");
     }
   }
 });
