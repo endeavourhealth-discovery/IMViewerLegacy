@@ -10,7 +10,7 @@
     <template #empty>
       No records found
     </template>
-    <Column field="name" header="Name">
+    <Column field="property.name" header="Name" :sortable="true">
       <template #body="slotProps">
         <div
           class="link capitalize-text"
@@ -20,14 +20,14 @@
         </div>
       </template>
     </Column>
-    <Column field="type" header="Type">
+    <Column field="type.name" header="Type" :sortable="true">
       <template #body="slotProps">
         <div class="link" @click="navigate(slotProps.data.type.iri)">
           {{ slotProps.data.type?.name || slotProps.data.type?.iri }}
         </div>
       </template>
     </Column>
-    <Column field="inherited" header="Inherited From">
+    <Column field="inherited.name" header="Inherited From" :sortable="true">
       <template #body="slotProps">
         <div
           v-if="slotProps.data.inherited?.name"
