@@ -28,8 +28,7 @@
         <template #body="slotProps">
           <div
             class="result-container"
-            @mouseenter="toggle($event, slotProps.data)"
-            @mouseleave="toggle($event, slotProps.data)"
+            @mouseenter="showOverlay($event, slotProps.data)"
           >
             <div class="result-icon-container">
               <i
@@ -106,7 +105,8 @@ export default defineComponent({
     return {
       results: new SearchResponse() as SearchResponse,
       selectedResult: {} as ConceptSummary,
-      hoveredResult: {} as ConceptSummary | any
+      hoveredResult: {} as ConceptSummary | any,
+      hoveredEvent: {} as any
     };
   },
   methods: {
@@ -123,10 +123,18 @@ export default defineComponent({
       });
     },
 
-    toggle(event: any, data: any): void {
-      this.hoveredResult = data;
+    hideOverlay(): void {
       const x = this.$refs.op as any;
-      x.toggle(event);
+      x.hide();
+    },
+
+    async showOverlay(event: any, data: any): Promise<void> {
+      this.hideOverlay();
+      await this.$nextTick();
+      this.hoveredResult = data;
+      this.hoveredEvent = event;
+      const x = this.$refs.op as any;
+      x.show(event, event.target);
     },
 
     getConceptTypes(concept: any): any {
