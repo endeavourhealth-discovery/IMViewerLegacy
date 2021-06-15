@@ -100,10 +100,6 @@ export default defineComponent({
     };
   },
   async mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.setTreeHeight);
-    });
-
     await this.getConceptAggregate(this.conceptIri);
     this.createTree(
       this.conceptAggregate.concept,
@@ -111,9 +107,6 @@ export default defineComponent({
       this.conceptAggregate.children,
       0
     );
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.setTreeHeight);
   },
   methods: {
     async getConceptAggregate(iri: string): Promise<void> {
@@ -197,7 +190,6 @@ export default defineComponent({
         this.expandedKeys[selectedConcept.key] = true;
       }
       this.selectedKey[selectedConcept.key] = true;
-      this.setTreeHeight();
     },
 
     createTreeNode(
@@ -262,7 +254,6 @@ export default defineComponent({
           index++;
         }
       });
-      this.setTreeHeight();
       node.loading = false;
     },
 
@@ -358,53 +349,6 @@ export default defineComponent({
             )
           );
         });
-      this.setTreeHeight();
-    },
-
-    setTreeHeight(): void {
-      const conceptContainer = document.getElementsByClassName(
-        "concept-container"
-      )[0] as HTMLElement;
-      const header = conceptContainer.getElementsByClassName(
-        "p-panel-header"
-      )[0] as HTMLElement;
-      const nav = conceptContainer.getElementsByClassName(
-        "p-tabview-nav"
-      )[0] as HTMLElement;
-      const tree = conceptContainer.getElementsByClassName(
-        "p-tree"
-      )[0] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
-      const parentBar = document.getElementById(
-        "secondary-tree-parents-bar"
-      ) as HTMLElement;
-      const altParentsContainer = document.getElementById(
-        "alternate-parents-container"
-      ) as HTMLElement;
-      if (
-        tree &&
-        header &&
-        nav &&
-        conceptContainer &&
-        currentFontSize &&
-        parentBar &&
-        altParentsContainer
-      ) {
-        const calcHeight =
-          conceptContainer.getBoundingClientRect().height -
-          header.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
-          altParentsContainer.getBoundingClientRect().height -
-          parentBar.getBoundingClientRect().height -
-          4 * currentFontSize -
-          7 +
-          "px";
-        tree.style.maxHeight = calcHeight;
-      }
     }
   }
 });
@@ -418,6 +362,7 @@ export default defineComponent({
 }
 
 #secondary-tree-bar-container {
+  height: 100%;
   border: 1px solid #dee2e6;
 }
 </style>

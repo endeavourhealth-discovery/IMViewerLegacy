@@ -4,20 +4,21 @@
     <div class="home">
       <TabView>
         <TabPanel header="Single address lookup">
-          <g-map
-              :disableUI="false"
-              :zoom="12"
-              mapType="roadmap"
-              :pin="pin"
-          >
-          </g-map>
+          <g-map :disableUI="false" :zoom="12" mapType="roadmap" :pin="pin" />
           <div class="uprn-form p-d-flex">
-            <InputText type="text" v-model="value" placeholder='Enter address, e.g. "10 Downing St,Westminster,London,SW1A2AA"' @keyup.enter="search()"/>
-            <Button class="btn-search" icon="fas fa-search" @click="search()"/>
+            <InputText
+              type="text"
+              v-model="value"
+              placeholder='Enter address, e.g. "10 Downing St,Westminster,London,SW1A2AA"'
+              @keyup.enter="search()"
+            />
+            <Button class="btn-search" icon="fas fa-search" @click="search()" />
           </div>
 
           <div class="content" ref="uprn-info" :hidden="!match.Matched">
-            <h1 id="firstHeading" class="firstHeading">UPRN : {{match.UPRN}}</h1>
+            <h1 id="firstHeading" class="firstHeading">
+              UPRN : {{ match.UPRN }}
+            </h1>
             <div id="bodyContent">
               <table>
                 <thead></thead>
@@ -26,32 +27,42 @@
                   <th colspan="2">Match</th>
                 </tr>
                 <tbody>
-                <tr>
-                  <td>Number</td><td>{{match?.ABPAddress?.Number}}</td>
-                  <td>Number</td><td>{{match?.Match_pattern?.Number}}</td>
-                </tr>
                   <tr>
-                    <td>Street</td><td>{{match?.ABPAddress?.Street}}</td>
-                    <td>Building</td><td>{{match?.Match_pattern?.Building}}</td>
+                    <td>Number</td>
+                    <td>{{ match?.ABPAddress?.Number }}</td>
+                    <td>Number</td>
+                    <td>{{ match?.Match_pattern?.Number }}</td>
                   </tr>
                   <tr>
-                    <td>Town</td><td>{{match?.ABPAddress?.Town}}</td>
-                    <td>Street</td><td>{{match?.Match_pattern?.Street}}</td>
+                    <td>Street</td>
+                    <td>{{ match?.ABPAddress?.Street }}</td>
+                    <td>Building</td>
+                    <td>{{ match?.Match_pattern?.Building }}</td>
                   </tr>
                   <tr>
-                    <td>PostCode</td><td>{{match?.ABPAddress?.Postcode}}</td>
-                    <td>PostCode</td><td>{{match?.Match_pattern?.Postcode}}</td>
+                    <td>Town</td>
+                    <td>{{ match?.ABPAddress?.Town }}</td>
+                    <td>Street</td>
+                    <td>{{ match?.Match_pattern?.Street }}</td>
                   </tr>
                   <tr>
-                    <td>Class</td><td>{{match?.Classification}} - {{match?.ClassTerm}}</td>
-                    <td>Qualifier</td><td>{{match?.Qualifier}}</td>
+                    <td>PostCode</td>
+                    <td>{{ match?.ABPAddress?.Postcode }}</td>
+                    <td>PostCode</td>
+                    <td>{{ match?.Match_pattern?.Postcode }}</td>
                   </tr>
-
+                  <tr>
+                    <td>Class</td>
+                    <td>
+                      {{ match?.Classification }} - {{ match?.ClassTerm }}
+                    </td>
+                    <td>Qualifier</td>
+                    <td>{{ match?.Qualifier }}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           </div>
-
         </TabPanel>
         <TabPanel header="Address file workflow">
           Content II
@@ -65,7 +76,7 @@
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import GMap from "@/components/gmap/GMap.vue";
-import UprnService from '@/services/UprnService';
+import UprnService from "@/services/UprnService";
 
 export default defineComponent({
   name: "Uprn",
@@ -75,7 +86,7 @@ export default defineComponent({
   },
   data() {
     return {
-      value : "10 Downing St,Westminster,London,SW1A2AA",
+      value: "10 Downing St,Westminster,London,SW1A2AA",
       pin: null as any,
       match: {} as any
     };
@@ -85,14 +96,14 @@ export default defineComponent({
     async search() {
       this.pin = null;
       console.log("Searching [" + this.value + "]");
-      this.match = (await (UprnService.findUprn(this.value))).data;
+      this.match = (await UprnService.findUprn(this.value)).data;
       if (this.match.Matched) {
-        const uprn = (await (UprnService.getUprn(this.match.UPRN))).data;
+        const uprn = (await UprnService.getUprn(this.match.UPRN)).data;
         this.pin = {
           lat: +uprn.Latitude,
           lng: +uprn.Longitude,
-          info: this.$refs['uprn-info']
-        }
+          info: this.$refs["uprn-info"]
+        };
       }
     }
   }
@@ -134,7 +145,8 @@ export default defineComponent({
   border-color: lightgray !important;
 }
 
-table td, table td * {
+table td,
+table td * {
   vertical-align: top;
 }
 

@@ -66,29 +66,17 @@ export default defineComponent({
     },
 
     setListboxHeight(): void {
-      const conceptContainer = document.getElementsByClassName(
-        "concept-container"
-      )[0] as HTMLElement;
-      const header = conceptContainer.getElementsByClassName(
-        "p-panel-header"
-      )[0];
-      const nav = conceptContainer.getElementsByClassName("p-tabview-nav")[0];
-      const listHeader = conceptContainer.getElementsByClassName(
+      const container = document.getElementById(
+        "usedin-container"
+      ) as HTMLElement;
+      const listHeader = container.getElementsByClassName(
         "p-listbox-header"
       )[0] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
-      if (conceptContainer && header && nav && listHeader && currentFontSize) {
+      if (container && listHeader) {
         const newHeight =
-          conceptContainer.getBoundingClientRect().height -
-          header.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
+          container.getBoundingClientRect().height -
           listHeader.getBoundingClientRect().height -
-          currentFontSize * 4 -
-          7;
+          2;
         this.listHeight = "height: " + newHeight + "px;";
       }
     }
