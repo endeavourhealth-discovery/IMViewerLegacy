@@ -73,6 +73,15 @@
                 <Members :conceptIri="conceptIri" v-if="active === 3" />
               </div>
             </TabPanel>
+            <TabPanel header="Hierarchy position">
+              <div
+                class="concept-panel-content"
+                id="secondary-tree-container"
+                :style="contentHeight"
+              >
+                <SecondaryTree :conceptIri="conceptIri" v-if="active === 4" />
+              </div>
+            </TabPanel>
           </TabView>
         </div>
         <div v-if="concept && !isSet" id="concept-panel-container">
