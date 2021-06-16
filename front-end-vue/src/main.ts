@@ -42,6 +42,7 @@ import Listbox from "primevue/listbox";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup"; //optional for column grouping
+import FileUpload from "primevue/fileupload";
 import OrganizationChart from "primevue/organizationchart";
 import Textarea from "primevue/textarea";
 import Dropdown from "primevue/dropdown";
@@ -122,6 +123,7 @@ const app = createApp(App)
   .component("Timeline", Timeline)
   .component("SelectButton", SelectButton)
   .component("Toast", Toast)
-  .component("Checkbox", Checkbox);
+  .component("Checkbox", Checkbox)
+  .component("FileUpload", FileUpload);
 
 app.mount("#app");
