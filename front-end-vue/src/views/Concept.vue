@@ -227,15 +227,18 @@ export default defineComponent({
     focusTree(): void {
       this.$store.commit("updateFocusTree", true);
     },
+
     directToEditRoute(): void {
       this.$router.push({
         name: "Edit",
         params: { iri: this.concept["@id"] }
       });
     },
+
     directToCreateRoute(): void {
       this.$router.push({ name: "Create" });
     },
+
     onResize(): void {
       this.setContentHeight();
     },
