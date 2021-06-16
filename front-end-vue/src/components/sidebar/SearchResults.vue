@@ -52,6 +52,8 @@
       id="overlay_panel"
       style="width: 700px"
       :breakpoints="{ '960px': '75vw' }"
+      :showCloseIcon="true"
+      :dismissable="true"
     >
       <div
         class="p-d-flex p-flex-row p-jc-start result-overlay"
