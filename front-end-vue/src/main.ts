@@ -3,6 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import PrimeVue from "primevue/config";
+import VueClipboard from "vue3-clipboard";
 
 // Font Awesome
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -79,6 +80,10 @@ const app = createApp(App)
   .use(PrimeVue, { ripple: true })
   .use(ConfirmationService)
   .use(ToastService)
+  .use(VueClipboard, {
+    autoSetContainer: true,
+    appendToBody: true
+  })
   .directive("tooltip", Tooltip)
   .component("Card", Card)
   .component("ProgressSpinner", ProgressSpinner)
