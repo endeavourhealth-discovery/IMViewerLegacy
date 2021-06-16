@@ -125,7 +125,7 @@ const app = createApp(App)
   .component("SelectButton", SelectButton)
   .component("Toast", Toast)
   .component("Checkbox", Checkbox)
-  .component("PickList", PickList);
+  .component("PickList", PickList)
   .component("FileUpload", FileUpload);
 
 app.mount("#app");
