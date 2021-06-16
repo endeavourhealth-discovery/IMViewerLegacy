@@ -42,7 +42,7 @@ export default defineComponent({
       this.setListHeight();
     }
   },
-  async mounted() {
+  mounted() {
     this.setListHeight();
   },
   data() {
