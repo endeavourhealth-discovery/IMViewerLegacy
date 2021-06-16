@@ -11,9 +11,10 @@
             :style="contentHeight"
           >
             <FormEditor
-              v-if="active === 0"
+              v-if="active === 0 && Object.keys(conceptUpdated).length > 0"
               :iri="iri"
-              :conceptUpdated="conceptUpdated"
+              :updatedConcept="conceptUpdated"
+              @concept-updated="updateConcept"
             />
           </div>
         </TabPanel>
@@ -34,7 +35,7 @@
             :style="contentHeight"
           >
             <MemberEditor
-              v-if="active === 2"
+              v-if="active === 2 && Object.keys(membersUpdated).length > 0"
               :iri="iri"
               :contentHeight="contentHeight"
               :updatedMembers="membersUpdated"
@@ -50,6 +51,12 @@
         label="Cancel"
         class="p-button-secondary"
         @click="$router.go(-1)"
+      />
+      <Button
+        icon="pi pi-refresh"
+        label="Reset"
+        class="p-button-warning"
+        @click="refreshEditor"
       />
       <Button
         icon="pi pi-check"
@@ -106,9 +113,9 @@ export default defineComponent({
       iri: this.$route.params.iri?.toString(),
       concept: {} as any,
       conceptOriginal: {} as any,
-      conceptUpdated: null as any,
+      conceptUpdated: {} as any,
       membersOriginal: {} as any,
-      membersUpdated: null as any,
+      membersUpdated: {} as any,
       active: 0,
       contentHeight: ""
     };
@@ -117,42 +124,7 @@ export default defineComponent({
     this.$nextTick(() => {
       window.addEventListener("resize", this.setContentHeight);
     });
-    if (this.iri) {
-      await ConceptService.getConcept(this.iri)
-        .then(res => {
-          this.concept = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Editor get concept request failed", err)
-          );
-        });
-
-      await ConceptService.getConceptDefinitionDto(this.iri)
-        .then(res => {
-          this.conceptOriginal = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Editor get concept request failed", err)
-          );
-        });
-
-      if (this.hasMembers) {
-        await ConceptService.getConceptMembers(this.iri, false)
-          .then(res => {
-            this.membersOriginal = res.data;
-          })
-          .catch(err => {
-            this.$toast.add(
-              LoggerService.error(
-                "Editor get concept members request failed",
-                err
-              )
-            );
-          });
-      }
-    }
+    this.fetchConceptData();
 
     this.setContentHeight();
   },
@@ -160,6 +132,47 @@ export default defineComponent({
     window.removeEventListener("resize", this.setContentHeight);
   },
   methods: {
+    async fetchConceptData(): Promise<void> {
+      if (this.iri) {
+        await ConceptService.getConcept(this.iri)
+          .then(res => {
+            this.concept = res.data;
+          })
+          .catch(err => {
+            this.$toast.add(
+              LoggerService.error("Editor get concept request failed", err)
+            );
+          });
+
+        await ConceptService.getConceptDefinitionDto(this.iri)
+          .then(res => {
+            this.conceptOriginal = res.data;
+            this.conceptUpdated = JSON.parse(JSON.stringify(res.data));
+          })
+          .catch(err => {
+            this.$toast.add(
+              LoggerService.error("Editor get concept request failed", err)
+            );
+          });
+
+        if (this.hasMembers) {
+          await ConceptService.getConceptMembers(this.iri, false)
+            .then(res => {
+              this.membersOriginal = res.data;
+              this.membersUpdated = JSON.parse(JSON.stringify(res.data));
+            })
+            .catch(err => {
+              this.$toast.add(
+                LoggerService.error(
+                  "Editor get concept members request failed",
+                  err
+                )
+              );
+            });
+        }
+      }
+    },
+
     submit(): void {
       console.log("submit");
     },
@@ -168,12 +181,26 @@ export default defineComponent({
       this.membersUpdated = data;
     },
 
+    updateConcept(data: any) {
+      this.conceptUpdated = data;
+    },
+
     checkForChanges() {
-      if (!this.membersUpdated) {
+      if (
+        JSON.stringify(this.membersUpdated) ===
+          JSON.stringify(this.membersOriginal) &&
+        JSON.stringify(this.conceptUpdated) ===
+          JSON.stringify(this.conceptOriginal)
+      ) {
         return false;
       } else {
         return true;
       }
+    },
+
+    refreshEditor(): void {
+      this.conceptUpdated = {};
+      this.membersUpdated = {};
     },
 
     setContentHeight(): void {

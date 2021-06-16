@@ -92,15 +92,23 @@ import ConceptService from "@/services/ConceptService";
 import { defineComponent } from "@vue/runtime-core";
 import Dropdown from "primevue/dropdown";
 import Card from "primevue/card";
-import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "FormEditor",
   components: { Dropdown, Card },
-  props: ["iri", "conceptUpdated"],
+  props: ["iri", "updatedConcept"],
+  emits: ["concept-updated"],
+  watch: {
+    conceptDto: {
+      handler(newValue) {
+        this.$emit("concept-updated", newValue);
+      },
+      deep: true
+    }
+  },
   data() {
     return {
-      conceptDto: {} as any,
+      conceptDto: JSON.parse(JSON.stringify(this.updatedConcept)),
       schemeOptions: [] as ConceptReference[],
       statusOptions: Object.keys(ConceptStatus).filter(f =>
         isNaN(Number(f))
@@ -109,31 +117,9 @@ export default defineComponent({
     };
   },
   async mounted() {
-    this.getConcept();
     this.schemeOptions = (await ConceptService.getSchemeOptions()).data;
   },
-  methods: {
-    async getConcept(): Promise<void> {
-      this.loading = true;
-      if (this.conceptUpdated) {
-        this.conceptDto = JSON.parse(JSON.stringify(this.conceptUpdated));
-      } else {
-        await ConceptService.getConceptDefinitionDto(this.iri)
-          .then(res => {
-            this.conceptDto = res.data;
-          })
-          .catch(err => {
-            this.$toast.add(
-              LoggerService.error(
-                "Editable concept fetch failed from server",
-                err
-              )
-            );
-          });
-      }
-      this.loading = false;
-    }
-  }
+  methods: {}
 });
 </script>
 

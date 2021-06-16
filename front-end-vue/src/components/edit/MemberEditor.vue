@@ -32,8 +32,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import ConceptService from "@/services/ConceptService";
-import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "MemberEditor",
@@ -45,42 +43,20 @@ export default defineComponent({
     }
   },
   async mounted() {
-    if (this.iri) {
-      await this.getMembers(this.iri);
-      this.setListHeight();
-    }
+    this.setListHeight();
   },
   data() {
     return {
-      members: [] as any,
-      data: [[], []] as any,
+      members: JSON.parse(JSON.stringify(this.updatedMembers)),
+      data: [
+        JSON.parse(JSON.stringify(this.updatedMembers.included)),
+        JSON.parse(JSON.stringify(this.updatedMembers.excluded))
+      ] as any,
       listHeight: "",
       loading: false
     };
   },
   methods: {
-    async getMembers(iri: string): Promise<void> {
-      this.loading = true;
-      if (this.updatedMembers) {
-        this.members = JSON.parse(JSON.stringify(this.updatedMembers));
-        this.data[0] = this.members.included;
-        this.data[1] = this.members.excluded;
-      } else {
-        await ConceptService.getConceptMembers(iri, false)
-          .then(res => {
-            this.members = res.data;
-            this.data[0] = this.members.included;
-            this.data[1] = this.members.excluded;
-          })
-          .catch(err => {
-            this.$toast.add(
-              LoggerService.error("Members server request failed", err)
-            );
-          });
-      }
-      this.loading = false;
-    },
-
     setListHeight(): void {
       const container = document.getElementById(
         "member-editor-container"
