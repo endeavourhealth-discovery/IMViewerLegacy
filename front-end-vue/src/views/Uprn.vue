@@ -65,7 +65,49 @@
           </div>
         </TabPanel>
         <TabPanel header="Address file workflow">
-          Content II
+          <div class="card">
+            <div class="card">
+              <FileUpload
+                name="demo[]"
+                mode="basic"
+                :customUpload="true"
+                @uploader="onUpload"
+                accept="text/plain"
+                :maxFileSize="1000000"
+              >
+                <template #empty>
+                  <p>Drag and drop files to here to upload.</p>
+                </template>
+              </FileUpload>
+              <button
+                class="p-button p-component p-button-outlined p-button-secondary p-mt-5"
+                @click="refreshActivity"
+              >
+                Refresh Table
+              </button>
+            </div>
+            <div>
+              <DataTable
+                :value="activity"
+                responsiveLayout="scroll"
+                showGridlines
+                style="height: 200px"
+              >
+                <Column field="DT" header="Time"></Column>
+                <Column field="A" header="Status"></Column>
+                <Column field="F" header="Action">
+                  <template #body="slotProps">
+                    <button
+                      v-if="slotProps.data.F"
+                      type="button"
+                      @click="download(slotProps.data.F)"
+                      class="p-button button-download pi pi-download"
+                    />
+                  </template>
+                </Column>
+              </DataTable>
+            </div>
+          </div>
         </TabPanel>
       </TabView>
     </div>
@@ -88,10 +130,13 @@ export default defineComponent({
     return {
       value: "10 Downing St,Westminster,London,SW1A2AA",
       pin: null as any,
+      activity: [],
       match: {} as any
     };
   },
-  // mounted() {},
+  mounted() {
+    this.refreshActivity();
+  },
   methods: {
     async search() {
       this.pin = null;
@@ -105,6 +150,22 @@ export default defineComponent({
           info: this.$refs["uprn-info"]
         };
       }
+    },
+    async refreshActivity() {
+      this.activity = (await UprnService.getActivity()).data;
+    },
+    async download(filename: string) {
+      await UprnService.download(filename).then(response => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+      });
+    },
+    async onUpload() {
+      console.log("upload");
     }
   }
 });

@@ -36,17 +36,64 @@
       class="tree-root"
     >
       <template #default="slotProps">
-        <span v-if="!slotProps.node.loading">
-          <i
-            :class="'fas fa-fw' + slotProps.node.typeIcon"
-            :style="'color:' + slotProps.node.color"
-            aria-hidden="true"
-          />
-        </span>
-        <ProgressSpinner v-if="slotProps.node.loading" />
-        {{ slotProps.node.label }}
+        <div
+          @mouseover="showPopup($event, slotProps.node)"
+          @mouseleave="hidePopup($event)"
+        >
+          <span v-if="!slotProps.node.loading">
+            <i
+              :class="'fas fa-fw' + slotProps.node.typeIcon"
+              :style="'color:' + slotProps.node.color"
+              aria-hidden="true"
+            />
+          </span>
+          <ProgressSpinner v-if="slotProps.node.loading" />
+          {{ slotProps.node.label }}
+        </div>
       </template>
     </Tree>
+
+    <OverlayPanel
+      ref="altTreeOP"
+      id="secondary_tree_overlay_panel"
+      style="width: 700px"
+      :breakpoints="{ '960px': '75vw' }"
+    >
+      <div
+        v-if="hoveredResult.name"
+        class="p-d-flex p-flex-row p-jc-start result-overlay"
+        style="width: 100%; gap: 7px;"
+      >
+        <div class="left-side" style="width: 50%;">
+          <p>
+            <strong>Name: </strong>
+            <span>{{ hoveredResult.name }}</span>
+          </p>
+          <p>
+            <strong>Iri: </strong>
+            <span>{{ hoveredResult.iri }}</span>
+          </p>
+          <p v-if="hoveredResult.code">
+            <strong>Code: </strong>
+            <span>{{ hoveredResult.code }}</span>
+          </p>
+        </div>
+        <div class="right-side" style="width: 50%;">
+          <p v-if="hoveredResult.status">
+            <strong>Status: </strong>
+            <span>{{ hoveredResult.status }}</span>
+          </p>
+          <p v-if="hoveredResult.scheme">
+            <strong>Scheme: </strong>
+            <span>{{ hoveredResult.scheme }}</span>
+          </p>
+          <p v-if="hoveredResult.types">
+            <strong>Type: </strong>
+            <span>{{ getConceptTypes(hoveredResult.types) }}</span>
+          </p>
+        </div>
+      </div>
+    </OverlayPanel>
   </div>
 </template>
 
@@ -62,6 +109,7 @@ import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
 import { defineComponent } from "vue";
 import LoggerService from "@/services/LoggerService";
+import { ConceptSummary } from "@/models/search/ConceptSummary";
 
 export default defineComponent({
   name: "SecondaryTree",
@@ -96,7 +144,8 @@ export default defineComponent({
         iri: string;
         listPosition: number;
       }[],
-      parentPosition: 0
+      parentPosition: 0,
+      hoveredResult: {} as ConceptSummary | any
     };
   },
   async mounted() {
@@ -349,6 +398,27 @@ export default defineComponent({
             )
           );
         });
+    },
+
+    async showPopup(event: any, data: any): Promise<void> {
+      const x = this.$refs.altTreeOP as any;
+      x.show(event);
+      await ConceptService.getConceptDefinitionDto(data.data).then(res => {
+        this.hoveredResult = res.data;
+      });
+    },
+
+    hidePopup(event: any): void {
+      const x = this.$refs.altTreeOP as any;
+      x.hide(event);
+    },
+
+    getConceptTypes(concept: any): any {
+      return concept
+        .map(function(type: any) {
+          return type.name;
+        })
+        .join(", ");
     }
   }
 });

@@ -3,6 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import PrimeVue from "primevue/config";
+import VueClipboard from "vue3-clipboard";
 
 // Font Awesome
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -41,6 +42,7 @@ import Listbox from "primevue/listbox";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup"; //optional for column grouping
+import FileUpload from "primevue/fileupload";
 import OrganizationChart from "primevue/organizationchart";
 import Textarea from "primevue/textarea";
 import Dropdown from "primevue/dropdown";
@@ -79,6 +81,10 @@ const app = createApp(App)
   .use(PrimeVue, { ripple: true })
   .use(ConfirmationService)
   .use(ToastService)
+  .use(VueClipboard, {
+    autoSetContainer: true,
+    appendToBody: true
+  })
   .directive("tooltip", Tooltip)
   .component("Card", Card)
   .component("ProgressSpinner", ProgressSpinner)
@@ -120,5 +126,6 @@ const app = createApp(App)
   .component("Toast", Toast)
   .component("Checkbox", Checkbox)
   .component("PickList", PickList);
+  .component("FileUpload", FileUpload);
 
 app.mount("#app");
