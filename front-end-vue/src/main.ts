@@ -68,6 +68,7 @@ import ToastService from "primevue/toastservice";
 import Toast from "primevue/toast";
 import Checkbox from "primevue/checkbox";
 import PickList from "primevue/picklist";
+import Steps from "primevue/steps";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
@@ -126,6 +127,7 @@ const app = createApp(App)
   .component("Toast", Toast)
   .component("Checkbox", Checkbox)
   .component("PickList", PickList)
-  .component("FileUpload", FileUpload);
+  .component("FileUpload", FileUpload)
+  .component("Steps", Steps);
 
 app.mount("#app");

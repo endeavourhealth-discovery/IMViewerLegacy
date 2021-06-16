@@ -16,6 +16,7 @@ import Logout from "../components/user/Logout.vue";
 import ForgotPassword from "../components/user/ForgotPassword.vue";
 import ForgotPasswordSubmit from "../components/user/ForgotPasswordSubmit.vue";
 import SnomedLicense from "../views/SnomedLicense.vue";
+import Creator from "../views/Creator.vue";
 // import RecoverByEmail from "../components/user/RecoverByEmail.vue";
 import store from "@/store/index";
 import { nextTick } from "vue";
@@ -141,6 +142,11 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       requiresAuth: true
     }
+  },
+  {
+    path: "/creator",
+    name: "Creator",
+    component: Creator
   },
   {
     path: "/workflow",
