@@ -3,7 +3,12 @@
   <ConfirmDialog />
   <div id="creator-main-container">
     <Panel header="Creator">
-      <div v-if="!createType" id="selection-button-container" class="p-d-flex p-flex-row p-jc-center p-ai-center" :style="contentHeight">
+      <div
+        v-if="!createType"
+        id="selection-button-container"
+        class="p-d-flex p-flex-row p-jc-center p-ai-center"
+        :style="contentHeight"
+      >
         <button>Concept</button>
         <button>Value set</button>
       </div>
@@ -33,7 +38,7 @@ export default defineComponent({
     return {
       createType: null,
       contentHeight: ""
-    }
+    };
   },
   mounted() {
     this.$nextTick(() => {
@@ -49,7 +54,9 @@ export default defineComponent({
       const header = container.getElementsByClassName(
         "p-panel-header"
       )[0] as HTMLElement;
-      const content = container.getElementsByClassName("p-panel-content")[0] as HTMLElement;
+      const content = container.getElementsByClassName(
+        "p-panel-content"
+      )[0] as HTMLElement;
       const currentFontSize = parseFloat(
         window
           .getComputedStyle(document.documentElement, null)

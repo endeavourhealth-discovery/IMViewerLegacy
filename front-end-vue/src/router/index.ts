@@ -146,7 +146,10 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/creator",
     name: "Creator",
-    component: Creator
+    component: Creator,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: "/workflow",
