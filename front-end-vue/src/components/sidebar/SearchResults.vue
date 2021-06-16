@@ -57,25 +57,101 @@
         class="p-d-flex p-flex-row p-jc-start result-overlay"
         style="width: 100%; gap: 7px;"
       >
-        <div class="left-side" style="width: 50%;" v-if="hoveredResult.name">
-          <p><strong>Name: </strong>{{ hoveredResult.name }}</p>
-          <p><strong>Iri: </strong>{{ hoveredResult.iri }}</p>
-          <p><strong>Code: </strong>{{ hoveredResult.code }}</p>
+        <div
+          class="left-side"
+          style="max-width: 50%; flex-grow: 2;"
+          v-if="hoveredResult.name"
+        >
+          <p>
+            <strong>Name: </strong>
+            <span
+              v-if="hoveredResult.status"
+              style="cursor:pointer"
+              v-clipboard:copy="hoveredResult.name"
+              v-clipboard:success="onCopy"
+              v-clipboard:error="onCopyError"
+            >
+              {{ hoveredResult.name }}
+            </span>
+          </p>
+          <p>
+            <strong>Iri: </strong>
+            <span
+              v-if="hoveredResult.status"
+              style="cursor:pointer"
+              v-clipboard:copy="hoveredResult.iri"
+              v-clipboard:success="onCopy"
+              v-clipboard:error="onCopyError"
+            >
+              {{ hoveredResult.iri }}
+            </span>
+          </p>
+          <p>
+            <strong>Code: </strong>
+            <span
+              v-if="hoveredResult.status"
+              style="cursor:pointer"
+              v-clipboard:copy="hoveredResult.code"
+              v-clipboard:success="onCopy"
+              v-clipboard:error="onCopyError"
+            >
+              {{ hoveredResult.code }}
+            </span>
+          </p>
         </div>
-        <div class="right-side" style="width: 50%;" v-if="hoveredResult.name">
+        <div
+          class="right-side"
+          style="max-width: 50%; flex-grow: 2"
+          v-if="hoveredResult.name"
+        >
           <p>
             <strong>Status: </strong>
-            <span v-if="hoveredResult.status">{{
-              hoveredResult.status.name
-            }}</span>
+            <span
+              v-if="hoveredResult.status"
+              style="cursor:pointer"
+              v-clipboard:copy="hoveredResult.status.name"
+              v-clipboard:success="onCopy"
+              v-clipboard:error="onCopyError"
+            >
+              {{ hoveredResult.status.name }}
+            </span>
           </p>
           <p>
             <strong>Scheme: </strong>
-            <span v-if="hoveredResult.scheme">{{
-              hoveredResult.scheme.name
-            }}</span>
+            <span
+              v-if="hoveredResult.scheme"
+              style="cursor:pointer"
+              v-clipboard:copy="hoveredResult.scheme.name"
+              v-clipboard:success="onCopy"
+              v-clipboard:error="onCopyError"
+            >
+              {{ hoveredResult.scheme.name }}
+            </span>
           </p>
-          <p><strong>Type: </strong>{{ getConceptTypes(hoveredResult) }}</p>
+          <p>
+            <strong>Type: </strong>
+            <span
+              style="cursor:pointer"
+              v-clipboard:copy="getConceptTypes(hoveredResult)"
+              v-clipboard:success="onCopy"
+              v-clipboard:error="onCopyError"
+            >
+              {{ getConceptTypes(hoveredResult) }}
+            </span>
+          </p>
+        </div>
+        <div
+          class="p-d-flex p-flex-column p-jc-center p-ai-center"
+          style="width: fit-content"
+        >
+          <Button
+            icon="pi pi-copy"
+            class="p-button-rounded p-button-text"
+            v-clipboard:copy="copyHoveredResult()"
+            v-clipboard:success="onCopy"
+            v-clipboard:error="onCopyError"
+            v-tooltip.right="'Copy concept to clipboard'"
+          />
         </div>
       </div>
     </OverlayPanel>
@@ -85,6 +161,7 @@
 <script lang="ts">
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { SearchResponse } from "@/models/search/SearchResponse";
+import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
 import {
@@ -143,6 +220,31 @@ export default defineComponent({
           return type.name;
         })
         .join(", ");
+    },
+
+    copyHoveredResult(): string {
+      return (
+        "Name: " +
+        this.hoveredResult.name +
+        ", Iri: " +
+        this.hoveredResult.iri +
+        ", Code: " +
+        this.hoveredResult.code +
+        ", Status: " +
+        this.hoveredResult.status.name +
+        ", Scheme: " +
+        this.hoveredResult.scheme.name +
+        ", Type: " +
+        this.hoveredResult.conceptType[0].name
+      );
+    },
+
+    onCopy(): void {
+      this.$toast.add(LoggerService.success("Value copied to clipboard"));
+    },
+
+    onCopyError(): void {
+      this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
     }
   }
 });
