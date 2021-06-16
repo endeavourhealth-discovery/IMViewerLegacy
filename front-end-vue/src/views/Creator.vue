@@ -3,14 +3,21 @@
   <ConfirmDialog />
   <div id="creator-main-container">
     <Panel header="Creator">
-      <div
-        v-if="!createType"
-        id="selection-button-container"
-        class="p-d-flex p-flex-row p-jc-center p-ai-center"
-        :style="contentHeight"
-      >
-        <button>Concept</button>
-        <button>Value set</button>
+      <div v-if="!createType" id="landing-page-container" class="p-d-flex p-flex-column p-jc-center p-ai-center">
+        <div
+          id="selection-button-container"
+          class="p-d-flex p-flex-row p-jc-evenly p-ai-center"
+          :style="contentHeight"
+        >
+          <Button
+            label="Create oncept"
+            class="p-button-rounded p-button-lrg p-button-success"
+          />
+          <Button
+            label="Create value set"
+            class="p-button-rounded p-button-lrg p-button-help"
+          />
+        </div>
       </div>
     </Panel>
   </div>
@@ -86,6 +93,11 @@ export default defineComponent({
   overflow-y: auto;
   background-color: #ffffff;
   border: 1px solid #dee2e6;
+}
+
+#landing-page-container {
+  height: 100%;
+  width: 100%;
 }
 
 #selection-button-container {
