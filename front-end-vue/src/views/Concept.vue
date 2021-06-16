@@ -301,6 +301,7 @@ export default defineComponent({
   height: calc(100vh - 2rem);
   width: 100%;
   overflow-y: auto;
+  background-color: #ffffff;
 }
 
 .p-tabview-panel {
