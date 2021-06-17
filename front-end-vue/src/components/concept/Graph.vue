@@ -6,10 +6,10 @@
     <ProgressSpinner />
   </div>
   <OrganizationChart v-else :value="graph" :collapsible="true">
-    <template #ISA="slotProps">
-      <span>{{ slotProps.node.name }}</span>
+    <template #NONE>
+      <p class="p-text-centered">None</p>
     </template>
-    <template #WRAPPER="slotProps">
+    <template #default="slotProps">
       <span>{{ slotProps.node.name }}</span>
     </template>
     <template #PROPERTY="slotProps">
@@ -21,7 +21,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="prop in slotProps.node.children" :key="prop">
+          <tr v-for="prop in slotProps.node.leafNodes" :key="prop">
             <td>{{ prop.name }}</td>
             <td>{{ prop.valueTypeName }}</td>
           </tr>
