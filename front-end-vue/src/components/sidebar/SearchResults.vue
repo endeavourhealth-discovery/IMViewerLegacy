@@ -218,71 +218,136 @@ export default defineComponent({
         {
           label: "All",
           command: async () => {
-            await navigator.clipboard.writeText(
-              "Name: " +
-                this.hoveredResult.name +
-                ", Iri: " +
-                this.hoveredResult.iri +
-                ", Code: " +
-                this.hoveredResult.code +
-                ", Status: " +
-                this.hoveredResult.status.name +
-                ", Scheme: " +
-                this.hoveredResult.scheme.name +
-                ", Type: " +
-                this.hoveredResult.conceptType[0].name
-            );
-            this.$toast.add(
-              LoggerService.success("Concept copied to clipboard")
-            );
+            await navigator.clipboard
+              .writeText(
+                "Name: " +
+                  this.hoveredResult.name +
+                  ", Iri: " +
+                  this.hoveredResult.iri +
+                  ", Code: " +
+                  this.hoveredResult.code +
+                  ", Status: " +
+                  this.hoveredResult.status.name +
+                  ", Scheme: " +
+                  this.hoveredResult.scheme.name +
+                  ", Type: " +
+                  this.hoveredResult.conceptType[0].name
+              )
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Concept copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error(
+                    "Failed to copy concept to clipboard",
+                    err
+                  )
+                );
+              });
           }
         },
         {
           label: "Name",
           command: async () => {
-            await navigator.clipboard.writeText(this.hoveredResult.name);
-            this.$toast.add(LoggerService.success("Name copied to clipboard"));
+            await navigator.clipboard
+              .writeText(this.hoveredResult.name)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Name copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy name to clipboard", err)
+                );
+              });
           }
         },
         {
           label: "Iri",
           command: async () => {
-            await navigator.clipboard.writeText(this.hoveredResult.iri);
-            this.$toast.add(LoggerService.success("Iri copied to clipboard"));
+            await navigator.clipboard
+              .writeText(this.hoveredResult.iri)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Iri copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy iri to clipboard", err)
+                );
+              });
           }
         },
         {
           label: "Code",
           command: async () => {
-            await navigator.clipboard.writeText(this.hoveredResult.code);
-            this.$toast.add(LoggerService.success("Code copied to clipboard"));
+            await navigator.clipboard
+              .writeText(this.hoveredResult.code)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Code copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy code to clipboard", err)
+                );
+              });
           }
         },
         {
           label: "Status",
           command: async () => {
-            await navigator.clipboard.writeText(this.hoveredResult.status.name);
-            this.$toast.add(
-              LoggerService.success("Status copied to clipboard")
-            );
+            await navigator.clipboard
+              .writeText(this.hoveredResult.status.name)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Status copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy status to clipboard", err)
+                );
+              });
           }
         },
         {
           label: "Scheme",
           command: async () => {
-            await navigator.clipboard.writeText(this.hoveredResult.scheme.name);
-            this.$toast.add(
-              LoggerService.success("Scheme copied to clipboard")
-            );
+            await navigator.clipboard
+              .writeText(this.hoveredResult.scheme.name)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Scheme copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy scheme to clipboard", err)
+                );
+              });
           }
         },
         {
           label: "Type",
           command: async () => {
-            await navigator.clipboard.writeText(
-              this.getConceptTypes(this.hoveredResult)
-            );
-            this.$toast.add(LoggerService.success("Type copied to clipboard"));
+            await navigator.clipboard
+              .writeText(this.getConceptTypes(this.hoveredResult))
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Type copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy type to clipboard", err)
+                );
+              });
           }
         }
       ];
