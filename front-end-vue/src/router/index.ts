@@ -149,7 +149,14 @@ const routes: Array<RouteRecordRaw> = [
     component: Creator,
     meta: {
       requiresAuth: true
-    }
+    },
+    // children: [
+    //   {
+    //     path: "/creator/definition",
+    //     name: "Definition",
+    //     component: Definition
+    //   }
+    // ]
   },
   {
     path: "/workflow",
