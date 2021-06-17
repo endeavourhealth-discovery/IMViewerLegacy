@@ -50,8 +50,12 @@
                 v-clipboard:copy="copyConceptToClipboard(slotProps.data)"
                 v-clipboard:success="onCopy"
                 v-clipboard:error="onCopyError"
-                v-tooltip.right="'Copy concept to clipboard'"
+                v-tooltip.right="
+                  'Copy concept to clipboard \n (right click to copy individual properties)'
+                "
+                @contextmenu="onCopyRightClick"
               />
+              <ContextMenu ref="copyMenu" :model="copyMenuItems" />
             </div>
           </div>
         </template>
@@ -134,7 +138,8 @@ export default defineComponent({
     return {
       results: new SearchResponse() as SearchResponse,
       selectedResult: {} as ConceptSummary,
-      hoveredResult: {} as ConceptSummary | any
+      hoveredResult: {} as ConceptSummary | any,
+      copyMenuItems: [] as any
     };
   },
   methods: {
@@ -158,6 +163,7 @@ export default defineComponent({
 
     async showOverlay(event: any, data: any): Promise<void> {
       this.hoveredResult = data;
+      this.setCopyMenuItems();
       const x = this.$refs.op as any;
       x.show(event, event.target);
     },
@@ -193,6 +199,93 @@ export default defineComponent({
 
     onCopyError(): void {
       this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
+    },
+
+    onCopyRightClick(event: any) {
+      const x = this.$refs.copyMenu as any;
+      x.show(event);
+    },
+
+    setCopyMenuItems() {
+      this.copyMenuItems = [
+        {
+          label: "Copy",
+          disabled: true
+        },
+        {
+          separator: true
+        },
+        {
+          label: "All",
+          command: async () => {
+            await navigator.clipboard.writeText(
+              "Name: " +
+                this.hoveredResult.name +
+                ", Iri: " +
+                this.hoveredResult.iri +
+                ", Code: " +
+                this.hoveredResult.code +
+                ", Status: " +
+                this.hoveredResult.status.name +
+                ", Scheme: " +
+                this.hoveredResult.scheme.name +
+                ", Type: " +
+                this.hoveredResult.conceptType[0].name
+            );
+            this.$toast.add(
+              LoggerService.success("Concept copied to clipboard")
+            );
+          }
+        },
+        {
+          label: "Name",
+          command: async () => {
+            await navigator.clipboard.writeText(this.hoveredResult.name);
+            this.$toast.add(LoggerService.success("Name copied to clipboard"));
+          }
+        },
+        {
+          label: "Iri",
+          command: async () => {
+            await navigator.clipboard.writeText(this.hoveredResult.iri);
+            this.$toast.add(LoggerService.success("Iri copied to clipboard"));
+          }
+        },
+        {
+          label: "Code",
+          command: async () => {
+            await navigator.clipboard.writeText(this.hoveredResult.code);
+            this.$toast.add(LoggerService.success("Code copied to clipboard"));
+          }
+        },
+        {
+          label: "Status",
+          command: async () => {
+            await navigator.clipboard.writeText(this.hoveredResult.status.name);
+            this.$toast.add(
+              LoggerService.success("Status copied to clipboard")
+            );
+          }
+        },
+        {
+          label: "Scheme",
+          command: async () => {
+            await navigator.clipboard.writeText(this.hoveredResult.scheme.name);
+            this.$toast.add(
+              LoggerService.success("Scheme copied to clipboard")
+            );
+          }
+        },
+        {
+          label: "Type",
+          command: async () => {
+            await navigator.clipboard.writeText(
+              this.getConceptTypes(this.hoveredResult)
+            );
+            this.$toast.add(LoggerService.success("Type copied to clipboard"));
+          }
+        }
+      ];
     }
   }
 });
@@ -230,6 +323,7 @@ export default defineComponent({
 
 .result-text-container {
   height: fit-content;
+  flex-grow: 10;
 }
 
 .result-icon {
