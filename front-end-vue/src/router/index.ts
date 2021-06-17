@@ -17,6 +17,7 @@ import ForgotPassword from "../components/user/ForgotPassword.vue";
 import ForgotPasswordSubmit from "../components/user/ForgotPasswordSubmit.vue";
 import SnomedLicense from "../views/SnomedLicense.vue";
 import Creator from "../views/Creator.vue";
+import DefinitionForm from "../components/creator/DefinitionForm.vue";
 // import RecoverByEmail from "../components/user/RecoverByEmail.vue";
 import store from "@/store/index";
 import { nextTick } from "vue";
@@ -150,13 +151,13 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       requiresAuth: true
     },
-    // children: [
-    //   {
-    //     path: "/creator/definition",
-    //     name: "Definition",
-    //     component: Definition
-    //   }
-    // ]
+    children: [
+      {
+        path: "/creator/definition",
+        name: "DefinitionForm",
+        component: DefinitionForm
+      }
+    ]
   },
   {
     path: "/workflow",

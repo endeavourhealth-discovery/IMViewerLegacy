@@ -5,11 +5,7 @@
     <div class="header"><span class="title">Creator</span></div>
     <div id="creator-menu-content-container">
       <Menu :model="menuItems" id="creator-side-menu" />
-      <div
-        id="content-container"
-        class="p-d-flex p-flex-column p-jc-center p-ai-center"
-        :style="contentHeight"
-      >
+      <div id="content-container">
         <Steps :model="stepsItems" />
         <router-view
           :key="$route.params.slug || 'default'"
@@ -49,7 +45,6 @@ export default defineComponent({
   data() {
     return {
       selectedType: "",
-      contentHeight: "",
       menuItems: [] as any,
       stepsItems: [] as any,
       formObject: {} as any
@@ -70,6 +65,7 @@ export default defineComponent({
               command: () => {
                 this.selectedType = "concept";
                 this.setStepsItems("concept");
+                this.$router.push(this.stepsItems[0].to);
               }
             },
             {
@@ -159,6 +155,7 @@ export default defineComponent({
   justify-content: flex-start;
   padding: 1rem;
   flex-grow: 100;
+  gap: 7px;
 }
 
 #content-container {
