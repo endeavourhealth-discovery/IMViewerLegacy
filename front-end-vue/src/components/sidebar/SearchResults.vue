@@ -29,6 +29,7 @@
           <div
             class="result-container"
             @mouseenter="showOverlay($event, slotProps.data)"
+            @mouseleave="hideOverlay()"
           >
             <div class="result-icon-container">
               <i
@@ -42,6 +43,16 @@
               {{ slotProps.data.match }}<br />
               <small style="color:lightgrey">{{ slotProps.data.name }}</small>
             </div>
+            <div class="button-container">
+              <Button
+                icon="pi pi-copy"
+                class="p-button-rounded p-button-text"
+                v-clipboard:copy="copyConceptToClipboard(slotProps.data)"
+                v-clipboard:success="onCopy"
+                v-clipboard:error="onCopyError"
+                v-tooltip.right="'Copy concept to clipboard'"
+              />
+            </div>
           </div>
         </template>
       </Column>
@@ -51,44 +62,25 @@
       ref="op"
       id="overlay-panel"
       style="width: 25vw"
-      :showCloseIcon="true"
       :dismissable="true"
     >
       <div class="result-overlay">
         <div class="left-side" v-if="hoveredResult.iri">
           <p>
             <strong>Name: </strong>
-            <span
-              v-if="hoveredResult.status"
-              style="cursor:pointer"
-              v-clipboard:copy="hoveredResult.name"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
-            >
+            <span>
               {{ hoveredResult.name }}
             </span>
           </p>
           <p>
             <strong>Iri: </strong>
-            <span
-              v-if="hoveredResult.status"
-              style="cursor:pointer; word-break: break-all;"
-              v-clipboard:copy="hoveredResult.iri"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
-            >
+            <span>
               {{ hoveredResult.iri }}
             </span>
           </p>
           <p>
             <strong>Code: </strong>
-            <span
-              v-if="hoveredResult.status"
-              style="cursor:pointer"
-              v-clipboard:copy="hoveredResult.code"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
-            >
+            <span>
               {{ hoveredResult.code }}
             </span>
           </p>
@@ -96,49 +88,22 @@
         <div class="right-side" v-if="hoveredResult.iri">
           <p>
             <strong>Status: </strong>
-            <span
-              v-if="hoveredResult.status"
-              style="cursor:pointer"
-              v-clipboard:copy="hoveredResult.status.name"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
-            >
+            <span v-if="hoveredResult.status">
               {{ hoveredResult.status.name }}
             </span>
           </p>
           <p>
             <strong>Scheme: </strong>
-            <span
-              v-if="hoveredResult.scheme"
-              style="cursor:pointer"
-              v-clipboard:copy="hoveredResult.scheme.name"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
-            >
+            <span v-if="hoveredResult.scheme">
               {{ hoveredResult.scheme.name }}
             </span>
           </p>
           <p>
             <strong>Type: </strong>
-            <span
-              style="cursor:pointer"
-              v-clipboard:copy="getConceptTypes(hoveredResult)"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
-            >
+            <span>
               {{ getConceptTypes(hoveredResult) }}
             </span>
           </p>
-        </div>
-        <div class="button-container">
-          <Button
-            icon="pi pi-copy"
-            class="p-button-rounded p-button-text"
-            v-clipboard:copy="copyHoveredResult()"
-            v-clipboard:success="onCopy"
-            v-clipboard:error="onCopyError"
-            v-tooltip.right="'Copy concept to clipboard'"
-          />
         </div>
       </div>
     </OverlayPanel>
@@ -169,8 +134,7 @@ export default defineComponent({
     return {
       results: new SearchResponse() as SearchResponse,
       selectedResult: {} as ConceptSummary,
-      hoveredResult: {} as ConceptSummary | any,
-      hoveredEvent: {} as any
+      hoveredResult: {} as ConceptSummary | any
     };
   },
   methods: {
@@ -193,10 +157,7 @@ export default defineComponent({
     },
 
     async showOverlay(event: any, data: any): Promise<void> {
-      this.hideOverlay();
-      await this.$nextTick();
       this.hoveredResult = data;
-      this.hoveredEvent = event;
       const x = this.$refs.op as any;
       x.show(event, event.target);
     },
@@ -209,20 +170,20 @@ export default defineComponent({
         .join(", ");
     },
 
-    copyHoveredResult(): string {
+    copyConceptToClipboard(data: any): string {
       return (
         "Name: " +
-        this.hoveredResult.name +
+        data.name +
         ", Iri: " +
-        this.hoveredResult.iri +
+        data.iri +
         ", Code: " +
-        this.hoveredResult.code +
+        data.code +
         ", Status: " +
-        this.hoveredResult.status.name +
+        data.status.name +
         ", Scheme: " +
-        this.hoveredResult.scheme.name +
+        data.scheme.name +
         ", Type: " +
-        this.hoveredResult.conceptType[0].name
+        data.conceptType[0].name
       );
     },
 
