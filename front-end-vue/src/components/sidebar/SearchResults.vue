@@ -49,21 +49,13 @@
 
     <OverlayPanel
       ref="op"
-      id="overlay_panel"
-      style="width: 700px"
-      :breakpoints="{ '960px': '75vw' }"
+      id="overlay-panel"
+      style="width: 25vw"
       :showCloseIcon="true"
       :dismissable="true"
     >
-      <div
-        class="p-d-flex p-flex-row p-jc-start result-overlay"
-        style="width: 100%; gap: 7px;"
-      >
-        <div
-          class="left-side"
-          style="max-width: 50%; flex-grow: 2;"
-          v-if="hoveredResult.name"
-        >
+      <div class="result-overlay">
+        <div class="left-side" v-if="hoveredResult.iri">
           <p>
             <strong>Name: </strong>
             <span
@@ -80,7 +72,7 @@
             <strong>Iri: </strong>
             <span
               v-if="hoveredResult.status"
-              style="cursor:pointer"
+              style="cursor:pointer; word-break: break-all;"
               v-clipboard:copy="hoveredResult.iri"
               v-clipboard:success="onCopy"
               v-clipboard:error="onCopyError"
@@ -101,11 +93,7 @@
             </span>
           </p>
         </div>
-        <div
-          class="right-side"
-          style="max-width: 50%; flex-grow: 2"
-          v-if="hoveredResult.name"
-        >
+        <div class="right-side" v-if="hoveredResult.iri">
           <p>
             <strong>Status: </strong>
             <span
@@ -142,10 +130,7 @@
             </span>
           </p>
         </div>
-        <div
-          class="p-d-flex p-flex-column p-jc-center p-ai-center"
-          style="width: fit-content"
-        >
+        <div class="button-container">
           <Button
             icon="pi pi-copy"
             class="p-button-rounded p-button-text"
@@ -290,5 +275,57 @@ export default defineComponent({
   font-size: 2.5rem;
   color: lightgrey;
   padding: 5px;
+}
+
+#overlay-panel:hover {
+  transition-delay: 2s;
+}
+
+@media screen and (min-width: 1024px) {
+  .result-overlay {
+    display: flex;
+    flex-flow: row;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 7px;
+  }
+
+  .left-side,
+  .right-side {
+    max-width: 50%;
+    flex-grow: 2;
+  }
+
+  .button-container {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .result-overlay {
+    display: flex;
+    flex-flow: column;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 7px;
+  }
+
+  .left-side,
+  .right-side {
+    width: 100%;
+    flex-grow: 2;
+  }
+
+  .button-container {
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
 }
 </style>
