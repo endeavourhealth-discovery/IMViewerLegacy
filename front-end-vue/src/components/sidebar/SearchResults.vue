@@ -46,7 +46,7 @@
             <div class="button-container">
               <Button
                 icon="pi pi-copy"
-                class="p-button-rounded p-button-text"
+                class="p-button-rounded p-button-text p-button-secondary"
                 v-clipboard:copy="copyConceptToClipboard(slotProps.data)"
                 v-clipboard:success="onCopy"
                 v-clipboard:error="onCopyError"
