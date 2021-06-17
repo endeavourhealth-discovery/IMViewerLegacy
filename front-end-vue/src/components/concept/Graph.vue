@@ -12,8 +12,8 @@
     <template #default="slotProps">
       <span>{{ slotProps.node.name }}</span>
     </template>
-    <template #PROPERTY="slotProps">
-      <table aria-label="Concept map children">
+    <template #PROPERTIES="slotProps">
+      <table>
         <thead>
           <tr>
             <th scope="col">Name</th>
@@ -22,8 +22,28 @@
         </thead>
         <tbody>
           <tr v-for="prop in slotProps.node.leafNodes" :key="prop">
-            <td>{{ prop.name }}</td>
-            <td>{{ prop.valueTypeName }}</td>
+            <td @click="navigate(prop.iri)">{{ prop.name }}</td>
+            <td @click="navigate(prop.valueTypeIri)">
+              {{ prop.valueTypeName }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
+    <template #ISA="slotProps">
+      <table>
+        <tbody>
+          <tr v-for="isa in slotProps.node.leafNodes" :key="isa">
+            <td @click="navigate(isa.iri)">{{ isa.name }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
+    <template #SUBTYPE="slotProps">
+      <table>
+        <tbody>
+          <tr v-for="subtype in slotProps.node.leafNodes" :key="subtype">
+            <td @click="navigate(subtype.iri)">{{ subtype.name }}</td>
           </tr>
         </tbody>
       </table>
@@ -35,6 +55,7 @@
 import GraphData from "../../models/GraphData";
 import { defineComponent } from "@vue/runtime-core";
 import ConceptService from "@/services/ConceptService";
+import { RouteRecordName } from "vue-router";
 
 export default defineComponent({
   name: "Graph",
@@ -63,6 +84,14 @@ export default defineComponent({
       this.loading = true;
       this.graph = (await ConceptService.getConceptGraph(iri)).data;
       this.loading = false;
+    },
+    navigate(iri: string) {
+      const currentRoute = this.$route.name as RouteRecordName | undefined;
+      if (iri)
+        this.$router.push({
+          name: currentRoute,
+          params: { selectedIri: iri }
+        });
     }
   }
 });
@@ -73,11 +102,12 @@ td,
 th {
   border: 1px solid lightgray;
   padding: 0.5rem;
+  overflow-wrap: break-word;
+  text-align: left;
 }
 
-td,
-th {
-  text-align: left;
+td {
+  cursor: pointer;
 }
 
 tr:nth-child(even) {
@@ -92,11 +122,6 @@ th[scope="col"] {
 table {
   border-collapse: collapse;
   border: 2px solid rgb(200, 200, 200);
-}
-
-td,
-th {
-  overflow-wrap: break-word;
 }
 
 .p-organizationchart {
