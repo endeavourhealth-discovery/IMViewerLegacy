@@ -56,10 +56,6 @@ export default defineComponent({
     };
   },
   mounted() {
-    // this.$nextTick(() => {
-    //   window.addEventListener("resize", this.setContentHeight);
-    // });
-    // this.setContentHeight();
     this.setMenuItems();
   },
   methods: {
@@ -121,35 +117,7 @@ export default defineComponent({
 
     complete() {
       this.$toast.add({ severity: "success", summary: "Completed" });
-    },
-
-    // setContentHeight(): void {
-    //   const container = document.getElementById(
-    //     "creator-main-container"
-    //   ) as HTMLElement;
-    //   const header = container.getElementsByClassName(
-    //     "p-panel-header"
-    //   )[0] as HTMLElement;
-    //   const content = container.getElementsByClassName(
-    //     "p-panel-content"
-    //   )[0] as HTMLElement;
-    //   const currentFontSize = parseFloat(
-    //     window
-    //       .getComputedStyle(document.documentElement, null)
-    //       .getPropertyValue("font-size")
-    //   );
-    //   if (container && header && currentFontSize && content) {
-    //     header.style.border = "none";
-    //     header.style.borderBottom = "1px solid #dee2e6";
-    //     content.style.border = "none";
-    //     const height =
-    //       container.getBoundingClientRect().height -
-    //       header.getBoundingClientRect().height -
-    //       currentFontSize * 2 -
-    //       2;
-    //     this.contentHeight = "height: " + height + "px";
-    //   }
-    // }
+    }
   }
 });
 </script>
@@ -164,6 +132,8 @@ export default defineComponent({
   border: 1px solid #dee2e6;
   border-top-right-radius: 3px;
   border-top-left-radius: 3px;
+  display: flex;
+  flex-flow: column nowrap;
 }
 
 .header {
@@ -177,16 +147,24 @@ export default defineComponent({
   align-items: center;
 }
 
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
 #creator-menu-content-container {
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;
+  padding: 1rem;
+  flex-grow: 100;
 }
 
 #content-container {
-  padding: 1rem;
   height: 100%;
   width: 100%;
+  overflow: auto;
 }
 
 #selection-button-container {
