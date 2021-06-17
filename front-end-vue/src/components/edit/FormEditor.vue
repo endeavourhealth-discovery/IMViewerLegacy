@@ -1,5 +1,11 @@
 <template>
-  <Card>
+  <div
+    class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center"
+    v-if="loading"
+  >
+    <ProgressSpinner />
+  </div>
+  <Card v-if="!loading">
     <template #content>
       <div class="p-fluid editor-grid">
         <div class="p-field float-label-container iri">
@@ -76,20 +82,6 @@
         </div>
       </div>
     </template>
-    <template #footer>
-      <Button
-        icon="pi pi-times"
-        label="Cancel"
-        class="p-button-secondary"
-        @click="$router.go(-1)"
-      />
-      <Button
-        icon="pi pi-check"
-        label="Save"
-        class="save-button"
-        @click="submit"
-      />
-    </template>
   </Card>
 </template>
 
@@ -104,31 +96,30 @@ import Card from "primevue/card";
 export default defineComponent({
   name: "FormEditor",
   components: { Dropdown, Card },
-  props: {
-    concept: {} as any
-  },
+  props: ["iri", "updatedConcept"],
+  emits: ["concept-updated"],
   watch: {
-    concept() {
-      this.conceptDto.iri = this.concept["@id"];
+    conceptDto: {
+      handler(newValue) {
+        this.$emit("concept-updated", newValue);
+      },
+      deep: true
     }
   },
   data() {
     return {
-      conceptDto: {} as any,
+      conceptDto: JSON.parse(JSON.stringify(this.updatedConcept)),
       schemeOptions: [] as ConceptReference[],
       statusOptions: Object.keys(ConceptStatus).filter(f =>
         isNaN(Number(f))
-      ) as any
+      ) as any,
+      loading: false
     };
   },
   async mounted() {
     this.schemeOptions = (await ConceptService.getSchemeOptions()).data;
   },
-  methods: {
-    submit() {
-      //   console.log(this.conceptDto);
-    }
-  }
+  methods: {}
 });
 </script>
 
@@ -143,6 +134,7 @@ export default defineComponent({
 
 .p-card {
   box-shadow: unset;
+  height: 100%;
 }
 
 .editor-grid {
@@ -155,7 +147,7 @@ export default defineComponent({
     "version status scheme"
     "imlang imlang imlang";
   column-gap: 7px;
-  height: calc(100vh - 20rem);
+  height: 100%;
 }
 
 .iri {
