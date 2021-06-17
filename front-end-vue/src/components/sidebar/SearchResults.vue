@@ -47,20 +47,15 @@
       </Column>
     </DataTable>
 
-
     <OverlayPanel
       ref="op"
-      id="overlay_panel"
+      id="overlay-panel"
       style="width: 25vw"
       :showCloseIcon="true"
       :dismissable="true"
     >
-      <transition name="delay">
       <div class="result-overlay">
-        <div
-          class="left-side"
-          v-if="hoveredResult.name"
-        >
+        <div class="left-side" v-if="hoveredResult.iri">
           <p>
             <strong>Name: </strong>
             <span
@@ -98,10 +93,7 @@
             </span>
           </p>
         </div>
-        <div
-          class="right-side"
-          v-if="hoveredResult.name"
-        >
+        <div class="right-side" v-if="hoveredResult.iri">
           <p>
             <strong>Status: </strong>
             <span
@@ -149,7 +141,6 @@
           />
         </div>
       </div>
-      </transition>
     </OverlayPanel>
   </div>
 </template>
@@ -286,12 +277,8 @@ export default defineComponent({
   padding: 5px;
 }
 
-.delay-enter-active {
+#overlay-panel:hover {
   transition-delay: 2s;
-}
-
-.delay-enter-from {
-  opacity: 0;
 }
 
 @media screen and (min-width: 1024px) {
@@ -303,7 +290,8 @@ export default defineComponent({
     gap: 7px;
   }
 
-  .left-side, .right-side {
+  .left-side,
+  .right-side {
     max-width: 50%;
     flex-grow: 2;
   }
@@ -326,7 +314,8 @@ export default defineComponent({
     gap: 7px;
   }
 
-  .left-side, .right-side {
+  .left-side,
+  .right-side {
     width: 100%;
     flex-grow: 2;
   }
