@@ -35,7 +35,10 @@
         <PanelHeader :types="types" :header="header" />
       </template>
       <div id="concept-content-dialogs-container">
-        <div v-if="concept && isSet" id="concept-panel-container">
+        <div
+          v-if="Object.keys(concept).length && isSet"
+          id="concept-panel-container"
+        >
           <TabView v-model:activeIndex="active">
             <TabPanel header="Definition">
               <div
@@ -84,7 +87,10 @@
             </TabPanel>
           </TabView>
         </div>
-        <div v-if="concept && !isSet" id="concept-panel-container">
+        <div
+          v-if="Object.keys(concept).length && !isSet"
+          id="concept-panel-container"
+        >
           <TabView v-model:activeIndex="active">
             <TabPanel header="Definition">
               <div
