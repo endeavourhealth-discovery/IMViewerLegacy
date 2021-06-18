@@ -17,7 +17,7 @@
               v-clipboard:copy="copyConceptToClipboard(concept)"
               v-clipboard:success="onCopy"
               v-clipboard:error="onCopyError"
-              v-tooltip.right="
+              v-tooltip="
                 'Copy concept to clipboard \n (right click to copy individual properties)'
               "
               @contextmenu="onCopyRightClick"
