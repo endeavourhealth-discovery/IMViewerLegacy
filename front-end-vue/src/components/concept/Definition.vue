@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="p-d-flex p-flex-row p-jc-start summary-container">
-      <div class="left-side" v-if="concept">
+      <div class="left-side">
         <div class="p-d-flex p-flex-row p-jc-start p-ai-center">
           <p>
             <strong>Name:</strong>
@@ -81,9 +81,7 @@ import Properties from "./Properties.vue";
 export default defineComponent({
   name: "Definition",
   components: { Description, Properties },
-  props: {
-    concept: {} as any
-  },
+  props: ["concept"],
   computed: {
     conceptTypes(): string {
       return this.concept?.types
@@ -103,7 +101,8 @@ export default defineComponent({
   },
   data() {
     return {
-      selected: {}
+      selected: {},
+      copyMenuItems: [] as any
     };
   },
   methods: {
