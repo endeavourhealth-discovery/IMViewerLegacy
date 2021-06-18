@@ -166,4 +166,10 @@ export default class ConceptService {
       params: { iri: iri }
     });
   }
+
+  public static getConceptSummary(iri: string): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/concept/summary", {
+      params: { iri: iri }
+    });
+  }
 }
