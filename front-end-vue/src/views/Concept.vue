@@ -2,34 +2,50 @@
   <div id="concept-main-container">
     <Panel>
       <template #icons>
-        <button
-          class="p-panel-header-icon p-link p-mr-2"
-          @click="focusTree"
-          v-tooltip.left="'Focus hierarchy tree to this concept'"
-        >
-          <i class="fas fa-sitemap" aria-hidden="true"></i>
-        </button>
-        <button
-          class="p-panel-header-icon p-link p-mr-2"
-          @click="openDownloadDialog"
-          v-tooltip.bottom="'Download concept'"
-        >
-          <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
-        </button>
-        <!--<button
-          class="p-panel-header-icon p-link p-mr-2"
-          @click="directToCreateRoute"
-          v-tooltip.bottom="'Create new concept'"
-        >
-          <i class="fas fa-plus-circle" aria-hidden="true"></i>
-        </button>
-        <button
-          class="p-panel-header-icon p-link p-mr-2"
-          @click="directToEditRoute"
-          v-tooltip.bottom="'Edit concept'"
-        >
-          <i class="fas fa-pencil-alt" aria-hidden="true"></i>
-        </button>-->
+        <div class="icons-container">
+          <button
+            class="p-panel-header-icon p-link p-mr-2"
+            @click="focusTree"
+            v-tooltip.left="'Focus hierarchy tree to this concept'"
+          >
+            <i class="fas fa-sitemap" aria-hidden="true"></i>
+          </button>
+          <div v-if="'iri' in concept" class="copy-container">
+            <Button
+              icon="far fa-copy"
+              class="p-button-rounded p-button-text p-button-secondary"
+              v-clipboard:copy="copyConceptToClipboard(concept)"
+              v-clipboard:success="onCopy"
+              v-clipboard:error="onCopyError"
+              v-tooltip.right="
+                'Copy concept to clipboard \n (right click to copy individual properties)'
+              "
+              @contextmenu="onCopyRightClick"
+            />
+            <ContextMenu ref="copyMenu" :model="copyMenuItems" />
+          </div>
+          <button
+            class="p-panel-header-icon p-link p-mr-2"
+            @click="openDownloadDialog"
+            v-tooltip.bottom="'Download concept'"
+          >
+            <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
+          </button>
+          <!--<button
+            class="p-panel-header-icon p-link p-mr-2"
+            @click="directToCreateRoute"
+            v-tooltip.bottom="'Create new concept'"
+          >
+            <i class="fas fa-plus-circle" aria-hidden="true"></i>
+          </button>
+          <button
+            class="p-panel-header-icon p-link p-mr-2"
+            @click="directToEditRoute"
+            v-tooltip.bottom="'Edit concept'"
+          >
+            <i class="fas fa-pencil-alt" aria-hidden="true"></i>
+          </button>-->
+        </div>
       </template>
       <template #header>
         <PanelHeader :types="types" :header="header" />
@@ -201,6 +217,11 @@ export default defineComponent({
       this.concept = await this.getConcept(newValue);
       this.types = this.concept.types;
       this.header = this.concept.name;
+    },
+    concept(newValue) {
+      if (Object.keys(newValue).length) {
+        this.setCopyMenuItems(newValue);
+      }
     }
   },
   async mounted() {
@@ -226,7 +247,8 @@ export default defineComponent({
       header: "",
       dialogHeader: "",
       active: 0,
-      contentHeight: ""
+      contentHeight: "",
+      copyMenuItems: [] as any
     };
   },
   methods: {
@@ -297,6 +319,222 @@ export default defineComponent({
 
     closeDownloadDialog(): void {
       this.showDownloadDialog = false;
+    },
+
+    copyConceptToClipboard(concept: any): string {
+      let isasString = "";
+      let subTypesString = "";
+      if (concept.isa.length > 0) {
+        isasString = concept.isa.map((item: any) => item.name).join(", ");
+      }
+      if (concept.subtypes.length > 0) {
+        subTypesString = concept.subtypes
+          .map((item: any) => item.name)
+          .join(", ");
+      }
+      let returnString =
+        "Name: " +
+        concept.name +
+        ",\nIri: " +
+        concept.iri +
+        ",\nStatus: " +
+        concept.status +
+        ",\nType: " +
+        concept.types[0].name +
+        ",\nIs-a: " +
+        "[" +
+        isasString +
+        "]" +
+        ",\nSubtypes: " +
+        "[" +
+        subTypesString +
+        "]";
+      if (concept.description) {
+        returnString = returnString + ",\nDescription: " + concept.description;
+      }
+      return returnString;
+    },
+
+    onCopy(): void {
+      this.$toast.add(LoggerService.success("Value copied to clipboard"));
+    },
+
+    onCopyError(): void {
+      this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
+    },
+
+    onCopyRightClick(event: any) {
+      const x = this.$refs.copyMenu as any;
+      x.show(event);
+    },
+
+    setCopyMenuItems(concept: any) {
+      let isasString = "";
+      let subTypesString = "";
+      if ("isa" in concept && concept.isa.length > 0) {
+        isasString = concept.isa.map((item: any) => item.name).join(", ");
+      }
+      if ("subtypes" in concept && concept.subtypes.length > 0) {
+        subTypesString = concept.subtypes
+          .map((item: any) => item.name)
+          .join(", ");
+      }
+      this.copyMenuItems = [
+        {
+          label: "Copy",
+          disabled: true
+        },
+        {
+          separator: true
+        },
+        {
+          label: "All",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(this.copyConceptToClipboard(concept))
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Concept copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error(
+                    "Failed to copy concept to clipboard",
+                    err
+                  )
+                );
+              });
+          }
+        },
+        {
+          label: "Name",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(concept.name)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Name copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy name to clipboard", err)
+                );
+              });
+          }
+        },
+        {
+          label: "Iri",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(concept.iri)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Iri copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy iri to clipboard", err)
+                );
+              });
+          }
+        },
+        {
+          label: "Status",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(concept.status)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Status copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy status to clipboard", err)
+                );
+              });
+          }
+        },
+        {
+          label: "Type",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(concept.types[0].name)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Type copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy type to clipboard", err)
+                );
+              });
+          }
+        },
+        {
+          label: "Is a",
+          command: async () => {
+            await navigator.clipboard
+              .writeText("[" + isasString + "]")
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Is-a's copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy is-a's to clipboard", err)
+                );
+              });
+          }
+        },
+        {
+          label: "Subtypes",
+          command: async () => {
+            await navigator.clipboard
+              .writeText("[" + subTypesString + "]")
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Subtypes copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error(
+                    "Failed to copy subtypes to clipboard",
+                    err
+                  )
+                );
+              });
+          }
+        }
+      ];
+      if (concept.description) {
+        this.copyMenuItems.push({
+          label: "Description",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(concept.description)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Description copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error(
+                    "Failed to copy description to clipboard",
+                    err
+                  )
+                );
+              });
+          }
+        });
+      }
     }
   }
 });
@@ -324,5 +562,18 @@ export default defineComponent({
 .concept-panel-content {
   overflow: auto;
   background-color: #ffffff;
+}
+
+.copy-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.icons-container {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
 }
 </style>
