@@ -51,7 +51,7 @@
                 v-clipboard:success="onCopy"
                 v-clipboard:error="onCopyError"
                 v-tooltip.right="
-                  'Copy concept to clipboard \n (right click to copy individual properties)'
+                  'Copy concept summary to clipboard \n (right click to copy individual properties)'
                 "
                 @contextmenu="onCopyRightClick"
               />
