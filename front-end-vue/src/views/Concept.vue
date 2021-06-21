@@ -236,13 +236,13 @@ export default defineComponent({
     await this.init();
 
     this.$nextTick(() => {
-      window.addEventListener("resize", this.onResize);
+      window.addEventListener("resize", this.setContentHeight);
     });
 
     this.setContentHeight();
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.onResize);
+    window.removeEventListener("resize", this.setContentHeight);
   },
   data() {
     return {
@@ -275,10 +275,6 @@ export default defineComponent({
 
     directToCreateRoute(): void {
       this.$router.push({ name: "Create" });
-    },
-
-    onResize(): void {
-      this.setContentHeight();
     },
 
     setContentHeight(): void {
@@ -323,8 +319,8 @@ export default defineComponent({
     },
 
     async init() {
-      this.concept = await this.getConcept(this.conceptIri);
       this.properties = await this.getProperties(this.conceptIri);
+      this.concept = await this.getConcept(this.conceptIri);
       this.types = this.concept?.types;
       this.header = this.concept?.name;
     },
@@ -340,12 +336,18 @@ export default defineComponent({
     copyConceptToClipboard(concept: any): string {
       let isasString = "";
       let subTypesString = "";
+      let propertiesString = "";
       if (concept.isa.length > 0) {
         isasString = concept.isa.map((item: any) => item.name).join(", ");
       }
       if (concept.subtypes.length > 0) {
         subTypesString = concept.subtypes
           .map((item: any) => item.name)
+          .join(", ");
+      }
+      if (this.properties.length > 0) {
+        propertiesString = this.properties
+          .map((item: any) => item.property.name)
           .join(", ");
       }
       let returnString =
@@ -364,6 +366,10 @@ export default defineComponent({
         ",\nSubtypes: " +
         "[" +
         subTypesString +
+        "]" +
+        ",\nProperties: " +
+        "[" +
+        propertiesString +
         "]";
       if (concept.description) {
         returnString = returnString + ",\nDescription: " + concept.description;
@@ -387,12 +393,18 @@ export default defineComponent({
     setCopyMenuItems(concept: any) {
       let isasString = "";
       let subTypesString = "";
+      let propertiesString = "";
       if ("isa" in concept && concept.isa.length > 0) {
         isasString = concept.isa.map((item: any) => item.name).join(", ");
       }
       if ("subtypes" in concept && concept.subtypes.length > 0) {
         subTypesString = concept.subtypes
           .map((item: any) => item.name)
+          .join(", ");
+      }
+      if (this.properties.length > 0) {
+        propertiesString = this.properties
+          .map((item: any) => item.property.name)
           .join(", ");
       }
       this.copyMenuItems = [
@@ -522,6 +534,26 @@ export default defineComponent({
                 this.$toast.add(
                   LoggerService.error(
                     "Failed to copy subtypes to clipboard",
+                    err
+                  )
+                );
+              });
+          }
+        },
+        {
+          label: "Properties",
+          command: async () => {
+            await navigator.clipboard
+              .writeText("[" + propertiesString + "]")
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Properties copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error(
+                    "Failed to copy properties to clipboard",
                     err
                   )
                 );
