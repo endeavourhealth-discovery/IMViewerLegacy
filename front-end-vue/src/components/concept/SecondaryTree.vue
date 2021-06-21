@@ -396,6 +396,8 @@ export default defineComponent({
             )
           );
         });
+      // this refreshes the keys so they start open if children and parents were both expanded
+      this.expandedKeys = { ...this.expandedKeys };
     },
 
     async showPopup(event: any, data: any): Promise<void> {

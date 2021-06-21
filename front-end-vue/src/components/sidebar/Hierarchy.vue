@@ -346,6 +346,8 @@ export default defineComponent({
             LoggerService.error("Concept parents server request failed", err)
           );
         });
+      // this refreshes the keys so they start open if children and parents were both expanded
+      this.expandedKeys = { ...this.expandedKeys };
     },
 
     resetConcept(): void {
