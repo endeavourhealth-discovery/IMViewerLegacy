@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="content-container">
     <div class="p-d-flex p-flex-row p-jc-start summary-container">
       <div class="left-side">
         <div class="p-d-flex p-flex-row p-jc-start p-ai-center">
@@ -31,7 +31,7 @@
         <strong>Definitional properties</strong>
       </div>
     </Divider>
-    <div class="p-d-flex p-flex-row p-jc-start summary-container">
+    <div class="p-d-flex p-flex-row p-jc-start definitional-container">
       <div class="left-side">
         <strong>is a: </strong>{{ concept.isa?.length }}
         <Listbox
@@ -68,7 +68,7 @@
         <strong>Structure properties</strong>
       </div>
     </Divider>
-    <Properties :conceptIri="concept.iri" />
+    <Properties :properties="properties" :contentHeight="contentHeight" />
   </div>
 </template>
 
@@ -81,7 +81,7 @@ import Properties from "./Properties.vue";
 export default defineComponent({
   name: "Definition",
   components: { Description, Properties },
-  props: ["concept"],
+  props: ["concept", "properties", "contentHeight"],
   computed: {
     conceptTypes(): string {
       return this.concept?.types
@@ -119,6 +119,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.content-container {
+  height: 100%;
+}
+
 .summary-container {
   width: 100%;
   gap: 7px;

@@ -42,7 +42,7 @@
           {{
             `${slotProps.data.cardinality.minExclusive ||
               slotProps.data.cardinality.minInclusive ||
-              0} : 
+              0} :
             ${slotProps.data.cardinality.maxExclusive ||
               slotProps.data.cardinality.maxInclusive ||
               "*"}`
@@ -56,41 +56,26 @@
 <script lang="ts">
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { defineComponent } from "@vue/runtime-core";
-import ConceptService from "@/services/ConceptService";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "Properties",
   components: {},
-  props: {
-    conceptIri: String
-  },
+  props: ["properties", "contentHeight"],
   watch: {
-    async conceptIri(newValue) {
-      this.properties = await this.getProperties(newValue);
+    contentHeight() {
+      this.setScrollHeight();
     }
   },
-  async mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.onResize);
-    });
-    if (this.conceptIri) {
-      this.properties = await this.getProperties(this.conceptIri);
-    }
+  mounted() {
     this.setScrollHeight();
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.onResize);
   },
   data() {
     return {
-      properties: [] as any[],
       scrollHeight: ""
     };
   },
   methods: {
-    onResize(): void {
-      this.setScrollHeight();
-    },
     navigate(iri: any) {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
       if (iri)
@@ -100,43 +85,61 @@ export default defineComponent({
         });
     },
 
-    async getProperties(iri: string) {
-      return (await ConceptService.getRecordStructure(iri)).data;
-    },
-
     setScrollHeight(): void {
-      const container = document.getElementsByClassName(
-        "concept-container"
-      )[0] as HTMLElement;
-      const header = document.getElementsByClassName(
-        "p-panel-header"
-      )[0] as HTMLElement;
-      const nav = document.getElementsByClassName(
-        "p-tabview-nav"
-      )[1] as HTMLElement;
+      const container = document.getElementById(
+        "definition-container"
+      ) as HTMLElement;
       const properties = document.getElementById(
         "properties-table"
       ) as HTMLElement;
+      const summary = container.getElementsByClassName(
+        "summary-container"
+      )[0] as HTMLElement;
+      const defDivider = container.getElementsByClassName(
+        "p-divider"
+      )[0] as HTMLElement;
+      const defContainer = container.getElementsByClassName(
+        "definitional-container"
+      )[0] as HTMLElement;
+      const structDivider = container.getElementsByClassName(
+        "p-divider"
+      )[1] as HTMLElement;
       const paginator = properties.getElementsByClassName(
         "p-paginator"
       )[0] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
-      const paginatorHeight =
-        paginator?.getBoundingClientRect().height === 0
-          ? currentFontSize * 3.7
-          : paginator?.getBoundingClientRect().height;
-      this.scrollHeight =
-        container?.getBoundingClientRect().height -
-        header?.getBoundingClientRect().height -
-        nav?.getBoundingClientRect().height -
-        paginatorHeight -
-        currentFontSize * 4 -
-        1 +
-        "px";
+      if (
+        container &&
+        properties &&
+        summary &&
+        defDivider &&
+        defContainer &&
+        structDivider
+      ) {
+        if (paginator) {
+          this.scrollHeight =
+            this.contentHeight -
+            summary.getBoundingClientRect().height -
+            defDivider.getBoundingClientRect().height -
+            defContainer.getBoundingClientRect().height -
+            structDivider.getBoundingClientRect().height -
+            paginator.getBoundingClientRect().height -
+            1 +
+            "px";
+        } else {
+          this.scrollHeight =
+            this.contentHeight -
+            summary.getBoundingClientRect().height -
+            defDivider.getBoundingClientRect().height -
+            defContainer.getBoundingClientRect().height -
+            structDivider.getBoundingClientRect().height -
+            1 +
+            "px";
+        }
+      } else {
+        LoggerService.error(
+          "Properties table scroll height setter failed due to undefined element"
+        );
+      }
     }
   }
 });
@@ -145,9 +148,5 @@ export default defineComponent({
 <style scoped>
 div.link {
   cursor: pointer;
-}
-
-#properties-table {
-  height: 381px;
 }
 </style>

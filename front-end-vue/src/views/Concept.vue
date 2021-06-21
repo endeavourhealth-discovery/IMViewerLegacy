@@ -59,10 +59,15 @@
             <TabPanel header="Definition">
               <div
                 class="concept-panel-content"
-                id="definiton-container"
+                id="definition-container"
                 :style="contentHeight"
               >
-                <Definition :concept="concept" v-if="active === 0" />
+                <Definition
+                  :concept="concept"
+                  :properties="properties"
+                  :contentHeight="contentHeightValue"
+                  v-if="active === 0"
+                />
               </div>
             </TabPanel>
             <TabPanel header="Terms">
@@ -111,10 +116,15 @@
             <TabPanel header="Definition">
               <div
                 class="concept-panel-content"
-                id="definiton-container"
+                id="definition-container"
                 :style="contentHeight"
               >
-                <Definition :concept="concept" v-if="active === 0" />
+                <Definition
+                  :concept="concept"
+                  :properties="properties"
+                  :contentHeight="contentHeightValue"
+                  v-if="active === 0"
+                />
               </div>
             </TabPanel>
             <TabPanel header="Terms">
@@ -213,10 +223,8 @@ export default defineComponent({
     ...mapState(["conceptIri"])
   },
   watch: {
-    async conceptIri(newValue) {
-      this.concept = await this.getConcept(newValue);
-      this.types = this.concept.types;
-      this.header = this.concept.name;
+    async conceptIri() {
+      this.init();
     },
     concept(newValue) {
       if (Object.keys(newValue).length) {
@@ -241,6 +249,7 @@ export default defineComponent({
       editDialogView: true,
       showDownloadDialog: false,
       concept: {} as any,
+      properties: [] as any[],
       definitionText: "",
       display: false,
       types: [],
@@ -248,6 +257,7 @@ export default defineComponent({
       dialogHeader: "",
       active: 0,
       contentHeight: "",
+      contentHeightValue: 0,
       copyMenuItems: [] as any
     };
   },
@@ -295,6 +305,7 @@ export default defineComponent({
           1;
         this.contentHeight =
           "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
+        this.contentHeightValue = calcHeight;
       } else {
         LoggerService.error(
           "Content sizing error",
@@ -307,8 +318,13 @@ export default defineComponent({
       return (await ConceptService.getConceptDefinitionDto(iri)).data;
     },
 
+    async getProperties(iri: string) {
+      return (await ConceptService.getRecordStructure(iri)).data;
+    },
+
     async init() {
       this.concept = await this.getConcept(this.conceptIri);
+      this.properties = await this.getProperties(this.conceptIri);
       this.types = this.concept?.types;
       this.header = this.concept?.name;
     },
