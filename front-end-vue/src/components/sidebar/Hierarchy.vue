@@ -401,14 +401,6 @@ export default defineComponent({
         });
     },
 
-    onCopy(): void {
-      this.$toast.add(LoggerService.success("Value copied to clipboard"));
-    },
-
-    onCopyError(): void {
-      this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
-    },
-
     onCopyRightClick(event: any) {
       const x = this.$refs.copyMenuHierarchy as any;
       x.show(event);
