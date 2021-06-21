@@ -367,7 +367,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 #hierarchy-tree-bar-container {
   height: 100%;
 }

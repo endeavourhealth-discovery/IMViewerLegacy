@@ -435,4 +435,9 @@ export default defineComponent({
   height: 100%;
   border: 1px solid #dee2e6;
 }
+
+.p-progress-spinner {
+  width: 1.25em !important;
+  height: 1.25em !important;
+}
 </style>
