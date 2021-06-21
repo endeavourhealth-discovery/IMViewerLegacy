@@ -119,7 +119,6 @@ export default defineComponent({
       this.selectedKey = {};
       this.alternateParents = [];
       this.expandedKeys = {};
-      this.childrenExpanded = false;
       await this.getConceptAggregate(newValue);
       this.createTree(
         this.conceptAggregate.concept,
@@ -146,8 +145,7 @@ export default defineComponent({
         listPosition: number;
       }[],
       parentPosition: 0,
-      hoveredResult: {} as ConceptSummary | any,
-      childrenExpanded: false
+      hoveredResult: {} as ConceptSummary | any
     };
   },
   async mounted() {
@@ -303,7 +301,6 @@ export default defineComponent({
           );
         }
       });
-      this.childrenExpanded = true;
       node.loading = false;
     },
 
