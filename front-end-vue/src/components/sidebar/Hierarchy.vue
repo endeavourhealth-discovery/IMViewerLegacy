@@ -49,15 +49,35 @@
       class="tree-root"
     >
       <template #default="slotProps">
-        <span v-if="!slotProps.node.loading">
-          <i
-            :class="'fas fa-fw ' + slotProps.node.typeIcon"
-            :style="'color:' + slotProps.node.color"
-            aria-hidden="true"
-          />
-        </span>
-        <ProgressSpinner v-if="slotProps.node.loading" />
-        {{ slotProps.node.label }}
+        <div
+          class="node-container"
+          @mouseover="setHoveredResult(slotProps.node)"
+        >
+          <span v-if="!slotProps.node.loading">
+            <i
+              :class="'fas fa-fw ' + slotProps.node.typeIcon"
+              :style="'color:' + slotProps.node.color"
+              aria-hidden="true"
+            />
+          </span>
+          <ProgressSpinner v-if="slotProps.node.loading" />
+          <span class="node-text">{{ slotProps.node.label }}</span>
+          <div class="button-container">
+            <Button
+              icon="far fa-copy"
+              class="copy-button"
+              aria-hidden="true"
+              v-clipboard:copy="copyConceptToClipboard(slotProps.node)"
+              v-clipboard:success="onCopy"
+              v-clipboard:error="onCopyError"
+              v-tooltip.right="
+                'Copy concept summary to clipboard \n (right click to copy individual properties)'
+              "
+              @contextmenu="onCopyRightClick"
+            />
+            <ContextMenu ref="copyMenuHierarchy" :model="copyMenuItems" />
+          </div>
+        </div>
       </template>
     </Tree>
   </div>
@@ -134,6 +154,9 @@ export default defineComponent({
           this.conceptAggregate.children
         );
       }
+    },
+    hoveredResult() {
+      this.setCopyMenuItems();
     }
   },
   data() {
@@ -143,7 +166,9 @@ export default defineComponent({
       root: [] as TreeNode[],
       expandedKeys: {} as any,
       selectedKey: {} as any,
-      parentLabel: ""
+      parentLabel: "",
+      copyMenuItems: [] as any,
+      hoveredResult: {} as any
     };
   },
   async mounted() {
@@ -362,6 +387,98 @@ export default defineComponent({
 
     toggleTreeLocked(value: boolean): void {
       this.$store.commit("updateTreeLocked", value);
+    },
+
+    copyConceptToClipboard(data: any): string {
+      return "Name: " + data.label + ", Iri: " + data.data;
+    },
+
+    onCopy(): void {
+      this.$toast.add(LoggerService.success("Value copied to clipboard"));
+    },
+
+    onCopyError(): void {
+      this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
+    },
+
+    onCopyRightClick(event: any) {
+      const x = this.$refs.copyMenuHierarchy as any;
+      x.show(event);
+    },
+
+    setHoveredResult(data: any) {
+      this.hoveredResult = data;
+    },
+
+    setCopyMenuItems() {
+      this.copyMenuItems = [
+        {
+          label: "Copy",
+          disabled: true
+        },
+        {
+          separator: true
+        },
+        {
+          label: "All",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(
+                "Name: " +
+                  this.hoveredResult.label +
+                  ", Iri: " +
+                  this.hoveredResult.data
+              )
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Concept copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error(
+                    "Failed to copy concept to clipboard",
+                    err
+                  )
+                );
+              });
+          }
+        },
+        {
+          label: "Name",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(this.hoveredResult.label)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Name copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy name to clipboard", err)
+                );
+              });
+          }
+        },
+        {
+          label: "Iri",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(this.hoveredResult.data)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Iri copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy iri to clipboard", err)
+                );
+              });
+          }
+        }
+      ];
     }
   }
 });
@@ -393,5 +510,30 @@ export default defineComponent({
 .p-progress-spinner {
   width: 1.25em !important;
   height: 1.25em !important;
+}
+
+.p-treenode-label {
+  flex-grow: 4;
+}
+
+.node-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.node-text {
+  padding-left: 0.25rem;
+  flex-grow: 10;
+}
+
+.copy-button {
+  padding: 0px !important;
+  width: fit-content !important;
+  color: gray !important;
+  background-color: #ffffff !important;
+  border: none !important;
 }
 </style>
