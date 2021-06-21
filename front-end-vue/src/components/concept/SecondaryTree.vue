@@ -287,7 +287,6 @@ export default defineComponent({
             LoggerService.error("Concept children server request failed", err)
           );
         });
-      let index = 0;
 
       children.forEach((child: any) => {
         if (!this.containsChild(node.children, child)) {
@@ -296,11 +295,10 @@ export default defineComponent({
               child.name,
               child["@id"],
               child.type,
-              node.key + "-" + index,
+              child.name,
               child.hasChildren
             )
           );
-          index++;
         }
       });
       node.loading = false;
