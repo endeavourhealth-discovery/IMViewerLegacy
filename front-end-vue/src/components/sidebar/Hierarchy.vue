@@ -65,11 +65,9 @@
           <div class="button-container">
             <Button
               icon="far fa-copy"
-              class="copy-button"
+              class="p-button-rounded p-button-text p-button-plain copy-button"
               aria-hidden="true"
-              v-clipboard:copy="copyConceptToClipboard(slotProps.node)"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
+              v-on:click="copyConceptToClipboard(slotProps.node, $event)"
               v-tooltip.right="
                 'Copy concept summary to clipboard \n (right click to copy individual properties)'
               "
@@ -389,8 +387,18 @@ export default defineComponent({
       this.$store.commit("updateTreeLocked", value);
     },
 
-    copyConceptToClipboard(data: any): string {
-      return "Name: " + data.label + ", Iri: " + data.data;
+    async copyConceptToClipboard(data: any, event: any): Promise<void> {
+      event.stopPropagation();
+      await navigator.clipboard
+        .writeText("Name: " + data.label + ", Iri: " + data.data)
+        .then(() => {
+          this.$toast.add(LoggerService.success("Concept copied to clipboard"));
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to copy concept to clipboard", err)
+          );
+        });
     },
 
     onCopy(): void {
@@ -530,10 +538,12 @@ export default defineComponent({
 }
 
 .copy-button {
-  padding: 0px !important;
-  width: fit-content !important;
-  color: gray !important;
-  background-color: #ffffff !important;
-  border: none !important;
+  padding: 0 !important;
+  height: 1.5rem !important;
+  width: 1.5rem !important;
+  /* width: fit-content !important; */
+  /* color: gray !important; */
+  /* background-color: #ffffff !important; */
+  /* border: none !important; */
 }
 </style>
