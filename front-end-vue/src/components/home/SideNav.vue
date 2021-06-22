@@ -64,7 +64,7 @@
             aria-controls="overlay_menu"
             aria-hidden="true"
           >
-            <i class="fas fa-fw fa-3x fa-users" style="color: lightgrey"></i>
+            <i class="fas fa-fw fa-users" style="color: lightgrey"></i>
           </span>
           <img
             v-if="isLoggedIn"
@@ -145,7 +145,6 @@ export default defineComponent({
     },
 
     toggle(event: any): void {
-      console.log("Toggle");
       const menu = this.$refs.menu as any;
       menu.toggle(event);
     },
@@ -224,9 +223,10 @@ export default defineComponent({
   cursor: pointer;
   text-align: center;
   margin-top: auto;
+  width: 100%;
 }
 
-.user-icon,
+#user-icon,
 .settings-icon {
   width: 100%;
   /* font-size: 4rem; */
@@ -256,7 +256,7 @@ export default defineComponent({
 }
 
 @media screen and (max-width: 1439px) {
-  .user-icon,
+  #user-icon,
   .sidebutton {
     font-size: 4vw;
   }
@@ -271,9 +271,9 @@ export default defineComponent({
 }
 
 @media screen and (min-width: 1440px) {
-  .user-icon,
+  #user-icon,
   .sidebutton {
-    font-size: 40px;
+    font-size: 60px;
   }
 
   .avatar-icon {
