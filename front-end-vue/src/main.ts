@@ -69,6 +69,7 @@ import Toast from "primevue/toast";
 import Checkbox from "primevue/checkbox";
 import PickList from "primevue/picklist";
 import Steps from "primevue/steps";
+import ContextMenu from "primevue/contextmenu";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
@@ -107,7 +108,7 @@ const app = createApp(App)
   .component("ColumnGroup", ColumnGroup)
   .component("OrganizationChart", OrganizationChart)
   .component("Textarea", Textarea)
-  .component("DropDown", Dropdown)
+  .component("Dropdown", Dropdown)
   .component("ConfirmDialog", ConfirmDialog)
   .component("Dialog", Dialog)
   .component("SplitButton", SplitButton)
@@ -128,6 +129,7 @@ const app = createApp(App)
   .component("Checkbox", Checkbox)
   .component("PickList", PickList)
   .component("FileUpload", FileUpload)
-  .component("Steps", Steps);
+  .component("Steps", Steps)
+  .component("ContextMenu", ContextMenu);
 
 app.mount("#app");

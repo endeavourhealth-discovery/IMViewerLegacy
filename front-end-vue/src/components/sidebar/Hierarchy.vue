@@ -275,7 +275,6 @@ export default defineComponent({
             LoggerService.error("Concept children server request failed", err)
           );
         });
-      let index = 0;
 
       children.forEach((child: any) => {
         if (!this.containsChild(node.children, child)) {
@@ -284,11 +283,10 @@ export default defineComponent({
               child.name,
               child["@id"],
               child.type,
-              node.key + "-" + index,
+              child.name,
               child.hasChildren
             )
           );
-          index++;
         }
       });
       node.loading = false;
@@ -348,6 +346,8 @@ export default defineComponent({
             LoggerService.error("Concept parents server request failed", err)
           );
         });
+      // this refreshes the keys so they start open if children and parents were both expanded
+      this.expandedKeys = { ...this.expandedKeys };
     },
 
     resetConcept(): void {
@@ -367,7 +367,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 #hierarchy-tree-bar-container {
   height: 100%;
 }

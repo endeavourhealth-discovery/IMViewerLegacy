@@ -81,15 +81,15 @@
         <div class="right-side" style="width: 50%;">
           <p v-if="hoveredResult.status">
             <strong>Status: </strong>
-            <span>{{ hoveredResult.status }}</span>
+            <span>{{ hoveredResult.status.name }}</span>
           </p>
           <p v-if="hoveredResult.scheme">
             <strong>Scheme: </strong>
-            <span>{{ hoveredResult.scheme }}</span>
+            <span>{{ hoveredResult.scheme.name }}</span>
           </p>
-          <p v-if="hoveredResult.types">
+          <p v-if="hoveredResult.conceptType">
             <strong>Type: </strong>
-            <span>{{ getConceptTypes(hoveredResult.types) }}</span>
+            <span>{{ getConceptTypes(hoveredResult.conceptType) }}</span>
           </p>
         </div>
       </div>
@@ -287,7 +287,6 @@ export default defineComponent({
             LoggerService.error("Concept children server request failed", err)
           );
         });
-      let index = 0;
 
       children.forEach((child: any) => {
         if (!this.containsChild(node.children, child)) {
@@ -296,11 +295,10 @@ export default defineComponent({
               child.name,
               child["@id"],
               child.type,
-              node.key + "-" + index,
+              child.name,
               child.hasChildren
             )
           );
-          index++;
         }
       });
       node.loading = false;
@@ -398,12 +396,14 @@ export default defineComponent({
             )
           );
         });
+      // this refreshes the keys so they start open if children and parents were both expanded
+      this.expandedKeys = { ...this.expandedKeys };
     },
 
     async showPopup(event: any, data: any): Promise<void> {
       const x = this.$refs.altTreeOP as any;
       x.show(event);
-      await ConceptService.getConceptDefinitionDto(data.data).then(res => {
+      await ConceptService.getConceptSummary(data.data).then(res => {
         this.hoveredResult = res.data;
       });
     },
@@ -434,5 +434,10 @@ export default defineComponent({
 #secondary-tree-bar-container {
   height: 100%;
   border: 1px solid #dee2e6;
+}
+
+.p-progress-spinner {
+  width: 1.25em !important;
+  height: 1.25em !important;
 }
 </style>
