@@ -64,7 +64,7 @@
             aria-controls="overlay_menu"
             aria-hidden="true"
           >
-            <i class="fas fa-fw fa-users" style="color: lightgrey"></i>
+            <i class="fas fa-users"></i>
           </span>
           <img
             v-if="isLoggedIn"
