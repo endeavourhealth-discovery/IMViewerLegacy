@@ -51,7 +51,7 @@ export default class UprnService {
   }
 
   public static async upload(fileData: any): Promise<AxiosResponse<any>> {
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("file", fileData, fileData.name)
     formData.append("userid", "b786234a-edfd-4424-b87f-d0ea7ee8949b")
     return axios.post(this.api + "/fileUpload2",
