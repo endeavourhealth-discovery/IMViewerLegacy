@@ -1,8 +1,10 @@
 <template>
-  <div class="p-fluid">
-    <div class="p-field">
-      <label for="name">Name</label>
-      <InputText id="name" type="text" />
+  <div id="create-definition-container">
+    <div class="p-fluid">
+      <div class="p-field">
+        <label for="name">Name</label>
+        <InputText id="name" type="text" />
+      </div>
     </div>
   </div>
 </template>

@@ -57,6 +57,7 @@ export default defineComponent({
           }
         });
       }
+      this.setMenuItems();
     }
   },
   data() {
@@ -79,6 +80,7 @@ export default defineComponent({
             {
               label: "Concept",
               icon: "far fa-lightbulb",
+              disabled: this.selectedType === "concept" ? true : false,
               command: () => {
                 this.selectedType = "concept";
                 this.setStepsItems("concept");
@@ -88,6 +90,7 @@ export default defineComponent({
             {
               label: "Value set",
               icon: "fas fa-book-medical",
+              disabled: this.selectedType === "valueset" ? true : false,
               command: () => {
                 this.selectedType = "valueset";
                 this.setStepsItems("valueset");
