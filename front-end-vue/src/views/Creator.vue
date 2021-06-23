@@ -9,6 +9,7 @@
         <Steps :model="stepsItems" />
         <router-view
           :key="$route.params.slug || 'default'"
+          v-if="stepsItems.length > 0"
           v-slot="{ Component }"
           :formData="formObject"
           @prevPage="prevPage($event)"
@@ -32,15 +33,23 @@ export default defineComponent({
   name: "Creator",
   components: { SideNav },
   beforeRouteLeave(to, from, next) {
-    this.$confirm.require({
-      message:
-        "All unsaved changes will be lost. Are you sure you want to proceed?",
-      header: "Confirmation",
-      icon: "pi pi-exclamation-triangle",
-      accept: () => {
-        next();
+    let toStepRoute = false
+    this.stepsItems.forEach((step: any) => {
+      if (step.to === from.path) {
+        toStepRoute = true;
       }
     });
+    if (!toStepRoute) {
+      this.$confirm.require({
+        message:
+          "All unsaved changes will be lost. Are you sure you want to proceed?",
+        header: "Confirmation",
+        icon: "pi pi-exclamation-triangle",
+        accept: () => {
+          next();
+        }
+      });
+    }
   },
   watch: {
     selectedType(newValue) {
@@ -110,12 +119,20 @@ export default defineComponent({
             to: "/creator/definition"
           },
           {
-            label: "IMLang",
-            to: "/creator/imlang"
+            label: "Isa's",
+            to: "/creator/isas"
           },
           {
-            label: "Members",
-            to: "/creator/members"
+            label: "Subtypes",
+            to: "/creator/subtypes"
+          },
+          {
+            label: "Properties",
+            to: "/creator/properties"
+          },
+          {
+            label: "Confirmation",
+            to: "/creator/confirmation"
           }
         ];
       } else if (type === "valueset") {
@@ -133,6 +150,7 @@ export default defineComponent({
     },
 
     nextPage(event: any) {
+      console.log(event);
       for (let field in event.formData) {
         this.formObject[field] = event.formData[field];
       }
