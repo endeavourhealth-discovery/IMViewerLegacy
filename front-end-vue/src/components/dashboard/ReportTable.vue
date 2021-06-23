@@ -52,14 +52,18 @@ export default defineComponent({
       key: "reportTable_" + this.iri,
       value: true
     });
-    EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY])
+    EntityService.getPartialEntity(this.iri, [
+      RDFS.LABEL,
+      RDFS.COMMENT,
+      IM.STATS_REPORT_ENTRY
+    ])
       .then(res => {
         this.tableData = [];
 
         for (const entry of res.data[IM.STATS_REPORT_ENTRY]) {
           this.tableData.push({
-            label: entry[RDFS.LABEL]["@value"],
-            count: +entry[OWL.HAS_VALUE]["@value"]
+            label: entry[RDFS.LABEL],
+            count: +entry[OWL.HAS_VALUE]
           });
         }
 
