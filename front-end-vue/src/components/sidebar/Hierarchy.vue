@@ -170,7 +170,7 @@ export default defineComponent({
   methods: {
     async getConceptAggregate(iri: string) {
       await Promise.all([
-        EntityService.getEntity(iri).then(res => {
+        EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]).then(res => {
           this.conceptAggregate.concept = res.data;
         }),
         EntityService.getEntityParents(iri).then(res => {
