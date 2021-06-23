@@ -3,10 +3,9 @@ import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
 import Card from "primevue/card";
 import Chart from "primevue/chart";
 import ProgressSpinner from "primevue/progressspinner";
-import IndividualService from "@/services/IndividualService";
 import LoggerService from "@/services/LoggerService";
-import { ChartOptions } from "@/models/charts/ChartOptions";
 import { PieChartData } from "@/models/charts/PieChartData";
+import EntityService from '@/services/EntityService';
 
 describe("ReportPieChart.vue", () => {
   let wrapper: any;
@@ -15,7 +14,7 @@ describe("ReportPieChart.vue", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    IndividualService.getIndividual = jest.fn().mockResolvedValue({
+    EntityService.getPartialEntity = jest.fn().mockResolvedValue({
       status: 200,
       data: {
           "@id": "http://endhealth.info/im#ontologyConceptTypes",
@@ -201,7 +200,7 @@ describe("ReportPieChart.vue", () => {
   });
 
   it("calls the report service on mount", () => {
-    expect(IndividualService.getIndividual).toBeCalledTimes(1);
+    expect(EntityService.getPartialEntity).toBeCalledTimes(1);
   });
 
   it("processes api return into realData, chartOptions and chartConceptTypes", async() => {
@@ -528,7 +527,7 @@ describe("service fail", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     testError = new Error("concept status deliberate test error")
-    IndividualService.getIndividual = jest.fn().mockRejectedValue({ status: 400, error: testError });
+    EntityService.getPartialEntity = jest.fn().mockRejectedValue({ status: 400, error: testError });
     mockStore = {
       commit: jest.fn()
     };
@@ -547,7 +546,7 @@ describe("service fail", () => {
 
   it("fires a toast message on service error and stops loading", () => {
     console.error = jest.fn();
-    expect(IndividualService.getIndividual).toHaveBeenCalledTimes(1);
+    expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
     expect(mockStore.commit).toHaveBeenCalledTimes(2);
     expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", { key: "reportPie_im:test", value: false });
     expect(mockToast.add).toHaveBeenCalledTimes(1);

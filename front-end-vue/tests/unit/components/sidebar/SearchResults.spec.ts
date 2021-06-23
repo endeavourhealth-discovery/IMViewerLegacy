@@ -27,7 +27,7 @@ describe("SearchResults.vue", () => {
           "code":"298382003",
           "status":{"name":"Active","@id":"http://endhealth.info/im#Active"},
           "scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"},
-          "conceptType":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],
+          "entityType":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],
           "isDescendentOf":[],
           "weighting":0,
           "match":"Scoliosis"
@@ -88,7 +88,7 @@ describe("SearchResults.vue", () => {
       "code":"298382003",
       "status":{"name":"Active","@id":"http://endhealth.info/im#Active"},
       "scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"},
-      "conceptType":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}, {"name":"Instance","@id":""}],
+      "entityType":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}, {"name":"Instance","@id":""}],
       "isDescendentOf":[],
       "weighting":0,
       "match":"Scoliosis"

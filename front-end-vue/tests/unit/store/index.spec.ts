@@ -149,7 +149,7 @@ describe("mutations", () => {
   });
 
   it("can fetchSearchResults ___ pass", async() => {
-    EntityService.advancedSearch = jest.fn().mockResolvedValue({ status: 200, data: { concepts: [{ iri: "testResult" }] } });
+    EntityService.advancedSearch = jest.fn().mockResolvedValue({ status: 200, data: { entities: [{ iri: "testResult" }] } });
     LoggerService.info = jest.fn();
     const testInput = { searchRequest: new SearchRequest, cancelToken: "testCancelToken" };
     let result = false;

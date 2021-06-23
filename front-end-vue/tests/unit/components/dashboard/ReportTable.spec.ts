@@ -4,8 +4,8 @@ import Card from "primevue/card";
 import DataTable from "primevue/datatable";
 import ProgressSpinner from "primevue/progressspinner";
 import Column from "primevue/column";
-import IndividualService from "@/services/IndividualService";
 import LoggerService from "@/services/LoggerService";
+import EntityService from '@/services/EntityService';
 
 describe("ReportTable.vue", () => {
   let wrapper: any;
@@ -14,7 +14,7 @@ describe("ReportTable.vue", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    IndividualService.getIndividual = jest.fn().mockResolvedValue({
+    EntityService.getPartialEntity = jest.fn().mockResolvedValue({
       status: 200,
       data: {
           "@id": "http://endhealth.info/im#ontologyOverview",
@@ -83,7 +83,7 @@ describe("ReportTable.vue", () => {
   });
 
   it("calls IndividualService.getIndividual", () => {
-    expect(IndividualService.getIndividual).toHaveBeenCalledTimes(1);
+    expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -96,7 +96,7 @@ describe("service fail", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     testError = new Error("deliberate test error");
-    IndividualService.getIndividual = jest.fn().mockRejectedValue({
+    EntityService.getPartialEntity = jest.fn().mockRejectedValue({
       status: 400,
       error: testError
     });
