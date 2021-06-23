@@ -197,7 +197,7 @@ import ComplexMappings from "../components/concept/ComplexMappings.vue";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import SecondaryTree from "../components/concept/SecondaryTree.vue";
 
@@ -311,11 +311,11 @@ export default defineComponent({
     },
 
     async getConcept(iri: string) {
-      return (await ConceptService.getConceptDefinitionDto(iri)).data;
+      return (await EntityService.getEntityDefinitionDto(iri)).data;
     },
 
     async getProperties(iri: string) {
-      return (await ConceptService.getRecordStructure(iri)).data;
+      return (await EntityService.getRecordStructure(iri)).data;
     },
 
     async init() {

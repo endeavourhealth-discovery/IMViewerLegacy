@@ -3,12 +3,12 @@ import { ConceptDto } from "@/models/ConceptDto";
 import axios, { AxiosResponse, CancelToken } from "axios";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 
-export default class ConceptService {
+export default class EntityService {
   public static async getDataModelProperties(
     iri: string,
     cancelToken: CancelToken
   ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/dataModelProperties", {
+    return axios.get(this.api + "api/entity/dataModelProperties", {
       params: { iri: iri },
       cancelToken: cancelToken
     });
@@ -19,29 +19,29 @@ export default class ConceptService {
     request: SearchRequest,
     cancelToken: CancelToken
   ): Promise<AxiosResponse<any>> {
-    return axios.post(this.api + "api/concept/search", request, {
+    return axios.post(this.api + "api/entity/search", request, {
       cancelToken: cancelToken
     });
   }
 
-  public static async getConcept(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept", {
+  public static async getEntity(iri: string): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity", {
       params: { iri: iri }
     });
   }
 
-  public static async getConceptDefinitionDto(
+  public static async getEntityDefinitionDto(
     iri: string
   ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/definition", {
+    return axios.get(this.api + "api/entity/definition", {
       params: { iri: iri }
     });
   }
 
-  public static async getConceptImLang(
+  public static async getEntityImLang(
     iri: string
   ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept", {
+    return axios.get(this.api + "api/entity", {
       params: { iri: iri },
       headers: {
         accept: "application/imlang"
@@ -50,51 +50,51 @@ export default class ConceptService {
     });
   }
 
-  public static async getConceptParents(
+  public static async getEntityParents(
     iri: string
   ): Promise<AxiosResponse<any>> {
-    return axios.get<ConceptNode[]>(this.api + "api/concept/parents", {
+    return axios.get<ConceptNode[]>(this.api + "api/entity/parents", {
       params: { iri: iri }
     });
   }
 
-  public static async getConceptChildren(
+  public static async getEntityChildren(
     iri: string,
     cancelToken?: CancelToken
   ): Promise<AxiosResponse<any>> {
-    return axios.get<ConceptNode[]>(this.api + "api/concept/children", {
+    return axios.get<ConceptNode[]>(this.api + "api/entity/children", {
       params: { iri: iri },
       cancelToken: cancelToken
     });
   }
 
-  public static async getConceptUsages(
+  public static async getEntityUsages(
     iri: string
   ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/usages", { params: { iri: iri } });
+    return axios.get(this.api + "api/entity/usages", { params: { iri: iri } });
   }
 
-  public static async getConceptMappedFrom(
+  public static async getEntityMappedFrom(
     iri: string
   ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/mappedFrom", {
+    return axios.get(this.api + "api/entity/mappedFrom", {
       params: { iri: iri }
     });
   }
 
-  public static async getConceptMappedTo(
+  public static async getEntityMappedTo(
     iri: string
   ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/mappedTo", {
+    return axios.get(this.api + "api/entity/mappedTo", {
       params: { iri: iri }
     });
   }
 
-  public static async getConceptMembers(
+  public static async getEntityMembers(
     iri: string,
     expanded: boolean
   ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/members", {
+    return axios.get(this.api + "api/entity/members", {
       params: { iri: iri, expanded: expanded }
     });
   }
@@ -102,51 +102,51 @@ export default class ConceptService {
   public static async getAncestorDefinitions(
     iri: string
   ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/parents/definitions", {
+    return axios.get(this.api + "api/entity/parents/definitions", {
       params: { iri: iri }
     });
   }
 
   public static async getSchemeOptions(): Promise<AxiosResponse<any>> {
-    return this.getConceptChildren("http://endhealth.info/im#551000252107");
+    return this.getEntityChildren("http://endhealth.info/im#551000252107");
   }
 
-  public static async saveConcept(
+  public static async saveEntity(
     conceptDto: ConceptDto
   ): Promise<AxiosResponse<any>> {
-    return axios.post(this.api + "api/concept", conceptDto);
+    return axios.post(this.api + "api/entity", conceptDto);
   }
 
-  public static getConceptProperties(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/properties", {
+  public static getEntityProperties(iri: string): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/properties", {
       params: { iri: iri }
     });
   }
 
-  public static getConceptRoles(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/roles", {
+  public static getEntityRoles(iri: string): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/roles", {
       params: { iri: iri }
     });
   }
 
-  public static getConceptGraph(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/graph", { params: { iri: iri } });
+  public static getEntityGraph(iri: string): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/graph", { params: { iri: iri } });
   }
 
-  public static getConceptSynonyms(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/synonyms", {
+  public static getEntitySynonyms(iri: string): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/synonyms", {
       params: { iri: iri }
     });
   }
 
-  public static getConceptTermCodes(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/termCode", {
+  public static getEntityTermCodes(iri: string): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/termCode", {
       params: { iri: iri }
     });
   }
 
   public static getRecordStructure(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/recordStructure", {
+    return axios.get(this.api + "api/entity/recordStructure", {
       params: { iri: iri }
     });
   }
@@ -155,20 +155,20 @@ export default class ConceptService {
     iri: string,
     cancelToken?: CancelToken
   ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/definitionSubTypes", {
+    return axios.get(this.api + "api/entity/definitionSubTypes", {
       params: { iri: iri },
       cancelToken: cancelToken
     });
   }
 
   public static getComplexMappings(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/complexMappings", {
+    return axios.get(this.api + "api/entity/complexMappings", {
       params: { iri: iri }
     });
   }
 
-  public static getConceptSummary(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/concept/summary", {
+  public static getEntitySummary(iri: string): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/summary", {
       params: { iri: iri }
     });
   }

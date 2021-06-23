@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 
 export default defineComponent({
   name: "Members",
@@ -86,7 +86,7 @@ export default defineComponent({
   methods: {
     async getMembers(iri: string) {
       this.loading = true;
-      this.members = (await ConceptService.getConceptMembers(iri, false)).data;
+      this.members = (await EntityService.getEntityMembers(iri, false)).data;
       this.loading = false;
       this.combinedMembers = this.getCombinedMembers();
     },

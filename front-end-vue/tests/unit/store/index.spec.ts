@@ -2,7 +2,7 @@ import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 import { User } from "@/models/user/User";
 import store from "@/store/index";
 import { IM } from "@/vocabulary/IM";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import { flushPromises } from "@vue/test-utils";
 import LoggerService from "@/services/LoggerService";
 import { SearchRequest } from "@/models/search/SearchRequest";
@@ -149,28 +149,28 @@ describe("mutations", () => {
   });
 
   it("can fetchSearchResults ___ pass", async() => {
-    ConceptService.advancedSearch = jest.fn().mockResolvedValue({ status: 200, data: { concepts: [{ iri: "testResult" }] } });
+    EntityService.advancedSearch = jest.fn().mockResolvedValue({ status: 200, data: { concepts: [{ iri: "testResult" }] } });
     LoggerService.info = jest.fn();
     const testInput = { searchRequest: new SearchRequest, cancelToken: "testCancelToken" };
     let result = false;
     await store.dispatch("fetchSearchResults", testInput).then(res => result = res);
     await flushPromises();
-    expect(ConceptService.advancedSearch).toBeCalledTimes(1);
-    expect(ConceptService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
+    expect(EntityService.advancedSearch).toBeCalledTimes(1);
+    expect(EntityService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
     await flushPromises();
     expect(store.state.searchResults).toEqual([{ iri: "testResult" }]);
     expect(result).toBe("true");
   });
 
   it("can fetchSearchResults ___ cancelled", async() => {
-    ConceptService.advancedSearch = jest.fn().mockRejectedValue({ status: 400 });
+    EntityService.advancedSearch = jest.fn().mockRejectedValue({ status: 400 });
     LoggerService.info = jest.fn();
     const testInput = { searchRequest: new SearchRequest, cancelToken: "testCancelToken" };
     let result = false;
     await store.dispatch("fetchSearchResults", testInput).then(res => result = res);
     await flushPromises();
-    expect(ConceptService.advancedSearch).toBeCalledTimes(1);
-    expect(ConceptService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
+    expect(EntityService.advancedSearch).toBeCalledTimes(1);
+    expect(EntityService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
     await flushPromises();
     expect(LoggerService.info).toBeCalledTimes(1);
     expect(LoggerService.info).toBeCalledWith(undefined, "axios request cancelled");
@@ -178,14 +178,14 @@ describe("mutations", () => {
   });
 
   it("can fetchSearchResults ___ failed", async() => {
-    ConceptService.advancedSearch = jest.fn().mockRejectedValue({ status: 400, message: "test fail" });
+    EntityService.advancedSearch = jest.fn().mockRejectedValue({ status: 400, message: "test fail" });
     LoggerService.error = jest.fn();
     const testInput = { searchRequest: new SearchRequest, cancelToken: "testCancelToken" };
     let result = false;
     await store.dispatch("fetchSearchResults", testInput).then(res => result = res);
     await flushPromises();
-    expect(ConceptService.advancedSearch).toBeCalledTimes(1);
-    expect(ConceptService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
+    expect(EntityService.advancedSearch).toBeCalledTimes(1);
+    expect(EntityService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
     await flushPromises();
     expect(LoggerService.error).toBeCalledTimes(1);
     expect(LoggerService.error).toBeCalledWith(undefined, { status: 400, message: "test fail" });

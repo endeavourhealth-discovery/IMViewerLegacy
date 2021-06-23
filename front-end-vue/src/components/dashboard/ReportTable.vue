@@ -32,11 +32,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import IndividualService from "@/services/IndividualService";
 import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 import { OWL } from "@/vocabulary/OWL";
+import EntityService from "@/services/EntityService";
 
 export default defineComponent({
   name: "OntologyOverview",
@@ -52,7 +52,7 @@ export default defineComponent({
       key: "reportTable_" + this.iri,
       value: true
     });
-    IndividualService.getIndividual(this.iri)
+    EntityService.getEntity(this.iri)
       .then(res => {
         this.tableData = [];
 

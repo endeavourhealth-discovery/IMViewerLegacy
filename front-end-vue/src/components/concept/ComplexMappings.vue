@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
 
@@ -94,7 +94,7 @@ export default defineComponent({
   },
   methods: {
     async getMappings(): Promise<void> {
-      await ConceptService.getComplexMappings(this.conceptIri)
+      await EntityService.getComplexMappings(this.conceptIri)
         .then(res => {
           this.mappings = res.data;
         })

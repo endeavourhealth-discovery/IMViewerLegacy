@@ -17,7 +17,7 @@
   ></Listbox>
 </template>
 <script lang="ts">
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
@@ -54,7 +54,7 @@ export default defineComponent({
   methods: {
     async getUsages(iri: string) {
       this.loading = true;
-      this.usages = (await ConceptService.getConceptUsages(iri)).data;
+      this.usages = (await EntityService.getEntityUsages(iri)).data;
       this.loading = false;
     },
 

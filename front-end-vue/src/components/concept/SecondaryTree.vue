@@ -103,7 +103,7 @@ import {
   getColourFromType
 } from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import { IM } from "@/vocabulary/IM";
 import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
@@ -160,13 +160,13 @@ export default defineComponent({
   methods: {
     async getConceptAggregate(iri: string): Promise<void> {
       await Promise.all([
-        ConceptService.getConcept(iri).then(res => {
+        EntityService.getEntity(iri).then(res => {
           this.conceptAggregate.concept = res.data;
         }),
-        ConceptService.getConceptParents(iri).then(res => {
+        EntityService.getEntityParents(iri).then(res => {
           this.conceptAggregate.parents = res.data;
         }),
-        ConceptService.getConceptChildren(iri).then(res => {
+        EntityService.getEntityChildren(iri).then(res => {
           this.conceptAggregate.children = res.data;
         })
       ]).catch(err => {
@@ -278,7 +278,7 @@ export default defineComponent({
         this.expandedKeys[node.key] = true;
       }
       let children: any[] = [];
-      await ConceptService.getConceptChildren(node.data)
+      await EntityService.getEntityChildren(node.data)
         .then(res => {
           children = res.data;
         })
@@ -318,7 +318,7 @@ export default defineComponent({
 
       let parents: any[] = [];
       let parentNode = {} as TreeNode;
-      await ConceptService.getConceptParents(this.root[0].data)
+      await EntityService.getEntityParents(this.root[0].data)
         .then(res => {
           parents = res.data;
         })
@@ -349,7 +349,7 @@ export default defineComponent({
       this.root = [];
       this.root.push(parentNode);
 
-      await ConceptService.getConceptParents(this.root[0].data)
+      await EntityService.getEntityParents(this.root[0].data)
         .then(res => {
           this.alternateParents = [];
           if (res.data.length) {
@@ -403,7 +403,7 @@ export default defineComponent({
     async showPopup(event: any, data: any): Promise<void> {
       const x = this.$refs.altTreeOP as any;
       x.show(event);
-      await ConceptService.getConceptSummary(data.data).then(res => {
+      await EntityService.getEntitySummary(data.data).then(res => {
         this.hoveredResult = res.data;
       });
     },

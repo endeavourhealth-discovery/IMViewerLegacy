@@ -117,7 +117,7 @@
 </template>
 
 <script lang="ts">
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 
@@ -204,13 +204,13 @@ export default defineComponent({
       this.closeDownloadDialog();
     },
     async init(iri: string) {
-      this.concept = (await ConceptService.getConcept(iri)).data;
-      this.parents = (await ConceptService.getConceptParents(iri)).data;
-      this.children = (await ConceptService.getConceptChildren(iri)).data;
-      this.props = (await ConceptService.getConceptProperties(iri)).data;
-      this.roles = (await ConceptService.getConceptRoles(iri)).data;
+      this.concept = (await EntityService.getEntity(iri)).data;
+      this.parents = (await EntityService.getEntityParents(iri)).data;
+      this.children = (await EntityService.getEntityChildren(iri)).data;
+      this.props = (await EntityService.getEntityProperties(iri)).data;
+      this.roles = (await EntityService.getEntityRoles(iri)).data;
       this.members = (
-        await ConceptService.getConceptMembers(iri, this.expandMembers)
+        await EntityService.getEntityMembers(iri, this.expandMembers)
       ).data;
 
       this.includeParents = !!this.parents.length;

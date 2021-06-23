@@ -54,7 +54,7 @@
 <script lang="ts">
 import GraphData from "../../models/GraphData";
 import { defineComponent } from "@vue/runtime-core";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import { RouteRecordName } from "vue-router";
 
 export default defineComponent({
@@ -82,7 +82,7 @@ export default defineComponent({
   methods: {
     async getGraph(iri: string) {
       this.loading = true;
-      this.graph = (await ConceptService.getConceptGraph(iri)).data;
+      this.graph = (await EntityService.getEntityGraph(iri)).data;
       this.loading = false;
     },
     navigate(iri: string) {

@@ -169,7 +169,7 @@ export default defineComponent({
     },
 
     getConceptTypes(concept: any): any {
-      return concept.conceptType
+      return concept.entityType
         .map(function(type: any) {
           return type.name;
         })
@@ -189,7 +189,7 @@ export default defineComponent({
         ", Scheme: " +
         data.scheme.name +
         ", Type: " +
-        data.conceptType[0].name
+        data.entityType[0].name
       );
     },
 

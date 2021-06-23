@@ -27,7 +27,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import IndividualService from "@/services/IndividualService";
 const palette = require("../../../node_modules/google-palette");
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
@@ -36,6 +35,7 @@ import { ChartOptions } from "@/models/charts/ChartOptions";
 import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 import { OWL } from "@/vocabulary/OWL";
+import EntityService from "@/services/EntityService";
 
 export default defineComponent({
   name: "ReportPieChart",
@@ -90,7 +90,7 @@ export default defineComponent({
   },
   methods: {
     async setChartData(): Promise<void> {
-      await IndividualService.getIndividual(this.iri)
+      await EntityService.getEntity(this.iri)
         .then(res => {
           this.name = res.data[RDFS.LABEL]["@value"];
           this.description = res.data[RDFS.COMMENT]["@value"];

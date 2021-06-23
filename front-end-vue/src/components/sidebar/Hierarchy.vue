@@ -67,7 +67,7 @@
 import { HistoryItem } from "@/models/HistoryItem";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";
 import { IM } from "@/vocabulary/IM";
@@ -170,13 +170,13 @@ export default defineComponent({
   methods: {
     async getConceptAggregate(iri: string) {
       await Promise.all([
-        ConceptService.getConcept(iri).then(res => {
+        EntityService.getEntity(iri).then(res => {
           this.conceptAggregate.concept = res.data;
         }),
-        ConceptService.getConceptParents(iri).then(res => {
+        EntityService.getEntityParents(iri).then(res => {
           this.conceptAggregate.parents = res.data;
         }),
-        ConceptService.getConceptChildren(iri).then(res => {
+        EntityService.getEntityChildren(iri).then(res => {
           this.conceptAggregate.children = res.data;
         })
       ]).catch(err => {
@@ -266,7 +266,7 @@ export default defineComponent({
       node.loading = true;
       this.expandedKeys[node.key] = true;
       let children: any[] = [];
-      await ConceptService.getConceptChildren(node.data)
+      await EntityService.getEntityChildren(node.data)
         .then(res => {
           children = res.data;
         })
@@ -304,7 +304,7 @@ export default defineComponent({
 
       let parents: any[] = [];
       const parentsNodes: any[] = [];
-      await ConceptService.getConceptParents(this.root[0].data)
+      await EntityService.getEntityParents(this.root[0].data)
         .then(res => {
           parents = res.data;
         })
@@ -333,7 +333,7 @@ export default defineComponent({
 
       this.root = parentsNodes;
 
-      await ConceptService.getConceptParents(this.root[0].data)
+      await EntityService.getEntityParents(this.root[0].data)
         .then(res => {
           if (res.data[0]) {
             this.parentLabel = res.data[0].name;
