@@ -68,7 +68,6 @@
           </span>
           <img
             v-if="isLoggedIn"
-            id="user-icon"
             class="avatar-icon"
             :src="getUrl(currentUser.avatar.value)"
             alt="avatar icon"
@@ -229,7 +228,6 @@ export default defineComponent({
 #user-icon,
 .settings-icon {
   width: 100%;
-  /* font-size: 4rem; */
   color: lightgray;
   padding: 5px;
   cursor: pointer;
@@ -240,7 +238,6 @@ export default defineComponent({
 }
 
 .avatar-icon {
-  /* width: 4rem; */
   border: 1px solid lightgray;
   border-radius: 50%;
   cursor: pointer;
@@ -248,7 +245,6 @@ export default defineComponent({
 
 .im-logo {
   text-align: center;
-  /* font-size: 4rem; */
   color: lightgray;
   font-weight: bold;
   cursor: pointer;
@@ -277,7 +273,7 @@ export default defineComponent({
   }
 
   .avatar-icon {
-    width: 60px;
+    width: 80px;
   }
 
   .im-logo {
