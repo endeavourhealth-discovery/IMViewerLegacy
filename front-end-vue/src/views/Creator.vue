@@ -33,7 +33,7 @@ export default defineComponent({
   name: "Creator",
   components: { SideNav },
   beforeRouteLeave(to, from, next) {
-    let toStepRoute = false
+    let toStepRoute = false;
     this.stepsItems.forEach((step: any) => {
       if (step.to === from.path) {
         toStepRoute = true;
@@ -150,7 +150,6 @@ export default defineComponent({
     },
 
     nextPage(event: any) {
-      console.log(event);
       for (let field in event.formData) {
         this.formObject[field] = event.formData[field];
       }

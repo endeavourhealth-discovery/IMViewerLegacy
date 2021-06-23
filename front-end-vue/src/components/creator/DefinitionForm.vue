@@ -67,7 +67,7 @@ export default defineComponent({
     },
 
     setIri() {
-      this.iri = IM.NAMESPACE + Math.floor(Math.random() * 1000000)
+      this.iri = IM.NAMESPACE + Math.floor(Math.random() * 1000000);
     }
   }
 });
