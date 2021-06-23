@@ -52,7 +52,7 @@ export default defineComponent({
       key: "reportTable_" + this.iri,
       value: true
     });
-    EntityService.getEntity(this.iri)
+    EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY])
       .then(res => {
         this.tableData = [];
 

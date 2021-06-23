@@ -4,6 +4,15 @@ import axios, { AxiosResponse, CancelToken } from "axios";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
 
 export default class EntityService {
+    public static async getPartialEntity(iri: string, predicates: string[]): Promise<AxiosResponse<any>> {
+        return axios.get(this.api + "api/entity/partial", {
+            params: {
+                iri: iri,
+                predicate: predicates.join(",")
+            }
+        });
+    }
+
   public static async getDataModelProperties(
     iri: string,
     cancelToken: CancelToken
