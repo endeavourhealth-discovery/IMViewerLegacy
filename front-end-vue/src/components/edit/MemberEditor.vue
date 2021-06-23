@@ -17,10 +17,24 @@
     @move-all-to-source="membersUpdated"
   >
     <template #sourceHeader>
-      Included
+      <div class="header-container">
+        <span>Included</span>
+        <Button
+          label="Add"
+          icon="fas fa-plus"
+          @click="openDialog('included')"
+        />
+      </div>
     </template>
     <template #targetHeader>
-      Excluded
+      <div class="header-container">
+        <span>Excluded</span>
+        <Button
+          label="Add"
+          icon="fas fa-plus"
+          @click="openDialog('excluded')"
+        />
+      </div>
     </template>
     <template #item="slotProps">
       <div class="member-container">
@@ -28,6 +42,25 @@
       </div>
     </template>
   </PickList>
+  <Dialog
+    :visible="showAddMemberDialog"
+    header="Add member"
+    :modal="true"
+    :style="{ width: '80vw' }"
+    :maximizable="true"
+    :closable="false"
+  >
+    <h1>Dialog!</h1>
+    <template #footer>
+      <Button
+        label="Cancel"
+        icon="fas fa-times"
+        @click="closeDialog"
+        class="p-button-text"
+      />
+      <Button label="Add members" icon="fas fa-check" @click="addMembers" />
+    </template>
+  </Dialog>
 </template>
 
 <script lang="ts">
@@ -53,7 +86,10 @@ export default defineComponent({
         JSON.parse(JSON.stringify(this.updatedMembers.excluded))
       ] as any,
       listHeight: "",
-      loading: false
+      loading: false,
+      showAddMemberDialog: false,
+      selectedColumn: "",
+      selectedMembersToAdd: [] as any
     };
   },
   methods: {
@@ -103,6 +139,19 @@ export default defineComponent({
         excluded: this.data[1],
         valueSet: this.members.valueSet
       });
+    },
+
+    openDialog(columnName: string) {
+      this.selectedColumn = columnName;
+      this.showAddMemberDialog = true;
+    },
+
+    closeDialog() {
+      this.showAddMemberDialog = false;
+    },
+
+    addMembers() {
+      console.log("added");
     }
   }
 });
@@ -115,5 +164,12 @@ export default defineComponent({
 
 .loading-container {
   height: 100%;
+}
+
+.header-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>
