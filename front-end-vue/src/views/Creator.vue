@@ -42,6 +42,23 @@ export default defineComponent({
       }
     });
   },
+  watch: {
+    selectedType(newValue) {
+      if (newValue !== "" && Object.keys(this.formObject).length > 0) {
+        this.$confirm.require({
+          message:
+            "All unsaved changes will be lost. Are you sure you want to proceed?",
+          header: "Confirmation",
+          icon: "pi pi-exclamation-triangle",
+          accept: () => {
+            this.formObject = {};
+            this.setStepsItems(newValue);
+            this.$router.push(this.stepsItems[0].to);
+          }
+        });
+      }
+    }
+  },
   data() {
     return {
       selectedType: "",
@@ -74,6 +91,7 @@ export default defineComponent({
               command: () => {
                 this.selectedType = "valueset";
                 this.setStepsItems("valueset");
+                this.$router.push(this.stepsItems[0].to);
               }
             }
           ]
@@ -91,6 +109,17 @@ export default defineComponent({
           {
             label: "IMLang",
             to: "/creator/imlang"
+          },
+          {
+            label: "Members",
+            to: "/creator/members"
+          }
+        ];
+      } else if (type === "valueset") {
+        this.stepsItems = [
+          {
+            label: "Definition",
+            to: "/creator/definition"
           },
           {
             label: "Members",

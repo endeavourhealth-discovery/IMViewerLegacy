@@ -11,7 +11,8 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "DefinitionForm"
+  name: "DefinitionForm",
+  props: ["formData"]
 });
 </script>
 
