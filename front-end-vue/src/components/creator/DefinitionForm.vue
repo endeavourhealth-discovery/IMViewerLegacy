@@ -18,6 +18,7 @@
     <template #footer>
       <div class="footer button-bar">
         <!-- <Button
+          v-if="pageIndex > 0"
           label="Previous"
           icon="fas fa-chevron-circle-left"
           class=""
@@ -46,7 +47,7 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "DefinitionForm",
-  props: ["formData"],
+  props: ["formData", "pageIndex"],
   emits: ["prevPage", "nextPage"],
   data() {
     return {
@@ -57,8 +58,7 @@ export default defineComponent({
   methods: {
     handleNext() {
       const formData = { name: this.name, iri: this.iri };
-      const pageIndex = 0;
-      this.$emit("nextPage", { formData: formData, pageIndex: pageIndex });
+      this.$emit("nextPage", { formData: formData, pageIndex: this.pageIndex });
     },
 
     handleClear() {

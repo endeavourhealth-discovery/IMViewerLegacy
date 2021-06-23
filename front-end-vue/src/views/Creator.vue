@@ -17,7 +17,7 @@
           @complete="complete"
         >
           <keep-alive :max="100">
-            <component :is="Component" />
+            <component :is="Component" :pageIndex="currentPageIndex" />
           </keep-alive>
         </router-view>
       </div>
@@ -35,7 +35,7 @@ export default defineComponent({
   beforeRouteLeave(to, from, next) {
     let toStepRoute = false;
     this.stepsItems.forEach((step: any) => {
-      if (step.to === from.path) {
+      if (step.to === to.path) {
         toStepRoute = true;
       }
     });
@@ -52,20 +52,7 @@ export default defineComponent({
     }
   },
   watch: {
-    selectedType(newValue) {
-      if (newValue !== "" && Object.keys(this.formObject).length > 0) {
-        this.$confirm.require({
-          message:
-            "All unsaved changes will be lost. Are you sure you want to proceed?",
-          header: "Confirmation",
-          icon: "pi pi-exclamation-triangle",
-          accept: () => {
-            this.formObject = {};
-            this.setStepsItems(newValue);
-            this.$router.push(this.stepsItems[0].to);
-          }
-        });
-      }
+    selectedType() {
       this.setMenuItems();
     }
   },
@@ -74,7 +61,8 @@ export default defineComponent({
       selectedType: "",
       menuItems: [] as any,
       stepsItems: [] as any,
-      formObject: {} as any
+      formObject: {} as any,
+      currentPageIndex: 0
     };
   },
   mounted() {
@@ -91,9 +79,23 @@ export default defineComponent({
               icon: "far fa-lightbulb",
               disabled: this.selectedType === "concept" ? true : false,
               command: () => {
-                this.selectedType = "concept";
-                this.setStepsItems("concept");
-                this.$router.push(this.stepsItems[0].to);
+                if (this.selectedType !== "") {
+                  this.$confirm.require({
+                    message:
+                      "All unsaved changes will be lost. Are you sure you want to proceed?",
+                    header: "Confirmation",
+                    icon: "pi pi-exclamation-triangle",
+                    accept: () => {
+                      this.selectedType = "concept";
+                      this.setStepsItems("concept");
+                      this.$router.push(this.stepsItems[0].to);
+                    }
+                  });
+                } else {
+                  this.selectedType = "concept";
+                  this.setStepsItems("concept");
+                  this.$router.push(this.stepsItems[0].to);
+                }
               }
             },
             {
@@ -101,9 +103,23 @@ export default defineComponent({
               icon: "fas fa-book-medical",
               disabled: this.selectedType === "valueset" ? true : false,
               command: () => {
-                this.selectedType = "valueset";
-                this.setStepsItems("valueset");
-                this.$router.push(this.stepsItems[0].to);
+                if (this.selectedType !== "") {
+                  this.$confirm.require({
+                    message:
+                      "All unsaved changes will be lost. Are you sure you want to proceed?",
+                    header: "Confirmation",
+                    icon: "pi pi-exclamation-triangle",
+                    accept: () => {
+                      this.selectedType = "valueset";
+                      this.setStepsItems("valueset");
+                      this.$router.push(this.stepsItems[0].to);
+                    }
+                  });
+                } else {
+                  this.selectedType = "valueset";
+                  this.setStepsItems("valueset");
+                  this.$router.push(this.stepsItems[0].to);
+                }
               }
             }
           ]
@@ -153,10 +169,12 @@ export default defineComponent({
       for (let field in event.formData) {
         this.formObject[field] = event.formData[field];
       }
+      this.currentPageIndex++;
       this.$router.push(this.stepsItems[event.pageIndex + 1].to);
     },
 
     prevPage(event: any) {
+      this.currentPageIndex--;
       this.$router.push(this.stepsItems[event.pageIndex - 1].to);
     },
 
