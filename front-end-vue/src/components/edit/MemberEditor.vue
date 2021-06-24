@@ -50,7 +50,7 @@
     :maximizable="true"
     :closable="false"
   >
-    <AddMember />
+    <AddMember @selected-updated="selectedUpdated($event)" />
     <template #footer>
       <Button
         label="Cancel"
@@ -153,7 +153,23 @@ export default defineComponent({
     },
 
     addMembers() {
-      console.log("added");
+      if (this.selectedMembersToAdd.length > 0) {
+        if (this.selectedColumn === "included") {
+          this.selectedMembersToAdd.forEach((member: any) => {
+            this.data[0].push(member);
+          });
+        }
+        if (this.selectedColumn === "excluded") {
+          this.selectedMembersToAdd.forEach((member: any) => {
+            this.data[1].push(member);
+          });
+        }
+      }
+      this.showAddMemberDialog = false;
+    },
+
+    selectedUpdated(event: any) {
+      this.selectedMembersToAdd = event;
     }
   }
 });

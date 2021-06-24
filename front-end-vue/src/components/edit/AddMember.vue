@@ -9,6 +9,37 @@
       class="p-inputtext"
     />
   </span>
+  <PickList
+    v-model="pickListData"
+    dataKey="code"
+    :responsive="false"
+    listStyle="height:50vh"
+    @move-to-target="selectedUpdated"
+    @move-to-source="selectedUpdated"
+    @move-all-to-source="selectedUpdated"
+    @move-all-to-target="selectedUpdated"
+  >
+    <template #sourceHeader>
+      <div class="header-container">
+        <span>Search results</span>
+      </div>
+    </template>
+    <template #targetHeader>
+      <div class="header-container">
+        <span>Selected members</span>
+      </div>
+    </template>
+    <template v-if="!loading" #item="slotProps">
+      <div class="member-container">
+        <p class="member-name">{{ slotProps.item.concept.name }}</p>
+      </div>
+    </template>
+    <template v-else #item>
+      <div class="member-container">
+        <ProgressSpinner />
+      </div>
+    </template>
+  </PickList>
 </template>
 
 <script lang="ts">
@@ -24,19 +55,27 @@ import ConceptService from "@/services/ConceptService";
 
 export default defineComponent({
   name: "AddMember",
+  emits: ["selected-updated"],
+  watch: {
+    searchResults(newValue) {
+      this.pickListData[0] = newValue;
+    }
+  },
   data() {
     return {
       searchTerm: "",
       debounce: 0,
       loading: false,
       request: null as any,
-      searchResults: null as any
+      searchResults: null as any,
+      pickListData: [[], []] as any
     };
   },
   methods: {
     async search(): Promise<void> {
       if (this.searchTerm.length > 2) {
         this.loading = true;
+        this.pickListData[0] = [{ code: "Loading", name: "Loading..." }];
         const searchRequest = new SearchRequest();
         searchRequest.termFilter = this.searchTerm;
         searchRequest.sortBy = SortBy.Usage;
@@ -68,7 +107,7 @@ export default defineComponent({
 
         await ConceptService.advancedSearch(searchRequest, axiosSource.token)
           .then(res => {
-            this.searchResults = res.data.concepts;
+            this.searchResults = this.removeDuplicates(res.data.concepts);
             this.loading = false;
           })
           .catch(err => {
@@ -87,6 +126,28 @@ export default defineComponent({
       this.debounce = window.setTimeout(() => {
         this.search();
       }, 600);
+    },
+
+    removeDuplicates(array: any): any[] {
+      const added: any = [];
+      return array
+        .filter(function(obj: any) {
+          if (added.indexOf(obj.code) === -1) {
+            added.push(obj.code);
+            return obj;
+          }
+        })
+        .map((obj: any) => {
+          return {
+            code: obj.code,
+            concept: { "@id": obj.iri, name: obj.name },
+            scheme: obj.scheme
+          };
+        });
+    },
+
+    selectedUpdated(): void {
+      this.$emit("selected-updated", this.pickListData[1]);
     }
   }
 });
