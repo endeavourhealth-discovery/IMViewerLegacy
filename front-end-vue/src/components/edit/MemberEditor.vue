@@ -50,7 +50,7 @@
     :maximizable="true"
     :closable="false"
   >
-    <h1>Dialog!</h1>
+    <AddMember />
     <template #footer>
       <Button
         label="Cancel"
@@ -65,10 +65,12 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import AddMember from "@/components/edit/AddMember.vue";
 
 export default defineComponent({
   name: "MemberEditor",
   props: ["iri", "contentHeight", "updatedMembers"],
+  components: { AddMember },
   emits: ["members-updated"],
   watch: {
     contentHeight() {
