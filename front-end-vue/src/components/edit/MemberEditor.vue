@@ -50,7 +50,12 @@
     :maximizable="true"
     :closable="false"
   >
-    <AddMember @selected-updated="selectedUpdated($event)" />
+    <AddMember
+      @selected-updated="selectedUpdated($event)"
+      :selectedColumn="selectedColumn"
+      :included="data[0]"
+      :excluded="data[1]"
+    />
     <template #footer>
       <Button
         label="Cancel"

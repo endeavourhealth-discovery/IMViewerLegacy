@@ -1,45 +1,47 @@
 <template>
-  <span id="member-search-bar">
-    <i class="pi pi-search" aria-hidden="true" />
-    <InputText
-      type="text"
-      v-model="searchTerm"
-      @input="debounceForSearch"
-      placeholder="Search"
-      class="p-inputtext"
-    />
-  </span>
-  <PickList
-    v-model="pickListData"
-    dataKey="code"
-    :responsive="false"
-    listStyle="height:50vh"
-    @move-to-target="selectedUpdated"
-    @move-to-source="selectedUpdated"
-    @move-all-to-source="selectedUpdated"
-    @move-all-to-target="selectedUpdated"
-  >
-    <template #sourceHeader>
-      <div class="header-container">
-        <span>Search results</span>
-      </div>
-    </template>
-    <template #targetHeader>
-      <div class="header-container">
-        <span>Selected members</span>
-      </div>
-    </template>
-    <template v-if="!loading" #item="slotProps">
-      <div class="member-container">
-        <p class="member-name">{{ slotProps.item.concept.name }}</p>
-      </div>
-    </template>
-    <template v-else #item>
-      <div class="member-container">
-        <ProgressSpinner />
-      </div>
-    </template>
-  </PickList>
+  <div id="add-member-container">
+    <span id="member-search-bar">
+      <i class="pi pi-search" aria-hidden="true" />
+      <InputText
+        type="text"
+        v-model="searchTerm"
+        @input="debounceForSearch"
+        placeholder="Search"
+        class="p-inputtext"
+      />
+    </span>
+    <PickList
+      v-model="pickListData"
+      dataKey="code"
+      :responsive="false"
+      listStyle="height:80vh"
+      @move-to-target="selectedUpdated"
+      @move-to-source="selectedUpdated"
+      @move-all-to-source="selectedUpdated"
+      @move-all-to-target="selectedUpdated"
+    >
+      <template #sourceHeader>
+        <div class="header-container">
+          <span>Search results</span>
+        </div>
+      </template>
+      <template #targetHeader>
+        <div class="header-container">
+          <span>Selected members</span>
+        </div>
+      </template>
+      <template v-if="!loading" #item="slotProps">
+        <div class="member-container">
+          <p class="member-name">{{ slotProps.item.concept.name }}</p>
+        </div>
+      </template>
+      <template v-else #item>
+        <div class="member-container">
+          <ProgressSpinner />
+        </div>
+      </template>
+    </PickList>
+  </div>
 </template>
 
 <script lang="ts">
@@ -55,6 +57,7 @@ import ConceptService from "@/services/ConceptService";
 
 export default defineComponent({
   name: "AddMember",
+  props: ["selectedColumn", "included", "excluded"],
   emits: ["selected-updated"],
   watch: {
     searchResults(newValue) {
@@ -131,7 +134,7 @@ export default defineComponent({
     removeDuplicates(array: any): any[] {
       const added: any = [];
       return array
-        .filter(function(obj: any) {
+        .filter((obj: any) => {
           if (added.indexOf(obj.code) === -1) {
             added.push(obj.code);
             return obj;
