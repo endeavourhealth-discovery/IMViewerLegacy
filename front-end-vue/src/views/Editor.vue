@@ -268,4 +268,11 @@ export default defineComponent({
   padding: 0 2rem 1rem 0;
   gap: 0.5rem;
 }
+
+#member-editor-container {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-start;
+  gap: 7px;
+}
 </style>

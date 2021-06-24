@@ -1,5 +1,56 @@
 <template>
-  <div
+  <div class="left-side">
+    <TabView :activeIndex="activeIndexLeft">
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-sitemap icon-header" aria-hidden="true" />
+          <span>Hierarchy</span>
+        </template>
+      </TabPanel>
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-search icon-header" aria-hidden="true" />
+          <span>Search</span>
+        </template>
+      </TabPanel>
+    </TabView>
+  </div>
+  <div class="center-buttons">
+    <Button icon="pi pi-angle-right" />
+    <Button icon="pi pi-angle-double-right" />
+    <Button icon="pi pi-angle-left" />
+    <Button icon="pi pi-angle-double-left" />
+  </div>
+  <div class="right-side">
+    <TabView :activeIndex="activeIndexRight" lazy>
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-plus icon-header" aria-hidden="true" />
+          <span>Included</span>
+        </template>
+        <div id="included-panel-content" :style="panelHeight">
+          <DataTable
+            :value="data[0]"
+            :selection="selectedIncluded"
+            selectionMode="multiple"
+            dataKey="code"
+            :metaKeySelection="false"
+            scrollHeight="flex"
+            :scrollable="true"
+          >
+            <Column field="concept.name" header="Included" />
+          </DataTable>
+        </div>
+      </TabPanel>
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-minus icon-header" aria-hidden="true" />
+          <span>Excluded</span>
+        </template>
+      </TabPanel>
+    </TabView>
+  </div>
+  <!-- <div
     class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center"
     v-if="loading"
   >
@@ -65,7 +116,7 @@
       />
       <Button label="Add members" icon="fas fa-check" @click="addMembers" />
     </template>
-  </Dialog>
+  </Dialog> -->
 </template>
 
 <script lang="ts">
@@ -75,15 +126,15 @@ import AddMember from "@/components/edit/AddMember.vue";
 export default defineComponent({
   name: "MemberEditor",
   props: ["iri", "contentHeight", "updatedMembers"],
-  components: { AddMember },
+  components: { },
   emits: ["members-updated"],
   watch: {
     contentHeight() {
-      this.setListHeight();
+      this.setPanelHeights();
     }
   },
   mounted() {
-    this.setListHeight();
+    this.setPanelHeights();
   },
   data() {
     return {
@@ -92,51 +143,41 @@ export default defineComponent({
         JSON.parse(JSON.stringify(this.updatedMembers.included)),
         JSON.parse(JSON.stringify(this.updatedMembers.excluded))
       ] as any,
-      listHeight: "",
+      panelHeight: "",
       loading: false,
       showAddMemberDialog: false,
       selectedColumn: "",
-      selectedMembersToAdd: [] as any
+      selectedMembersToAdd: [] as any,
+      activeIndexLeft: 0,
+      activeIndexRight: 0,
+      selectedIncluded: null as any
     };
   },
   methods: {
-    setListHeight(): void {
+    setPanelHeights(): void {
       const container = document.getElementById(
         "member-editor-container"
       ) as HTMLElement;
-      const pickListHeader = container.getElementsByClassName(
-        "p-picklist-header"
+      const nav = container.getElementsByClassName(
+        "p-tabview-nav"
       )[0] as HTMLElement;
-      if (container && pickListHeader) {
+      const currentFontSize = parseFloat(
+        window
+          .getComputedStyle(document.documentElement, null)
+          .getPropertyValue("font-size")
+      );
+      if (container && nav && currentFontSize) {
         const optimumHeight =
           container.getBoundingClientRect().height -
-          pickListHeader.getBoundingClientRect().height -
-          4;
-        this.listHeight =
+          nav.getBoundingClientRect().height -
+          currentFontSize * 2 -
+          1;
+        this.panelHeight =
           "height: " +
           optimumHeight +
           "px; max-height: " +
           optimumHeight +
           "px;";
-      }
-      this.removeOrderButtons();
-    },
-
-    removeOrderButtons(): void {
-      const container = document.getElementById(
-        "member-editor-container"
-      ) as HTMLElement;
-      const sourceOrderButtons = container.getElementsByClassName(
-        "p-picklist-source-controls"
-      )[0] as HTMLElement;
-      const targetOrderButtons = document.getElementsByClassName(
-        "p-picklist-target-controls"
-      )[0] as HTMLElement;
-      if (sourceOrderButtons) {
-        sourceOrderButtons.remove();
-      }
-      if (targetOrderButtons) {
-        targetOrderButtons.remove();
       }
     },
 
@@ -194,5 +235,33 @@ export default defineComponent({
   flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
+}
+
+.center-buttons {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 10%;
+  height: 100%;
+}
+
+.left-side {
+  width: 40%;
+  height: 100%
+}
+
+.right-side {
+  width: 40%;
+  height: 100%;
+}
+
+.p-tabview-panels {
+  overflow-y: auto;
+}
+
+.p-datatable {
+  max-height: 100%;
 }
 </style>
