@@ -338,17 +338,17 @@ export default defineComponent({
       let subTypesString = "";
       let propertiesString = "";
       if (concept.isa.length > 0) {
-        isasString = concept.isa.map((item: any) => item.name).join(", ");
+        isasString = concept.isa.map((item: any) => item.name).join(",\n\t");
       }
       if (concept.subtypes.length > 0) {
         subTypesString = concept.subtypes
           .map((item: any) => item.name)
-          .join(", ");
+          .join(",\n\t");
       }
       if (this.properties.length > 0) {
         propertiesString = this.properties
           .map((item: any) => item.property.name)
-          .join(", ");
+          .join(",\n\t");
       }
       let returnString =
         "Name: " +
@@ -360,17 +360,17 @@ export default defineComponent({
         ",\nType: " +
         concept.types[0].name +
         ",\nIs-a: " +
-        "[" +
+        "[\n\t" +
         isasString +
-        "]" +
+        "\n]" +
         ",\nSubtypes: " +
-        "[" +
+        "[\n\t" +
         subTypesString +
-        "]" +
+        "\n]" +
         ",\nProperties: " +
-        "[" +
+        "[\n\t" +
         propertiesString +
-        "]";
+        "\n]";
       if (concept.description) {
         returnString = returnString + ",\nDescription: " + concept.description;
       }
@@ -395,17 +395,17 @@ export default defineComponent({
       let subTypesString = "";
       let propertiesString = "";
       if ("isa" in concept && concept.isa.length > 0) {
-        isasString = concept.isa.map((item: any) => item.name).join(", ");
+        isasString = concept.isa.map((item: any) => item.name).join(",\n\t");
       }
       if ("subtypes" in concept && concept.subtypes.length > 0) {
         subTypesString = concept.subtypes
           .map((item: any) => item.name)
-          .join(", ");
+          .join(",\n\t");
       }
       if (this.properties.length > 0) {
         propertiesString = this.properties
           .map((item: any) => item.property.name)
-          .join(", ");
+          .join(",\n\t");
       }
       this.copyMenuItems = [
         {
@@ -439,7 +439,7 @@ export default defineComponent({
           label: "Name",
           command: async () => {
             await navigator.clipboard
-              .writeText(concept.name)
+              .writeText("Name: " + concept.name)
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Name copied to clipboard")
@@ -456,7 +456,7 @@ export default defineComponent({
           label: "Iri",
           command: async () => {
             await navigator.clipboard
-              .writeText(concept.iri)
+              .writeText("Iri: " + concept.iri)
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Iri copied to clipboard")
@@ -473,7 +473,7 @@ export default defineComponent({
           label: "Status",
           command: async () => {
             await navigator.clipboard
-              .writeText(concept.status)
+              .writeText("Status: " + concept.status)
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Status copied to clipboard")
@@ -490,7 +490,7 @@ export default defineComponent({
           label: "Type",
           command: async () => {
             await navigator.clipboard
-              .writeText(concept.types[0].name)
+              .writeText("Types: " + concept.types[0].name)
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Type copied to clipboard")
@@ -507,7 +507,7 @@ export default defineComponent({
           label: "Is a",
           command: async () => {
             await navigator.clipboard
-              .writeText("[" + isasString + "]")
+              .writeText("Is-a: [\n\t" + isasString + "\n]")
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Is-a's copied to clipboard")
@@ -524,7 +524,7 @@ export default defineComponent({
           label: "Subtypes",
           command: async () => {
             await navigator.clipboard
-              .writeText("[" + subTypesString + "]")
+              .writeText("Subtypes: [\n\t" + subTypesString + "\n]")
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Subtypes copied to clipboard")
@@ -544,7 +544,7 @@ export default defineComponent({
           label: "Properties",
           command: async () => {
             await navigator.clipboard
-              .writeText("[" + propertiesString + "]")
+              .writeText("Properties: [\n\t" + propertiesString + "\n]")
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Properties copied to clipboard")
@@ -566,7 +566,7 @@ export default defineComponent({
           label: "Description",
           command: async () => {
             await navigator.clipboard
-              .writeText(concept.description)
+              .writeText("Description: " + concept.description)
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Description copied to clipboard")
