@@ -17,8 +17,15 @@
     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
     :rowsPerPageOptions="[25, 50, 100]"
     currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
-    :rows="15"
+    :rows="25"
+    :loading="loading"
   >
+    <template #empty>
+      No results found
+    </template>
+    <template #loading>
+      No results found
+    </template>
     <Column field="name" header="Results">
       <template #body="slotProps">
         <div

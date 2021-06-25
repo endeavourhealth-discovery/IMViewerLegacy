@@ -26,7 +26,7 @@
             />
           </div>
         </TabPanel>
-        <TabPanel>
+        <!-- <TabPanel>
           <template #header>
             <i class="fas fa-sitemap icon-header" aria-hidden="true" />
             <span>Hierarchy</span>
@@ -34,14 +34,14 @@
           <div id="member-hierarchy-container" :style="panelLeftHeight">
             <p>Tree</p>
           </div>
-        </TabPanel>
+        </TabPanel> -->
       </TabView>
     </div>
     <div class="center-buttons">
       <Button icon="pi pi-angle-right" />
-      <Button icon="pi pi-angle-double-right" />
+      <!-- <Button icon="pi pi-angle-double-right" />
       <Button icon="pi pi-angle-left" />
-      <Button icon="pi pi-angle-double-left" />
+      <Button icon="pi pi-angle-double-left" /> -->
     </div>
     <div class="right-side">
       <TabView :activeIndex="activeIndexRight" lazy>
@@ -64,6 +64,12 @@
               currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
               :rows="25"
             >
+              <template #empty>
+                No members included
+              </template>
+              <template #loading>
+                Loading...
+              </template>
               <Column field="concept.name" header="Included" :sortable="true" />
             </DataTable>
           </div>
@@ -86,6 +92,12 @@
               currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
               :rows="25"
             >
+              <template #empty>
+                No members excluded
+              </template>
+              <template #loading>
+                Loading...
+              </template>
               <Column field="concept.name" header="Included" :sortable="true" />
             </DataTable>
           </div>
