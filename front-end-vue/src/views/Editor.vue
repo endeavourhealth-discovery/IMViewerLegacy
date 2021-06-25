@@ -271,7 +271,7 @@ export default defineComponent({
 
 #member-editor-container {
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: column nowrap;
   align-items: flex-start;
   gap: 7px;
 }
