@@ -24,7 +24,7 @@
       No results found
     </template>
     <template #loading>
-      No results found
+      Loading...
     </template>
     <Column field="name" header="Results">
       <template #body="slotProps">
