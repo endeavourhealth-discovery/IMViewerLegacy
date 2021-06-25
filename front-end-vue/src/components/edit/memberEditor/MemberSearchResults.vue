@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="p-d-flex p-flex-row p-jc-center"
-    v-if="loading"
-  >
+  <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
     <div class="p-text-center">
       <ProgressSpinner />
     </div>
@@ -18,7 +15,7 @@
     :scrollable="true"
     :paginator="true"
     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-    :rowsPerPageOptions="[25,50,100]"
+    :rowsPerPageOptions="[25, 50, 100]"
     currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
     :rows="15"
   >
@@ -46,35 +43,24 @@
     </Column>
   </DataTable>
 
-  <OverlayPanel
-    ref="memberOP"
-    id="overlay-panel"
-    style="width: 40vw"
-  >
+  <OverlayPanel ref="memberOP" id="overlay-panel" style="width: 40vw">
     <div class="result-overlay">
       <div class="left-side" v-if="hoveredResult.iri">
         <p>
           <strong>Name: </strong>
-          <span
-            v-if="hoveredResult.status"
-          >
+          <span v-if="hoveredResult.status">
             {{ hoveredResult.name }}
           </span>
         </p>
         <p>
           <strong>Iri: </strong>
-          <span
-            v-if="hoveredResult.status"
-            style="word-break: break-all;"
-          >
+          <span v-if="hoveredResult.status" style="word-break: break-all;">
             {{ hoveredResult.iri }}
           </span>
         </p>
         <p>
           <strong>Code: </strong>
-          <span
-            v-if="hoveredResult.status"
-          >
+          <span v-if="hoveredResult.status">
             {{ hoveredResult.code }}
           </span>
         </p>
@@ -82,17 +68,13 @@
       <div class="right-side" v-if="hoveredResult.iri">
         <p>
           <strong>Status: </strong>
-          <span
-            v-if="hoveredResult.status"
-          >
+          <span v-if="hoveredResult.status">
             {{ hoveredResult.status.name }}
           </span>
         </p>
         <p>
           <strong>Scheme: </strong>
-          <span
-            v-if="hoveredResult.scheme"
-          >
+          <span v-if="hoveredResult.scheme">
             {{ hoveredResult.scheme.name }}
           </span>
         </p>
@@ -154,9 +136,9 @@ export default defineComponent({
     hideOverlay(): void {
       const x = this.$refs.memberOP as any;
       x.hide();
-    },
+    }
   }
-})
+});
 </script>
 
 <style scoped>

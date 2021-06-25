@@ -20,7 +20,10 @@
             <span>Search Results</span>
           </template>
           <div id="member-search-results-container" :style="panelLeftHeight">
-            <MemberSearchResults :searchResults="searchResults" :loading="loading" />
+            <MemberSearchResults
+              :searchResults="searchResults"
+              :loading="loading"
+            />
           </div>
         </TabPanel>
         <TabPanel>
@@ -57,7 +60,7 @@
               :paginator="true"
               :scrollable="true"
               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-              :rowsPerPageOptions="[25,50,100]"
+              :rowsPerPageOptions="[25, 50, 100]"
               currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
               :rows="25"
             >
@@ -79,7 +82,7 @@
               :metaKeySelection="false"
               :scrollable="true"
               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-              :rowsPerPageOptions="[25,50,100]"
+              :rowsPerPageOptions="[25, 50, 100]"
               currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
               :rows="25"
             >
@@ -157,10 +160,7 @@ export default defineComponent({
         ":SemanticConcept",
         ":VSET_ValueSet"
       ];
-      searchRequest.statusFilter = [
-        ConceptStatus.Active,
-        ConceptStatus.Draft
-      ];
+      searchRequest.statusFilter = [ConceptStatus.Active, ConceptStatus.Draft];
       searchRequest.typeFilter = [ConceptType.Class];
 
       if (this.request) {
@@ -314,6 +314,17 @@ export default defineComponent({
 }
 
 #included-panel-content ::v-deep(.p-datatable-wrapper) {
+  flex-grow: 6;
+}
+
+#excluded-panel-content ::v-deep(.p-datatable) {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+}
+
+#excluded-panel-content ::v-deep(.p-datatable-wrapper) {
   flex-grow: 6;
 }
 </style>
