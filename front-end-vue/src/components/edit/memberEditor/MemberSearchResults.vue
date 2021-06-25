@@ -18,7 +18,7 @@
     :scrollable="true"
     :paginator="true"
     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-    :rowsPerPageOptions="[15,25,50]"
+    :rowsPerPageOptions="[25,50,100]"
     currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
     :rows="15"
   >
@@ -26,7 +26,8 @@
       <template #body="slotProps">
         <div
           class="result-container"
-          @mouseenter="showSearchResultOverlay($event, slotProps.data)"
+          @mouseover="showSearchResultOverlay($event, slotProps.data)"
+          @mouseleave="hideOverlay"
         >
           <div class="result-icon-container">
             <i
@@ -48,9 +49,7 @@
   <OverlayPanel
     ref="memberOP"
     id="overlay-panel"
-    style="width: 25vw"
-    :showCloseIcon="true"
-    :dismissable="true"
+    style="width: 40vw"
   >
     <div class="result-overlay">
       <div class="left-side" v-if="hoveredResult.iri">
@@ -139,8 +138,6 @@ export default defineComponent({
     },
 
     async showSearchResultOverlay(event: any, data: any): Promise<void> {
-      this.hideOverlay();
-      await this.$nextTick();
       this.hoveredResult = data;
       const x = this.$refs.memberOP as any;
       x.show(event, event.target);
@@ -188,5 +185,19 @@ export default defineComponent({
 
 #overlay-panel:hover {
   transition-delay: 2s;
+}
+
+.result-overlay {
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 7px;
+}
+
+.left-side,
+.right-side {
+  max-width: 50%;
+  flex-grow: 2;
 }
 </style>

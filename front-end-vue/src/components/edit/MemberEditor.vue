@@ -54,8 +54,12 @@
               selectionMode="multiple"
               dataKey="code"
               :metaKeySelection="false"
-              scrollHeight="flex"
+              :paginator="true"
               :scrollable="true"
+              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+              :rowsPerPageOptions="[25,50,100]"
+              currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
+              :rows="25"
             >
               <Column field="concept.name" header="Included" :sortable="true" />
             </DataTable>
@@ -73,8 +77,11 @@
               selectionMode="multiple"
               dataKey="code"
               :metaKeySelection="false"
-              scrollHeight="flex"
               :scrollable="true"
+              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+              :rowsPerPageOptions="[25,50,100]"
+              currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
+              :rows="25"
             >
               <Column field="concept.name" header="Included" :sortable="true" />
             </DataTable>
@@ -205,13 +212,13 @@ export default defineComponent({
           container.getBoundingClientRect().height -
           nav.getBoundingClientRect().height -
           currentFontSize * 2 -
-          1;
+          8;
         const optimumLeftHeight =
           container.getBoundingClientRect().height -
           nav.getBoundingClientRect().height -
           search.getBoundingClientRect().height -
           currentFontSize * 2 -
-          1;
+          8;
         this.panelRightHeight =
           "height: " +
           optimumLeftHeight +
@@ -286,5 +293,27 @@ export default defineComponent({
 
 .icon-header {
   margin-right: 0.25rem;
+}
+
+#member-search-results-container ::v-deep(.p-datatable) {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+}
+
+#member-search-results-container ::v-deep(.p-datatable-wrapper) {
+  flex-grow: 6;
+}
+
+#included-panel-content ::v-deep(.p-datatable) {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+}
+
+#included-panel-content ::v-deep(.p-datatable-wrapper) {
+  flex-grow: 6;
 }
 </style>
