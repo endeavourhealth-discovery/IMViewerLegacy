@@ -53,13 +53,13 @@
       <div id="concept-content-dialogs-container">
         <div
           v-if="Object.keys(concept).length && isSet"
-          id="set-concept-panel-container"
+          id="concept-panel-container"
         >
           <TabView v-model:activeIndex="active">
             <TabPanel header="Definition">
               <div
                 class="concept-panel-content"
-                id="set-definition-container"
+                id="definition-container"
                 :style="contentHeight"
               >
                 <Definition
@@ -73,7 +73,7 @@
             <TabPanel header="Terms">
               <div
                 class="concept-panel-content"
-                id="set-terms-container"
+                id="terms-container"
                 :style="contentHeight"
               >
                 <Terms :conceptIri="conceptIri" v-if="active === 1" />
@@ -82,7 +82,7 @@
             <TabPanel header="Used in">
               <div
                 class="concept-panel-content"
-                id="set-usedin-container"
+                id="usedin-container"
                 :style="contentHeight"
               >
                 <UsedIn :conceptIri="conceptIri" v-if="active === 2" />
@@ -100,7 +100,7 @@
             <TabPanel header="Hierarchy position">
               <div
                 class="concept-panel-content"
-                id="set-secondary-tree-container"
+                id="secondary-tree-container"
                 :style="contentHeight"
               >
                 <SecondaryTree :conceptIri="conceptIri" v-if="active === 4" />
@@ -313,9 +313,7 @@ export default defineComponent({
     },
 
     async getConcept(iri: string) {
-      // return (await EntityService.getEntityDefinitionDto(iri)).data;
-      return (await EntityService.getPartialEntity(iri, [IM.IS_A, RDF.TYPE]))
-        .data;
+      return (await EntityService.getEntityDefinitionDto(iri)).data;
     },
 
     async getProperties(iri: string) {

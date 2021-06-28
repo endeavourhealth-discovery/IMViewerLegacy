@@ -33,8 +33,8 @@
                   aria-hidden="true"
                 ></i>
                 {{
-                  slotProps.option.member?.concept.name ||
-                    slotProps.option.member?.concept["@id"]
+                  slotProps.option.member?.entity.name ||
+                    slotProps.option.member?.entity["@id"]
                 }}
               </div>
             </span>
