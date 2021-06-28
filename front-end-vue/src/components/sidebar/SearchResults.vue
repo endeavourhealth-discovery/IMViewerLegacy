@@ -24,6 +24,12 @@
       currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
       :rows="15"
     >
+      <template #empty>
+        None
+      </template>
+      <template #loading>
+        Loading...
+      </template>
       <Column field="name" header="Results">
         <template #body="slotProps">
           <div
