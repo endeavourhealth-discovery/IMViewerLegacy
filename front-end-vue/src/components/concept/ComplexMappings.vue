@@ -108,14 +108,14 @@ export default defineComponent({
     createChartStructure(): void {
       let counters = { 1: 0 } as any;
       let data = {} as any;
-      console.log(this.mappings)
-      console.log("before")
+      console.log(this.mappings);
+      console.log("before");
       this.mappings.forEach(mapping => {
-        console.log("first")
+        console.log("first");
         counters[2] = 0;
         if (IM.ONE_OF in mapping) {
           if (counters[1] === 0) {
-            console.log("one_of")
+            console.log("one_of");
             data = {
               key: "" + counters[1],
               type: "oneOf",
@@ -130,7 +130,7 @@ export default defineComponent({
             };
           }
           mapping[IM.ONE_OF].forEach((map: any) => {
-            console.log("second")
+            console.log("second");
             data.children[counters[1]].data.labels.push({
               name: map[IM.MATCHED_TO].name,
               iri: map[IM.MATCHED_TO]["@id"],
@@ -142,7 +142,7 @@ export default defineComponent({
           });
           data.children[counters[1]].data.labels.sort(this.byPriority);
         } else if (IM.COMBINATION_OF in mapping) {
-          console.log("combination")
+          console.log("combination");
           if (counters[1] === 0) {
             data = {
               key: "" + counters[1],
@@ -202,7 +202,7 @@ export default defineComponent({
             }
             counters[2]++;
           });
-        }else{
+        } else {
           console.log("something else");
           console.log(mapping);
         }

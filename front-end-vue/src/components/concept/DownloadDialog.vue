@@ -120,10 +120,7 @@
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
-import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
-import {SHACL} from "@/vocabulary/SHACL";
-import {RDF} from "@/vocabulary/RDF";
 
 export default defineComponent({
   name: "DownloadDialog",
@@ -209,7 +206,9 @@ export default defineComponent({
       this.closeDownloadDialog();
     },
     async init(iri: string) {
-      this.concept = (await EntityService.getPartialEntity(iri,[RDFS.LABEL])).data;
+      this.concept = (
+        await EntityService.getPartialEntity(iri, [RDFS.LABEL])
+      ).data;
       this.parents = (await EntityService.getEntityParents(iri)).data;
       this.children = (await EntityService.getEntityChildren(iri)).data;
       this.props = (await EntityService.getEntityProperties(iri)).data;

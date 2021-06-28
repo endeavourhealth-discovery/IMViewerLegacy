@@ -170,7 +170,11 @@ export default defineComponent({
   methods: {
     async getConceptAggregate(iri: string) {
       await Promise.all([
-        EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]).then(res => {
+        EntityService.getPartialEntity(iri, [
+          RDFS.LABEL,
+          RDFS.COMMENT,
+          RDF.TYPE
+        ]).then(res => {
           this.conceptAggregate.concept = res.data;
         }),
         EntityService.getEntityParents(iri).then(res => {
@@ -238,7 +242,7 @@ export default defineComponent({
       level: any,
       hasChildren: boolean
     ): TreeNode {
-      const node: TreeNode = {
+      return {
         key: level,
         label: conceptName,
         typeIcon: getIconFromType(conceptTypes),
@@ -248,7 +252,6 @@ export default defineComponent({
         loading: false,
         children: []
       };
-      return node;
     },
 
     onNodeSelect(node: any): void {

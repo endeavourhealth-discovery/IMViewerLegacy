@@ -8,8 +8,8 @@ export class IM {
   public static IS_A = IM.NAMESPACE + "isA";
   public static ROLE_GROUP = IM.NAMESPACE + "roleGroup";
   public static IS_CONTAINED_IN = IM.NAMESPACE + "isContainedIn";
-  public static PROPERTY_GROUP = IM.NAMESPACE +"propertyGroup";
-  public static INHERITED_FROM = IM.NAMESPACE+"inheritedFrom";
+  public static PROPERTY_GROUP = IM.NAMESPACE + "propertyGroup";
+  public static INHERITED_FROM = IM.NAMESPACE + "inheritedFrom";
 
   // mapping
   public static HAS_MAP = IM.NAMESPACE + "hasMap";

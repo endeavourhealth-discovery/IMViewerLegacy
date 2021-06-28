@@ -16,7 +16,10 @@
 
         <!--
         <div id="center-icons" style="color: grey">
-          <div v-bind:class="{ active: isActive(['Dashboard', 'Concept']) }" @click="$router.push({ name: 'Dashboard' })">
+          <div
+            v-bind:class="{ active: isActive(['Dashboard', 'Concept']) }"
+            @click="$router.push({ name: 'Dashboard' })"
+          >
             <font-awesome-icon
               class="sidebutton"
               :icon="['fas', 'book']"
@@ -25,12 +28,15 @@
             />
             <div>Ontology</div>
           </div>
-          <div v-bind:class="{ active: isActive(['UPRN']) }" @click="$router.push({ name: 'UPRN' })">
+          <div
+            v-bind:class="{ active: isActive(['UPRN']) }"
+            @click="$router.push({ name: 'UPRN' })"
+          >
             <font-awesome-icon
-                class="sidebutton"
-                :icon="['fas', 'map-marked-alt']"
-                style="padding: 5px"
-                fixed-width
+              class="sidebutton"
+              :icon="['fas', 'map-marked-alt']"
+              style="padding: 5px"
+              fixed-width
             />
             <div>UPRN</div>
           </div>

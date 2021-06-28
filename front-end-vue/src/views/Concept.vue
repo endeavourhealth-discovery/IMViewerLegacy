@@ -200,6 +200,8 @@ import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import SecondaryTree from "../components/concept/SecondaryTree.vue";
+import { IM } from "@/vocabulary/IM";
+import { RDF } from "@/vocabulary/RDF";
 
 export default defineComponent({
   name: "Concept",
@@ -311,7 +313,9 @@ export default defineComponent({
     },
 
     async getConcept(iri: string) {
-      return (await EntityService.getEntityDefinitionDto(iri)).data;
+      // return (await EntityService.getEntityDefinitionDto(iri)).data;
+      return (await EntityService.getPartialEntity(iri, [IM.IS_A, RDF.TYPE]))
+        .data;
     },
 
     async getProperties(iri: string) {
