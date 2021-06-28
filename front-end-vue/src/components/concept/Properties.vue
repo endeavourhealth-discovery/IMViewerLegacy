@@ -10,6 +10,9 @@
     <template #empty>
       No records found
     </template>
+    <template #header>
+      Properties
+    </template>
     <Column field="property.name" header="Name" :sortable="true">
       <template #body="slotProps">
         <div class="link" @click="navigate(slotProps.data.property?.iri)">
