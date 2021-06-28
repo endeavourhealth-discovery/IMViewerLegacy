@@ -26,11 +26,7 @@
         <Description :description="descriptionHTML" />
       </div>
     </div>
-    <Divider align="left">
-      <div class="p-d-inline-flex p-ai-center">
-        <strong>Definitional properties</strong>
-      </div>
-    </Divider>
+    <Divider />
     <div class="p-d-flex p-flex-row p-jc-start definitional-container">
       <div class="left-side">
         <strong>is a: </strong>{{ concept.isa?.length }}
@@ -63,11 +59,7 @@
         </Listbox>
       </div>
     </div>
-    <Divider align="left">
-      <div class="p-d-inline-flex p-ai-center">
-        <strong>Structure properties</strong>
-      </div>
-    </Divider>
+    <Divider />
     <Properties :properties="properties" :contentHeight="contentHeight" />
   </div>
 </template>
@@ -125,6 +117,10 @@ export default defineComponent({
 
 .summary-container {
   width: 100%;
+  gap: 7px;
+}
+
+.definitional-container {
   gap: 7px;
 }
 
