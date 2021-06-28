@@ -197,7 +197,8 @@ export default defineComponent({
       editDialogView: true,
       showDownloadDialog: false,
       concept: {} as any,
-      properties: [] as any[],
+      semanticProperties: [] as any[],
+      dataModelProperties: [] as any[],
       definitionText: "",
       display: false,
       types: [],
@@ -276,9 +277,22 @@ export default defineComponent({
     },
 
     async getProperties(iri: string) {
-      await EntityService.getRecordStructure(iri)
+      await EntityService.getSemanticProperties(iri)
         .then(res => {
-          this.properties = res.data;
+          this.semanticProperties = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Failed to get properties record structure from server",
+              err
+            )
+          );
+        });
+
+      await EntityService.getDataModelProperties(iri)
+        .then(res => {
+          this.dataModelProperties = res.data;
         })
         .catch(err => {
           this.$toast.add(
@@ -308,7 +322,8 @@ export default defineComponent({
     copyConceptToClipboard(concept: any): string {
       let isasString = "";
       let subTypesString = "";
-      let propertiesString = "";
+      let semanticPropertiesString = "";
+      let dataModelPropertiesString = "";
       if (concept.isa.length > 0) {
         isasString = concept.isa.map((item: any) => item.name).join(",\n\t");
       }
@@ -317,8 +332,13 @@ export default defineComponent({
           .map((item: any) => item.name)
           .join(",\n\t");
       }
-      if (this.properties.length > 0) {
-        propertiesString = this.properties
+      if (this.semanticProperties.length > 0) {
+        semanticPropertiesString = this.semanticProperties
+          .map((item: any) => item.property.name)
+          .join(",\n\t");
+      }
+      if (this.dataModelProperties.length > 0) {
+        dataModelPropertiesString = this.dataModelProperties
           .map((item: any) => item.property.name)
           .join(",\n\t");
       }
@@ -339,9 +359,13 @@ export default defineComponent({
         "[\n\t" +
         subTypesString +
         "\n]" +
-        ",\nProperties: " +
+        ",\nSemantic properties: " +
         "[\n\t" +
-        propertiesString +
+        semanticPropertiesString +
+        "\n]" +
+        ",\nData model properties: " +
+        "[\n\t" +
+        dataModelPropertiesString +
         "\n]";
       if (concept.description) {
         returnString = returnString + ",\nDescription: " + concept.description;
@@ -365,7 +389,8 @@ export default defineComponent({
     setCopyMenuItems(concept: any) {
       let isasString = "";
       let subTypesString = "";
-      let propertiesString = "";
+      let semanticPropertiesString = "";
+      let dataModelPropertiesString = "";
       if ("isa" in concept && concept.isa.length > 0) {
         isasString = concept.isa.map((item: any) => item.name).join(",\n\t");
       }
@@ -374,8 +399,13 @@ export default defineComponent({
           .map((item: any) => item.name)
           .join(",\n\t");
       }
-      if (this.properties.length > 0) {
-        propertiesString = this.properties
+      if (this.semanticProperties.length > 0) {
+        semanticPropertiesString = this.semanticProperties
+          .map((item: any) => item.property.name)
+          .join(",\n\t");
+      }
+      if (this.dataModelProperties.length > 0) {
+        dataModelPropertiesString = this.dataModelProperties
           .map((item: any) => item.property.name)
           .join(",\n\t");
       }
@@ -513,19 +543,39 @@ export default defineComponent({
           }
         },
         {
-          label: "Properties",
+          label: "Semantic properties",
           command: async () => {
             await navigator.clipboard
-              .writeText("Properties: [\n\t" + propertiesString + "\n]")
+              .writeText("Properties: [\n\t" + semanticPropertiesString + "\n]")
               .then(() => {
                 this.$toast.add(
-                  LoggerService.success("Properties copied to clipboard")
+                  LoggerService.success("Semantic properties copied to clipboard")
                 );
               })
               .catch(err => {
                 this.$toast.add(
                   LoggerService.error(
-                    "Failed to copy properties to clipboard",
+                    "Failed to copy semantic properties to clipboard",
+                    err
+                  )
+                );
+              });
+          }
+        },
+        {
+          label: "Data model properties",
+          command: async () => {
+            await navigator.clipboard
+              .writeText("Properties: [\n\t" + dataModelPropertiesString + "\n]")
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Data model properties copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error(
+                    "Failed to copy data model properties to clipboard",
                     err
                   )
                 );
