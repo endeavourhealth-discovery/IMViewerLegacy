@@ -57,6 +57,8 @@
               selectionMode="multiple"
               dataKey="code"
               :metaKeySelection="false"
+              filterDisplay="menu"
+              :globalFilterFields="['name']"
               :paginator="true"
               :scrollable="true"
               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
@@ -64,13 +66,29 @@
               currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
               :rows="25"
             >
+              <template #header>
+                <div class="p-d-flex p-jc-between p-ai-center">
+                  <h5 class="p-m-0">Included</h5>
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-search" />
+                        <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
+                    </span>
+                </div>
+              </template>
               <template #empty>
                 No members included
               </template>
-              <template #loading>
-                Loading...
-              </template>
-              <Column field="concept.name" header="Included" :sortable="true" />
+              <Column selectionMode="multiple" headerStyle="width: 3rem" />
+              <Column field="concept.name" header="Name" :sortable="true">
+                <template #filter="{ filterModel }">
+                  <InputText type="text" v-model="filterModel.name" class="p-column-filter" placeholder="Search by name" />
+                </template>
+              </Column>
+              <Column headerStyle="width: 4rem; text-align: center" bodyStyle="text-align: center; overflow: visible">
+                <template #body>
+                    <Button type="button" icon="pi pi-minus"></Button>
+                </template>
+            </Column>
             </DataTable>
           </div>
         </TabPanel>
@@ -95,10 +113,14 @@
               <template #empty>
                 No members excluded
               </template>
-              <template #loading>
-                Loading...
-              </template>
-              <Column field="concept.name" header="Included" :sortable="true" />
+              <Column selectionMode="multiple" headerStyle="width: 3rem" />
+              <Column field="concept.name" header="Included" :sortable="true">
+              </Column>
+              <Column headerStyle="width: 4rem; text-align: center" bodyStyle="text-align: center; overflow: visible">
+                <template #body>
+                    <Button type="button" icon="pi pi-minus"></Button>
+                </template>
+            </Column>
             </DataTable>
           </div>
         </TabPanel>
@@ -118,6 +140,7 @@ import axios from "axios";
 import ConceptService from "@/services/ConceptService";
 import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
+import { FilterMatchMode, FilterOperator } from "primevue/api";
 
 export default defineComponent({
   name: "MemberEditor",
@@ -149,7 +172,10 @@ export default defineComponent({
       activeIndexLeft: 0,
       activeIndexRight: 0,
       selectedIncluded: null as any,
-      selectedExcluded: null as any
+      selectedExcluded: null as any,
+      filters: {
+        global: { value: null, matchMode:FilterMatchMode.CONTAINS }
+      }
     };
   },
   methods: {
