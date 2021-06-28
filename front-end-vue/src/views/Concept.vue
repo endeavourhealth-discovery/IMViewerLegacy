@@ -51,68 +51,8 @@
         <PanelHeader :types="types" :header="header" />
       </template>
       <div id="concept-content-dialogs-container">
-        <div
-          v-if="Object.keys(concept).length && isSet"
-          id="set-concept-panel-container"
-        >
-          <TabView v-model:activeIndex="active">
-            <TabPanel header="Definition">
-              <div
-                class="concept-panel-content"
-                id="set-definition-container"
-                :style="contentHeight"
-              >
-                <Definition
-                  :concept="concept"
-                  :properties="properties"
-                  :contentHeight="contentHeightValue"
-                  v-if="active === 0"
-                />
-              </div>
-            </TabPanel>
-            <TabPanel header="Terms">
-              <div
-                class="concept-panel-content"
-                id="set-terms-container"
-                :style="contentHeight"
-              >
-                <Terms :conceptIri="conceptIri" v-if="active === 1" />
-              </div>
-            </TabPanel>
-            <TabPanel header="Used in">
-              <div
-                class="concept-panel-content"
-                id="set-usedin-container"
-                :style="contentHeight"
-              >
-                <UsedIn :conceptIri="conceptIri" v-if="active === 2" />
-              </div>
-            </TabPanel>
-            <TabPanel header="Members">
-              <div
-                class="concept-panel-content"
-                id="members-container"
-                :style="contentHeight"
-              >
-                <Members :conceptIri="conceptIri" v-if="active === 3" />
-              </div>
-            </TabPanel>
-            <TabPanel header="Hierarchy position">
-              <div
-                class="concept-panel-content"
-                id="set-secondary-tree-container"
-                :style="contentHeight"
-              >
-                <SecondaryTree :conceptIri="conceptIri" v-if="active === 4" />
-              </div>
-            </TabPanel>
-          </TabView>
-        </div>
-        <div
-          v-if="Object.keys(concept).length && !isSet"
-          id="concept-panel-container"
-        >
-          <TabView v-model:activeIndex="active">
+        <div v-if="Object.keys(concept).length" id="concept-panel-container">
+          <TabView v-model:activeIndex="active" :lazy="true">
             <TabPanel header="Definition">
               <div
                 class="concept-panel-content"
@@ -123,7 +63,6 @@
                   :concept="concept"
                   :properties="properties"
                   :contentHeight="contentHeightValue"
-                  v-if="active === 0"
                 />
               </div>
             </TabPanel>
@@ -133,34 +72,43 @@
                 id="terms-container"
                 :style="contentHeight"
               >
-                <Terms :conceptIri="conceptIri" v-if="active === 1" />
+                <Terms :conceptIri="conceptIri" />
               </div>
             </TabPanel>
-            <TabPanel header="Maps">
+            <TabPanel header="Maps" v-if="!isSet">
               <div
                 class="concept-panel-content"
                 id="complex-mappings-container"
                 :style="contentHeight"
               >
-                <ComplexMappings :conceptIri="conceptIri" v-if="active === 2" />
+                <ComplexMappings :conceptIri="conceptIri" />
               </div>
             </TabPanel>
-            <TabPanel header="Used In">
+            <TabPanel header="Used in">
               <div
                 class="concept-panel-content"
                 id="usedin-container"
                 :style="contentHeight"
               >
-                <UsedIn :conceptIri="conceptIri" v-if="active === 3" />
+                <UsedIn :conceptIri="conceptIri" />
               </div>
             </TabPanel>
-            <TabPanel header="Graph">
+            <TabPanel header="Graph" v-if="!isSet">
               <div
                 class="concept-panel-content"
                 id="graph-container"
                 :style="contentHeight"
               >
-                <Graph :conceptIri="conceptIri" v-if="active === 4" />
+                <Graph :conceptIri="conceptIri" />
+              </div>
+            </TabPanel>
+            <TabPanel header="Members" v-if="isSet">
+              <div
+                class="concept-panel-content"
+                id="members-container"
+                :style="contentHeight"
+              >
+                <Members :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Hierarchy position">
@@ -169,7 +117,7 @@
                 id="secondary-tree-container"
                 :style="contentHeight"
               >
-                <SecondaryTree :conceptIri="conceptIri" v-if="active === 5" />
+                <SecondaryTree :conceptIri="conceptIri" />
               </div>
             </TabPanel>
           </TabView>
@@ -294,7 +242,7 @@ export default defineComponent({
           .getComputedStyle(document.documentElement, null)
           .getPropertyValue("font-size")
       );
-      if (header && container && currentFontSize) {
+      if (header && container && nav && currentFontSize) {
         const calcHeight =
           container.getBoundingClientRect().height -
           header.getBoundingClientRect().height -
@@ -305,6 +253,8 @@ export default defineComponent({
           "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
         this.contentHeightValue = calcHeight;
       } else {
+        this.contentHeight = "height: 800px; max-height: 800px;";
+        this.contentHeightValue = 800;
         LoggerService.error(
           "Content sizing error",
           "failed to get element(s) for concept content resizing"
