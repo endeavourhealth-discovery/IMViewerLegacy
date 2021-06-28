@@ -111,7 +111,7 @@
                 <Members :conceptIri="conceptIri" />
               </div>
             </TabPanel>
-            <TabPanel header="Hierarchy position">
+            <TabPanel header="Hierarchy position" v-if="!isSet">
               <div
                 class="concept-panel-content"
                 id="secondary-tree-container"
