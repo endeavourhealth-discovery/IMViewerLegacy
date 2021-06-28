@@ -148,8 +148,6 @@ import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import SecondaryTree from "../components/concept/SecondaryTree.vue";
-import { IM } from "@/vocabulary/IM";
-import { RDF } from "@/vocabulary/RDF";
 
 export default defineComponent({
   name: "Concept",
@@ -263,16 +261,38 @@ export default defineComponent({
     },
 
     async getConcept(iri: string) {
-      return (await EntityService.getEntityDefinitionDto(iri)).data;
+      await EntityService.getEntityDefinitionDto(iri)
+        .then(res => {
+          this.concept = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Failed to get concept definition dto from server",
+              err
+            )
+          );
+        });
     },
 
     async getProperties(iri: string) {
-      return (await EntityService.getRecordStructure(iri)).data;
+      await EntityService.getRecordStructure(iri)
+        .then(res => {
+          this.properties = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Failed to get properties record structure from server",
+              err
+            )
+          );
+        });
     },
 
     async init() {
-      this.properties = await this.getProperties(this.conceptIri);
-      this.concept = await this.getConcept(this.conceptIri);
+      await this.getProperties(this.conceptIri);
+      await this.getConcept(this.conceptIri);
       this.types = this.concept?.types;
       this.header = this.concept?.name;
     },
