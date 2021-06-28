@@ -23,6 +23,7 @@ export class IM {
   public static NATIONALLY_ASSURED_UK = IM.NAMESPACE + "NationallyAssuredUK";
 
   public static QUERY_SET = IM.NAMESPACE + "QuerySet";
+  public static CONCEPT_SET = IM.NAMESPACE + "ConceptSet";
   public static VALUE_SET = IM.NAMESPACE + "ValueSet";
   public static HAS_MEMBERS = IM.NAMESPACE + "hasMembers";
   public static SET = IM.NAMESPACE + "Set";
