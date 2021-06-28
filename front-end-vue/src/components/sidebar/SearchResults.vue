@@ -39,9 +39,9 @@
           >
             <div class="result-icon-container">
               <i
-                :class="getPerspectiveByConceptType(slotProps.data.conceptType)"
+                :class="getPerspectiveByConceptType(slotProps.data.entityType)"
                 class="result-icon"
-                :style="getColorByConceptType(slotProps.data.conceptType)"
+                :style="getColorByConceptType(slotProps.data.entityType)"
                 aria-hidden="true"
               />
             </div>
