@@ -10,8 +10,8 @@
       <h3>Download Concept:</h3>
     </template>
     <div id="content" class="p-d-flex p-flex-column p-jc-center p-ai-center">
-      <h4 v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']">
-        {{ concept["http://www.w3.org/2000/01/rdf-schema#label"] }}
+      <h4 v-if="concept[RDFS_LABEL]">
+        {{ concept[RDFS_LABEL] }}
       </h4>
       <SelectButton
         class="format-container"
@@ -120,6 +120,10 @@
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
+import { IM } from "@/vocabulary/IM";
+import { RDFS } from "@/vocabulary/RDFS";
+import {SHACL} from "@/vocabulary/SHACL";
+import {RDF} from "@/vocabulary/RDF";
 
 export default defineComponent({
   name: "DownloadDialog",
@@ -148,6 +152,7 @@ export default defineComponent({
       includeParents: true,
       includeInactive: false,
       includeRoles: false,
+      RDFS_LABEL: RDFS.LABEL,
       format: {
         name: "Excel(.xlsx)",
         value: "excel",
@@ -177,7 +182,7 @@ export default defineComponent({
 
       const url =
         process.env.VUE_APP_API +
-        "api/concept/download?iri=" +
+        "api/entity/download?iri=" +
         modIri +
         "&format=" +
         this.format.value +
@@ -204,7 +209,7 @@ export default defineComponent({
       this.closeDownloadDialog();
     },
     async init(iri: string) {
-      this.concept = (await EntityService.getEntity(iri)).data;
+      this.concept = (await EntityService.getPartialEntity(iri,[RDFS.LABEL])).data;
       this.parents = (await EntityService.getEntityParents(iri)).data;
       this.children = (await EntityService.getEntityChildren(iri)).data;
       this.props = (await EntityService.getEntityProperties(iri)).data;

@@ -8,6 +8,8 @@ export class IM {
   public static IS_A = IM.NAMESPACE + "isA";
   public static ROLE_GROUP = IM.NAMESPACE + "roleGroup";
   public static IS_CONTAINED_IN = IM.NAMESPACE + "isContainedIn";
+  public static PROPERTY_GROUP = IM.NAMESPACE +"propertyGroup";
+  public static INHERITED_FROM = IM.NAMESPACE+"inheritedFrom";
 
   // mapping
   public static HAS_MAP = IM.NAMESPACE + "hasMap";
@@ -29,6 +31,7 @@ export class IM {
   public static DATA_PROPERTY = IM.NAMESPACE + "DataProperty";
 
   // code schemes
+  public static CODE_SCHEME = IM.NAMESPACE + "CodeScheme";
   public static CODE_SCHEME_SNOMED = IM.NAMESPACE + "SnomedCodeScheme";
   public static CODE_SCHEME_READ = IM.NAMESPACE + "Read2CodeScheme";
   public static CODE_SCHEME_ICD10 = IM.NAMESPACE + "ICD10CodeScheme";

@@ -53,13 +53,13 @@
       <div id="concept-content-dialogs-container">
         <div
           v-if="Object.keys(concept).length && isSet"
-          id="concept-panel-container"
+          id="set-concept-panel-container"
         >
           <TabView v-model:activeIndex="active">
             <TabPanel header="Definition">
               <div
                 class="concept-panel-content"
-                id="definition-container"
+                id="set-definition-container"
                 :style="contentHeight"
               >
                 <Definition
@@ -73,7 +73,7 @@
             <TabPanel header="Terms">
               <div
                 class="concept-panel-content"
-                id="terms-container"
+                id="set-terms-container"
                 :style="contentHeight"
               >
                 <Terms :conceptIri="conceptIri" v-if="active === 1" />
@@ -82,7 +82,7 @@
             <TabPanel header="Used in">
               <div
                 class="concept-panel-content"
-                id="usedin-container"
+                id="set-usedin-container"
                 :style="contentHeight"
               >
                 <UsedIn :conceptIri="conceptIri" v-if="active === 2" />
@@ -100,7 +100,7 @@
             <TabPanel header="Hierarchy position">
               <div
                 class="concept-panel-content"
-                id="secondary-tree-container"
+                id="set-secondary-tree-container"
                 :style="contentHeight"
               >
                 <SecondaryTree :conceptIri="conceptIri" v-if="active === 4" />

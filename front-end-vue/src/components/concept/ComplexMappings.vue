@@ -94,9 +94,10 @@ export default defineComponent({
   },
   methods: {
     async getMappings(): Promise<void> {
-      await EntityService.getComplexMappings(this.conceptIri)
+      // await EntityService.getComplexMappings(this.conceptIri)
+      await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP])
         .then(res => {
-          this.mappings = res.data;
+          this.mappings = res.data[IM.HAS_MAP];
         })
         .catch(() => {
           this.mappings = [];
@@ -107,10 +108,14 @@ export default defineComponent({
     createChartStructure(): void {
       let counters = { 1: 0 } as any;
       let data = {} as any;
+      console.log(this.mappings)
+      console.log("before")
       this.mappings.forEach(mapping => {
+        console.log("first")
         counters[2] = 0;
         if (IM.ONE_OF in mapping) {
           if (counters[1] === 0) {
+            console.log("one_of")
             data = {
               key: "" + counters[1],
               type: "oneOf",
@@ -125,10 +130,11 @@ export default defineComponent({
             };
           }
           mapping[IM.ONE_OF].forEach((map: any) => {
+            console.log("second")
             data.children[counters[1]].data.labels.push({
               name: map[IM.MATCHED_TO].name,
               iri: map[IM.MATCHED_TO]["@id"],
-              priority: map[IM.MAP_PRIORITY]["@value"],
+              priority: map[IM.MAP_PRIORITY],
               assuranceLevel: map[IM.ASSURANCE_LEVEL].name,
               mapAdvice: map[IM.MAP_ADVICE]
             });
@@ -136,6 +142,7 @@ export default defineComponent({
           });
           data.children[counters[1]].data.labels.sort(this.byPriority);
         } else if (IM.COMBINATION_OF in mapping) {
+          console.log("combination")
           if (counters[1] === 0) {
             data = {
               key: "" + counters[1],
@@ -166,7 +173,7 @@ export default defineComponent({
                 ].data.labels.push({
                   name: child[IM.MATCHED_TO].name,
                   iri: child[IM.MATCHED_TO]["@id"],
-                  priority: child[IM.MAP_PRIORITY]["@value"],
+                  priority: child[IM.MAP_PRIORITY],
                   assuranceLevel: child[IM.ASSURANCE_LEVEL].name,
                   mapAdvice: child[IM.MAP_ADVICE]
                 });
@@ -184,7 +191,7 @@ export default defineComponent({
                     {
                       name: map[IM.MATCHED_TO].name,
                       iri: map[IM.MATCHED_TO]["@id"],
-                      priority: map[IM.MAP_PRIORITY]["@value"],
+                      priority: map[IM.MAP_PRIORITY],
                       assuranceLevel: map[IM.ASSURANCE_LEVEL].name,
                       mapAdvice: map[IM.MAP_ADVICE]
                     }
@@ -195,6 +202,9 @@ export default defineComponent({
             }
             counters[2]++;
           });
+        }else{
+          console.log("something else");
+          console.log(mapping);
         }
         counters[1]++;
       });

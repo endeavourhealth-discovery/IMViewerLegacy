@@ -5,4 +5,6 @@ export class SHACL {
   public static PATH = SHACL.NAMESPACE + "path";
   public static CLASS = SHACL.NAMESPACE + "class";
   public static DATATYPE = SHACL.NAMESPACE + "datatype";
+  public static MINCOUNT= SHACL.NAMESPACE +"minCount";
+  public static MAXCOUNT= SHACL.NAMESPACE +"maxCount";
 }

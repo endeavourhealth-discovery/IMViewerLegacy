@@ -2,6 +2,7 @@ import { SearchRequest } from "@/models/search/SearchRequest";
 import { ConceptDto } from "@/models/ConceptDto";
 import axios, { AxiosResponse, CancelToken } from "axios";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
+import {IM} from "@/vocabulary/IM";
 
 export default class EntityService {
     public static async getPartialEntity(iri: string, predicates: string[]): Promise<AxiosResponse<any>> {
@@ -83,22 +84,6 @@ export default class EntityService {
     return axios.get(this.api + "api/entity/usages", { params: { iri: iri } });
   }
 
-  public static async getEntityMappedFrom(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/mappedFrom", {
-      params: { iri: iri }
-    });
-  }
-
-  public static async getEntityMappedTo(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/mappedTo", {
-      params: { iri: iri }
-    });
-  }
-
   public static async getEntityMembers(
     iri: string,
     expanded: boolean
@@ -108,16 +93,8 @@ export default class EntityService {
     });
   }
 
-  public static async getAncestorDefinitions(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/parents/definitions", {
-      params: { iri: iri }
-    });
-  }
-
   public static async getSchemeOptions(): Promise<AxiosResponse<any>> {
-    return this.getEntityChildren("http://endhealth.info/im#551000252107");
+    return this.getEntityChildren(IM.CODE_SCHEME);
   }
 
   public static async saveEntity(
