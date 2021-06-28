@@ -263,9 +263,7 @@ export default defineComponent({
     },
 
     async getConcept(iri: string) {
-      // return (await EntityService.getEntityDefinitionDto(iri)).data;
-      return (await EntityService.getPartialEntity(iri, [IM.IS_A, RDF.TYPE]))
-        .data;
+      return (await EntityService.getEntityDefinitionDto(iri)).data;
     },
 
     async getProperties(iri: string) {

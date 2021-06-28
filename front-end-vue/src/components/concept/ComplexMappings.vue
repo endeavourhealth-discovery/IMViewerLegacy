@@ -97,7 +97,7 @@ export default defineComponent({
       // await EntityService.getComplexMappings(this.conceptIri)
       await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP])
         .then(res => {
-          this.mappings = res.data[IM.HAS_MAP];
+          this.mappings = res.data[IM.HAS_MAP] || [];
         })
         .catch(() => {
           this.mappings = [];
@@ -141,6 +141,7 @@ export default defineComponent({
             counters[2]++;
           });
           data.children[counters[1]].data.labels.sort(this.byPriority);
+          counters[1]++;
         } else if (IM.COMBINATION_OF in mapping) {
           console.log("combination");
           if (counters[1] === 0) {
@@ -202,11 +203,11 @@ export default defineComponent({
             }
             counters[2]++;
           });
+          counters[1]++;
         } else {
           console.log("something else");
           console.log(mapping);
         }
-        counters[1]++;
       });
       this.data = data;
     },
