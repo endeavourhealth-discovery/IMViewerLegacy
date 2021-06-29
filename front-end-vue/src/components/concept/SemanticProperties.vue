@@ -25,33 +25,6 @@
         </div>
       </template>
     </Column>
-    <Column field="inherited.name" header="Inherited From" :sortable="true">
-      <template #body="slotProps">
-        <div
-          v-if="slotProps.data.inherited?.name"
-          class="link"
-          @click="navigate(slotProps.data.inherited?.['@id'])"
-        >
-          {{ slotProps.data.inherited?.name }}
-        </div>
-        <div v-else>-</div>
-      </template>
-    </Column>
-    <Column field="cardinality" header="Cardinality">
-      <template #body="slotProps">
-        <div v-if="slotProps.data.cardinality">
-          {{
-            `${slotProps.data.cardinality.minExclusive ||
-              slotProps.data.cardinality.minInclusive ||
-              0} :
-            ${slotProps.data.cardinality.maxExclusive ||
-              slotProps.data.cardinality.maxInclusive ||
-              "*"}`
-          }}
-        </div>
-        <div v-else>-</div>
-      </template>
-    </Column>
   </DataTable>
 </template>
 <script lang="ts">
