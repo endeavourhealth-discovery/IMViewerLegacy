@@ -6,6 +6,9 @@
     <ProgressSpinner />
   </div>
   <OrganizationChart v-else :value="data">
+    <template #hasMap="slotProps">
+      <span>{{ slotProps.node.data.label }}</span>
+    </template>
     <template #oneOf="slotProps">
       <span>{{ slotProps.node.data.label }}</span>
     </template>
@@ -22,13 +25,13 @@
         </thead>
         <tbody>
           <tr
-            v-for="label in slotProps.node.data.labels"
-            :key="label"
-            @mouseenter="toggle($event, label)"
-            @mouseleave="toggle($event, label)"
+            v-for="mapItem in slotProps.node.data.mapItems"
+            :key="mapItem"
+            @mouseenter="toggle($event, mapItem)"
+            @mouseleave="toggle($event, mapItem)"
           >
-            <td>{{ label.name }}</td>
-            <td>{{ label.priority }}</td>
+            <td>{{ mapItem.name }}</td>
+            <td>{{ mapItem.priority }}</td>
           </tr>
         </tbody>
       </table>
@@ -53,7 +56,6 @@
 
 <script lang="ts">
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
 
@@ -67,7 +69,13 @@ export default defineComponent({
         value: true
       });
       await this.getMappings();
-      this.createChartStructure();
+      this.data = this.createChartStructure(
+        "0",
+        this.mappings,
+        this.data,
+        0,
+        0
+      );
       this.$store.commit("updateLoading", {
         key: "mappings",
         value: false
@@ -76,7 +84,7 @@ export default defineComponent({
   },
   data() {
     return {
-      mappings: [] as any[],
+      mappings: {} as any,
       data: {} as any,
       hoveredResult: {} as any
     };
@@ -87,7 +95,7 @@ export default defineComponent({
       value: true
     });
     await this.getMappings();
-    this.createChartStructure();
+    this.data = this.createChartStructure("0", this.mappings, this.data, 0, 0);
     this.$store.commit("updateLoading", {
       key: "mappings",
       value: false
@@ -97,7 +105,8 @@ export default defineComponent({
     async getMappings(): Promise<void> {
       await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP])
         .then(res => {
-          this.mappings = res.data[IM.HAS_MAP] || [];
+          this.mappings = res.data || {};
+          this.data = {};
         })
         .catch(() => {
           this.mappings = [];
@@ -105,107 +114,136 @@ export default defineComponent({
         });
     },
 
-    createChartStructure(): void {
-      let counters = { 1: 0 } as any;
-      let data = {} as any;
-      this.mappings.forEach(mapping => {
-        counters[2] = 0;
-        if (IM.ONE_OF in mapping) {
-          if (counters[1] === 0) {
-            data = {
-              key: "" + counters[1],
-              type: "oneOf",
-              data: { label: "One of" },
-              children: [
-                {
-                  key: "" + counters[1] + "_" + counters[2],
-                  type: "childList",
-                  data: { labels: [] }
-                }
-              ]
-            };
-          }
-          mapping[IM.ONE_OF].forEach((map: any) => {
-            data.children[counters[1]].data.labels.push({
-              name: map[IM.MATCHED_TO].name,
-              iri: map[IM.MATCHED_TO]["@id"],
-              priority: map[IM.MAP_PRIORITY],
-              assuranceLevel: map[IM.ASSURANCE_LEVEL].name,
-              mapAdvice: map[IM.MAP_ADVICE]
-            });
-            counters[2]++;
-          });
-          data.children[counters[1]].data.labels.sort(this.byPriority);
-          counters[1]++;
-        } else if (IM.COMBINATION_OF in mapping) {
-          if (counters[1] === 0) {
-            data = {
-              key: "" + counters[1],
-              type: "comboOf",
-              data: { label: "Combination of" },
-              children: []
-            };
-          }
-          mapping[IM.COMBINATION_OF].forEach((map: any) => {
-            if (IM.ONE_OF in map) {
-              counters[3] = 0;
-              data.children[counters[2]] = {
-                key: "" + counters[1] + "_" + counters[2],
-                type: "oneOf",
-                data: { label: "One of" },
-                children: [
-                  {
-                    key:
-                      "" + counters[1] + "_" + counters[2] + "_" + counters[3],
-                    type: "childList",
-                    data: { labels: [] }
-                  }
-                ]
-              };
-              map[IM.ONE_OF].forEach((child: any) => {
-                data.children[counters[2]].children[
-                  counters[3]
-                ].data.labels.push({
-                  name: child[IM.MATCHED_TO].name,
-                  iri: child[IM.MATCHED_TO]["@id"],
-                  priority: child[IM.MAP_PRIORITY],
-                  assuranceLevel: child[IM.ASSURANCE_LEVEL].name,
-                  mapAdvice: child[IM.MAP_ADVICE]
-                });
-              });
-              data.children[counters[2]].children[counters[3]].data.labels.sort(
-                this.byPriority
-              );
-              counters[3]++;
-            } else if (IM.MATCHED_TO in map) {
-              data.children[counters[2]] = {
-                key: "" + counters[1] + "_" + counters[2],
-                type: "childList",
-                data: {
-                  labels: [
-                    {
-                      name: map[IM.MATCHED_TO].name,
-                      iri: map[IM.MATCHED_TO]["@id"],
-                      priority: map[IM.MAP_PRIORITY],
-                      assuranceLevel: map[IM.ASSURANCE_LEVEL].name,
-                      mapAdvice: map[IM.MAP_ADVICE]
-                    }
-                  ]
-                }
-              };
-              data.children[counters[2]].data.labels.sort(this.byPriority);
-            }
-            counters[2]++;
-          });
-          counters[1]++;
-        } else {
-          LoggerService.warn(
-            undefined,
-            "No 'On of' or 'Combination of' found on concept for concept mapping"
+    createChartTableNodeObject(
+      items: {
+        assuranceLevel: string;
+        iri: string;
+        mapAdvice: string;
+        name: string;
+        priority: number;
+      },
+      location: string,
+      position: number
+    ): {
+      key: string;
+      type: string;
+      data: any;
+    } {
+      return {
+        key: location + "_" + position,
+        type: "childList",
+        data: { mapItems: items }
+      };
+    },
+
+    createChartMapNode(
+      item: string,
+      location: string,
+      positionInLevel: number
+    ): {
+          key: string;
+          type: string;
+          data: { label: string };
+          children: any[];
+        } | undefined {
+      if (item === IM.HAS_MAP) {
+        return {
+          key: "0",
+          type: "hasMap",
+          data: { label: "Has map" },
+          children: []
+        };
+      }
+      if (item === IM.ONE_OF) {
+        return {
+          key: location + "_" + positionInLevel,
+          type: "oneOf",
+          data: { label: "One of" },
+          children: []
+        };
+      }
+      if (item === IM.COMBINATION_OF) {
+        return {
+          key: location + "_" + positionInLevel,
+          type: "comboOf",
+          data: { label: "Combination of" },
+          children: []
+        };
+      }
+      if (item === IM.SOME_OF) {
+        return {
+          key: location + "_" + positionInLevel,
+          type: "someOf",
+          data: { label: "Some of" },
+          children: []
+        };
+      }
+    },
+
+    createChartStructure(
+      location: string,
+      object: any,
+      result: any,
+      level: number,
+      positionInLevel: number
+    ): any {
+      for (const [key, value] of Object.entries(object)) {
+        if (Array.isArray(value)) {
+          const mapNode = this.createChartMapNode(
+            key,
+            location,
+            positionInLevel
           );
+          result = this.addToData(mapNode, result, level);
+          let count = 0;
+          value.forEach(item => {
+            this.data = this.createChartStructure(
+              location,
+              item,
+              result,
+              level + 1,
+              count
+            );
+            count++;
+          });
+        } else {
+          const tableNode = this.createChartTableNodeObject(
+            value as {
+              assuranceLevel: string;
+              iri: string;
+              mapAdvice: string;
+              name: string;
+              priority: number;
+            },
+            location,
+            positionInLevel
+          );
+          result = this.addToData(tableNode, result, level);
         }
-      });
-      this.data = data;
+      }
+      return result;
+    },
+
+    addToData(node: any, result: any, level: number) {
+      console.log(result);
+      console.log(node);
+      console.log(level);
+      if (level === 0) {
+        result = node;
+        return result;
+      }
+      if (level === 1) {
+        result.children.push(node);
+        return result;
+      }
+      if (level === 2) {
+        result.children.children.push(node);
+        return result;
+      }
+      if (level === 3) {
+        result.children.children.children.push(node);
+        return result;
+      }
     },
 
     byPriority(a: any, b: any): number {
