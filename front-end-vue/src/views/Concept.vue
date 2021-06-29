@@ -61,7 +61,8 @@
               >
                 <Definition
                   :concept="concept"
-                  :properties="properties"
+                  :semanticProperties="semanticProperties"
+                  :dataModelProperties="dataModelProperties"
                   :contentHeight="contentHeightValue"
                 />
               </div>
@@ -549,7 +550,9 @@ export default defineComponent({
               .writeText("Properties: [\n\t" + semanticPropertiesString + "\n]")
               .then(() => {
                 this.$toast.add(
-                  LoggerService.success("Semantic properties copied to clipboard")
+                  LoggerService.success(
+                    "Semantic properties copied to clipboard"
+                  )
                 );
               })
               .catch(err => {
@@ -566,10 +569,14 @@ export default defineComponent({
           label: "Data model properties",
           command: async () => {
             await navigator.clipboard
-              .writeText("Properties: [\n\t" + dataModelPropertiesString + "\n]")
+              .writeText(
+                "Properties: [\n\t" + dataModelPropertiesString + "\n]"
+              )
               .then(() => {
                 this.$toast.add(
-                  LoggerService.success("Data model properties copied to clipboard")
+                  LoggerService.success(
+                    "Data model properties copied to clipboard"
+                  )
                 );
               })
               .catch(err => {

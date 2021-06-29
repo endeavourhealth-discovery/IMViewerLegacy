@@ -107,25 +107,19 @@ export default class EntityService {
     });
   }
 
-  public static getSemanticProperties(iri: string): Promise<AxiosResponse<any>> {
+  public static getSemanticProperties(
+    iri: string
+  ): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/semanticProperties", {
       params: { iri: iri }
     });
   }
 
-  public static getDataModelProperties(iri: string): Promise<AxiosResponse<any>> {
+  public static getDataModelProperties(
+    iri: string
+  ): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/dataModelProperties", {
       params: { iri: iri }
-    });
-  }
-
-  public static getDefinitionSubTypes(
-    iri: string,
-    cancelToken?: CancelToken
-  ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/definitionSubTypes", {
-      params: { iri: iri },
-      cancelToken: cancelToken
     });
   }
 

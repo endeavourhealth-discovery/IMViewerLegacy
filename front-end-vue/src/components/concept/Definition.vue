@@ -34,7 +34,7 @@
           :options="concept.isa"
           listStyle="height: 12rem;"
           v-model="selected"
-          @change="navigate(selected.iri)"
+          @change="navigate(selected['@id'])"
         >
           <template #option="slotProps">
             <div>
@@ -49,7 +49,7 @@
           :options="concept.subtypes"
           listStyle="height: 12rem;"
           v-model="selected"
-          @change="navigate(selected.iri)"
+          @change="navigate(selected['@id'])"
         >
           <template #option="slotProps">
             <div>
@@ -60,7 +60,16 @@
       </div>
     </div>
     <Divider />
-    <Properties :properties="properties" :contentHeight="contentHeight" />
+    <SemanticProperties
+      :semanticProperties="semanticProperties"
+      :dataModelProperties="dataModelProperties"
+      :contentHeight="contentHeight"
+    />
+    <Divider />
+    <DataModelProperties
+      :dataModelProperties="dataModelProperties"
+      :contentHeight="contentHeight"
+    />
   </div>
 </template>
 
@@ -68,12 +77,18 @@
 import { defineComponent } from "vue";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import Description from "./Description.vue";
-import Properties from "./Properties.vue";
+import SemanticProperties from "./SemanticProperties.vue";
+import DataModelProperties from "./DataModelProperties.vue";
 
 export default defineComponent({
   name: "Definition",
-  components: { Description, Properties },
-  props: ["concept", "properties", "contentHeight"],
+  components: { Description, SemanticProperties, DataModelProperties },
+  props: [
+    "concept",
+    "semanticProperties",
+    "dataModelProperties",
+    "contentHeight"
+  ],
   computed: {
     conceptTypes(): string {
       return this.concept?.types
