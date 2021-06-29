@@ -211,8 +211,8 @@ export default defineComponent({
       ).data;
       this.parents = (await EntityService.getEntityParents(iri)).data;
       this.children = (await EntityService.getEntityChildren(iri)).data;
-      this.props = (await EntityService.getEntityProperties(iri)).data;
-      this.roles = (await EntityService.getEntityRoles(iri)).data;
+      this.props = (await EntityService.getDataModelProperties(iri)).data;
+      this.roles = (await EntityService.getSemanticProperties(iri)).data;
       this.members = (
         await EntityService.getEntityMembers(iri, this.expandMembers)
       ).data;

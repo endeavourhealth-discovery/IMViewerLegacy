@@ -17,16 +17,6 @@ export default class EntityService {
     });
   }
 
-  public static async getDataModelProperties(
-    iri: string,
-    cancelToken: CancelToken
-  ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/dataModelProperties", {
-      params: { iri: iri },
-      cancelToken: cancelToken
-    });
-  }
-
   static api = process.env.VUE_APP_API;
 
   public static async advancedSearch(
@@ -107,18 +97,6 @@ export default class EntityService {
     return axios.post(this.api + "api/entity", conceptDto);
   }
 
-  public static getEntityProperties(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/properties", {
-      params: { iri: iri }
-    });
-  }
-
-  public static getEntityRoles(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/roles", {
-      params: { iri: iri }
-    });
-  }
-
   public static getEntityGraph(iri: string): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/graph", { params: { iri: iri } });
   }
@@ -129,19 +107,19 @@ export default class EntityService {
     });
   }
 
-  public static getRecordStructure(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/recordStructure", {
+  public static getSemanticProperties(
+    iri: string
+  ): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/semanticProperties", {
       params: { iri: iri }
     });
   }
 
-  public static getDefinitionSubTypes(
-    iri: string,
-    cancelToken?: CancelToken
+  public static getDataModelProperties(
+    iri: string
   ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/definitionSubTypes", {
-      params: { iri: iri },
-      cancelToken: cancelToken
+    return axios.get(this.api + "api/entity/dataModelProperties", {
+      params: { iri: iri }
     });
   }
 
