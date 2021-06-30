@@ -82,7 +82,10 @@
                 id="complex-mappings-container"
                 :style="contentHeight"
               >
-                <ComplexMappings :conceptIri="conceptIri" />
+                <ComplexMappings
+                  :conceptIri="conceptIri"
+                  @toTermsClicked="showTerms"
+                />
               </div>
             </TabPanel>
             <TabPanel header="Used in">
@@ -612,6 +615,10 @@ export default defineComponent({
           }
         });
       }
+    },
+
+    showTerms() {
+      this.active = 1;
     }
   }
 });

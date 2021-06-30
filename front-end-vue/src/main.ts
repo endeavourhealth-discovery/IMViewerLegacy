@@ -69,12 +69,11 @@ import Toast from "primevue/toast";
 import Checkbox from "primevue/checkbox";
 import PickList from "primevue/picklist";
 import ContextMenu from "primevue/contextmenu";
-import {FilterMatchMode,FilterOperator} from 'primevue/api';
-import RadioButton from 'primevue/radiobutton';
+import { FilterMatchMode, FilterOperator } from "primevue/api";
+import RadioButton from "primevue/radiobutton";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
-import component from "*.vue";
 
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);

@@ -18,6 +18,9 @@
     <template #someOf="slotProps">
       <span>{{ slotProps.node.data.label }}</span>
     </template>
+    <template #terms="slotProps">
+      <a class="terms-link" @click="toTerms"><span>{{ slotProps.node.data.label }}</span></a>
+    </template>
     <template #childList="slotProps">
       <table aria-label="Concept map children">
         <thead>
@@ -65,6 +68,7 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "ComplexMappings",
   props: ["conceptIri"],
+  emits: ["toTermsClicked"],
   watch: {
     async conceptIri() {
       this.$store.commit("updateLoading", {
@@ -225,6 +229,11 @@ export default defineComponent({
         children: [] as any
       };
       parentNode.children = this.generateChildNodes(mappingObject, "0", 0, 0);
+      parentNode.children.push({
+        key: "0" + parentNode.children.length,
+        type: "terms",
+        data: { label: "Term maps" }
+      });
       return parentNode;
     },
 
@@ -242,6 +251,10 @@ export default defineComponent({
       this.hoveredResult = data;
       const x = this.$refs.opMap as any;
       x.toggle(event);
+    },
+
+    toTerms() {
+      this.$emit("toTermsClicked");
     }
   }
 });
@@ -282,5 +295,9 @@ th {
   height: 100%;
   width: 100%;
   overflow: auto;
+}
+
+.terms-link {
+  cursor: pointer;
 }
 </style>
