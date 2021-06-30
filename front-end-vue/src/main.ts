@@ -69,9 +69,12 @@ import Toast from "primevue/toast";
 import Checkbox from "primevue/checkbox";
 import PickList from "primevue/picklist";
 import ContextMenu from "primevue/contextmenu";
+import {FilterMatchMode,FilterOperator} from 'primevue/api';
+import RadioButton from 'primevue/radiobutton';
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
+import component from "*.vue";
 
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
@@ -128,6 +131,9 @@ const app = createApp(App)
   .component("Checkbox", Checkbox)
   .component("PickList", PickList)
   .component("FileUpload", FileUpload)
-  .component("ContextMenu", ContextMenu);
+  .component("ContextMenu", ContextMenu)
+  .component("FilterMatchMode", FilterMatchMode)
+  .component("FilterOperator", FilterOperator)
+  .component("RadioButton", RadioButton);
 
 app.mount("#app");
