@@ -19,7 +19,9 @@
       <span>{{ slotProps.node.data.label }}</span>
     </template>
     <template #terms="slotProps">
-      <a class="terms-link" @click="toTerms"><span>{{ slotProps.node.data.label }}</span></a>
+      <a class="terms-link" @click="toTerms">
+        <span>{{ slotProps.node.data.label }}</span>
+      </a>
     </template>
     <template #childList="slotProps">
       <table aria-label="Concept map children">
