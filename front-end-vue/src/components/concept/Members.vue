@@ -67,8 +67,8 @@ export default defineComponent({
     conceptIri: String
   },
   watch: {
-    async conceptIri(newValue) {
-      await this.getMembers(newValue);
+    async conceptIri() {
+      await this.getMembers();
     }
   },
   async mounted() {
@@ -79,7 +79,7 @@ export default defineComponent({
     this.setListboxHeight();
 
     if (this.conceptIri) {
-      await this.getMembers(this.conceptIri);
+      await this.getMembers();
     }
   },
   beforeUnmount() {
@@ -100,11 +100,9 @@ export default defineComponent({
     };
   },
   methods: {
-    async getMembers(iri: string) {
-      this.loading = true;
-      this.members = (await EntityService.getEntityMembers(iri, false)).data;
-      this.loading = false;
-      this.combinedMembers = this.getCombinedMembers();
+    async getMembers() {
+      this.expanded = false;
+      await this.expandMembers();
     },
     async expandMembers(){
       if(this.expanded) {
@@ -118,7 +116,6 @@ export default defineComponent({
         this.loading = false;
         this.combinedMembers = this.getCombinedMembers();
       }
-
     },
     getCombinedMembers() {
       const combinedMembers: { status: string; member: any }[] = [];
