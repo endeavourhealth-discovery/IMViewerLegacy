@@ -45,13 +45,13 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!props?.length"
-            id="properties"
+            :disabled="!dataModelProperties?.length"
+            id="data-model-properties"
             :binary="true"
-            value="Include properties"
-            v-model="includeProperties"
+            value="Include data model properties"
+            v-model="includeDataModelProperties"
           />
-          <label class="label" for="properties">Include properties</label>
+          <label class="label" for="data-model-properties">Include data model properties</label>
         </div>
         <div class="checkbox-label">
           <Checkbox
@@ -87,13 +87,13 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!roles?.length"
-            id="roles"
+            :disabled="!semanticProperties?.length"
+            id="semantic-properties"
             :binary="true"
-            value="Include roles"
-            v-model="includeRoles"
+            value="Include semantic properties"
+            v-model="includeSemanticProperties"
           />
-          <label class="label" for="roles">Include roles</label>
+          <label class="label" for="semantic-properties">Include semantic properties</label>
         </div>
       </div>
       <div class="download-button-container p-d-flex p-flex-row p-jc-around">
@@ -139,16 +139,16 @@ export default defineComponent({
       concept: {},
       parents: [] as any,
       children: [] as any,
-      props: [],
-      roles: [],
+      dataModelProperties: [],
+      semanticProperties: [],
       members: {} as any,
       includeChildren: true,
-      includeProperties: true,
+      includeDataModelProperties: true,
       includeMembers: true,
       expandMembers: false,
       includeParents: true,
       includeInactive: false,
-      includeRoles: false,
+      includeSemanticProperties: false,
       RDFS_LABEL: RDFS.LABEL,
       format: {
         name: "Excel(.xlsx)",
@@ -185,16 +185,16 @@ export default defineComponent({
         this.format.value +
         "&children=" +
         this.includeChildren +
-        "&properties=" +
-        this.includeProperties +
+        "&dataModelProperties=" +
+        this.includeDataModelProperties +
         "&members=" +
         this.includeMembers +
         "&expandMembers=" +
         this.expandMembers +
         "&parents=" +
         this.includeParents +
-        "&roles=" +
-        this.includeRoles +
+        "&semanticProperties=" +
+        this.includeSemanticProperties +
         "&inactive=" +
         this.includeInactive;
       const popup = window.open(url);
@@ -211,16 +211,16 @@ export default defineComponent({
       ).data;
       this.parents = (await EntityService.getEntityParents(iri)).data;
       this.children = (await EntityService.getEntityChildren(iri)).data;
-      this.props = (await EntityService.getDataModelProperties(iri)).data;
-      this.roles = (await EntityService.getSemanticProperties(iri)).data;
+      this.dataModelProperties = (await EntityService.getDataModelProperties(iri)).data;
+      this.semanticProperties = (await EntityService.getSemanticProperties(iri)).data;
       this.members = (
         await EntityService.getEntityMembers(iri, this.expandMembers)
       ).data;
 
       this.includeParents = !!this.parents.length;
       this.includeChildren = !!this.children.length;
-      this.includeProperties = !!this.props.length;
-      this.includeRoles = !!this.roles.length;
+      this.includeDataModelProperties = !!this.dataModelProperties.length;
+      this.includeSemanticProperties = !!this.semanticProperties.length;
       this.includeMembers =
         !!this.members?.included?.length || !!this.members.excluded?.length;
     }
