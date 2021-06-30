@@ -15,6 +15,9 @@
     <template #comboOf="slotProps">
       <span>{{ slotProps.node.data.label }}</span>
     </template>
+    <template #someOf="slotProps">
+      <span>{{ slotProps.node.data.label }}</span>
+    </template>
     <template #childList="slotProps">
       <table aria-label="Concept map children">
         <thead>
@@ -69,13 +72,7 @@ export default defineComponent({
         value: true
       });
       await this.getMappings();
-      this.data = this.createChartStructure(
-        "0",
-        this.mappings,
-        this.data,
-        0,
-        0
-      );
+      this.data = this.createChartStructure(this.mappings);
       this.$store.commit("updateLoading", {
         key: "mappings",
         value: false
@@ -95,7 +92,7 @@ export default defineComponent({
       value: true
     });
     await this.getMappings();
-    this.data = this.createChartStructure("0", this.mappings, this.data, 0, 0);
+    this.data = this.createChartStructure(this.mappings);
     this.$store.commit("updateLoading", {
       key: "mappings",
       value: false
@@ -105,7 +102,7 @@ export default defineComponent({
     async getMappings(): Promise<void> {
       await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP])
         .then(res => {
-          this.mappings = res.data || {};
+          this.mappings = res.data[IM.HAS_MAP] || {};
           this.data = {};
         })
         .catch(() => {
@@ -114,14 +111,13 @@ export default defineComponent({
         });
     },
 
-    createChartTableNodeObject(
+    createChartTableNode(
       items: {
         assuranceLevel: string;
         iri: string;
-        mapAdvice: string;
         name: string;
         priority: number;
-      },
+      }[],
       location: string,
       position: number
     ): {
@@ -140,26 +136,20 @@ export default defineComponent({
       item: string,
       location: string,
       positionInLevel: number
-    ): {
+    ):
+      | {
           key: string;
           type: string;
           data: { label: string };
           children: any[];
-        } | undefined {
-      if (item === IM.HAS_MAP) {
-        return {
-          key: "0",
-          type: "hasMap",
-          data: { label: "Has map" },
-          children: []
-        };
-      }
+        }
+      | undefined {
       if (item === IM.ONE_OF) {
         return {
           key: location + "_" + positionInLevel,
           type: "oneOf",
           data: { label: "One of" },
-          children: []
+          children: [] as any
         };
       }
       if (item === IM.COMBINATION_OF) {
@@ -167,7 +157,7 @@ export default defineComponent({
           key: location + "_" + positionInLevel,
           type: "comboOf",
           data: { label: "Combination of" },
-          children: []
+          children: [] as any
         };
       }
       if (item === IM.SOME_OF) {
@@ -175,75 +165,67 @@ export default defineComponent({
           key: location + "_" + positionInLevel,
           type: "someOf",
           data: { label: "Some of" },
-          children: []
+          children: [] as any
         };
       }
     },
 
-    createChartStructure(
+    generateChildNodes(
+      mapObject: any,
       location: string,
-      object: any,
-      result: any,
       level: number,
       positionInLevel: number
-    ): any {
-      for (const [key, value] of Object.entries(object)) {
-        if (Array.isArray(value)) {
-          const mapNode = this.createChartMapNode(
-            key,
+    ) {
+      if (IM.MATCHED_TO in mapObject[0]) {
+        const matchedList = [] as any;
+        mapObject.forEach((item: any) => {
+          matchedList.push({
+            name: item[IM.MATCHED_TO].name,
+            iri: item[IM.MATCHED_TO]["@id"],
+            priority: item[IM.MAP_PRIORITY],
+            assuranceLevel: item[IM.ASSURANCE_LEVEL].name
+          });
+        });
+        return [
+          this.createChartTableNode(
+            matchedList.sort(this.byPriority),
             location,
             positionInLevel
+          )
+        ];
+      } else {
+        const results = [];
+        let count = 0;
+        for (const item of mapObject) {
+          let mapNode = this.createChartMapNode(
+            Object.keys(item)[0],
+            location,
+            count
           );
-          result = this.addToData(mapNode, result, level);
-          let count = 0;
-          value.forEach(item => {
-            this.data = this.createChartStructure(
+          if (mapNode) {
+            mapNode.children = this.generateChildNodes(
+              item[Object.keys(item)[0]],
               location,
-              item,
-              result,
               level + 1,
               count
             );
-            count++;
-          });
-        } else {
-          const tableNode = this.createChartTableNodeObject(
-            value as {
-              assuranceLevel: string;
-              iri: string;
-              mapAdvice: string;
-              name: string;
-              priority: number;
-            },
-            location,
-            positionInLevel
-          );
-          result = this.addToData(tableNode, result, level);
+          }
+          results.push(mapNode);
+          count++;
         }
+        return results;
       }
-      return result;
     },
 
-    addToData(node: any, result: any, level: number) {
-      console.log(result);
-      console.log(node);
-      console.log(level);
-      if (level === 0) {
-        result = node;
-        return result;
-      }
-      if (level === 1) {
-        result.children.push(node);
-        return result;
-      }
-      if (level === 2) {
-        result.children.children.push(node);
-        return result;
-      }
-      if (level === 3) {
-        result.children.children.children.push(node);
-        return result;
-      }
+    createChartStructure(mappingObject: any): any {
+      const parentNode = {
+        key: "0",
+        type: "hasMap",
+        data: { label: "Has map" },
+        children: [] as any
+      };
+      parentNode.children = this.generateChildNodes(mappingObject, "0", 0, 0);
+      return parentNode;
     },
 
     byPriority(a: any, b: any): number {
