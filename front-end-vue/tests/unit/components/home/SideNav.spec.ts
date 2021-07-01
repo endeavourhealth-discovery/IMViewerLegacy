@@ -2,6 +2,7 @@ import { shallowMount } from "@vue/test-utils";
 import SideNav from "@/components/home/SideNav.vue";
 import Menu from "primevue/menu";
 import { User } from "@/models/user/User";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 describe("SideNav.spec ___ not logged in", () => {
   let wrapper: any;
@@ -13,7 +14,8 @@ describe("SideNav.spec ___ not logged in", () => {
     mockStore = {
       state: {
         currentUser: null,
-        isLoggedIn: false
+        isLoggedIn: false,
+        sideNavHierarchyFocus: {name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" }
       },
       commit: jest.fn()
     };
@@ -27,7 +29,7 @@ describe("SideNav.spec ___ not logged in", () => {
     };
     wrapper = shallowMount(SideNav, {
       global: {
-        components: { Menu },
+        components: { Menu, FontAwesomeIcon },
         mocks: { $store: mockStore, $route: mockRoute, $router: mockRouter }
       }
     });
@@ -72,7 +74,7 @@ describe("SideNav.spec ___ not logged in", () => {
   });
 
   it("can determine isActive ___ true", () => {
-    expect(wrapper.vm.isActive("Home")).toBeTruthy();
+    expect(wrapper.vm.isActive("Ontology")).toBeTruthy();
   });
 
   it("can determine isActive ___ false", () => {
@@ -105,11 +107,15 @@ describe("SideNav.spec ___ not logged in", () => {
   it("can reset to home", async() => {
     wrapper.vm.resetToHome();
     await wrapper.vm.$nextTick();
-    expect(mockStore.commit).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledWith(
-      "updateConceptIri",
-      "http://endhealth.info/im#DiscoveryOntology"
+    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1,
+      "updateSideNavHierarchyFocus", {
+        name: "InformationModel",
+        iri: "http://endhealth.info/im#InformationModel"
+      }
     );
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateConceptIri",
+    "http://endhealth.info/im#InformationModel")
     expect(mockRouter.push).toHaveBeenCalledTimes(1);
     expect(mockRouter.push).toHaveBeenCalledWith({ name: "Dashboard" });
   });
@@ -125,7 +131,8 @@ describe("SideNav.spec ___ logged in", () => {
     mockStore = {
       state: {
         currentUser: new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "12345678", { value: "colour/001-man.png" }),
-        isLoggedIn: true
+        isLoggedIn: true,
+        sideNavHierarchyFocus: {name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" }
       },
       commit: jest.fn()
     };
@@ -139,7 +146,7 @@ describe("SideNav.spec ___ logged in", () => {
     };
     wrapper = shallowMount(SideNav, {
       global: {
-        components: { Menu },
+        components: { Menu, FontAwesomeIcon },
         mocks: { $store: mockStore, $route: mockRoute, $router: mockRouter }
       }
     });
