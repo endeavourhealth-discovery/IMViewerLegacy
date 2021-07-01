@@ -18,16 +18,17 @@
           <div
             v-for="item in menuItems"
             :key="item.route"
+            class="center-icon-container"
             v-bind:class="{ active: isActive(item.activeOn) }"
             @click="$router.push({ name: item.route })"
           >
             <font-awesome-icon
-              class="sidebutton"
+              class="sidebutton center-icon"
               :icon="item.icon"
               style="padding: 5px"
               fixed-width
             />
-            <div>{{ item.name }}</div>
+            <div class="center-icon-text">{{ item.name }}</div>
           </div>
         </div>
 
@@ -199,15 +200,21 @@ export default defineComponent({
   width: 100%;
 }
 
-#center-icons div {
+.center-icon-container {
   width: 100%;
   padding-right: 5px;
   border-right: 0;
   margin-bottom: 20px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
 }
 
-#center-icons div div {
+.center-icon-text {
   padding-right: 0;
+  width: 100%;
+  word-break: break-all;
 }
 
 #center-icons .active {
@@ -218,18 +225,6 @@ export default defineComponent({
 .disabled * {
   color: #555555;
   cursor: not-allowed !important;
-}
-
-@media screen and (max-width: 1439px) {
-  .layout-menu-container {
-    width: 8vw;
-  }
-}
-
-@media screen and (min-width: 1440px) {
-  .layout-menu-container {
-    width: 115px;
-  }
 }
 
 .sidebutton {
@@ -279,6 +274,10 @@ export default defineComponent({
 }
 
 @media screen and (max-width: 1439px) {
+  .layout-menu-container {
+    width: 8vw;
+  }
+
   #user-icon,
   .sidebutton {
     font-size: 4vw;
@@ -291,9 +290,17 @@ export default defineComponent({
   .im-logo {
     width: 7vw;
   }
+
+  .center-icon-text {
+    font-size: 1rem;
+  }
 }
 
 @media screen and (min-width: 1440px) {
+  .layout-menu-container {
+    width: 115px;
+  }
+
   #user-icon,
   .sidebutton {
     font-size: 50px;
@@ -305,6 +312,10 @@ export default defineComponent({
 
   .im-logo {
     width: 100px;
+  }
+
+  .center-icon-text {
+    font-size: 1.5rem;
   }
 }
 </style>
