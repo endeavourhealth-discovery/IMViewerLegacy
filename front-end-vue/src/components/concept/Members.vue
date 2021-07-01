@@ -42,7 +42,7 @@
               <Checkbox
                 id="expanded"
                 v-model="expanded"
-                v-on:change="expandMembers"
+                v-on:change="toggleExpansion"
                 :binary="true"
               />
               <label for="expanded" class="p-mx-1">Expanded</label>
@@ -91,6 +91,8 @@
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
 import { FilterMatchMode } from "primevue/api";
+import Swal from 'sweetalert2';
+import LoggerService from '@/services/LoggerService';
 
 export default defineComponent({
   name: "Members",
@@ -134,23 +136,50 @@ export default defineComponent({
   methods: {
     async getMembers() {
       this.expanded = false;
-      await this.expandMembers();
+      await this.toggleExpansion();
     },
-    async expandMembers() {
+    async toggleExpansion() {
+      this.loading = true;
       if (this.expanded) {
-        this.loading = true;
         this.members = (
-          await EntityService.getEntityMembers(this.conceptIri as string, true)
+          await EntityService.getEntityMembers(this.conceptIri as string, true, 2000)
         ).data;
-        this.loading = false;
-        this.combinedMembers = this.getCombinedMembers();
       } else {
-        this.loading = true;
         this.members = (
           await EntityService.getEntityMembers(this.conceptIri as string, false)
         ).data;
-        this.loading = false;
+      }
+      this.loading = false;
+      if (this.members.limited) {
+        this.expanded = false;
+        Swal.fire({
+          icon: "warning",
+          title: "Large data set",
+          text: "Expanding this set results in a large amount of data.  Download instead?",
+          confirmButtonText: "Download",
+          showCancelButton: true
+        }).then((result) => {
+          if (result.isConfirmed)
+            this.download();
+          else {
+            this.$toast.add(
+                LoggerService.warn("Expansion cancelled, results not downloaded")
+            );
+          }
+        });
+      } else {
         this.combinedMembers = this.getCombinedMembers();
+      }
+    },
+    download() {
+      const modIri = (this.conceptIri as string)
+          .replace(/\//gi, "%2F")
+          .replace(/#/gi, "%23");
+      const popup = window.open(process.env.VUE_APP_API + "api/entity/download?iri=" + modIri + "&members=true&expandMembers=true&format=excel");
+      if (!popup) {
+        this.$toast.add(LoggerService.error("Download failed from server"));
+      } else {
+        this.$toast.add(LoggerService.success("Download will begin shortly"));
       }
     },
     getCombinedMembers() {
