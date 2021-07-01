@@ -18,16 +18,17 @@
           <div
             v-for="item in menuItems"
             :key="item.route"
-            v-bind:class="{ active: isActive(item.activeOn) }"
-            @click="$router.push({ name: item.route })"
+            class="center-icon-container"
+            v-bind:class="{ active: isActive(item.name) }"
+            @click="handleCenterIconClick(item)"
           >
             <font-awesome-icon
-              class="sidebutton"
+              class="sidebutton center-icon"
               :icon="item.icon"
               style="padding: 5px"
               fixed-width
             />
-            <div>{{ item.name }}</div>
+            <div class="center-icon-text">{{ item.name }}</div>
           </div>
         </div>
 
@@ -65,7 +66,7 @@ import { mapState } from "vuex";
 
 export default defineComponent({
   name: "SideNav",
-  computed: mapState(["currentUser", "isLoggedIn"]),
+  computed: mapState(["currentUser", "isLoggedIn", "sideNavHierarchyFocus"]),
   data() {
     return {
       userPopupBottom: 0,
@@ -107,44 +108,35 @@ export default defineComponent({
 
       menuItems: [
         {
-          activeOn: ["Dashboard", "Concept"],
-          route: "Dashboard",
           icon: ["fas", "book"],
-          name: "Ontology"
-        } //,
+          name: "Ontology",
+          iri: "http://endhealth.info/im#DiscoveryOntology"
+        },
         // {
         //   activeOn: ["ReferenceData"],
-        //   // route: "ReferenceData",
+        //   route: "ReferenceData",
         //   icon: ["fas", "database"],
         //   name: "Reference"
         // },
+        {
+          icon: ["fas", "layer-group"],
+          name: "Sets",
+          iri: "http://endhealth.info/im#Sets"
+        },
+        {
+          icon: ["fas", "search"],
+          name: "Queries",
+          iri: "http://endhealth.info/im#QT_QueryTemplates"
+        } //,
         // {
-        //   activeOn: ["ValueSets"],
-        //   // route: "ValueSets",
-        //   icon: ["fas", "layer-group"],
-        //   name: "Sets"
-        // },
-        // {
-        //   activeOn: ["Queries"],
-        //   // route: "Queries",
-        //   icon: ["fas", "search"],
-        //   name: "Queries"
-        // },
-        // {
-        //   activeOn: ["Workflow"],
-        //   // route: "Workflow",
         //   icon: ["fas", "tasks"],
         //   name: "Workflow"
         // },
         // {
-        //   activeOn: ["Mapping"],
-        //   // route: "Mapping",
         //   icon: ["fas", "map"],
         //   name: "Maps"
         // },
         // {
-        //   activeOn: ["UPRN"],
-        //   route: "UPRN",
         //   icon: ["fas", "map-marked-alt"],
         //   name: "Assign"
         // }
@@ -152,8 +144,8 @@ export default defineComponent({
     };
   },
   methods: {
-    isActive(items: any[]): boolean {
-      return items.indexOf(this.$route.name) >= 0;
+    isActive(item: string): boolean {
+      return item === this.sideNavHierarchyFocus.name ? true : false;
     },
 
     getItems(): { label: string; icon: string; to: string }[] {
@@ -174,10 +166,23 @@ export default defineComponent({
     },
 
     resetToHome(): void {
+      this.$store.commit("updateSideNavHierarchyFocus", {
+        name: "InformationModel",
+        iri: "http://endhealth.info/im#InformationModel"
+      });
       this.$store.commit(
         "updateConceptIri",
-        "http://endhealth.info/im#DiscoveryOntology"
+        "http://endhealth.info/im#InformationModel"
       );
+      this.$router.push({ name: "Dashboard" });
+    },
+
+    handleCenterIconClick(item: any) {
+      this.$store.commit("updateSideNavHierarchyFocus", {
+        name: item.name,
+        iri: item.iri
+      });
+      this.$store.commit("updateConceptIri", item.iri);
       this.$router.push({ name: "Dashboard" });
     }
   }
@@ -199,15 +204,21 @@ export default defineComponent({
   width: 100%;
 }
 
-#center-icons div {
+.center-icon-container {
   width: 100%;
   padding-right: 5px;
   border-right: 0;
   margin-bottom: 20px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
 }
 
-#center-icons div div {
+.center-icon-text {
   padding-right: 0;
+  width: 100%;
+  word-break: break-all;
 }
 
 #center-icons .active {
@@ -218,18 +229,6 @@ export default defineComponent({
 .disabled * {
   color: #555555;
   cursor: not-allowed !important;
-}
-
-@media screen and (max-width: 1439px) {
-  .layout-menu-container {
-    width: 8vw;
-  }
-}
-
-@media screen and (min-width: 1440px) {
-  .layout-menu-container {
-    width: 115px;
-  }
 }
 
 .sidebutton {
@@ -279,6 +278,10 @@ export default defineComponent({
 }
 
 @media screen and (max-width: 1439px) {
+  .layout-menu-container {
+    width: 8vw;
+  }
+
   #user-icon,
   .sidebutton {
     font-size: 4vw;
@@ -291,9 +294,17 @@ export default defineComponent({
   .im-logo {
     width: 7vw;
   }
+
+  .center-icon-text {
+    font-size: 1rem;
+  }
 }
 
 @media screen and (min-width: 1440px) {
+  .layout-menu-container {
+    width: 115px;
+  }
+
   #user-icon,
   .sidebutton {
     font-size: 50px;
@@ -305,6 +316,10 @@ export default defineComponent({
 
   .im-logo {
     width: 100px;
+  }
+
+  .center-icon-text {
+    font-size: 1.5rem;
   }
 }
 </style>

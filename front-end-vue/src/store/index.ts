@@ -29,6 +29,10 @@ export default createStore({
     historyCount: 0 as number,
     focusTree: false as boolean,
     treeLocked: true as boolean,
+    sideNavHierarchyFocus: {
+      name: "Ontology",
+      iri: "http://endhealth.info/im#DiscoveryOntology"
+    } as { name: string; iri: string },
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
@@ -106,6 +110,9 @@ export default createStore({
     },
     updateTreeLocked(state, bool) {
       state.treeLocked = bool;
+    },
+    updateSideNavHierarchyFocus(state, focus) {
+      state.sideNavHierarchyFocus = focus;
     }
   },
   actions: {
