@@ -38,7 +38,7 @@
             scrollHeight="flex"
             :scrollable="true"
           >
-            <Column field="concept.name" header="Included" />
+            <Column field="entity.name" header="Included" />
           </DataTable>
         </div>
       </TabPanel>

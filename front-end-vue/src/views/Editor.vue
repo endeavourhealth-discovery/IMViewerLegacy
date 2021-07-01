@@ -134,7 +134,7 @@ export default defineComponent({
   methods: {
     async fetchConceptData(): Promise<void> {
       if (this.iri) {
-        await EntityService.getEntity(this.iri)
+        await EntityService.getPartialEntity(this.iri, [IM.HAS_MEMBERS])
           .then(res => {
             this.concept = res.data;
           })
