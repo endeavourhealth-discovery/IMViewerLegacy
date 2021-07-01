@@ -166,7 +166,10 @@ export default defineComponent({
     },
 
     resetToHome(): void {
-      this.$store.commit("updateSideNavHierarchyFocus", { name: "InformationModel", iri: "http://endhealth.info/im#InformationModel" });
+      this.$store.commit("updateSideNavHierarchyFocus", {
+        name: "InformationModel",
+        iri: "http://endhealth.info/im#InformationModel"
+      });
       this.$store.commit(
         "updateConceptIri",
         "http://endhealth.info/im#InformationModel"
@@ -175,9 +178,12 @@ export default defineComponent({
     },
 
     handleCenterIconClick(item: any) {
-      this.$store.commit("updateSideNavHierarchyFocus", { name: item.name, iri: item.iri });
-      this.$store.commit("updateConceptIri", item.iri)
-      this.$router.push({ name: "Dashboard" })
+      this.$store.commit("updateSideNavHierarchyFocus", {
+        name: item.name,
+        iri: item.iri
+      });
+      this.$store.commit("updateConceptIri", item.iri);
+      this.$router.push({ name: "Dashboard" });
     }
   }
 });

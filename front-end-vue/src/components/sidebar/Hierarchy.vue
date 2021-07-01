@@ -83,7 +83,12 @@ export default defineComponent({
   components: {},
   props: ["active"],
   emits: ["showTree"],
-  computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus"]),
+  computed: mapState([
+    "conceptIri",
+    "focusTree",
+    "treeLocked",
+    "sideNavHierarchyFocus"
+  ]),
   watch: {
     async conceptIri(newValue) {
       if (this.$route.fullPath === "/") {
