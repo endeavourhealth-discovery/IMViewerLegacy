@@ -14,53 +14,23 @@
           />
         </div>
 
-        <!--
         <div id="center-icons" style="color: grey">
           <div
-            v-bind:class="{ active: isActive(['Dashboard', 'Concept']) }"
-            @click="$router.push({ name: 'Dashboard' })"
+            v-for="item in menuItems"
+            :key="item.route"
+            v-bind:class="{ active: isActive(item.activeOn) }"
+            @click="$router.push({ name: item.route })"
           >
             <font-awesome-icon
               class="sidebutton"
-              :icon="['fas', 'book']"
+              :icon="item.icon"
               style="padding: 5px"
               fixed-width
             />
-            <div>Ontology</div>
-          </div>
-          <div
-            v-bind:class="{ active: isActive(['UPRN']) }"
-            @click="$router.push({ name: 'UPRN' })"
-          >
-            <font-awesome-icon
-              class="sidebutton"
-              :icon="['fas', 'map-marked-alt']"
-              style="padding: 5px"
-              fixed-width
-            />
-            <div>UPRN</div>
-          </div>
-          <div v-bind:class="{ active: isActive('Workflow') }" class="disabled">
-            <font-awesome-icon
-              class="sidebutton"
-              :icon="['fas', 'tasks']"
-              size="4x"
-              style="padding: 5px"
-            />
-            <div>Workflow</div>
-          </div>
-          <div v-bind:class="{ active: isActive('Mapping') }" class="disabled">
-            <font-awesome-icon
-              class="sidebutton"
-              :icon="['fas', 'map']"
-              size="4x"
-              style="padding: 5px"
-            />
-            <div>Mapping</div>
+            <div>{{ item.name }}</div>
           </div>
         </div>
 
-        -->
         <div class="footer user-settings">
           <span
             v-if="!isLoggedIn"
@@ -133,7 +103,52 @@ export default defineComponent({
           icon: "fa fa-fw fa-sign-out-alt",
           to: "/user/logout" //+ this.user.id
         }
-      ] as { label: string; icon: string; to: string }[]
+      ] as { label: string; icon: string; to: string }[],
+
+      menuItems: [
+        {
+          activeOn: ["Dashboard", "Concept"],
+          route: "Dashboard",
+          icon: ["fas", "book"],
+          name: "Ontology"
+        } //,
+        // {
+        //   activeOn: ["ReferenceData"],
+        //   // route: "ReferenceData",
+        //   icon: ["fas", "database"],
+        //   name: "Reference"
+        // },
+        // {
+        //   activeOn: ["ValueSets"],
+        //   // route: "ValueSets",
+        //   icon: ["fas", "layer-group"],
+        //   name: "Sets"
+        // },
+        // {
+        //   activeOn: ["Queries"],
+        //   // route: "Queries",
+        //   icon: ["fas", "search"],
+        //   name: "Queries"
+        // },
+        // {
+        //   activeOn: ["Workflow"],
+        //   // route: "Workflow",
+        //   icon: ["fas", "tasks"],
+        //   name: "Workflow"
+        // },
+        // {
+        //   activeOn: ["Mapping"],
+        //   // route: "Mapping",
+        //   icon: ["fas", "map"],
+        //   name: "Maps"
+        // },
+        // {
+        //   activeOn: ["UPRN"],
+        //   route: "UPRN",
+        //   icon: ["fas", "map-marked-alt"],
+        //   name: "Assign"
+        // }
+      ]
     };
   },
   methods: {
@@ -191,12 +206,17 @@ export default defineComponent({
   margin-bottom: 20px;
 }
 
+#center-icons div div {
+  padding-right: 0;
+}
+
 #center-icons .active {
   padding-right: 0;
   border-right: 5px solid lightgrey;
 }
 
 .disabled * {
+  color: #555555;
   cursor: not-allowed !important;
 }
 
@@ -247,6 +267,7 @@ export default defineComponent({
   border: 1px solid lightgray;
   border-radius: 50%;
   cursor: pointer;
+  margin-right: 5px;
 }
 
 .im-logo {
@@ -275,7 +296,7 @@ export default defineComponent({
 @media screen and (min-width: 1440px) {
   #user-icon,
   .sidebutton {
-    font-size: 60px;
+    font-size: 50px;
   }
 
   .avatar-icon {
