@@ -69,7 +69,6 @@ export default createStore({
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
-      console.log(conceptIri);
       state.conceptIri = conceptIri;
     },
     updateCancelSource(state) {
