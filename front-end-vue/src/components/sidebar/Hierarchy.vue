@@ -82,6 +82,7 @@ export default defineComponent({
   name: "Hierarchy",
   components: {},
   props: ["active"],
+  emits: ["showTree"],
   computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus"]),
   watch: {
     async conceptIri(newValue) {
@@ -93,6 +94,7 @@ export default defineComponent({
           this.conceptAggregate.parents,
           this.conceptAggregate.children
         );
+
         this.$store.commit("updateHistory", {
           url: this.sideNavHierarchyFocus.iri,
           conceptName: this.sideNavHierarchyFocus.name,
@@ -358,6 +360,7 @@ export default defineComponent({
     resetConcept(): void {
       this.parentLabel = "";
       this.selectedKey = {};
+      this.$emit("showTree");
       // this.$store.commit(
       //   "updateConceptIri",
       //   this.sideNavHierarchyFocus.iri
