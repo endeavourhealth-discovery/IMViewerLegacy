@@ -19,7 +19,7 @@ describe("Home.vue ___ route = Home", () => {
     testUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g09");
     Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
     mockStore = {
-      state: { conceptIri: "test Iri" },
+      state: { conceptIri: "test Iri", sideNavHierarchyFocus: {name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" } },
       commit: jest.fn(),
       dispatch: jest.fn().mockResolvedValue(true)
     }

@@ -31,7 +31,8 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
       state: {
         conceptIri: "http://endhealth.info/im#DiscoveryOntology",
         focusTree: false,
-        treeLocked: true
+        treeLocked: true,
+        sideNavHierarchyFocus: {name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" }
       },
       commit: jest.fn(),
       dispatch: jest.fn()
@@ -114,7 +115,7 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
     expect(wrapper.vm.createTree).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.resetConcept).toHaveBeenCalledTimes(1);
     expect(mockStore.commit).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledWith("updateHistory", {"conceptName": "Home", "url": "/", "view": "Dashboard"});
+    expect(mockStore.commit).toHaveBeenCalledWith("updateHistory", {"conceptName": "Ontology", "url": "http://endhealth.info/im#DiscoveryOntology", "view": "Dashboard"});
     jest.clearAllMocks();
   });
 });
@@ -135,7 +136,8 @@ describe("Hierarchy.vue ___ Concept", () => {
       state: {
         conceptIri: "http://snomed.info/sct#298382003",
         focusTree: false,
-        treeLocked: true
+        treeLocked: true,
+        sideNavHierarchyFocus: {name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" }
       },
       commit: jest.fn(),
       dispatch: jest.fn()

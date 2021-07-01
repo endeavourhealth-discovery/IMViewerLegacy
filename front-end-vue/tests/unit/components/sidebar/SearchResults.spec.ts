@@ -5,6 +5,10 @@ import ProgressSpinner from "primevue/progressspinner";
 import Column from "primevue/column";
 import OverlayPanel from "primevue/overlaypanel";
 import * as ConceptTypeMethods from "@/helpers/ConceptTypeMethods";
+import Tooltip from "primevue/tooltip";
+import ContextMenu from "primevue/contextmenu";
+import VueClipboard from "vue3-clipboard";
+import Button from "primevue/button";
 
 describe("SearchResults.vue", () => {
   let wrapper: any;
@@ -37,8 +41,9 @@ describe("SearchResults.vue", () => {
 
     wrapper = shallowMount(SearchResults, {
       global: {
-        components: { DataTable, ProgressSpinner, Column, OverlayPanel },
-        mocks: { $store: mockStore, $router: mockRouter }
+        components: { DataTable, ProgressSpinner, Column, OverlayPanel, ContextMenu, Button },
+        mocks: { $store: mockStore, $router: mockRouter },
+        directives: { "tooltip": Tooltip, "clipboard": VueClipboard }
       }
     });
   });
