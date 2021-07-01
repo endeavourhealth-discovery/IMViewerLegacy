@@ -88,7 +88,7 @@
 <script lang="ts">
 import { ConceptReference } from "@/models/ConceptReference";
 import { ConceptStatus } from "@/models/ConceptStatus";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import { defineComponent } from "@vue/runtime-core";
 import Dropdown from "primevue/dropdown";
 import Card from "primevue/card";
@@ -117,7 +117,7 @@ export default defineComponent({
     };
   },
   async mounted() {
-    this.schemeOptions = (await ConceptService.getSchemeOptions()).data;
+    this.schemeOptions = (await EntityService.getSchemeOptions()).data;
   },
   methods: {}
 });

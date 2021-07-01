@@ -67,7 +67,7 @@
 import { HistoryItem } from "@/models/HistoryItem";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";
 import { IM } from "@/vocabulary/IM";
@@ -82,23 +82,36 @@ export default defineComponent({
   name: "Hierarchy",
   components: {},
   props: ["active"],
-  computed: mapState(["conceptIri", "focusTree", "treeLocked"]),
+  emits: ["showTree"],
+  computed: mapState([
+    "conceptIri",
+    "focusTree",
+    "treeLocked",
+    "sideNavHierarchyFocus"
+  ]),
   watch: {
     async conceptIri(newValue) {
-      await this.getConceptAggregate(newValue);
-      this.createTree(
-        this.conceptAggregate.concept,
-        this.conceptAggregate.parents,
-        this.conceptAggregate.children
-      );
       if (this.$route.fullPath === "/") {
         this.resetConcept();
+        await this.getConceptAggregate(newValue);
+        this.createTree(
+          this.conceptAggregate.concept,
+          this.conceptAggregate.parents,
+          this.conceptAggregate.children
+        );
+
         this.$store.commit("updateHistory", {
-          url: this.$route.fullPath,
-          conceptName: "Home",
+          url: this.sideNavHierarchyFocus.iri,
+          conceptName: this.sideNavHierarchyFocus.name,
           view: this.$route.name
         } as HistoryItem);
       } else {
+        await this.getConceptAggregate(newValue);
+        this.createTree(
+          this.conceptAggregate.concept,
+          this.conceptAggregate.parents,
+          this.conceptAggregate.children
+        );
         this.$store.commit("updateHistory", {
           url: this.$route.fullPath,
           conceptName: this.conceptAggregate.concept?.[RDFS.LABEL],
@@ -170,13 +183,17 @@ export default defineComponent({
   methods: {
     async getConceptAggregate(iri: string) {
       await Promise.all([
-        ConceptService.getConcept(iri).then(res => {
+        EntityService.getPartialEntity(iri, [
+          RDFS.LABEL,
+          RDFS.COMMENT,
+          RDF.TYPE
+        ]).then(res => {
           this.conceptAggregate.concept = res.data;
         }),
-        ConceptService.getConceptParents(iri).then(res => {
+        EntityService.getEntityParents(iri).then(res => {
           this.conceptAggregate.parents = res.data;
         }),
-        ConceptService.getConceptChildren(iri).then(res => {
+        EntityService.getEntityChildren(iri).then(res => {
           this.conceptAggregate.children = res.data;
         })
       ]).catch(err => {
@@ -189,11 +206,7 @@ export default defineComponent({
       });
     },
     createTree(concept: any, parentHierarchy: any, children: any): void {
-      if (this.root.length == 0) {
-        this.refreshTree(concept, parentHierarchy, children);
-      } else if (concept[IM.IRI] === IM.NAMESPACE + "DiscoveryOntology") {
-        this.refreshTree(concept, parentHierarchy, children);
-      }
+      this.refreshTree(concept, parentHierarchy, children);
     },
 
     refreshTree(concept: any, parentHierarchy: any, children: any): void {
@@ -238,7 +251,7 @@ export default defineComponent({
       level: any,
       hasChildren: boolean
     ): TreeNode {
-      const node: TreeNode = {
+      return {
         key: level,
         label: conceptName,
         typeIcon: getIconFromType(conceptTypes),
@@ -248,7 +261,6 @@ export default defineComponent({
         loading: false,
         children: []
       };
-      return node;
     },
 
     onNodeSelect(node: any): void {
@@ -266,7 +278,7 @@ export default defineComponent({
       node.loading = true;
       this.expandedKeys[node.key] = true;
       let children: any[] = [];
-      await ConceptService.getConceptChildren(node.data)
+      await EntityService.getEntityChildren(node.data)
         .then(res => {
           children = res.data;
         })
@@ -275,7 +287,6 @@ export default defineComponent({
             LoggerService.error("Concept children server request failed", err)
           );
         });
-      let index = 0;
 
       children.forEach((child: any) => {
         if (!this.containsChild(node.children, child)) {
@@ -284,11 +295,10 @@ export default defineComponent({
               child.name,
               child["@id"],
               child.type,
-              node.key + "-" + index,
+              child.name,
               child.hasChildren
             )
           );
-          index++;
         }
       });
       node.loading = false;
@@ -306,7 +316,7 @@ export default defineComponent({
 
       let parents: any[] = [];
       const parentsNodes: any[] = [];
-      await ConceptService.getConceptParents(this.root[0].data)
+      await EntityService.getEntityParents(this.root[0].data)
         .then(res => {
           parents = res.data;
         })
@@ -335,7 +345,7 @@ export default defineComponent({
 
       this.root = parentsNodes;
 
-      await ConceptService.getConceptParents(this.root[0].data)
+      await EntityService.getEntityParents(this.root[0].data)
         .then(res => {
           if (res.data[0]) {
             this.parentLabel = res.data[0].name;
@@ -348,16 +358,19 @@ export default defineComponent({
             LoggerService.error("Concept parents server request failed", err)
           );
         });
+      // this refreshes the keys so they start open if children and parents were both expanded
+      this.expandedKeys = { ...this.expandedKeys };
     },
 
     resetConcept(): void {
       this.parentLabel = "";
       this.selectedKey = {};
-      this.$store.commit(
-        "updateConceptIri",
-        "http://endhealth.info/im#DiscoveryOntology"
-      );
-      this.$router.push({ name: "Dashboard" });
+      this.$emit("showTree");
+      // this.$store.commit(
+      //   "updateConceptIri",
+      //   this.sideNavHierarchyFocus.iri
+      // );
+      // this.$router.push({ name: "Dashboard" });
     },
 
     toggleTreeLocked(value: boolean): void {
@@ -367,7 +380,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 #hierarchy-tree-bar-container {
   height: 100%;
 }

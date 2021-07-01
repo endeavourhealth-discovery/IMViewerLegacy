@@ -13,9 +13,11 @@ export function isValueSet(conceptTypeElements: ConceptReference[]): boolean {
       e.iri === IM.SET ||
       e.iri === IM.QUERY_SET ||
       e.iri === IM.VALUE_SET ||
+      e.iri === IM.CONCEPT_SET ||
       e[IM.IRI] === IM.SET ||
       e[IM.IRI] === IM.QUERY_SET ||
-      e[IM.IRI] === IM.VALUE_SET
+      e[IM.IRI] === IM.VALUE_SET ||
+      e[IM.IRI] === IM.CONCEPT_SET
   );
 }
 

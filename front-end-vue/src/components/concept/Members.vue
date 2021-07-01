@@ -6,48 +6,91 @@
           <ProgressSpinner />
         </div>
       </div>
-      <Listbox
-        v-else
-        :listStyle="listHeight"
-        :filter="true"
-        emptyMessage="No results found"
-        emptyFilterMessage="No results found"
-        v-model="selectedIncludedMember"
-        @change="onNodeSelect(selectedIncludedMember.member)"
-        :options="combinedMembers"
+      <DataTable
+        :value="combinedMembers"
+        responsiveLayout="scroll"
+        showGridlines
+        :paginator="true"
+        :rows="10"
+        :rowsPerPageOptions="[10, 20, 50]"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+        currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
+        rowGroupMode="subheader"
+        groupRowsBy="status"
+        v-model:filters="filters1"
+        filterDisplay="menu"
+        :globalFilterFields="[
+          'member.code',
+          'member.entity.name',
+          'member.scheme.name',
+          'status'
+        ]"
+        :scrollable="true"
+        class="p-datatable-sm"
+        scrollHeight="flex"
       >
-        <template #option="slotProps">
-          <div>
-            <span>
-              <div>
-                <i
-                  v-if="slotProps.option.included"
-                  class="pi pi-plus"
-                  style="fontSize: 0.7rem"
-                  aria-hidden="true"
-                ></i>
-                <i
-                  v-if="!slotProps.option.included"
-                  class="pi pi-minus"
-                  style="fontSize: 0.7rem"
-                  aria-hidden="true"
-                ></i>
-                {{
-                  slotProps.option.member?.concept.name ||
-                    slotProps.option.member?.concept["@id"]
-                }}
-              </div>
+        <template #header>
+          <div class="p-d-flex p-jc-between">
+            <span class="p-input-icon-left">
+              <i class="pi pi-search" />
+              <InputText
+                v-model="filters1['global'].value"
+                placeholder="Keyword Search"
+              />
             </span>
+            <div class="p-grid p-mx-2 p-align-center">
+              <Checkbox
+                id="expanded"
+                v-model="expanded"
+                v-on:change="expandMembers"
+                :binary="true"
+              />
+              <label for="expanded" class="p-mx-1">Expanded</label>
+            </div>
           </div>
         </template>
-      </Listbox>
+        <template #empty>
+          No members found.
+        </template>
+        <Column
+          field="member.entity.name"
+          header="Name"
+          :sortable="true"
+          filter-field="member.entity.name"
+          style="flex: 0 0 60%"
+        />
+        <Column
+          field="member.code"
+          header="Code"
+          :sortable="true"
+          filter-field="member.code"
+        />
+        <Column
+          field="member.scheme.name"
+          header="Scheme"
+          :sortable="true"
+          filter-field="member.scheme.name"
+        />
+        <template #groupheader="slotProps">
+          <span
+            style="font-weight: 700; color:rgba(51,153,255,0.8)"
+            v-if="slotProps.data.status === include"
+          >
+            Included
+          </span>
+          <span style="font-weight: 700; color:rgba(51,153,255,0.8)" v-else>
+            Excluded
+          </span>
+        </template>
+      </DataTable>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
+import { FilterMatchMode } from "primevue/api";
 
 export default defineComponent({
   name: "Members",
@@ -56,8 +99,8 @@ export default defineComponent({
     conceptIri: String
   },
   watch: {
-    async conceptIri(newValue) {
-      await this.getMembers(newValue);
+    async conceptIri() {
+      await this.getMembers();
     }
   },
   async mounted() {
@@ -68,7 +111,7 @@ export default defineComponent({
     this.setListboxHeight();
 
     if (this.conceptIri) {
-      await this.getMembers(this.conceptIri);
+      await this.getMembers();
     }
   },
   beforeUnmount() {
@@ -80,24 +123,44 @@ export default defineComponent({
       members: [] as any,
       selectedIncludedMember: {},
       combinedMembers: [] as any,
-      listHeight: ""
+      listHeight: "",
+      filters1: {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+      },
+      expanded: false,
+      include: "Included"
     };
   },
   methods: {
-    async getMembers(iri: string) {
-      this.loading = true;
-      this.members = (await ConceptService.getConceptMembers(iri, false)).data;
-      this.loading = false;
-      this.combinedMembers = this.getCombinedMembers();
+    async getMembers() {
+      this.expanded = false;
+      await this.expandMembers();
+    },
+    async expandMembers() {
+      if (this.expanded) {
+        this.loading = true;
+        this.members = (
+          await EntityService.getEntityMembers(this.conceptIri as string, true)
+        ).data;
+        this.loading = false;
+        this.combinedMembers = this.getCombinedMembers();
+      } else {
+        this.loading = true;
+        this.members = (
+          await EntityService.getEntityMembers(this.conceptIri as string, false)
+        ).data;
+        this.loading = false;
+        this.combinedMembers = this.getCombinedMembers();
+      }
     },
     getCombinedMembers() {
-      const combinedMembers: { included: boolean; member: any }[] = [];
+      const combinedMembers: { status: string; member: any }[] = [];
       this.members?.included?.forEach((included: any) => {
-        const member = { included: true, member: included };
+        const member = { status: "Included", member: included };
         combinedMembers.push(member);
       });
-      this.members?.excluded?.forEach((included: any) => {
-        const member = { included: false, member: included };
+      this.members?.excluded?.forEach((excluded: any) => {
+        const member = { status: "Excluded", member: excluded };
         combinedMembers.push(member);
       });
       return combinedMembers;
@@ -137,14 +200,17 @@ export default defineComponent({
 .p-panel-header {
   all: unset;
 }
+
 .members-container {
   width: 100%;
   height: 100%;
 }
+
 .included-container {
   width: 100%;
   height: 100%;
 }
+
 .excluded-container {
   width: 50%;
 }

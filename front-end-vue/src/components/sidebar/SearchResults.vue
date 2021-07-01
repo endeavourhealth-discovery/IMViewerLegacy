@@ -24,23 +24,44 @@
       currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
       :rows="15"
     >
+      <template #empty>
+        None
+      </template>
+      <template #loading>
+        Loading...
+      </template>
       <Column field="name" header="Results">
         <template #body="slotProps">
           <div
             class="result-container"
             @mouseenter="showOverlay($event, slotProps.data)"
+            @mouseleave="hideOverlay()"
           >
             <div class="result-icon-container">
               <i
-                :class="getPerspectiveByConceptType(slotProps.data.conceptType)"
+                :class="getPerspectiveByConceptType(slotProps.data.entityType)"
                 class="result-icon"
-                :style="getColorByConceptType(slotProps.data.conceptType)"
+                :style="getColorByConceptType(slotProps.data.entityType)"
                 aria-hidden="true"
               />
             </div>
             <div class="result-text-container">
               {{ slotProps.data.match }}<br />
               <small style="color:lightgrey">{{ slotProps.data.name }}</small>
+            </div>
+            <div class="button-container">
+              <Button
+                icon="pi pi-copy"
+                class="p-button-rounded p-button-text p-button-secondary"
+                v-clipboard:copy="copyConceptToClipboard(slotProps.data)"
+                v-clipboard:success="onCopy"
+                v-clipboard:error="onCopyError"
+                v-tooltip.right="
+                  'Copy concept summary to clipboard \n (right click to copy individual properties)'
+                "
+                @contextmenu="onCopyRightClick"
+              />
+              <ContextMenu ref="copyMenu" :model="copyMenuItems" />
             </div>
           </div>
         </template>
@@ -51,44 +72,25 @@
       ref="op"
       id="overlay-panel"
       style="width: 25vw"
-      :showCloseIcon="true"
       :dismissable="true"
     >
       <div class="result-overlay">
         <div class="left-side" v-if="hoveredResult.iri">
           <p>
             <strong>Name: </strong>
-            <span
-              v-if="hoveredResult.status"
-              style="cursor:pointer"
-              v-clipboard:copy="hoveredResult.name"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
-            >
+            <span>
               {{ hoveredResult.name }}
             </span>
           </p>
           <p>
             <strong>Iri: </strong>
-            <span
-              v-if="hoveredResult.status"
-              style="cursor:pointer; word-break: break-all;"
-              v-clipboard:copy="hoveredResult.iri"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
-            >
+            <span>
               {{ hoveredResult.iri }}
             </span>
           </p>
           <p>
             <strong>Code: </strong>
-            <span
-              v-if="hoveredResult.status"
-              style="cursor:pointer"
-              v-clipboard:copy="hoveredResult.code"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
-            >
+            <span>
               {{ hoveredResult.code }}
             </span>
           </p>
@@ -96,49 +98,22 @@
         <div class="right-side" v-if="hoveredResult.iri">
           <p>
             <strong>Status: </strong>
-            <span
-              v-if="hoveredResult.status"
-              style="cursor:pointer"
-              v-clipboard:copy="hoveredResult.status.name"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
-            >
+            <span v-if="hoveredResult.status">
               {{ hoveredResult.status.name }}
             </span>
           </p>
           <p>
             <strong>Scheme: </strong>
-            <span
-              v-if="hoveredResult.scheme"
-              style="cursor:pointer"
-              v-clipboard:copy="hoveredResult.scheme.name"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
-            >
+            <span v-if="hoveredResult.scheme">
               {{ hoveredResult.scheme.name }}
             </span>
           </p>
           <p>
             <strong>Type: </strong>
-            <span
-              style="cursor:pointer"
-              v-clipboard:copy="getConceptTypes(hoveredResult)"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
-            >
+            <span>
               {{ getConceptTypes(hoveredResult) }}
             </span>
           </p>
-        </div>
-        <div class="button-container">
-          <Button
-            icon="pi pi-copy"
-            class="p-button-rounded p-button-text"
-            v-clipboard:copy="copyHoveredResult()"
-            v-clipboard:success="onCopy"
-            v-clipboard:error="onCopyError"
-            v-tooltip.right="'Copy concept to clipboard'"
-          />
         </div>
       </div>
     </OverlayPanel>
@@ -170,7 +145,7 @@ export default defineComponent({
       results: new SearchResponse() as SearchResponse,
       selectedResult: {} as ConceptSummary,
       hoveredResult: {} as ConceptSummary | any,
-      hoveredEvent: {} as any
+      copyMenuItems: [] as any
     };
   },
   methods: {
@@ -193,36 +168,34 @@ export default defineComponent({
     },
 
     async showOverlay(event: any, data: any): Promise<void> {
-      this.hideOverlay();
-      await this.$nextTick();
       this.hoveredResult = data;
-      this.hoveredEvent = event;
+      this.setCopyMenuItems();
       const x = this.$refs.op as any;
       x.show(event, event.target);
     },
 
     getConceptTypes(concept: any): any {
-      return concept.conceptType
+      return concept.entityType
         .map(function(type: any) {
           return type.name;
         })
         .join(", ");
     },
 
-    copyHoveredResult(): string {
+    copyConceptToClipboard(data: any): string {
       return (
         "Name: " +
-        this.hoveredResult.name +
+        data.name +
         ", Iri: " +
-        this.hoveredResult.iri +
+        data.iri +
         ", Code: " +
-        this.hoveredResult.code +
+        data.code +
         ", Status: " +
-        this.hoveredResult.status.name +
+        data.status.name +
         ", Scheme: " +
-        this.hoveredResult.scheme.name +
+        data.scheme.name +
         ", Type: " +
-        this.hoveredResult.conceptType[0].name
+        data.entityType[0].name
       );
     },
 
@@ -232,6 +205,158 @@ export default defineComponent({
 
     onCopyError(): void {
       this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
+    },
+
+    onCopyRightClick(event: any) {
+      const x = this.$refs.copyMenu as any;
+      x.show(event);
+    },
+
+    setCopyMenuItems() {
+      this.copyMenuItems = [
+        {
+          label: "Copy",
+          disabled: true
+        },
+        {
+          separator: true
+        },
+        {
+          label: "All",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(
+                "Name: " +
+                  this.hoveredResult.name +
+                  ", Iri: " +
+                  this.hoveredResult.iri +
+                  ", Code: " +
+                  this.hoveredResult.code +
+                  ", Status: " +
+                  this.hoveredResult.status.name +
+                  ", Scheme: " +
+                  this.hoveredResult.scheme.name +
+                  ", Type: " +
+                  this.hoveredResult.conceptType[0].name
+              )
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Concept copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error(
+                    "Failed to copy concept to clipboard",
+                    err
+                  )
+                );
+              });
+          }
+        },
+        {
+          label: "Name",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(this.hoveredResult.name)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Name copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy name to clipboard", err)
+                );
+              });
+          }
+        },
+        {
+          label: "Iri",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(this.hoveredResult.iri)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Iri copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy iri to clipboard", err)
+                );
+              });
+          }
+        },
+        {
+          label: "Code",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(this.hoveredResult.code)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Code copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy code to clipboard", err)
+                );
+              });
+          }
+        },
+        {
+          label: "Status",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(this.hoveredResult.status.name)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Status copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy status to clipboard", err)
+                );
+              });
+          }
+        },
+        {
+          label: "Scheme",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(this.hoveredResult.scheme.name)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Scheme copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy scheme to clipboard", err)
+                );
+              });
+          }
+        },
+        {
+          label: "Type",
+          command: async () => {
+            await navigator.clipboard
+              .writeText(this.getConceptTypes(this.hoveredResult))
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success("Type copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error("Failed to copy type to clipboard", err)
+                );
+              });
+          }
+        }
+      ];
     }
   }
 });
@@ -269,6 +394,7 @@ export default defineComponent({
 
 .result-text-container {
   height: fit-content;
+  flex-grow: 10;
 }
 
 .result-icon {

@@ -13,6 +13,7 @@
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import SidebarControl from "@/components/home/SidebarControl.vue";
+import { mapState } from "vuex";
 
 export default defineComponent({
   name: "Home",
@@ -21,6 +22,7 @@ export default defineComponent({
     SidebarControl
   },
   emits: ["userPopupToggled"],
+  computed: mapState(["sideNavHierarchyFocus"]),
   async mounted() {
     // check for user and log them in if found or logout if not
     await this.$store.dispatch("authenticateCurrentUser");
@@ -29,10 +31,32 @@ export default defineComponent({
   methods: {
     updateRoute(): void {
       if (this.$route.name === "Home" || this.$route.name === "Dashboard") {
-        this.$store.commit(
-          "updateConceptIri",
-          "http://endhealth.info/im#DiscoveryOntology"
-        );
+        switch (this.sideNavHierarchyFocus.name) {
+          case "InformationModel":
+            this.$store.commit(
+              "updateConceptIri",
+              "http://endhealth.info/im#InformationModel"
+            );
+            break;
+          case "Ontology":
+            this.$store.commit(
+              "updateConceptIri",
+              "http://endhealth.info/im#DiscoveryOntology"
+            );
+            break;
+          case "ValueSets":
+            this.$store.commit(
+              "updateConceptIri",
+              "http://endhealth.info/im#Sets"
+            );
+            break;
+          case "Queries":
+            this.$store.commit(
+              "updateConceptIri",
+              "http://endhealth.info/im#QT_QueryTemplates"
+            );
+            break;
+        }
       } else if (this.$route.name === "Concept") {
         this.$store.commit(
           "updateConceptIri",

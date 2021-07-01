@@ -33,7 +33,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
@@ -76,7 +76,7 @@ export default defineComponent({
     },
     async getTerms(iri: string) {
       this.loading = true;
-      await ConceptService.getConceptTermCodes(iri)
+      await EntityService.getEntityTermCodes(iri)
         .then(res => {
           this.terms = res.data;
         })

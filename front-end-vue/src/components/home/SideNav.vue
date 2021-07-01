@@ -14,47 +14,24 @@
           />
         </div>
 
-        <!--
         <div id="center-icons" style="color: grey">
-          <div v-bind:class="{ active: isActive(['Dashboard', 'Concept']) }" @click="$router.push({ name: 'Dashboard' })">
+          <div
+            v-for="item in menuItems"
+            :key="item.route"
+            class="center-icon-container"
+            v-bind:class="{ active: isActive(item.name) }"
+            @click="handleCenterIconClick(item)"
+          >
             <font-awesome-icon
-              class="sidebutton"
-              :icon="['fas', 'book']"
+              class="sidebutton center-icon"
+              :icon="item.icon"
               style="padding: 5px"
               fixed-width
             />
-            <div>Ontology</div>
-          </div>
-          <div v-bind:class="{ active: isActive(['UPRN']) }" @click="$router.push({ name: 'UPRN' })">
-            <font-awesome-icon
-                class="sidebutton"
-                :icon="['fas', 'map-marked-alt']"
-                style="padding: 5px"
-                fixed-width
-            />
-            <div>UPRN</div>
-          </div>
-          <div v-bind:class="{ active: isActive('Workflow') }" class="disabled">
-            <font-awesome-icon
-              class="sidebutton"
-              :icon="['fas', 'tasks']"
-              size="4x"
-              style="padding: 5px"
-            />
-            <div>Workflow</div>
-          </div>
-          <div v-bind:class="{ active: isActive('Mapping') }" class="disabled">
-            <font-awesome-icon
-              class="sidebutton"
-              :icon="['fas', 'map']"
-              size="4x"
-              style="padding: 5px"
-            />
-            <div>Mapping</div>
+            <div class="center-icon-text">{{ item.name }}</div>
           </div>
         </div>
 
-        -->
         <div class="footer user-settings">
           <span
             v-if="!isLoggedIn"
@@ -64,11 +41,10 @@
             aria-controls="overlay_menu"
             aria-hidden="true"
           >
-            <i class="fas fa-fw fa-3x fa-users" style="color: lightgrey"></i>
+            <i class="fas fa-users"></i>
           </span>
           <img
             v-if="isLoggedIn"
-            id="user-icon"
             class="avatar-icon"
             :src="getUrl(currentUser.avatar.value)"
             alt="avatar icon"
@@ -90,7 +66,7 @@ import { mapState } from "vuex";
 
 export default defineComponent({
   name: "SideNav",
-  computed: mapState(["currentUser", "isLoggedIn"]),
+  computed: mapState(["currentUser", "isLoggedIn", "sideNavHierarchyFocus"]),
   data() {
     return {
       userPopupBottom: 0,
@@ -128,12 +104,48 @@ export default defineComponent({
           icon: "fa fa-fw fa-sign-out-alt",
           to: "/user/logout" //+ this.user.id
         }
-      ] as { label: string; icon: string; to: string }[]
+      ] as { label: string; icon: string; to: string }[],
+
+      menuItems: [
+        {
+          icon: ["fas", "book"],
+          name: "Ontology",
+          iri: "http://endhealth.info/im#DiscoveryOntology"
+        },
+        // {
+        //   activeOn: ["ReferenceData"],
+        //   route: "ReferenceData",
+        //   icon: ["fas", "database"],
+        //   name: "Reference"
+        // },
+        {
+          icon: ["fas", "layer-group"],
+          name: "Sets",
+          iri: "http://endhealth.info/im#Sets"
+        },
+        {
+          icon: ["fas", "search"],
+          name: "Queries",
+          iri: "http://endhealth.info/im#QT_QueryTemplates"
+        } //,
+        // {
+        //   icon: ["fas", "tasks"],
+        //   name: "Workflow"
+        // },
+        // {
+        //   icon: ["fas", "map"],
+        //   name: "Maps"
+        // },
+        // {
+        //   icon: ["fas", "map-marked-alt"],
+        //   name: "Assign"
+        // }
+      ]
     };
   },
   methods: {
-    isActive(items: any[]): boolean {
-      return items.indexOf(this.$route.name) >= 0;
+    isActive(item: string): boolean {
+      return item === this.sideNavHierarchyFocus.name ? true : false;
     },
 
     getItems(): { label: string; icon: string; to: string }[] {
@@ -145,7 +157,6 @@ export default defineComponent({
     },
 
     toggle(event: any): void {
-      console.log("Toggle");
       const menu = this.$refs.menu as any;
       menu.toggle(event);
     },
@@ -155,10 +166,23 @@ export default defineComponent({
     },
 
     resetToHome(): void {
+      this.$store.commit("updateSideNavHierarchyFocus", {
+        name: "InformationModel",
+        iri: "http://endhealth.info/im#InformationModel"
+      });
       this.$store.commit(
         "updateConceptIri",
-        "http://endhealth.info/im#DiscoveryOntology"
+        "http://endhealth.info/im#InformationModel"
       );
+      this.$router.push({ name: "Dashboard" });
+    },
+
+    handleCenterIconClick(item: any) {
+      this.$store.commit("updateSideNavHierarchyFocus", {
+        name: item.name,
+        iri: item.iri
+      });
+      this.$store.commit("updateConceptIri", item.iri);
       this.$router.push({ name: "Dashboard" });
     }
   }
@@ -180,11 +204,21 @@ export default defineComponent({
   width: 100%;
 }
 
-#center-icons div {
+.center-icon-container {
   width: 100%;
   padding-right: 5px;
   border-right: 0;
   margin-bottom: 20px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.center-icon-text {
+  padding-right: 0;
+  width: 100%;
+  word-break: break-all;
 }
 
 #center-icons .active {
@@ -193,19 +227,8 @@ export default defineComponent({
 }
 
 .disabled * {
+  color: #555555;
   cursor: not-allowed !important;
-}
-
-@media screen and (max-width: 1439px) {
-  .layout-menu-container {
-    width: 8vw;
-  }
-}
-
-@media screen and (min-width: 1440px) {
-  .layout-menu-container {
-    width: 115px;
-  }
 }
 
 .sidebutton {
@@ -224,12 +247,12 @@ export default defineComponent({
   cursor: pointer;
   text-align: center;
   margin-top: auto;
+  width: 100%;
 }
 
-.user-icon,
+#user-icon,
 .settings-icon {
   width: 100%;
-  /* font-size: 4rem; */
   color: lightgray;
   padding: 5px;
   cursor: pointer;
@@ -240,15 +263,14 @@ export default defineComponent({
 }
 
 .avatar-icon {
-  /* width: 4rem; */
   border: 1px solid lightgray;
   border-radius: 50%;
   cursor: pointer;
+  margin-right: 5px;
 }
 
 .im-logo {
   text-align: center;
-  /* font-size: 4rem; */
   color: lightgray;
   font-weight: bold;
   cursor: pointer;
@@ -256,7 +278,11 @@ export default defineComponent({
 }
 
 @media screen and (max-width: 1439px) {
-  .user-icon,
+  .layout-menu-container {
+    width: 8vw;
+  }
+
+  #user-icon,
   .sidebutton {
     font-size: 4vw;
   }
@@ -268,20 +294,32 @@ export default defineComponent({
   .im-logo {
     width: 7vw;
   }
+
+  .center-icon-text {
+    font-size: 1rem;
+  }
 }
 
 @media screen and (min-width: 1440px) {
-  .user-icon,
+  .layout-menu-container {
+    width: 115px;
+  }
+
+  #user-icon,
   .sidebutton {
-    font-size: 40px;
+    font-size: 50px;
   }
 
   .avatar-icon {
-    width: 60px;
+    width: 80px;
   }
 
   .im-logo {
     width: 100px;
+  }
+
+  .center-icon-text {
+    font-size: 1.5rem;
   }
 }
 </style>

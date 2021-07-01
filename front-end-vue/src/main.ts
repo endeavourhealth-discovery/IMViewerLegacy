@@ -10,9 +10,11 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library, dom } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
+import { fab } from "@fortawesome/free-brands-svg-icons";
+
 dom.watch();
 
-library.add(fas, far);
+library.add(fas, far, fab);
 
 import "primevue/resources/themes/saga-blue/theme.css"; //theme
 
@@ -68,6 +70,9 @@ import ToastService from "primevue/toastservice";
 import Toast from "primevue/toast";
 import Checkbox from "primevue/checkbox";
 import PickList from "primevue/picklist";
+import ContextMenu from "primevue/contextmenu";
+import { FilterMatchMode, FilterOperator } from "primevue/api";
+import RadioButton from "primevue/radiobutton";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
@@ -106,7 +111,7 @@ const app = createApp(App)
   .component("ColumnGroup", ColumnGroup)
   .component("OrganizationChart", OrganizationChart)
   .component("Textarea", Textarea)
-  .component("DropDown", Dropdown)
+  .component("Dropdown", Dropdown)
   .component("ConfirmDialog", ConfirmDialog)
   .component("Dialog", Dialog)
   .component("SplitButton", SplitButton)
@@ -126,6 +131,10 @@ const app = createApp(App)
   .component("Toast", Toast)
   .component("Checkbox", Checkbox)
   .component("PickList", PickList)
-  .component("FileUpload", FileUpload);
+  .component("FileUpload", FileUpload)
+  .component("ContextMenu", ContextMenu)
+  .component("FilterMatchMode", FilterMatchMode)
+  .component("FilterOperator", FilterOperator)
+  .component("RadioButton", RadioButton);
 
 app.mount("#app");

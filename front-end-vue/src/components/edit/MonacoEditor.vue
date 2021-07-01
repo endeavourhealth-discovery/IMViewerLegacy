@@ -18,7 +18,7 @@ import { defineComponent } from "vue";
 import * as monaco from "monaco-editor";
 import { getDiscoveryCompletionProvider } from "@/services/MonacoService";
 import { ConceptDto } from "@/models/ConceptDto";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import { ConceptReference } from "@/models/ConceptReference";
 import { ConceptStatus } from "@/models/ConceptStatus";
 import LoggerService from "@/services/LoggerService";
@@ -43,7 +43,7 @@ export default defineComponent({
   async mounted() {
     this.initMonaco();
     this.validate();
-    await ConceptService.getSchemeOptions()
+    await EntityService.getSchemeOptions()
       .then(res => {
         this.schemeOptions = res.data;
       })
