@@ -82,23 +82,29 @@ export default defineComponent({
   name: "Hierarchy",
   components: {},
   props: ["active"],
-  computed: mapState(["conceptIri", "focusTree", "treeLocked"]),
+  computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus"]),
   watch: {
     async conceptIri(newValue) {
-      await this.getConceptAggregate(newValue);
-      this.createTree(
-        this.conceptAggregate.concept,
-        this.conceptAggregate.parents,
-        this.conceptAggregate.children
-      );
       if (this.$route.fullPath === "/") {
         this.resetConcept();
+        await this.getConceptAggregate(newValue);
+        this.createTree(
+          this.conceptAggregate.concept,
+          this.conceptAggregate.parents,
+          this.conceptAggregate.children
+        );
         this.$store.commit("updateHistory", {
-          url: this.$route.fullPath,
-          conceptName: "Home",
+          url: this.sideNavHierarchyFocus.iri,
+          conceptName: this.sideNavHierarchyFocus.name,
           view: this.$route.name
         } as HistoryItem);
       } else {
+        await this.getConceptAggregate(newValue);
+        this.createTree(
+          this.conceptAggregate.concept,
+          this.conceptAggregate.parents,
+          this.conceptAggregate.children
+        );
         this.$store.commit("updateHistory", {
           url: this.$route.fullPath,
           conceptName: this.conceptAggregate.concept?.[RDFS.LABEL],
@@ -193,11 +199,7 @@ export default defineComponent({
       });
     },
     createTree(concept: any, parentHierarchy: any, children: any): void {
-      if (this.root.length == 0) {
-        this.refreshTree(concept, parentHierarchy, children);
-      } else if (concept[IM.IRI] === IM.NAMESPACE + "DiscoveryOntology") {
-        this.refreshTree(concept, parentHierarchy, children);
-      }
+      this.refreshTree(concept, parentHierarchy, children);
     },
 
     refreshTree(concept: any, parentHierarchy: any, children: any): void {
@@ -356,11 +358,11 @@ export default defineComponent({
     resetConcept(): void {
       this.parentLabel = "";
       this.selectedKey = {};
-      this.$store.commit(
-        "updateConceptIri",
-        "http://endhealth.info/im#DiscoveryOntology"
-      );
-      this.$router.push({ name: "Dashboard" });
+      // this.$store.commit(
+      //   "updateConceptIri",
+      //   this.sideNavHierarchyFocus.iri
+      // );
+      // this.$router.push({ name: "Dashboard" });
     },
 
     toggleTreeLocked(value: boolean): void {
