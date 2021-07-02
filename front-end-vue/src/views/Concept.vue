@@ -324,7 +324,6 @@ export default defineComponent({
     },
 
     copyConceptToClipboard(concept: any): string {
-      console.log(concept);
       let isasString = "";
       let subTypesString = "";
       let semanticPropertiesString = "";
