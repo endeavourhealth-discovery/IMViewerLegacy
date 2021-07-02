@@ -14,11 +14,11 @@
         </p>
         <p>
           <strong>Status: </strong>
-          {{ concept.status }}
+          {{ concept.status ? concept.status : "None" }}
         </p>
         <p>
           <strong>Types: </strong>
-          {{ conceptTypes }}
+          {{ conceptTypes ? conceptTypes : "None" }}
         </p>
       </div>
       <div class="right-side" v-if="concept.description">

@@ -136,7 +136,7 @@ describe("Hierarchy.vue ___ Concept", () => {
       state: {
         conceptIri: "http://snomed.info/sct#298382003",
         focusTree: false,
-        treeLocked: true,
+        treeLocked: false,
         sideNavHierarchyFocus: {name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" }
       },
       commit: jest.fn(),
@@ -192,5 +192,41 @@ describe("Hierarchy.vue ___ Concept", () => {
     await flushPromises();
     expect(mockStore.commit).toHaveBeenCalled();
     expect(mockStore.commit).toHaveBeenLastCalledWith("updateHistory", {"conceptName": "Scoliosis deformity of spine (disorder)", "url": "/concept/http:%2F%2Fsnomed.info%2Fsct%23298382003", "view": "Concept"});
+  });
+
+  it("handles focusTree changes", async() => {
+    wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.$options.watch.focusTree.call(wrapper.vm, true);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateFocusTree", false);
+    expect(wrapper.emitted().showTree).toBeTruthy();
+  });
+
+  it("handles active changes", async() => {
+    wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.$options.watch.active.call(wrapper.vm, 0, 1);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
+  });
+
+  it("handles treeLocked changes", async() => {
+    wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.$options.watch.treeLocked.call(wrapper.vm, false);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
+  });
+
+  it("createsTree ___ no root", () => {
+    wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.createTree(EntityService.getPartialEntity, EntityService.getEntityParents, EntityService.getEntityChildren);
+    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
+  });
+
+  it("createsTree ___ concept", () => {
+    wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.root = [1];
+    wrapper.vm.createTree({ "@id": "http://endhealth.info/im#InformationModel" }, EntityService.getEntityParents, EntityService.getEntityChildren);
+    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
   });
 });

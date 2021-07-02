@@ -175,7 +175,7 @@ export default defineComponent({
     } else {
       this.$store.commit("updateHistory", {
         url: this.$route.fullPath,
-        conceptName: this.conceptAggregate.concept?.[RDFS.LABEL],
+        conceptName: this.conceptAggregate.concept[RDFS.LABEL],
         view: this.$route.name
       } as HistoryItem);
     }
@@ -229,18 +229,15 @@ export default defineComponent({
       );
 
       children.forEach((child: any) => {
-        if (child.name) {
-          //remove this to return all OWL children
-          selectedConcept.children.push(
-            this.createTreeNode(
-              child.name,
-              child["@id"],
-              child.type,
-              child.name,
-              child.hasChildren
-            )
-          );
-        }
+        selectedConcept.children.push(
+          this.createTreeNode(
+            child.name,
+            child["@id"],
+            child.type,
+            child.name,
+            child.hasChildren
+          )
+        );
       });
       this.root = [];
 
