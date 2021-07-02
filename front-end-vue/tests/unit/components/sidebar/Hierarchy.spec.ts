@@ -241,4 +241,32 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(mockRouter.push).toHaveBeenCalledTimes(1);
     expect(mockRouter.push).toHaveBeenCalledWith({ name: "Concept", params: { selectedIri: "http://endhealth.info/im#TestConcept" } });
   });
+
+  it("can expand children", async() => {
+    wrapper.vm.containsChild = jest.fn().mockReturnValue(false);
+    const testNode = { data: "http://endhealth.info/im#TestConcept", key: "http://endhealth.info/im#TestConcept", loading: false, children: [1] }
+    await wrapper.vm.expandChildren(testNode);
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(2);
+    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept");
+    expect(wrapper.vm.containsChild).toHaveBeenCalled();
+    expect(testNode.children).toHaveLength(21);
+  });
+
+  it("can expand children ___ api fail", async() => {
+    wrapper.vm.containsChild = jest.fn().mockReturnValue(false);
+    EntityService.getEntityChildren = jest.fn().mockRejectedValue({ code: 404, message: "testError"});
+    const testNode = { data: "http://endhealth.info/im#TestConcept", key: "http://endhealth.info/im#TestConcept", loading: false, children: [1] }
+    await wrapper.vm.expandChildren(testNode);
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept");
+    expect(mockToast.add).toHaveBeenCalled();
+  });
+
+
 });
