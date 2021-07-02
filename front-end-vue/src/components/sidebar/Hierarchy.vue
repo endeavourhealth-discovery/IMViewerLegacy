@@ -92,7 +92,7 @@ export default defineComponent({
   watch: {
     async conceptIri(newValue) {
       if (this.$route.fullPath === "/") {
-        this.resetConcept();
+        this.selectedKey = {};
         await this.getConceptAggregate(newValue);
         this.createTree(
           this.conceptAggregate.concept,
@@ -377,14 +377,11 @@ export default defineComponent({
     },
 
     resetConcept(): void {
-      this.parentLabel = "";
+      // this.parentLabel = "";
       this.selectedKey = {};
       this.$emit("showTree");
-      // this.$store.commit(
-      //   "updateConceptIri",
-      //   this.sideNavHierarchyFocus.iri
-      // );
-      // this.$router.push({ name: "Dashboard" });
+      this.$store.commit("updateConceptIri", this.sideNavHierarchyFocus.iri);
+      this.$router.push({ name: "Dashboard" });
     },
 
     toggleTreeLocked(value: boolean): void {
