@@ -216,4 +216,17 @@ describe("Hierarchy.vue ___ Concept", () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
   });
+
+  it("createsTree ___ no root", () => {
+    wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.createTree(EntityService.getPartialEntity, EntityService.getEntityParents, EntityService.getEntityChildren);
+    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
+  });
+
+  it("createsTree ___ concept", () => {
+    wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.root = [1];
+    wrapper.vm.createTree({ "@id": "http://endhealth.info/im#InformationModel" }, EntityService.getEntityParents, EntityService.getEntityChildren);
+    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
+  });
 });

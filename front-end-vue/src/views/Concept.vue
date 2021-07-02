@@ -10,7 +10,7 @@
           >
             <i class="fas fa-sitemap" aria-hidden="true"></i>
           </button>
-          <div v-if="'iri' in concept" class="copy-container">
+          <div v-if="Object.keys(concept).length" class="copy-container">
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
@@ -324,10 +324,12 @@ export default defineComponent({
     },
 
     copyConceptToClipboard(concept: any): string {
+      console.log(concept);
       let isasString = "";
       let subTypesString = "";
       let semanticPropertiesString = "";
       let dataModelPropertiesString = "";
+      let typesString = "";
       if (concept.isa.length > 0) {
         isasString = concept.isa.map((item: any) => item.name).join(",\n\t");
       }
@@ -346,6 +348,11 @@ export default defineComponent({
           .map((item: any) => item.property.name)
           .join(",\n\t");
       }
+      if (concept.types.length > 0) {
+        typesString = concept.types
+          .map((item: any) => item.name)
+          .join(",\n\t");
+      }
       let returnString =
         "Name: " +
         concept.name +
@@ -353,8 +360,10 @@ export default defineComponent({
         concept.iri +
         ",\nStatus: " +
         concept.status +
-        ",\nType: " +
-        concept.types[0].name +
+        ",\nTypes: " +
+        "[\n\t" +
+        typesString +
+        "\n]" +
         ",\nIs-a: " +
         "[\n\t" +
         isasString +
@@ -395,6 +404,7 @@ export default defineComponent({
       let subTypesString = "";
       let semanticPropertiesString = "";
       let dataModelPropertiesString = "";
+      let typesString = "";
       if ("isa" in concept && concept.isa.length > 0) {
         isasString = concept.isa.map((item: any) => item.name).join(",\n\t");
       }
@@ -411,6 +421,11 @@ export default defineComponent({
       if (this.dataModelProperties.length > 0) {
         dataModelPropertiesString = this.dataModelProperties
           .map((item: any) => item.property.name)
+          .join(",\n\t");
+      }
+      if (concept.types.length > 0) {
+        typesString = concept.types
+          .map((item: any) => item.name)
           .join(",\n\t");
       }
       this.copyMenuItems = [
@@ -496,7 +511,7 @@ export default defineComponent({
           label: "Type",
           command: async () => {
             await navigator.clipboard
-              .writeText("Types: " + concept.types[0].name)
+              .writeText("Types: [\n\t" + typesString + "\n]")
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Type copied to clipboard")

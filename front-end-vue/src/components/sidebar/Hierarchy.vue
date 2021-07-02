@@ -175,7 +175,7 @@ export default defineComponent({
     } else {
       this.$store.commit("updateHistory", {
         url: this.$route.fullPath,
-        conceptName: this.conceptAggregate.concept?.[RDFS.LABEL],
+        conceptName: this.conceptAggregate.concept[RDFS.LABEL],
         view: this.$route.name
       } as HistoryItem);
     }
