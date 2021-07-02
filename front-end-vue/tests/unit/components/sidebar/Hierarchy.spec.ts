@@ -193,4 +193,13 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(mockStore.commit).toHaveBeenCalled();
     expect(mockStore.commit).toHaveBeenLastCalledWith("updateHistory", {"conceptName": "Scoliosis deformity of spine (disorder)", "url": "/concept/http:%2F%2Fsnomed.info%2Fsct%23298382003", "view": "Concept"});
   });
+
+  it("handles focusTree changes", async() => {
+    wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.$options.watch.focusTree.call(wrapper.vm, true);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.refreshTree).toHaveBeenCalled();
+    expect(mockStore.commit).toHaveBeenCalledWith("updateFocusTree", false);
+    expect(wrapper.emitted().showTree).toBeTruthy();
+  })
 });
