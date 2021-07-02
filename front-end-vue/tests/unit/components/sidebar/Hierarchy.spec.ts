@@ -136,7 +136,7 @@ describe("Hierarchy.vue ___ Concept", () => {
       state: {
         conceptIri: "http://snomed.info/sct#298382003",
         focusTree: false,
-        treeLocked: true,
+        treeLocked: false,
         sideNavHierarchyFocus: {name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" }
       },
       commit: jest.fn(),
@@ -198,8 +198,22 @@ describe("Hierarchy.vue ___ Concept", () => {
     wrapper.vm.refreshTree = jest.fn();
     wrapper.vm.$options.watch.focusTree.call(wrapper.vm, true);
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.refreshTree).toHaveBeenCalled();
+    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
     expect(mockStore.commit).toHaveBeenCalledWith("updateFocusTree", false);
     expect(wrapper.emitted().showTree).toBeTruthy();
-  })
+  });
+
+  it("handles active changes", async() => {
+    wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.$options.watch.active.call(wrapper.vm, 0, 1);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
+  });
+
+  it("handles treeLocked changes", async() => {
+    wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.$options.watch.treeLocked.call(wrapper.vm, false);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
+  });
 });
