@@ -6,6 +6,7 @@
         type="text"
         v-model="searchTerm"
         @input="debounceForSearch"
+        @keydown="checkKey($event)"
         placeholder="Search"
         class="p-inputtext-lg search-input"
         autoWidth="false"
@@ -192,6 +193,12 @@ export default defineComponent({
       this.debounce = window.setTimeout(() => {
         this.search();
       }, 600);
+    },
+
+    checkKey(event: any) {
+      if (event.code === "Enter") {
+        this.search();
+      }
     },
 
     setContainerHeights(): void {
