@@ -61,7 +61,7 @@ describe("SearchResults.vue", () => {
 
   it("can get colour by concept type", () => {
     const testConceptType = [{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}];
-    expect(wrapper.vm.getColorByConceptType(testConceptType)).toBe("color:#dbab3b88")
+    expect(wrapper.vm.getColorByConceptType(testConceptType)).toBe("color:#e39a3688")
   });
 
   it("reroutes on node select", async() => {
