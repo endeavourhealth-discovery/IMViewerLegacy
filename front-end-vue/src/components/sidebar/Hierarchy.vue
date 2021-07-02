@@ -380,10 +380,7 @@ export default defineComponent({
       // this.parentLabel = "";
       this.selectedKey = {};
       this.$emit("showTree");
-      this.$store.commit(
-        "updateConceptIri",
-        this.sideNavHierarchyFocus.iri
-      );
+      this.$store.commit("updateConceptIri", this.sideNavHierarchyFocus.iri);
       this.$router.push({ name: "Dashboard" });
     },
 
