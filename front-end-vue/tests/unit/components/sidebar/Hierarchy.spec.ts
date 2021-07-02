@@ -229,4 +229,16 @@ describe("Hierarchy.vue ___ Concept", () => {
     wrapper.vm.createTree({ "@id": "http://endhealth.info/im#InformationModel" }, EntityService.getEntityParents, EntityService.getEntityChildren);
     expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
   });
+
+  it("routes onNodeSelect ___ IM", () => {
+    wrapper.vm.onNodeSelect({ data: "http://endhealth.info/im#InformationModel" });
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Dashboard" });
+  });
+
+  it("routes onNodeSelect ___ Concept", () => {
+    wrapper.vm.onNodeSelect({ data: "http://endhealth.info/im#TestConcept" });
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Concept", params: { selectedIri: "http://endhealth.info/im#TestConcept" } });
+  });
 });
