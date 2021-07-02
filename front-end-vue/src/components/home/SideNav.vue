@@ -41,7 +41,7 @@
             aria-controls="overlay_menu"
             aria-hidden="true"
           >
-            <i class="fas fa-users"></i>
+            <i class="fas fa-users" aria-hidden="true"></i>
           </span>
           <img
             v-if="isLoggedIn"

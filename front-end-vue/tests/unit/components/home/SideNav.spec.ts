@@ -119,6 +119,17 @@ describe("SideNav.spec ___ not logged in", () => {
     expect(mockRouter.push).toHaveBeenCalledTimes(1);
     expect(mockRouter.push).toHaveBeenCalledWith({ name: "Dashboard" });
   });
+
+  it("can handleCenterIconClick", async() => {
+    wrapper.vm.handleCenterIconClick({ name: "Ontology", iri: "http://endhealth.info/im#Discoveryontology" });
+    await wrapper.vm.$nextTick();
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSideNavHierarchyFocus", {
+      name: "Ontology",
+      iri: "http://endhealth.info/im#Discoveryontology"
+    });
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateConceptIri", "http://endhealth.info/im#Discoveryontology");
+    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Dashboard" });
+  });
 });
 
 describe("SideNav.spec ___ logged in", () => {
