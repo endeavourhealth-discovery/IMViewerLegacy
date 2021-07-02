@@ -258,7 +258,7 @@ describe("Hierarchy.vue ___ Concept", () => {
   it("can expand children ___ api fail", async() => {
     wrapper.vm.containsChild = jest.fn().mockReturnValue(false);
     EntityService.getEntityChildren = jest.fn().mockRejectedValue({ code: 404, message: "testError"});
-    const testNode = { data: "http://endhealth.info/im#TestConcept", key: "http://endhealth.info/im#TestConcept", loading: false, children: [1] }
+    const testNode = { data: "http://endhealth.info/im#TestConcept", key: "testKey", loading: false, children: [1] }
     await wrapper.vm.expandChildren(testNode);
     await wrapper.vm.$nextTick();
     await flushPromises();
@@ -268,5 +268,31 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(mockToast.add).toHaveBeenCalled();
   });
 
+  it("can check containsChild ___ false", async() => {
+    expect(wrapper.vm.containsChild([{ data: "TestFail" }], { "@id": "TestId" })).toBeFalsy();
+  });
 
+  it("can check containsChild ___ true", async() => {
+    expect(wrapper.vm.containsChild([{ data: "TestId" }], { "@id": "TestId" })).toBeTruthy();
+  });
+
+  it("can expand parents __ api pass", async() => {
+    wrapper.vm.root = [{ data: "http://snomed.info/sct#298382003", key: "Scoliosis deformity of spine (disorder)"}];
+    await wrapper.vm.expandParents();
+    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(3);
+    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003");
+    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#64217002");
+  });
+
+  it("can expand parents __ api 1 fail", async() => {
+    EntityService.getEntityParents = jest.fn().mockRejectedValue({ code: 404, message: "Test error" });
+    wrapper.vm.root = [{ data: "http://snomed.info/sct#298382003", key: "Scoliosis deformity of spine (disorder)"}];
+    await wrapper.vm.expandParents();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003");
+    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#298382003");
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+  });
 });
