@@ -41,6 +41,12 @@ export function isFolder(conceptTypeElements: ConceptReference[]): boolean {
   });
 }
 
+export function isQuery(conceptTypeElements: ConceptReference[]): boolean {
+  return conceptTypeElements?.some((e: any) => {
+    return e[IM.IRI] === IM.QUERY_TEMPLATE || e.iri === IM.QUERY_TEMPLATE;
+  });
+}
+
 export function getIconFromType(conceptTypes: ConceptReference[]): string {
   if (isRecordModel(conceptTypes)) {
     return "fas fa-fw fa-project-diagram";
@@ -58,12 +64,16 @@ export function getIconFromType(conceptTypes: ConceptReference[]): string {
     return "fas fa-fw fa-folder";
   }
 
+  if (isQuery(conceptTypes)) {
+    return "fab fa-fw fa-searchengin";
+  }
+
   return "far fa-fw fa-lightbulb";
 }
 
 const palette = require("../../node_modules/google-palette");
 export function getColourFromType(conceptTypes: ConceptReference[]): string {
-  const bgs = palette("tol-rainbow", 5);
+  const bgs = palette("tol-rainbow", 6);
   const bgsFixed = bgs.map((color: string) => "#" + color + "88");
 
   if (isRecordModel(conceptTypes)) {
@@ -71,7 +81,7 @@ export function getColourFromType(conceptTypes: ConceptReference[]): string {
   }
 
   if (isProperty(conceptTypes)) {
-    return bgsFixed[4];
+    return bgsFixed[5];
   }
 
   if (isValueSet(conceptTypes)) {
@@ -82,5 +92,9 @@ export function getColourFromType(conceptTypes: ConceptReference[]): string {
     return bgsFixed[1];
   }
 
-  return bgsFixed[3];
+  if (isQuery(conceptTypes)) {
+    return bgsFixed[3];
+  }
+
+  return bgsFixed[4];
 }
