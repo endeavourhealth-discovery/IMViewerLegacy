@@ -114,7 +114,7 @@ export default defineComponent({
         );
         this.$store.commit("updateHistory", {
           url: this.$route.fullPath,
-          conceptName: this.conceptAggregate.concept?.[RDFS.LABEL],
+          conceptName: this.conceptAggregate.concept[RDFS.LABEL],
           view: this.$route.name
         } as HistoryItem);
       }
@@ -377,7 +377,9 @@ export default defineComponent({
     },
 
     resetConcept(): void {
-      // this.parentLabel = "";
+      if (this.parentLabel !== "Information Model") {
+        this.parentLabel = "";
+      }
       this.selectedKey = {};
       this.$emit("showTree");
       this.$store.commit("updateConceptIri", this.sideNavHierarchyFocus.iri);
