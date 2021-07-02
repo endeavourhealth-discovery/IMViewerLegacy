@@ -2,7 +2,6 @@
   <SideNav />
   <div class="layout-main">
     <div class="main-grid">
-      <!-- <Header /> -->
       <SidebarControl />
       <router-view />
     </div>
