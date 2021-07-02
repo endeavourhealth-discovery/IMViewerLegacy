@@ -107,15 +107,15 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
   it("handles conceptIri changes", async() => {
     wrapper.vm.getConceptAggregate = jest.fn();
     wrapper.vm.createTree = jest.fn();
-    wrapper.vm.resetConcept = jest.fn();
     wrapper.vm.$options.watch.conceptIri.call(wrapper.vm, "http://endhealth.info/im#DiscoveryOntology");
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.getConceptAggregate).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.getConceptAggregate).toHaveBeenCalledWith("http://endhealth.info/im#DiscoveryOntology");
-    expect(wrapper.vm.createTree).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.resetConcept).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledWith("updateHistory", {"conceptName": "Ontology", "url": "http://endhealth.info/im#DiscoveryOntology", "view": "Dashboard"});
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.createTree).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateHistory", {"conceptName": "Ontology", "url": "http://endhealth.info/im#DiscoveryOntology", "view": "Dashboard"});
     jest.clearAllMocks();
   });
 });
