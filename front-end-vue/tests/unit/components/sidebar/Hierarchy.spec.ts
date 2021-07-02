@@ -229,4 +229,70 @@ describe("Hierarchy.vue ___ Concept", () => {
     wrapper.vm.createTree({ "@id": "http://endhealth.info/im#InformationModel" }, EntityService.getEntityParents, EntityService.getEntityChildren);
     expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
   });
+
+  it("routes onNodeSelect ___ IM", () => {
+    wrapper.vm.onNodeSelect({ data: "http://endhealth.info/im#InformationModel" });
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Dashboard" });
+  });
+
+  it("routes onNodeSelect ___ Concept", () => {
+    wrapper.vm.onNodeSelect({ data: "http://endhealth.info/im#TestConcept" });
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Concept", params: { selectedIri: "http://endhealth.info/im#TestConcept" } });
+  });
+
+  it("can expand children", async() => {
+    wrapper.vm.containsChild = jest.fn().mockReturnValue(false);
+    const testNode = { data: "http://endhealth.info/im#TestConcept", key: "http://endhealth.info/im#TestConcept", loading: false, children: [1] }
+    await wrapper.vm.expandChildren(testNode);
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(2);
+    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept");
+    expect(wrapper.vm.containsChild).toHaveBeenCalled();
+    expect(testNode.children).toHaveLength(21);
+  });
+
+  it("can expand children ___ api fail", async() => {
+    wrapper.vm.containsChild = jest.fn().mockReturnValue(false);
+    EntityService.getEntityChildren = jest.fn().mockRejectedValue({ code: 404, message: "testError"});
+    const testNode = { data: "http://endhealth.info/im#TestConcept", key: "testKey", loading: false, children: [1] }
+    await wrapper.vm.expandChildren(testNode);
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept");
+    expect(mockToast.add).toHaveBeenCalled();
+  });
+
+  it("can check containsChild ___ false", async() => {
+    expect(wrapper.vm.containsChild([{ data: "TestFail" }], { "@id": "TestId" })).toBeFalsy();
+  });
+
+  it("can check containsChild ___ true", async() => {
+    expect(wrapper.vm.containsChild([{ data: "TestId" }], { "@id": "TestId" })).toBeTruthy();
+  });
+
+  it("can expand parents __ api pass", async() => {
+    wrapper.vm.root = [{ data: "http://snomed.info/sct#298382003", key: "Scoliosis deformity of spine (disorder)"}];
+    await wrapper.vm.expandParents();
+    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(3);
+    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003");
+    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#64217002");
+  });
+
+  it("can expand parents __ api 1 fail", async() => {
+    EntityService.getEntityParents = jest.fn().mockRejectedValue({ code: 404, message: "Test error" });
+    wrapper.vm.root = [{ data: "http://snomed.info/sct#298382003", key: "Scoliosis deformity of spine (disorder)"}];
+    await wrapper.vm.expandParents();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003");
+    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#298382003");
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+  });
 });

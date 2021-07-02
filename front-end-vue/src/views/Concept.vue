@@ -348,9 +348,7 @@ export default defineComponent({
           .join(",\n\t");
       }
       if (concept.types.length > 0) {
-        typesString = concept.types
-          .map((item: any) => item.name)
-          .join(",\n\t");
+        typesString = concept.types.map((item: any) => item.name).join(",\n\t");
       }
       let returnString =
         "Name: " +
@@ -423,9 +421,7 @@ export default defineComponent({
           .join(",\n\t");
       }
       if (concept.types.length > 0) {
-        typesString = concept.types
-          .map((item: any) => item.name)
-          .join(",\n\t");
+        typesString = concept.types.map((item: any) => item.name).join(",\n\t");
       }
       this.copyMenuItems = [
         {

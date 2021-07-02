@@ -328,49 +328,48 @@ export default defineComponent({
       let parents: any[] = [];
       const parentsNodes: any[] = [];
       await EntityService.getEntityParents(this.root[0].data)
-        .then(res => {
+        .then(async res => {
           parents = res.data;
+          parents.forEach((parent: any) => {
+            parentsNodes.push(
+              this.createTreeNode(
+                parent.name,
+                parent["@id"],
+                parent.type,
+                parent.name,
+                true
+              )
+            );
+          });
+
+          parentsNodes.forEach((parentNode: TreeNode) => {
+            parentNode.children.push(this.root[0]);
+            this.expandedKeys[parentNode.key] = true;
+          });
+
+          this.root = parentsNodes;
+
+          await EntityService.getEntityParents(this.root[0].data)
+            .then(res => {
+              if (res.data[0]) {
+                this.parentLabel = res.data[0].name;
+              } else {
+                this.parentLabel = "";
+              }
+            })
+            .catch(err => {
+              this.$toast.add(
+                LoggerService.error("Concept parents server request 2 failed", err)
+              );
+            });
+          // this refreshes the keys so they start open if children and parents were both expanded
+          this.expandedKeys = { ...this.expandedKeys };
         })
         .catch(err => {
           this.$toast.add(
-            LoggerService.error("Concept children server request failed", err)
+            LoggerService.error("Concept parents server request 1 failed", err)
           );
         });
-
-      parents.forEach((parent: any) => {
-        parentsNodes.push(
-          this.createTreeNode(
-            parent.name,
-            parent["@id"],
-            parent.type,
-            parent.name,
-            true
-          )
-        );
-      });
-
-      parentsNodes.forEach((parentNode: TreeNode) => {
-        parentNode.children.push(this.root[0]);
-        this.expandedKeys[parentNode.key] = true;
-      });
-
-      this.root = parentsNodes;
-
-      await EntityService.getEntityParents(this.root[0].data)
-        .then(res => {
-          if (res.data[0]) {
-            this.parentLabel = res.data[0].name;
-          } else {
-            this.parentLabel = "";
-          }
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Concept parents server request failed", err)
-          );
-        });
-      // this refreshes the keys so they start open if children and parents were both expanded
-      this.expandedKeys = { ...this.expandedKeys };
     },
 
     resetConcept(): void {
