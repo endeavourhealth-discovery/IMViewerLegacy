@@ -341,12 +341,12 @@ export default defineComponent({
               .writeText(this.getConceptTypes(this.hoveredResult))
               .then(() => {
                 this.$toast.add(
-                  LoggerService.success("Type copied to clipboard")
+                  LoggerService.success("Types copied to clipboard")
                 );
               })
               .catch(err => {
                 this.$toast.add(
-                  LoggerService.error("Failed to copy type to clipboard", err)
+                  LoggerService.error("Failed to copy types to clipboard", err)
                 );
               });
           }
