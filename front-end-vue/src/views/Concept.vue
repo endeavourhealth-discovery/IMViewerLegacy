@@ -309,6 +309,7 @@ export default defineComponent({
     },
 
     async init() {
+      this.active = 0;
       await this.getProperties(this.conceptIri);
       await this.getConcept(this.conceptIri);
       this.types = this.concept?.types;
