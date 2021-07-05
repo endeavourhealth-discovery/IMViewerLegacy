@@ -10,7 +10,7 @@
     </div>
     <DataTable
       v-else
-      :value="$store.state.searchResults"
+      :value="searchResults"
       v-model:selection="selectedResult"
       @row-select="onNodeSelect"
       selectionMode="single"
@@ -183,19 +183,27 @@ export default defineComponent({
     },
 
     copyConceptToClipboard(data: any): string {
+      let typesString = "";
+      if (data.entityType.length > 0) {
+        typesString = data.entityType
+          .map((item: any) => item.name)
+          .join(",\n\t");
+      }
       return (
         "Name: " +
         data.name +
-        ", Iri: " +
+        ",\nIri: " +
         data.iri +
-        ", Code: " +
+        ",\nCode: " +
         data.code +
-        ", Status: " +
+        ",\nStatus: " +
         data.status.name +
-        ", Scheme: " +
+        ",\nScheme: " +
         data.scheme.name +
-        ", Type: " +
-        data.entityType[0].name
+        ",\nTypes: " +
+        "[\n\t" +
+        typesString +
+        "\n]"
       );
     },
 
@@ -225,20 +233,7 @@ export default defineComponent({
           label: "All",
           command: async () => {
             await navigator.clipboard
-              .writeText(
-                "Name: " +
-                  this.hoveredResult.name +
-                  ", Iri: " +
-                  this.hoveredResult.iri +
-                  ", Code: " +
-                  this.hoveredResult.code +
-                  ", Status: " +
-                  this.hoveredResult.status.name +
-                  ", Scheme: " +
-                  this.hoveredResult.scheme.name +
-                  ", Type: " +
-                  this.hoveredResult.conceptType[0].name
-              )
+              .writeText(this.copyConceptToClipboard(this.hoveredResult))
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Concept copied to clipboard")
@@ -340,18 +335,18 @@ export default defineComponent({
           }
         },
         {
-          label: "Type",
+          label: "Types",
           command: async () => {
             await navigator.clipboard
               .writeText(this.getConceptTypes(this.hoveredResult))
               .then(() => {
                 this.$toast.add(
-                  LoggerService.success("Type copied to clipboard")
+                  LoggerService.success("Types copied to clipboard")
                 );
               })
               .catch(err => {
                 this.$toast.add(
-                  LoggerService.error("Failed to copy type to clipboard", err)
+                  LoggerService.error("Failed to copy types to clipboard", err)
                 );
               });
           }

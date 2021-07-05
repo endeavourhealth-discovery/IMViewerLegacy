@@ -1,22 +1,31 @@
-import { shallowMount } from "@vue/test-utils";
+import { flushPromises, shallowMount } from "@vue/test-utils";
 import SearchResults from "@/components/sidebar/SearchResults.vue";
 import DataTable from "primevue/datatable";
 import ProgressSpinner from "primevue/progressspinner";
 import Column from "primevue/column";
 import OverlayPanel from "primevue/overlaypanel";
-import * as ConceptTypeMethods from "@/helpers/ConceptTypeMethods";
 import Tooltip from "primevue/tooltip";
 import ContextMenu from "primevue/contextmenu";
 import VueClipboard from "vue3-clipboard";
 import Button from "primevue/button";
+import LoggerService from "@/services/LoggerService";
+
+Object.assign(navigator, {
+  clipboard: {
+    writeText: () => {}
+  }
+});
 
 describe("SearchResults.vue", () => {
   let wrapper: any;
   let mockStore: any;
   let mockRouter: any;
+  let mockToast: any;
+  let clipboardSpy: any;
 
   beforeEach(() => {
     jest.resetAllMocks();
+    clipboardSpy = jest.spyOn(navigator.clipboard, "writeText")
     mockRouter = {
       push: jest.fn()
     }
@@ -38,11 +47,14 @@ describe("SearchResults.vue", () => {
         }]
       }
     };
+    mockToast = {
+      add: jest.fn()
+    }
 
     wrapper = shallowMount(SearchResults, {
       global: {
         components: { DataTable, ProgressSpinner, Column, OverlayPanel, ContextMenu, Button },
-        mocks: { $store: mockStore, $router: mockRouter },
+        mocks: { $store: mockStore, $router: mockRouter, $toast: mockToast },
         directives: { "tooltip": Tooltip, "clipboard": VueClipboard }
       }
     });
@@ -106,5 +118,137 @@ describe("SearchResults.vue", () => {
     wrapper.vm.$options.watch.searchResults.call(wrapper.vm, testResult);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.results).toStrictEqual(testResult);
+  });
+
+  it("can create copy return object", () => {
+    const testData = {"name":"Scoliosis deformity of spine (disorder)","iri":"http://snomed.info/sct#298382003","code":"298382003","status":{"name":"Active","@id":"http://endhealth.info/im#Active"},"scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"},"entityType":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isDescendentOf":[],"weighting":0,"match":"Scoliosis"};
+    const returnData = wrapper.vm.copyConceptToClipboard(testData);
+    expect(returnData).toEqual(
+      "Name: Scoliosis deformity of spine (disorder),\nIri: http://snomed.info/sct#298382003,\nCode: 298382003,\nStatus: Active,\nScheme: Snomed-CT code,\nTypes: [\n\tClass\n]");
+  });
+
+  it("can fire toast on copy", () => {
+    wrapper.vm.onCopy();
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Value copied to clipboard"));
+  });
+
+  it("can fire toast on copy error", () => {
+    wrapper.vm.onCopyError();
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to copy value to clipboard"));
+  });
+
+  it("can set copy menu items", () => {
+    wrapper.vm.hoveredResult = {"name":"Scoliosis deformity of spine (disorder)","iri":"http://snomed.info/sct#298382003","code":"298382003","status":{"name":"Active","@id":"http://endhealth.info/im#Active"},"scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"},"entityType":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isDescendentOf":[],"weighting":0,"match":"Scoliosis"}
+    wrapper.vm.copyMenuItems = [];
+    expect(wrapper.vm.copyMenuItems).toStrictEqual([]);
+    wrapper.vm.setCopyMenuItems();
+    expect(wrapper.vm.copyMenuItems).toHaveLength(9);
+    expect(wrapper.vm.copyMenuItems[0]).toStrictEqual({
+      label: "Copy",
+      disabled: true
+    });
+    expect(wrapper.vm.copyMenuItems[1]).toStrictEqual({
+      separator: true
+    });
+    expect(Object.keys(wrapper.vm.copyMenuItems[2])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[2].label).toBe("All");
+    expect(Object.keys(wrapper.vm.copyMenuItems[3])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[3].label).toBe("Name");
+    expect(Object.keys(wrapper.vm.copyMenuItems[4])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[4].label).toBe("Iri");
+    expect(Object.keys(wrapper.vm.copyMenuItems[5])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[5].label).toBe("Code");
+    expect(Object.keys(wrapper.vm.copyMenuItems[6])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[6].label).toBe("Status");
+    expect(Object.keys(wrapper.vm.copyMenuItems[7])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[7].label).toBe("Scheme");
+    expect(Object.keys(wrapper.vm.copyMenuItems[8])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[8].label).toBe("Types");
+  });
+
+  it("can run commands from copymenuItems ___ pass", async() => {
+    clipboardSpy.mockResolvedValue(true);
+    wrapper.vm.hoveredResult = {"name":"Scoliosis deformity of spine (disorder)","iri":"http://snomed.info/sct#298382003","code":"298382003","status":{"name":"Active","@id":"http://endhealth.info/im#Active"},"scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"},"entityType":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isDescendentOf":[],"weighting":0,"match":"Scoliosis"}
+    wrapper.vm.setCopyMenuItems();
+    await wrapper.vm.$nextTick();
+
+    wrapper.vm.copyMenuItems[2].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Name: Scoliosis deformity of spine (disorder),\nIri: http://snomed.info/sct#298382003,\nCode: 298382003,\nStatus: Active,\nScheme: Snomed-CT code,\nTypes: [\n\tClass\n]");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Concept copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[3].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Scoliosis deformity of spine (disorder)");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Name copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[4].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("http://snomed.info/sct#298382003");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Iri copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[5].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("298382003");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Code copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[6].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Active");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Status copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[7].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Snomed-CT code");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Scheme copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[8].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Class");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Types copied to clipboard"));
+  });
+
+  it("can run commands from copymenuItems ___ fail", async() => {
+    clipboardSpy.mockRejectedValue(false);
+    wrapper.vm.hoveredResult = {"name":"Scoliosis deformity of spine (disorder)","iri":"http://snomed.info/sct#298382003","code":"298382003","status":{"name":"Active","@id":"http://endhealth.info/im#Active"},"scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"},"entityType":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isDescendentOf":[],"weighting":0,"match":"Scoliosis"}
+    wrapper.vm.setCopyMenuItems();
+    await wrapper.vm.$nextTick();
+
+    wrapper.vm.copyMenuItems[2].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Name: Scoliosis deformity of spine (disorder),\nIri: http://snomed.info/sct#298382003,\nCode: 298382003,\nStatus: Active,\nScheme: Snomed-CT code,\nTypes: [\n\tClass\n]");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy concept to clipboard"));
+
+    wrapper.vm.copyMenuItems[3].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Scoliosis deformity of spine (disorder)");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy name to clipboard"));
+
+    wrapper.vm.copyMenuItems[4].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("http://snomed.info/sct#298382003");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy iri to clipboard"));
+
+    wrapper.vm.copyMenuItems[5].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("298382003");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy code to clipboard"));
+
+    wrapper.vm.copyMenuItems[6].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Active");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy status to clipboard"));
+
+    wrapper.vm.copyMenuItems[7].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Snomed-CT code");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy scheme to clipboard"));
+
+    wrapper.vm.copyMenuItems[8].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Class");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy types to clipboard"));
   });
 });
