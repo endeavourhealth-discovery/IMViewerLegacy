@@ -118,6 +118,31 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
     expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateHistory", {"conceptName": "Ontology", "url": "http://endhealth.info/im#DiscoveryOntology", "view": "Dashboard"});
     jest.clearAllMocks();
   });
+
+  it("can resetConcept", async() => {
+    wrapper.vm.createTree = jest.fn();
+    wrapper.vm.parentLabel = "Test label";
+    wrapper.vm.selectedKey = { name: "test selected key" };
+    wrapper.vm.$nextTick();
+    expect(wrapper.vm.parentLabel).toBe("Test label");
+    expect(wrapper.vm.selectedKey).toStrictEqual({ name: "test selected key" });
+    expect(wrapper.vm.sideNavHierarchyFocus.iri).toEqual("http://endhealth.info/im#DiscoveryOntology");
+    wrapper.vm.resetConcept();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.parentLabel).toBe("");
+    expect(wrapper.vm.selectedKey).toStrictEqual({});
+    expect(wrapper.emitted()["showTree"]).toBeTruthy();
+    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateConceptIri", "http://endhealth.info/im#DiscoveryOntology");
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Dashboard" });
+  });
+
+  it("can toggleTreeLocked", () => {
+    wrapper.vm.toggleTreeLocked(true);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateTreeLocked", true);
+  });
 });
 
 describe("Hierarchy.vue ___ Concept", () => {
@@ -294,5 +319,31 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003");
     expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#298382003");
     expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith({
+      "detail": "Concept parents server request 1 failed",
+      "life": 3000,
+      "severity": "error",
+      "summary": "Error"
+    });
+  });
+
+  it("can expand parents __ api 2 fail", async() => {
+    wrapper.vm.root = [{ data: "http://snomed.info/sct#298382003", key: "Scoliosis deformity of spine (disorder)"}];
+    EntityService.getEntityParents = jest.fn()
+      .mockResolvedValueOnce({data:[{"name":"Curvature of spine (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#64217002"},{"name":"Disorder of musculoskeletal system (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#928000"},{"name":"Disorder of vertebral column (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#699699005"}]})
+      .mockRejectedValue({ code: 404, message: "Test error" })
+    await wrapper.vm.expandParents();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(2);
+    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003");
+    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#64217002");
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith({
+      "detail": "Concept parents server request 2 failed",
+      "life": 3000,
+      "severity": "error",
+      "summary": "Error"
+    });
   });
 });
