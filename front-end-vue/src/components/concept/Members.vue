@@ -36,7 +36,7 @@
         <template #header>
           <div class="p-d-flex p-jc-between">
             <span class="p-input-icon-left">
-              <i class="pi pi-search" />
+              <i class="pi pi-search" aria-hidden="true" />
               <InputText
                 v-model="filters1['global'].value"
                 placeholder="Keyword Search"

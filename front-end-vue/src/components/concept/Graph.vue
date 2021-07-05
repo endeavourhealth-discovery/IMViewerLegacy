@@ -13,7 +13,7 @@
       <span>{{ slotProps.node.name }}</span>
     </template>
     <template #PROPERTIES="slotProps">
-      <table>
+      <table aria-label="graph semantic properties table">
         <thead>
           <tr>
             <th scope="col">Name</th>
@@ -31,7 +31,8 @@
       </table>
     </template>
     <template #ISA="slotProps">
-      <table>
+      <table aria-label="graph isa's table">
+        <thead></thead>
         <tbody>
           <tr v-for="isa in slotProps.node.leafNodes" :key="isa">
             <td @click="navigate(isa.iri)">{{ isa.name }}</td>
@@ -40,7 +41,8 @@
       </table>
     </template>
     <template #SUBTYPE="slotProps">
-      <table>
+      <table aria-label="graph subtypes table">
+        <thead></thead>
         <tbody>
           <tr v-for="subtype in slotProps.node.leafNodes" :key="subtype">
             <td @click="navigate(subtype.iri)">{{ subtype.name }}</td>

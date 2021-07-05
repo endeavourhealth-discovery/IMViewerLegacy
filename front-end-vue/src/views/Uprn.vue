@@ -27,12 +27,15 @@
               UPRN : {{ match.UPRN }}
             </h1>
             <div id="bodyContent">
-              <table>
-                <thead></thead>
-                <tr>
-                  <th colspan="2">Address</th>
-                  <th colspan="2">Match - {{ match?.Algorithm }}</th>
-                </tr>
+              <table aria-label="UPRN address lookup results">
+                <thead>
+                  <tr>
+                    <th scope="col" colspan="2">Address</th>
+                    <th scope="col" colspan="2">
+                      Match - {{ match?.Algorithm }}
+                    </th>
+                  </tr>
+                </thead>
                 <tbody>
                   <tr>
                     <td>Number</td>
@@ -95,7 +98,7 @@
             </div>
           </div>
         </TabPanel>
-        <TabPanel header="Address file workflow" class="p-scrollpanel-bar">
+        <TabPanel header="Address file workflow">
           <ScrollPanel class="scroll-panel">
             <div class="card">
               <div class="p-grid">
@@ -106,7 +109,7 @@
                     :customUpload="true"
                     @uploader="onUpload"
                     @clear="clearUpload"
-                    preview-width="0"
+                    :preview-width="0"
                     @remove="clearUpload"
                     accept="text/plain"
                     chooseLabel="Select"
