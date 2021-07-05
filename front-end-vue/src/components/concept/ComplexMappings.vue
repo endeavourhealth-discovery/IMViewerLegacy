@@ -182,6 +182,9 @@ export default defineComponent({
       level: number,
       positionInLevel: number
     ) {
+      if(!Object.keys(mapObject[0]).includes(IM.MATCHED_TO))
+        return [];
+
       if (IM.MATCHED_TO in mapObject[0]) {
         const matchedList = [] as any;
         mapObject.forEach((item: any) => {
