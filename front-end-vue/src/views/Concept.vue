@@ -112,7 +112,7 @@
                 id="members-container"
                 :style="contentHeight"
               >
-                <Members :conceptIri="conceptIri" />
+                <Members :conceptIri="conceptIri" @memberClick="active = 0" />
               </div>
             </TabPanel>
             <TabPanel header="Hierarchy position" v-if="!isSet">

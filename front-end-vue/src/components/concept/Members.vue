@@ -28,6 +28,10 @@
         :scrollable="true"
         class="p-datatable-sm"
         scrollHeight="flex"
+        v-model:selection="selected"
+        selectionMode="single"
+        @click="onClick()"
+        v-else
       >
         <template #header>
           <div class="p-d-flex p-jc-between">
@@ -91,8 +95,8 @@
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
 import { FilterMatchMode } from "primevue/api";
-import Swal from 'sweetalert2';
-import LoggerService from '@/services/LoggerService';
+import Swal from "sweetalert2";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "Members",
@@ -100,24 +104,16 @@ export default defineComponent({
   props: {
     conceptIri: String
   },
+  emits: ["memberClick"],
   watch: {
     async conceptIri() {
       await this.getMembers();
     }
   },
   async mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.setListboxHeight);
-    });
-
-    this.setListboxHeight();
-
     if (this.conceptIri) {
       await this.getMembers();
     }
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.setListboxHeight);
   },
   data() {
     return {
@@ -130,10 +126,20 @@ export default defineComponent({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       },
       expanded: false,
-      include: "Included"
+      include: "Included",
+      selected: {} as any
     };
   },
   methods: {
+    onClick() {
+      if (this.selected != null && this.selected.member != null) {
+        this.$router.push({
+          name: "Concept",
+          params: { selectedIri: this.selected.member.entity["@id"] }
+        });
+        this.$emit("memberClick");
+      }
+    },
     async getMembers() {
       this.expanded = false;
       await this.toggleExpansion();
@@ -142,7 +148,11 @@ export default defineComponent({
       this.loading = true;
       if (this.expanded) {
         this.members = (
-          await EntityService.getEntityMembers(this.conceptIri as string, true, 2000)
+          await EntityService.getEntityMembers(
+            this.conceptIri as string,
+            true,
+            2000
+          )
         ).data;
       } else {
         this.members = (
@@ -155,15 +165,15 @@ export default defineComponent({
         Swal.fire({
           icon: "warning",
           title: "Large data set",
-          text: "Expanding this set results in a large amount of data.  Download instead?",
+          text:
+            "Expanding this set results in a large amount of data.  Download instead?",
           confirmButtonText: "Download",
           showCancelButton: true
-        }).then((result) => {
-          if (result.isConfirmed)
-            this.download();
+        }).then(result => {
+          if (result.isConfirmed) this.download();
           else {
             this.$toast.add(
-                LoggerService.warn("Expansion cancelled, results not downloaded")
+              LoggerService.warn("Expansion cancelled, results not downloaded")
             );
           }
         });
@@ -173,9 +183,14 @@ export default defineComponent({
     },
     download() {
       const modIri = (this.conceptIri as string)
-          .replace(/\//gi, "%2F")
-          .replace(/#/gi, "%23");
-      const popup = window.open(process.env.VUE_APP_API + "api/entity/download?iri=" + modIri + "&members=true&expandMembers=true&format=excel");
+        .replace(/\//gi, "%2F")
+        .replace(/#/gi, "%23");
+      const popup = window.open(
+        process.env.VUE_APP_API +
+          "api/entity/download?iri=" +
+          modIri +
+          "&members=true&expandMembers=true&format=excel"
+      );
       if (!popup) {
         this.$toast.add(LoggerService.error("Download failed from server"));
       } else {
@@ -204,22 +219,6 @@ export default defineComponent({
     toggle(event: any) {
       const x = this.$refs.menu as any;
       x.toggle(event);
-    },
-
-    setListboxHeight(): void {
-      const container = document.getElementById(
-        "members-container"
-      ) as HTMLElement;
-      const listHeader = container.getElementsByClassName(
-        "p-listbox-header"
-      )[0] as HTMLElement;
-      if (container && listHeader) {
-        const newHeight =
-          container.getBoundingClientRect().height -
-          listHeader.getBoundingClientRect().height -
-          7;
-        this.listHeight = "height: " + newHeight + "px;";
-      }
     }
   }
 });
