@@ -33,7 +33,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
@@ -76,7 +76,7 @@ export default defineComponent({
     },
     async getTerms(iri: string) {
       this.loading = true;
-      await ConceptService.getConceptTermCodes(iri)
+      await EntityService.getEntityTermCodes(iri)
         .then(res => {
           this.terms = res.data;
         })
@@ -96,46 +96,28 @@ export default defineComponent({
       }
     },
     setScrollHeight(): void {
-      const container = document.getElementsByClassName(
-        "concept-container"
-      )[0] as HTMLElement;
-      const header = container.getElementsByClassName(
-        "p-panel-header"
-      )[0] as HTMLElement;
-      const nav = container.getElementsByClassName(
-        "p-tabview-nav"
-      )[0] as HTMLElement;
+      const container = document.getElementById(
+        "terms-container"
+      ) as HTMLElement;
       const terms = document.getElementById("terms-table") as HTMLElement;
       const paginator = terms.getElementsByClassName(
         "p-paginator"
       )[0] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
-      if (paginator && currentFontSize && container && header && nav) {
+      if (paginator && container) {
         this.scrollHeight =
           container.getBoundingClientRect().height -
-          header.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
           paginator.getBoundingClientRect().height -
-          currentFontSize * 4 -
           1 +
           "px";
-      } else if (currentFontSize && container && header && nav) {
-        this.scrollHeight =
-          container.getBoundingClientRect().height -
-          header.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
-          currentFontSize * 8 -
-          1 +
-          "px";
+      } else if (container) {
+        this.scrollHeight = container.getBoundingClientRect().height - 1 + "px";
       }
     },
 
     setTableWidth(): void {
-      const container = document.getElementById("terms-table") as HTMLElement;
+      const container = document.getElementById(
+        "terms-container"
+      ) as HTMLElement;
       const table = container.getElementsByClassName(
         "p-datatable-table"
       )[0] as HTMLElement;
@@ -144,13 +126,7 @@ export default defineComponent({
 
     setTableRows(): void {
       const container = document.getElementsByClassName(
-        "concept-container"
-      )[0] as HTMLElement;
-      const header = container.getElementsByClassName(
-        "p-panel-header"
-      )[0] as HTMLElement;
-      const nav = container.getElementsByClassName(
-        "p-tabview-nav"
+        "concept-panel-content"
       )[0] as HTMLElement;
       const terms = document.getElementById("terms-table") as HTMLElement;
       const row = terms.getElementsByTagName("tr")[0] as HTMLElement;
@@ -165,25 +141,20 @@ export default defineComponent({
       const schemeCount = terms.getElementsByClassName("p-rowgroup-header")
         .length;
       let maxRows = 25;
-      if (paginator && container && header && nav && row && currentFontSize) {
+      if (paginator && container && row && currentFontSize) {
         maxRows =
           Math.floor(
             (container.getBoundingClientRect().height -
-              header.getBoundingClientRect().height -
-              nav.getBoundingClientRect().height -
               paginator.getBoundingClientRect().height -
               currentFontSize * 4) /
               row.getBoundingClientRect().height
           ) -
           1 -
           schemeCount;
-      } else if (container && header && nav && row && currentFontSize) {
+      } else if (container && row && currentFontSize) {
         maxRows =
           Math.floor(
-            (container.getBoundingClientRect().height -
-              header.getBoundingClientRect().height -
-              nav.getBoundingClientRect().height -
-              currentFontSize * 4) /
+            (container.getBoundingClientRect().height - currentFontSize * 4) /
               row.getBoundingClientRect().height
           ) -
           1 -

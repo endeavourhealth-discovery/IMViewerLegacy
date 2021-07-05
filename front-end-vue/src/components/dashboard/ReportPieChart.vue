@@ -27,7 +27,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import IndividualService from "@/services/IndividualService";
 const palette = require("../../../node_modules/google-palette");
 import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
@@ -36,6 +35,7 @@ import { ChartOptions } from "@/models/charts/ChartOptions";
 import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 import { OWL } from "@/vocabulary/OWL";
+import EntityService from "@/services/EntityService";
 
 export default defineComponent({
   name: "ReportPieChart",
@@ -90,15 +90,17 @@ export default defineComponent({
   },
   methods: {
     async setChartData(): Promise<void> {
-      await IndividualService.getIndividual(this.iri)
+      await EntityService.getPartialEntity(this.iri, [
+        RDFS.LABEL,
+        RDFS.COMMENT,
+        IM.STATS_REPORT_ENTRY
+      ])
         .then(res => {
-          this.name = res.data[RDFS.LABEL]["@value"];
-          this.description = res.data[RDFS.COMMENT]["@value"];
+          this.name = res.data[RDFS.LABEL];
+          this.description = res.data[RDFS.COMMENT];
           for (const entry of res.data[IM.STATS_REPORT_ENTRY]) {
-            this.chartConceptTypes.labels.push(entry[RDFS.LABEL]["@value"]);
-            this.chartConceptTypes.datasets[0].data.push(
-              +entry[OWL.HAS_VALUE]["@value"]
-            );
+            this.chartConceptTypes.labels.push(entry[RDFS.LABEL]);
+            this.chartConceptTypes.datasets[0].data.push(entry[OWL.HAS_VALUE]);
           }
           this.realData = { ...this.chartConceptTypes.datasets[0].data };
           // set tooltip to use real data

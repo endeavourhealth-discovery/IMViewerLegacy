@@ -10,8 +10,8 @@
       <h3>Download Concept:</h3>
     </template>
     <div id="content" class="p-d-flex p-flex-column p-jc-center p-ai-center">
-      <h4 v-if="concept['http://www.w3.org/2000/01/rdf-schema#label']">
-        {{ concept["http://www.w3.org/2000/01/rdf-schema#label"] }}
+      <h4 v-if="concept[RDFS_LABEL]">
+        {{ concept[RDFS_LABEL] }}
       </h4>
       <SelectButton
         class="format-container"
@@ -45,13 +45,15 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!props?.length"
-            id="properties"
+            :disabled="!dataModelProperties?.length"
+            id="data-model-properties"
             :binary="true"
-            value="Include properties"
-            v-model="includeProperties"
+            value="Include data model properties"
+            v-model="includeDataModelProperties"
           />
-          <label class="label" for="properties">Include properties</label>
+          <label class="label" for="data-model-properties">
+            Include data model properties
+          </label>
         </div>
         <div class="checkbox-label">
           <Checkbox
@@ -87,13 +89,15 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!roles?.length"
-            id="roles"
+            :disabled="!semanticProperties?.length"
+            id="semantic-properties"
             :binary="true"
-            value="Include roles"
-            v-model="includeRoles"
+            value="Include semantic properties"
+            v-model="includeSemanticProperties"
           />
-          <label class="label" for="roles">Include roles</label>
+          <label class="label" for="semantic-properties">
+            Include semantic properties
+          </label>
         </div>
       </div>
       <div class="download-button-container p-d-flex p-flex-row p-jc-around">
@@ -117,9 +121,10 @@
 </template>
 
 <script lang="ts">
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
+import { RDFS } from "@/vocabulary/RDFS";
 
 export default defineComponent({
   name: "DownloadDialog",
@@ -138,16 +143,17 @@ export default defineComponent({
       concept: {},
       parents: [] as any,
       children: [] as any,
-      props: [],
-      roles: [],
+      dataModelProperties: [],
+      semanticProperties: [],
       members: {} as any,
       includeChildren: true,
-      includeProperties: true,
+      includeDataModelProperties: true,
       includeMembers: true,
       expandMembers: false,
       includeParents: true,
       includeInactive: false,
-      includeRoles: false,
+      includeSemanticProperties: false,
+      RDFS_LABEL: RDFS.LABEL,
       format: {
         name: "Excel(.xlsx)",
         value: "excel",
@@ -177,22 +183,22 @@ export default defineComponent({
 
       const url =
         process.env.VUE_APP_API +
-        "api/concept/download?iri=" +
+        "api/entity/download?iri=" +
         modIri +
         "&format=" +
         this.format.value +
         "&children=" +
         this.includeChildren +
-        "&properties=" +
-        this.includeProperties +
+        "&dataModelProperties=" +
+        this.includeDataModelProperties +
         "&members=" +
         this.includeMembers +
         "&expandMembers=" +
         this.expandMembers +
         "&parents=" +
         this.includeParents +
-        "&roles=" +
-        this.includeRoles +
+        "&semanticProperties=" +
+        this.includeSemanticProperties +
         "&inactive=" +
         this.includeInactive;
       const popup = window.open(url);
@@ -204,19 +210,25 @@ export default defineComponent({
       this.closeDownloadDialog();
     },
     async init(iri: string) {
-      this.concept = (await ConceptService.getConcept(iri)).data;
-      this.parents = (await ConceptService.getConceptParents(iri)).data;
-      this.children = (await ConceptService.getConceptChildren(iri)).data;
-      this.props = (await ConceptService.getConceptProperties(iri)).data;
-      this.roles = (await ConceptService.getConceptRoles(iri)).data;
+      this.concept = (
+        await EntityService.getPartialEntity(iri, [RDFS.LABEL])
+      ).data;
+      this.parents = (await EntityService.getEntityParents(iri)).data;
+      this.children = (await EntityService.getEntityChildren(iri)).data;
+      this.dataModelProperties = (
+        await EntityService.getDataModelProperties(iri)
+      ).data;
+      this.semanticProperties = (
+        await EntityService.getSemanticProperties(iri)
+      ).data;
       this.members = (
-        await ConceptService.getConceptMembers(iri, this.expandMembers)
+        await EntityService.getEntityMembers(iri, this.expandMembers)
       ).data;
 
       this.includeParents = !!this.parents.length;
       this.includeChildren = !!this.children.length;
-      this.includeProperties = !!this.props.length;
-      this.includeRoles = !!this.roles.length;
+      this.includeDataModelProperties = !!this.dataModelProperties.length;
+      this.includeSemanticProperties = !!this.semanticProperties.length;
       this.includeMembers =
         !!this.members?.included?.length || !!this.members.excluded?.length;
     }

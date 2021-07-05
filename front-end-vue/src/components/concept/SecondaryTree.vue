@@ -36,17 +36,64 @@
       class="tree-root"
     >
       <template #default="slotProps">
-        <span v-if="!slotProps.node.loading">
-          <i
-            :class="'fas fa-fw' + slotProps.node.typeIcon"
-            :style="'color:' + slotProps.node.color"
-            aria-hidden="true"
-          />
-        </span>
-        <ProgressSpinner v-if="slotProps.node.loading" />
-        {{ slotProps.node.label }}
+        <div
+          @mouseover="showPopup($event, slotProps.node)"
+          @mouseleave="hidePopup($event)"
+        >
+          <span v-if="!slotProps.node.loading">
+            <i
+              :class="'fas fa-fw' + slotProps.node.typeIcon"
+              :style="'color:' + slotProps.node.color"
+              aria-hidden="true"
+            />
+          </span>
+          <ProgressSpinner v-if="slotProps.node.loading" />
+          {{ slotProps.node.label }}
+        </div>
       </template>
     </Tree>
+
+    <OverlayPanel
+      ref="altTreeOP"
+      id="secondary_tree_overlay_panel"
+      style="width: 700px"
+      :breakpoints="{ '960px': '75vw' }"
+    >
+      <div
+        v-if="hoveredResult.name"
+        class="p-d-flex p-flex-row p-jc-start result-overlay"
+        style="width: 100%; gap: 7px;"
+      >
+        <div class="left-side" style="width: 50%;">
+          <p>
+            <strong>Name: </strong>
+            <span>{{ hoveredResult.name }}</span>
+          </p>
+          <p>
+            <strong>Iri: </strong>
+            <span>{{ hoveredResult.iri }}</span>
+          </p>
+          <p v-if="hoveredResult.code">
+            <strong>Code: </strong>
+            <span>{{ hoveredResult.code }}</span>
+          </p>
+        </div>
+        <div class="right-side" style="width: 50%;">
+          <p v-if="hoveredResult.status">
+            <strong>Status: </strong>
+            <span>{{ hoveredResult.status.name }}</span>
+          </p>
+          <p v-if="hoveredResult.scheme">
+            <strong>Scheme: </strong>
+            <span>{{ hoveredResult.scheme.name }}</span>
+          </p>
+          <p v-if="hoveredResult.conceptType">
+            <strong>Type: </strong>
+            <span>{{ getConceptTypes(hoveredResult.conceptType) }}</span>
+          </p>
+        </div>
+      </div>
+    </OverlayPanel>
   </div>
 </template>
 
@@ -56,12 +103,13 @@ import {
   getColourFromType
 } from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import { IM } from "@/vocabulary/IM";
 import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
 import { defineComponent } from "vue";
 import LoggerService from "@/services/LoggerService";
+import { ConceptSummary } from "@/models/search/ConceptSummary";
 
 export default defineComponent({
   name: "SecondaryTree",
@@ -96,14 +144,11 @@ export default defineComponent({
         iri: string;
         listPosition: number;
       }[],
-      parentPosition: 0
+      parentPosition: 0,
+      hoveredResult: {} as ConceptSummary | any
     };
   },
   async mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.setTreeHeight);
-    });
-
     await this.getConceptAggregate(this.conceptIri);
     this.createTree(
       this.conceptAggregate.concept,
@@ -112,19 +157,18 @@ export default defineComponent({
       0
     );
   },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.setTreeHeight);
-  },
   methods: {
     async getConceptAggregate(iri: string): Promise<void> {
       await Promise.all([
-        ConceptService.getConcept(iri).then(res => {
-          this.conceptAggregate.concept = res.data;
-        }),
-        ConceptService.getConceptParents(iri).then(res => {
+        EntityService.getPartialEntity(iri, [RDF.TYPE, RDFS.LABEL]).then(
+          res => {
+            this.conceptAggregate.concept = res.data;
+          }
+        ),
+        EntityService.getEntityParents(iri).then(res => {
           this.conceptAggregate.parents = res.data;
         }),
-        ConceptService.getConceptChildren(iri).then(res => {
+        EntityService.getEntityChildren(iri).then(res => {
           this.conceptAggregate.children = res.data;
         })
       ]).catch(err => {
@@ -197,7 +241,6 @@ export default defineComponent({
         this.expandedKeys[selectedConcept.key] = true;
       }
       this.selectedKey[selectedConcept.key] = true;
-      this.setTreeHeight();
     },
 
     createTreeNode(
@@ -237,7 +280,7 @@ export default defineComponent({
         this.expandedKeys[node.key] = true;
       }
       let children: any[] = [];
-      await ConceptService.getConceptChildren(node.data)
+      await EntityService.getEntityChildren(node.data)
         .then(res => {
           children = res.data;
         })
@@ -246,7 +289,6 @@ export default defineComponent({
             LoggerService.error("Concept children server request failed", err)
           );
         });
-      let index = 0;
 
       children.forEach((child: any) => {
         if (!this.containsChild(node.children, child)) {
@@ -255,14 +297,12 @@ export default defineComponent({
               child.name,
               child["@id"],
               child.type,
-              node.key + "-" + index,
+              child.name,
               child.hasChildren
             )
           );
-          index++;
         }
       });
-      this.setTreeHeight();
       node.loading = false;
     },
 
@@ -280,7 +320,7 @@ export default defineComponent({
 
       let parents: any[] = [];
       let parentNode = {} as TreeNode;
-      await ConceptService.getConceptParents(this.root[0].data)
+      await EntityService.getEntityParents(this.root[0].data)
         .then(res => {
           parents = res.data;
         })
@@ -311,7 +351,7 @@ export default defineComponent({
       this.root = [];
       this.root.push(parentNode);
 
-      await ConceptService.getConceptParents(this.root[0].data)
+      await EntityService.getEntityParents(this.root[0].data)
         .then(res => {
           this.alternateParents = [];
           if (res.data.length) {
@@ -358,53 +398,29 @@ export default defineComponent({
             )
           );
         });
-      this.setTreeHeight();
+      // this refreshes the keys so they start open if children and parents were both expanded
+      this.expandedKeys = { ...this.expandedKeys };
     },
 
-    setTreeHeight(): void {
-      const conceptContainer = document.getElementsByClassName(
-        "concept-container"
-      )[0] as HTMLElement;
-      const header = conceptContainer.getElementsByClassName(
-        "p-panel-header"
-      )[0] as HTMLElement;
-      const nav = conceptContainer.getElementsByClassName(
-        "p-tabview-nav"
-      )[0] as HTMLElement;
-      const tree = conceptContainer.getElementsByClassName(
-        "p-tree"
-      )[0] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
-      const parentBar = document.getElementById(
-        "secondary-tree-parents-bar"
-      ) as HTMLElement;
-      const altParentsContainer = document.getElementById(
-        "alternate-parents-container"
-      ) as HTMLElement;
-      if (
-        tree &&
-        header &&
-        nav &&
-        conceptContainer &&
-        currentFontSize &&
-        parentBar &&
-        altParentsContainer
-      ) {
-        const calcHeight =
-          conceptContainer.getBoundingClientRect().height -
-          header.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
-          altParentsContainer.getBoundingClientRect().height -
-          parentBar.getBoundingClientRect().height -
-          4 * currentFontSize -
-          7 +
-          "px";
-        tree.style.maxHeight = calcHeight;
-      }
+    async showPopup(event: any, data: any): Promise<void> {
+      const x = this.$refs.altTreeOP as any;
+      x.show(event);
+      await EntityService.getEntitySummary(data.data).then(res => {
+        this.hoveredResult = res.data;
+      });
+    },
+
+    hidePopup(event: any): void {
+      const x = this.$refs.altTreeOP as any;
+      x.hide(event);
+    },
+
+    getConceptTypes(concept: any): any {
+      return concept
+        .map(function(type: any) {
+          return type.name;
+        })
+        .join(", ");
     }
   }
 });
@@ -418,6 +434,12 @@ export default defineComponent({
 }
 
 #secondary-tree-bar-container {
+  height: 100%;
   border: 1px solid #dee2e6;
+}
+
+.p-progress-spinner {
+  width: 1.25em !important;
+  height: 1.25em !important;
 }
 </style>

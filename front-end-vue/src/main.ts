@@ -3,15 +3,18 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import PrimeVue from "primevue/config";
+import VueClipboard from "vue3-clipboard";
 
 // Font Awesome
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library, dom } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
+import { fab } from "@fortawesome/free-brands-svg-icons";
+
 dom.watch();
 
-library.add(fas, far);
+library.add(fas, far, fab);
 
 import "primevue/resources/themes/saga-blue/theme.css"; //theme
 
@@ -41,6 +44,7 @@ import Listbox from "primevue/listbox";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup"; //optional for column grouping
+import FileUpload from "primevue/fileupload";
 import OrganizationChart from "primevue/organizationchart";
 import Textarea from "primevue/textarea";
 import Dropdown from "primevue/dropdown";
@@ -65,10 +69,13 @@ import SelectButton from "primevue/selectbutton";
 import ToastService from "primevue/toastservice";
 import Toast from "primevue/toast";
 import Checkbox from "primevue/checkbox";
+import PickList from "primevue/picklist";
+import ContextMenu from "primevue/contextmenu";
+import { FilterMatchMode, FilterOperator } from "primevue/api";
+import RadioButton from "primevue/radiobutton";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
-
 
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
@@ -79,6 +86,10 @@ const app = createApp(App)
   .use(PrimeVue, { ripple: true })
   .use(ConfirmationService)
   .use(ToastService)
+  .use(VueClipboard, {
+    autoSetContainer: true,
+    appendToBody: true
+  })
   .directive("tooltip", Tooltip)
   .component("Card", Card)
   .component("ProgressSpinner", ProgressSpinner)
@@ -100,7 +111,7 @@ const app = createApp(App)
   .component("ColumnGroup", ColumnGroup)
   .component("OrganizationChart", OrganizationChart)
   .component("Textarea", Textarea)
-  .component("DropDown", Dropdown)
+  .component("Dropdown", Dropdown)
   .component("ConfirmDialog", ConfirmDialog)
   .component("Dialog", Dialog)
   .component("SplitButton", SplitButton)
@@ -118,6 +129,12 @@ const app = createApp(App)
   .component("Timeline", Timeline)
   .component("SelectButton", SelectButton)
   .component("Toast", Toast)
-  .component("Checkbox", Checkbox);
+  .component("Checkbox", Checkbox)
+  .component("PickList", PickList)
+  .component("FileUpload", FileUpload)
+  .component("ContextMenu", ContextMenu)
+  .component("FilterMatchMode", FilterMatchMode)
+  .component("FilterOperator", FilterOperator)
+  .component("RadioButton", RadioButton);
 
 app.mount("#app");
