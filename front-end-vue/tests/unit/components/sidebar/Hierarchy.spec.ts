@@ -319,12 +319,7 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003");
     expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#298382003");
     expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith({
-      "detail": "Concept parents server request 1 failed",
-      "life": 3000,
-      "severity": "error",
-      "summary": "Error"
-    });
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Concept parents server request 1 failed"));
   });
 
   it("can expand parents __ api 2 fail", async() => {
@@ -339,11 +334,6 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003");
     expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#64217002");
     expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith({
-      "detail": "Concept parents server request 2 failed",
-      "life": 3000,
-      "severity": "error",
-      "summary": "Error"
-    });
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Concept parents server request 2 failed"));
   });
 });

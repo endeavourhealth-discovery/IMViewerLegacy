@@ -4,16 +4,17 @@ import DataTable from "primevue/datatable";
 import ProgressSpinner from "primevue/progressspinner";
 import Column from "primevue/column";
 import OverlayPanel from "primevue/overlaypanel";
-import * as ConceptTypeMethods from "@/helpers/ConceptTypeMethods";
 import Tooltip from "primevue/tooltip";
 import ContextMenu from "primevue/contextmenu";
 import VueClipboard from "vue3-clipboard";
 import Button from "primevue/button";
+import LoggerService from "@/services/LoggerService";
 
 describe("SearchResults.vue", () => {
   let wrapper: any;
   let mockStore: any;
   let mockRouter: any;
+  let mockToast: any;
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -38,11 +39,14 @@ describe("SearchResults.vue", () => {
         }]
       }
     };
+    mockToast = {
+      add: jest.fn()
+    }
 
     wrapper = shallowMount(SearchResults, {
       global: {
         components: { DataTable, ProgressSpinner, Column, OverlayPanel, ContextMenu, Button },
-        mocks: { $store: mockStore, $router: mockRouter },
+        mocks: { $store: mockStore, $router: mockRouter, $toast: mockToast },
         directives: { "tooltip": Tooltip, "clipboard": VueClipboard }
       }
     });
@@ -107,4 +111,30 @@ describe("SearchResults.vue", () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.results).toStrictEqual(testResult);
   });
+
+  it("can create copy return object", () => {
+    const testData = {"name":"Scoliosis deformity of spine (disorder)","iri":"http://snomed.info/sct#298382003","code":"298382003","status":{"name":"Active","@id":"http://endhealth.info/im#Active"},"scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"},"entityType":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isDescendentOf":[],"weighting":0,"match":"Scoliosis"};
+    const returnData = wrapper.vm.copyConceptToClipboard(testData);
+    expect(returnData).toEqual("Name: Scoliosis deformity of spine (disorder), Iri: http://snomed.info/sct#298382003, Code: 298382003, Status: Active, Scheme: Snomed-CT code, Type: Class");
+  });
+
+  it("can fire toast on copy", () => {
+    wrapper.vm.onCopy();
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Value copied to clipboard"));
+  });
+
+  it("can fire toast on copy error", () => {
+    wrapper.vm.onCopyError();
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to copy value to clipboard"));
+  });
+
+  it("can set copy menu items", () => {
+    wrapper.vm.hoveredResult = {"name":"Scoliosis deformity of spine (disorder)","iri":"http://snomed.info/sct#298382003","code":"298382003","status":{"name":"Active","@id":"http://endhealth.info/im#Active"},"scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"},"entityType":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isDescendentOf":[],"weighting":0,"match":"Scoliosis"}
+    wrapper.vm.copyMenuItems = [];
+    expect(wrapper.vm.copyMenuItems).toStrictEqual([]);
+    wrapper.vm.setCopyMenuItems();
+    expect(wrapper.vm.copyMenuItems).toHaveLength(9);
+  })
 });

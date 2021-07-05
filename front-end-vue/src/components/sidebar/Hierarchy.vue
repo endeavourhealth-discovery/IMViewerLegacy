@@ -359,7 +359,10 @@ export default defineComponent({
             })
             .catch(err => {
               this.$toast.add(
-                LoggerService.error("Concept parents server request 2 failed", err)
+                LoggerService.error(
+                  "Concept parents server request 2 failed",
+                  err
+                )
               );
             });
           // this refreshes the keys so they start open if children and parents were both expanded
