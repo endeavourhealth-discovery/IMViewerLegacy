@@ -65,7 +65,7 @@ export function getIconFromType(conceptTypes: ConceptReference[]): string {
   }
 
   if (isQuery(conceptTypes)) {
-    return "fab fa-fw fa-searchengin";
+    return "fas fa-fw fa-search";
   }
 
   return "far fa-fw fa-lightbulb";
