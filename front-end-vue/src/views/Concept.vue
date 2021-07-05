@@ -179,7 +179,7 @@ export default defineComponent({
       this.init();
     },
     concept(newValue) {
-      if (Object.keys(newValue).length) {
+      if (newValue && Object.keys(newValue).length) {
         this.setCopyMenuItems(newValue);
       }
     }
@@ -234,10 +234,10 @@ export default defineComponent({
       const container = document.getElementById(
         "concept-main-container"
       ) as HTMLElement;
-      const header = container.getElementsByClassName(
+      const header = container?.getElementsByClassName(
         "p-panel-header"
       )[0] as HTMLElement;
-      const nav = container.getElementsByClassName(
+      const nav = container?.getElementsByClassName(
         "p-tabview-nav"
       )[0] as HTMLElement;
       const currentFontSize = parseFloat(
