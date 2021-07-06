@@ -202,7 +202,29 @@ describe("Concept.vue", () => {
     wrapper.vm.openDownloadDialog();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.showDownloadDialog).toBe(true);
-  })
+  });
+
+  it("can closeDialog", async() => {
+    wrapper.vm.closeDownloadDialog();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showDownloadDialog).toBe(false);
+  });
+
+  it("can copy concept to clipboard", () => {
+    expect(wrapper.vm.copyConceptToClipboard({"iri":"http://snomed.info/sct#298382003","name":"Scoliosis deformity of spine (disorder)","status":"Active","types":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isa":[{"name":"Curvature of spine (disorder)","@id":"http://snomed.info/sct#64217002"},{"name":"Disorder of musculoskeletal system (disorder)","@id":"http://snomed.info/sct#928000"},{"name":"Disorder of vertebral column (disorder)","@id":"http://snomed.info/sct#699699005"}],"subtypes":[{"name":"Acquired scoliosis (disorder)","@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","@id":"http://snomed.info/sct#205045003"},{"name":"Distal arthrogryposis type 4 (disorder)","@id":"http://snomed.info/sct#715575001"},{"name":"Duane anomaly, myopathy, scoliosis syndrome (disorder)","@id":"http://snomed.info/sct#722432000"},{"name":"Horizontal gaze palsy with progressive scoliosis (disorder)","@id":"http://snomed.info/sct#702381007"},{"name":"Idiopathic scoliosis (disorder)","@id":"http://snomed.info/sct#203639008"},{"name":"Idiopathic scoliosis AND/OR kyphoscoliosis (disorder)","@id":"http://snomed.info/sct#30611007"},{"name":"Kyphoscoliosis and scoliosis (disorder)","@id":"http://snomed.info/sct#203638000"},{"name":"Kyphoscoliosis deformity of spine (disorder)","@id":"http://snomed.info/sct#405773007"},{"name":"Lordoscoliosis (disorder)","@id":"http://snomed.info/sct#111268000"},{"name":"Neuromuscular scoliosis (disorder)","@id":"http://snomed.info/sct#203662005"},{"name":"Postural scoliosis (disorder)","@id":"http://snomed.info/sct#203645000"},{"name":"Radioulnar synostosis with microcephaly and scoliosis syndrome (disorder)","@id":"http://snomed.info/sct#719162001"},{"name":"Scoliosis in connective tissue anomalies (disorder)","@id":"http://snomed.info/sct#203664006"},{"name":"Scoliosis in neurofibromatosis (disorder)","@id":"http://snomed.info/sct#203663000"},{"name":"Scoliosis in skeletal dysplasia (disorder)","@id":"http://snomed.info/sct#203661003"},{"name":"Scoliosis of cervical spine (disorder)","@id":"http://snomed.info/sct#298392006"},{"name":"Scoliosis of lumbar spine (disorder)","@id":"http://snomed.info/sct#298591003"},{"name":"Scoliosis of thoracic spine (disorder)","@id":"http://snomed.info/sct#298494008"}]})).toBe("Name: Scoliosis deformity of spine (disorder),\nIri: http://snomed.info/sct#298382003,\nStatus: Active,\nTypes: [\n\tClass\n],\nIs-a: [\n\tCurvature of spine (disorder),\n\tDisorder of musculoskeletal system (disorder),\n\tDisorder of vertebral column (disorder)\n],\nSubtypes: [\n\tAcquired scoliosis (disorder),\n\tAcrodysplasia scoliosis (disorder),\n\tCongenital scoliosis due to bony malformation (disorder),\n\tDistal arthrogryposis type 4 (disorder),\n\tDuane anomaly, myopathy, scoliosis syndrome (disorder),\n\tHorizontal gaze palsy with progressive scoliosis (disorder),\n\tIdiopathic scoliosis (disorder),\n\tIdiopathic scoliosis AND/OR kyphoscoliosis (disorder),\n\tKyphoscoliosis and scoliosis (disorder),\n\tKyphoscoliosis deformity of spine (disorder),\n\tLordoscoliosis (disorder),\n\tNeuromuscular scoliosis (disorder),\n\tPostural scoliosis (disorder),\n\tRadioulnar synostosis with microcephaly and scoliosis syndrome (disorder),\n\tScoliosis in connective tissue anomalies (disorder),\n\tScoliosis in neurofibromatosis (disorder),\n\tScoliosis in skeletal dysplasia (disorder),\n\tScoliosis of cervical spine (disorder),\n\tScoliosis of lumbar spine (disorder),\n\tScoliosis of thoracic spine (disorder)\n],\nSemantic properties: [\n\tAssociated morphology (attribute)\n],\nData model properties: [\n\t\n]");
+  });
+
+  it("toasts onCopy", () => {
+    wrapper.vm.onCopy();
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Value copied to clipboard"));
+  });
+
+  it("toasts onCopyError", () => {
+    wrapper.vm.onCopyError();
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to copy value to clipboard"));
+  });
 });
 
 
