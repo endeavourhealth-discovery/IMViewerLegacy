@@ -396,6 +396,11 @@ describe("Concept.vue", () => {
     expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Description: An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.");
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy description to clipboard"));
   });
+
+  it("can show terms", () => {
+    wrapper.vm.showTerms();
+    expect(wrapper.vm.active).toBe(1);
+  })
 });
 
 
