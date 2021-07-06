@@ -20,10 +20,10 @@ import Panel from "primevue/panel";
 import EntityService from "@/services/EntityService";
 
 describe("Concept.vue", () => {
-  let wrapper: any;
-  let mockStore: any;
-  let mockRouter: any;
-  let mockToast: any;
+  let wrapper;
+  let mockStore;
+  let mockRouter;
+  let mockToast;
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -34,12 +34,12 @@ describe("Concept.vue", () => {
       return { height: 100, width: 0, top: 0, bottom: 0, right: 0, x: 0, y: 0, left: 0, toJSON: jest.fn() }
     });
     Element.prototype.getElementsByClassName = jest.fn().mockReturnValue([mockElement]);
-    let docSpy: any;
+    let docSpy;
     mockElement.style.height = 100 + "px";
     docSpy = jest.spyOn(document, "getElementById");
     docSpy.mockReturnValue(mockElement);
 
-    let windowSpy: any;
+    let windowSpy;
     windowSpy = jest.spyOn(window, "getComputedStyle");
     windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue(16) })
 
@@ -84,6 +84,10 @@ describe("Concept.vue", () => {
     });
   });
 
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
+
   it("starts with data from mounted", async() => {
     await flushPromises();
     await wrapper.vm.$nextTick();
@@ -113,21 +117,12 @@ describe("Concept.vue", () => {
     expect(EntityService.getSemanticProperties).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
   });
 
-  xit("can check for a set ___ false", async() => {
-    await flushPromises();
-    await wrapper.vm.$nextTick();
-    // console.log(wrapper.find("#members-container"));
-    expect(wrapper.find("#members-container").exists()).toBeFalsy();
+  it("can check for a set ___ false", async() => {
+    expect(Concept.computed.isSet.call({concept: {types: [{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]}})).toBe(false);
   });
 
-  xit("can check for a set ___ true", async() => {
-    wrapper.vm.concept = {"iri":"http://endhealth.info/im#VSET_ValueSet_359","name":"Concept set - Ethnicity","types":[{"name":"Concept Set","@id":"http://endhealth.info/im#ConceptSet"}],"isa":[],"subtypes":[]}
-    await wrapper.vm.$nextTick();
-    await flushPromises();
-    wrapper.vm.active = 3;
-    await wrapper.vm.$nextTick();
-    console.log(wrapper.find("#members-container"));
-    expect(wrapper.find("#members-container").exists()).toBeTruthy();
+  it("can check for a set ___ true", async() => {
+    expect(Concept.computed.isSet.call({concept: {types: [{"name":"Concept Set","@id":"http://endhealth.info/im#ConceptSet"}]}})).toBe(true);
   });
 });
 

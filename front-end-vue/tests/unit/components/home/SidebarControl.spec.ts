@@ -64,6 +64,10 @@ describe("SidebarControl.vue", () => {
     });
   });
 
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
+
   it("adds event listener to setsContainerHeights on resize", async() => {
     const spy1 = jest.spyOn(wrapper.vm, "setContainerHeights");
     window.dispatchEvent(new Event("resize"));

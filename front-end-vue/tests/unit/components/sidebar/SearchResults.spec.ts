@@ -60,6 +60,10 @@ describe("SearchResults.vue", () => {
     });
   });
 
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
+
   it("starts empty", () => {
     expect(wrapper.vm.results).toEqual({});
     expect(wrapper.vm.selectedResult).toStrictEqual({});
