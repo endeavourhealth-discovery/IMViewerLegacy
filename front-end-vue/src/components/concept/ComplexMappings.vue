@@ -182,10 +182,7 @@ export default defineComponent({
       level: number,
       positionInLevel: number
     ) {
-      if(!Object.keys(mapObject[0]).includes(IM.MATCHED_TO))
-        return [];
-
-      if (IM.MATCHED_TO in mapObject[0]) {
+      if (Object.keys(mapObject[0]).includes(IM.MATCHED_TO)) {
         const matchedList = [] as any;
         mapObject.forEach((item: any) => {
           matchedList.push({
@@ -227,6 +224,9 @@ export default defineComponent({
     },
 
     createChartStructure(mappingObject: any): any {
+      if (!Object.keys(mappingObject).length) {
+        return [];
+      }
       const parentNode = {
         key: "0",
         type: "hasMap",
