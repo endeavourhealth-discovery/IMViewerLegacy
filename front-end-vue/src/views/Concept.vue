@@ -227,7 +227,7 @@ export default defineComponent({
     directToEditRoute(): void {
       this.$router.push({
         name: "Edit",
-        params: { iri: this.concept["@id"] }
+        params: { iri: this.concept.iri }
       });
     },
 

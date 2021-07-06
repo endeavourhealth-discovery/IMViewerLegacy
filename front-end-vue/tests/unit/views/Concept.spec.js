@@ -27,22 +27,6 @@ describe("Concept.vue", () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-
-    const mockElement = document.createElement("div");
-    mockElement.style.height = "100px";
-    Element.prototype.getBoundingClientRect = jest.fn(() => {
-      return { height: 100, width: 0, top: 0, bottom: 0, right: 0, x: 0, y: 0, left: 0, toJSON: jest.fn() }
-    });
-    Element.prototype.getElementsByClassName = jest.fn().mockReturnValue([mockElement]);
-    let docSpy;
-    mockElement.style.height = 100 + "px";
-    docSpy = jest.spyOn(document, "getElementById");
-    docSpy.mockReturnValue(mockElement);
-
-    let windowSpy;
-    windowSpy = jest.spyOn(window, "getComputedStyle");
-    windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue(16) })
-
     EntityService.getSemanticProperties = jest.fn().mockResolvedValue({data: [{"property":{"name":"Associated morphology (attribute)","@id":"http://snomed.info/sct#116676008"},"type":{"name":"Lateral abnormal curvature (morphologic abnormality)","@id":"http://snomed.info/sct#31739005"}}]});
     EntityService.getDataModelProperties = jest.fn().mockResolvedValue({data:[{"property":{"name":"additional Practitioners","@id":"http://endhealth.info/im#additionalPractitioners"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"inheritedFrom":{}}]});
     EntityService.getEntityDefinitionDto = jest.fn().mockResolvedValue({data:{"iri":"http://snomed.info/sct#298382003","name":"Scoliosis deformity of spine (disorder)","status":"Active","types":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isa":[{"name":"Curvature of spine (disorder)","@id":"http://snomed.info/sct#64217002"},{"name":"Disorder of musculoskeletal system (disorder)","@id":"http://snomed.info/sct#928000"},{"name":"Disorder of vertebral column (disorder)","@id":"http://snomed.info/sct#699699005"}],"subtypes":[{"name":"Acquired scoliosis (disorder)","@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","@id":"http://snomed.info/sct#205045003"},{"name":"Distal arthrogryposis type 4 (disorder)","@id":"http://snomed.info/sct#715575001"},{"name":"Duane anomaly, myopathy, scoliosis syndrome (disorder)","@id":"http://snomed.info/sct#722432000"},{"name":"Horizontal gaze palsy with progressive scoliosis (disorder)","@id":"http://snomed.info/sct#702381007"},{"name":"Idiopathic scoliosis (disorder)","@id":"http://snomed.info/sct#203639008"},{"name":"Idiopathic scoliosis AND/OR kyphoscoliosis (disorder)","@id":"http://snomed.info/sct#30611007"},{"name":"Kyphoscoliosis and scoliosis (disorder)","@id":"http://snomed.info/sct#203638000"},{"name":"Kyphoscoliosis deformity of spine (disorder)","@id":"http://snomed.info/sct#405773007"},{"name":"Lordoscoliosis (disorder)","@id":"http://snomed.info/sct#111268000"},{"name":"Neuromuscular scoliosis (disorder)","@id":"http://snomed.info/sct#203662005"},{"name":"Postural scoliosis (disorder)","@id":"http://snomed.info/sct#203645000"},{"name":"Radioulnar synostosis with microcephaly and scoliosis syndrome (disorder)","@id":"http://snomed.info/sct#719162001"},{"name":"Scoliosis in connective tissue anomalies (disorder)","@id":"http://snomed.info/sct#203664006"},{"name":"Scoliosis in neurofibromatosis (disorder)","@id":"http://snomed.info/sct#203663000"},{"name":"Scoliosis in skeletal dysplasia (disorder)","@id":"http://snomed.info/sct#203661003"},{"name":"Scoliosis of cervical spine (disorder)","@id":"http://snomed.info/sct#298392006"},{"name":"Scoliosis of lumbar spine (disorder)","@id":"http://snomed.info/sct#298591003"},{"name":"Scoliosis of thoracic spine (disorder)","@id":"http://snomed.info/sct#298494008"}]}});
@@ -59,6 +43,7 @@ describe("Concept.vue", () => {
     mockToast = {
       add: jest.fn()
     };
+    console.error = jest.fn();
 
     wrapper = shallowMount(Concept, {
       global: {
@@ -82,10 +67,6 @@ describe("Concept.vue", () => {
         directives: { "tooltip": Tooltip, "clipboard": VueClipboard }
       }
     });
-  });
-
-  afterAll(() => {
-    jest.clearAllMocks();
   });
 
   it("starts with data from mounted", async() => {
@@ -124,6 +105,104 @@ describe("Concept.vue", () => {
   it("can check for a set ___ true", async() => {
     expect(Concept.computed.isSet.call({concept: {types: [{"name":"Concept Set","@id":"http://endhealth.info/im#ConceptSet"}]}})).toBe(true);
   });
+
+  it("can check isClass ___ true", () => {
+    expect(Concept.computed.isClass.call({concept: {types: [{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]}})).toBe(true);
+  });
+
+  it("can check isClass ___ false", () => {
+    expect(Concept.computed.isClass.call({concept: {types: [{"name":"Concept Set","@id":"http://endhealth.info/im#ConceptSet"}]}})).toBe(false);
+  });
+
+  it("inits on iri change", async() => {
+    wrapper.vm.init = jest.fn();
+    wrapper.vm.$options.watch.conceptIri.call(wrapper.vm, "http://endhealth.info/im#DiscoveryOntology");
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.init).toHaveBeenCalledTimes(1);
+  });
+
+  it("updates copyMenuItems on concept change", async() => {
+    wrapper.vm.setCopyMenuItems = jest.fn();
+    wrapper.vm.$options.watch.concept.call(wrapper.vm, {"iri":"http://snomed.info/sct#298591003","name":"Scoliosis of lumbar spine (disorder)","status":"Active","types":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isa":[{"name":"Deformity of lumbar spine (finding)","@id":"http://snomed.info/sct#298589006"},{"name":"Scoliosis deformity of spine (disorder)","@id":"http://snomed.info/sct#298382003"},{"name":"Disorder of lumbar spine (disorder)","@id":"http://snomed.info/sct#129139009"}],"subtypes":[{"name":"Idiopathic scoliosis of lumbar spine (disorder)","@id":"http://snomed.info/sct#712581001"}]});
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.setCopyMenuItems).toHaveBeenCalledTimes(1);
+  });
+
+  it("can update focusTree", () => {
+    wrapper.vm.focusTree();
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateFocusTree", true);
+  });
+
+  it("can routeToEdit", async() => {
+    await flushPromises();
+    wrapper.vm.directToEditRoute();
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith({
+      name: "Edit",
+      params: { iri: "http://snomed.info/sct#298382003" }
+    });
+  });
+
+  it("can route to create", () => {
+    wrapper.vm.directToCreateRoute();
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Create" });
+  });
+
+  it("can getConcept ___ pass", async() => {
+    EntityService.getEntityDefinitionDto = jest.fn().mockResolvedValue({data:{"iri":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)","status":"Active","types":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isa":[{"name":"Acquired curvature of spine (disorder)","@id":"http://snomed.info/sct#12903001"},{"name":"Scoliosis deformity of spine (disorder)","@id":"http://snomed.info/sct#298382003"}],"subtypes":[{"name":"Acquired kyphoscoliosis (disorder)","@id":"http://snomed.info/sct#405771009"},{"name":"Adolescent idiopathic scoliosis (disorder)","@id":"http://snomed.info/sct#203646004"},{"name":"Infantile idiopathic scoliosis of cervical spine (disorder)","@id":"http://snomed.info/sct#310421000119106"},{"name":"Post-surgical scoliosis (disorder)","@id":"http://snomed.info/sct#203647008"},{"name":"Scoliosis caused by radiation (disorder)","@id":"http://snomed.info/sct#47518006"},{"name":"Thoracogenic scoliosis (disorder)","@id":"http://snomed.info/sct#72992003"}]}});
+    wrapper.vm.getConcept("http://snomed.info/sct#111266001");
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(EntityService.getEntityDefinitionDto).toHaveBeenCalledTimes(2);
+    expect(EntityService.getEntityDefinitionDto).toHaveBeenCalledWith("http://snomed.info/sct#111266001");
+    expect(wrapper.vm.concept).toStrictEqual({"iri":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)","status":"Active","types":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isa":[{"name":"Acquired curvature of spine (disorder)","@id":"http://snomed.info/sct#12903001"},{"name":"Scoliosis deformity of spine (disorder)","@id":"http://snomed.info/sct#298382003"}],"subtypes":[{"name":"Acquired kyphoscoliosis (disorder)","@id":"http://snomed.info/sct#405771009"},{"name":"Adolescent idiopathic scoliosis (disorder)","@id":"http://snomed.info/sct#203646004"},{"name":"Infantile idiopathic scoliosis of cervical spine (disorder)","@id":"http://snomed.info/sct#310421000119106"},{"name":"Post-surgical scoliosis (disorder)","@id":"http://snomed.info/sct#203647008"},{"name":"Scoliosis caused by radiation (disorder)","@id":"http://snomed.info/sct#47518006"},{"name":"Thoracogenic scoliosis (disorder)","@id":"http://snomed.info/sct#72992003"}]});
+  });
+
+  it("can getConcept ___ fail", async() => {
+    EntityService.getEntityDefinitionDto = jest.fn().mockRejectedValue({code: 403, message: "test message"});
+    wrapper.vm.getConcept("http://snomed.info/sct#111266001");
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(EntityService.getEntityDefinitionDto).toHaveBeenCalledTimes(2);
+    expect(EntityService.getEntityDefinitionDto).toHaveBeenCalledWith("http://snomed.info/sct#111266001");
+    expect(mockToast.add).toHaveBeenCalledTimes(2);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get concept definition dto from server", {code: 403, message: "test message"}));
+  });
+
+  it("can get properties ___ pass both", async() => {
+    EntityService.getSemanticProperties = jest.fn().mockResolvedValue({data: [{"property":{"name":"takes place in care setting","@id":"http://endhealth.info/im#51000252106"},"type":{"name":"Critical care unit function","@id":"http://endhealth.info/im#211000252109"}}]});
+    EntityService.getDataModelProperties = jest.fn().mockResolvedValue({data:[{"property":{"name":"has admission source","@id":"http://endhealth.info/im#hasAdmissionSource"},"type":{"name":"Critical care admission source","@id":"http://endhealth.info/im#1041000252100"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has critical care unit function","@id":"http://endhealth.info/im#hasCriticalCareUnitFunction"},"type":{"name":"Critical care unit function","@id":"http://endhealth.info/im#211000252109"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}}]});
+    wrapper.vm.getProperties("http://endhealth.info/im#CriticalCareEncounter");
+    await flushPromises();
+    expect(EntityService.getSemanticProperties).toHaveBeenCalledTimes(1);
+    expect(EntityService.getSemanticProperties).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
+    expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
+    expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
+    expect(wrapper.vm.semanticProperties).toStrictEqual([{"property":{"name":"takes place in care setting","@id":"http://endhealth.info/im#51000252106"},"type":{"name":"Critical care unit function","@id":"http://endhealth.info/im#211000252109"}}]);
+    expect(wrapper.vm.dataModelProperties).toStrictEqual([{"property":{"name":"has admission source","@id":"http://endhealth.info/im#hasAdmissionSource"},"type":{"name":"Critical care admission source","@id":"http://endhealth.info/im#1041000252100"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has critical care unit function","@id":"http://endhealth.info/im#hasCriticalCareUnitFunction"},"type":{"name":"Critical care unit function","@id":"http://endhealth.info/im#211000252109"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}}]);
+  });
+
+  it("Inits", async() => {
+    wrapper.vm.getProperties = jest.fn();
+    wrapper.vm.getConcept = jest.fn();
+    wrapper.vm.concept = {"iri":"http://snomed.info/sct#47518006","name":"Scoliosis caused by radiation (disorder)","status":"Active","types":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isa":[{"name":"Acquired scoliosis (disorder)","@id":"http://snomed.info/sct#111266001"},{"name":"Radiation therapy complication (disorder)","@id":"http://snomed.info/sct#212904005"},{"name":"Disorder of musculoskeletal system following procedure (disorder)","@id":"http://snomed.info/sct#724614007"},{"name":"Deformity of spine due to injury (disorder)","@id":"http://snomed.info/sct#442544003"}],"subtypes":[]};
+    wrapper.vm.init();
+    await flushPromises();
+    expect(wrapper.vm.getProperties).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.getProperties).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.getConcept).toHaveBeenCalledTimes(2);
+    expect(wrapper.vm.getConcept).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.types).toStrictEqual([{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]);
+    expect(wrapper.vm.header).toBe("Scoliosis caused by radiation (disorder)");
+  });
+
+  it("can openDownloadDialog", async() => {
+    wrapper.vm.openDownloadDialog();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showDownloadDialog).toBe(true);
+  })
 });
 
 

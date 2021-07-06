@@ -6,6 +6,9 @@ describe("ButtonBar.vue", () => {
   let wrapper: any;
   let mockStore: any;
   let mockRouter: any;
+  beforeAll(() => {
+    jest.clearAllMocks();
+  })
   beforeEach(() => {
     jest.resetAllMocks();
     mockStore = {
