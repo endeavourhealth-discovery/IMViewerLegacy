@@ -7,6 +7,7 @@ describe("ButtonBar.vue", () => {
   let mockStore: any;
   let mockRouter: any;
   beforeEach(() => {
+    jest.resetAllMocks();
     mockStore = {
       state: { historyCount: 0, snomedLicenseAccepted: true },
       commit: jest.fn()
