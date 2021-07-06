@@ -19,14 +19,22 @@ import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import Panel from "primevue/panel";
 import EntityService from "@/services/EntityService";
 
+Object.assign(navigator, {
+  clipboard: {
+    writeText: () => {}
+  }
+});
+
 describe("Concept.vue", () => {
   let wrapper;
   let mockStore;
   let mockRouter;
   let mockToast;
+  let clipboardSpy;
 
   beforeEach(() => {
     jest.resetAllMocks();
+    clipboardSpy = jest.spyOn(navigator.clipboard, "writeText");
     EntityService.getSemanticProperties = jest.fn().mockResolvedValue({data: [{"property":{"name":"Associated morphology (attribute)","@id":"http://snomed.info/sct#116676008"},"type":{"name":"Lateral abnormal curvature (morphologic abnormality)","@id":"http://snomed.info/sct#31739005"}}]});
     EntityService.getDataModelProperties = jest.fn().mockResolvedValue({data:[{"property":{"name":"additional Practitioners","@id":"http://endhealth.info/im#additionalPractitioners"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"inheritedFrom":{}}]});
     EntityService.getEntityDefinitionDto = jest.fn().mockResolvedValue({data:{"iri":"http://snomed.info/sct#298382003","name":"Scoliosis deformity of spine (disorder)","status":"Active","types":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isa":[{"name":"Curvature of spine (disorder)","@id":"http://snomed.info/sct#64217002"},{"name":"Disorder of musculoskeletal system (disorder)","@id":"http://snomed.info/sct#928000"},{"name":"Disorder of vertebral column (disorder)","@id":"http://snomed.info/sct#699699005"}],"subtypes":[{"name":"Acquired scoliosis (disorder)","@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","@id":"http://snomed.info/sct#205045003"},{"name":"Distal arthrogryposis type 4 (disorder)","@id":"http://snomed.info/sct#715575001"},{"name":"Duane anomaly, myopathy, scoliosis syndrome (disorder)","@id":"http://snomed.info/sct#722432000"},{"name":"Horizontal gaze palsy with progressive scoliosis (disorder)","@id":"http://snomed.info/sct#702381007"},{"name":"Idiopathic scoliosis (disorder)","@id":"http://snomed.info/sct#203639008"},{"name":"Idiopathic scoliosis AND/OR kyphoscoliosis (disorder)","@id":"http://snomed.info/sct#30611007"},{"name":"Kyphoscoliosis and scoliosis (disorder)","@id":"http://snomed.info/sct#203638000"},{"name":"Kyphoscoliosis deformity of spine (disorder)","@id":"http://snomed.info/sct#405773007"},{"name":"Lordoscoliosis (disorder)","@id":"http://snomed.info/sct#111268000"},{"name":"Neuromuscular scoliosis (disorder)","@id":"http://snomed.info/sct#203662005"},{"name":"Postural scoliosis (disorder)","@id":"http://snomed.info/sct#203645000"},{"name":"Radioulnar synostosis with microcephaly and scoliosis syndrome (disorder)","@id":"http://snomed.info/sct#719162001"},{"name":"Scoliosis in connective tissue anomalies (disorder)","@id":"http://snomed.info/sct#203664006"},{"name":"Scoliosis in neurofibromatosis (disorder)","@id":"http://snomed.info/sct#203663000"},{"name":"Scoliosis in skeletal dysplasia (disorder)","@id":"http://snomed.info/sct#203661003"},{"name":"Scoliosis of cervical spine (disorder)","@id":"http://snomed.info/sct#298392006"},{"name":"Scoliosis of lumbar spine (disorder)","@id":"http://snomed.info/sct#298591003"},{"name":"Scoliosis of thoracic spine (disorder)","@id":"http://snomed.info/sct#298494008"}]}});
@@ -68,6 +76,10 @@ describe("Concept.vue", () => {
       }
     });
   });
+
+  afterAll(() => {
+    jest.clearAllMocks();
+  })
 
   it("starts with data from mounted", async() => {
     await flushPromises();
@@ -210,8 +222,9 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.showDownloadDialog).toBe(false);
   });
 
-  it("can copy concept to clipboard", () => {
-    expect(wrapper.vm.copyConceptToClipboard({"iri":"http://snomed.info/sct#298382003","name":"Scoliosis deformity of spine (disorder)","status":"Active","types":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isa":[{"name":"Curvature of spine (disorder)","@id":"http://snomed.info/sct#64217002"},{"name":"Disorder of musculoskeletal system (disorder)","@id":"http://snomed.info/sct#928000"},{"name":"Disorder of vertebral column (disorder)","@id":"http://snomed.info/sct#699699005"}],"subtypes":[{"name":"Acquired scoliosis (disorder)","@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","@id":"http://snomed.info/sct#205045003"},{"name":"Distal arthrogryposis type 4 (disorder)","@id":"http://snomed.info/sct#715575001"},{"name":"Duane anomaly, myopathy, scoliosis syndrome (disorder)","@id":"http://snomed.info/sct#722432000"},{"name":"Horizontal gaze palsy with progressive scoliosis (disorder)","@id":"http://snomed.info/sct#702381007"},{"name":"Idiopathic scoliosis (disorder)","@id":"http://snomed.info/sct#203639008"},{"name":"Idiopathic scoliosis AND/OR kyphoscoliosis (disorder)","@id":"http://snomed.info/sct#30611007"},{"name":"Kyphoscoliosis and scoliosis (disorder)","@id":"http://snomed.info/sct#203638000"},{"name":"Kyphoscoliosis deformity of spine (disorder)","@id":"http://snomed.info/sct#405773007"},{"name":"Lordoscoliosis (disorder)","@id":"http://snomed.info/sct#111268000"},{"name":"Neuromuscular scoliosis (disorder)","@id":"http://snomed.info/sct#203662005"},{"name":"Postural scoliosis (disorder)","@id":"http://snomed.info/sct#203645000"},{"name":"Radioulnar synostosis with microcephaly and scoliosis syndrome (disorder)","@id":"http://snomed.info/sct#719162001"},{"name":"Scoliosis in connective tissue anomalies (disorder)","@id":"http://snomed.info/sct#203664006"},{"name":"Scoliosis in neurofibromatosis (disorder)","@id":"http://snomed.info/sct#203663000"},{"name":"Scoliosis in skeletal dysplasia (disorder)","@id":"http://snomed.info/sct#203661003"},{"name":"Scoliosis of cervical spine (disorder)","@id":"http://snomed.info/sct#298392006"},{"name":"Scoliosis of lumbar spine (disorder)","@id":"http://snomed.info/sct#298591003"},{"name":"Scoliosis of thoracic spine (disorder)","@id":"http://snomed.info/sct#298494008"}]})).toBe("Name: Scoliosis deformity of spine (disorder),\nIri: http://snomed.info/sct#298382003,\nStatus: Active,\nTypes: [\n\tClass\n],\nIs-a: [\n\tCurvature of spine (disorder),\n\tDisorder of musculoskeletal system (disorder),\n\tDisorder of vertebral column (disorder)\n],\nSubtypes: [\n\tAcquired scoliosis (disorder),\n\tAcrodysplasia scoliosis (disorder),\n\tCongenital scoliosis due to bony malformation (disorder),\n\tDistal arthrogryposis type 4 (disorder),\n\tDuane anomaly, myopathy, scoliosis syndrome (disorder),\n\tHorizontal gaze palsy with progressive scoliosis (disorder),\n\tIdiopathic scoliosis (disorder),\n\tIdiopathic scoliosis AND/OR kyphoscoliosis (disorder),\n\tKyphoscoliosis and scoliosis (disorder),\n\tKyphoscoliosis deformity of spine (disorder),\n\tLordoscoliosis (disorder),\n\tNeuromuscular scoliosis (disorder),\n\tPostural scoliosis (disorder),\n\tRadioulnar synostosis with microcephaly and scoliosis syndrome (disorder),\n\tScoliosis in connective tissue anomalies (disorder),\n\tScoliosis in neurofibromatosis (disorder),\n\tScoliosis in skeletal dysplasia (disorder),\n\tScoliosis of cervical spine (disorder),\n\tScoliosis of lumbar spine (disorder),\n\tScoliosis of thoracic spine (disorder)\n],\nSemantic properties: [\n\tAssociated morphology (attribute)\n],\nData model properties: [\n\t\n]");
+  it("can copy concept to clipboard", async() => {
+    await flushPromises();
+    expect(wrapper.vm.copyConceptToClipboard()).toBe("Name: Scoliosis deformity of spine (disorder),\nIri: http://snomed.info/sct#298382003,\nStatus: Active,\nTypes: [\n\tClass\n],\nIs-a: [\n\tCurvature of spine (disorder),\n\tDisorder of musculoskeletal system (disorder),\n\tDisorder of vertebral column (disorder)\n],\nSubtypes: [\n\tAcquired scoliosis (disorder),\n\tAcrodysplasia scoliosis (disorder),\n\tCongenital scoliosis due to bony malformation (disorder),\n\tDistal arthrogryposis type 4 (disorder),\n\tDuane anomaly, myopathy, scoliosis syndrome (disorder),\n\tHorizontal gaze palsy with progressive scoliosis (disorder),\n\tIdiopathic scoliosis (disorder),\n\tIdiopathic scoliosis AND/OR kyphoscoliosis (disorder),\n\tKyphoscoliosis and scoliosis (disorder),\n\tKyphoscoliosis deformity of spine (disorder),\n\tLordoscoliosis (disorder),\n\tNeuromuscular scoliosis (disorder),\n\tPostural scoliosis (disorder),\n\tRadioulnar synostosis with microcephaly and scoliosis syndrome (disorder),\n\tScoliosis in connective tissue anomalies (disorder),\n\tScoliosis in neurofibromatosis (disorder),\n\tScoliosis in skeletal dysplasia (disorder),\n\tScoliosis of cervical spine (disorder),\n\tScoliosis of lumbar spine (disorder),\n\tScoliosis of thoracic spine (disorder)\n],\nSemantic properties: [\n\tAssociated morphology (attribute)\n],\nData model properties: [\n\tadditional Practitioners\n]");
   });
 
   it("toasts onCopy", () => {
@@ -224,6 +237,164 @@ describe("Concept.vue", () => {
     wrapper.vm.onCopyError();
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to copy value to clipboard"));
+  });
+
+  it("can set copy menu items", async() => {
+    await flushPromises();
+    wrapper.vm.copyMenuItems = [];
+    wrapper.vm.concept = {"iri":"http://endhealth.info/im#Encounter","name":"Encounter (record type)","description":"An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.","status":"Active","types":[{"name":"Record type","@id":"http://endhealth.info/im#RecordType"},{"name":"Node shape","@id":"http://www.w3.org/ns/shacl#NodeShape"},{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isa":[{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"},{"name":"Encounter type (record artifact)","@id":"http://snomed.info/sct#325841000000109"},{"name":"Encounter related value concept","@id":"http://endhealth.info/im#903031000252104"},{"name":"Discovery common data  model","@id":"http://endhealth.info/im#DiscoveryCommonDataModel"}],"subtypes":[{"name":"Administrative entry","@id":"http://endhealth.info/im#1731000252106"},{"name":"Consultation","@id":"http://endhealth.info/im#31000252100"},{"name":"Hospital encounter","@id":"http://endhealth.info/im#1161000252102"}]}
+    wrapper.vm.dataModelProperties = [{"property":{"name":"additional Practitioners","@id":"http://endhealth.info/im#additionalPractitioners"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"inheritedFrom":{}},{"property":{"name":"completion Status","@id":"http://endhealth.info/im#completionStatus"},"type":{"name":"Concept class","@id":"http://endhealth.info/im#894281000252100"},"inheritedFrom":{}},{"property":{"name":"duration","@id":"http://endhealth.info/im#duration"},"type":{"name":"Concept class","@id":"http://endhealth.info/im#894281000252100"},"minExclusive":"1","inheritedFrom":{}},{"property":{"name":"has section","@id":"http://endhealth.info/im#hasSection"},"type":{"name":"Section (structural)","@id":"http://endhealth.info/im#Section"},"inheritedFrom":{}},{"property":{"name":"linked appointment","@id":"http://endhealth.info/im#linkedAppointment"},"type":{"name":"Appointment (slot)  (record type)","@id":"http://endhealth.info/im#Appointment"},"inheritedFrom":{}},{"property":{"name":"linked care episode","@id":"http://endhealth.info/im#linkedCareEpisode"},"type":{"name":"Episode of care  (record type)","@id":"http://endhealth.info/im#EpisodeOfCare"},"inheritedFrom":{}},{"property":{"name":"location","@id":"http://endhealth.info/im#location"},"type":{"name":"Location  (record type)","@id":"http://endhealth.info/im#Location"},"inheritedFrom":{}},{"property":{"name":"providing Organisation/ services or departments","@id":"http://endhealth.info/im#providingOrganisation_ServicesOrDepartments"},"type":{"name":"Organisation  (record type)","@id":"http://endhealth.info/im#Organisation"},"inheritedFrom":{}},{"property":{"name":"is subencounter of","@id":"http://endhealth.info/im#isSubEnctounterOf"},"type":{"name":"Encounter (record type)","@id":"http://endhealth.info/im#Encounter"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has subject","@id":"http://endhealth.info/im#hasSubject"},"type":{"name":"Patient (person)","@id":"http://snomed.info/sct#116154003"},"inheritedFrom":{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"}},{"property":{"name":"practitioner","@id":"http://endhealth.info/im#hasPractitioner"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"}},{"property":{"name":"date","@id":"http://endhealth.info/im#date"},"type":{"name":"string","@id":"http://www.w3.org/2001/XMLSchema#string"},"inheritedFrom":{"name":"Health event (record type)","@id":"http://endhealth.info/im#HealthEvent"}},{"property":{"name":"end date","@id":"http://endhealth.info/im#endDate"},"type":{"name":"string","@id":"http://www.w3.org/2001/XMLSchema#string"},"inheritedFrom":{"name":"Health event (record type)","@id":"http://endhealth.info/im#HealthEvent"}}];
+    wrapper.vm.semanticProperties = [];
+    wrapper.vm.setCopyMenuItems();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.copyMenuItems).toHaveLength(12);
+    expect(wrapper.vm.copyMenuItems[0]).toStrictEqual({
+      label: "Copy",
+      disabled: true
+    });
+    expect(wrapper.vm.copyMenuItems[1]).toStrictEqual({
+      separator: true
+    });
+    expect(Object.keys(wrapper.vm.copyMenuItems[2])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[2].label).toBe("All");
+    expect(Object.keys(wrapper.vm.copyMenuItems[3])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[3].label).toBe("Name");
+    expect(Object.keys(wrapper.vm.copyMenuItems[4])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[4].label).toBe("Iri");
+    expect(Object.keys(wrapper.vm.copyMenuItems[5])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[5].label).toBe("Status");
+    expect(Object.keys(wrapper.vm.copyMenuItems[6])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[6].label).toBe("Types");
+    expect(Object.keys(wrapper.vm.copyMenuItems[7])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[7].label).toBe("Is a");
+    expect(Object.keys(wrapper.vm.copyMenuItems[8])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[8].label).toBe("Subtypes");
+    expect(Object.keys(wrapper.vm.copyMenuItems[9])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[9].label).toBe("Semantic properties");
+    expect(Object.keys(wrapper.vm.copyMenuItems[10])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[10].label).toBe("Data model properties");
+    expect(Object.keys(wrapper.vm.copyMenuItems[11])).toStrictEqual(["label", "command"]);
+    expect(wrapper.vm.copyMenuItems[11].label).toBe("Description");
+  });
+
+  it("can run commands from copymenuItems ___ pass", async() => {
+    clipboardSpy.mockResolvedValue(true);
+    await flushPromises();
+    wrapper.vm.dataModelProperties = [{"property":{"name":"additional Practitioners","@id":"http://endhealth.info/im#additionalPractitioners"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"inheritedFrom":{}},{"property":{"name":"completion Status","@id":"http://endhealth.info/im#completionStatus"},"type":{"name":"Concept class","@id":"http://endhealth.info/im#894281000252100"},"inheritedFrom":{}},{"property":{"name":"duration","@id":"http://endhealth.info/im#duration"},"type":{"name":"Concept class","@id":"http://endhealth.info/im#894281000252100"},"minExclusive":"1","inheritedFrom":{}},{"property":{"name":"has section","@id":"http://endhealth.info/im#hasSection"},"type":{"name":"Section (structural)","@id":"http://endhealth.info/im#Section"},"inheritedFrom":{}},{"property":{"name":"linked appointment","@id":"http://endhealth.info/im#linkedAppointment"},"type":{"name":"Appointment (slot)  (record type)","@id":"http://endhealth.info/im#Appointment"},"inheritedFrom":{}},{"property":{"name":"linked care episode","@id":"http://endhealth.info/im#linkedCareEpisode"},"type":{"name":"Episode of care  (record type)","@id":"http://endhealth.info/im#EpisodeOfCare"},"inheritedFrom":{}},{"property":{"name":"location","@id":"http://endhealth.info/im#location"},"type":{"name":"Location  (record type)","@id":"http://endhealth.info/im#Location"},"inheritedFrom":{}},{"property":{"name":"providing Organisation/ services or departments","@id":"http://endhealth.info/im#providingOrganisation_ServicesOrDepartments"},"type":{"name":"Organisation  (record type)","@id":"http://endhealth.info/im#Organisation"},"inheritedFrom":{}},{"property":{"name":"is subencounter of","@id":"http://endhealth.info/im#isSubEnctounterOf"},"type":{"name":"Encounter (record type)","@id":"http://endhealth.info/im#Encounter"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has subject","@id":"http://endhealth.info/im#hasSubject"},"type":{"name":"Patient (person)","@id":"http://snomed.info/sct#116154003"},"inheritedFrom":{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"}},{"property":{"name":"practitioner","@id":"http://endhealth.info/im#hasPractitioner"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"}},{"property":{"name":"date","@id":"http://endhealth.info/im#date"},"type":{"name":"string","@id":"http://www.w3.org/2001/XMLSchema#string"},"inheritedFrom":{"name":"Health event (record type)","@id":"http://endhealth.info/im#HealthEvent"}},{"property":{"name":"end date","@id":"http://endhealth.info/im#endDate"},"type":{"name":"string","@id":"http://www.w3.org/2001/XMLSchema#string"},"inheritedFrom":{"name":"Health event (record type)","@id":"http://endhealth.info/im#HealthEvent"}}];
+    wrapper.vm.semanticProperties = [];
+    wrapper.vm.concept = {"iri":"http://endhealth.info/im#Encounter","name":"Encounter (record type)","description":"An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.","status":"Active","types":[{"name":"Record type","@id":"http://endhealth.info/im#RecordType"},{"name":"Node shape","@id":"http://www.w3.org/ns/shacl#NodeShape"},{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isa":[{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"},{"name":"Encounter type (record artifact)","@id":"http://snomed.info/sct#325841000000109"},{"name":"Encounter related value concept","@id":"http://endhealth.info/im#903031000252104"},{"name":"Discovery common data  model","@id":"http://endhealth.info/im#DiscoveryCommonDataModel"}],"subtypes":[{"name":"Administrative entry","@id":"http://endhealth.info/im#1731000252106"},{"name":"Consultation","@id":"http://endhealth.info/im#31000252100"},{"name":"Hospital encounter","@id":"http://endhealth.info/im#1161000252102"}]}
+    wrapper.vm.setCopyMenuItems();
+    await wrapper.vm.$nextTick();
+
+    wrapper.vm.copyMenuItems[2].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Name: Encounter (record type),\nIri: http://endhealth.info/im#Encounter,\nStatus: Active,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nIs-a: [\n\tPatient health event (record type),\n\tEncounter type (record artifact),\n\tEncounter related value concept,\n\tDiscovery common data  model\n],\nSubtypes: [\n\tAdministrative entry,\n\tConsultation,\n\tHospital encounter\n],\nSemantic properties: [\n\t\n],\nData model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n],\nDescription: An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Concept copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[3].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Name: Encounter (record type)");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Name copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[4].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Iri: http://endhealth.info/im#Encounter");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Iri copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[5].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Status: Active");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Status copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[6].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Types: [\n\tRecord type,\n\tNode shape,\n\tClass\n]");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Types copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[7].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Is-a: [\n\tPatient health event (record type),\n\tEncounter type (record artifact),\n\tEncounter related value concept,\n\tDiscovery common data  model\n]");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Is-a's copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[8].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Subtypes: [\n\tAdministrative entry,\n\tConsultation,\n\tHospital encounter\n]");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Subtypes copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[9].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Semantic properties: [\n\t\n]");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Semantic properties copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[10].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Data model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n]");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Data model properties copied to clipboard"));
+
+    wrapper.vm.copyMenuItems[11].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Description: An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Description copied to clipboard"));
+  });
+
+  it("can run commands from copymenuItems ___ fail", async() => {
+    clipboardSpy.mockRejectedValue(false);
+    await flushPromises();
+    wrapper.vm.dataModelProperties = [{"property":{"name":"additional Practitioners","@id":"http://endhealth.info/im#additionalPractitioners"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"inheritedFrom":{}},{"property":{"name":"completion Status","@id":"http://endhealth.info/im#completionStatus"},"type":{"name":"Concept class","@id":"http://endhealth.info/im#894281000252100"},"inheritedFrom":{}},{"property":{"name":"duration","@id":"http://endhealth.info/im#duration"},"type":{"name":"Concept class","@id":"http://endhealth.info/im#894281000252100"},"minExclusive":"1","inheritedFrom":{}},{"property":{"name":"has section","@id":"http://endhealth.info/im#hasSection"},"type":{"name":"Section (structural)","@id":"http://endhealth.info/im#Section"},"inheritedFrom":{}},{"property":{"name":"linked appointment","@id":"http://endhealth.info/im#linkedAppointment"},"type":{"name":"Appointment (slot)  (record type)","@id":"http://endhealth.info/im#Appointment"},"inheritedFrom":{}},{"property":{"name":"linked care episode","@id":"http://endhealth.info/im#linkedCareEpisode"},"type":{"name":"Episode of care  (record type)","@id":"http://endhealth.info/im#EpisodeOfCare"},"inheritedFrom":{}},{"property":{"name":"location","@id":"http://endhealth.info/im#location"},"type":{"name":"Location  (record type)","@id":"http://endhealth.info/im#Location"},"inheritedFrom":{}},{"property":{"name":"providing Organisation/ services or departments","@id":"http://endhealth.info/im#providingOrganisation_ServicesOrDepartments"},"type":{"name":"Organisation  (record type)","@id":"http://endhealth.info/im#Organisation"},"inheritedFrom":{}},{"property":{"name":"is subencounter of","@id":"http://endhealth.info/im#isSubEnctounterOf"},"type":{"name":"Encounter (record type)","@id":"http://endhealth.info/im#Encounter"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has subject","@id":"http://endhealth.info/im#hasSubject"},"type":{"name":"Patient (person)","@id":"http://snomed.info/sct#116154003"},"inheritedFrom":{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"}},{"property":{"name":"practitioner","@id":"http://endhealth.info/im#hasPractitioner"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"}},{"property":{"name":"date","@id":"http://endhealth.info/im#date"},"type":{"name":"string","@id":"http://www.w3.org/2001/XMLSchema#string"},"inheritedFrom":{"name":"Health event (record type)","@id":"http://endhealth.info/im#HealthEvent"}},{"property":{"name":"end date","@id":"http://endhealth.info/im#endDate"},"type":{"name":"string","@id":"http://www.w3.org/2001/XMLSchema#string"},"inheritedFrom":{"name":"Health event (record type)","@id":"http://endhealth.info/im#HealthEvent"}}];
+    wrapper.vm.semanticProperties = [];
+    wrapper.vm.concept = {"iri":"http://endhealth.info/im#Encounter","name":"Encounter (record type)","description":"An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.","status":"Active","types":[{"name":"Record type","@id":"http://endhealth.info/im#RecordType"},{"name":"Node shape","@id":"http://www.w3.org/ns/shacl#NodeShape"},{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isa":[{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"},{"name":"Encounter type (record artifact)","@id":"http://snomed.info/sct#325841000000109"},{"name":"Encounter related value concept","@id":"http://endhealth.info/im#903031000252104"},{"name":"Discovery common data  model","@id":"http://endhealth.info/im#DiscoveryCommonDataModel"}],"subtypes":[{"name":"Administrative entry","@id":"http://endhealth.info/im#1731000252106"},{"name":"Consultation","@id":"http://endhealth.info/im#31000252100"},{"name":"Hospital encounter","@id":"http://endhealth.info/im#1161000252102"}]}
+    wrapper.vm.setCopyMenuItems();
+    await wrapper.vm.$nextTick();
+
+    wrapper.vm.copyMenuItems[2].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Name: Encounter (record type),\nIri: http://endhealth.info/im#Encounter,\nStatus: Active,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nIs-a: [\n\tPatient health event (record type),\n\tEncounter type (record artifact),\n\tEncounter related value concept,\n\tDiscovery common data  model\n],\nSubtypes: [\n\tAdministrative entry,\n\tConsultation,\n\tHospital encounter\n],\nSemantic properties: [\n\t\n],\nData model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n],\nDescription: An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy concept to clipboard"));
+
+    wrapper.vm.copyMenuItems[3].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Name: Encounter (record type)");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy name to clipboard"));
+
+    wrapper.vm.copyMenuItems[4].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Iri: http://endhealth.info/im#Encounter");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy iri to clipboard"));
+
+    wrapper.vm.copyMenuItems[5].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Status: Active");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy status to clipboard"));
+
+    wrapper.vm.copyMenuItems[6].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Types: [\n\tRecord type,\n\tNode shape,\n\tClass\n]");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy types to clipboard"));
+
+    wrapper.vm.copyMenuItems[7].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Is-a: [\n\tPatient health event (record type),\n\tEncounter type (record artifact),\n\tEncounter related value concept,\n\tDiscovery common data  model\n]");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy is-a's to clipboard"));
+
+    wrapper.vm.copyMenuItems[8].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Subtypes: [\n\tAdministrative entry,\n\tConsultation,\n\tHospital encounter\n]");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy subtypes to clipboard"));
+
+    wrapper.vm.copyMenuItems[9].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Semantic properties: [\n\t\n]");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy semantic properties to clipboard"));
+
+    wrapper.vm.copyMenuItems[10].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Data model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n]");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy data model properties to clipboard"));
+
+    wrapper.vm.copyMenuItems[11].command();
+    await flushPromises();
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Description: An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.");
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy description to clipboard"));
   });
 });
 
