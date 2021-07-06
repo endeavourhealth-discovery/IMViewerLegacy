@@ -182,7 +182,7 @@ export default defineComponent({
       level: number,
       positionInLevel: number
     ) {
-      if(!Object.keys(mapObject[0]).includes(IM.MATCHED_TO))
+      if(!mapObject || !mapObject[0])
         return [];
 
       if (IM.MATCHED_TO in mapObject[0]) {
