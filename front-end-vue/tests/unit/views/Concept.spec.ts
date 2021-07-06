@@ -112,6 +112,23 @@ describe("Concept.vue", () => {
     expect(EntityService.getSemanticProperties).toHaveBeenCalledTimes(1);
     expect(EntityService.getSemanticProperties).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
   });
+
+  it("can check for a set ___ false", async() => {
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    // console.log(wrapper.find("#members-container"));
+    expect(wrapper.find("#members-container").exists()).toBeFalsy();
+  });
+
+  it("can check for a set ___ true", async() => {
+    wrapper.vm.concept = {"iri":"http://endhealth.info/im#VSET_ValueSet_359","name":"Concept set - Ethnicity","types":[{"name":"Concept Set","@id":"http://endhealth.info/im#ConceptSet"}],"isa":[],"subtypes":[]}
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    wrapper.vm.active = 3;
+    await wrapper.vm.$nextTick();
+    console.log(wrapper.find("#members-container"));
+    expect(wrapper.find("#members-container").exists()).toBeTruthy();
+  });
 });
 
 

@@ -76,7 +76,7 @@
                 <Terms :conceptIri="conceptIri" />
               </div>
             </TabPanel>
-            <TabPanel header="Maps" v-if="!isSet">
+            <TabPanel header="Maps" v-if="isClass">
               <div
                 class="concept-panel-content"
                 id="complex-mappings-container"
@@ -97,7 +97,7 @@
                 <UsedIn :conceptIri="conceptIri" />
               </div>
             </TabPanel>
-            <TabPanel header="Graph" v-if="!isSet">
+            <TabPanel header="Graph" v-if="isClass">
               <div
                 class="concept-panel-content"
                 id="graph-container"
@@ -115,7 +115,7 @@
                 <Members :conceptIri="conceptIri" @memberClick="active = 0" />
               </div>
             </TabPanel>
-            <TabPanel header="Hierarchy position" v-if="!isSet">
+            <TabPanel header="Hierarchy position">
               <div
                 class="concept-panel-content"
                 id="secondary-tree-container"
@@ -146,7 +146,7 @@ import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
 import ComplexMappings from "../components/concept/ComplexMappings.vue";
-import { isValueSet } from "@/helpers/ConceptTypeMethods";
+import { isValueSet, isClass } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import EntityService from "@/services/EntityService";
@@ -168,8 +168,13 @@ export default defineComponent({
   },
   computed: {
     isSet(): boolean {
-      const conceptTypeElements = this?.concept?.types;
+      const conceptTypeElements = this.concept?.types;
       return isValueSet(conceptTypeElements);
+    },
+
+    isClass(): boolean {
+      const conceptTypeElements = this.concept?.types;
+      return isClass(conceptTypeElements);
     },
 
     ...mapState(["conceptIri"])
