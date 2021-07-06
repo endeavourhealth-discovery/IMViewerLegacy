@@ -110,24 +110,21 @@ export default defineComponent({
         {
           icon: ["fas", "book"],
           name: "Ontology",
+          route: "Dashboard",
           iri: "http://endhealth.info/im#DiscoveryOntology"
         },
-        // {
-        //   activeOn: ["ReferenceData"],
-        //   route: "ReferenceData",
-        //   icon: ["fas", "database"],
-        //   name: "Reference"
-        // },
         {
           icon: ["fas", "layer-group"],
           name: "Sets",
+          route: "Dashboard",
           iri: "http://endhealth.info/im#Sets"
         },
         {
           icon: ["fas", "search"],
           name: "Queries",
+          route: "Dashboard",
           iri: "http://endhealth.info/im#QT_QueryTemplates"
-        } //,
+        },
         // {
         //   icon: ["fas", "tasks"],
         //   name: "Workflow"
@@ -136,10 +133,11 @@ export default defineComponent({
         //   icon: ["fas", "map"],
         //   name: "Maps"
         // },
-        // {
-        //   icon: ["fas", "map-marked-alt"],
-        //   name: "Assign"
-        // }
+        {
+          icon: ["fas", "map-marked-alt"],
+          name: "Assign",
+          route: "UPRN"
+        }
       ]
     };
   },
@@ -182,8 +180,10 @@ export default defineComponent({
         name: item.name,
         iri: item.iri
       });
-      this.$store.commit("updateConceptIri", item.iri);
-      this.$router.push({ name: "Dashboard" });
+      if (item.iri)
+        this.$store.commit("updateConceptIri", item.iri);
+
+      this.$router.push({ name: item.route });
     }
   }
 });

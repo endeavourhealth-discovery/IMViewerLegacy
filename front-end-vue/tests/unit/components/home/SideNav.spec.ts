@@ -121,7 +121,7 @@ describe("SideNav.spec ___ not logged in", () => {
   });
 
   it("can handleCenterIconClick", async() => {
-    wrapper.vm.handleCenterIconClick({ name: "Ontology", iri: "http://endhealth.info/im#Discoveryontology" });
+    wrapper.vm.handleCenterIconClick({ name: "Ontology", iri: "http://endhealth.info/im#Discoveryontology", route: "Dashboard" });
     await wrapper.vm.$nextTick();
     expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSideNavHierarchyFocus", {
       name: "Ontology",
