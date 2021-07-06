@@ -25,7 +25,7 @@ describe("SearchResults.vue", () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    clipboardSpy = jest.spyOn(navigator.clipboard, "writeText")
+    clipboardSpy = jest.spyOn(navigator.clipboard, "writeText");
     mockRouter = {
       push: jest.fn()
     }
