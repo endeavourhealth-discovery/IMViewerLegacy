@@ -167,7 +167,7 @@ export default defineComponent({
     ComplexMappings
   },
   computed: {
-    isSet(): any {
+    isSet(): boolean {
       const conceptTypeElements = this?.concept?.types;
       return isValueSet(conceptTypeElements);
     },
