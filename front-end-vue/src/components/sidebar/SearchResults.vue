@@ -14,7 +14,6 @@
       v-model:selection="selectedResult"
       @row-select="onNodeSelect"
       selectionMode="single"
-      dataKey="iri"
       class="p-datatable-sm"
       :scrollable="true"
       removableSort
