@@ -66,7 +66,39 @@ import { mapState } from "vuex";
 
 export default defineComponent({
   name: "SideNav",
-  computed: mapState(["currentUser", "isLoggedIn", "sideNavHierarchyFocus"]),
+  computed: mapState([
+    "currentUser",
+    "isLoggedIn",
+    "sideNavHierarchyFocus",
+    "selectedEntityType"
+  ]),
+  watch: {
+    selectedEntityType(newValue) {
+      switch (newValue) {
+        case "Class":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[0].name,
+            fullName: this.menuItems[0].fullName,
+            iri: this.menuItems[0].iri
+          });
+          break;
+        case "Set":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[1].name,
+            fullName: this.menuItems[1].fullName,
+            iri: this.menuItems[1].iri
+          });
+          break;
+        case "Query":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[2].name,
+            fullName: this.menuItems[2].fullName,
+            iri: this.menuItems[2].iri
+          });
+          break;
+      }
+    }
+  },
   data() {
     return {
       userPopupBottom: 0,

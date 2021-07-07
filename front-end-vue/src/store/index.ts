@@ -34,6 +34,7 @@ export default createStore({
       fullName: "Ontologies",
       iri: "http://endhealth.info/im#DiscoveryOntology"
     } as { name: string; iri: string },
+    selectedEntityType: "",
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
@@ -114,6 +115,9 @@ export default createStore({
     },
     updateSideNavHierarchyFocus(state, focus) {
       state.sideNavHierarchyFocus = focus;
+    },
+    updateSelectedEntityType(state, type) {
+      state.selectedEntityType = type;
     }
   },
   actions: {
