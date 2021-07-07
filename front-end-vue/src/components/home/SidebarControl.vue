@@ -65,6 +65,16 @@ import axios from "axios";
 export default defineComponent({
   name: "SidebarControl",
   components: { Hierarchy, History, SearchResults, Filters },
+  props: ["focusHierarchy"],
+  emits: ["hierarchyFocused"],
+  watch: {
+    focusHierarchy(newValue) {
+      if (newValue) {
+        this.active = 0;
+        this.$emit("hierarchyFocused");
+      }
+    }
+  },
   data() {
     return {
       searchTerm: "",
@@ -76,9 +86,7 @@ export default defineComponent({
     };
   },
   mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.onResize);
-    });
+    window.addEventListener("resize", this.onResize);
 
     this.setContainerHeights();
   },
