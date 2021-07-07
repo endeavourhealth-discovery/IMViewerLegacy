@@ -57,6 +57,14 @@ describe("ForgotPassword.vue", () => {
     expect(AuthService.forgotPassword).toBeCalledWith("testUser");
   });
 
+  it("does nothing on swal cancel", async() => {
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: false }));
+    wrapper.vm.handleSubmit();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(AuthService.forgotPassword).toBeCalledTimes(0);
+  });
+
   it("calls swal after successful auth service forgotPassword call", async() => {
     wrapper.vm.handleSubmit();
     await wrapper.vm.$nextTick();
