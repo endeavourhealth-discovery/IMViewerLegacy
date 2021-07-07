@@ -7,4 +7,5 @@ export class SHACL {
   public static DATATYPE = SHACL.NAMESPACE + "datatype";
   public static MINCOUNT= SHACL.NAMESPACE +"minCount";
   public static MAXCOUNT= SHACL.NAMESPACE +"maxCount";
+  public static NODESHAPE = SHACL.NAMESPACE +"NodeShape";
 }

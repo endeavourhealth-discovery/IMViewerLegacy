@@ -6,6 +6,7 @@
 import { ConceptReference } from "@/models/TTConcept/ConceptReference";
 import { IM } from "@/vocabulary/IM";
 import { OWL } from "@/vocabulary/OWL";
+import {SHACL} from '@/vocabulary/SHACL';
 
 export function isValueSet(conceptTypeElements: ConceptReference[]): boolean {
   return conceptTypeElements?.some(
@@ -31,7 +32,7 @@ export function isRecordModel(
   conceptTypeElements: ConceptReference[]
 ): boolean {
   return conceptTypeElements?.some((e: any) => {
-    return e.iri === IM.RECORD_TYPE || e[IM.IRI] === IM.RECORD_TYPE;
+    return e.iri === SHACL.NODESHAPE || e[IM.IRI] === SHACL.NODESHAPE;
   });
 }
 
