@@ -101,8 +101,8 @@ export default defineComponent({
         );
 
         this.$store.commit("updateHistory", {
-          url: this.sideNavHierarchyFocus.iri,
-          conceptName: this.sideNavHierarchyFocus.name,
+          url: "/",
+          conceptName: this.sideNavHierarchyFocus.fullName,
           view: this.$route.name
         } as HistoryItem);
       } else {
@@ -168,8 +168,8 @@ export default defineComponent({
     );
     if (this.$route.fullPath === "/") {
       this.$store.commit("updateHistory", {
-        url: this.$route.fullPath,
-        conceptName: "Home",
+        url: "/",
+        conceptName: this.sideNavHierarchyFocus.fullName,
         view: this.$route.name
       } as HistoryItem);
     } else {

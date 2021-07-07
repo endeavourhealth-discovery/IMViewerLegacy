@@ -110,18 +110,21 @@ export default defineComponent({
         {
           icon: ["fas", "book"],
           name: "Ontology",
+          fullName: "Ontologies",
           route: "Dashboard",
           iri: "http://endhealth.info/im#DiscoveryOntology"
         },
         {
           icon: ["fas", "layer-group"],
           name: "Sets",
+          fullName: "Concept sets and value sets",
           route: "Dashboard",
           iri: "http://endhealth.info/im#Sets"
         },
         {
           icon: ["fas", "search"],
           name: "Queries",
+          fullName: "Query templates",
           route: "Dashboard",
           iri: "http://endhealth.info/im#QT_QueryTemplates"
         },
@@ -166,6 +169,7 @@ export default defineComponent({
     resetToHome(): void {
       this.$store.commit("updateSideNavHierarchyFocus", {
         name: "InformationModel",
+        fullName: "Information Model",
         iri: "http://endhealth.info/im#InformationModel"
       });
       this.$store.commit(
@@ -178,10 +182,12 @@ export default defineComponent({
     handleCenterIconClick(item: any) {
       this.$store.commit("updateSideNavHierarchyFocus", {
         name: item.name,
+        fullName: item.fullName,
         iri: item.iri
       });
-      if (item.iri)
+      if (item.iri) {
         this.$store.commit("updateConceptIri", item.iri);
+      }
 
       this.$router.push({ name: item.route });
     }

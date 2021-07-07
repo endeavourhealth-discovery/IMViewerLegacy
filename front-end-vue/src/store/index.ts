@@ -31,6 +31,7 @@ export default createStore({
     treeLocked: true as boolean,
     sideNavHierarchyFocus: {
       name: "Ontology",
+      fullName: "Ontologies",
       iri: "http://endhealth.info/im#DiscoveryOntology"
     } as { name: string; iri: string },
     filters: {
@@ -76,7 +77,7 @@ export default createStore({
     },
     updateHistory(state, historyItem) {
       state.history = state.history.filter(function(el) {
-        return el.url !== historyItem.url;
+        return el.conceptName !== historyItem.conceptName;
       });
       state.history.splice(0, 0, historyItem);
     },
