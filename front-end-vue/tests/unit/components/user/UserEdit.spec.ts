@@ -14,7 +14,7 @@ import Swal from "sweetalert2";
 
 let testUser: User;
 
-describe("userEdit.vue", () => {
+describe("userEdit.vue ___ user", () => {
   let wrapper: any;
   let mockStore: any;
   let mockRouter: any;
@@ -538,6 +538,36 @@ describe("userEdit.vue", () => {
     expect(wrapper.vm.showLastNameNotice).toBe(false);
   });
 
+  it("does nothing on reset form Swal cancelled", async() => {
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: false }));
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "12345678";
+    wrapper.vm.passwordNew1 = "87654321";
+    wrapper.vm.passwordNew2 = "87654321";
+    wrapper.vm.firstName = "Bill";
+    wrapper.vm.lastName = "Williams";
+    wrapper.vm.email1 = "bill.williams@ergosoft.co.uk";
+    wrapper.vm.email2 = "bill.williams@ergosoft.co.uk";
+    wrapper.vm.selectedAvatar = { value: "colour/004-man.png" };
+    await wrapper.vm.$nextTick();
+    wrapper.vm.resetForm();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.firstName).toBe("Bill");
+    expect(wrapper.vm.lastName).toBe("Williams");
+    expect(wrapper.vm.email1).toBe("bill.williams@ergosoft.co.uk");
+    expect(wrapper.vm.email2).toBe("bill.williams@ergosoft.co.uk");
+    expect(wrapper.vm.selectedAvatar).toStrictEqual({ value: "colour/004-man.png" });
+    expect(wrapper.vm.email1Verified).toBe(true);
+    expect(wrapper.vm.emailsMatch).toBe(true);
+    expect(wrapper.vm.firstNameVerified).toBe(true);
+    expect(wrapper.vm.lastNameVerified).toBe(true);
+    expect(wrapper.vm.showEmail1Notice).toBe(false);
+    expect(wrapper.vm.showEmail2Notice).toBe(false);
+    expect(wrapper.vm.showPassword2Notice).toBe(false);
+    expect(wrapper.vm.showFirstNameNotice).toBe(false);
+    expect(wrapper.vm.showLastNameNotice).toBe(false);
+  });
+
   it("can update avatar", async() => {
     wrapper.vm.updateAvatar({ value: "colour/005-man.png" });
     await wrapper.vm.$nextTick();
@@ -588,4 +618,63 @@ describe("userEdit.vue", () => {
   it("can can check for changes ___ false", async() => {
     expect(wrapper.vm.checkForChanges()).toBeFalsy();
   });
+
+  it("can handle editPasswordClicked ___ false", () => {
+    wrapper.vm.editPasswordClicked(false);
+    expect(wrapper.vm.passwordOld).toBe("");
+    expect(wrapper.vm.passwordNew1).toBe("");
+    expect(wrapper.vm.passwordNew2).toBe("");
+  });
+
+  it("fires swal if password different from original check failed", async() => {
+    wrapper.vm.showPasswordEdit = true;
+    wrapper.vm.passwordOld = "12345678";
+    wrapper.vm.passwordNew1 = "12345678";
+    wrapper.vm.passwordNew2 = "12345678";
+    testUser.firstName = "Johnny";
+    testUser.password = "12345678";
+    wrapper.vm.firstName = "Johnny";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleEditSubmit();
+    await flushPromises();
+    expect(Swal.fire).toHaveBeenCalledTimes(1);
+    expect(Swal.fire).toHaveBeenCalledWith({
+      icon: "error",
+      title: "Error",
+      text: "New password can not be the same as the current password."
+    });
+  });
 });
+
+describe("userEdit.vue ___ no user", () => {
+  let wrapper: any;
+  let mockStore: any;
+  let mockRouter: any;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    mockStore = {
+      state: {currentUser: undefined, isLoggedIn: false},
+      commit: jest.fn()
+    }
+    mockRouter = {
+      push: jest.fn(),
+      go: jest.fn()
+    }
+    wrapper = mount(UserEdit, {
+      global: {
+        components: { Card, Button, InputText, InlineMessage, SelectButton, OverlayPanel, AvatarWithSelector },
+        mocks: { $store: mockStore, $router: mockRouter }
+      }
+    });
+  });
+
+  it("does nothing on mount if no currentUser or loggedIn", () => {
+    expect(wrapper.vm.username).toBe("");
+    expect(wrapper.vm.firstName).toBe("");
+    expect(wrapper.vm.lastName).toBe("");
+    expect(wrapper.vm.email1).toBe("");
+    expect(wrapper.vm.email2).toBe("");
+  });
+})

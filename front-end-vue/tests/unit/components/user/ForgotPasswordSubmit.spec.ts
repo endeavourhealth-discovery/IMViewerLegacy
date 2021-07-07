@@ -175,6 +175,16 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
     expect(AuthService.forgotPasswordSubmit).toBeCalledWith("testUser", "123456", "12345678");
   });
 
+  it("does nothing if not all verified", async () => {
+    wrapper.vm.newPassword1 = "12345678";
+    wrapper.vm.newPassword2 = "12345689";
+    wrapper.vm.code = "123456";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleSubmit();
+    await wrapper.vm.$nextTick();
+    expect(AuthService.forgotPasswordSubmit).toBeCalledTimes(0);
+  });
+
   it("calls swal on auth success", async () => {
     wrapper.vm.newPassword1 = "12345678";
     wrapper.vm.newPassword2 = "12345678";
@@ -223,6 +233,19 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
     await flushPromises();
     expect(mockRouter.push).toBeCalledTimes(1);
     expect(mockRouter.push).toBeCalledWith({ name: "ForgotPassword" });
+  });
+
+  it("doesn't reroute on auth 403 swal cancelled", async () => {
+    AuthService.forgotPasswordSubmit = jest.fn().mockResolvedValue({ status: 403, message: "Password reset successful" });
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: false }));
+    wrapper.vm.newPassword1 = "12345678";
+    wrapper.vm.newPassword2 = "12345678";
+    wrapper.vm.code = "123456";
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleSubmit();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(mockRouter.push).toBeCalledTimes(0);
   });
 
   it("shows error swal on auth error not 403", async () => {

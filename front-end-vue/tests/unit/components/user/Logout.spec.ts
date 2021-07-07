@@ -76,6 +76,14 @@ describe("Logout.vue", () => {
     });
   });
 
+  it("does nothing on swal cancel", async() => {
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: false }));
+    wrapper.vm.handleSubmit();
+    await wrapper.vm.$nextTick();
+    expect(Swal.fire).toBeCalledTimes(1);
+    expect(mockStore.dispatch).toBeCalledTimes(0);
+  });
+
   it("dispatches to store on swal confirm", async() => {
     wrapper.vm.handleSubmit();
     await wrapper.vm.$nextTick();
