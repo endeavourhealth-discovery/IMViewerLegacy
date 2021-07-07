@@ -14,7 +14,7 @@
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
-              v-clipboard:copy="copyConceptToClipboard(concept)"
+              v-clipboard:copy="copyConceptToClipboard()"
               v-clipboard:success="onCopy"
               v-clipboard:error="onCopyError"
               v-tooltip="
@@ -76,7 +76,7 @@
                 <Terms :conceptIri="conceptIri" />
               </div>
             </TabPanel>
-            <TabPanel header="Maps" v-if="!isSet">
+            <TabPanel header="Maps" v-if="isClass">
               <div
                 class="concept-panel-content"
                 id="complex-mappings-container"
@@ -97,7 +97,7 @@
                 <UsedIn :conceptIri="conceptIri" />
               </div>
             </TabPanel>
-            <TabPanel header="Graph" v-if="!isSet">
+            <TabPanel header="Graph" v-if="isClass">
               <div
                 class="concept-panel-content"
                 id="graph-container"
@@ -115,7 +115,7 @@
                 <Members :conceptIri="conceptIri" @memberClick="active = 0" />
               </div>
             </TabPanel>
-            <TabPanel header="Hierarchy position" v-if="!isSet">
+            <TabPanel header="Hierarchy position">
               <div
                 class="concept-panel-content"
                 id="secondary-tree-container"
@@ -146,7 +146,7 @@ import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
 import ComplexMappings from "../components/concept/ComplexMappings.vue";
-import { isValueSet } from "@/helpers/ConceptTypeMethods";
+import { isValueSet, isClass } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import EntityService from "@/services/EntityService";
@@ -167,9 +167,14 @@ export default defineComponent({
     ComplexMappings
   },
   computed: {
-    isSet(): any {
-      const conceptTypeElements = this?.concept?.types;
+    isSet(): boolean {
+      const conceptTypeElements = this.concept?.types;
       return isValueSet(conceptTypeElements);
+    },
+
+    isClass(): boolean {
+      const conceptTypeElements = this.concept?.types;
+      return isClass(conceptTypeElements);
     },
 
     ...mapState(["conceptIri"])
@@ -180,7 +185,7 @@ export default defineComponent({
     },
     concept(newValue) {
       if (newValue && Object.keys(newValue).length) {
-        this.setCopyMenuItems(newValue);
+        this.setCopyMenuItems();
       }
     }
   },
@@ -222,7 +227,7 @@ export default defineComponent({
     directToEditRoute(): void {
       this.$router.push({
         name: "Edit",
-        params: { iri: this.concept["@id"] }
+        params: { iri: this.concept.iri }
       });
     },
 
@@ -324,17 +329,17 @@ export default defineComponent({
       this.showDownloadDialog = false;
     },
 
-    copyConceptToClipboard(concept: any): string {
+    copyConceptToClipboard(): string {
       let isasString = "";
       let subTypesString = "";
       let semanticPropertiesString = "";
       let dataModelPropertiesString = "";
       let typesString = "";
-      if (concept.isa.length > 0) {
-        isasString = concept.isa.map((item: any) => item.name).join(",\n\t");
+      if (this.concept.isa.length > 0) {
+        isasString = this.concept.isa.map((item: any) => item.name).join(",\n\t");
       }
-      if (concept.subtypes.length > 0) {
-        subTypesString = concept.subtypes
+      if (this.concept.subtypes.length > 0) {
+        subTypesString = this.concept.subtypes
           .map((item: any) => item.name)
           .join(",\n\t");
       }
@@ -348,16 +353,16 @@ export default defineComponent({
           .map((item: any) => item.property.name)
           .join(",\n\t");
       }
-      if (concept.types.length > 0) {
-        typesString = concept.types.map((item: any) => item.name).join(",\n\t");
+      if (this.concept.types.length > 0) {
+        typesString = this.concept.types.map((item: any) => item.name).join(",\n\t");
       }
       let returnString =
         "Name: " +
-        concept.name +
+        this.concept.name +
         ",\nIri: " +
-        concept.iri +
+        this.concept.iri +
         ",\nStatus: " +
-        concept.status +
+        this.concept.status +
         ",\nTypes: " +
         "[\n\t" +
         typesString +
@@ -378,8 +383,8 @@ export default defineComponent({
         "[\n\t" +
         dataModelPropertiesString +
         "\n]";
-      if (concept.description) {
-        returnString = returnString + ",\nDescription: " + concept.description;
+      if (this.concept.description) {
+        returnString = returnString + ",\nDescription: " + this.concept.description;
       }
       return returnString;
     },
@@ -397,17 +402,17 @@ export default defineComponent({
       x.show(event);
     },
 
-    setCopyMenuItems(concept: any) {
+    setCopyMenuItems() {
       let isasString = "";
       let subTypesString = "";
       let semanticPropertiesString = "";
       let dataModelPropertiesString = "";
       let typesString = "";
-      if ("isa" in concept && concept.isa.length > 0) {
-        isasString = concept.isa.map((item: any) => item.name).join(",\n\t");
+      if ("isa" in this.concept && this.concept.isa.length > 0) {
+        isasString = this.concept.isa.map((item: any) => item.name).join(",\n\t");
       }
-      if ("subtypes" in concept && concept.subtypes.length > 0) {
-        subTypesString = concept.subtypes
+      if ("subtypes" in this.concept && this.concept.subtypes.length > 0) {
+        subTypesString = this.concept.subtypes
           .map((item: any) => item.name)
           .join(",\n\t");
       }
@@ -421,8 +426,8 @@ export default defineComponent({
           .map((item: any) => item.property.name)
           .join(",\n\t");
       }
-      if (concept.types.length > 0) {
-        typesString = concept.types.map((item: any) => item.name).join(",\n\t");
+      if (this.concept.types.length > 0) {
+        typesString = this.concept.types.map((item: any) => item.name).join(",\n\t");
       }
       this.copyMenuItems = [
         {
@@ -436,7 +441,7 @@ export default defineComponent({
           label: "All",
           command: async () => {
             await navigator.clipboard
-              .writeText(this.copyConceptToClipboard(concept))
+              .writeText(this.copyConceptToClipboard())
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Concept copied to clipboard")
@@ -456,7 +461,7 @@ export default defineComponent({
           label: "Name",
           command: async () => {
             await navigator.clipboard
-              .writeText("Name: " + concept.name)
+              .writeText("Name: " + this.concept.name)
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Name copied to clipboard")
@@ -473,7 +478,7 @@ export default defineComponent({
           label: "Iri",
           command: async () => {
             await navigator.clipboard
-              .writeText("Iri: " + concept.iri)
+              .writeText("Iri: " + this.concept.iri)
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Iri copied to clipboard")
@@ -490,7 +495,7 @@ export default defineComponent({
           label: "Status",
           command: async () => {
             await navigator.clipboard
-              .writeText("Status: " + concept.status)
+              .writeText("Status: " + this.concept.status)
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Status copied to clipboard")
@@ -504,18 +509,18 @@ export default defineComponent({
           }
         },
         {
-          label: "Type",
+          label: "Types",
           command: async () => {
             await navigator.clipboard
               .writeText("Types: [\n\t" + typesString + "\n]")
               .then(() => {
                 this.$toast.add(
-                  LoggerService.success("Type copied to clipboard")
+                  LoggerService.success("Types copied to clipboard")
                 );
               })
               .catch(err => {
                 this.$toast.add(
-                  LoggerService.error("Failed to copy type to clipboard", err)
+                  LoggerService.error("Failed to copy types to clipboard", err)
                 );
               });
           }
@@ -561,7 +566,7 @@ export default defineComponent({
           label: "Semantic properties",
           command: async () => {
             await navigator.clipboard
-              .writeText("Properties: [\n\t" + semanticPropertiesString + "\n]")
+              .writeText("Semantic properties: [\n\t" + semanticPropertiesString + "\n]")
               .then(() => {
                 this.$toast.add(
                   LoggerService.success(
@@ -584,7 +589,7 @@ export default defineComponent({
           command: async () => {
             await navigator.clipboard
               .writeText(
-                "Properties: [\n\t" + dataModelPropertiesString + "\n]"
+                "Data model properties: [\n\t" + dataModelPropertiesString + "\n]"
               )
               .then(() => {
                 this.$toast.add(
@@ -604,12 +609,12 @@ export default defineComponent({
           }
         }
       ];
-      if (concept.description) {
+      if (this.concept.description) {
         this.copyMenuItems.push({
           label: "Description",
           command: async () => {
             await navigator.clipboard
-              .writeText("Description: " + concept.description)
+              .writeText("Description: " + this.concept.description)
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Description copied to clipboard")

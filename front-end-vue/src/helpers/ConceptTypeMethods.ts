@@ -21,6 +21,12 @@ export function isValueSet(conceptTypeElements: ConceptReference[]): boolean {
   );
 }
 
+export function isClass(conceptTypeElements: ConceptReference[]): boolean {
+  return conceptTypeElements?.some(
+    (e: any) => e.iri === OWL.CLASS || e[IM.IRI] === OWL.CLASS
+  );
+}
+
 export function isRecordModel(
   conceptTypeElements: ConceptReference[]
 ): boolean {
