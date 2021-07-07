@@ -124,7 +124,7 @@ export default defineComponent({
           name: "Queries",
           route: "Dashboard",
           iri: "http://endhealth.info/im#QT_QueryTemplates"
-        },
+        }
         // {
         //   icon: ["fas", "tasks"],
         //   name: "Workflow"
@@ -133,11 +133,11 @@ export default defineComponent({
         //   icon: ["fas", "map"],
         //   name: "Maps"
         // },
-        {
-          icon: ["fas", "map-marked-alt"],
-          name: "Assign",
-          route: "UPRN"
-        }
+        // {
+        //   icon: ["fas", "map-marked-alt"],
+        //   name: "Assign",
+        //   route: "UPRN"
+        // }
       ]
     };
   },
