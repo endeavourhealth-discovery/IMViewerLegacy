@@ -111,6 +111,7 @@ describe("SideNav.spec ___ not logged in", () => {
     expect(mockStore.commit).toHaveBeenNthCalledWith(1,
       "updateSideNavHierarchyFocus", {
         name: "InformationModel",
+        fullName: "Information Model",
         iri: "http://endhealth.info/im#InformationModel"
       }
     );
