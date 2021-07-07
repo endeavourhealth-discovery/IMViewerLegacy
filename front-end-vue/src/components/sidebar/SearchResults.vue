@@ -1,5 +1,5 @@
 <template>
-  <div class="p-field results-container">
+  <div id="search-results-container" class="p-field">
     <div
       class="p-d-flex p-flex-row p-jc-center"
       v-if="$store.state.loading.get('searchResults')"
@@ -23,6 +23,7 @@
       :rowsPerPageOptions="[15, 25, 50]"
       currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
       :rows="15"
+      @page="scrollToTop"
     >
       <template #empty>
         None
@@ -152,14 +153,26 @@ export default defineComponent({
     getPerspectiveByConceptType(conceptType: any): any {
       return getIconFromType(conceptType);
     },
+
     getColorByConceptType(conceptType: any): any {
       return "color:" + getColourFromType(conceptType);
     },
+
     onNodeSelect(): void {
       this.$router.push({
         name: "Concept",
         params: { selectedIri: this.selectedResult.iri }
       });
+    },
+
+    scrollToTop(): void {
+      const resultsContainer = document.getElementById(
+        "search-results-container"
+      ) as HTMLElement;
+      const scrollBox = resultsContainer.getElementsByClassName(
+        "p-datatable-wrapper"
+      )[0] as HTMLElement;
+      scrollBox.scrollTop = 0;
     },
 
     hideOverlay(): void {
@@ -358,19 +371,19 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.results-container {
+#search-results-container {
   flex-grow: 5;
   overflow-y: auto;
 }
 
-.results-container ::v-deep(.p-datatable) {
+#search-results-container ::v-deep(.p-datatable) {
   height: 100%;
   display: flex;
   flex-flow: column;
   justify-content: space-between;
 }
 
-.results-container ::v-deep(.p-datatable-wrapper) {
+#search-results-container ::v-deep(.p-datatable-wrapper) {
   flex-grow: 6;
 }
 
