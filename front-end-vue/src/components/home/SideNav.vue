@@ -72,6 +72,7 @@ export default defineComponent({
     "sideNavHierarchyFocus",
     "selectedEntityType"
   ]),
+  emits: ["hierarchyFocusSelected"],
   watch: {
     selectedEntityType(newValue) {
       switch (newValue) {
@@ -220,7 +221,7 @@ export default defineComponent({
       if (item.iri) {
         this.$store.commit("updateConceptIri", item.iri);
       }
-
+      this.$emit("hierarchyFocusSelected");
       this.$router.push({ name: item.route });
     }
   }

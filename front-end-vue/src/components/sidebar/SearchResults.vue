@@ -14,7 +14,6 @@
       v-model:selection="selectedResult"
       @row-select="onNodeSelect"
       selectionMode="single"
-      dataKey="iri"
       class="p-datatable-sm"
       :scrollable="true"
       removableSort
@@ -85,7 +84,7 @@
           </p>
           <p>
             <strong>Iri: </strong>
-            <span>
+            <span style="word-break:break-all;">
               {{ hoveredResult.iri }}
             </span>
           </p>

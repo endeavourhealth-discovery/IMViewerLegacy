@@ -1,8 +1,11 @@
 <template>
-  <SideNav />
+  <SideNav @hierarchyFocusSelected="focusHierarchy = true" />
   <div class="layout-main">
     <div class="main-grid">
-      <SidebarControl />
+      <SidebarControl
+        :focusHierarchy="focusHierarchy"
+        @hierarchyFocused="focusHierarchy = false"
+      />
       <router-view />
     </div>
   </div>
@@ -22,6 +25,11 @@ export default defineComponent({
   },
   emits: ["userPopupToggled"],
   computed: mapState(["sideNavHierarchyFocus"]),
+  data() {
+    return {
+      focusHierarchy: false
+    };
+  },
   async mounted() {
     // check for user and log them in if found or logout if not
     await this.$store.dispatch("authenticateCurrentUser");
