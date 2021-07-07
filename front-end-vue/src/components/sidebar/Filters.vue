@@ -6,7 +6,6 @@
         v-model="$store.state.filters.selectedStatus"
         @change="search()"
         :options="statusOptions"
-        placeholder="Select Status"
         display="chip"
       />
       <label for="status">Select status:</label>
@@ -21,7 +20,6 @@
         @change="search()"
         :options="schemeOptions"
         optionLabel="name"
-        placeholder="Select Schemes"
         display="chip"
       />
       <label for="scheme">Select scheme:</label>
@@ -35,7 +33,6 @@
         v-model="$store.state.filters.selectedTypes"
         @change="search()"
         :options="typeOptions"
-        placeholder="Select Concept Type"
         display="chip"
       />
       <label for="scheme">Select concept type:</label>
