@@ -146,7 +146,7 @@ import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
 import ComplexMappings from "../components/concept/ComplexMappings.vue";
-import { isValueSet, isClass } from "@/helpers/ConceptTypeMethods";
+import { isValueSet, isClass, isQuery } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import EntityService from "@/services/EntityService";
@@ -175,6 +175,11 @@ export default defineComponent({
     isClass(): boolean {
       const conceptTypeElements = this.concept?.types;
       return isClass(conceptTypeElements);
+    },
+
+    isQuery(): boolean {
+      const conceptTypeElements = this.concept?.types;
+      return isQuery(conceptTypeElements);
     },
 
     ...mapState(["conceptIri"])
@@ -319,6 +324,16 @@ export default defineComponent({
       await this.getConcept(this.conceptIri);
       this.types = this.concept?.types;
       this.header = this.concept?.name;
+      this.$store.commit(
+        "updateSelectedEntityType",
+        this.isSet
+          ? "Set"
+          : this.isClass
+          ? "Class"
+          : this.isQuery
+          ? "Query"
+          : "None"
+      );
     },
 
     openDownloadDialog(): void {
@@ -336,7 +351,9 @@ export default defineComponent({
       let dataModelPropertiesString = "";
       let typesString = "";
       if (this.concept.isa.length > 0) {
-        isasString = this.concept.isa.map((item: any) => item.name).join(",\n\t");
+        isasString = this.concept.isa
+          .map((item: any) => item.name)
+          .join(",\n\t");
       }
       if (this.concept.subtypes.length > 0) {
         subTypesString = this.concept.subtypes
@@ -354,7 +371,9 @@ export default defineComponent({
           .join(",\n\t");
       }
       if (this.concept.types.length > 0) {
-        typesString = this.concept.types.map((item: any) => item.name).join(",\n\t");
+        typesString = this.concept.types
+          .map((item: any) => item.name)
+          .join(",\n\t");
       }
       let returnString =
         "Name: " +
@@ -384,7 +403,8 @@ export default defineComponent({
         dataModelPropertiesString +
         "\n]";
       if (this.concept.description) {
-        returnString = returnString + ",\nDescription: " + this.concept.description;
+        returnString =
+          returnString + ",\nDescription: " + this.concept.description;
       }
       return returnString;
     },
@@ -409,7 +429,9 @@ export default defineComponent({
       let dataModelPropertiesString = "";
       let typesString = "";
       if ("isa" in this.concept && this.concept.isa.length > 0) {
-        isasString = this.concept.isa.map((item: any) => item.name).join(",\n\t");
+        isasString = this.concept.isa
+          .map((item: any) => item.name)
+          .join(",\n\t");
       }
       if ("subtypes" in this.concept && this.concept.subtypes.length > 0) {
         subTypesString = this.concept.subtypes
@@ -427,7 +449,9 @@ export default defineComponent({
           .join(",\n\t");
       }
       if (this.concept.types.length > 0) {
-        typesString = this.concept.types.map((item: any) => item.name).join(",\n\t");
+        typesString = this.concept.types
+          .map((item: any) => item.name)
+          .join(",\n\t");
       }
       this.copyMenuItems = [
         {
@@ -566,7 +590,9 @@ export default defineComponent({
           label: "Semantic properties",
           command: async () => {
             await navigator.clipboard
-              .writeText("Semantic properties: [\n\t" + semanticPropertiesString + "\n]")
+              .writeText(
+                "Semantic properties: [\n\t" + semanticPropertiesString + "\n]"
+              )
               .then(() => {
                 this.$toast.add(
                   LoggerService.success(
@@ -589,7 +615,9 @@ export default defineComponent({
           command: async () => {
             await navigator.clipboard
               .writeText(
-                "Data model properties: [\n\t" + dataModelPropertiesString + "\n]"
+                "Data model properties: [\n\t" +
+                  dataModelPropertiesString +
+                  "\n]"
               )
               .then(() => {
                 this.$toast.add(

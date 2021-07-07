@@ -31,8 +31,10 @@ export default createStore({
     treeLocked: true as boolean,
     sideNavHierarchyFocus: {
       name: "Ontology",
+      fullName: "Ontologies",
       iri: "http://endhealth.info/im#DiscoveryOntology"
     } as { name: string; iri: string },
+    selectedEntityType: "",
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
@@ -76,7 +78,7 @@ export default createStore({
     },
     updateHistory(state, historyItem) {
       state.history = state.history.filter(function(el) {
-        return el.url !== historyItem.url;
+        return el.conceptName !== historyItem.conceptName;
       });
       state.history.splice(0, 0, historyItem);
     },
@@ -113,6 +115,9 @@ export default createStore({
     },
     updateSideNavHierarchyFocus(state, focus) {
       state.sideNavHierarchyFocus = focus;
+    },
+    updateSelectedEntityType(state, type) {
+      state.selectedEntityType = type;
     }
   },
   actions: {
