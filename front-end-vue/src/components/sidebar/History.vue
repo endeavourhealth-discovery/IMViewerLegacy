@@ -36,32 +36,6 @@ export default defineComponent({
     },
 
     navigate(): void {
-      // if (this.selectedHistoryItem.url === "/") {
-      //   switch (this.selectedHistoryItem.conceptName) {
-      //     case "Ontologies":
-      //       this.$store.commit("updateSideNavHierarchyFocus", {
-      //         name: "Ontology",
-      //         fullName: "Ontologies",
-      //         iri: "http://endhealth.info/im#DiscoveryOntology"
-      //       });
-      //       break;
-      //     case "Concept sets and value sets":
-      //       this.$store.commit("updateSideNavHierarchyFocus", {
-      //         name: "Sets",
-      //         fullName: "Concept sets and value sets",
-      //         iri: "http://endhealth.info/im#Sets"
-      //       });
-      //       break;
-      //     case "":
-      //       this.$store.commit("updateSideNavHierarchyFocus", {
-      //         name: "Queries",
-      //         fullName: "Query templates",
-      //         iri: "http://endhealth.info/im#QT_QueryTemplates"
-      //       });
-      //       break;
-      //   }
-      //   this.$store.commit("updateConceptIri", this.sideNavHierarchyFocus.iri);
-      // }
       this.$router.push(this.selectedHistoryItem.url);
     }
   }
