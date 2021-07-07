@@ -84,12 +84,7 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
     expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityParents).toHaveBeenCalledWith("http://endhealth.info/im#DiscoveryOntology");
     await flushPromises();
-    expect(mockStore.commit).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledWith("updateHistory", {
-      url: "/",
-      conceptName: "Home",
-      view: "Dashboard"
-    });
+    expect(mockStore.commit).toHaveBeenCalledTimes(0);
   });
 
   it("fires a toast on conceptAggregate fetch error", async() => {
@@ -114,9 +109,7 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
     await flushPromises();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.createTree).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateHistory", {"conceptName": "Ontology", "url": "http://endhealth.info/im#DiscoveryOntology", "view": "Dashboard"});
-    jest.clearAllMocks();
+    expect(mockStore.commit).toHaveBeenCalledTimes(0);
   });
 
   it("can resetConcept", async() => {
@@ -132,7 +125,7 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
     expect(wrapper.vm.parentLabel).toBe("");
     expect(wrapper.vm.selectedKey).toStrictEqual({});
     expect(wrapper.emitted()["showTree"]).toBeTruthy();
-    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
     expect(mockStore.commit).toHaveBeenCalledWith("updateConceptIri", "http://endhealth.info/im#DiscoveryOntology");
     expect(mockRouter.push).toHaveBeenCalledTimes(1);
     expect(mockRouter.push).toHaveBeenCalledWith({ name: "Dashboard" });
