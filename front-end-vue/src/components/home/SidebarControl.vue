@@ -42,7 +42,7 @@
           class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container"
         >
           <SearchResults />
-          <Filters :search="search" />
+          <Filters :search="search" :searchTerm="searchTerm" />
         </div>
       </TabPanel>
     </TabView>
