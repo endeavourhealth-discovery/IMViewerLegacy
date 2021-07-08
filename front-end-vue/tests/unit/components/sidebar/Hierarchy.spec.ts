@@ -327,18 +327,18 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(mockToast.add).toHaveBeenCalled();
   });
 
-  it("can expand children ___ containsChild fail", async() => {
+
+  it("can expand children ___ containsChildTrue", async() => {
     wrapper.vm.containsChild = jest.fn().mockReturnValue(true);
-    EntityService.getEntityChildren = jest.fn().mockRejectedValue({ code: 404, message: "testError"});
-    const testNode = { data: "http://endhealth.info/im#TestConcept", key: "testKey", loading: false, children: jest.fn() }
+    const testNode = { data: "http://endhealth.info/im#TestConcept", key: "http://endhealth.info/im#TestConcept", loading: false, children: [] }
     await wrapper.vm.expandChildren(testNode);
     await wrapper.vm.$nextTick();
     await flushPromises();
     await wrapper.vm.$nextTick();
-    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(2);
     expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept");
-    expect(mockToast.add).toHaveBeenCalled();
-    expect(testNode.children).not.toHaveBeenCalled();
+    expect(wrapper.vm.containsChild).toHaveBeenCalled();
+    expect(testNode.children).toHaveLength(0);
   });
 
   it("can check containsChild ___ false", async() => {
