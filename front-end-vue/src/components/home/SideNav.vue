@@ -209,19 +209,24 @@ export default defineComponent({
         "updateConceptIri",
         "http://endhealth.info/im#InformationModel"
       );
+      this.$emit("hierarchyFocusSelected");
       this.$router.push({ name: "Dashboard" });
     },
 
     handleCenterIconClick(item: any) {
-      this.$store.commit("updateSideNavHierarchyFocus", {
-        name: item.name,
-        fullName: item.fullName,
-        iri: item.iri
-      });
-      if (item.iri) {
+      if (
+        item.name === "Ontology" ||
+        item.name === "Sets" ||
+        item.name === "Queries"
+      ) {
+        this.$store.commit("updateSideNavHierarchyFocus", {
+          name: item.name,
+          fullName: item.fullName,
+          iri: item.iri
+        });
         this.$store.commit("updateConceptIri", item.iri);
+        this.$emit("hierarchyFocusSelected");
       }
-      this.$emit("hierarchyFocusSelected");
       this.$router.push({ name: item.route });
     }
   }
