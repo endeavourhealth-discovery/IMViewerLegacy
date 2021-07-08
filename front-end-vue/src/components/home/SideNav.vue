@@ -66,7 +66,40 @@ import { mapState } from "vuex";
 
 export default defineComponent({
   name: "SideNav",
-  computed: mapState(["currentUser", "isLoggedIn", "sideNavHierarchyFocus"]),
+  computed: mapState([
+    "currentUser",
+    "isLoggedIn",
+    "sideNavHierarchyFocus",
+    "selectedEntityType"
+  ]),
+  emits: ["hierarchyFocusSelected"],
+  watch: {
+    selectedEntityType(newValue) {
+      switch (newValue) {
+        case "Class":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[0].name,
+            fullName: this.menuItems[0].fullName,
+            iri: this.menuItems[0].iri
+          });
+          break;
+        case "Set":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[1].name,
+            fullName: this.menuItems[1].fullName,
+            iri: this.menuItems[1].iri
+          });
+          break;
+        case "Query":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[2].name,
+            fullName: this.menuItems[2].fullName,
+            iri: this.menuItems[2].iri
+          });
+          break;
+      }
+    }
+  },
   data() {
     return {
       userPopupBottom: 0,
@@ -110,18 +143,21 @@ export default defineComponent({
         {
           icon: ["fas", "book"],
           name: "Ontology",
+          fullName: "Ontologies",
           route: "Dashboard",
           iri: "http://endhealth.info/im#DiscoveryOntology"
         },
         {
           icon: ["fas", "layer-group"],
           name: "Sets",
+          fullName: "Concept sets and value sets",
           route: "Dashboard",
           iri: "http://endhealth.info/im#Sets"
         },
         {
           icon: ["fas", "search"],
           name: "Queries",
+          fullName: "Query templates",
           route: "Dashboard",
           iri: "http://endhealth.info/im#QT_QueryTemplates"
         }
@@ -166,23 +202,31 @@ export default defineComponent({
     resetToHome(): void {
       this.$store.commit("updateSideNavHierarchyFocus", {
         name: "InformationModel",
+        fullName: "Information Model",
         iri: "http://endhealth.info/im#InformationModel"
       });
       this.$store.commit(
         "updateConceptIri",
         "http://endhealth.info/im#InformationModel"
       );
+      this.$emit("hierarchyFocusSelected");
       this.$router.push({ name: "Dashboard" });
     },
 
     handleCenterIconClick(item: any) {
-      this.$store.commit("updateSideNavHierarchyFocus", {
-        name: item.name,
-        iri: item.iri
-      });
-      if (item.iri)
+      if (
+        item.name === "Ontology" ||
+        item.name === "Sets" ||
+        item.name === "Queries"
+      ) {
+        this.$store.commit("updateSideNavHierarchyFocus", {
+          name: item.name,
+          fullName: item.fullName,
+          iri: item.iri
+        });
         this.$store.commit("updateConceptIri", item.iri);
-
+        this.$emit("hierarchyFocusSelected");
+      }
       this.$router.push({ name: item.route });
     }
   }

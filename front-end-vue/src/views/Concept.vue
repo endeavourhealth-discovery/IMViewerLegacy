@@ -146,7 +146,7 @@ import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
 import ComplexMappings from "../components/concept/ComplexMappings.vue";
-import { isValueSet, isClass } from "@/helpers/ConceptTypeMethods";
+import { isValueSet, isClass, isQuery } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import EntityService from "@/services/EntityService";
@@ -168,13 +168,15 @@ export default defineComponent({
   },
   computed: {
     isSet(): boolean {
-      const conceptTypeElements = this.concept?.types;
-      return isValueSet(conceptTypeElements);
+      return isValueSet(this.types);
     },
 
     isClass(): boolean {
-      const conceptTypeElements = this.concept?.types;
-      return isClass(conceptTypeElements);
+      return isClass(this.types);
+    },
+
+    isQuery(): boolean {
+      return isQuery(this.types);
     },
 
     ...mapState(["conceptIri"])
@@ -192,14 +194,12 @@ export default defineComponent({
   async mounted() {
     await this.init();
 
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.setContentHeight);
-    });
+    window.addEventListener("resize", this.onResize);
 
     this.setContentHeight();
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.setContentHeight);
+    window.removeEventListener("resize", this.onResize);
   },
   data() {
     return {
@@ -220,6 +220,10 @@ export default defineComponent({
     };
   },
   methods: {
+    onResize(): void {
+      this.setContentHeight();
+    },
+
     focusTree(): void {
       this.$store.commit("updateFocusTree", true);
     },
@@ -293,7 +297,7 @@ export default defineComponent({
         .catch(err => {
           this.$toast.add(
             LoggerService.error(
-              "Failed to get properties record structure from server",
+              "Failed to get semantic properties from server",
               err
             )
           );
@@ -306,7 +310,7 @@ export default defineComponent({
         .catch(err => {
           this.$toast.add(
             LoggerService.error(
-              "Failed to get properties record structure from server",
+              "Failed to get data model properties from server",
               err
             )
           );
@@ -317,8 +321,18 @@ export default defineComponent({
       this.active = 0;
       await this.getProperties(this.conceptIri);
       await this.getConcept(this.conceptIri);
-      this.types = this.concept?.types;
-      this.header = this.concept?.name;
+      this.types = this.concept.types;
+      this.header = this.concept.name;
+      this.$store.commit(
+        "updateSelectedEntityType",
+        this.isSet
+          ? "Set"
+          : this.isClass
+          ? "Class"
+          : this.isQuery
+          ? "Query"
+          : "None"
+      );
     },
 
     openDownloadDialog(): void {
@@ -336,7 +350,9 @@ export default defineComponent({
       let dataModelPropertiesString = "";
       let typesString = "";
       if (this.concept.isa.length > 0) {
-        isasString = this.concept.isa.map((item: any) => item.name).join(",\n\t");
+        isasString = this.concept.isa
+          .map((item: any) => item.name)
+          .join(",\n\t");
       }
       if (this.concept.subtypes.length > 0) {
         subTypesString = this.concept.subtypes
@@ -354,7 +370,9 @@ export default defineComponent({
           .join(",\n\t");
       }
       if (this.concept.types.length > 0) {
-        typesString = this.concept.types.map((item: any) => item.name).join(",\n\t");
+        typesString = this.concept.types
+          .map((item: any) => item.name)
+          .join(",\n\t");
       }
       let returnString =
         "Name: " +
@@ -384,7 +402,8 @@ export default defineComponent({
         dataModelPropertiesString +
         "\n]";
       if (this.concept.description) {
-        returnString = returnString + ",\nDescription: " + this.concept.description;
+        returnString =
+          returnString + ",\nDescription: " + this.concept.description;
       }
       return returnString;
     },
@@ -409,7 +428,9 @@ export default defineComponent({
       let dataModelPropertiesString = "";
       let typesString = "";
       if ("isa" in this.concept && this.concept.isa.length > 0) {
-        isasString = this.concept.isa.map((item: any) => item.name).join(",\n\t");
+        isasString = this.concept.isa
+          .map((item: any) => item.name)
+          .join(",\n\t");
       }
       if ("subtypes" in this.concept && this.concept.subtypes.length > 0) {
         subTypesString = this.concept.subtypes
@@ -427,7 +448,9 @@ export default defineComponent({
           .join(",\n\t");
       }
       if (this.concept.types.length > 0) {
-        typesString = this.concept.types.map((item: any) => item.name).join(",\n\t");
+        typesString = this.concept.types
+          .map((item: any) => item.name)
+          .join(",\n\t");
       }
       this.copyMenuItems = [
         {
@@ -566,7 +589,9 @@ export default defineComponent({
           label: "Semantic properties",
           command: async () => {
             await navigator.clipboard
-              .writeText("Semantic properties: [\n\t" + semanticPropertiesString + "\n]")
+              .writeText(
+                "Semantic properties: [\n\t" + semanticPropertiesString + "\n]"
+              )
               .then(() => {
                 this.$toast.add(
                   LoggerService.success(
@@ -589,7 +614,9 @@ export default defineComponent({
           command: async () => {
             await navigator.clipboard
               .writeText(
-                "Data model properties: [\n\t" + dataModelPropertiesString + "\n]"
+                "Data model properties: [\n\t" +
+                  dataModelPropertiesString +
+                  "\n]"
               )
               .then(() => {
                 this.$toast.add(

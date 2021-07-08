@@ -4,7 +4,7 @@
       <MultiSelect
         id="status"
         v-model="$store.state.filters.selectedStatus"
-        @change="search()"
+        @change="checkForSearch"
         :options="statusOptions"
         display="chip"
       />
@@ -17,7 +17,7 @@
       <MultiSelect
         id="scheme"
         v-model="$store.state.filters.selectedSchemes"
-        @change="search()"
+        @change="checkForSearch"
         :options="schemeOptions"
         optionLabel="name"
         display="chip"
@@ -31,7 +31,7 @@
       <MultiSelect
         id="conceptType"
         v-model="$store.state.filters.selectedTypes"
-        @change="search()"
+        @change="checkForSearch"
         :options="typeOptions"
         display="chip"
       />
@@ -47,7 +47,7 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "Filters",
   components: {},
-  props: ["search"],
+  props: ["search", "searchTerm"],
   data() {
     return {
       statusOptions: ["Active", "Draft", "Inactive"] as string[],
@@ -112,6 +112,13 @@ export default defineComponent({
         "CategoryGroup"
       ] as string[]
     };
+  },
+  methods: {
+    checkForSearch() {
+      if (this.searchTerm.length > 2) {
+        this.search();
+      }
+    }
   }
 });
 </script>

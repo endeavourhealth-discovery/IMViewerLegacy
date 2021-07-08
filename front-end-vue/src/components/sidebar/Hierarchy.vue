@@ -91,7 +91,7 @@ export default defineComponent({
   ]),
   watch: {
     async conceptIri(newValue) {
-      if (this.$route.fullPath === "/") {
+      if (this.homeIris.includes(newValue)) {
         this.selectedKey = {};
         await this.getConceptAggregate(newValue);
         this.createTree(
@@ -99,12 +99,6 @@ export default defineComponent({
           this.conceptAggregate.parents,
           this.conceptAggregate.children
         );
-
-        this.$store.commit("updateHistory", {
-          url: this.sideNavHierarchyFocus.iri,
-          conceptName: this.sideNavHierarchyFocus.name,
-          view: this.$route.name
-        } as HistoryItem);
       } else {
         await this.getConceptAggregate(newValue);
         this.createTree(
@@ -156,7 +150,13 @@ export default defineComponent({
       root: [] as TreeNode[],
       expandedKeys: {} as any,
       selectedKey: {} as any,
-      parentLabel: ""
+      parentLabel: "",
+      homeIris: [
+        IM.NAMESPACE + "Sets",
+        IM.NAMESPACE + "DiscoveryOntology",
+        IM.NAMESPACE + "QT_QueryTemplates",
+        IM.NAMESPACE + "InformationModel"
+      ]
     };
   },
   async mounted() {
@@ -166,13 +166,7 @@ export default defineComponent({
       this.conceptAggregate.parents,
       this.conceptAggregate.children
     );
-    if (this.$route.fullPath === "/") {
-      this.$store.commit("updateHistory", {
-        url: this.$route.fullPath,
-        conceptName: "Home",
-        view: this.$route.name
-      } as HistoryItem);
-    } else {
+    if (!this.homeIris.includes(this.conceptAggregate.concept[IM.IRI])) {
       this.$store.commit("updateHistory", {
         url: this.$route.fullPath,
         conceptName: this.conceptAggregate.concept[RDFS.LABEL],
@@ -316,7 +310,7 @@ export default defineComponent({
     },
 
     containsChild(children: any[], child: any) {
-      if (children.some(e => e.data === child?.["@id"])) {
+      if (children.some(e => e.data === child["@id"])) {
         return true;
       }
       return false;

@@ -11,11 +11,9 @@ import { defineComponent } from "@vue/runtime-core";
 export default defineComponent({
   name: "Description",
   components: {},
-  props: {
-    description: {} as any
-  },
+  props: ["description"],
   watch: {
-    async description() {
+    description() {
       this.init();
     }
   },

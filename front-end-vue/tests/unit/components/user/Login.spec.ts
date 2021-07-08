@@ -168,6 +168,18 @@ describe("login.vue with registeredUser", () => {
     expect(mockRouter.push).toBeCalledWith({ name: "ConfirmCode" });
   });
 
+  it("doesn't update store and reroutes on auth error, swal cancelled ___ 401", async() => {
+    AuthService.signIn = jest.fn().mockResolvedValue({ status: 401, message: "Login successful", user: testUser });
+    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: false }));
+    wrapper.vm.username = "Devtest";
+    wrapper.vm.password = "12345678";
+    wrapper.vm.handleSubmit();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(mockStore.commit).toBeCalledTimes(0);
+    expect(mockRouter.push).toBeCalledTimes(0);
+  });
+
   it("fires swal on auth error ___ other", async() => {
     AuthService.signIn = jest.fn().mockResolvedValue({ status: 400, message: "Login failed", user: testUser });
     wrapper.vm.username = "Devtest";

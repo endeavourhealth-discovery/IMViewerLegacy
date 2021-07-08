@@ -5,9 +5,9 @@ import Button from "primevue/button";
 import PrimeVue from 'primevue/config';
 
 describe("SnomedLicense.vue", () => {
-  let wrapper: any;
-  let mockStore: any;
-  let mockRouter: any;
+  let wrapper;
+  let mockStore;
+  let mockRouter;
 
   beforeEach(() => {
     mockStore = {
@@ -58,3 +58,43 @@ describe("SnomedLicense.vue", () => {
     expect(mockRouter.go).toBeCalledWith(-1);
   });
 });
+
+describe("SnomedLicense.vue ___ mock window location", () => {
+  const { location } = window;
+  let wrapper;
+  let mockStore;
+  let mockRouter;
+
+  beforeEach(() => {
+    delete window.location;
+    window.location = {
+      href: ""
+    };
+    mockStore = {
+      state: { snomedLicenseAccepted: "false", historyCount: 1 },
+      commit: jest.fn()
+    };
+    mockRouter = {
+      push: jest.fn(),
+      go: jest.fn()
+    };
+    wrapper = mount(SnomedLicense, {
+      global: {
+          plugins: [PrimeVue],
+          components: { Dialog, Button },
+        mocks: { $store: mockStore, $router: mockRouter },
+      }
+    });
+  });
+
+  afterAll(() => {
+    window.location = location;
+  });
+
+  it("reroutes on submitDecline", async() => {
+    wrapper.vm.$store.state.historyCount = 0;
+    wrapper.vm.submitDecline();
+    await wrapper.vm.$nextTick();
+    expect(window.location.href).toBe("https://www.snomed.org/");
+  });
+})
