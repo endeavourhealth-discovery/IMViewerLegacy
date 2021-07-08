@@ -177,5 +177,24 @@ describe("SidebarControl.vue", () => {
     wrapper.vm.setContainerHeights();
     await wrapper.vm.$nextTick();
     expect(mockElement.style.maxHeight).toBeTruthy();
-  })
+  });
+
+  it("can checkKey ___ enter", () => {
+    wrapper.vm.search = jest.fn();
+    wrapper.vm.checkKey({ code: "Enter" });
+    expect(wrapper.vm.search).toHaveBeenCalledTimes(1);
+  });
+
+  it("can checkKey ___ other", () => {
+    wrapper.vm.search = jest.fn();
+    wrapper.vm.checkKey({ code: "Space" });
+    expect(wrapper.vm.search).toHaveBeenCalledTimes(0);
+  });
+
+  it("can remove eventListener", () => {
+    const spy = jest.spyOn(global, "removeEventListener");
+    wrapper.unmount();
+    expect(spy).toHaveBeenCalled();
+    spy.mockReset();
+  });
 });

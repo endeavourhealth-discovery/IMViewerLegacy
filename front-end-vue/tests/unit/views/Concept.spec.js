@@ -31,6 +31,8 @@ describe("Concept.vue", () => {
   let mockRouter;
   let mockToast;
   let clipboardSpy;
+  let docSpy;
+  let windowSpy
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -52,6 +54,12 @@ describe("Concept.vue", () => {
       add: jest.fn()
     };
     console.error = jest.fn();
+
+    windowSpy = jest.spyOn(window, "getComputedStyle");
+    windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue("16px") });
+
+    docSpy = jest.spyOn(document, "getElementById");
+    docSpy.mockReturnValue(undefined);
 
     wrapper = shallowMount(Concept, {
       global: {
@@ -78,6 +86,7 @@ describe("Concept.vue", () => {
   });
 
   afterAll(() => {
+    jest.resetAllMocks();
     jest.clearAllMocks();
   })
 
@@ -108,6 +117,40 @@ describe("Concept.vue", () => {
     expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(EntityService.getSemanticProperties).toHaveBeenCalledTimes(1);
     expect(EntityService.getSemanticProperties).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+  });
+
+  it("adds event listener to setContentHeights on resize", async() => {
+    await flushPromises();
+    const spy = jest.spyOn(wrapper.vm, "setContentHeight");
+    window.dispatchEvent(new Event("resize"));
+    await wrapper.vm.$nextTick();
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.mockReset();
+  });
+
+  it("can remove eventListener", () => {
+    const spy = jest.spyOn(global, "removeEventListener");
+    wrapper.unmount();
+    expect(spy).toHaveBeenCalled();
+    spy.mockReset();
+  });
+
+  it("sets container size ___ container fail", async() => {
+    wrapper.vm.setContentHeight();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.contentHeightValue).toBe(800);
+  });
+
+  it("sets container size ___ container success", async() => {
+    const mockElement = document.createElement("div");
+    mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 })
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([mockElement]);
+    docSpy.mockReturnValue(mockElement);
+    wrapper.vm.setContentHeight();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.contentHeightValue).not.toBe(800);
+    docSpy.mockReset();
+    jest.clearAllMocks();
   });
 
   it("can check for a set ___ false", async() => {
@@ -398,6 +441,7 @@ describe("Concept.vue", () => {
   });
 
   it("can show terms", () => {
+    wrapper.vm.setContentHeight = jest.fn();
     wrapper.vm.showTerms();
     expect(wrapper.vm.active).toBe(1);
   })
