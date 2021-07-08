@@ -168,18 +168,15 @@ export default defineComponent({
   },
   computed: {
     isSet(): boolean {
-      const conceptTypeElements = this.concept?.types;
-      return isValueSet(conceptTypeElements);
+      return isValueSet(this.types);
     },
 
     isClass(): boolean {
-      const conceptTypeElements = this.concept?.types;
-      return isClass(conceptTypeElements);
+      return isClass(this.types);
     },
 
     isQuery(): boolean {
-      const conceptTypeElements = this.concept?.types;
-      return isQuery(conceptTypeElements);
+      return isQuery(this.types);
     },
 
     ...mapState(["conceptIri"])
@@ -300,7 +297,7 @@ export default defineComponent({
         .catch(err => {
           this.$toast.add(
             LoggerService.error(
-              "Failed to get properties record structure from server",
+              "Failed to get semantic properties from server",
               err
             )
           );
@@ -313,7 +310,7 @@ export default defineComponent({
         .catch(err => {
           this.$toast.add(
             LoggerService.error(
-              "Failed to get properties record structure from server",
+              "Failed to get data model properties from server",
               err
             )
           );
@@ -324,8 +321,8 @@ export default defineComponent({
       this.active = 0;
       await this.getProperties(this.conceptIri);
       await this.getConcept(this.conceptIri);
-      this.types = this.concept?.types;
-      this.header = this.concept?.name;
+      this.types = this.concept.types;
+      this.header = this.concept.name;
       this.$store.commit(
         "updateSelectedEntityType",
         this.isSet

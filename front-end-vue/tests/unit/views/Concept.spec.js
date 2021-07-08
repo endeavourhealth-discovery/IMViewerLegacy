@@ -154,19 +154,19 @@ describe("Concept.vue", () => {
   });
 
   it("can check for a set ___ false", async() => {
-    expect(Concept.computed.isSet.call({concept: {types: [{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]}})).toBe(false);
+    expect(Concept.computed.isSet.call({types: [{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]})).toBe(false);
   });
 
   it("can check for a set ___ true", async() => {
-    expect(Concept.computed.isSet.call({concept: {types: [{"name":"Concept Set","@id":"http://endhealth.info/im#ConceptSet"}]}})).toBe(true);
+    expect(Concept.computed.isSet.call({types: [{"name":"Concept Set","@id":"http://endhealth.info/im#ConceptSet"}]})).toBe(true);
   });
 
   it("can check isClass ___ true", () => {
-    expect(Concept.computed.isClass.call({concept: {types: [{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]}})).toBe(true);
+    expect(Concept.computed.isClass.call({types: [{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]})).toBe(true);
   });
 
   it("can check isClass ___ false", () => {
-    expect(Concept.computed.isClass.call({concept: {types: [{"name":"Concept Set","@id":"http://endhealth.info/im#ConceptSet"}]}})).toBe(false);
+    expect(Concept.computed.isClass.call({types: [{"name":"Concept Set","@id":"http://endhealth.info/im#ConceptSet"}]})).toBe(false);
   });
 
   it("inits on iri change", async() => {
@@ -176,11 +176,18 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.init).toHaveBeenCalledTimes(1);
   });
 
-  it("updates copyMenuItems on concept change", async() => {
+  it("updates copyMenuItems on concept change ___ newValue success", async() => {
     wrapper.vm.setCopyMenuItems = jest.fn();
     wrapper.vm.$options.watch.concept.call(wrapper.vm, {"iri":"http://snomed.info/sct#298591003","name":"Scoliosis of lumbar spine (disorder)","status":"Active","types":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isa":[{"name":"Deformity of lumbar spine (finding)","@id":"http://snomed.info/sct#298589006"},{"name":"Scoliosis deformity of spine (disorder)","@id":"http://snomed.info/sct#298382003"},{"name":"Disorder of lumbar spine (disorder)","@id":"http://snomed.info/sct#129139009"}],"subtypes":[{"name":"Idiopathic scoliosis of lumbar spine (disorder)","@id":"http://snomed.info/sct#712581001"}]});
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.setCopyMenuItems).toHaveBeenCalledTimes(1);
+  });
+
+  it("updates copyMenuItems on concept change ___ newValue fail", async() => {
+    wrapper.vm.setCopyMenuItems = jest.fn();
+    wrapper.vm.$options.watch.concept.call(wrapper.vm, undefined);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.setCopyMenuItems).toHaveBeenCalledTimes(0);
   });
 
   it("can update focusTree", () => {
@@ -239,7 +246,21 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.dataModelProperties).toStrictEqual([{"property":{"name":"has admission source","@id":"http://endhealth.info/im#hasAdmissionSource"},"type":{"name":"Critical care admission source","@id":"http://endhealth.info/im#1041000252100"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has critical care unit function","@id":"http://endhealth.info/im#hasCriticalCareUnitFunction"},"type":{"name":"Critical care unit function","@id":"http://endhealth.info/im#211000252109"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}}]);
   });
 
-  it("Inits", async() => {
+  it("can get properties ___ both fail", async() => {
+    EntityService.getSemanticProperties = jest.fn().mockRejectedValue({ code: 403, message: "Semantic error"});
+    EntityService.getDataModelProperties = jest.fn().mockRejectedValue({ code: 403, message: "Data error"});
+    wrapper.vm.getProperties("http://endhealth.info/im#CriticalCareEncounter");
+    await flushPromises();
+    expect(EntityService.getSemanticProperties).toHaveBeenCalledTimes(1);
+    expect(EntityService.getSemanticProperties).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
+    expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
+    expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
+    expect(mockToast.add).toHaveBeenCalledTimes(2);
+    expect(mockToast.add).toHaveBeenNthCalledWith(1, LoggerService.error("Failed to get semantic properties from server", { code: 403, message: "Semantic error"}));
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to get data model properties from server", { code: 403, message: "Data error"}));
+  });
+
+  it("Inits ___ Class", async() => {
     wrapper.vm.getProperties = jest.fn();
     wrapper.vm.getConcept = jest.fn();
     wrapper.vm.concept = {"iri":"http://snomed.info/sct#47518006","name":"Scoliosis caused by radiation (disorder)","status":"Active","types":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"isa":[{"name":"Acquired scoliosis (disorder)","@id":"http://snomed.info/sct#111266001"},{"name":"Radiation therapy complication (disorder)","@id":"http://snomed.info/sct#212904005"},{"name":"Disorder of musculoskeletal system following procedure (disorder)","@id":"http://snomed.info/sct#724614007"},{"name":"Deformity of spine due to injury (disorder)","@id":"http://snomed.info/sct#442544003"}],"subtypes":[]};
@@ -251,6 +272,26 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.getConcept).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.types).toStrictEqual([{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]);
     expect(wrapper.vm.header).toBe("Scoliosis caused by radiation (disorder)");
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Class");
+  });
+
+
+  it("Inits ___ Set", async() => {
+    wrapper.vm.getProperties = jest.fn();
+    wrapper.vm.getConcept = jest.fn();
+    wrapper.vm.concept = {"iri":"http://endhealth.info/im#VSET_RecordType_FamilyHistory","name":"Family history","description":"Family history value set not including negative family history","types":[{"name":"Concept Set","@id":"http://endhealth.info/im#ConceptSet"}],"isa":[],"subtypes":[]};
+    wrapper.vm.init();
+    await flushPromises();
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Set");
+  });
+
+  it("Inits ___ Query", async() => {
+    wrapper.vm.getProperties = jest.fn();
+    wrapper.vm.getConcept = jest.fn();
+    wrapper.vm.concept = {"iri":"http://endhealth.info/im#1000051000252106","name":"Frailty flag (query definition)","description":"Queries the health record of a patient to ascertain potential frailty","types":[{"name":"Query template","@id":"http://endhealth.info/im#QueryTemplate"}],"isa":[],"subtypes":[]};
+    wrapper.vm.init();
+    await flushPromises();
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Query");
   });
 
   it("can openDownloadDialog", async() => {
