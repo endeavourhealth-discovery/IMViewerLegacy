@@ -197,14 +197,12 @@ export default defineComponent({
   async mounted() {
     await this.init();
 
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.setContentHeight);
-    });
+    window.addEventListener("resize", this.onResize);
 
     this.setContentHeight();
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.setContentHeight);
+    window.removeEventListener("resize", this.onResize);
   },
   data() {
     return {
@@ -225,6 +223,10 @@ export default defineComponent({
     };
   },
   methods: {
+    onResize(): void {
+      this.setContentHeight();
+    },
+
     focusTree(): void {
       this.$store.commit("updateFocusTree", true);
     },

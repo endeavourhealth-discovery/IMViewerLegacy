@@ -195,5 +195,6 @@ describe("SidebarControl.vue", () => {
     const spy = jest.spyOn(global, "removeEventListener");
     wrapper.unmount();
     expect(spy).toHaveBeenCalled();
-  })
+    spy.mockReset();
+  });
 });
