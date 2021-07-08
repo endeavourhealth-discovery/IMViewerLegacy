@@ -310,7 +310,7 @@ export default defineComponent({
     },
 
     containsChild(children: any[], child: any) {
-      if (children.some(e => e.data === child?.["@id"])) {
+      if (children.some(e => e.data === child["@id"])) {
         return true;
       }
       return false;
