@@ -184,7 +184,7 @@ export default defineComponent({
               this.$toast.add(
                 LoggerService.error("Search results server request failed")
               );
-            } else if (res === "true") {
+            } else {
               this.$store.commit("updateLoading", {
                 key: "searchResults",
                 value: false

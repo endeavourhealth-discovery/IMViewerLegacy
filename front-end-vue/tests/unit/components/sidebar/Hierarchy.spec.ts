@@ -327,7 +327,6 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(mockToast.add).toHaveBeenCalled();
   });
 
-
   it("can expand children ___ containsChildTrue", async() => {
     wrapper.vm.containsChild = jest.fn().mockReturnValue(true);
     const testNode = { data: "http://endhealth.info/im#TestConcept", key: "http://endhealth.info/im#TestConcept", loading: false, children: [] }
