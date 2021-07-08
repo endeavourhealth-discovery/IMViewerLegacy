@@ -1,13 +1,11 @@
 <template>
-  <div>
-    <div :key="icon">
-      <i :class="icon" :style="color" aria-hidden="true" />
-      {{ header }}
-    </div>
+  <div id="entity-panel-header-text" :key="icon">
+    <i :class="icon" :style="color" aria-hidden="true" />
+    {{ header }}
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
 import {
   getColourFromType,
@@ -25,7 +23,7 @@ export default defineComponent({
   },
   watch: {
     types(newValue) {
-      if (newValue) {
+      if (newValue.length > 0) {
         this.color = "color: " + getColourFromType(newValue);
         this.icon = getIconFromType(newValue);
       }
@@ -34,4 +32,4 @@ export default defineComponent({
 });
 </script>
 
-<style></style>
+<style scoped></style>
