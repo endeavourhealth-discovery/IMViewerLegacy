@@ -1,6 +1,6 @@
 <template>
   <div class="p-d-flex p-flex-row members-container">
-    <div class="included-container">
+    <div id="members-table-container" class="included-container p-field">
       <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
         <div class="spinner">
           <ProgressSpinner />
@@ -32,6 +32,7 @@
         selectionMode="single"
         @click="onClick()"
         v-else
+        @page="scrollToTop"
       >
         <template #header>
           <div class="p-d-flex p-jc-between">
@@ -219,6 +220,16 @@ export default defineComponent({
     toggle(event: any) {
       const x = this.$refs.menu as any;
       x.toggle(event);
+    },
+
+    scrollToTop(): void {
+      const tableContainer = document.getElementById(
+        "members-table-container"
+      ) as HTMLElement;
+      const scrollBox = tableContainer.getElementsByClassName(
+        "p-datatable-wrapper"
+      )[0] as HTMLElement;
+      scrollBox.scrollTop = 0;
     }
   }
 });
@@ -241,5 +252,21 @@ export default defineComponent({
 
 .excluded-container {
   width: 50%;
+}
+
+#members-table-container {
+  flex-grow: 5;
+  overflow-y: auto;
+}
+
+#members-table-container ::v-deep(.p-datatable) {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+}
+
+#members-table-container ::v-deep(.p-datatable-wrapper) {
+  flex-grow: 6;
 }
 </style>
