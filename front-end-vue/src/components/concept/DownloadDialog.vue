@@ -80,13 +80,17 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!semanticProperties?.length"
+            :disabled="!includeSemanticProperties"
             id="semantic-properties"
             :binary="true"
             value="Include semantic properties"
             v-model="includeSemanticProperties"
           />
-          <label class="label" for="semantic-properties">
+          <label
+            class="label"
+            :class="includeSemanticProperties ? null : 'inactive-text'"
+            for="semantic-properties"
+          >
             Include semantic properties
           </label>
         </div>
@@ -318,7 +322,7 @@ export default defineComponent({
       this.includeDataModelProperties = !!this.dataModelProperties.length;
       this.includeSemanticProperties = !!this.semanticProperties.length;
       this.includeMembers =
-        !!this.members?.included?.length || !!this.members.excluded?.length;
+        !!this.members.included?.length || !!this.members.excluded?.length;
     }
   }
 });
