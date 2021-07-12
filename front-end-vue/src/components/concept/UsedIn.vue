@@ -14,10 +14,11 @@
     @change="onNodeSelect(selectedUsage)"
     :options="usages"
     optionLabel="name"
-  ></Listbox>
+  />
 </template>
 <script lang="ts">
 import EntityService from "@/services/EntityService";
+import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
@@ -32,16 +33,14 @@ export default defineComponent({
     }
   },
   async mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.setListboxHeight);
-    });
+    window.addEventListener("resize", this.resize);
     this.setListboxHeight();
     if (this.conceptIri) {
       await this.getUsages(this.conceptIri);
     }
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.setListboxHeight);
+    window.removeEventListener("resize", this.resize);
   },
   data() {
     return {
@@ -52,9 +51,20 @@ export default defineComponent({
     };
   },
   methods: {
+    resize() {
+      this.setListboxHeight();
+    },
     async getUsages(iri: string) {
       this.loading = true;
-      this.usages = (await EntityService.getEntityUsages(iri)).data;
+      await EntityService.getEntityUsages(iri)
+        .then(res => {
+          this.usages = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get usages from server", err)
+          );
+        });
       this.loading = false;
     },
 
@@ -69,7 +79,7 @@ export default defineComponent({
       const container = document.getElementById(
         "usedin-container"
       ) as HTMLElement;
-      const listHeader = container.getElementsByClassName(
+      const listHeader = container?.getElementsByClassName(
         "p-listbox-header"
       )[0] as HTMLElement;
       if (container && listHeader) {
@@ -78,6 +88,8 @@ export default defineComponent({
           listHeader.getBoundingClientRect().height -
           2;
         this.listHeight = "height: " + newHeight + "px;";
+      } else {
+        LoggerService.error("Failed to set UsedIn listbox height");
       }
     }
   }
