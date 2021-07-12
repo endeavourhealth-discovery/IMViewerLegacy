@@ -9,7 +9,14 @@
     <template #header>
       <h3>Download Concept:</h3>
     </template>
-    <div id="content" class="p-d-flex p-flex-column p-jc-center p-ai-center">
+    <div v-if="loading">
+      <ProgressSpinner />
+    </div>
+    <div
+      v-else
+      id="content"
+      class="p-d-flex p-flex-column p-jc-center p-ai-center"
+    >
       <h4 v-if="concept[RDFS_LABEL]">
         {{ concept[RDFS_LABEL] }}
       </h4>
@@ -25,67 +32,51 @@
       >
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!parents?.length"
+            :disabled="!includeParents"
             id="parents"
             :binary="true"
             value="Include parents"
             v-model="includeParents"
           />
-          <label class="label" for="parents">Include parents</label>
+          <label
+            class="label"
+            :class="includeParents ? null : 'inactive-text'"
+            for="parents"
+          >
+            Include parents
+          </label>
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!children?.length"
+            :disabled="!includeChildren"
             id="children"
             :binary="true"
             value="Include children"
             v-model="includeChildren"
           />
-          <label class="label" for="children">Include children</label>
+          <label
+            class="label"
+            :class="includeChildren ? null : 'inactive-text'"
+            for="children"
+          >
+            Include children
+          </label>
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!dataModelProperties?.length"
+            :disabled="!includeDataModelProperties"
             id="data-model-properties"
             :binary="true"
             value="Include data model properties"
             v-model="includeDataModelProperties"
           />
-          <label class="label" for="data-model-properties">
+          <label
+            class="label"
+            :class="includeDataModelProperties ? null : 'inactive-text'"
+            for="data-model-properties"
+          >
             Include data model properties
           </label>
-        </div>
-        <div class="checkbox-label">
-          <Checkbox
-            :disabled="
-              !$store.state.members?.included?.length &&
-                !$store.state.members?.excluded?.length
-            "
-            id="members"
-            :binary="true"
-            value="Include members"
-            v-model="includeMembers"
-          />
-          <label class="label" for="members">Include members</label>
-        </div>
-        <div class="checkbox-label">
-          <Checkbox
-            :disabled="!includeMembers"
-            id="expandMembers"
-            :binary="true"
-            value="Expand members"
-            v-model="expandMembers"
-          />
-          <label class="label" for="expandMembers">Expand members</label>
-        </div>
-        <div class="checkbox-label">
-          <Checkbox
-            id="inactive"
-            :binary="true"
-            value="Include inactive"
-            v-model="includeInactive"
-          />
-          <label class="label" for="inactive">Include inactive</label>
         </div>
         <div class="checkbox-label">
           <Checkbox
@@ -97,6 +88,49 @@
           />
           <label class="label" for="semantic-properties">
             Include semantic properties
+          </label>
+        </div>
+        <div class="checkbox-label">
+          <Checkbox
+            :disabled="!includeMembers"
+            id="members"
+            :binary="true"
+            value="Include members"
+            v-model="includeMembers"
+          />
+          <label
+            class="label"
+            :class="includeMembers ? null : 'inactive-text'"
+            for="members"
+          >
+            Include members
+          </label>
+        </div>
+        <div class="checkbox-label">
+          <Checkbox
+            :disabled="!includeMembers"
+            id="expandMembers"
+            :binary="true"
+            value="Expand members"
+            v-model="expandMembers"
+          />
+          <label
+            class="label"
+            :class="includeMembers ? null : 'inactive-text'"
+            for="expandMembers"
+          >
+            Expand members
+          </label>
+        </div>
+        <div class="checkbox-label">
+          <Checkbox
+            id="inactive"
+            :binary="true"
+            value="Include inactive"
+            v-model="includeInactive"
+          />
+          <label class="label" for="inactive">
+            Include inactive children/parents
           </label>
         </div>
       </div>
@@ -129,6 +163,7 @@ import { RDFS } from "@/vocabulary/RDFS";
 export default defineComponent({
   name: "DownloadDialog",
   props: ["conceptIri", "showDialog"],
+  emits: ["closeDownloadDialog"],
   watch: {
     async conceptIri(newValue) {
       await this.init(newValue);
@@ -153,6 +188,7 @@ export default defineComponent({
       includeParents: true,
       includeInactive: false,
       includeSemanticProperties: false,
+      loading: false,
       RDFS_LABEL: RDFS.LABEL,
       format: {
         name: "Excel(.xlsx)",
@@ -209,22 +245,74 @@ export default defineComponent({
       }
       this.closeDownloadDialog();
     },
-    async init(iri: string) {
-      this.concept = (
-        await EntityService.getPartialEntity(iri, [RDFS.LABEL])
-      ).data;
-      this.parents = (await EntityService.getEntityParents(iri)).data;
-      this.children = (await EntityService.getEntityChildren(iri)).data;
-      this.dataModelProperties = (
-        await EntityService.getDataModelProperties(iri)
-      ).data;
-      this.semanticProperties = (
-        await EntityService.getSemanticProperties(iri)
-      ).data;
-      this.members = (
-        await EntityService.getEntityMembers(iri, this.expandMembers)
-      ).data;
 
+    async init(iri: string) {
+      this.loading = true;
+      await EntityService.getPartialEntity(iri, [RDFS.LABEL])
+        .then(res => {
+          this.concept = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get concept data from server", err)
+          );
+        });
+      await EntityService.getEntityParents(iri)
+        .then(res => {
+          this.parents = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get parents data from server", err)
+          );
+        });
+      await EntityService.getEntityChildren(iri)
+        .then(res => {
+          this.children = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get children data from server", err)
+          );
+        });
+      await EntityService.getDataModelProperties(iri)
+        .then(res => {
+          this.dataModelProperties = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Failed to get data model properties from server",
+              err
+            )
+          );
+        });
+      await EntityService.getSemanticProperties(iri)
+        .then(res => {
+          this.semanticProperties = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Failed to get semantic properties from server",
+              err
+            )
+          );
+        });
+      await EntityService.getEntityMembers(iri, this.expandMembers)
+        .then(res => {
+          this.members = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get members from server", err)
+          );
+        });
+      this.setIncludeBooleans();
+      this.loading = false;
+    },
+
+    setIncludeBooleans() {
       this.includeParents = !!this.parents.length;
       this.includeChildren = !!this.children.length;
       this.includeDataModelProperties = !!this.dataModelProperties.length;
@@ -258,5 +346,9 @@ export default defineComponent({
 }
 h4 {
   margin-bottom: 1em;
+}
+.inactive-text {
+  color: lightgray;
+  text-decoration: line-through;
 }
 </style>
