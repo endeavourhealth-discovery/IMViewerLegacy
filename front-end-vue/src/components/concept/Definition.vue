@@ -102,15 +102,16 @@ export default defineComponent({
       }
     },
 
-    descriptionHTML(): string {
-      let text = "";
+    descriptionHTML(): string | undefined {
       if ({}.hasOwnProperty.call(this.concept, "description")) {
-        text = this.concept.description.replace(
+        const text = this.concept.description.replace(
           /<p>/g,
           "</p>\n<p class='description-p'>"
         );
+        return "<p class='description-p'>" + text + "</p>";
+      } else {
+        return undefined;
       }
-      return "<p class='description-p'>" + text + "</p>";
     }
   },
   data() {

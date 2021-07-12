@@ -59,7 +59,6 @@ describe("Definition.vue", () => {
     expect(Definition.computed.conceptTypes.call({ concept: { types: [{"name":"Record type","@id":"http://endhealth.info/im#RecordType"},{"name":"Node shape","@id":"http://www.w3.org/ns/shacl#NodeShape"},{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]} })).toBe("Record type, Node shape, Class");
   });
 
-
   it("can get conceptTypes ___ none", () => {
     expect(Definition.computed.conceptTypes.call({ concept: {} })).toBe(undefined);
   });
@@ -70,7 +69,7 @@ describe("Definition.vue", () => {
 
 
   it("can create descriptionHTML ___ description", () => {
-    expect(Definition.computed.descriptionHTML.call({ concept: {}})).toBe("<p class='description-p'></p>");
+    expect(Definition.computed.descriptionHTML.call({ concept: {}})).toBe(undefined);
   });
 
   it("can navigate", () => {
