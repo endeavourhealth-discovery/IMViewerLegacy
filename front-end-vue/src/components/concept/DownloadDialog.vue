@@ -303,7 +303,7 @@ export default defineComponent({
             )
           );
         });
-      await EntityService.getEntityMembers(iri, this.expandMembers)
+      await EntityService.getEntityMembers(iri, this.expandMembers, false)
         .then(res => {
           this.members = res.data;
         })

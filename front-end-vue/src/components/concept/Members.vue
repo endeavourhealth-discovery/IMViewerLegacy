@@ -45,12 +45,22 @@
             </span>
             <div class="p-grid p-mx-2 p-align-center">
               <Checkbox
-                id="expanded"
-                v-model="expanded"
+                id="expandedMembers"
+                v-model="expandedMembers"
                 v-on:change="toggleExpansion"
                 :binary="true"
               />
-              <label for="expanded" class="p-mx-1">Expanded</label>
+              <label for="expandedMembers" class="p-mx-1">
+                Expanded members
+              </label>
+              <Checkbox
+                :disabled="expandedMembers"
+                id="expandedSets"
+                v-model="expandedSets"
+                v-on:change="toggleExpansion"
+                :binary="true"
+              />
+              <label for="expandedSets" class="p-mx-1">Expanded sets</label>
             </div>
           </div>
         </template>
@@ -79,12 +89,18 @@
         <template #groupheader="slotProps">
           <span
             style="font-weight: 700; color:rgba(51,153,255,0.8)"
+            v-if="slotProps.data.status === includeSet"
+          >
+            Included Sets
+          </span>
+          <span
+            style="font-weight: 700; color:rgba(51,153,255,0.8)"
             v-if="slotProps.data.status === include"
           >
-            Included
+            Included Members
           </span>
           <span style="font-weight: 700; color:rgba(51,153,255,0.8)" v-else>
-            Excluded
+            Excluded Members
           </span>
         </template>
       </DataTable>
@@ -126,8 +142,10 @@ export default defineComponent({
       filters1: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       },
-      expanded: false,
+      expandedMembers: false,
+      expandedSets: false,
       include: "Included",
+      includeSet: "IncludedSet",
       selected: {} as any
     };
   },
@@ -142,27 +160,22 @@ export default defineComponent({
       }
     },
     async getMembers() {
-      this.expanded = false;
+      this.expandedMembers = false;
       await this.toggleExpansion();
     },
     async toggleExpansion() {
       this.loading = true;
-      if (this.expanded) {
-        this.members = (
-          await EntityService.getEntityMembers(
-            this.conceptIri as string,
-            true,
-            2000
-          )
-        ).data;
-      } else {
-        this.members = (
-          await EntityService.getEntityMembers(this.conceptIri as string, false)
-        ).data;
-      }
+      this.members = (
+        await EntityService.getEntityMembers(
+          this.conceptIri as string,
+          this.expandedMembers,
+          this.expandedSets,
+          this.expandedMembers ? 2000 : undefined
+        )
+      ).data;
       this.loading = false;
       if (this.members.limited) {
-        this.expanded = false;
+        this.expandedMembers = false;
         Swal.fire({
           icon: "warning",
           title: "Large data set",
@@ -200,6 +213,10 @@ export default defineComponent({
     },
     getCombinedMembers() {
       const combinedMembers: { status: string; member: any }[] = [];
+      this.members?.includedSets?.forEach((includedSet: any) => {
+        const member = { status: "IncludedSet", member: includedSet };
+        combinedMembers.push(member);
+      });
       this.members?.included?.forEach((included: any) => {
         const member = { status: "Included", member: included };
         combinedMembers.push(member);
