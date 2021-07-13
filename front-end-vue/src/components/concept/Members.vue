@@ -44,6 +44,15 @@
               />
             </span>
             <div class="toggles-container">
+              <div class="toggle-label-container" v-if="!expandedMembers">
+                <label for="expandedSets">Expand sets</label>
+                <Checkbox
+                  :disabled="expandedMembers"
+                  id="expandedSets"
+                  v-model="expandedSets"
+                  :binary="true"
+                />
+              </div>
               <div class="toggle-label-container">
                 <label for="expandedMembers">
                   Expand members
@@ -51,15 +60,6 @@
                 <Checkbox
                   id="expandedMembers"
                   v-model="expandedMembers"
-                  :binary="true"
-                />
-              </div>
-              <div class="toggle-label-container">
-                <label for="expandedSets">Expand sets</label>
-                <Checkbox
-                  :disabled="expandedMembers"
-                  id="expandedSets"
-                  v-model="expandedSets"
                   :binary="true"
                 />
               </div>
@@ -90,10 +90,10 @@
         />
         <template #groupheader="slotProps">
           <span
-            v-if="slotProps.data.status === 'IncludedSet'"
+            v-if="slotProps.data.status === 'IncludedSubset'"
             class="group-header"
           >
-            Included Sets
+            Included Subsets
           </span>
           <span
             v-if="slotProps.data.status === 'IncludedMember'"
@@ -239,15 +239,15 @@ export default defineComponent({
 
     getCombinedMembers() {
       const combinedMembers: { status: string; member: any }[] = [];
-      this.members?.includedSets?.forEach((includedSet: any) => {
-        const member = { status: "IncludedSet", member: includedSet };
+      this.members.includedSubsets?.forEach((includedSubset: any) => {
+        const member = { status: "IncludedSubset", member: includedSubset };
         combinedMembers.push(member);
       });
-      this.members?.includedMembers?.forEach((included: any) => {
+      this.members.includedMembers?.forEach((included: any) => {
         const member = { status: "IncludedMember", member: included };
         combinedMembers.push(member);
       });
-      this.members?.excludedMembers?.forEach((excluded: any) => {
+      this.members.excludedMembers?.forEach((excluded: any) => {
         const member = { status: "ExcludedMember", member: excluded };
         combinedMembers.push(member);
       });
