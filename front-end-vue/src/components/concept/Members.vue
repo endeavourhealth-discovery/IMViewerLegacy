@@ -43,14 +43,26 @@
                 placeholder="Keyword Search"
               />
             </span>
-            <div class="p-grid p-mx-2 p-align-center">
-              <Checkbox
-                id="expanded"
-                v-model="expanded"
-                v-on:change="toggleExpansion"
-                :binary="true"
-              />
-              <label for="expanded" class="p-mx-1">Expanded</label>
+            <div class="toggles-container">
+              <div class="toggle-label-container" v-if="!expandMembers">
+                <label for="expandSets">Expand sets</label>
+                <Checkbox
+                  :disabled="expandMembers"
+                  id="expandSets"
+                  v-model="expandSets"
+                  :binary="true"
+                />
+              </div>
+              <div class="toggle-label-container">
+                <label for="expandMembers">
+                  Expand members
+                </label>
+                <Checkbox
+                  id="expandMembers"
+                  v-model="expandMembers"
+                  :binary="true"
+                />
+              </div>
             </div>
           </div>
         </template>
@@ -78,13 +90,22 @@
         />
         <template #groupheader="slotProps">
           <span
-            style="font-weight: 700; color:rgba(51,153,255,0.8)"
-            v-if="slotProps.data.status === include"
+            v-if="slotProps.data.status === 'IncludedSubset'"
+            class="group-header"
           >
-            Included
+            Included Subsets
           </span>
-          <span style="font-weight: 700; color:rgba(51,153,255,0.8)" v-else>
-            Excluded
+          <span
+            v-if="slotProps.data.status === 'IncludedMember'"
+            class="group-header"
+          >
+            Included Members
+          </span>
+          <span
+            v-if="slotProps.data.status === 'ExcludedMember'"
+            class="group-header"
+          >
+            Excluded Members
           </span>
         </template>
       </DataTable>
@@ -108,11 +129,23 @@ export default defineComponent({
   emits: ["memberClick"],
   watch: {
     async conceptIri() {
+      this.expandMembers = false;
+      this.expandSets = false;
+      await this.getMembers();
+    },
+
+    async expandMembers() {
+      await this.getMembers();
+    },
+
+    async expandSets() {
       await this.getMembers();
     }
   },
   async mounted() {
     if (this.conceptIri) {
+      this.expandMembers = false;
+      this.expandSets = false;
       await this.getMembers();
     }
   },
@@ -126,8 +159,8 @@ export default defineComponent({
       filters1: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       },
-      expanded: false,
-      include: "Included",
+      expandMembers: false,
+      expandSets: false,
       selected: {} as any
     };
   },
@@ -141,40 +174,44 @@ export default defineComponent({
         this.$emit("memberClick");
       }
     },
+
     async getMembers() {
-      this.expanded = false;
-      await this.toggleExpansion();
-    },
-    async toggleExpansion() {
       this.loading = true;
-      if (this.expanded) {
-        this.members = (
-          await EntityService.getEntityMembers(
-            this.conceptIri as string,
-            true,
-            2000
-          )
-        ).data;
-      } else {
-        this.members = (
-          await EntityService.getEntityMembers(this.conceptIri as string, false)
-        ).data;
-      }
+      await EntityService.getEntityMembers(
+        this.conceptIri as string,
+        this.expandMembers,
+        this.expandSets,
+        this.expandMembers ? 2000 : undefined
+      )
+        .then(res => {
+          this.members = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get members from server", err)
+          );
+        });
+      this.expandMembersSizeCheck();
       this.loading = false;
+    },
+
+    async expandMembersSizeCheck() {
       if (this.members.limited) {
-        this.expanded = false;
-        Swal.fire({
+        this.expandMembers = false;
+        await Swal.fire({
           icon: "warning",
           title: "Large data set",
           text:
-            "Expanding this set results in a large amount of data.  Download instead?",
+            "Expanding this set results in a large amount of data.\n Would you like to download it instead?",
           confirmButtonText: "Download",
           showCancelButton: true
         }).then(result => {
           if (result.isConfirmed) this.download();
           else {
             this.$toast.add(
-              LoggerService.warn("Expansion cancelled, results not downloaded")
+              LoggerService.warn(
+                "Member expansion cancelled as results exceeded displayable limit."
+              )
             );
           }
         });
@@ -182,6 +219,7 @@ export default defineComponent({
         this.combinedMembers = this.getCombinedMembers();
       }
     },
+
     download() {
       const modIri = (this.conceptIri as string)
         .replace(/\//gi, "%2F")
@@ -198,18 +236,24 @@ export default defineComponent({
         this.$toast.add(LoggerService.success("Download will begin shortly"));
       }
     },
+
     getCombinedMembers() {
       const combinedMembers: { status: string; member: any }[] = [];
-      this.members?.included?.forEach((included: any) => {
-        const member = { status: "Included", member: included };
+      this.members.includedSubsets?.forEach((includedSubset: any) => {
+        const member = { status: "IncludedSubset", member: includedSubset };
         combinedMembers.push(member);
       });
-      this.members?.excluded?.forEach((excluded: any) => {
-        const member = { status: "Excluded", member: excluded };
+      this.members.includedMembers?.forEach((included: any) => {
+        const member = { status: "IncludedMember", member: included };
+        combinedMembers.push(member);
+      });
+      this.members.excludedMembers?.forEach((excluded: any) => {
+        const member = { status: "ExcludedMember", member: excluded };
         combinedMembers.push(member);
       });
       return combinedMembers;
     },
+
     onNodeSelect(member: any) {
       this.$router.push({
         name: "Concept",
@@ -268,5 +312,24 @@ export default defineComponent({
 
 #members-table-container ::v-deep(.p-datatable-wrapper) {
   flex-grow: 6;
+}
+
+.group-header {
+  font-weight: 700;
+  color: rgba(51, 153, 255, 0.8);
+}
+
+.toggles-container {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toggle-label-container {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 0.5rem;
 }
 </style>

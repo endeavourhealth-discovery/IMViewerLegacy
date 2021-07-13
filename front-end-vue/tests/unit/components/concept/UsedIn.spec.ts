@@ -121,3 +121,36 @@ describe("UsedIn.vue", () => {
     });
   })
 });
+
+describe("UsedIn.vue ___ no iri", () => {
+  let wrapper: any;
+  let mockRouter: any;
+  let mockToast: any;
+  let docSpy: any;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    EntityService.getEntityUsages = jest.fn().mockResolvedValue({data: []});
+    mockRouter = {
+      push: jest.fn()
+    };
+    mockToast = {
+      add: jest.fn()
+    };
+    docSpy = jest.spyOn(document, "getElementById");
+    docSpy.mockReturnValue(undefined);
+
+    wrapper = shallowMount(UsedIn, {
+      global: {
+        components: { ProgressSpinner, Listbox },
+        mocks: { $router: mockRouter, $toast: mockToast }
+      },
+      props: { conceptIri: "" }
+    });
+  });
+
+  it("doesnt getUsages", () => {
+    expect(EntityService.getEntityUsages).not.toHaveBeenCalled();
+  });
+
+});

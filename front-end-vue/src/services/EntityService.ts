@@ -80,11 +80,17 @@ export default class EntityService {
 
   public static async getEntityMembers(
     iri: string,
-    expanded: boolean,
+    expandMembers: boolean,
+    expandSets: boolean,
     limit?: number
   ): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/members", {
-      params: { iri: iri, expanded: expanded, limit: limit }
+      params: {
+        iri: iri,
+        expandMembers: expandMembers,
+        expandSets: expandSets,
+        limit: limit
+      }
     });
   }
 
