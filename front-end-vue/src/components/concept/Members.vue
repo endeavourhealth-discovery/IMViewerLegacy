@@ -43,22 +43,26 @@
                 placeholder="Keyword Search"
               />
             </span>
-            <div class="p-grid p-mx-2 p-align-center">
-              <Checkbox
-                id="expandedMembers"
-                v-model="expandedMembers"
-                :binary="true"
-              />
-              <label for="expandedMembers" class="p-mx-1">
-                Expand members
-              </label>
-              <Checkbox
-                :disabled="expandedMembers"
-                id="expandedSets"
-                v-model="expandedSets"
-                :binary="true"
-              />
-              <label for="expandedSets" class="p-mx-1">Expand sets</label>
+            <div class="toggles-container">
+              <div class="toggle-label-container">
+                <label for="expandedMembers">
+                  Expand members
+                </label>
+                <Checkbox
+                  id="expandedMembers"
+                  v-model="expandedMembers"
+                  :binary="true"
+                />
+              </div>
+              <div class="toggle-label-container">
+                <label for="expandedSets">Expand sets</label>
+                <Checkbox
+                  :disabled="expandedMembers"
+                  id="expandedSets"
+                  v-model="expandedSets"
+                  :binary="true"
+                />
+              </div>
             </div>
           </div>
         </template>
@@ -86,20 +90,20 @@
         />
         <template #groupheader="slotProps">
           <span
-            style="font-weight: 700; color:rgba(51,153,255,0.8)"
             v-if="slotProps.data.status === 'IncludedSet'"
+            class="group-header"
           >
             Included Sets
           </span>
           <span
-            style="font-weight: 700; color:rgba(51,153,255,0.8)"
             v-if="slotProps.data.status === 'IncludedMember'"
+            class="group-header"
           >
             Included Members
           </span>
           <span
-            style="font-weight: 700; color:rgba(51,153,255,0.8)"
             v-if="slotProps.data.status === 'ExcludedMember'"
+            class="group-header"
           >
             Excluded Members
           </span>
@@ -131,7 +135,11 @@ export default defineComponent({
     },
 
     async expandedMembers() {
-      this.getMembers();
+      await this.getMembers();
+    },
+
+    async expandedSets() {
+      await this.getMembers();
     }
   },
   async mounted() {
@@ -183,38 +191,33 @@ export default defineComponent({
             LoggerService.error("Failed to get members from server", err)
           );
         });
-      this.combinedMembers = this.getCombinedMembers();
+      this.expandMembersSizeCheck();
       this.loading = false;
     },
 
-    async expandMembers() {
-      if (!this.expandedMembers) {
-        return;
-      }
+    async expandMembersSizeCheck() {
       if (this.members.limited) {
         this.expandedMembers = false;
-        Swal.fire({
+        await Swal.fire({
           icon: "warning",
           title: "Large data set",
           text:
-            "Expanding this set results in a large amount of data.  Download instead?",
+            "Expanding this set results in a large amount of data.\n Would you like to download it instead?",
           confirmButtonText: "Download",
           showCancelButton: true
         }).then(result => {
           if (result.isConfirmed) this.download();
           else {
             this.$toast.add(
-              LoggerService.warn("Expansion cancelled, results not downloaded")
+              LoggerService.warn(
+                "Member expansion cancelled as results exceeded displayable limit."
+              )
             );
           }
         });
       } else {
-        await this.getMembers();
+        this.combinedMembers = this.getCombinedMembers();
       }
-    },
-
-    async expandSets() {
-      return;
     },
 
     download() {
@@ -309,5 +312,24 @@ export default defineComponent({
 
 #members-table-container ::v-deep(.p-datatable-wrapper) {
   flex-grow: 6;
+}
+
+.group-header {
+  font-weight: 700;
+  color: rgba(51, 153, 255, 0.8);
+}
+
+.toggles-container {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toggle-label-container {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 0.5rem;
 }
 </style>
