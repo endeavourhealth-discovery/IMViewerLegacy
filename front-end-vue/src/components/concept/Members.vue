@@ -44,22 +44,22 @@
               />
             </span>
             <div class="toggles-container">
-              <div class="toggle-label-container" v-if="!expandedMembers">
-                <label for="expandedSets">Expand sets</label>
+              <div class="toggle-label-container" v-if="!expandMembers">
+                <label for="expandSets">Expand sets</label>
                 <Checkbox
-                  :disabled="expandedMembers"
-                  id="expandedSets"
-                  v-model="expandedSets"
+                  :disabled="expandMembers"
+                  id="expandSets"
+                  v-model="expandSets"
                   :binary="true"
                 />
               </div>
               <div class="toggle-label-container">
-                <label for="expandedMembers">
+                <label for="expandMembers">
                   Expand members
                 </label>
                 <Checkbox
-                  id="expandedMembers"
-                  v-model="expandedMembers"
+                  id="expandMembers"
+                  v-model="expandMembers"
                   :binary="true"
                 />
               </div>
@@ -129,23 +129,23 @@ export default defineComponent({
   emits: ["memberClick"],
   watch: {
     async conceptIri() {
-      this.expandedMembers = false;
-      this.expandedSets = false;
+      this.expandMembers = false;
+      this.expandSets = false;
       await this.getMembers();
     },
 
-    async expandedMembers() {
+    async expandMembers() {
       await this.getMembers();
     },
 
-    async expandedSets() {
+    async expandSets() {
       await this.getMembers();
     }
   },
   async mounted() {
     if (this.conceptIri) {
-      this.expandedMembers = false;
-      this.expandedSets = false;
+      this.expandMembers = false;
+      this.expandSets = false;
       await this.getMembers();
     }
   },
@@ -159,8 +159,8 @@ export default defineComponent({
       filters1: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       },
-      expandedMembers: false,
-      expandedSets: false,
+      expandMembers: false,
+      expandSets: false,
       selected: {} as any
     };
   },
@@ -179,9 +179,9 @@ export default defineComponent({
       this.loading = true;
       await EntityService.getEntityMembers(
         this.conceptIri as string,
-        this.expandedMembers,
-        this.expandedSets,
-        this.expandedMembers ? 2000 : undefined
+        this.expandMembers,
+        this.expandSets,
+        this.expandMembers ? 2000 : undefined
       )
         .then(res => {
           this.members = res.data;
@@ -197,7 +197,7 @@ export default defineComponent({
 
     async expandMembersSizeCheck() {
       if (this.members.limited) {
-        this.expandedMembers = false;
+        this.expandMembers = false;
         await Swal.fire({
           icon: "warning",
           title: "Large data set",
