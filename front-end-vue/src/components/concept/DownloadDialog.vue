@@ -222,7 +222,7 @@ export default defineComponent({
         await EntityService.getSemanticProperties(iri)
       ).data;
       this.members = (
-        await EntityService.getEntityMembers(iri, this.expandMembers)
+        await EntityService.getEntityMembers(iri, this.expandMembers, false)
       ).data;
 
       this.includeParents = !!this.parents.length;

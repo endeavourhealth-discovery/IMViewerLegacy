@@ -156,7 +156,7 @@ export default defineComponent({
           });
 
         if (this.hasMembers) {
-          await EntityService.getEntityMembers(this.iri, false)
+          await EntityService.getEntityMembers(this.iri, false, false)
             .then(res => {
               this.membersOriginal = res.data;
               this.membersUpdated = JSON.parse(JSON.stringify(res.data));
