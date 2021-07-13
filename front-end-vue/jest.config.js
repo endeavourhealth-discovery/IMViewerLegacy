@@ -8,5 +8,6 @@ module.exports = {
   collectCoverageFrom: [
     "src/**/*.{js,vue}",
     "!src/main.js" // No need to cover bootstrap file
-  ]
+  ],
+  setupFiles: ["<rootDir>/.jest/setEnvVars.js"]
 };
