@@ -57,18 +57,18 @@ describe("DownloadDialog.vue", () => {
     wrapper.vm.downloadConcept();
     expect(wrapper.vm.closeDownloadDialog).toHaveBeenCalledTimes(1);
     expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith("http://endhealth.info/api/entity/download?iri=http:%2F%2Fsnomed.info%2Fsct%23298382003&format=excel&children=true&dataModelProperties=true&members=true&expandMembers=false&parents=true&semanticProperties=false&inactive=false");
+    expect(window.open).toHaveBeenCalledWith("/test/api/entity/download?iri=http:%2F%2Fsnomed.info%2Fsct%23298382003&format=excel&children=true&dataModelProperties=true&members=true&expandMembers=false&parents=true&semanticProperties=false&inactive=false");
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Download will begin shortly"));
   });
 
-  it("can downloadConcept ___ success", () => {
+  it("can downloadConcept ___ fail", () => {
     wrapper.vm.closeDownloadDialog = jest.fn();
     window.open = jest.fn().mockReturnValue(false);
     wrapper.vm.downloadConcept();
     expect(wrapper.vm.closeDownloadDialog).toHaveBeenCalledTimes(1);
     expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith("http://endhealth.info/api/entity/download?iri=http:%2F%2Fsnomed.info%2Fsct%23298382003&format=excel&children=true&dataModelProperties=true&members=true&expandMembers=false&parents=true&semanticProperties=false&inactive=false");
+    expect(window.open).toHaveBeenCalledWith("/test/api/entity/download?iri=http:%2F%2Fsnomed.info%2Fsct%23298382003&format=excel&children=true&dataModelProperties=true&members=true&expandMembers=false&parents=true&semanticProperties=false&inactive=false");
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Download failed from server"));
   });
