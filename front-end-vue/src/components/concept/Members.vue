@@ -47,20 +47,18 @@
               <Checkbox
                 id="expandedMembers"
                 v-model="expandedMembers"
-                v-on:change="toggleExpansion"
                 :binary="true"
               />
               <label for="expandedMembers" class="p-mx-1">
-                Expanded members
+                Expand members
               </label>
               <Checkbox
                 :disabled="expandedMembers"
                 id="expandedSets"
                 v-model="expandedSets"
-                v-on:change="toggleExpansion"
                 :binary="true"
               />
-              <label for="expandedSets" class="p-mx-1">Expanded sets</label>
+              <label for="expandedSets" class="p-mx-1">Expand sets</label>
             </div>
           </div>
         </template>
@@ -89,17 +87,20 @@
         <template #groupheader="slotProps">
           <span
             style="font-weight: 700; color:rgba(51,153,255,0.8)"
-            v-if="slotProps.data.status === includeSet"
+            v-if="slotProps.data.status === 'IncludedSet'"
           >
             Included Sets
           </span>
           <span
             style="font-weight: 700; color:rgba(51,153,255,0.8)"
-            v-if="slotProps.data.status === include"
+            v-if="slotProps.data.status === 'IncludedMember'"
           >
             Included Members
           </span>
-          <span style="font-weight: 700; color:rgba(51,153,255,0.8)" v-else>
+          <span
+            style="font-weight: 700; color:rgba(51,153,255,0.8)"
+            v-if="slotProps.data.status === 'ExcludedMember'"
+          >
             Excluded Members
           </span>
         </template>
@@ -124,11 +125,19 @@ export default defineComponent({
   emits: ["memberClick"],
   watch: {
     async conceptIri() {
+      this.expandedMembers = false;
+      this.expandedSets = false;
       await this.getMembers();
+    },
+
+    async expandedMembers() {
+      this.getMembers();
     }
   },
   async mounted() {
     if (this.conceptIri) {
+      this.expandedMembers = false;
+      this.expandedSets = false;
       await this.getMembers();
     }
   },
@@ -144,8 +153,6 @@ export default defineComponent({
       },
       expandedMembers: false,
       expandedSets: false,
-      include: "Included",
-      includeSet: "IncludedSet",
       selected: {} as any
     };
   },
@@ -159,21 +166,31 @@ export default defineComponent({
         this.$emit("memberClick");
       }
     },
+
     async getMembers() {
-      this.expandedMembers = false;
-      await this.toggleExpansion();
-    },
-    async toggleExpansion() {
       this.loading = true;
-      this.members = (
-        await EntityService.getEntityMembers(
-          this.conceptIri as string,
-          this.expandedMembers,
-          this.expandedSets,
-          this.expandedMembers ? 2000 : undefined
-        )
-      ).data;
+      await EntityService.getEntityMembers(
+        this.conceptIri as string,
+        this.expandedMembers,
+        this.expandedSets,
+        this.expandedMembers ? 2000 : undefined
+      )
+        .then(res => {
+          this.members = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get members from server", err)
+          );
+        });
+      this.combinedMembers = this.getCombinedMembers();
       this.loading = false;
+    },
+
+    async expandMembers() {
+      if (!this.expandedMembers) {
+        return;
+      }
       if (this.members.limited) {
         this.expandedMembers = false;
         Swal.fire({
@@ -192,9 +209,14 @@ export default defineComponent({
           }
         });
       } else {
-        this.combinedMembers = this.getCombinedMembers();
+        await this.getMembers();
       }
     },
+
+    async expandSets() {
+      return;
+    },
+
     download() {
       const modIri = (this.conceptIri as string)
         .replace(/\//gi, "%2F")
@@ -211,22 +233,24 @@ export default defineComponent({
         this.$toast.add(LoggerService.success("Download will begin shortly"));
       }
     },
+
     getCombinedMembers() {
       const combinedMembers: { status: string; member: any }[] = [];
       this.members?.includedSets?.forEach((includedSet: any) => {
         const member = { status: "IncludedSet", member: includedSet };
         combinedMembers.push(member);
       });
-      this.members?.included?.forEach((included: any) => {
-        const member = { status: "Included", member: included };
+      this.members?.includedMembers?.forEach((included: any) => {
+        const member = { status: "IncludedMember", member: included };
         combinedMembers.push(member);
       });
-      this.members?.excluded?.forEach((excluded: any) => {
-        const member = { status: "Excluded", member: excluded };
+      this.members?.excludedMembers?.forEach((excluded: any) => {
+        const member = { status: "ExcludedMember", member: excluded };
         combinedMembers.push(member);
       });
       return combinedMembers;
     },
+
     onNodeSelect(member: any) {
       this.$router.push({
         name: "Concept",
