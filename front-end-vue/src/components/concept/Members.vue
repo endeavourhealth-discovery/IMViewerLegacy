@@ -45,11 +45,11 @@
             </span>
             <div class="toggles-container">
               <div class="toggle-label-container" v-if="!expandMembers">
-                <label for="expandSets">Expand sets</label>
+                <label for="expandSubsets">Expand subsets</label>
                 <Checkbox
                   :disabled="expandMembers"
-                  id="expandSets"
-                  v-model="expandSets"
+                  id="expandSubsets"
+                  v-model="expandSubsets"
                   :binary="true"
                 />
               </div>
@@ -130,7 +130,7 @@ export default defineComponent({
   watch: {
     async conceptIri() {
       this.expandMembers = false;
-      this.expandSets = false;
+      this.expandSubsets = false;
       await this.getMembers();
     },
 
@@ -138,14 +138,14 @@ export default defineComponent({
       await this.getMembers();
     },
 
-    async expandSets() {
+    async expandSubsets() {
       await this.getMembers();
     }
   },
   async mounted() {
     if (this.conceptIri) {
       this.expandMembers = false;
-      this.expandSets = false;
+      this.expandSubsets = false;
       await this.getMembers();
     }
   },
@@ -160,7 +160,7 @@ export default defineComponent({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       },
       expandMembers: false,
-      expandSets: false,
+      expandSubsets: false,
       selected: {} as any
     };
   },
@@ -180,7 +180,7 @@ export default defineComponent({
       await EntityService.getEntityMembers(
         this.conceptIri as string,
         this.expandMembers,
-        this.expandSets,
+        this.expandSubsets,
         this.expandMembers ? 2000 : undefined
       )
         .then(res => {
