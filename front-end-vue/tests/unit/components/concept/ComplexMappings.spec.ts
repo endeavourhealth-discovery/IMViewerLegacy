@@ -62,4 +62,17 @@ describe("ComplexMappings.vue", () => {
     expect(wrapper.vm.mappings).toStrictEqual([]);
     expect(wrapper.vm.data).toStrictEqual({});
   });
+
+
+  it("can get mappings ___ fail no hasMap", async() => {
+    EntityService.getPartialEntity = jest.fn().mockResolvedValue({data: { comboOf: [1, 2] }});
+    wrapper.vm.getMappings();
+    await flushPromises();
+    expect(wrapper.vm.mappings).toStrictEqual({});
+    expect(wrapper.vm.data).toStrictEqual({});
+  });
+
+  it("can create chartTableNode", () => {
+    expect(wrapper.vm.createChartTableNode([{ assuranceLevel: "TestAssurance", iri: "TestIri", name: "TestName", priority: 1 }], "0", 1)).toStrictEqual({ key: "0_1", type: "childList", data: { mapItems: [{ assuranceLevel: "TestAssurance", iri: "TestIri", name: "TestName", priority: 1 }] } });
+  });
 });
