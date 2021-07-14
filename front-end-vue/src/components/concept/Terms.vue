@@ -1,16 +1,16 @@
 <template>
-  <div id="term-table-container" class="p-field">
+  <div id="term-table-container">
     <DataTable
       :value="terms"
       :rowsPerPageOptions="[25, 50, 100]"
       :paginator="terms.length > rows ? true : false"
-      :rows="25"
+      :rows="rows"
       rowGroupMode="subheader"
       groupRowsBy="scheme.name"
       sortMode="single"
       sortField="scheme.name"
       :sortOrder="1"
-      scrollable
+      :scrollable="true"
       showGridlines
       :scrollHeight="scrollHeight"
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
@@ -51,9 +51,7 @@ export default defineComponent({
     }
   },
   async mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.onResize);
-    });
+    window.addEventListener("resize", this.onResize);
     if (this.conceptIri) {
       await this.getTerms(this.conceptIri);
     }
@@ -67,16 +65,16 @@ export default defineComponent({
       selected: {},
       loading: false,
       terms: [],
-      scrollHeight: "",
+      scrollHeight: "500px",
       rows: 25
     };
   },
   methods: {
     onResize(): void {
       this.setTableWidth();
-      this.setTableRows();
       this.setScrollHeight();
     },
+
     async getTerms(iri: string) {
       this.loading = true;
       await EntityService.getEntityTermCodes(iri)
@@ -90,6 +88,7 @@ export default defineComponent({
         });
       this.loading = false;
     },
+
     onNodeSelect(concept: any) {
       if (concept?.["@id"]) {
         this.$router.push({
@@ -103,7 +102,7 @@ export default defineComponent({
         "terms-container"
       ) as HTMLElement;
       const terms = document.getElementById("terms-table") as HTMLElement;
-      const paginator = terms.getElementsByClassName(
+      const paginator = terms?.getElementsByClassName(
         "p-paginator"
       )[0] as HTMLElement;
       if (paginator && container) {
@@ -121,63 +120,24 @@ export default defineComponent({
       const container = document.getElementById(
         "terms-container"
       ) as HTMLElement;
-      const table = container.getElementsByClassName(
+      const table = container?.getElementsByClassName(
         "p-datatable-table"
       )[0] as HTMLElement;
-      table.style.width = "100%";
-    },
-
-    setTableRows(): void {
-      const container = document.getElementsByClassName(
-        "concept-panel-content"
-      )[0] as HTMLElement;
-      const terms = document.getElementById("terms-table") as HTMLElement;
-      const row = terms.getElementsByTagName("tr")[0] as HTMLElement;
-      const paginator = terms.getElementsByClassName(
-        "p-paginator"
-      )[0] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
-      const schemeCount = terms.getElementsByClassName("p-rowgroup-header")
-        .length;
-      let maxRows = 25;
-      if (paginator && container && row && currentFontSize) {
-        maxRows =
-          Math.floor(
-            (container.getBoundingClientRect().height -
-              paginator.getBoundingClientRect().height -
-              currentFontSize * 4) /
-              row.getBoundingClientRect().height
-          ) -
-          1 -
-          schemeCount;
-      } else if (container && row && currentFontSize) {
-        maxRows =
-          Math.floor(
-            (container.getBoundingClientRect().height - currentFontSize * 4) /
-              row.getBoundingClientRect().height
-          ) -
-          1 -
-          schemeCount;
-      } else {
-        LoggerService.error(
-          "Error setting terms table rows. Element selecting failed."
-        );
+      if (table) {
+        table.style.width = "100%";
       }
-      this.rows = maxRows;
     },
 
     scrollToTop(): void {
       const tableContainer = document.getElementById(
         "term-table-container"
       ) as HTMLElement;
-      const scrollBox = tableContainer.getElementsByClassName(
+      const scrollBox = tableContainer?.getElementsByClassName(
         "p-datatable-wrapper"
       )[0] as HTMLElement;
-      scrollBox.scrollTop = 0;
+      if (scrollBox) {
+        scrollBox.scrollTop = 0;
+      }
     }
   }
 });
@@ -185,7 +145,7 @@ export default defineComponent({
 
 <style scoped>
 #term-table-container {
-  flex-grow: 5;
+  height: 100%;
   overflow-y: auto;
 }
 
