@@ -175,6 +175,17 @@ export default defineComponent({
   left: 23rem;
   width: calc(100% - 30rem);
 }
+
+.map {
+  width: 100%;
+  height: calc(100vh - 7rem) !important;
+  background-color: azure;
+}
+
+.uprn-form .p-inputtext {
+  width: 100%;
+}
+
 .btn-search {
   background-color: white !important;
   color: gray !important;
@@ -184,11 +195,6 @@ export default defineComponent({
 table td,
 table td * {
   vertical-align: top;
-}
-
-#activity {
-  height: calc(100vh - 32rem);
-  overflow-y: auto;
 }
 
 table {

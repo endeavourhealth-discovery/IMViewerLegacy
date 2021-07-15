@@ -22,7 +22,11 @@
             </template>
           </FileUpload>
         </div>
-        <div class="p-lg-4 p-md-12 p-sm-12" style="font-size: small;">
+        <div
+          class="p-lg-4 p-md-12 p-sm-12"
+          id="file-upload-instructions-container"
+          style="font-size: small;"
+        >
           <p class="p-text-bold">File format description:</p>
           <p>
             The address file to be uploaded must contain two columns separated
@@ -149,5 +153,12 @@ export default defineComponent({
 
 .p-fileupload-row div:first-of-type {
   display: none;
+}
+
+.file-upload-instructions-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  gap: 7px;
 }
 </style>
