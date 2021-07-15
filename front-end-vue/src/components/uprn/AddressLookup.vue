@@ -102,7 +102,7 @@ export default defineComponent({
   data() {
     return {
       value: "10 Downing St,Westminster,London,SW1A2AA",
-      pin: null as any,
+      pin: { lat: 51.503541, lng: -0.12767 } as { lat: number, lng: number, info: any, xCoor: string, yCoor: string, pointCode: string } | null,
       match: {} as any,
       selectedArea: null as any,
       postalAreas: [
