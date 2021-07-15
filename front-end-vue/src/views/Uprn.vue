@@ -2,7 +2,7 @@
   <side-nav />
   <div class="layout-main">
     <div id="uprn-home">
-      <TabView>
+      <TabView lazy>
         <TabPanel header="Single address lookup">
           <AddressLookup />
         </TabPanel>

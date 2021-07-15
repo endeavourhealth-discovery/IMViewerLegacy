@@ -88,7 +88,7 @@ export default defineComponent({
 <style lang="css" scoped>
 .map {
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 7rem) !important;
   background-color: azure;
 }
 </style>

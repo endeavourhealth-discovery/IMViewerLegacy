@@ -95,7 +95,7 @@ import LoggerService from "@/services/LoggerService";
 import GMap from "@/components/gmap/GMap.vue";
 
 export default defineComponent({
-  name: "AdsressLookup",
+  name: "AddressLookup",
   components: {
     GMap
   },
@@ -174,12 +174,6 @@ export default defineComponent({
   top: 6rem;
   left: 23rem;
   width: calc(100% - 30rem);
-}
-
-.map {
-  width: 100%;
-  height: calc(100vh - 7rem) !important;
-  background-color: azure;
 }
 
 .uprn-form .p-inputtext {
