@@ -98,15 +98,33 @@ export default defineComponent({
   position: relative;
 }
 
+@media screen and (max-width: 767px) {
+  #file-workflow-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "upload"
+      "description"
+      "examples"
+      "refresh"
+      "table";
+  }
+}
+
+@media screen and (min-width: 768px) {
+  #file-workflow-container {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "upload description examples"
+      "refresh refresh refresh"
+      "table table table";
+  }
+}
+
 #file-workflow-container {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: auto auto 1fr;
-  grid-template-areas:
-    "upload description examples"
-    "refresh refresh refresh"
-    "table table table";
   gap: 1rem 1rem;
   align-items: start;
   overflow: auto;
