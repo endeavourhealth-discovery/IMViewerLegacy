@@ -197,6 +197,24 @@ export default defineComponent({
   gap: 1rem;
 }
 
+@media screen and (min-width: 768px) {
+  #address-search-container {
+    top: 1rem;
+    width: calc(100% - 193px - 60px - 2rem);
+    left: calc(193px + 1.5rem);
+    right: calc(40px + 1.5rem);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  #address-search-container {
+    top: calc(40px + 2rem);
+    width: calc(100% - 2rem);
+    left: 1rem;
+    right: 1rem;
+  }
+}
+
 .search-button-container {
   display: flex;
   flex-flow: row nowrap;
