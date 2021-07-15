@@ -98,7 +98,17 @@ export default defineComponent({
   position: relative;
 }
 
-.uprn-panel-content {
+#file-workflow-container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto 1fr;
+  grid-template-areas:
+    "upload description examples"
+    "refresh refresh refresh"
+    "table table table";
+  gap: 1rem 1rem;
+  align-items: start;
   overflow: auto;
   background-color: #ffffff;
 }
