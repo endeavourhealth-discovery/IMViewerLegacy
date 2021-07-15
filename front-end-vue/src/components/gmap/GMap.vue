@@ -17,18 +17,14 @@ export default defineComponent({
 
       if (newValue) {
         let latlong = newValue || { lat: 53.6242957, lng: -1.8826361 };
-
         this.map.setCenter(latlong);
-
         this.marker = new window.google.maps.Marker({
           position: latlong,
           map: this.map
         });
-
         this.infowindow = new window.google.maps.InfoWindow({
           content: newValue.info
         });
-
         this.infowindow.open(this.map, this.marker);
       }
     }
