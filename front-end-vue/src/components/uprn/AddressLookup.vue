@@ -1,13 +1,15 @@
 <template>
   <g-map :disableUI="false" :zoom="12" mapType="roadmap" :pin="pin" />
   <div id="address-search-container">
-    <InputText
-      type="text"
-      v-model="value"
-      placeholder='Enter address, e.g. "10 Downing St,Westminster,London,SW1A2AA"'
-      @keyup.enter="search()"
-    />
-    <Button class="btn-search" icon="fas fa-search" @click="search()" />
+    <div class="search-button-container">
+      <InputText
+        type="text"
+        v-model="value"
+        placeholder='Enter address, e.g. "10 Downing St,Westminster,London,SW1A2AA"'
+        @keyup.enter="search()"
+      />
+      <Button class="btn-search" icon="fas fa-search" @click="search()" />
+    </div>
     <Dropdown
       v-model="selectedArea"
       :options="postalAreas"
@@ -187,11 +189,18 @@ export default defineComponent({
   z-index: 10;
   position: absolute;
   top: 1rem;
-  width: calc(100% - 193px - 60px -4rem);
-  left: calc(193px + 1rem);
-  right: calc(40px + 1rem);
+  width: calc(100% - 193px - 60px - 2rem);
+  left: calc(193px + 1.5rem);
+  right: calc(40px + 1.5rem);
   display: flex;
   flex-flow: row nowrap;
+  gap: 1rem;
+}
+
+.search-button-container {
+  display: flex;
+  flex-flow: row nowrap;
+  flex-grow: 100;
 }
 
 #address-search-container .p-inputtext {
