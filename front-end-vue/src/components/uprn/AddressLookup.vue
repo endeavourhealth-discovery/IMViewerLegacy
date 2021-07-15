@@ -1,6 +1,6 @@
 <template>
   <g-map :disableUI="false" :zoom="12" mapType="roadmap" :pin="pin" />
-  <div class="uprn-form p-d-flex">
+  <div id="address-search-container">
     <InputText
       type="text"
       v-model="value"
@@ -134,7 +134,11 @@ export default defineComponent({
         { value: "TW", display: "TW: Twickenham" },
         { value: "UB", display: "UB: Uxbridge" },
         { value: "WD", display: "WD: Watford" }
-      ]
+      ],
+      searchContainerSizes: { width: 0, left: 0 } as {
+        width: number;
+        left: number;
+      }
     };
   },
   methods: {
@@ -169,22 +173,29 @@ export default defineComponent({
         pointCode: uprn.Pointcode,
         info: this.$refs["uprn-info"]
       };
+    },
+
+    setSizes(data: { width: number; left: number }) {
+      this.searchContainerSizes = data;
     }
   }
 });
 </script>
 
 <style scoped>
-.uprn-form {
+#address-search-container {
   z-index: 10;
   position: absolute;
-  top: 6rem;
-  left: 23rem;
-  width: calc(100% - 30rem);
+  top: 1rem;
+  width: calc(100% - 193px - 60px -4rem);
+  left: calc(193px + 1rem);
+  right: calc(40px + 1rem);
+  display: flex;
+  flex-flow: row nowrap;
 }
 
-.uprn-form .p-inputtext {
-  width: 100%;
+#address-search-container .p-inputtext {
+  flex-grow: 100;
 }
 
 .btn-search {

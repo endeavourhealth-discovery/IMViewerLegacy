@@ -60,7 +60,7 @@ export default defineComponent({
 <style lang="css" scoped>
 #uprn-map {
   width: 100%;
-  height: calc(100vh - 7rem);
+  height: 100%;
   background-color: azure;
 }
 </style>
