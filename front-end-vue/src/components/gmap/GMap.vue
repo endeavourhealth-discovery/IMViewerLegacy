@@ -47,12 +47,15 @@ export default defineComponent({
     });
 
     await loader.load().then(() => {
-      this.map = new window.google.maps.Map(document.getElementById("uprn-map"), {
-        mapTypeId: this.mapType || "hybrid",
-        center: { lat: this.pin.lat, lng: this.pin.lng },
-        zoom: this.zoom,
-        disableDefaultUI: this.disableUI
-      });
+      this.map = new window.google.maps.Map(
+        document.getElementById("uprn-map"),
+        {
+          mapTypeId: this.mapType || "hybrid",
+          center: { lat: this.pin.lat, lng: this.pin.lng },
+          zoom: this.zoom,
+          disableDefaultUI: this.disableUI
+        }
+      );
     });
   }
 });
