@@ -1,62 +1,75 @@
 <template>
-  <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
-    <div class="spinner">
-      <ProgressSpinner />
-    </div>
+  <div id="usedIn-table-container" class="p-field">
+    <DataTable
+      :value="usages"
+      responsiveLayout="scroll"
+      :scrollable="true"
+      showGridlines
+      class="p-datatable-sm"
+      scrollHeight="flex"
+      :totalRecords="records"
+      :rows="15"
+      :paginator="true"
+      paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+      currentPageReportTemplate="Displaying {currentPage} of {totalPages} pages"
+      :lazy="true"
+      @page="getPage($event.originalEvent.page)"
+      :loading="loading"
+    >
+      <template #empty>
+        No records found.
+      </template>
+      <template #loading>
+        Loading data. Please wait.
+      </template>
+      <Column field="name" filter-field="name" header="Name">
+        <template #body="slotProps">
+          {{ slotProps.data.name }}
+        </template>
+      </Column>
+    </DataTable>
   </div>
-  <Listbox
-    v-else
-    :listStyle="listHeight"
-    :filter="true"
-    emptyMessage="No results found"
-    emptyFilterMessage="No results found"
-    v-model="selectedUsage"
-    @change="onNodeSelect(selectedUsage)"
-    :options="usages"
-    optionLabel="name"
-  />
 </template>
 <script lang="ts">
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
+import { FilterMatchMode } from "primevue/api";
 
 export default defineComponent({
   name: "UsedIn",
   components: {},
   props: {
-    conceptIri: String
+    conceptIri: String as any
   },
-  watch: {
-    async conceptIri(newValue) {
-      await this.getUsages(newValue);
-    }
-  },
+
   async mounted() {
-    window.addEventListener("resize", this.resize);
-    this.setListboxHeight();
     if (this.conceptIri) {
-      await this.getUsages(this.conceptIri);
+      await this.getUsages(this.conceptIri, this.currentPage, this.pageSize);
+      await this.getRecordsSize(this.conceptIri);
     }
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.resize);
   },
   data() {
     return {
       selectedUsage: {},
       usages: [],
       loading: false,
-      listHeight: ""
+      filters1: {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+      },
+      selected: {} as any,
+      records: 0,
+      filters: {
+        name: { value: "", matchMode: "contains" }
+      },
+      currentPage: 1,
+      pageSize: 15
     };
   },
   methods: {
-    resize() {
-      this.setListboxHeight();
-    },
-    async getUsages(iri: string) {
+    async getUsages(iri: string, pageIndex: number, pageSize: number) {
       this.loading = true;
-      await EntityService.getEntityUsages(iri)
+      await EntityService.getEntityUsages(iri, pageIndex, pageSize)
         .then(res => {
           this.usages = res.data;
         })
@@ -68,29 +81,15 @@ export default defineComponent({
       this.loading = false;
     },
 
-    onNodeSelect(concept: any) {
-      this.$router.push({
-        name: "Concept",
-        params: { selectedIri: concept["@id"] }
+    async getRecordsSize(iri: string) {
+      await EntityService.getUsagesTotalRecords(iri).then(res => {
+        this.records = res.data;
       });
     },
 
-    setListboxHeight(): void {
-      const container = document.getElementById(
-        "usedin-container"
-      ) as HTMLElement;
-      const listHeader = container?.getElementsByClassName(
-        "p-listbox-header"
-      )[0] as HTMLElement;
-      if (container && listHeader) {
-        const newHeight =
-          container.getBoundingClientRect().height -
-          listHeader.getBoundingClientRect().height -
-          2;
-        this.listHeight = "height: " + newHeight + "px;";
-      } else {
-        LoggerService.error("Failed to set UsedIn listbox height");
-      }
+    async getPage(page: any) {
+      this.currentPage = page;
+      await this.getUsages(this.conceptIri, this.currentPage, this.pageSize);
     }
   }
 });
@@ -107,5 +106,21 @@ export default defineComponent({
 
 .usage-container {
   width: 50%;
+}
+
+#usedIn-table-container {
+  flex-grow: 5;
+  overflow-y: auto;
+}
+
+#usedIn-table-container ::v-deep(.p-datatable) {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+}
+
+#usedIn-table-container ::v-deep(.p-datatable-wrapper) {
+  flex-grow: 6;
 }
 </style>

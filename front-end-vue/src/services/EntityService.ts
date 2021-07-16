@@ -73,9 +73,27 @@ export default class EntityService {
   }
 
   public static async getEntityUsages(
+    iri: string,
+    pageIndex: number,
+    pageSize: number
+  ): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/usages", {
+      params: {
+        iri: iri,
+        page: pageIndex,
+        size: pageSize
+      }
+    });
+  }
+
+  public static async getUsagesTotalRecords(
     iri: string
   ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/usages", { params: { iri: iri } });
+    return axios.get(this.api + "api/entity/usagesTotalRecords", {
+      params: {
+        iri: iri
+      }
+    });
   }
 
   public static async getEntityMembers(
