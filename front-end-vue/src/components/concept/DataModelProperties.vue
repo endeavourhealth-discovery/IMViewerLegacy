@@ -20,10 +20,8 @@
     </Column>
     <Column field="type.name" header="Type" :sortable="true">
       <template #body="slotProps">
-        <div class="link" @click="navigate(slotProps.data.valueType['@id'])">
-          {{
-            slotProps.data.valueType?.name || slotProps.data.valueType?.["@id"]
-          }}
+        <div class="link" @click="navigate(slotProps.data.type['@id'])">
+          {{ slotProps.data.type?.name || slotProps.data.type?.["@id"] }}
         </div>
       </template>
     </Column>
