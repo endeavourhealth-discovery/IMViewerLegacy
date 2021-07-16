@@ -42,6 +42,11 @@ export default defineComponent({
   props: {
     conceptIri: String as any
   },
+  watch: {
+    async conceptIri(newValue) {
+      await this.getUsages(newValue,1,15);
+    }
+  },
 
   async mounted() {
     if (this.conceptIri) {
