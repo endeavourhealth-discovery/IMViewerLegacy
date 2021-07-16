@@ -238,4 +238,123 @@ describe("SecondaryTree.vue", () => {
     const testNode = {"key":"Acquired scoliosis (disorder)","label":"Acquired scoliosis (disorder)","typeIcon":"far fa-fw fa-lightbulb","color":"#e39a3688","data":"http://snomed.info/sct#111266001","leaf":false,"loading":false,"children":[{"key":"Adolescent idiopathic scoliosis (disorder)","label":"Adolescent idiopathic scoliosis (disorder)","typeIcon":"far fa-fw fa-lightbulb","color":"#e39a3688","data":"http://snomed.info/sct#203646004","leaf":false,"loading":false,"children":[]}]};
     expect(wrapper.vm.containsChild(testNode.children, {"name":"Acquired kyphoscoliosis (disorder)","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#405771009"})).toBe(false);
   });
+
+  it("can expandParents ___ no key", async() => {
+    wrapper.vm.expandedKeys = {};
+    wrapper.vm.createExpandedParentTree = jest.fn().mockReturnValue({ data: {
+      "key": "Curvature of spine (disorder)",
+      "label": "Curvature of spine (disorder)",
+      "typeIcon": "far fa-fw fa-lightbulb",
+      "color": "#e39a3688",
+      "data": "http://snomed.info/sct#64217002",
+      "leaf": false,
+      "loading": false,
+      "children": [
+          {
+              "key": "Scoliosis deformity of spine (disorder)",
+              "label": "Scoliosis deformity of spine (disorder)",
+              "typeIcon": "far fa-fw fa-lightbulb",
+              "color": "#e39a3688",
+              "data": "http://snomed.info/sct#298382003",
+              "leaf": true,
+              "loading": false,
+              "children": [
+                  {
+                      "key": "Acquired scoliosis (disorder)",
+                      "label": "Acquired scoliosis (disorder)",
+                      "typeIcon": "far fa-fw fa-lightbulb",
+                      "color": "#e39a3688",
+                      "data": "http://snomed.info/sct#111266001",
+                      "leaf": false,
+                      "loading": false,
+                      "children": []
+                  },
+              ]
+          }
+      ]
+    }});
+    wrapper.vm.setExpandedParentParents = jest.fn();
+    wrapper.vm.expandParents(0);
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.expandedKeys).toStrictEqual({"Scoliosis deformity of spine (disorder)": true});
+    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.createExpandedParentTree).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.setExpandedParentParents).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.root).toStrictEqual([{"data": {"children": [{"children": [{"children": [], "color": "#e39a3688", "data": "http://snomed.info/sct#111266001", "key": "Acquired scoliosis (disorder)", "label": "Acquired scoliosis (disorder)", "leaf": false, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"}], "color": "#e39a3688", "data": "http://snomed.info/sct#298382003", "key": "Scoliosis deformity of spine (disorder)", "label": "Scoliosis deformity of spine (disorder)", "leaf": true, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"}], "color": "#e39a3688", "data": "http://snomed.info/sct#64217002", "key": "Curvature of spine (disorder)", "label": "Curvature of spine (disorder)", "leaf": false, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"}}]);
+  });
+
+  it("can expandParents ___ key", async() => {
+    wrapper.vm.expandedKeys = {"Scoliosis deformity of spine (disorder)": true};
+    wrapper.vm.createExpandedParentTree = jest.fn().mockReturnValue({ data: {
+      "key": "Curvature of spine (disorder)",
+      "label": "Curvature of spine (disorder)",
+      "typeIcon": "far fa-fw fa-lightbulb",
+      "color": "#e39a3688",
+      "data": "http://snomed.info/sct#64217002",
+      "leaf": false,
+      "loading": false,
+      "children": [
+          {
+              "key": "Scoliosis deformity of spine (disorder)",
+              "label": "Scoliosis deformity of spine (disorder)",
+              "typeIcon": "far fa-fw fa-lightbulb",
+              "color": "#e39a3688",
+              "data": "http://snomed.info/sct#298382003",
+              "leaf": true,
+              "loading": false,
+              "children": [
+                  {
+                      "key": "Acquired scoliosis (disorder)",
+                      "label": "Acquired scoliosis (disorder)",
+                      "typeIcon": "far fa-fw fa-lightbulb",
+                      "color": "#e39a3688",
+                      "data": "http://snomed.info/sct#111266001",
+                      "leaf": false,
+                      "loading": false,
+                      "children": []
+                  },
+              ]
+          }
+      ]
+    }});
+    wrapper.vm.setExpandedParentParents = jest.fn();
+    wrapper.vm.expandParents(0);
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.expandedKeys).toStrictEqual({"Scoliosis deformity of spine (disorder)": true});
+    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.createExpandedParentTree).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.setExpandedParentParents).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.root).toStrictEqual([{"data": {"children": [{"children": [{"children": [], "color": "#e39a3688", "data": "http://snomed.info/sct#111266001", "key": "Acquired scoliosis (disorder)", "label": "Acquired scoliosis (disorder)", "leaf": false, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"}], "color": "#e39a3688", "data": "http://snomed.info/sct#298382003", "key": "Scoliosis deformity of spine (disorder)", "label": "Scoliosis deformity of spine (disorder)", "leaf": true, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"}], "color": "#e39a3688", "data": "http://snomed.info/sct#64217002", "key": "Curvature of spine (disorder)", "label": "Curvature of spine (disorder)", "leaf": false, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"}}]);
+  });
+
+  it("can expandParents ___ service fail", async() => {
+    wrapper.vm.expandedKeys = {};
+    wrapper.vm.createExpandedParentTree = jest.fn();
+    wrapper.vm.setExpandedParentParents = jest.fn();
+    EntityService.getEntityParents = jest.fn().mockRejectedValue(false);
+    wrapper.vm.expandParents(0);
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.expandedKeys).toStrictEqual({"Scoliosis deformity of spine (disorder)": true});
+    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.createExpandedParentTree).not.toHaveBeenCalled();
+    expect(wrapper.vm.setExpandedParentParents).not.toHaveBeenCalled();
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Concept parents server request failed during parent expand stage 1"));
+  });
+
+  it("can expandParents ___ no root", async() => {
+    wrapper.vm.root = undefined;
+    EntityService.getEntityParents = jest.fn().mockRejectedValue(false);
+    wrapper.vm.expandParents(0);
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(EntityService.getEntityParents).not.toHaveBeenCalled();
+  });
+
+  it("can createExpandedParentTree", () => {
+    expect(wrapper.vm.createExpandedParentTree([{"name":"Acquired curvature of spine (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#12903001"},{"name":"Scoliosis deformity of spine (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#298382003"}], 0)).toStrictEqual({"children": [{"children": [{"children": [], "color": "#e39a3688", "data": "http://snomed.info/sct#111266001", "key": "Acquired scoliosis (disorder)", "label": "Acquired scoliosis (disorder)", "leaf": false, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"}, {"children": [], "color": "#e39a3688", "data": "http://snomed.info/sct#773773006", "key": "Acrodysplasia scoliosis (disorder)", "label": "Acrodysplasia scoliosis (disorder)", "leaf": true, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"}, {"children": [], "color": "#e39a3688", "data": "http://snomed.info/sct#205045003", "key": "Congenital scoliosis due to bony malformation (disorder)", "label": "Congenital scoliosis due to bony malformation (disorder)", "leaf": true, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"}], "color": "#e39a3688", "data": "http://snomed.info/sct#298382003", "key": "Scoliosis deformity of spine (disorder)", "label": "Scoliosis deformity of spine (disorder)", "leaf": true, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"}], "color": "#e39a3688", "data": "http://snomed.info/sct#12903001", "key": "Acquired curvature of spine (disorder)", "label": "Acquired curvature of spine (disorder)", "leaf": false, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"});
+  });
 });

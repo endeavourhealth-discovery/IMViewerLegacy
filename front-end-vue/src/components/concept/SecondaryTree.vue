@@ -316,16 +316,19 @@ export default defineComponent({
     },
 
     async expandParents(parentPosition: number): Promise<void> {
+      if (!this.root || !this.root.length) return;
       if (!(this.root[0].key in this.expandedKeys)) {
         this.expandedKeys[this.root[0].key] = true;
       }
 
       let parents: any[] = [];
-      let parentNode = {} as TreeNode;
       await EntityService.getEntityParents(this.root[0].data)
-        .then(async(res) => {
+        .then(async res => {
           parents = res.data;
-          parentNode = this.createExpandedParentTree(parents, parentPosition, parentNode);
+          const parentNode = this.createExpandedParentTree(
+            parents,
+            parentPosition
+          );
           this.root = [];
           this.root.push(parentNode);
           await this.setExpandedParentParents(parentPosition);
@@ -342,7 +345,8 @@ export default defineComponent({
         });
     },
 
-    createExpandedParentTree(parents: any, parentPosition: number, parentNode: any) {
+    createExpandedParentTree(parents: any, parentPosition: number): TreeNode {
+      let parentNode = {} as TreeNode;
       for (let i = 0; i < parents.length; i++) {
         if (i === parentPosition) {
           parentNode = this.createTreeNode(
