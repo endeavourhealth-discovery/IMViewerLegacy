@@ -174,7 +174,7 @@ export default defineComponent({
       ]).catch(err => {
         this.$toast.add(
           LoggerService.error(
-            "Secondary tree selected concept aggregate fetch failed",
+            "Secondary tree selected concept aggregate server request failed",
             err
           )
         );
@@ -194,7 +194,6 @@ export default defineComponent({
         concept[RDFS.LABEL],
         concept.hasChildren
       );
-
       children.forEach((child: any) => {
         selectedConcept.children.push(
           this.createTreeNode(
@@ -206,9 +205,16 @@ export default defineComponent({
           )
         );
       });
-
       this.root = [];
+      this.setParents(parentHierarchy, parentPosition);
+      this.root.push(selectedConcept);
+      if (!(selectedConcept.key in this.expandedKeys)) {
+        this.expandedKeys[selectedConcept.key] = true;
+      }
+      this.selectedKey[selectedConcept.key] = true;
+    },
 
+    setParents(parentHierarchy: any, parentPosition: number): void {
       if (parentHierarchy.length) {
         if (parentHierarchy.length === 1) {
           this.currentParent = {
@@ -235,12 +241,6 @@ export default defineComponent({
           }
         }
       }
-
-      this.root.push(selectedConcept);
-      if (!(selectedConcept.key in this.expandedKeys)) {
-        this.expandedKeys[selectedConcept.key] = true;
-      }
-      this.selectedKey[selectedConcept.key] = true;
     },
 
     createTreeNode(
