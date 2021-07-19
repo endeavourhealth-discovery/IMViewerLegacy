@@ -208,7 +208,12 @@ export default defineComponent({
       this.root = [];
       this.setParents(parentHierarchy, parentPosition);
       this.root.push(selectedConcept);
-      if (!(selectedConcept.key in this.expandedKeys)) {
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          this.expandedKeys,
+          selectedConcept.key
+        )
+      ) {
         this.expandedKeys[selectedConcept.key] = true;
       }
       this.selectedKey[selectedConcept.key] = true;
@@ -276,7 +281,7 @@ export default defineComponent({
 
     async expandChildren(node: TreeNode): Promise<void> {
       node.loading = true;
-      if (!(node.key in this.expandedKeys)) {
+      if (!Object.prototype.hasOwnProperty.call(this.expandedKeys, node.key)) {
         this.expandedKeys[node.key] = true;
       }
       let children: any[] = [];
@@ -317,7 +322,12 @@ export default defineComponent({
 
     async expandParents(parentPosition: number): Promise<void> {
       if (!this.root || !this.root.length) return;
-      if (!(this.root[0].key in this.expandedKeys)) {
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          this.expandedKeys,
+          this.root[0].key
+        )
+      ) {
         this.expandedKeys[this.root[0].key] = true;
       }
 
@@ -357,7 +367,12 @@ export default defineComponent({
             true
           );
           parentNode.children.push(this.root[0]);
-          if (!(parentNode.key in this.expandedKeys)) {
+          if (
+            !Object.prototype.hasOwnProperty.call(
+              this.expandedKeys,
+              parentNode.key
+            )
+          ) {
             this.expandedKeys[parentNode.key] = true;
           }
         }
