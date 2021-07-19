@@ -3,7 +3,7 @@
     <DataTable
       :value="combinedMembers"
       showGridlines
-      :paginator="true"
+      :paginator="combinedMembers.length > 25 ? true : false"
       :rows="25"
       :rowsPerPageOptions="[25, 50, 100]"
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
