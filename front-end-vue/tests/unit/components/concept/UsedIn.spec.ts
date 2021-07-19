@@ -162,4 +162,52 @@ describe("UsedIn.vue", () => {
     wrapper.vm.handleSelected();
     expect(mockRouter.push).not.toHaveBeenCalledTimes(1);
   });
+
+  it("can scroll to top", () => {
+    const mockElement = document.createElement("div");
+    mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 });
+    mockElement.scrollTop = 100;
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([mockElement]);
+    docSpy.mockReturnValue(mockElement);
+    wrapper.vm.scrollToTop();
+    expect(mockElement.scrollTop).toBe(0);
+  });
+
+  it("can scroll to top ___ container fail", () => {
+    const mockElement = document.createElement("div");
+    mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 });
+    mockElement.scrollTop = 100;
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([undefined]);
+    docSpy.mockReturnValue(mockElement);
+    wrapper.vm.scrollToTop();
+    expect(mockElement.scrollTop).toBe(100);
+  });
+
+  it("can setScrollHeight", () => {
+    const mockElement = document.createElement("div");
+    mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 });
+    mockElement.scrollTop = 100;
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([mockElement]);
+    docSpy.mockReturnValue(mockElement);
+    wrapper.vm.setScrollHeight();
+    expect(wrapper.vm.scrollHeight).not.toBe("500px");
+  });
+
+  it("can setScrollHeight ___ paginator fail", () => {
+    const mockElement = document.createElement("div");
+    mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 });
+    mockElement.scrollTop = 100;
+    mockElement.getElementsByClassName = jest.fn().mockReturnValueOnce([mockElement]).mockReturnValue([undefined]);
+    docSpy.mockReturnValue(mockElement);
+    wrapper.vm.setScrollHeight();
+    expect(wrapper.vm.scrollHeight).not.toBe("500px");
+  });
+
+  it("can setScrollHeight ___ container fail", () => {
+    LoggerService.error = jest.fn();
+    wrapper.vm.setScrollHeight();
+    expect(wrapper.vm.scrollHeight).toBe("500px");
+    expect(LoggerService.error).toHaveBeenCalledTimes(1);
+    expect(LoggerService.error).toHaveBeenCalledWith(undefined, "Failed to set usedIn table scroll height. Required elements not found.");
+  });
 });
