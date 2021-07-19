@@ -1,19 +1,23 @@
 <template>
-  <div id="usedIn-table-container" class="p-field">
+  <div id="usedin-table-container">
     <DataTable
       :value="usages"
       responsiveLayout="scroll"
       :scrollable="true"
+      :scrollHeight="scrollHeight"
       showGridlines
       class="p-datatable-sm"
-      scrollHeight="flex"
       :totalRecords="records"
-      :rows="15"
-      :paginator="true"
-      paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-      currentPageReportTemplate="Displaying {currentPage} of {totalPages} pages"
+      :rowsPerPageOptions="[25, 50, 100]"
+      :rows="25"
+      :paginator="records > 25 ? true : false"
+      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+      currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} concepts"
+      selectionMode="single"
+      v-model:selection="selected"
+      @click="handleSelected"
       :lazy="true"
-      @page="getPage($event.originalEvent.page)"
+      @page="handlePage($event)"
       :loading="loading"
     >
       <template #empty>
@@ -34,7 +38,6 @@
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
-import { FilterMatchMode } from "primevue/api";
 
 export default defineComponent({
   name: "UsedIn",
@@ -44,31 +47,30 @@ export default defineComponent({
   },
   watch: {
     async conceptIri(newValue) {
-      await this.getUsages(newValue,1,15);
+      await this.getUsages(newValue, 0, this.pageSize);
+      await this.getRecordsSize(newValue);
     }
   },
-
   async mounted() {
+    window.addEventListener("resize", this.resize);
     if (this.conceptIri) {
-      await this.getUsages(this.conceptIri, this.currentPage, this.pageSize);
+      await this.getUsages(this.conceptIri, 0, this.pageSize);
       await this.getRecordsSize(this.conceptIri);
     }
+    this.setScrollHeight();
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.resize);
   },
   data() {
     return {
-      selectedUsage: {},
       usages: [],
       loading: false,
-      filters1: {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
-      },
       selected: {} as any,
       records: 0,
-      filters: {
-        name: { value: "", matchMode: "contains" }
-      },
       currentPage: 1,
-      pageSize: 15
+      pageSize: 25,
+      scrollHeight: "500px"
     };
   },
   methods: {
@@ -92,40 +94,83 @@ export default defineComponent({
       });
     },
 
-    async getPage(page: any) {
-      this.currentPage = page;
+    handlePage(event: any) {
+      this.pageSize = event.rows;
+      this.currentPage = event.page;
+      this.getPage();
+      this.scrollToTop();
+    },
+
+    async getPage() {
       await this.getUsages(this.conceptIri, this.currentPage, this.pageSize);
+    },
+
+    handleSelected() {
+      if (
+        this.selected != null &&
+        Object.prototype.hasOwnProperty.call(this.selected, "@id")
+      ) {
+        this.$router.push({
+          name: "Concept",
+          params: { selectedIri: this.selected["@id"] }
+        });
+      }
+    },
+
+    scrollToTop(): void {
+      const resultsContainer = document.getElementById(
+        "search-results-container"
+      ) as HTMLElement;
+      const scrollBox = resultsContainer?.getElementsByClassName(
+        "p-datatable-wrapper"
+      )[0] as HTMLElement;
+      if (scrollBox) {
+        scrollBox.scrollTop = 0;
+      }
+    },
+
+    resize() {
+      this.setScrollHeight();
+    },
+
+    setScrollHeight() {
+      const container = document.getElementById(
+        "usedin-table-container"
+      ) as HTMLElement;
+      const tableHead = container?.getElementsByClassName(
+        "p-datatable-thead"
+      )[0] as HTMLElement;
+      const paginator = container?.getElementsByClassName(
+        "p-paginator"
+      )[0] as HTMLElement;
+      if (container && tableHead && paginator) {
+        const height =
+          container.getBoundingClientRect().height -
+          tableHead.getBoundingClientRect().height -
+          paginator.getBoundingClientRect().height -
+          1 +
+          "px";
+        this.scrollHeight = height;
+      } else if (container && tableHead && !paginator) {
+        const height =
+          container.getBoundingClientRect().height -
+          tableHead.getBoundingClientRect().height -
+          1 +
+          "px";
+        this.scrollHeight = height;
+      } else {
+        LoggerService.error(
+          undefined,
+          "Failed to set usedIn table scroll height. Required elements not found."
+        );
+      }
     }
   }
 });
 </script>
 
 <style scoped>
-.usage-mapping-container {
-  width: 100%;
-}
-
-.mapping-container {
-  width: 50%;
-}
-
-.usage-container {
-  width: 50%;
-}
-
-#usedIn-table-container {
-  flex-grow: 5;
-  overflow-y: auto;
-}
-
-#usedIn-table-container ::v-deep(.p-datatable) {
+#usedin-table-container {
   height: 100%;
-  display: flex;
-  flex-flow: column;
-  justify-content: space-between;
-}
-
-#usedIn-table-container ::v-deep(.p-datatable-wrapper) {
-  flex-grow: 6;
 }
 </style>
