@@ -1,6 +1,7 @@
 <template>
   <div id="members-table-container">
     <DataTable
+      v-if="!loading"
       :value="combinedMembers"
       showGridlines
       :paginator="combinedMembers.length > 25 ? true : false"
