@@ -178,7 +178,7 @@ describe("UsedIn.vue", () => {
     mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 });
     mockElement.scrollTop = 100;
     mockElement.getElementsByClassName = jest.fn().mockReturnValue([undefined]);
-    docSpy.mockReturnValue(mockElement);
+    docSpy.mockReturnValue(undefined);
     wrapper.vm.scrollToTop();
     expect(mockElement.scrollTop).toBe(100);
   });
@@ -197,7 +197,7 @@ describe("UsedIn.vue", () => {
     const mockElement = document.createElement("div");
     mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 });
     mockElement.scrollTop = 100;
-    mockElement.getElementsByClassName = jest.fn().mockReturnValueOnce([mockElement]).mockReturnValue([undefined]);
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([undefined]);
     docSpy.mockReturnValue(mockElement);
     wrapper.vm.setScrollHeight();
     expect(wrapper.vm.scrollHeight).not.toBe("500px");
