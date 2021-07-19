@@ -25,7 +25,7 @@
       v-model:selection="selected"
       selectionMode="single"
       :loading="loading"
-      @click="onClick()"
+      @click="onClick($event)"
       @page="scrollToTop"
     >
       <template #header>
@@ -104,8 +104,17 @@
         >
           Excluded Members
         </span>
+        <span
+          v-for="subSet in subsetsExpanded" :key="subSet.status"
+        >
+          <span v-if="slotProps.data.status === subSet.status"
+            class="group-header">
+            {{ subSet.name }}
+          </span>
+        </span>
       </template>
     </DataTable>
+    <ConfirmPopup />
   </div>
 </template>
 
@@ -160,11 +169,30 @@ export default defineComponent({
       },
       expandMembers: false,
       expandSubsets: false,
-      selected: {} as any
+      selected: {} as any,
+      subsetsExpanded: [{ status: "Chinese", name: "Chinese" }]
     };
   },
   methods: {
-    onClick() {
+    onClick(event: any) {
+      console.log(this.selected.status);
+      console.log(event);
+      if (this.selected.status === "IncludedSubset") {
+        this.$confirm.require({
+          target: event.target,
+          message: "Expand subset?",
+          icon: "pi pi-exclamation-triangle",
+          accept: () => {
+            console.log("expand it");
+            this.combinedMembers = this.combinedMembers.filter((member :any) => member.member.entity["@id"] !== this.selected.member.entity["@id"]);
+            this.combinedMembers.push({"status":"Chinese","member":{"entity":{"name":"Black Caribbean and White (ethnic group)","@id":"http://snomed.info/sct#315634007"},"code":"315634007","scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"}}});
+          },
+          reject: () => {
+            console.log("no thanks");
+          }
+        });
+        return;
+      }
       if (this.selected != null && this.selected.member != null) {
         this.$router.push({
           name: "Concept",
