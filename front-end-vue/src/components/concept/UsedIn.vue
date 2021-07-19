@@ -2,7 +2,6 @@
   <div id="usedin-table-container">
     <DataTable
       :value="usages"
-      responsiveLayout="scroll"
       :scrollable="true"
       :scrollHeight="scrollHeight"
       showGridlines
@@ -144,26 +143,18 @@ export default defineComponent({
       const container = document.getElementById(
         "usedin-table-container"
       ) as HTMLElement;
-      const tableHead = container?.getElementsByClassName(
-        "p-datatable-thead"
-      )[0] as HTMLElement;
       const paginator = container?.getElementsByClassName(
         "p-paginator"
       )[0] as HTMLElement;
-      if (container && tableHead && paginator) {
+      if (container && paginator) {
         const height =
           container.getBoundingClientRect().height -
-          tableHead.getBoundingClientRect().height -
           paginator.getBoundingClientRect().height -
           1 +
           "px";
         this.scrollHeight = height;
-      } else if (container && tableHead && !paginator) {
-        const height =
-          container.getBoundingClientRect().height -
-          tableHead.getBoundingClientRect().height -
-          1 +
-          "px";
+      } else if (container && !paginator) {
+        const height = container.getBoundingClientRect().height - 1 + "px";
         this.scrollHeight = height;
       } else {
         LoggerService.error(

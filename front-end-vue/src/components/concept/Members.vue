@@ -1,115 +1,110 @@
 <template>
-  <div class="p-d-flex p-flex-row members-container">
-    <div id="members-table-container" class="included-container p-field">
-      <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
-        <div class="spinner">
-          <ProgressSpinner />
-        </div>
-      </div>
-      <DataTable
-        :value="combinedMembers"
-        responsiveLayout="scroll"
-        showGridlines
-        :paginator="true"
-        :rows="10"
-        :rowsPerPageOptions="[10, 20, 50]"
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
-        rowGroupMode="subheader"
-        groupRowsBy="status"
-        v-model:filters="filters1"
-        filterDisplay="menu"
-        :globalFilterFields="[
-          'member.code',
-          'member.entity.name',
-          'member.scheme.name',
-          'status'
-        ]"
-        :scrollable="true"
-        class="p-datatable-sm"
-        scrollHeight="flex"
-        v-model:selection="selected"
-        selectionMode="single"
-        @click="onClick()"
-        v-else
-        @page="scrollToTop"
-      >
-        <template #header>
-          <div class="p-d-flex p-jc-between">
-            <span class="p-input-icon-left">
-              <i class="pi pi-search" aria-hidden="true" />
-              <InputText
-                v-model="filters1['global'].value"
-                placeholder="Keyword Search"
+  <div id="members-table-container">
+    <DataTable
+      :value="combinedMembers"
+      showGridlines
+      :paginator="true"
+      :rows="25"
+      :rowsPerPageOptions="[25, 50, 100]"
+      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+      currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
+      rowGroupMode="subheader"
+      groupRowsBy="status"
+      v-model:filters="filters1"
+      filterDisplay="menu"
+      :globalFilterFields="[
+        'member.code',
+        'member.entity.name',
+        'member.scheme.name',
+        'status'
+      ]"
+      :scrollable="true"
+      class="p-datatable-sm"
+      :scrollHeight="scrollHeight"
+      v-model:selection="selected"
+      selectionMode="single"
+      :loading="loading"
+      @click="onClick()"
+      @page="scrollToTop"
+    >
+      <template #header>
+        <div class="p-d-flex p-jc-between">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search" aria-hidden="true" />
+            <InputText
+              v-model="filters1['global'].value"
+              placeholder="Keyword Search"
+            />
+          </span>
+          <div class="toggles-container">
+            <div class="toggle-label-container" v-if="!expandMembers">
+              <label for="expandSubsets">Expand subsets</label>
+              <Checkbox
+                :disabled="expandMembers"
+                id="expandSubsets"
+                v-model="expandSubsets"
+                :binary="true"
               />
-            </span>
-            <div class="toggles-container">
-              <div class="toggle-label-container" v-if="!expandMembers">
-                <label for="expandSubsets">Expand subsets</label>
-                <Checkbox
-                  :disabled="expandMembers"
-                  id="expandSubsets"
-                  v-model="expandSubsets"
-                  :binary="true"
-                />
-              </div>
-              <div class="toggle-label-container">
-                <label for="expandMembers">
-                  Expand members
-                </label>
-                <Checkbox
-                  id="expandMembers"
-                  v-model="expandMembers"
-                  :binary="true"
-                />
-              </div>
+            </div>
+            <div class="toggle-label-container">
+              <label for="expandMembers">
+                Expand members
+              </label>
+              <Checkbox
+                id="expandMembers"
+                v-model="expandMembers"
+                :binary="true"
+              />
             </div>
           </div>
-        </template>
-        <template #empty>
-          No members found.
-        </template>
-        <Column
-          field="member.entity.name"
-          header="Name"
-          :sortable="true"
-          filter-field="member.entity.name"
-          style="flex: 0 0 60%"
-        />
-        <Column
-          field="member.code"
-          header="Code"
-          :sortable="true"
-          filter-field="member.code"
-        />
-        <Column
-          field="member.scheme.name"
-          header="Scheme"
-          :sortable="true"
-          filter-field="member.scheme.name"
-        />
-        <template #groupheader="slotProps">
-          <span
-            v-if="slotProps.data.status === 'IncludedSubset'"
-            class="group-header"
-          >
-            Included Subsets
-          </span>
-          <span
-            v-if="slotProps.data.status === 'IncludedMember'"
-            class="group-header"
-          >
-            Included Members
-          </span>
-          <span
-            v-if="slotProps.data.status === 'ExcludedMember'"
-            class="group-header"
-          >
-            Excluded Members
-          </span>
-        </template>
-      </DataTable>
-    </div>
+        </div>
+      </template>
+      <template #empty>
+        No members found.
+      </template>
+      <template #loading>
+        Loading data. Please wait...
+      </template>
+      <Column
+        field="member.entity.name"
+        header="Name"
+        :sortable="true"
+        filter-field="member.entity.name"
+        style="flex: 0 0 60%"
+      />
+      <Column
+        field="member.code"
+        header="Code"
+        :sortable="true"
+        filter-field="member.code"
+      />
+      <Column
+        field="member.scheme.name"
+        header="Scheme"
+        :sortable="true"
+        filter-field="member.scheme.name"
+      />
+      <template #groupheader="slotProps">
+        <span
+          v-if="slotProps.data.status === 'IncludedSubset'"
+          class="group-header"
+        >
+          Included Subsets
+        </span>
+        <span
+          v-if="slotProps.data.status === 'IncludedMember'"
+          class="group-header"
+        >
+          Included Members
+        </span>
+        <span
+          v-if="slotProps.data.status === 'ExcludedMember'"
+          class="group-header"
+        >
+          Excluded Members
+        </span>
+      </template>
+    </DataTable>
   </div>
 </template>
 
@@ -143,11 +138,14 @@ export default defineComponent({
     }
   },
   async mounted() {
-    if (this.conceptIri) {
-      this.expandMembers = false;
-      this.expandSubsets = false;
-      await this.getMembers();
-    }
+    window.addEventListener("resize", this.onResize);
+    this.expandMembers = false;
+    this.expandSubsets = false;
+    await this.getMembers();
+    this.onResize();
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.onResize);
   },
   data() {
     return {
@@ -155,7 +153,7 @@ export default defineComponent({
       members: [] as any,
       selectedIncludedMember: {},
       combinedMembers: [] as any,
-      listHeight: "",
+      scrollHeight: "500px",
       filters1: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       },
@@ -274,44 +272,52 @@ export default defineComponent({
         "p-datatable-wrapper"
       )[0] as HTMLElement;
       scrollBox.scrollTop = 0;
+    },
+
+    onResize() {
+      this.setScrollHeight();
+    },
+
+    setScrollHeight() {
+      const container = document.getElementById(
+        "members-table-container"
+      ) as HTMLElement;
+      const header = container?.getElementsByClassName(
+        "p-datatable-header"
+      )[0] as HTMLElement;
+      const paginator = container?.getElementsByClassName(
+        "p-paginator"
+      )[0] as HTMLElement;
+      if (container && header && paginator) {
+        const height =
+          container.getBoundingClientRect().height -
+          header.getBoundingClientRect().height -
+          paginator.getBoundingClientRect().height -
+          1 +
+          "px";
+        this.scrollHeight = height;
+      } else if (container && header && !paginator) {
+        const height =
+          container.getBoundingClientRect().height -
+          header.getBoundingClientRect().height -
+          1 +
+          "px";
+        this.scrollHeight = height;
+      } else {
+        LoggerService.error(
+          undefined,
+          "Failed to set members table scroll height. Required elements not found."
+        );
+      }
     }
   }
 });
 </script>
 
 <style scoped>
-.p-panel-header {
-  all: unset;
-}
-
-.members-container {
-  width: 100%;
-  height: 100%;
-}
-
-.included-container {
-  width: 100%;
-  height: 100%;
-}
-
-.excluded-container {
-  width: 50%;
-}
-
 #members-table-container {
-  flex-grow: 5;
-  overflow-y: auto;
-}
-
-#members-table-container ::v-deep(.p-datatable) {
   height: 100%;
-  display: flex;
-  flex-flow: column;
-  justify-content: space-between;
-}
-
-#members-table-container ::v-deep(.p-datatable-wrapper) {
-  flex-grow: 6;
+  width: 100%;
 }
 
 .group-header {
