@@ -7,10 +7,10 @@
       :scrollHeight="scrollHeight"
       showGridlines
       class="p-datatable-sm"
-      :totalRecords="records"
+      :totalRecords="recordsTotal"
       :rowsPerPageOptions="[25, 50, 100]"
       :rows="25"
-      :paginator="records > 25 ? true : false"
+      :paginator="recordsTotal > 25 ? true : false"
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
       currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} concepts"
       selectionMode="single"
@@ -52,22 +52,20 @@ export default defineComponent({
     }
   },
   async mounted() {
-    window.addEventListener("resize", this.resize);
-    if (this.conceptIri) {
-      await this.getUsages(this.conceptIri, 0, this.pageSize);
-      await this.getRecordsSize(this.conceptIri);
-    }
+    window.addEventListener("resize", this.onResize);
+    await this.getUsages(this.conceptIri, 0, this.pageSize);
+    await this.getRecordsSize(this.conceptIri);
     this.setScrollHeight();
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.resize);
+    window.removeEventListener("resize", this.onResize);
   },
   data() {
     return {
       usages: [],
       loading: false,
       selected: {} as any,
-      records: 0,
+      recordsTotal: 0,
       currentPage: 1,
       pageSize: 25,
       scrollHeight: "500px"
@@ -89,9 +87,18 @@ export default defineComponent({
     },
 
     async getRecordsSize(iri: string) {
-      await EntityService.getUsagesTotalRecords(iri).then(res => {
-        this.records = res.data;
-      });
+      await EntityService.getUsagesTotalRecords(iri)
+        .then(res => {
+          this.recordsTotal = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Failed to get usages record count from server",
+              err
+            )
+          );
+        });
     },
 
     handlePage(event: any) {
@@ -129,7 +136,7 @@ export default defineComponent({
       }
     },
 
-    resize() {
+    onResize() {
       this.setScrollHeight();
     },
 
