@@ -185,7 +185,7 @@ export default defineComponent({
           accept: () => {
             console.log("expand it");
             this.combinedMembers = this.combinedMembers.filter((member :any) => member.member.entity["@id"] !== this.selected.member.entity["@id"]);
-            this.combinedMembers.push({"status":"Chinese","member":{"entity":{"name":"Black Caribbean and White (ethnic group)","@id":"http://snomed.info/sct#315634007"},"code":"315634007","scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"}}});
+            this.combinedMembers.push({"status":"Chinese","member":{"entity":{"name":"Chinese (ethnic group)","@id":"http://snomed.info/sct#33897005"},"code":"33897005","scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"}}});
           },
           reject: () => {
             console.log("no thanks");
