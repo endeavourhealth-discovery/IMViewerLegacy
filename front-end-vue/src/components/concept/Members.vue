@@ -142,7 +142,7 @@ export default defineComponent({
     this.expandMembers = false;
     this.expandSubsets = false;
     await this.getMembers();
-    this.setScrollHeight();
+    this.onResize();
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
