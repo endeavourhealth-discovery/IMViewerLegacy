@@ -1,7 +1,6 @@
 <template>
   <div id="members-table-container">
     <DataTable
-      v-if="!loading"
       :value="combinedMembers"
       showGridlines
       :paginator="combinedMembers.length > 25 ? true : false"
@@ -25,7 +24,7 @@
       v-model:selection="selected"
       selectionMode="single"
       :loading="loading"
-      @click="onClick($event)"
+      @rowSelect="onRowSelect($event)"
       @page="scrollToTop"
     >
       <template #header>
@@ -104,11 +103,11 @@
         >
           Excluded Members
         </span>
-        <span
-          v-for="subSet in subsetsExpanded" :key="subSet.status"
-        >
-          <span v-if="slotProps.data.status === subSet.status"
-            class="group-header">
+        <span v-for="subSet in subsetsExpanded" :key="subSet.status">
+          <span
+            v-if="slotProps.data.status === subSet.status"
+            class="group-header"
+          >
             {{ subSet.name }}
           </span>
         </span>
@@ -131,7 +130,6 @@ export default defineComponent({
   props: {
     conceptIri: String
   },
-  emits: ["memberClick"],
   watch: {
     async conceptIri() {
       this.expandMembers = false;
@@ -174,18 +172,33 @@ export default defineComponent({
     };
   },
   methods: {
-    onClick(event: any) {
-      console.log(this.selected.status);
-      console.log(event);
+    onRowSelect(event: any) {
       if (this.selected.status === "IncludedSubset") {
         this.$confirm.require({
-          target: event.target,
+          target: event.originalEvent.target,
           message: "Expand subset?",
           icon: "pi pi-exclamation-triangle",
           accept: () => {
-            console.log("expand it");
-            this.combinedMembers = this.combinedMembers.filter((member :any) => member.member.entity["@id"] !== this.selected.member.entity["@id"]);
-            this.combinedMembers.push({"status":"Chinese","member":{"entity":{"name":"Chinese (ethnic group)","@id":"http://snomed.info/sct#33897005"},"code":"33897005","scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"}}});
+            this.combinedMembers = this.combinedMembers.filter(
+              (member: any) =>
+                member.member.entity["@id"] !==
+                this.selected.member.entity["@id"]
+            );
+            this.combinedMembers.push({
+              status: "Chinese",
+              member: {
+                entity: {
+                  "@id": "http://snomed.info/sct#92511000000107",
+                  name: "Chinese - ethnic category 2001 census (finding)"
+                },
+                code: "92511000000107",
+                scheme: {
+                  name: "Snomed-CT code",
+                  "@id": "http://endhealth.info/im#SnomedCodeScheme"
+                }
+              }
+            });
+            this.scrollToRow(event.data.member.entity.name);
           },
           reject: () => {
             console.log("no thanks");
@@ -200,6 +213,19 @@ export default defineComponent({
         });
         this.$emit("memberClick");
       }
+    },
+
+    async scrollToRow(groupHeaderName: string) {
+      await this.$nextTick();
+      const xpath = "//span[text()='" + groupHeaderName + "']";
+      const matchingElement = document.evaluate(
+        xpath,
+        document,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null
+      ).singleNodeValue as HTMLElement;
+      matchingElement?.scrollIntoView();
     },
 
     async getMembers() {
@@ -305,6 +331,19 @@ export default defineComponent({
 
     onResize() {
       this.setScrollHeight();
+      this.setTableWidth();
+    },
+
+    setTableWidth(): void {
+      const container = document.getElementById(
+        "members-table-container"
+      ) as HTMLElement;
+      const table = container?.getElementsByClassName(
+        "p-datatable-table"
+      )[0] as HTMLElement;
+      if (table) {
+        table.style.width = "100%";
+      }
     },
 
     setScrollHeight() {
