@@ -3,11 +3,6 @@
     <DataTable
       :value="combinedMembers"
       showGridlines
-      :paginator="combinedMembers.length > 25 ? true : false"
-      :rows="25"
-      :rowsPerPageOptions="[25, 50, 100]"
-      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-      currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
       rowGroupMode="subheader"
       groupRowsBy="status"
       :expandableRowGroups="true"
@@ -27,12 +22,11 @@
       sortField="status"
       :sortOrder="1"
       class="p-datatable-sm"
-      :scrollHeight="scrollHeight"
+      scrollHeight="flex"
       v-model:selection="selected"
       selectionMode="single"
       :loading="loading"
       @rowSelect="onRowSelect"
-      @page="scrollToTop"
     >
       <template #header>
         <div class="p-d-flex p-jc-between">
@@ -97,7 +91,7 @@
             v-if="slotProps.data.status === subSet.status"
             class="group-header"
           >
-            {{ subSet.member.entity.name }}
+            Subset - {{ subSet.member.entity.name }}
           </span>
         </span>
         <span
@@ -163,7 +157,6 @@ export default defineComponent({
       members: [] as any,
       selectedIncludedMember: {},
       combinedMembers: [] as any,
-      scrollHeight: "500px",
       filters1: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       },
@@ -224,7 +217,7 @@ export default defineComponent({
     },
 
     onRowGroupCollapse() {
-      console.log("collapse");
+      this.setTableWidth();
     },
 
     onRowSelect() {
@@ -255,7 +248,6 @@ export default defineComponent({
         });
       this.expandMembersSizeCheck();
       this.loading = false;
-      this.setScrollHeight();
       this.setTableWidth();
     },
 
@@ -359,18 +351,7 @@ export default defineComponent({
       x.toggle(event);
     },
 
-    scrollToTop(): void {
-      const tableContainer = document.getElementById(
-        "members-table-container"
-      ) as HTMLElement;
-      const scrollBox = tableContainer.getElementsByClassName(
-        "p-datatable-wrapper"
-      )[0] as HTMLElement;
-      scrollBox.scrollTop = 0;
-    },
-
     onResize() {
-      this.setScrollHeight();
       this.setTableWidth();
     },
 
@@ -383,39 +364,6 @@ export default defineComponent({
       )[0] as HTMLElement;
       if (table) {
         table.style.width = "100%";
-      }
-    },
-
-    setScrollHeight() {
-      const container = document.getElementById(
-        "members-table-container"
-      ) as HTMLElement;
-      const header = container?.getElementsByClassName(
-        "p-datatable-header"
-      )[0] as HTMLElement;
-      const paginator = container?.getElementsByClassName(
-        "p-paginator"
-      )[0] as HTMLElement;
-      if (container && header && paginator) {
-        const height =
-          container.getBoundingClientRect().height -
-          header.getBoundingClientRect().height -
-          paginator.getBoundingClientRect().height -
-          1 +
-          "px";
-        this.scrollHeight = height;
-      } else if (container && header && !paginator) {
-        const height =
-          container.getBoundingClientRect().height -
-          header.getBoundingClientRect().height -
-          1 +
-          "px";
-        this.scrollHeight = height;
-      } else {
-        LoggerService.error(
-          undefined,
-          "Failed to set members table scroll height. Required elements not found."
-        );
       }
     }
   }
