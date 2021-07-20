@@ -168,44 +168,28 @@ export default defineComponent({
       expandMembers: false,
       expandSubsets: false,
       selected: {} as any,
-      subsetsExpanded: [{ status: "Chinese", name: "Chinese" }]
+      subsetsExpanded: [] as any[]
     };
   },
   methods: {
     onRowSelect(event: any) {
-      // if (this.selected.status === "IncludedSubset") {
-      //   this.$confirm.require({
-      //     target: event.originalEvent.target,
-      //     message: "Expand subset?",
-      //     icon: "pi pi-exclamation-triangle",
-      //     accept: () => {
-      //       this.combinedMembers = this.combinedMembers.filter(
-      //         (member: any) =>
-      //           member.member.entity["@id"] !==
-      //           this.selected.member.entity["@id"]
-      //       );
-      //       this.combinedMembers.push({
-      //         status: "Chinese",
-      //         member: {
-      //           entity: {
-      //             "@id": "http://snomed.info/sct#92511000000107",
-      //             name: "Chinese - ethnic category 2001 census (finding)"
-      //           },
-      //           code: "92511000000107",
-      //           scheme: {
-      //             name: "Snomed-CT code",
-      //             "@id": "http://endhealth.info/im#SnomedCodeScheme"
-      //           }
-      //         }
-      //       });
-      //       this.scrollToRow(event.data.member.entity.name);
-      //     },
-      //     reject: () => {
-      //       console.log("no thanks");
-      //     }
-      //   });
-      //   return;
-      // }
+      if (this.selected.status === "IncludedSubset") {
+        this.$confirm.require({
+          target: event.originalEvent.target,
+          message: "Expand subset?",
+          icon: "pi pi-exclamation-triangle",
+          accept: async () => {
+            this.loading = true;
+            this.expandSubsetInline();
+            this.scrollToRow(event.data.member.entity.name);
+            this.loading = false;
+          },
+          reject: () => {
+            return;
+          }
+        });
+        return;
+      }
       if (this.selected != null && this.selected.member != null) {
         this.$router.push({
           name: "Concept",
@@ -213,6 +197,49 @@ export default defineComponent({
         });
         this.$emit("memberClick");
       }
+    },
+
+    async expandSubsetInline() {
+      this.combinedMembers = this.combinedMembers.filter(
+        (member: any) =>
+          member.member.entity.name !== this.selected.member.entity.name
+      );
+      this.subsetsExpanded.push({
+        name: this.selected.member.entity.name,
+        status: this.selected.member.entity.name
+      });
+      await EntityService.getEntityMembers(
+        this.selected.member.entity["@id"],
+        false,
+        false,
+        undefined
+      )
+        .then(res => {
+          const combined = [] as any[];
+          res.data.includedMembers.forEach((element: any) => {
+            combined.push(element);
+          });
+          res.data.excludedMembers.forEach((element: any) => {
+            combined.push(element);
+          });
+          res.data.includedSubsets.forEach((element: any) => {
+            combined.push(element);
+          });
+          const subSetMembers = combined.map((member: any) => {
+            return { status: this.selected.member.entity.name, member: member };
+          });
+          subSetMembers.forEach((member: any) => {
+            this.combinedMembers.push(member);
+          });
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Subset server request error. Failed to expand subset.",
+              err
+            )
+          );
+        });
     },
 
     async scrollToRow(groupHeaderName: string) {
