@@ -377,6 +377,14 @@ export default defineComponent({
   width: 100%;
 }
 
+#members-table-container ::v-deep(.p-datatable-wrapper) {
+  overflow-x: hidden;
+}
+
+#members-table-container ::v-deep(td) {
+  word-break: break-all;
+}
+
 .group-header {
   font-weight: 700;
   color: rgba(51, 153, 255, 0.8);
