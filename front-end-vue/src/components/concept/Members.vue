@@ -143,6 +143,7 @@ export default defineComponent({
     },
 
     async expandSubsets() {
+      this.subsets = [];
       await this.getMembers();
     }
   },
