@@ -90,20 +90,28 @@ export default defineComponent({
     "contentHeight"
   ],
   computed: {
-    conceptTypes(): string {
-      return this.concept?.types
-        ?.map(function(type: any) {
-          return type.name;
-        })
-        .join(", ");
+    conceptTypes(): string | undefined {
+      if ({}.hasOwnProperty.call(this.concept, "types")) {
+        return this.concept.types
+          .map(function(type: any) {
+            return type.name;
+          })
+          .join(", ");
+      } else {
+        return undefined;
+      }
     },
 
-    descriptionHTML(): string {
-      const text = this.concept.description?.replaceAll(
-        "<p>",
-        "</p>\n<p class='description-p'>"
-      );
-      return "<p class='description-p'>" + text + "</p>";
+    descriptionHTML(): string | undefined {
+      if ({}.hasOwnProperty.call(this.concept, "description")) {
+        const text = this.concept.description.replace(
+          /<p>/g,
+          "</p>\n<p class='description-p'>"
+        );
+        return "<p class='description-p'>" + text + "</p>";
+      } else {
+        return undefined;
+      }
     }
   },
   data() {

@@ -6,7 +6,7 @@
 import { ConceptReference } from "@/models/TTConcept/ConceptReference";
 import { IM } from "@/vocabulary/IM";
 import { OWL } from "@/vocabulary/OWL";
-import {SHACL} from '@/vocabulary/SHACL';
+import { SHACL } from "@/vocabulary/SHACL";
 
 export function isValueSet(conceptTypeElements: ConceptReference[]): boolean {
   return conceptTypeElements?.some(

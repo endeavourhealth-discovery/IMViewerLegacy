@@ -1,13 +1,15 @@
 <template>
   <g-map :disableUI="false" :zoom="12" mapType="roadmap" :pin="pin" />
-  <div class="uprn-form p-d-flex">
-    <InputText
-      type="text"
-      v-model="value"
-      placeholder='Enter address, e.g. "10 Downing St,Westminster,London,SW1A2AA"'
-      @keyup.enter="search()"
-    />
-    <Button class="btn-search" icon="fas fa-search" @click="search()" />
+  <div id="address-search-container">
+    <div class="search-button-container">
+      <InputText
+        type="text"
+        v-model="value"
+        placeholder='Enter address, e.g. "10 Downing St,Westminster,London,SW1A2AA"'
+        @keyup.enter="search()"
+      />
+      <Button class="btn-search" icon="fas fa-search" @click="search()" />
+    </div>
     <Dropdown
       v-model="selectedArea"
       :options="postalAreas"
@@ -95,14 +97,21 @@ import LoggerService from "@/services/LoggerService";
 import GMap from "@/components/gmap/GMap.vue";
 
 export default defineComponent({
-  name: "AdsressLookup",
+  name: "AddressLookup",
   components: {
     GMap
   },
   data() {
     return {
       value: "10 Downing St,Westminster,London,SW1A2AA",
-      pin: null as any,
+      pin: { lat: 51.503541, lng: -0.12767 } as {
+        lat: number;
+        lng: number;
+        info: any;
+        xCoor: string;
+        yCoor: string;
+        pointCode: string;
+      } | null,
       match: {} as any,
       selectedArea: null as any,
       postalAreas: [
@@ -127,7 +136,11 @@ export default defineComponent({
         { value: "TW", display: "TW: Twickenham" },
         { value: "UB", display: "UB: Uxbridge" },
         { value: "WD", display: "WD: Watford" }
-      ]
+      ],
+      searchContainerSizes: { width: 0, left: 0 } as {
+        width: number;
+        left: number;
+      }
     };
   },
   methods: {
@@ -162,19 +175,56 @@ export default defineComponent({
         pointCode: uprn.Pointcode,
         info: this.$refs["uprn-info"]
       };
+    },
+
+    setSizes(data: { width: number; left: number }) {
+      this.searchContainerSizes = data;
     }
   }
 });
 </script>
 
 <style scoped>
-.uprn-form {
+#address-search-container {
   z-index: 10;
   position: absolute;
-  top: 6rem;
-  left: 23rem;
-  width: calc(100% - 30rem);
+  top: 1rem;
+  width: calc(100% - 193px - 60px - 2rem);
+  left: calc(193px + 1.5rem);
+  right: calc(40px + 1.5rem);
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 1rem;
 }
+
+@media screen and (min-width: 768px) {
+  #address-search-container {
+    top: 1rem;
+    width: calc(100% - 193px - 60px - 2rem);
+    left: calc(193px + 1.5rem);
+    right: calc(40px + 1.5rem);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  #address-search-container {
+    top: calc(40px + 2rem);
+    width: calc(100% - 2rem);
+    left: 1rem;
+    right: 1rem;
+  }
+}
+
+.search-button-container {
+  display: flex;
+  flex-flow: row nowrap;
+  flex-grow: 100;
+}
+
+#address-search-container .p-inputtext {
+  flex-grow: 100;
+}
+
 .btn-search {
   background-color: white !important;
   color: gray !important;
@@ -184,11 +234,6 @@ export default defineComponent({
 table td,
 table td * {
   vertical-align: top;
-}
-
-#activity {
-  height: calc(100vh - 32rem);
-  overflow-y: auto;
 }
 
 table {

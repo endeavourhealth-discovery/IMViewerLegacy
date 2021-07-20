@@ -245,7 +245,7 @@ export default defineComponent({
     byPriority(a: any, b: any): number {
       if (a.priority < b.priority) {
         return -1;
-      } else if (a.priority > a.priority) {
+      } else if (a.priority > b.priority) {
         return 1;
       } else {
         return 0;

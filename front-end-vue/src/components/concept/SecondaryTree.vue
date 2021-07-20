@@ -174,7 +174,7 @@ export default defineComponent({
       ]).catch(err => {
         this.$toast.add(
           LoggerService.error(
-            "Secondary tree selected concept aggregate fetch failed",
+            "Secondary tree selected concept aggregate server request failed",
             err
           )
         );
@@ -194,7 +194,6 @@ export default defineComponent({
         concept[RDFS.LABEL],
         concept.hasChildren
       );
-
       children.forEach((child: any) => {
         selectedConcept.children.push(
           this.createTreeNode(
@@ -206,9 +205,21 @@ export default defineComponent({
           )
         );
       });
-
       this.root = [];
+      this.setParents(parentHierarchy, parentPosition);
+      this.root.push(selectedConcept);
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          this.expandedKeys,
+          selectedConcept.key
+        )
+      ) {
+        this.expandedKeys[selectedConcept.key] = true;
+      }
+      this.selectedKey[selectedConcept.key] = true;
+    },
 
+    setParents(parentHierarchy: any, parentPosition: number): void {
       if (parentHierarchy.length) {
         if (parentHierarchy.length === 1) {
           this.currentParent = {
@@ -235,12 +246,6 @@ export default defineComponent({
           }
         }
       }
-
-      this.root.push(selectedConcept);
-      if (!(selectedConcept.key in this.expandedKeys)) {
-        this.expandedKeys[selectedConcept.key] = true;
-      }
-      this.selectedKey[selectedConcept.key] = true;
     },
 
     createTreeNode(
@@ -276,53 +281,69 @@ export default defineComponent({
 
     async expandChildren(node: TreeNode): Promise<void> {
       node.loading = true;
-      if (!(node.key in this.expandedKeys)) {
+      if (!Object.prototype.hasOwnProperty.call(this.expandedKeys, node.key)) {
         this.expandedKeys[node.key] = true;
       }
       let children: any[] = [];
       await EntityService.getEntityChildren(node.data)
         .then(res => {
           children = res.data;
+          children.forEach((child: any) => {
+            if (!this.containsChild(node.children, child)) {
+              node.children.push(
+                this.createTreeNode(
+                  child.name,
+                  child["@id"],
+                  child.type,
+                  child.name,
+                  child.hasChildren
+                )
+              );
+            }
+          });
         })
         .catch(err => {
           this.$toast.add(
-            LoggerService.error("Concept children server request failed", err)
-          );
-        });
-
-      children.forEach((child: any) => {
-        if (!this.containsChild(node.children, child)) {
-          node.children.push(
-            this.createTreeNode(
-              child.name,
-              child["@id"],
-              child.type,
-              child.name,
-              child.hasChildren
+            LoggerService.error(
+              "Concept children server request failed. Concept child failed to expand.",
+              err
             )
           );
-        }
-      });
+        });
       node.loading = false;
     },
 
-    containsChild(children: any[], child: any) {
-      if (children.some(e => e.data === child?.["@id"])) {
+    containsChild(nodeChildren: any[], child: any) {
+      if (nodeChildren.some(nodeChild => nodeChild.data === child["@id"])) {
         return true;
       }
       return false;
     },
 
     async expandParents(parentPosition: number): Promise<void> {
-      if (!(this.root[0].key in this.expandedKeys)) {
+      if (!this.root || !this.root.length) return;
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          this.expandedKeys,
+          this.root[0].key
+        )
+      ) {
         this.expandedKeys[this.root[0].key] = true;
       }
 
       let parents: any[] = [];
-      let parentNode = {} as TreeNode;
       await EntityService.getEntityParents(this.root[0].data)
-        .then(res => {
+        .then(async res => {
           parents = res.data;
+          const parentNode = this.createExpandedParentTree(
+            parents,
+            parentPosition
+          );
+          this.root = [];
+          this.root.push(parentNode);
+          await this.setExpandedParentParents(parentPosition);
+          // this refreshes the keys so they start open if children and parents were both expanded
+          this.expandedKeys = { ...this.expandedKeys };
         })
         .catch(err => {
           this.$toast.add(
@@ -332,6 +353,10 @@ export default defineComponent({
             )
           );
         });
+    },
+
+    createExpandedParentTree(parents: any, parentPosition: number): TreeNode {
+      let parentNode = {} as TreeNode;
       for (let i = 0; i < parents.length; i++) {
         if (i === parentPosition) {
           parentNode = this.createTreeNode(
@@ -342,15 +367,20 @@ export default defineComponent({
             true
           );
           parentNode.children.push(this.root[0]);
-          if (!(parentNode.key in this.expandedKeys)) {
+          if (
+            !Object.prototype.hasOwnProperty.call(
+              this.expandedKeys,
+              parentNode.key
+            )
+          ) {
             this.expandedKeys[parentNode.key] = true;
           }
         }
       }
+      return parentNode;
+    },
 
-      this.root = [];
-      this.root.push(parentNode);
-
+    async setExpandedParentParents(parentPosition: number) {
       await EntityService.getEntityParents(this.root[0].data)
         .then(res => {
           this.alternateParents = [];
@@ -398,8 +428,6 @@ export default defineComponent({
             )
           );
         });
-      // this refreshes the keys so they start open if children and parents were both expanded
-      this.expandedKeys = { ...this.expandedKeys };
     },
 
     async showPopup(event: any, data: any): Promise<void> {

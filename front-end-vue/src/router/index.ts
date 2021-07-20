@@ -16,7 +16,6 @@ import Logout from "../components/user/Logout.vue";
 import ForgotPassword from "../components/user/ForgotPassword.vue";
 import ForgotPasswordSubmit from "../components/user/ForgotPasswordSubmit.vue";
 import SnomedLicense from "../views/SnomedLicense.vue";
-// import RecoverByEmail from "../components/user/RecoverByEmail.vue";
 import store from "@/store/index";
 import { nextTick } from "vue";
 
@@ -86,12 +85,6 @@ const routes: Array<RouteRecordRaw> = [
         name: "ForgotPasswordSubmit",
         component: ForgotPasswordSubmit
       }
-      //this isn't currently possible with AWS Auth
-      // {
-      //   path: "account-recovery",
-      //   name: "RecoverByEmail",
-      //   component: RecoverByEmail
-      // }
     ]
   },
   {

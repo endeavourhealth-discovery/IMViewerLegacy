@@ -18,16 +18,6 @@
             />
           </div>
         </TabPanel>
-        <TabPanel header="IMLang">
-          <div
-            class="panel-content"
-            id="monaco-editor-container"
-            :style="contentHeight"
-          >
-            <!-- <MonacoEditor v-if="active === 1" /> -->
-            <p class="placeholder">Monoco Editor placeholder</p>
-          </div>
-        </TabPanel>
         <TabPanel v-if="hasMembers" header="Members">
           <div
             class="panel-content"
@@ -73,7 +63,6 @@ import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import FormEditor from "@/components/edit/FormEditor.vue";
 import EntityService from "@/services/EntityService";
-// import MonacoEditor from "@/components/edit/MonacoEditor.vue";
 import ConfirmDialog from "primevue/confirmdialog";
 import MemberEditor from "@/components/edit/MemberEditor.vue";
 import { IM } from "@/vocabulary/IM";
@@ -83,7 +72,6 @@ export default defineComponent({
   name: "Editor",
   components: {
     SideNav,
-    // MonacoEditor,
     ConfirmDialog,
     FormEditor,
     MemberEditor
@@ -156,7 +144,7 @@ export default defineComponent({
           });
 
         if (this.hasMembers) {
-          await EntityService.getEntityMembers(this.iri, false)
+          await EntityService.getEntityMembers(this.iri, false, false)
             .then(res => {
               this.membersOriginal = res.data;
               this.membersUpdated = JSON.parse(JSON.stringify(res.data));
