@@ -94,6 +94,14 @@
             Subset - {{ subSet.member.entity.name }}
           </span>
         </span>
+        <span v-for="subSet in subsetsExpanded" :key="subSet.status">
+          <span
+            v-if="slotProps.data.status === subSet.status"
+            class="group-header"
+          >
+            {{ subSet.name }}
+          </span>
+        </span>
         <span
           v-if="slotProps.data.status === 'IncludedMember'"
           class="group-header"
