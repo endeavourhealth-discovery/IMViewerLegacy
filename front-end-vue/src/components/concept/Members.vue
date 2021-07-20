@@ -167,19 +167,19 @@ export default defineComponent({
       expandSubsets: false,
       selected: {} as any,
       subsetsExpanded: [{ status: "Chinese", name: "Chinese" }],
-      expandedRowGroups: null
+      expandedRowGroups: ["IncludedMember", "ExcludedMember"]
     };
   },
   methods: {
     generateSubsetHeaders() {
-      console.log("here");
-      console.log(this.combinedMembers);
+      console.log(this.subsetsExpanded);
       this.subsetsExpanded = this.combinedMembers
         .filter((element: any) => {element.status === "IncludedSubset"})
-        // .map((element: any) => {
-        //   console.log(element.member.entity.name);
-        //   element.member.entity.name
-        // });
+        .map((element: any) => {
+          console.log(element.member.entity.name);
+          element.member.entity.name
+        });
+      console.log(this.subsetsExpanded)
     },
 
     onRowGroupExpand() {
