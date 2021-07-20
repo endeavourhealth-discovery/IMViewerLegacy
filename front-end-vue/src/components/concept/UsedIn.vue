@@ -46,15 +46,19 @@ export default defineComponent({
   },
   watch: {
     async conceptIri(newValue) {
+      this.loading = true;
       await this.getUsages(newValue, 0, this.pageSize);
       await this.getRecordsSize(newValue);
+      this.loading = false;
     }
   },
   async mounted() {
+    this.loading = true;
     window.addEventListener("resize", this.onResize);
     await this.getUsages(this.conceptIri, 0, this.pageSize);
     await this.getRecordsSize(this.conceptIri);
     this.setScrollHeight();
+    this.loading = false;
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
@@ -72,7 +76,6 @@ export default defineComponent({
   },
   methods: {
     async getUsages(iri: string, pageIndex: number, pageSize: number) {
-      this.loading = true;
       await EntityService.getEntityUsages(iri, pageIndex, pageSize)
         .then(res => {
           this.usages = res.data;
@@ -82,7 +85,6 @@ export default defineComponent({
             LoggerService.error("Failed to get usages from server", err)
           );
         });
-      this.loading = false;
     },
 
     async getRecordsSize(iri: string) {
@@ -100,15 +102,13 @@ export default defineComponent({
         });
     },
 
-    handlePage(event: any) {
+    async handlePage(event: any) {
+      this.loading = true;
       this.pageSize = event.rows;
       this.currentPage = event.page;
-      this.getPage();
-      this.scrollToTop();
-    },
-
-    async getPage() {
       await this.getUsages(this.conceptIri, this.currentPage, this.pageSize);
+      this.scrollToTop();
+      this.loading = false;
     },
 
     handleSelected() {
@@ -170,5 +170,16 @@ export default defineComponent({
 <style scoped>
 #usedin-table-container {
   height: 100%;
+}
+
+#usedin-table-container ::v-deep(.p-datatable) {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+}
+
+#usedin-table-container ::v-deep(.p-datatable-wrapper) {
+  flex-grow: 6;
 }
 </style>

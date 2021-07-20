@@ -155,4 +155,15 @@ export default defineComponent({
   height: 100%;
   overflow-y: auto;
 }
+
+#term-table-container ::v-deep(.p-datatable) {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+}
+
+#term-table-container ::v-deep(.p-datatable-wrapper) {
+  flex-grow: 6;
+}
 </style>
