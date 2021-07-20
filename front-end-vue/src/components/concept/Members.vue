@@ -10,6 +10,10 @@
       currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
       rowGroupMode="subheader"
       groupRowsBy="status"
+      :expandableRowGroups="true"
+      v-model:expandedRowGroups="expandedRowGroups"
+      @rowGroupExpand="onRowGroupExpand"
+      @rowGroupCollapse="onRowGroupCollapse"
       v-model:filters="filters1"
       filterDisplay="menu"
       :globalFilterFields="[
@@ -85,11 +89,13 @@
         filter-field="member.scheme.name"
       />
       <template #groupheader="slotProps">
-        <span
-          v-if="slotProps.data.status === 'IncludedSubset'"
-          class="group-header"
-        >
-          Included Subsets
+        <span v-for="subSet in subsetsExpanded" :key="subSet.status">
+          <span
+            v-if="slotProps.data.status === subSet.status"
+            class="group-header"
+          >
+            {{ subSet.name }}
+          </span>
         </span>
         <span
           v-if="slotProps.data.status === 'IncludedMember'"
@@ -102,14 +108,6 @@
           class="group-header"
         >
           Excluded Members
-        </span>
-        <span v-for="subSet in subsetsExpanded" :key="subSet.status">
-          <span
-            v-if="slotProps.data.status === subSet.status"
-            class="group-header"
-          >
-            {{ subSet.name }}
-          </span>
         </span>
       </template>
     </DataTable>
@@ -168,10 +166,30 @@ export default defineComponent({
       expandMembers: false,
       expandSubsets: false,
       selected: {} as any,
-      subsetsExpanded: [{ status: "Chinese", name: "Chinese" }]
+      subsetsExpanded: [{ status: "Chinese", name: "Chinese" }],
+      expandedRowGroups: null
     };
   },
   methods: {
+    generateSubsetHeaders() {
+      console.log("here");
+      console.log(this.combinedMembers);
+      this.subsetsExpanded = this.combinedMembers
+        .filter((element: any) => {element.status === "IncludedSubset"})
+        // .map((element: any) => {
+        //   console.log(element.member.entity.name);
+        //   element.member.entity.name
+        // });
+    },
+
+    onRowGroupExpand() {
+      console.log("expand");
+    },
+
+    onRowGroupCollapse() {
+      console.log("collapse");
+    },
+
     onRowSelect(event: any) {
       if (this.selected.status === "IncludedSubset") {
         this.$confirm.require({
@@ -270,6 +288,7 @@ export default defineComponent({
         });
       } else {
         this.combinedMembers = this.getCombinedMembers();
+        this.generateSubsetHeaders();
       }
     },
 
