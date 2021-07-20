@@ -173,39 +173,39 @@ export default defineComponent({
   },
   methods: {
     onRowSelect(event: any) {
-      if (this.selected.status === "IncludedSubset") {
-        this.$confirm.require({
-          target: event.originalEvent.target,
-          message: "Expand subset?",
-          icon: "pi pi-exclamation-triangle",
-          accept: () => {
-            this.combinedMembers = this.combinedMembers.filter(
-              (member: any) =>
-                member.member.entity["@id"] !==
-                this.selected.member.entity["@id"]
-            );
-            this.combinedMembers.push({
-              status: "Chinese",
-              member: {
-                entity: {
-                  "@id": "http://snomed.info/sct#92511000000107",
-                  name: "Chinese - ethnic category 2001 census (finding)"
-                },
-                code: "92511000000107",
-                scheme: {
-                  name: "Snomed-CT code",
-                  "@id": "http://endhealth.info/im#SnomedCodeScheme"
-                }
-              }
-            });
-            this.scrollToRow(event.data.member.entity.name);
-          },
-          reject: () => {
-            console.log("no thanks");
-          }
-        });
-        return;
-      }
+      // if (this.selected.status === "IncludedSubset") {
+      //   this.$confirm.require({
+      //     target: event.originalEvent.target,
+      //     message: "Expand subset?",
+      //     icon: "pi pi-exclamation-triangle",
+      //     accept: () => {
+      //       this.combinedMembers = this.combinedMembers.filter(
+      //         (member: any) =>
+      //           member.member.entity["@id"] !==
+      //           this.selected.member.entity["@id"]
+      //       );
+      //       this.combinedMembers.push({
+      //         status: "Chinese",
+      //         member: {
+      //           entity: {
+      //             "@id": "http://snomed.info/sct#92511000000107",
+      //             name: "Chinese - ethnic category 2001 census (finding)"
+      //           },
+      //           code: "92511000000107",
+      //           scheme: {
+      //             name: "Snomed-CT code",
+      //             "@id": "http://endhealth.info/im#SnomedCodeScheme"
+      //           }
+      //         }
+      //       });
+      //       this.scrollToRow(event.data.member.entity.name);
+      //     },
+      //     reject: () => {
+      //       console.log("no thanks");
+      //     }
+      //   });
+      //   return;
+      // }
       if (this.selected != null && this.selected.member != null) {
         this.$router.push({
           name: "Concept",
