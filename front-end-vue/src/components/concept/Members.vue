@@ -69,7 +69,6 @@
       <Column
         field="member.entity.name"
         header="Name"
-        :sortable="true"
         filter-field="member.entity.name"
         style="flex: 0 0 60%"
       />
@@ -94,7 +93,7 @@
             Subset - {{ subSet.member.entity.name }}
           </span>
         </span>
-        <span v-for="subSet in subsetsExpanded" :key="subSet.status">
+        <span v-for="subSet in subsets" :key="subSet.status">
           <span
             v-if="slotProps.data.status === subSet.status"
             class="group-header"
@@ -103,13 +102,13 @@
           </span>
         </span>
         <span
-          v-if="slotProps.data.status === 'IncludedMember'"
+          v-if="slotProps.data.status === 'MemberIncluded'"
           class="group-header"
         >
           Included Members
         </span>
         <span
-          v-if="slotProps.data.status === 'ExcludedMember'"
+          v-if="slotProps.data.status === 'MemberXcluded'"
           class="group-header"
         >
           Excluded Members
@@ -172,7 +171,7 @@ export default defineComponent({
       expandSubsets: false,
       selected: {} as any,
       subsets: [] as any[],
-      expandedRowGroups: ["IncludedMember", "ExcludedMember"]
+      expandedRowGroups: ["MemberIncluded", "MemberXcluded"]
     };
   },
   methods: {
@@ -337,11 +336,11 @@ export default defineComponent({
         this.subsets.push(member);
       });
       this.members.includedMembers?.forEach((included: any) => {
-        const member = { status: "IncludedMember", member: included };
+        const member = { status: "MemberIncluded", member: included };
         combinedMembers.push(member);
       });
       this.members.excludedMembers?.forEach((excluded: any) => {
-        const member = { status: "ExcludedMember", member: excluded };
+        const member = { status: "MemberXcluded", member: excluded };
         combinedMembers.push(member);
       });
       return combinedMembers;
