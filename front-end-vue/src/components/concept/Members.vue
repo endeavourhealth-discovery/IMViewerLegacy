@@ -93,14 +93,6 @@
             Subset - {{ subSet.member.entity.name }}
           </span>
         </span>
-        <span v-for="subSet in subsets" :key="subSet.status">
-          <span
-            v-if="slotProps.data.status === subSet.status"
-            class="group-header"
-          >
-            {{ subSet.name }}
-          </span>
-        </span>
         <span
           v-if="slotProps.data.status === 'MemberIncluded'"
           class="group-header"
@@ -329,7 +321,7 @@ export default defineComponent({
       this.sortMembers();
       this.members.includedSubsets?.forEach((includedSubset: any) => {
         const member = {
-          status: includedSubset.entity.name,
+          status: "Subset - " + includedSubset.entity.name,
           member: includedSubset
         };
         combinedMembers.push(member);
