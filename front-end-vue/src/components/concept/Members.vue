@@ -154,7 +154,6 @@ export default defineComponent({
     return {
       loading: false,
       members: [] as any,
-      selectedIncludedMember: {},
       combinedMembers: [] as any,
       filters1: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
@@ -231,6 +230,9 @@ export default defineComponent({
 
     async getMembers() {
       this.loading = true;
+      this.expandedRowGroups = ["MemberIncluded", "MemberXcluded"];
+      this.selected = {};
+      this.subsets = [];
       await EntityService.getEntityMembers(
         this.conceptIri as string,
         this.expandMembers,
