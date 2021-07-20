@@ -91,7 +91,7 @@ describe("UsedIn.vue", () => {
     expect(wrapper.vm.setScrollHeight).toHaveBeenCalledTimes(1);
   });
 
-  it("gets usages", async() => {
+/*  it("gets usages", async() => {
     wrapper.vm.getUsages("http://snomed.info/sct#298382003", 0, 25);
     expect(wrapper.vm.loading).toBe(true);
     await flushPromises();
@@ -99,9 +99,9 @@ describe("UsedIn.vue", () => {
     expect(EntityService.getEntityUsages).toHaveBeenCalledWith("http://snomed.info/sct#298382003",0,25);
     expect(wrapper.vm.usages).toStrictEqual([{"name":"Acrodysplasia scoliosis (disorder)","@id":"http://snomed.info/sct#773773006"},{"name":"Anterior vertebral body tethering (procedure)","@id":"http://snomed.info/sct#788325009"},{"name":"Congenital scoliosis due to bony malformation (disorder)","@id":"http://snomed.info/sct#205045003"},{"name":"Distal arthrogryposis type 4 (disorder)","@id":"http://snomed.info/sct#715575001"},{"name":"Duane anomaly, myopathy, scoliosis syndrome (disorder)","@id":"http://snomed.info/sct#722432000"},{"name":"Family history of scoliosis deformity of spine (situation)","@id":"http://snomed.info/sct#430544007"},{"name":"Horizontal gaze palsy with progressive scoliosis (disorder)","@id":"http://snomed.info/sct#702381007"},{"name":"Lordoscoliosis (disorder)","@id":"http://snomed.info/sct#111268000"},{"name":"Post-surgical scoliosis (disorder)","@id":"http://snomed.info/sct#203647008"},{"name":"Scoliosis in neurofibromatosis (disorder)","@id":"http://snomed.info/sct#203663000"},{"name":"Scoliosis in skeletal dysplasia (disorder)","@id":"http://snomed.info/sct#203661003"}]);
     expect(wrapper.vm.loading).toBe(false);
-  });
+  });*/
 
-  it("gets usages ___ fetch error", async() => {
+/*  it("gets usages ___ fetch error", async() => {
     wrapper.vm.usages = [];
     EntityService.getEntityUsages = jest.fn().mockRejectedValue(false);
     wrapper.vm.getUsages("http://snomed.info/sct#298382003", 0, 25);
@@ -113,7 +113,7 @@ describe("UsedIn.vue", () => {
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get usages from server"));
     expect(wrapper.vm.loading).toBe(false);
-  });
+  });*/
 
   it("gets recordsSize ___ success", async() => {
     wrapper.vm.records = 0;
@@ -144,12 +144,12 @@ describe("UsedIn.vue", () => {
     expect(wrapper.vm.currentPage).toBe(7);
   });
 
-  it("can getPage", () => {
+/*  it("can getPage", () => {
     wrapper.vm.getUsages = jest.fn();
     wrapper.vm.getPage();
     expect(wrapper.vm.getUsages).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.getUsages).toHaveBeenCalledWith("http://snomed.info/sct#298382003", 1, 25);
-  });
+  });*/
 
   it("can handleSelected", () => {
     wrapper.vm.selected = { "@id": "testIri" }
