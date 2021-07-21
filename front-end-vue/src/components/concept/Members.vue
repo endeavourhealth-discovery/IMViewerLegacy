@@ -199,6 +199,12 @@ export default defineComponent({
     setSubsets() {
       this.combinedMembers.forEach((member: any) => {
         if (!this.subsets.some(e => e.type === member.type)) {
+          if (
+            member.type === "MemberIncluded" ||
+            member.type === "MemberXcluded"
+          ) {
+            return;
+          }
           this.subsets.push({
             name: member.entity.name,
             type: member.type
