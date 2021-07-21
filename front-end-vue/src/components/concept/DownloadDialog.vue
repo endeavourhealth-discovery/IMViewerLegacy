@@ -9,7 +9,7 @@
     <template #header>
       <h3>Download Concept:</h3>
     </template>
-    <div v-if="loading">
+    <div v-if="loading" class="loading-container">
       <ProgressSpinner />
     </div>
     <div
@@ -128,22 +128,6 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!includeMembers"
-            id="expandSubsets"
-            :binary="true"
-            value="Expand subsets"
-            v-model="expandSubsets"
-          />
-          <label
-            class="label"
-            :class="hasSubsets() ? null : 'inactive-text'"
-            for="expandSubsets"
-          >
-            Expand subsets
-          </label>
-        </div>
-        <div class="checkbox-label">
-          <Checkbox
             id="inactive"
             :binary="true"
             value="Include inactive"
@@ -205,7 +189,6 @@ export default defineComponent({
       includeDataModelProperties: true,
       includeMembers: true,
       expandMembers: false,
-      expandSubsets: false,
       includeParents: true,
       includeInactive: false,
       includeSemanticProperties: false,
@@ -252,8 +235,6 @@ export default defineComponent({
         this.includeMembers +
         "&expandMembers=" +
         this.expandMembers +
-        "&expandSubsets=" +
-        this.expandSubsets +
         "&parents=" +
         this.includeParents +
         "&semanticProperties=" +
@@ -341,12 +322,6 @@ export default defineComponent({
       this.includeDataModelProperties = !!this.dataModelProperties.length;
       this.includeSemanticProperties = !!this.semanticProperties.length;
       this.includeMembers = !!this.members.members?.length;
-    },
-
-    hasSubsets() {
-      return !!this.members.members?.filter(
-        (e: any) => e.type !== "MemberIncluded" || e.type !== "MemberXcluded"
-      ).length;
     }
   }
 });
@@ -356,27 +331,40 @@ export default defineComponent({
 .button-left {
   margin-right: 1rem;
 }
+
 .options-container {
   width: 60%;
   margin-bottom: 2rem;
 }
+
 .checkbox-label {
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
   margin: 0.5em;
 }
+
 .label {
   margin-left: 0.5em;
 }
+
 .format-container {
   margin-bottom: 1rem;
 }
+
 h4 {
   margin-bottom: 1em;
 }
+
 .inactive-text {
   color: lightgray;
   text-decoration: line-through;
+}
+
+.loading-container {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
 }
 </style>
