@@ -4,22 +4,17 @@
       :value="combinedMembers"
       showGridlines
       rowGroupMode="subheader"
-      groupRowsBy="status"
+      groupRowsBy="type"
       :expandableRowGroups="true"
       v-model:expandedRowGroups="expandedRowGroups"
       @rowgroupExpand="onRowGroupExpand"
       @rowgroupCollapse="onRowGroupCollapse"
       v-model:filters="filters1"
       filterDisplay="menu"
-      :globalFilterFields="[
-        'member.code',
-        'member.entity.name',
-        'member.scheme.name',
-        'status'
-      ]"
+      :globalFilterFields="['code', 'entity.name', 'scheme.name', 'type']"
       :scrollable="true"
       sortMode="single"
-      sortField="status"
+      sortField="type"
       :sortOrder="1"
       class="p-datatable-sm"
       scrollHeight="flex"
@@ -67,40 +62,32 @@
         Loading data. Please wait...
       </template>
       <Column
-        field="member.entity.name"
+        field="entity.name"
         header="Name"
-        filter-field="member.entity.name"
+        filter-field="entity.name"
         style="flex: 0 0 60%"
       />
+      <Column field="code" header="Code" :sortable="true" filter-field="code" />
       <Column
-        field="member.code"
-        header="Code"
-        :sortable="true"
-        filter-field="member.code"
-      />
-      <Column
-        field="member.scheme.name"
+        field="scheme.name"
         header="Scheme"
         :sortable="true"
-        filter-field="member.scheme.name"
+        filter-field="scheme.name"
       />
       <template #groupheader="slotProps">
-        <span v-for="subSet in subsets" :key="subSet.status">
-          <span
-            v-if="slotProps.data.status === subSet.status"
-            class="group-header"
-          >
-            Subset - {{ subSet.member.entity.name }}
+        <span v-for="subSet in subsets" :key="subSet.type">
+          <span v-if="slotProps.data.type === subSet.type" class="group-header">
+            Subset - {{ subSet.name }}
           </span>
         </span>
         <span
-          v-if="slotProps.data.status === 'MemberIncluded'"
+          v-if="slotProps.data.type === 'MemberIncluded'"
           class="group-header"
         >
           Included Members
         </span>
         <span
-          v-if="slotProps.data.status === 'MemberXcluded'"
+          v-if="slotProps.data.type === 'MemberXcluded'"
           class="group-header"
         >
           Excluded Members
@@ -166,55 +153,8 @@ export default defineComponent({
     };
   },
   methods: {
-    async onRowGroupExpand(event: any) {
-      if (event.data === "MemberIncluded" || event.data === "MemberXcluded") {
-        return;
-      }
-      this.loading = true;
-      const foundMember = this.combinedMembers.find(
-        (member: any) => member.status == event.data
-      );
-      const index = this.combinedMembers.indexOf(foundMember);
-      this.combinedMembers.splice(index, 1);
-      if (foundMember) {
-        await EntityService.getEntityMembers(
-          foundMember.member.entity["@id"],
-          false,
-          false,
-          undefined
-        )
-          .then(res => {
-            const combined = [] as any[];
-            res.data.includedMembers.forEach((element: any) => {
-              combined.push({ status: event.data, member: element });
-            });
-            res.data.excludedMembers.forEach((element: any) => {
-              combined.push({ status: event.data, member: element });
-            });
-            res.data.includedSubsets.forEach((element: any) => {
-              combined.push({ status: event.data, member: element });
-            });
-            combined.sort((a: any, b: any) =>
-              a.member.entity.name > b.member.entity.name
-                ? 1
-                : b.member.entity.name > a.member.entity.name
-                ? -1
-                : 0
-            );
-            combined.forEach((member: any) => {
-              this.combinedMembers.push(member);
-            });
-          })
-          .catch(err => {
-            this.$toast.add(
-              LoggerService.error(
-                "Error requesting subest members from server.",
-                err
-              )
-            );
-          });
-      }
-      this.loading = false;
+    async onRowGroupExpand() {
+      this.setTableWidth();
     },
 
     onRowGroupCollapse() {
@@ -240,7 +180,8 @@ export default defineComponent({
         this.conceptIri as string,
         this.expandMembers,
         this.expandSubsets,
-        this.expandMembers ? 2000 : undefined
+        this.expandMembers ? 2000 : undefined,
+        undefined
       )
         .then(res => {
           this.members = res.data;
@@ -253,6 +194,23 @@ export default defineComponent({
       this.expandMembersSizeCheck();
       this.loading = false;
       this.setTableWidth();
+    },
+
+    setSubsets() {
+      this.combinedMembers.forEach((member: any) => {
+        if (!this.subsets.some(e => e.type === member.type)) {
+          if (
+            member.type === "MemberIncluded" ||
+            member.type === "MemberXcluded"
+          ) {
+            return;
+          }
+          this.subsets.push({
+            name: member.entity.name,
+            type: member.type
+          });
+        }
+      });
     },
 
     async expandMembersSizeCheck() {
@@ -276,7 +234,9 @@ export default defineComponent({
           }
         });
       } else {
-        this.combinedMembers = this.getCombinedMembers();
+        this.sortMembers();
+        this.combinedMembers = this.members.members;
+        this.setSubsets();
       }
     },
 
@@ -298,49 +258,13 @@ export default defineComponent({
     },
 
     sortMembers() {
-      this.members.includedMembers?.sort((a: any, b: any) =>
+      this.members.members.sort((a: any, b: any) =>
         a.entity.name > b.entity.name
           ? 1
           : b.entity.name > a.entity.name
           ? -1
           : 0
       );
-      this.members.excludedMembers?.sort((a: any, b: any) =>
-        a.entity.name > b.entity.name
-          ? 1
-          : b.entity.name > a.entity.name
-          ? -1
-          : 0
-      );
-      this.members.includedSubsets?.sort((a: any, b: any) =>
-        a.entity.name > b.entity.name
-          ? 1
-          : b.entity.name > a.entity.name
-          ? -1
-          : 0
-      );
-    },
-
-    getCombinedMembers() {
-      const combinedMembers: { status: string; member: any }[] = [];
-      this.sortMembers();
-      this.members.includedSubsets?.forEach((includedSubset: any) => {
-        const member = {
-          status: "Subset - " + includedSubset.entity.name,
-          member: includedSubset
-        };
-        combinedMembers.push(member);
-        this.subsets.push(member);
-      });
-      this.members.includedMembers?.forEach((included: any) => {
-        const member = { status: "MemberIncluded", member: included };
-        combinedMembers.push(member);
-      });
-      this.members.excludedMembers?.forEach((excluded: any) => {
-        const member = { status: "MemberXcluded", member: excluded };
-        combinedMembers.push(member);
-      });
-      return combinedMembers;
     },
 
     onNodeSelect(member: any) {
