@@ -75,9 +75,9 @@
         filter-field="scheme.name"
       />
       <template #groupheader="slotProps">
-        <span v-for="subSet in subsets" :key="subSet.type">
-          <span v-if="slotProps.data.type === subSet.type" class="group-header">
-            Subset - {{ subSet.name }}
+        <span v-for="subSet in subsets" :key="subSet">
+          <span v-if="slotProps.data.type === subSet" class="group-header">
+            {{ subSet }}
           </span>
         </span>
         <span
@@ -198,17 +198,14 @@ export default defineComponent({
 
     setSubsets() {
       this.combinedMembers.forEach((member: any) => {
-        if (!this.subsets.some(e => e.type === member.type)) {
+        if (!this.subsets.some(e => e === member.type)) {
           if (
             member.type === "MemberIncluded" ||
             member.type === "MemberXcluded"
           ) {
             return;
           }
-          this.subsets.push({
-            name: member.entity.name,
-            type: member.type
-          });
+          this.subsets.push(member.type);
         }
       });
     },
