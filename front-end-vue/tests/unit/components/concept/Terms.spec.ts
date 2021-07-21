@@ -169,11 +169,20 @@ describe("Terms.vue", () => {
     expect(mockElement.scrollTop).toBe(0);
   });
 
-  it("can scrollToTop ___ element fail", () => {
+  it("can scrollToTop ___ id element fail", () => {
     const mockElement = document.createElement("div");
     mockElement.scrollTop = 100;
     mockElement.getElementsByClassName = jest.fn().mockReturnValue([undefined]);
     docSpy.mockReturnValue(mockElement);
+    wrapper.vm.scrollToTop();
+    expect(mockElement.scrollTop).toBe(100);
+  });
+
+  it("can scrollToTop ___ class element fail", () => {
+    const mockElement = document.createElement("div");
+    mockElement.scrollTop = 100;
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([undefined]);
+    docSpy.mockReturnValue(undefined);
     wrapper.vm.scrollToTop();
     expect(mockElement.scrollTop).toBe(100);
   });
