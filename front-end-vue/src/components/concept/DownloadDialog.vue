@@ -128,6 +128,22 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
+            :disabled="!includeMembers"
+            id="expandSubsets"
+            :binary="true"
+            value="Expand subsets"
+            v-model="expandSubsets"
+          />
+          <label
+            class="label"
+            :class="hasSubsets() ? null : 'inactive-text'"
+            for="expandSubsets"
+          >
+            Expand subsets
+          </label>
+        </div>
+        <div class="checkbox-label">
+          <Checkbox
             id="inactive"
             :binary="true"
             value="Include inactive"
@@ -189,6 +205,7 @@ export default defineComponent({
       includeDataModelProperties: true,
       includeMembers: true,
       expandMembers: false,
+      expandSubsets: false,
       includeParents: true,
       includeInactive: false,
       includeSemanticProperties: false,
@@ -235,6 +252,8 @@ export default defineComponent({
         this.includeMembers +
         "&expandMembers=" +
         this.expandMembers +
+        "&expandSubsets=" +
+        this.expandSubsets +
         "&parents=" +
         this.includeParents +
         "&semanticProperties=" +
@@ -321,8 +340,13 @@ export default defineComponent({
       this.includeChildren = !!this.children.length;
       this.includeDataModelProperties = !!this.dataModelProperties.length;
       this.includeSemanticProperties = !!this.semanticProperties.length;
-      this.includeMembers =
-        !!this.members.included?.length || !!this.members.excluded?.length;
+      this.includeMembers = !!this.members.members?.length;
+    },
+
+    hasSubsets() {
+      return !!this.members.members?.filter(
+        (e: any) => e.type !== "MemberIncluded" || e.type !== "MemberXcluded"
+      ).length;
     }
   }
 });

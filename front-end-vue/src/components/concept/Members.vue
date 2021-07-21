@@ -140,7 +140,7 @@ export default defineComponent({
   data() {
     return {
       loading: false,
-      members: [] as any,
+      members: {} as any,
       combinedMembers: [] as any,
       filters1: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
