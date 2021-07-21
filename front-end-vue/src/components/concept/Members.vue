@@ -67,11 +67,10 @@
         filter-field="entity.name"
         style="flex: 0 0 60%"
       />
-      <Column field="code" header="Code" :sortable="true" filter-field="code" />
+      <Column field="code" header="Code" filter-field="code" />
       <Column
         field="scheme.name"
         header="Scheme"
-        :sortable="true"
         filter-field="scheme.name"
       />
       <template #groupheader="slotProps">
@@ -255,12 +254,10 @@ export default defineComponent({
     },
 
     sortMembers() {
-      this.members.members.sort((a: any, b: any) =>
-        a.entity.name > b.entity.name
-          ? 1
-          : b.entity.name > a.entity.name
-          ? -1
-          : 0
+      this.members.members = this.members.members.sort((a: any, b: any) =>
+          a.type.localeCompare(b.type) == 0
+            ? a.entity.name.localeCompare(b.entity.name)
+              : a.type.localeCompare(b.type)
       );
     },
 
