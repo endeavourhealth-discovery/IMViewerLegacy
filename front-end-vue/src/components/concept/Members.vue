@@ -67,17 +67,16 @@
         filter-field="entity.name"
         style="flex: 0 0 60%"
       />
-      <Column field="code" header="Code" :sortable="true" filter-field="code" />
+      <Column field="code" header="Code" filter-field="code" />
       <Column
         field="scheme.name"
         header="Scheme"
-        :sortable="true"
         filter-field="scheme.name"
       />
       <template #groupheader="slotProps">
         <span v-for="subSet in subsets" :key="subSet.type">
           <span v-if="slotProps.data.type === subSet.type" class="group-header">
-            Subset - {{ subSet.name }}
+            {{ subSet.type }}
           </span>
         </span>
         <span
@@ -258,12 +257,10 @@ export default defineComponent({
     },
 
     sortMembers() {
-      this.members.members.sort((a: any, b: any) =>
-        a.entity.name > b.entity.name
-          ? 1
-          : b.entity.name > a.entity.name
-          ? -1
-          : 0
+      this.members.members = this.members.members.sort((a: any, b: any) =>
+          a.type.localeCompare(b.type) == 0
+            ? a.entity.name.localeCompare(b.entity.name)
+              : a.type.localeCompare(b.type)
       );
     },
 
