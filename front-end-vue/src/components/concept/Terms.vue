@@ -49,9 +49,7 @@ import LoggerService from "@/services/LoggerService";
 export default defineComponent({
   name: "Terms",
   components: {},
-  props: {
-    conceptIri: String
-  },
+  props: ["conceptIri"],
   watch: {
     async conceptIri(newValue) {
       await this.getTerms(newValue);
@@ -59,9 +57,7 @@ export default defineComponent({
   },
   async mounted() {
     window.addEventListener("resize", this.onResize);
-    if (this.conceptIri) {
-      await this.getTerms(this.conceptIri);
-    }
+    await this.getTerms(this.conceptIri);
     this.onResize();
   },
   beforeUnmount() {
@@ -69,7 +65,7 @@ export default defineComponent({
   },
   data() {
     return {
-      selected: {},
+      selected: {} as any,
       loading: false,
       terms: [],
       scrollHeight: "500px",
@@ -96,14 +92,6 @@ export default defineComponent({
       this.loading = false;
     },
 
-    onNodeSelect(concept: any) {
-      if (concept?.["@id"]) {
-        this.$router.push({
-          name: "Concept",
-          params: { selectedIri: concept["@id"] }
-        });
-      }
-    },
     setScrollHeight(): void {
       const container = document.getElementById(
         "terms-container"

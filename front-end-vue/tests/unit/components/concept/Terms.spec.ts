@@ -114,17 +114,6 @@ describe("Terms.vue", () => {
     expect(wrapper.vm.loading).toBe(false);
   });
 
-  it("routes onNodeSelect", () => {
-    wrapper.vm.onNodeSelect({ "@id": "http://snomed.info/sct#123037004" });
-    expect(mockRouter.push).toHaveBeenCalledTimes(1);
-    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Concept", params: { selectedIri: "http://snomed.info/sct#123037004" } });
-  });
-
-  it("routes onNodeSelect ___ no id", () => {
-    wrapper.vm.onNodeSelect({});
-    expect(mockRouter.push).not.toHaveBeenCalled();
-  });
-
   it("can setScrollHeight ___ fail", () => {
     wrapper.vm.setScrollHeight();
     expect(wrapper.vm.scrollHeight).toBe("500px");
