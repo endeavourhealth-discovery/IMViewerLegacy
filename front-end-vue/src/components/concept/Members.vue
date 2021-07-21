@@ -167,6 +167,7 @@ export default defineComponent({
   },
   methods: {
     async onRowGroupExpand(event: any) {
+      if (event.data === "MemberIncluded" || event.data === "MemberXcluded") return;
       this.loading = true;
       const foundMember = this.combinedMembers.find(
         (member: any) => member.status == event.data
