@@ -162,10 +162,10 @@ export default defineComponent({
     },
 
     onRowSelect() {
-      if (this.selected != null && this.selected.member != null) {
+      if (this.selected != null && this.selected.entity != null) {
         this.$router.push({
           name: "Concept",
-          params: { selectedIri: this.selected.member.entity["@id"] }
+          params: { selectedIri: this.selected.entity["@id"] }
         });
         this.$emit("memberClick");
       }
