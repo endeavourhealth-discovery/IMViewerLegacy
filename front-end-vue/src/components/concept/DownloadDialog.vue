@@ -321,7 +321,11 @@ export default defineComponent({
       this.includeChildren = !!this.children.length;
       this.includeDataModelProperties = !!this.dataModelProperties.length;
       this.includeSemanticProperties = !!this.semanticProperties.length;
-      this.includeMembers = !!this.members.members?.length;
+      this.includeMembers =
+        Object.prototype.hasOwnProperty.call(this.members, "members") &&
+        this.members.members.length
+          ? true
+          : false;
     }
   }
 });
