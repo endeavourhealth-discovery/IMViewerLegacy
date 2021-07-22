@@ -161,4 +161,10 @@ export default class EntityService {
       params: { iri: iri }
     });
   }
+
+  public static getEntityShape(iri: string): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/shape", {
+      params: { iri: iri }
+    });
+  }
 }

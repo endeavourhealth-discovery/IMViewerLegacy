@@ -103,7 +103,8 @@ export default defineComponent({
       membersOriginal: {} as any,
       membersUpdated: {} as any,
       active: 0,
-      contentHeight: ""
+      contentHeight: "",
+      shape: {} as any
     };
   },
   async mounted() {
@@ -111,6 +112,8 @@ export default defineComponent({
       window.addEventListener("resize", this.setContentHeight);
     });
     this.fetchConceptData();
+
+    this.getShape();
 
     this.setContentHeight();
   },
@@ -145,6 +148,21 @@ export default defineComponent({
             );
           });
       }
+    },
+
+    async getShape() {
+      await EntityService.getEntityShape("http://endhealth.info/im#ClassShape")
+        .then(res => {
+          this.shape = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Editor failed to get entity shacl shape from server",
+              err
+            )
+          );
+        });
     },
 
     submit(): void {
