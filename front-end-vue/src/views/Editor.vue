@@ -3,7 +3,7 @@
   <ConfirmDialog></ConfirmDialog>
   <div id="editor-main-container">
     <Panel header="Editor">
-      <TabView v-model:activeIndex="active">
+      <TabView v-model:activeIndex="active" :lazy="true">
         <TabPanel header="Form">
           <div
             class="panel-content"
@@ -11,7 +11,7 @@
             :style="contentHeight"
           >
             <FormEditor
-              v-if="active === 0 && Object.keys(conceptUpdated).length > 0"
+              v-if="Object.keys(conceptUpdated).length > 0"
               :iri="iri"
               :updatedConcept="conceptUpdated"
               @concept-updated="updateConcept"
