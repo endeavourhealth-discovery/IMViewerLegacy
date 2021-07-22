@@ -1,7 +1,7 @@
 <template>
   <DataTable
     :value="members"
-    v-model:selection="selectedMember"
+    v-model:selection="selectedMembers"
     selectionMode="multiple"
     dataKey="code"
     :metaKeySelection="false"
@@ -61,7 +61,7 @@ export default defineComponent({
   props: ["members", "memberType"],
   data() {
     return {
-      selectedMember: {} as any,
+      selectedMembers: [] as any[],
       filters: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       }

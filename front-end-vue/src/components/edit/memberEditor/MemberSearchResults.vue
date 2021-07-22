@@ -7,9 +7,10 @@
   <DataTable
     v-else
     :value="searchResults"
-    v-model:selection="selectedResult"
+    v-model:selection="selectedResults"
     @row-select="onSearchResultSelect"
-    selectionMode="single"
+    selectionMode="multiple"
+    :metaKeySelection="false"
     dataKey="iri"
     class="p-datatable-sm"
     :scrollable="true"
@@ -107,15 +108,16 @@ import { ConceptSummary } from "@/models/search/ConceptSummary";
 export default defineComponent({
   name: "MemberSearchResults",
   props: ["searchResults", "loading"],
+  emits: ["searchResultsSelected"],
   data() {
     return {
-      selectedResult: null as any,
+      selectedResults: [] as any[],
       hoveredResult: {} as ConceptSummary | any
     };
   },
   methods: {
     onSearchResultSelect() {
-      console.log("searchResultSelected");
+      this.$emit("searchResultsSelected", this.selectedResults);
     },
 
     getPerspectiveByConceptType(conceptType: any): any {

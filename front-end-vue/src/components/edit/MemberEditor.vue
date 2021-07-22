@@ -13,7 +13,7 @@
   </div>
   <div id="member-edit-content">
     <div class="left-side">
-      <TabView :activeIndex="activeIndexLeft">
+      <TabView v-model:activeIndex="activeIndexLeft">
         <TabPanel>
           <template #header>
             <i class="fas fa-search icon-header" aria-hidden="true" />
@@ -23,6 +23,7 @@
             <MemberSearchResults
               :searchResults="searchResults"
               :loading="loading"
+              @searchResultsSelected="updateSelectedSearchResults"
             />
           </div>
         </TabPanel>
@@ -38,13 +39,17 @@
       </TabView>
     </div>
     <div class="center-buttons">
-      <Button icon="pi pi-angle-right" />
+      <Button
+        id="add-selected-to-members-panel-button"
+        icon="pi pi-angle-right"
+        @click="addToActiveMembersPanel()"
+      />
       <!-- <Button icon="pi pi-angle-double-right" />
       <Button icon="pi pi-angle-left" />
       <Button icon="pi pi-angle-double-left" /> -->
     </div>
     <div class="right-side">
-      <TabView :activeIndex="activeIndexRight" lazy>
+      <TabView v-model:activeIndex="activeIndexRight">
         <TabPanel>
           <template #header>
             <i class="fas fa-plus icon-header" aria-hidden="true" />
@@ -122,7 +127,8 @@ export default defineComponent({
       request: null as any,
       searchResults: [] as any[],
       activeIndexLeft: 0,
-      activeIndexRight: 0
+      activeIndexRight: 0,
+      selectedSearchResults: [] as any[]
     };
   },
   methods: {
@@ -245,6 +251,42 @@ export default defineComponent({
         excluded: this.excluded,
         subSets: this.subSets
       });
+    },
+
+    updateSelectedSearchResults(selectedSearchResults: any) {
+      this.selectedSearchResults = selectedSearchResults;
+    },
+
+    generateNewMembers(type: string) {
+      return this.selectedSearchResults.map((result: any) => {
+        return {
+          code: result.code,
+          entity: {
+            name: result.name,
+            "@id": result.iri
+          },
+          scheme: result.scheme,
+          type: type
+        };
+      });
+    },
+
+    addToActiveMembersPanel() {
+      switch (this.activeIndexRight) {
+        case 0:
+          this.included = this.included.concat(
+            this.generateNewMembers("MemberIncluded")
+          );
+          break;
+        case 1:
+          this.excluded = this.excluded.concat(
+            this.generateNewMembers("MemberXcluded")
+          );
+          break;
+        case 2:
+          this.subSets = this.subSets.concat(this.generateNewMembers("Subset"));
+          break;
+      }
     }
   }
 });
