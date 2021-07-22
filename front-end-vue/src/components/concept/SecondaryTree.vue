@@ -145,7 +145,8 @@ export default defineComponent({
         listPosition: number;
       }[],
       parentPosition: 0,
-      hoveredResult: {} as ConceptSummary | any
+      hoveredResult: {} as ConceptSummary | any,
+      overlayLocation: {} as any
     };
   },
   async mounted() {
@@ -156,6 +157,11 @@ export default defineComponent({
       this.conceptAggregate.children,
       0
     );
+  },
+  beforeUnmount() {
+    if (Object.keys(this.overlayLocation).length) {
+      this.hidePopup(this.overlayLocation);
+    }
   },
   methods: {
     async getConceptAggregate(iri: string): Promise<void> {
@@ -277,6 +283,9 @@ export default defineComponent({
         this.conceptAggregate.children,
         0
       );
+      if (Object.keys(this.overlayLocation).length) {
+        this.hidePopup(this.overlayLocation);
+      }
     },
 
     async expandChildren(node: TreeNode): Promise<void> {
@@ -431,6 +440,7 @@ export default defineComponent({
     },
 
     async showPopup(event: any, data: any): Promise<void> {
+      this.overlayLocation = event;
       const x = this.$refs.altTreeOP as any;
       x.show(event);
       await EntityService.getEntitySummary(data.data).then(res => {
@@ -441,6 +451,7 @@ export default defineComponent({
     hidePopup(event: any): void {
       const x = this.$refs.altTreeOP as any;
       x.hide(event);
+      this.overlayLocation = {};
     },
 
     getConceptTypes(concept: any): any {
