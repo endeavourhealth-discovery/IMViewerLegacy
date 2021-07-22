@@ -61,7 +61,6 @@ import Menubar from "primevue/menubar";
 import InlineMessage from "primevue/inlinemessage";
 import Message from "primevue/message";
 import ConfirmationService from "primevue/confirmationservice";
-import ConfirmDialogue from "primevue/confirmdialog";
 import Avatar from "primevue/avatar";
 import MegaMenu from "primevue/megamenu";
 import Timeline from "primevue/timeline";
@@ -73,6 +72,7 @@ import PickList from "primevue/picklist";
 import ContextMenu from "primevue/contextmenu";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 import RadioButton from "primevue/radiobutton";
+import ConfirmPopup from "primevue/confirmpopup";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
@@ -123,7 +123,6 @@ const app = createApp(App)
   .component("Menubar", Menubar)
   .component("InlineMessage", InlineMessage)
   .component("Message", Message)
-  .component("ConfirmDialogue", ConfirmDialogue)
   .component("Avatar", Avatar)
   .component("MegaMenu", MegaMenu)
   .component("Timeline", Timeline)
@@ -135,6 +134,7 @@ const app = createApp(App)
   .component("ContextMenu", ContextMenu)
   .component("FilterMatchMode", FilterMatchMode)
   .component("FilterOperator", FilterOperator)
-  .component("RadioButton", RadioButton);
+  .component("RadioButton", RadioButton)
+  .component("ConfirmPopup", ConfirmPopup);
 
 app.mount("#app");

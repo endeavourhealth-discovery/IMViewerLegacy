@@ -18,6 +18,7 @@
       class="p-datatable-sm"
       id="terms-table"
       @page="scrollToTop"
+      :loading="loading"
     >
       <Column field="scheme.name" header="Scheme" />
       <Column field="term" header="Term" style="flex: 0 0 65%" />
@@ -30,6 +31,12 @@
         <span style="font-weight: 700; color:rgba(51,153,255,0.8)">
           Scheme : {{ slotProps.data.scheme.name }}
         </span>
+      </template>
+      <template #empty>
+        No terms found.
+      </template>
+      <template #loading>
+        Loading data. Please wait...
       </template>
     </DataTable>
   </div>
@@ -153,7 +160,7 @@ export default defineComponent({
   height: 100%;
   display: flex;
   flex-flow: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 #term-table-container ::v-deep(.p-datatable-wrapper) {

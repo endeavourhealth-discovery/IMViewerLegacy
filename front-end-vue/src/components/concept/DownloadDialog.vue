@@ -9,7 +9,7 @@
     <template #header>
       <h3>Download Concept:</h3>
     </template>
-    <div v-if="loading">
+    <div v-if="loading" class="loading-container">
       <ProgressSpinner />
     </div>
     <div
@@ -322,7 +322,10 @@ export default defineComponent({
       this.includeDataModelProperties = !!this.dataModelProperties.length;
       this.includeSemanticProperties = !!this.semanticProperties.length;
       this.includeMembers =
-        !!this.members.included?.length || !!this.members.excluded?.length;
+        Object.prototype.hasOwnProperty.call(this.members, "members") &&
+        this.members.members.length
+          ? true
+          : false;
     }
   }
 });
@@ -332,27 +335,40 @@ export default defineComponent({
 .button-left {
   margin-right: 1rem;
 }
+
 .options-container {
   width: 60%;
   margin-bottom: 2rem;
 }
+
 .checkbox-label {
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
   margin: 0.5em;
 }
+
 .label {
   margin-left: 0.5em;
 }
+
 .format-container {
   margin-bottom: 1rem;
 }
+
 h4 {
   margin-bottom: 1em;
 }
+
 .inactive-text {
   color: lightgray;
   text-decoration: line-through;
+}
+
+.loading-container {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
 }
 </style>
