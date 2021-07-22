@@ -274,20 +274,6 @@ export default defineComponent({
       return node;
     },
 
-    async onNodeSelect(node: any): Promise<void> {
-      this.alternateParents = [];
-      await this.getConceptAggregate(node.data);
-      this.createTree(
-        this.conceptAggregate.concept,
-        this.conceptAggregate.parents,
-        this.conceptAggregate.children,
-        0
-      );
-      if (Object.keys(this.overlayLocation).length) {
-        this.hidePopup(this.overlayLocation);
-      }
-    },
-
     async expandChildren(node: TreeNode): Promise<void> {
       node.loading = true;
       if (!Object.prototype.hasOwnProperty.call(this.expandedKeys, node.key)) {
@@ -439,6 +425,13 @@ export default defineComponent({
         });
     },
 
+    async onNodeSelect() {
+      await this.$nextTick();
+      console.log("here");
+      this.selectedKey = {};
+      this.selectedKey[this.conceptAggregate.concept[RDFS.LABEL]] = true;
+    },
+
     async showPopup(event: any, data: any): Promise<void> {
       this.overlayLocation = event;
       const x = this.$refs.altTreeOP as any;
@@ -480,5 +473,9 @@ export default defineComponent({
 .p-progress-spinner {
   width: 1.25em !important;
   height: 1.25em !important;
+}
+
+#secondary-tree-bar-container ::v-deep(.p-treenode-selectable) {
+  cursor: default !important;
 }
 </style>
