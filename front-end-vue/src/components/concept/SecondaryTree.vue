@@ -427,7 +427,6 @@ export default defineComponent({
 
     async onNodeSelect() {
       await this.$nextTick();
-      console.log("here");
       this.selectedKey = {};
       this.selectedKey[this.conceptAggregate.concept[RDFS.LABEL]] = true;
     },
