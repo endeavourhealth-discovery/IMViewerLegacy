@@ -25,7 +25,7 @@
             :style="contentHeight"
           >
             <MemberEditor
-              v-if="active === 2 && Object.keys(membersUpdated).length > 0"
+              v-if="Object.keys(membersUpdated).length > 0"
               :iri="iri"
               :contentHeight="contentHeight"
               :updatedMembers="membersUpdated"
@@ -65,7 +65,6 @@ import FormEditor from "@/components/edit/FormEditor.vue";
 import EntityService from "@/services/EntityService";
 import ConfirmDialog from "primevue/confirmdialog";
 import MemberEditor from "@/components/edit/MemberEditor.vue";
-import { IM } from "@/vocabulary/IM";
 import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
@@ -93,13 +92,12 @@ export default defineComponent({
   },
   computed: {
     hasMembers(): any {
-      return IM.HAS_MEMBERS in this.concept ? true : false;
+      return this.membersOriginal?.members?.length ? true : false;
     }
   },
   data() {
     return {
       iri: this.$route.params.iri?.toString(),
-      concept: {} as any,
       conceptOriginal: {} as any,
       conceptUpdated: {} as any,
       membersOriginal: {} as any,
@@ -122,16 +120,6 @@ export default defineComponent({
   methods: {
     async fetchConceptData(): Promise<void> {
       if (this.iri) {
-        await EntityService.getEntity(this.iri)
-          .then(res => {
-            this.concept = res.data;
-          })
-          .catch(err => {
-            this.$toast.add(
-              LoggerService.error("Editor get concept request failed", err)
-            );
-          });
-
         await EntityService.getEntityDefinitionDto(this.iri)
           .then(res => {
             this.conceptOriginal = res.data;
@@ -143,21 +131,19 @@ export default defineComponent({
             );
           });
 
-        if (this.hasMembers) {
-          await EntityService.getEntityMembers(this.iri, false, false)
-            .then(res => {
-              this.membersOriginal = res.data;
-              this.membersUpdated = JSON.parse(JSON.stringify(res.data));
-            })
-            .catch(err => {
-              this.$toast.add(
-                LoggerService.error(
-                  "Editor get concept members request failed",
-                  err
-                )
-              );
-            });
-        }
+        await EntityService.getEntityMembers(this.iri, false, false)
+          .then(res => {
+            this.membersOriginal = res.data;
+            this.membersUpdated = JSON.parse(JSON.stringify(res.data));
+          })
+          .catch(err => {
+            this.$toast.add(
+              LoggerService.error(
+                "Editor get concept members request failed",
+                err
+              )
+            );
+          });
       }
     },
 

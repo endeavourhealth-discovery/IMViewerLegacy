@@ -51,45 +51,7 @@
             <span>Included</span>
           </template>
           <div id="included-panel-content" :style="panelRightHeight">
-            <DataTable
-              :value="data[0]"
-              v-model:selection="selectedIncluded"
-              selectionMode="multiple"
-              dataKey="code"
-              :metaKeySelection="false"
-              filterDisplay="menu"
-              :globalFilterFields="['name']"
-              :paginator="true"
-              :scrollable="true"
-              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-              :rowsPerPageOptions="[25, 50, 100]"
-              currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
-              :rows="25"
-            >
-              <template #header>
-                <div class="p-d-flex p-jc-between p-ai-center">
-                  <h5 class="p-m-0">Included</h5>
-                    <span class="p-input-icon-left">
-                        <i class="pi pi-search" />
-                        <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
-                    </span>
-                </div>
-              </template>
-              <template #empty>
-                No members included
-              </template>
-              <Column selectionMode="multiple" headerStyle="width: 3rem" />
-              <Column field="concept.name" header="Name" :sortable="true">
-                <template #filter="{ filterModel }">
-                  <InputText type="text" v-model="filterModel.name" class="p-column-filter" placeholder="Search by name" />
-                </template>
-              </Column>
-              <Column headerStyle="width: 4rem; text-align: center" bodyStyle="text-align: center; overflow: visible">
-                <template #body>
-                    <Button type="button" icon="pi pi-minus"></Button>
-                </template>
-            </Column>
-            </DataTable>
+            <MemberPickerTable :members="included" memberType="Included" />
           </div>
         </TabPanel>
         <TabPanel>
@@ -98,30 +60,16 @@
             <span>Excluded</span>
           </template>
           <div id="excluded-panel-content" :style="panelRightHeight">
-            <DataTable
-              :value="data[1]"
-              v-model:selection="selectedExcluded"
-              selectionMode="multiple"
-              dataKey="code"
-              :metaKeySelection="false"
-              :scrollable="true"
-              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-              :rowsPerPageOptions="[25, 50, 100]"
-              currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
-              :rows="25"
-            >
-              <template #empty>
-                No members excluded
-              </template>
-              <Column selectionMode="multiple" headerStyle="width: 3rem" />
-              <Column field="concept.name" header="Included" :sortable="true">
-              </Column>
-              <Column headerStyle="width: 4rem; text-align: center" bodyStyle="text-align: center; overflow: visible">
-                <template #body>
-                    <Button type="button" icon="pi pi-minus"></Button>
-                </template>
-            </Column>
-            </DataTable>
+            <MemberPickerTable :members="excluded" memberType="Excluded" />
+          </div>
+        </TabPanel>
+        <TabPanel>
+          <template #header>
+            <i class="fas fa-layer-group icon-header" aria-hidden="true" />
+            <span>Subsets</span>
+          </template>
+          <div id="subset-panel-content" :style="panelRightHeight">
+            <MemberPickerTable :members="subSets" memberType="Subsets" />
           </div>
         </TabPanel>
       </TabView>
@@ -137,48 +85,63 @@ import { SortBy } from "@/models/search/SortBy";
 import { ConceptStatus } from "@/models/ConceptStatus";
 import { ConceptType } from "@/models/search/ConceptType";
 import axios from "axios";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
-import { FilterMatchMode, FilterOperator } from "primevue/api";
+import MemberPickerTable from "@/components/edit/memberEditor/MemberPickerTable.vue";
 
 export default defineComponent({
   name: "MemberEditor",
   props: ["iri", "contentHeight", "updatedMembers"],
-  components: { MemberSearchResults },
+  components: { MemberSearchResults, MemberPickerTable },
   emits: ["members-updated"],
   watch: {
     contentHeight() {
       this.setPanelHeights();
+    },
+
+    members() {
+      this.separateMembersByType();
     }
   },
   mounted() {
+    this.separateMembersByType();
     this.setPanelHeights();
   },
   data() {
     return {
-      members: JSON.parse(JSON.stringify(this.updatedMembers)),
-      data: [
-        JSON.parse(JSON.stringify(this.updatedMembers.included)),
-        JSON.parse(JSON.stringify(this.updatedMembers.excluded))
-      ] as any,
+      members: JSON.parse(JSON.stringify(this.updatedMembers.members)),
+      included: [] as any[],
+      excluded: [] as any[],
+      subSets: [] as any[],
       panelLeftHeight: "",
       panelRightHeight: "",
       loading: false,
       debounce: 0,
       searchTerm: "",
       request: null as any,
-      searchResults: null as any,
+      searchResults: [] as any[],
       activeIndexLeft: 0,
-      activeIndexRight: 0,
-      selectedIncluded: null as any,
-      selectedExcluded: null as any,
-      filters: {
-        global: { value: null, matchMode:FilterMatchMode.CONTAINS }
-      }
+      activeIndexRight: 0
     };
   },
   methods: {
+    separateMembersByType() {
+      this.members.forEach((member: any) => {
+        switch (member.type) {
+          case "MemberIncluded":
+            this.included.push(member);
+            break;
+          case "MemberXcluded":
+            this.excluded.push(member);
+            break;
+          default:
+            this.subSets.push(member);
+            break;
+        }
+      });
+    },
+
     async search(): Promise<void> {
       if (this.searchTerm.length > 2) {
         this.loading = true;
@@ -208,9 +171,9 @@ export default defineComponent({
       const axiosSource = axios.CancelToken.source();
       this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
 
-      await ConceptService.advancedSearch(searchRequest, axiosSource.token)
+      await EntityService.advancedSearch(searchRequest, axiosSource.token)
         .then(res => {
-          this.searchResults = res.data.concepts;
+          this.searchResults = res.data.entities;
           this.loading = false;
         })
         .catch(err => {
@@ -269,14 +232,18 @@ export default defineComponent({
           "px; max-height: " +
           optimumLeftHeight +
           "px;";
+      } else {
+        LoggerService.error(
+          "Failed to set member editor panel heights. Required element not found."
+        );
       }
     },
 
     membersUpdated(): void {
       this.$emit("members-updated", {
-        included: this.data[0],
-        excluded: this.data[1],
-        valueSet: this.members.valueSet
+        included: this.included,
+        excluded: this.excluded,
+        subSets: this.subSets
       });
     }
   }
@@ -337,7 +304,7 @@ export default defineComponent({
   height: 100%;
   display: flex;
   flex-flow: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 #member-search-results-container ::v-deep(.p-datatable-wrapper) {
@@ -348,7 +315,7 @@ export default defineComponent({
   height: 100%;
   display: flex;
   flex-flow: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 #included-panel-content ::v-deep(.p-datatable-wrapper) {
@@ -359,7 +326,7 @@ export default defineComponent({
   height: 100%;
   display: flex;
   flex-flow: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 #excluded-panel-content ::v-deep(.p-datatable-wrapper) {

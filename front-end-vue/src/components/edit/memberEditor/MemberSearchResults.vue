@@ -13,7 +13,7 @@
     dataKey="iri"
     class="p-datatable-sm"
     :scrollable="true"
-    :paginator="true"
+    :paginator="searchResults.length > 25 ? true : false"
     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
     :rowsPerPageOptions="[25, 50, 100]"
     currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
@@ -132,8 +132,8 @@ export default defineComponent({
       x.show(event, event.target);
     },
 
-    getConceptTypes(concept: any): any {
-      return concept.conceptType
+    getConceptTypes(entity: any): any {
+      return entity.entityType
         .map(function(type: any) {
           return type.name;
         })
