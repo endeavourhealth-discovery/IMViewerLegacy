@@ -18,7 +18,7 @@ describe("Filters.vue", () => {
       }
     };
     wrapper = mount(Filters, {
-      props: { search: jest.fn() },
+      props: { search: jest.fn(), searchTerm: "sco" },
       global: {
         components: { MultiSelect },
         mocks: { $store: mockStore }
@@ -87,5 +87,16 @@ describe("Filters.vue", () => {
       "Legacy",
       "CategoryGroup"
     ]);
-  })
+  });
+
+  it("can check for search", () => {
+    wrapper.vm.checkForSearch();
+    expect(wrapper.vm.search).toHaveBeenCalled();
+  });
+
+  it("can check for search ___ no searchterm", async() => {
+    await wrapper.setProps({ searchTerm: "" });
+    wrapper.vm.checkForSearch();
+    expect(wrapper.vm.search).not.toHaveBeenCalled();
+  });
 })

@@ -18,16 +18,6 @@
             />
           </div>
         </TabPanel>
-        <TabPanel header="IMLang">
-          <div
-            class="panel-content"
-            id="monaco-editor-container"
-            :style="contentHeight"
-          >
-            <!-- <MonacoEditor v-if="active === 1" /> -->
-            <p class="placeholder">Monoco Editor placeholder</p>
-          </div>
-        </TabPanel>
         <TabPanel v-if="hasMembers" header="Members">
           <div
             class="panel-content"
@@ -72,8 +62,7 @@
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import FormEditor from "@/components/edit/FormEditor.vue";
-import ConceptService from "@/services/ConceptService";
-// import MonacoEditor from "@/components/edit/MonacoEditor.vue";
+import EntityService from "@/services/EntityService";
 import ConfirmDialog from "primevue/confirmdialog";
 import MemberEditor from "@/components/edit/MemberEditor.vue";
 import { IM } from "@/vocabulary/IM";
@@ -83,7 +72,6 @@ export default defineComponent({
   name: "Editor",
   components: {
     SideNav,
-    // MonacoEditor,
     ConfirmDialog,
     FormEditor,
     MemberEditor
@@ -134,7 +122,7 @@ export default defineComponent({
   methods: {
     async fetchConceptData(): Promise<void> {
       if (this.iri) {
-        await ConceptService.getConcept(this.iri)
+        await EntityService.getEntity(this.iri)
           .then(res => {
             this.concept = res.data;
           })
@@ -144,7 +132,7 @@ export default defineComponent({
             );
           });
 
-        await ConceptService.getConceptDefinitionDto(this.iri)
+        await EntityService.getEntityDefinitionDto(this.iri)
           .then(res => {
             this.conceptOriginal = res.data;
             this.conceptUpdated = JSON.parse(JSON.stringify(res.data));
@@ -156,7 +144,7 @@ export default defineComponent({
           });
 
         if (this.hasMembers) {
-          await ConceptService.getConceptMembers(this.iri, false)
+          await EntityService.getEntityMembers(this.iri, false, false)
             .then(res => {
               this.membersOriginal = res.data;
               this.membersUpdated = JSON.parse(JSON.stringify(res.data));

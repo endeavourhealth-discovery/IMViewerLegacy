@@ -81,15 +81,15 @@
         <div class="right-side" style="width: 50%;">
           <p v-if="hoveredResult.status">
             <strong>Status: </strong>
-            <span>{{ hoveredResult.status }}</span>
+            <span>{{ hoveredResult.status.name }}</span>
           </p>
           <p v-if="hoveredResult.scheme">
             <strong>Scheme: </strong>
-            <span>{{ hoveredResult.scheme }}</span>
+            <span>{{ hoveredResult.scheme.name }}</span>
           </p>
-          <p v-if="hoveredResult.types">
+          <p v-if="hoveredResult.conceptType">
             <strong>Type: </strong>
-            <span>{{ getConceptTypes(hoveredResult.types) }}</span>
+            <span>{{ getConceptTypes(hoveredResult.conceptType) }}</span>
           </p>
         </div>
       </div>
@@ -103,7 +103,7 @@ import {
   getColourFromType
 } from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import { IM } from "@/vocabulary/IM";
 import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
@@ -145,7 +145,8 @@ export default defineComponent({
         listPosition: number;
       }[],
       parentPosition: 0,
-      hoveredResult: {} as ConceptSummary | any
+      hoveredResult: {} as ConceptSummary | any,
+      overlayLocation: {} as any
     };
   },
   async mounted() {
@@ -157,22 +158,29 @@ export default defineComponent({
       0
     );
   },
+  beforeUnmount() {
+    if (Object.keys(this.overlayLocation).length) {
+      this.hidePopup(this.overlayLocation);
+    }
+  },
   methods: {
     async getConceptAggregate(iri: string): Promise<void> {
       await Promise.all([
-        ConceptService.getConcept(iri).then(res => {
-          this.conceptAggregate.concept = res.data;
-        }),
-        ConceptService.getConceptParents(iri).then(res => {
+        EntityService.getPartialEntity(iri, [RDF.TYPE, RDFS.LABEL]).then(
+          res => {
+            this.conceptAggregate.concept = res.data;
+          }
+        ),
+        EntityService.getEntityParents(iri).then(res => {
           this.conceptAggregate.parents = res.data;
         }),
-        ConceptService.getConceptChildren(iri).then(res => {
+        EntityService.getEntityChildren(iri).then(res => {
           this.conceptAggregate.children = res.data;
         })
       ]).catch(err => {
         this.$toast.add(
           LoggerService.error(
-            "Secondary tree selected concept aggregate fetch failed",
+            "Secondary tree selected concept aggregate server request failed",
             err
           )
         );
@@ -192,7 +200,6 @@ export default defineComponent({
         concept[RDFS.LABEL],
         concept.hasChildren
       );
-
       children.forEach((child: any) => {
         selectedConcept.children.push(
           this.createTreeNode(
@@ -204,9 +211,21 @@ export default defineComponent({
           )
         );
       });
-
       this.root = [];
+      this.setParents(parentHierarchy, parentPosition);
+      this.root.push(selectedConcept);
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          this.expandedKeys,
+          selectedConcept.key
+        )
+      ) {
+        this.expandedKeys[selectedConcept.key] = true;
+      }
+      this.selectedKey[selectedConcept.key] = true;
+    },
 
+    setParents(parentHierarchy: any, parentPosition: number): void {
       if (parentHierarchy.length) {
         if (parentHierarchy.length === 1) {
           this.currentParent = {
@@ -233,12 +252,6 @@ export default defineComponent({
           }
         }
       }
-
-      this.root.push(selectedConcept);
-      if (!(selectedConcept.key in this.expandedKeys)) {
-        this.expandedKeys[selectedConcept.key] = true;
-      }
-      this.selectedKey[selectedConcept.key] = true;
     },
 
     createTreeNode(
@@ -261,68 +274,71 @@ export default defineComponent({
       return node;
     },
 
-    async onNodeSelect(node: any): Promise<void> {
-      this.alternateParents = [];
-      await this.getConceptAggregate(node.data);
-      this.createTree(
-        this.conceptAggregate.concept,
-        this.conceptAggregate.parents,
-        this.conceptAggregate.children,
-        0
-      );
-    },
-
     async expandChildren(node: TreeNode): Promise<void> {
       node.loading = true;
-      if (!(node.key in this.expandedKeys)) {
+      if (!Object.prototype.hasOwnProperty.call(this.expandedKeys, node.key)) {
         this.expandedKeys[node.key] = true;
       }
       let children: any[] = [];
-      await ConceptService.getConceptChildren(node.data)
+      await EntityService.getEntityChildren(node.data)
         .then(res => {
           children = res.data;
+          children.forEach((child: any) => {
+            if (!this.containsChild(node.children, child)) {
+              node.children.push(
+                this.createTreeNode(
+                  child.name,
+                  child["@id"],
+                  child.type,
+                  child.name,
+                  child.hasChildren
+                )
+              );
+            }
+          });
         })
         .catch(err => {
           this.$toast.add(
-            LoggerService.error("Concept children server request failed", err)
-          );
-        });
-      let index = 0;
-
-      children.forEach((child: any) => {
-        if (!this.containsChild(node.children, child)) {
-          node.children.push(
-            this.createTreeNode(
-              child.name,
-              child["@id"],
-              child.type,
-              node.key + "-" + index,
-              child.hasChildren
+            LoggerService.error(
+              "Concept children server request failed. Concept child failed to expand.",
+              err
             )
           );
-          index++;
-        }
-      });
+        });
       node.loading = false;
     },
 
-    containsChild(children: any[], child: any) {
-      if (children.some(e => e.data === child?.["@id"])) {
+    containsChild(nodeChildren: any[], child: any) {
+      if (nodeChildren.some(nodeChild => nodeChild.data === child["@id"])) {
         return true;
       }
       return false;
     },
 
     async expandParents(parentPosition: number): Promise<void> {
-      if (!(this.root[0].key in this.expandedKeys)) {
+      if (!this.root || !this.root.length) return;
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          this.expandedKeys,
+          this.root[0].key
+        )
+      ) {
         this.expandedKeys[this.root[0].key] = true;
       }
 
       let parents: any[] = [];
-      let parentNode = {} as TreeNode;
-      await ConceptService.getConceptParents(this.root[0].data)
-        .then(res => {
+      await EntityService.getEntityParents(this.root[0].data)
+        .then(async res => {
           parents = res.data;
+          const parentNode = this.createExpandedParentTree(
+            parents,
+            parentPosition
+          );
+          this.root = [];
+          this.root.push(parentNode);
+          await this.setExpandedParentParents(parentPosition);
+          // this refreshes the keys so they start open if children and parents were both expanded
+          this.expandedKeys = { ...this.expandedKeys };
         })
         .catch(err => {
           this.$toast.add(
@@ -332,6 +348,10 @@ export default defineComponent({
             )
           );
         });
+    },
+
+    createExpandedParentTree(parents: any, parentPosition: number): TreeNode {
+      let parentNode = {} as TreeNode;
       for (let i = 0; i < parents.length; i++) {
         if (i === parentPosition) {
           parentNode = this.createTreeNode(
@@ -342,16 +362,21 @@ export default defineComponent({
             true
           );
           parentNode.children.push(this.root[0]);
-          if (!(parentNode.key in this.expandedKeys)) {
+          if (
+            !Object.prototype.hasOwnProperty.call(
+              this.expandedKeys,
+              parentNode.key
+            )
+          ) {
             this.expandedKeys[parentNode.key] = true;
           }
         }
       }
+      return parentNode;
+    },
 
-      this.root = [];
-      this.root.push(parentNode);
-
-      await ConceptService.getConceptParents(this.root[0].data)
+    async setExpandedParentParents(parentPosition: number) {
+      await EntityService.getEntityParents(this.root[0].data)
         .then(res => {
           this.alternateParents = [];
           if (res.data.length) {
@@ -400,10 +425,17 @@ export default defineComponent({
         });
     },
 
+    async onNodeSelect() {
+      await this.$nextTick();
+      this.selectedKey = {};
+      this.selectedKey[this.conceptAggregate.concept[RDFS.LABEL]] = true;
+    },
+
     async showPopup(event: any, data: any): Promise<void> {
+      this.overlayLocation = event;
       const x = this.$refs.altTreeOP as any;
       x.show(event);
-      await ConceptService.getConceptDefinitionDto(data.data).then(res => {
+      await EntityService.getEntitySummary(data.data).then(res => {
         this.hoveredResult = res.data;
       });
     },
@@ -411,6 +443,7 @@ export default defineComponent({
     hidePopup(event: any): void {
       const x = this.$refs.altTreeOP as any;
       x.hide(event);
+      this.overlayLocation = {};
     },
 
     getConceptTypes(concept: any): any {
@@ -434,5 +467,14 @@ export default defineComponent({
 #secondary-tree-bar-container {
   height: 100%;
   border: 1px solid #dee2e6;
+}
+
+.p-progress-spinner {
+  width: 1.25em !important;
+  height: 1.25em !important;
+}
+
+#secondary-tree-bar-container ::v-deep(.p-treenode-selectable) {
+  cursor: default !important;
 }
 </style>

@@ -1,6 +1,6 @@
 import { SearchRequest } from "./../models/search/SearchRequest";
 import { createStore } from "vuex";
-import ConceptService from "../services/ConceptService";
+import EntityService from "../services/EntityService";
 import { HistoryItem } from "../models/HistoryItem";
 import { User } from "../models/user/User";
 import AuthService from "@/services/AuthService";
@@ -29,6 +29,12 @@ export default createStore({
     historyCount: 0 as number,
     focusTree: false as boolean,
     treeLocked: true as boolean,
+    sideNavHierarchyFocus: {
+      name: "Ontology",
+      fullName: "Ontologies",
+      iri: "http://endhealth.info/im#DiscoveryOntology"
+    } as { name: string; iri: string },
+    selectedEntityType: "",
     filters: {
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
@@ -72,7 +78,7 @@ export default createStore({
     },
     updateHistory(state, historyItem) {
       state.history = state.history.filter(function(el) {
-        return el.url !== historyItem.url;
+        return el.conceptName !== historyItem.conceptName;
       });
       state.history.splice(0, 0, historyItem);
     },
@@ -106,6 +112,12 @@ export default createStore({
     },
     updateTreeLocked(state, bool) {
       state.treeLocked = bool;
+    },
+    updateSideNavHierarchyFocus(state, focus) {
+      state.sideNavHierarchyFocus = focus;
+    },
+    updateSelectedEntityType(state, type) {
+      state.selectedEntityType = type;
     }
   },
   actions: {
@@ -115,9 +127,9 @@ export default createStore({
     ) {
       let searchResults: any;
       let success = "true";
-      await ConceptService.advancedSearch(data.searchRequest, data.cancelToken)
+      await EntityService.advancedSearch(data.searchRequest, data.cancelToken)
         .then(res => {
-          searchResults = res.data.concepts;
+          searchResults = res.data.entities;
           commit("updateSearchResults", searchResults);
         })
         .catch(err => {

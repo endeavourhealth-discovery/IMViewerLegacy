@@ -405,7 +405,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 .p-timeline-event {
   min-width: 200px;
 }

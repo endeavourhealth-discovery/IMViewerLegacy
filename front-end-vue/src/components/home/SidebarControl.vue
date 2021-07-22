@@ -6,6 +6,7 @@
         type="text"
         v-model="searchTerm"
         @input="debounceForSearch"
+        @keydown="checkKey($event)"
         placeholder="Search"
         class="p-inputtext-lg search-input"
         autoWidth="false"
@@ -41,7 +42,7 @@
           class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container"
         >
           <SearchResults />
-          <Filters :search="search" />
+          <Filters :search="search" :searchTerm="searchTerm" />
         </div>
       </TabPanel>
     </TabView>
@@ -64,6 +65,16 @@ import axios from "axios";
 export default defineComponent({
   name: "SidebarControl",
   components: { Hierarchy, History, SearchResults, Filters },
+  props: ["focusHierarchy"],
+  emits: ["hierarchyFocused"],
+  watch: {
+    focusHierarchy(newValue) {
+      if (newValue) {
+        this.active = 0;
+        this.$emit("hierarchyFocused");
+      }
+    }
+  },
   data() {
     return {
       searchTerm: "",
@@ -75,9 +86,7 @@ export default defineComponent({
     };
   },
   mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.onResize);
-    });
+    window.addEventListener("resize", this.onResize);
 
     this.setContainerHeights();
   },
@@ -175,7 +184,7 @@ export default defineComponent({
               this.$toast.add(
                 LoggerService.error("Search results server request failed")
               );
-            } else if (res === "true") {
+            } else {
               this.$store.commit("updateLoading", {
                 key: "searchResults",
                 value: false
@@ -192,6 +201,12 @@ export default defineComponent({
       this.debounce = window.setTimeout(() => {
         this.search();
       }, 600);
+    },
+
+    checkKey(event: any) {
+      if (event.code === "Enter") {
+        this.search();
+      }
     },
 
     setContainerHeights(): void {

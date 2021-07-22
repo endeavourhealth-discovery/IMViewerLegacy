@@ -5,7 +5,7 @@ export class ConceptSummary {
   iri = "";
   scheme = {} as ConceptReference;
   code = "";
-  conceptType = {} as { elements: ConceptReference[]};
+  entityType = {} as { elements: ConceptReference[]};
   isDescendentOf: ConceptReference[] = [];
   weighting = 0;
   match = "";

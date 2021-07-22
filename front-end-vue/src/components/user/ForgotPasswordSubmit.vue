@@ -96,9 +96,6 @@
         </div>
       </template>
       <template #footer>
-        <!-- <small>Forgot your username? <a id="account-recovery-link" class="footer-link" @click="$router.push({name: 'RecoverByEmail'})">Recover Account</a></small>
-        <br>
-        <br> -->
         <small
           >Request a new code
           <a

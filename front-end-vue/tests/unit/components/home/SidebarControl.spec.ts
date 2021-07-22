@@ -60,8 +60,13 @@ describe("SidebarControl.vue", () => {
       global: {
         components: { InputText, TabPanel, TabView, Hierarchy, History, SearchResults, Filters },
         mocks: { $store: mockStore, $toast: mockToast }
-      }
+      },
+      props: { focusHierarchy: false }
     });
+  });
+
+  afterAll(() => {
+    jest.clearAllMocks();
   });
 
   it("adds event listener to setsContainerHeights on resize", async() => {
@@ -70,6 +75,17 @@ describe("SidebarControl.vue", () => {
     await wrapper.vm.$nextTick();
     expect(spy1).toHaveBeenCalledTimes(1);
     spy1.mockReset();
+  });
+
+  it("can update on focusHierarchy", async() => {
+    wrapper.vm.$options.watch.focusHierarchy.call(wrapper.vm, true);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.active).toBe(0);
+    expect(wrapper.emitted().hierarchyFocused).toBeTruthy();
+    wrapper.vm.active = 3;
+    wrapper.vm.$options.watch.focusHierarchy.call(wrapper.vm, false);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.active).toBe(3);
   });
 
   it("only searches with 3 or more characters ___ 0", async() => {
@@ -161,5 +177,24 @@ describe("SidebarControl.vue", () => {
     wrapper.vm.setContainerHeights();
     await wrapper.vm.$nextTick();
     expect(mockElement.style.maxHeight).toBeTruthy();
-  })
+  });
+
+  it("can checkKey ___ enter", () => {
+    wrapper.vm.search = jest.fn();
+    wrapper.vm.checkKey({ code: "Enter" });
+    expect(wrapper.vm.search).toHaveBeenCalledTimes(1);
+  });
+
+  it("can checkKey ___ other", () => {
+    wrapper.vm.search = jest.fn();
+    wrapper.vm.checkKey({ code: "Space" });
+    expect(wrapper.vm.search).toHaveBeenCalledTimes(0);
+  });
+
+  it("can remove eventListener", () => {
+    const spy = jest.spyOn(global, "removeEventListener");
+    wrapper.unmount();
+    expect(spy).toHaveBeenCalled();
+    spy.mockReset();
+  });
 });

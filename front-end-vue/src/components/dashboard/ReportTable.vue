@@ -32,11 +32,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import IndividualService from "@/services/IndividualService";
 import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 import { OWL } from "@/vocabulary/OWL";
+import EntityService from "@/services/EntityService";
 
 export default defineComponent({
   name: "OntologyOverview",
@@ -52,14 +52,18 @@ export default defineComponent({
       key: "reportTable_" + this.iri,
       value: true
     });
-    IndividualService.getIndividual(this.iri)
+    EntityService.getPartialEntity(this.iri, [
+      RDFS.LABEL,
+      RDFS.COMMENT,
+      IM.STATS_REPORT_ENTRY
+    ])
       .then(res => {
         this.tableData = [];
 
         for (const entry of res.data[IM.STATS_REPORT_ENTRY]) {
           this.tableData.push({
-            label: entry[RDFS.LABEL]["@value"],
-            count: +entry[OWL.HAS_VALUE]["@value"]
+            label: entry[RDFS.LABEL],
+            count: +entry[OWL.HAS_VALUE]
           });
         }
 

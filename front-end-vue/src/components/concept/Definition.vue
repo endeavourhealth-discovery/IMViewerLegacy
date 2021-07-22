@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="content-container">
     <div class="p-d-flex p-flex-row p-jc-start summary-container">
-      <div class="left-side" v-if="concept">
+      <div class="left-side">
         <div class="p-d-flex p-flex-row p-jc-start p-ai-center">
           <p>
             <strong>Name:</strong>
@@ -14,11 +14,11 @@
         </p>
         <p>
           <strong>Status: </strong>
-          {{ concept.status }}
+          {{ concept.status ? concept.status : "None" }}
         </p>
         <p>
           <strong>Types: </strong>
-          {{ conceptTypes }}
+          {{ conceptTypes ? conceptTypes : "None" }}
         </p>
       </div>
       <div class="right-side" v-if="concept.description">
@@ -26,19 +26,15 @@
         <Description :description="descriptionHTML" />
       </div>
     </div>
-    <Divider align="left">
-      <div class="p-d-inline-flex p-ai-center">
-        <strong>Definitional properties</strong>
-      </div>
-    </Divider>
-    <div class="p-d-flex p-flex-row p-jc-start summary-container">
+    <Divider />
+    <div class="p-d-flex p-flex-row p-jc-start definitional-container">
       <div class="left-side">
         <strong>is a: </strong>{{ concept.isa?.length }}
         <Listbox
           :options="concept.isa"
           listStyle="height: 12rem;"
           v-model="selected"
-          @change="navigate(selected.iri)"
+          @change="navigate(selected['@id'])"
         >
           <template #option="slotProps">
             <div>
@@ -53,7 +49,7 @@
           :options="concept.subtypes"
           listStyle="height: 12rem;"
           v-model="selected"
-          @change="navigate(selected.iri)"
+          @change="navigate(selected['@id'])"
         >
           <template #option="slotProps">
             <div>
@@ -63,12 +59,17 @@
         </Listbox>
       </div>
     </div>
-    <Divider align="left">
-      <div class="p-d-inline-flex p-ai-center">
-        <strong>Structure properties</strong>
-      </div>
-    </Divider>
-    <Properties :conceptIri="concept.iri" />
+    <Divider />
+    <SemanticProperties
+      :semanticProperties="semanticProperties"
+      :dataModelProperties="dataModelProperties"
+      :contentHeight="contentHeight"
+    />
+    <Divider />
+    <DataModelProperties
+      :dataModelProperties="dataModelProperties"
+      :contentHeight="contentHeight"
+    />
   </div>
 </template>
 
@@ -76,34 +77,47 @@
 import { defineComponent } from "vue";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import Description from "./Description.vue";
-import Properties from "./Properties.vue";
+import SemanticProperties from "./SemanticProperties.vue";
+import DataModelProperties from "./DataModelProperties.vue";
 
 export default defineComponent({
   name: "Definition",
-  components: { Description, Properties },
-  props: {
-    concept: {} as any
-  },
+  components: { Description, SemanticProperties, DataModelProperties },
+  props: [
+    "concept",
+    "semanticProperties",
+    "dataModelProperties",
+    "contentHeight"
+  ],
   computed: {
-    conceptTypes(): string {
-      return this.concept?.types
-        ?.map(function(type: any) {
-          return type.name;
-        })
-        .join(", ");
+    conceptTypes(): string | undefined {
+      if ({}.hasOwnProperty.call(this.concept, "types")) {
+        return this.concept.types
+          .map(function(type: any) {
+            return type.name;
+          })
+          .join(", ");
+      } else {
+        return undefined;
+      }
     },
 
-    descriptionHTML(): string {
-      const text = this.concept.description?.replaceAll(
-        "<p>",
-        "</p>\n<p class='description-p'>"
-      );
-      return "<p class='description-p'>" + text + "</p>";
+    descriptionHTML(): string | undefined {
+      if ({}.hasOwnProperty.call(this.concept, "description")) {
+        const text = this.concept.description.replace(
+          /<p>/g,
+          "</p>\n<p class='description-p'>"
+        );
+        return "<p class='description-p'>" + text + "</p>";
+      } else {
+        return undefined;
+      }
     }
   },
   data() {
     return {
-      selected: {}
+      selected: {},
+      copyMenuItems: [] as any
     };
   },
   methods: {
@@ -120,8 +134,16 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.content-container {
+  height: 100%;
+}
+
 .summary-container {
   width: 100%;
+  gap: 7px;
+}
+
+.definitional-container {
   gap: 7px;
 }
 

@@ -1,83 +1,166 @@
 <template>
-  <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
-    <div class="spinner">
-      <ProgressSpinner />
-    </div>
+  <div id="usedin-table-container">
+    <DataTable
+      :value="usages"
+      :scrollable="true"
+      :scrollHeight="scrollHeight"
+      showGridlines
+      class="p-datatable-sm"
+      :totalRecords="recordsTotal"
+      :rowsPerPageOptions="[25, 50, 100]"
+      :rows="25"
+      :paginator="recordsTotal > 25 ? true : false"
+      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+      currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} concepts"
+      selectionMode="single"
+      v-model:selection="selected"
+      @click="handleSelected"
+      :lazy="true"
+      @page="handlePage($event)"
+      :loading="loading"
+    >
+      <template #empty>
+        No records found.
+      </template>
+      <template #loading>
+        Loading data. Please wait.
+      </template>
+      <Column field="name" filter-field="name" header="Name">
+        <template #body="slotProps">
+          {{ slotProps.data.name }}
+        </template>
+      </Column>
+    </DataTable>
   </div>
-  <Listbox
-    v-else
-    :listStyle="listHeight"
-    :filter="true"
-    emptyMessage="No results found"
-    emptyFilterMessage="No results found"
-    v-model="selectedUsage"
-    @change="onNodeSelect(selectedUsage)"
-    :options="usages"
-    optionLabel="name"
-  ></Listbox>
 </template>
 <script lang="ts">
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
+import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
   name: "UsedIn",
   components: {},
   props: {
-    conceptIri: String
+    conceptIri: String as any
   },
   watch: {
     async conceptIri(newValue) {
-      await this.getUsages(newValue);
+      this.loading = true;
+      await this.getUsages(newValue, 0, this.pageSize);
+      await this.getRecordsSize(newValue);
+      this.loading = false;
     }
   },
   async mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.setListboxHeight);
-    });
-    this.setListboxHeight();
-    if (this.conceptIri) {
-      await this.getUsages(this.conceptIri);
-    }
+    this.loading = true;
+    window.addEventListener("resize", this.onResize);
+    await this.getUsages(this.conceptIri, 0, this.pageSize);
+    await this.getRecordsSize(this.conceptIri);
+    this.setScrollHeight();
+    this.loading = false;
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.setListboxHeight);
+    window.removeEventListener("resize", this.onResize);
   },
   data() {
     return {
-      selectedUsage: {},
       usages: [],
       loading: false,
-      listHeight: ""
+      selected: {} as any,
+      recordsTotal: 0,
+      currentPage: 1,
+      pageSize: 25,
+      scrollHeight: "500px"
     };
   },
   methods: {
-    async getUsages(iri: string) {
+    async getUsages(iri: string, pageIndex: number, pageSize: number) {
+      await EntityService.getEntityUsages(iri, pageIndex, pageSize)
+        .then(res => {
+          this.usages = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get usages from server", err)
+          );
+        });
+    },
+
+    async getRecordsSize(iri: string) {
+      await EntityService.getUsagesTotalRecords(iri)
+        .then(res => {
+          this.recordsTotal = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Failed to get usages record count from server",
+              err
+            )
+          );
+        });
+    },
+
+    async handlePage(event: any) {
       this.loading = true;
-      this.usages = (await ConceptService.getConceptUsages(iri)).data;
+      this.pageSize = event.rows;
+      this.currentPage = event.page;
+      await this.getUsages(this.conceptIri, this.currentPage, this.pageSize);
+      this.scrollToTop();
       this.loading = false;
     },
 
-    onNodeSelect(concept: any) {
-      this.$router.push({
-        name: "Concept",
-        params: { selectedIri: concept["@id"] }
-      });
+    handleSelected() {
+      if (
+        this.selected != null &&
+        Object.prototype.hasOwnProperty.call(this.selected, "@id")
+      ) {
+        this.$router.push({
+          name: "Concept",
+          params: { selectedIri: this.selected["@id"] }
+        });
+      }
     },
 
-    setListboxHeight(): void {
-      const container = document.getElementById(
-        "usedin-container"
+    scrollToTop(): void {
+      const resultsContainer = document.getElementById(
+        "search-results-container"
       ) as HTMLElement;
-      const listHeader = container.getElementsByClassName(
-        "p-listbox-header"
+      const scrollBox = resultsContainer?.getElementsByClassName(
+        "p-datatable-wrapper"
       )[0] as HTMLElement;
-      if (container && listHeader) {
-        const newHeight =
+      if (scrollBox) {
+        scrollBox.scrollTop = 0;
+      }
+    },
+
+    onResize() {
+      this.setScrollHeight();
+    },
+
+    setScrollHeight() {
+      const container = document.getElementById(
+        "usedin-table-container"
+      ) as HTMLElement;
+      const paginator = container?.getElementsByClassName(
+        "p-paginator"
+      )[0] as HTMLElement;
+      if (container && paginator) {
+        const height =
           container.getBoundingClientRect().height -
-          listHeader.getBoundingClientRect().height -
-          2;
-        this.listHeight = "height: " + newHeight + "px;";
+          paginator.getBoundingClientRect().height -
+          1 +
+          "px";
+        this.scrollHeight = height;
+      } else if (container && !paginator) {
+        const height = container.getBoundingClientRect().height - 1 + "px";
+        this.scrollHeight = height;
+      } else {
+        LoggerService.error(
+          undefined,
+          "Failed to set usedIn table scroll height. Required elements not found."
+        );
       }
     }
   }
@@ -85,15 +168,18 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.usage-mapping-container {
-  width: 100%;
+#usedin-table-container {
+  height: 100%;
 }
 
-.mapping-container {
-  width: 50%;
+#usedin-table-container ::v-deep(.p-datatable) {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
 }
 
-.usage-container {
-  width: 50%;
+#usedin-table-container ::v-deep(.p-datatable-wrapper) {
+  flex-grow: 6;
 }
 </style>
