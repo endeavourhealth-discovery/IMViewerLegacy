@@ -48,10 +48,17 @@ describe("SecondaryTree.vue", () => {
 
   it("hidesPopup on unMount", () => {
     wrapper.vm.hidePopup = jest.fn();
-    wrapper.vm.overlayLocation = [1,2,3];
+    wrapper.vm.overlayLocation = {1: 1, 2: 2, 3: 3};
     wrapper.unmount();
     expect(wrapper.vm.hidePopup).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.hidePopup).toHaveBeenCalledWith([1,2,3]);
+    expect(wrapper.vm.hidePopup).toHaveBeenCalledWith({1: 1, 2: 2, 3: 3});
+  });
+
+  it("hidesPopup on unMount ___ no keys", () => {
+    wrapper.vm.hidePopup = jest.fn();
+    wrapper.vm.overlayLocation = {};
+    wrapper.unmount();
+    expect(wrapper.vm.hidePopup).not.toHaveBeenCalled();
   });
 
   it("updates on conceptIri watch change", async() => {
@@ -369,5 +376,93 @@ describe("SecondaryTree.vue", () => {
     wrapper.vm.expandedKeys["Acquired curvature of spine (disorder)"] = true;
     expect(wrapper.vm.createExpandedParentTree([{"name":"Acquired curvature of spine (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#12903001"},{"name":"Scoliosis deformity of spine (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#298382003"}], 0)).toStrictEqual({"children": [{"children": [{"children": [], "color": "#e39a3688", "data": "http://snomed.info/sct#111266001", "key": "Acquired scoliosis (disorder)", "label": "Acquired scoliosis (disorder)", "leaf": false, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"}, {"children": [], "color": "#e39a3688", "data": "http://snomed.info/sct#773773006", "key": "Acrodysplasia scoliosis (disorder)", "label": "Acrodysplasia scoliosis (disorder)", "leaf": true, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"}, {"children": [], "color": "#e39a3688", "data": "http://snomed.info/sct#205045003", "key": "Congenital scoliosis due to bony malformation (disorder)", "label": "Congenital scoliosis due to bony malformation (disorder)", "leaf": true, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"}], "color": "#e39a3688", "data": "http://snomed.info/sct#298382003", "key": "Scoliosis deformity of spine (disorder)", "label": "Scoliosis deformity of spine (disorder)", "leaf": true, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"}], "color": "#e39a3688", "data": "http://snomed.info/sct#12903001", "key": "Acquired curvature of spine (disorder)", "label": "Acquired curvature of spine (disorder)", "leaf": false, "loading": false, "typeIcon": "far fa-fw fa-lightbulb"});
     expect(wrapper.vm.expandedKeys).toStrictEqual({"Acquired curvature of spine (disorder)": true, "Scoliosis deformity of spine (disorder)": true});
+  });
+
+  it("can setExpandedParentParents ___ api fail", async() => {
+    EntityService.getEntityParents = jest.fn().mockRejectedValue(false);
+    wrapper.vm.setExpandedParentParents(0);
+    await flushPromises();
+    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityParents).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Concept parents server request failed during parent expand stage 2"));
+  });
+
+  it("can setExpandedParentParents ___ length === 0", async() => {
+    expect(wrapper.vm.currentParent).toStrictEqual({"iri": "http://snomed.info/sct#64217002", "listPosition": 0, "name": "Curvature of spine (disorder)"});
+    expect(wrapper.vm.alternateParents).toStrictEqual([{"iri": "http://snomed.info/sct#928000", "listPosition": 1, "name": "Disorder of musculoskeletal system (disorder)"}, {"iri": "http://snomed.info/sct#699699005", "listPosition": 2, "name": "Disorder of vertebral column (disorder)"}]);
+    EntityService.getEntityParents = jest.fn().mockResolvedValue({data: []});
+    wrapper.vm.setExpandedParentParents();
+    await flushPromises();
+    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityParents).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.currentParent).toBe(null);
+    expect(wrapper.vm.alternateParents).toStrictEqual([]);
+  });
+
+  it("can setExpandedParentParents ___ length === 1", async() => {
+    expect(wrapper.vm.currentParent).toStrictEqual({"iri": "http://snomed.info/sct#64217002", "listPosition": 0, "name": "Curvature of spine (disorder)"});
+    expect(wrapper.vm.alternateParents).toStrictEqual([{"iri": "http://snomed.info/sct#928000", "listPosition": 1, "name": "Disorder of musculoskeletal system (disorder)"}, {"iri": "http://snomed.info/sct#699699005", "listPosition": 2, "name": "Disorder of vertebral column (disorder)"}]);
+    EntityService.getEntityParents = jest.fn().mockResolvedValue({data: [{
+      "@id": "http://endhealth.info/im#InformationModel",
+      hasChildren: false,
+      name: "Information Model",
+      type: [{name: "Folder", "@id": "http://endhealth.info/im#Folder"}]}]});
+    wrapper.vm.setExpandedParentParents();
+    await flushPromises();
+    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityParents).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.currentParent).toStrictEqual({"iri": "http://endhealth.info/im#InformationModel", "listPosition": 0, "name": "Information Model"});
+    expect(wrapper.vm.alternateParents).toStrictEqual([]);
+  });
+
+  it("can setExpandedParentParents ___ length > 1", async() => {
+    expect(wrapper.vm.currentParent).toStrictEqual({"iri": "http://snomed.info/sct#64217002", "listPosition": 0, "name": "Curvature of spine (disorder)"});
+    expect(wrapper.vm.alternateParents).toStrictEqual([{"iri": "http://snomed.info/sct#928000", "listPosition": 1, "name": "Disorder of musculoskeletal system (disorder)"}, {"iri": "http://snomed.info/sct#699699005", "listPosition": 2, "name": "Disorder of vertebral column (disorder)"}]);
+    EntityService.getEntityParents = jest.fn().mockResolvedValue({data: [
+      {
+          "name": "Curvature of spine (disorder)",
+          "hasChildren": false,
+          "type": [
+              {
+                  "name": "Class",
+                  "@id": "http://www.w3.org/2002/07/owl#Class"
+              }
+          ],
+          "@id": "http://snomed.info/sct#64217002"
+      },
+      {
+          "name": "Disorder of musculoskeletal system (disorder)",
+          "hasChildren": false,
+          "type": [
+              {
+                  "name": "Class",
+                  "@id": "http://www.w3.org/2002/07/owl#Class"
+              }
+          ],
+          "@id": "http://snomed.info/sct#928000"
+      },
+      {
+          "name": "Disorder of vertebral column (disorder)",
+          "hasChildren": false,
+          "type": [
+              {
+                  "name": "Class",
+                  "@id": "http://www.w3.org/2002/07/owl#Class"
+              }
+          ],
+          "@id": "http://snomed.info/sct#699699005"
+      }
+    ]});
+    wrapper.vm.setExpandedParentParents();
+    await flushPromises();
+    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityParents).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.currentParent).toStrictEqual({"iri": "http://snomed.info/sct#64217002", "listPosition": 0, "name": "Curvature of spine (disorder)"});
+    expect(wrapper.vm.alternateParents).toStrictEqual([{"iri": "http://snomed.info/sct#928000", "listPosition": 1, "name": "Disorder of musculoskeletal system (disorder)"}, {"iri": "http://snomed.info/sct#699699005", "listPosition": 2, "name": "Disorder of vertebral column (disorder)"}]);
+  });
+
+  it("can get concept types", () => {
+    expect(wrapper.vm.getConceptTypes([{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}, {"name":"NodeShape", "@id": "hppt://www.w3.org/2002/07/owl#NodeShape"}])).toBe("Class, NodeShape");
   });
 });
