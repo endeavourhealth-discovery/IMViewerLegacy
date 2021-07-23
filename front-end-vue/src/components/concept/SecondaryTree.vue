@@ -336,7 +336,7 @@ export default defineComponent({
           );
           this.root = [];
           this.root.push(parentNode);
-          await this.setExpandedParentParents(parentPosition);
+          await this.setExpandedParentParents();
           // this refreshes the keys so they start open if children and parents were both expanded
           this.expandedKeys = { ...this.expandedKeys };
         })
@@ -375,29 +375,24 @@ export default defineComponent({
       return parentNode;
     },
 
-    async setExpandedParentParents(parentPosition: number) {
+    async setExpandedParentParents() {
       await EntityService.getEntityParents(this.root[0].data)
         .then(res => {
+          this.currentParent = null;
           this.alternateParents = [];
           if (res.data.length) {
-            if (
-              res.data[0].name === "http://endhealth.info/im#DiscoveryOntology"
-            ) {
-              this.currentParent = null;
-            } else if (res.data.length === 1) {
+            if (res.data.length === 1) {
               this.parentPosition = 0;
               this.currentParent = {
                 name: res.data[0].name,
                 iri: res.data[0]["@id"],
                 listPosition: 0
               };
-              this.alternateParents = [];
             } else {
-              this.alternateParents = [];
               for (let i = 0; i < res.data.length; i++) {
-                if (i === parentPosition) {
+                if (i === 0) {
                   this.currentParent = {
-                    name: res.data[parentPosition].name,
+                    name: res.data[i].name,
                     iri: res.data[i]["@id"],
                     listPosition: i
                   };
@@ -411,8 +406,7 @@ export default defineComponent({
               }
             }
           } else {
-            this.currentParent = null;
-            this.alternateParents = [];
+            return;
           }
         })
         .catch(err => {
@@ -446,9 +440,9 @@ export default defineComponent({
       this.overlayLocation = {};
     },
 
-    getConceptTypes(concept: any): any {
-      return concept
-        .map(function(type: any) {
+    getConceptTypes(types: any): any {
+      return types
+        .map((type: any) => {
           return type.name;
         })
         .join(", ");
