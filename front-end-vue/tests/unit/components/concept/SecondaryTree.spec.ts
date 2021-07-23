@@ -152,13 +152,11 @@ describe("SecondaryTree.vue", () => {
   });
 
   it("can handle onNodeSelect", async() => {
-    wrapper.vm.createTree = jest.fn();
-    wrapper.vm.getConceptAggregate = jest.fn().mockResolvedValue(true);
-    wrapper.vm.onNodeSelect({ data: {} });
-    await flushPromises();
-    expect(wrapper.vm.getConceptAggregate).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.createTree).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.alternateParents).toStrictEqual([]);
+    await flushPromises()
+    wrapper.vm.selectedKey = { "Scoliosis of lumbar spine (disorder)": true };
+    wrapper.vm.onNodeSelect();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.selectedKey).toStrictEqual({ "Scoliosis deformity of spine (disorder)": true });
   });
 
   it("can expandChildren ___ !key ___ resolved service", async() => {
