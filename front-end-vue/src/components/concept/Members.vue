@@ -32,8 +32,8 @@
               placeholder="Keyword Search"
             />
           </span>
-          <div class="toggles-container">
-            <div class="toggle-label-container" v-if="!expandMembers">
+          <div class="checkboxes-container">
+            <div class="checkbox-label-container" v-if="!expandMembers">
               <label for="expandSubsets">Expand all subsets</label>
               <Checkbox
                 :disabled="expandMembers"
@@ -42,7 +42,7 @@
                 :binary="true"
               />
             </div>
-            <div class="toggle-label-container">
+            <div class="checkbox-label-container">
               <label for="expandMembers">
                 Expand all members
               </label>
@@ -89,7 +89,6 @@
         </span>
       </template>
     </DataTable>
-    <ConfirmPopup />
   </div>
 </template>
 
@@ -264,11 +263,6 @@ export default defineComponent({
       });
     },
 
-    toggle(event: any) {
-      const x = this.$refs.menu as any;
-      x.toggle(event);
-    },
-
     onResize() {
       this.setTableWidth();
     },
@@ -282,6 +276,11 @@ export default defineComponent({
       )[0] as HTMLElement;
       if (table) {
         table.style.width = "100%";
+      } else {
+        LoggerService.error(
+          undefined,
+          "Failed to set members table width. Required element(s) not found."
+        );
       }
     }
   }
@@ -307,14 +306,14 @@ export default defineComponent({
   color: rgba(51, 153, 255, 0.8);
 }
 
-.toggles-container {
+.checkboxes-container {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   gap: 0.5rem;
 }
 
-.toggle-label-container {
+.checkbox-label-container {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
