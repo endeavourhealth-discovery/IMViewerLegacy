@@ -82,4 +82,29 @@ describe("Members.vue", () => {
     expect(wrapper.vm.subsets).toStrictEqual(["Subset - \"other Black, African or Caribbean background\"", "Subset - African"]);
     expect(wrapper.vm.expandedRowGroups).toStrictEqual(["MemberIncluded", "MemberXcluded"]);
   });
+
+  it("adds event listener to setTableWidth on resize", async() => {
+    console.error = jest.fn();
+    await flushPromises();
+    const spy = jest.spyOn(wrapper.vm, "setTableWidth");
+    window.dispatchEvent(new Event("resize"));
+    await wrapper.vm.$nextTick();
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.mockReset();
+  });
+
+  it("can remove eventListener", () => {
+    console.error = jest.fn();
+    const spy = jest.spyOn(global, "removeEventListener");
+    wrapper.unmount();
+    expect(spy).toHaveBeenCalled();
+    spy.mockReset();
+  });
+
+  it("can resize", () => {
+    console.error = jest.fn();
+    wrapper.vm.setTableWidth = jest.fn();
+    wrapper.vm.onResize();
+    expect(wrapper.vm.setTableWidth).toHaveBeenCalledTimes(1);
+  });
 });
