@@ -22,6 +22,7 @@ describe("SearchResults.vue", () => {
   let mockRouter: any;
   let mockToast: any;
   let clipboardSpy: any;
+  let docSpy: any;
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -49,7 +50,9 @@ describe("SearchResults.vue", () => {
     };
     mockToast = {
       add: jest.fn()
-    }
+    };
+    docSpy = jest.spyOn(document, "getElementById");
+    docSpy.mockReturnValue(undefined);
 
     wrapper = shallowMount(SearchResults, {
       global: {
@@ -129,6 +132,14 @@ describe("SearchResults.vue", () => {
     const returnData = wrapper.vm.copyConceptToClipboard(testData);
     expect(returnData).toEqual(
       "Name: Scoliosis deformity of spine (disorder),\nIri: http://snomed.info/sct#298382003,\nCode: 298382003,\nStatus: Active,\nScheme: Snomed-CT code,\nTypes: [\n\tClass\n]");
+  });
+
+
+  it("can create copy return object ___ 0 type length", () => {
+    const testData = {"name":"Scoliosis deformity of spine (disorder)","iri":"http://snomed.info/sct#298382003","code":"298382003","status":{"name":"Active","@id":"http://endhealth.info/im#Active"},"scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"},"entityType":[],"isDescendentOf":[],"weighting":0,"match":"Scoliosis"};
+    const returnData = wrapper.vm.copyConceptToClipboard(testData);
+    expect(returnData).toEqual(
+      "Name: Scoliosis deformity of spine (disorder),\nIri: http://snomed.info/sct#298382003,\nCode: 298382003,\nStatus: Active,\nScheme: Snomed-CT code,\nTypes: [\n\t\n]");
   });
 
   it("can fire toast on copy", () => {
@@ -254,5 +265,26 @@ describe("SearchResults.vue", () => {
     await flushPromises();
     expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Class");
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy types to clipboard"));
+  });
+
+
+  it("can scroll to top", () => {
+    const mockElement = document.createElement("div");
+    mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 });
+    mockElement.scrollTop = 100;
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([mockElement]);
+    docSpy.mockReturnValue(mockElement);
+    wrapper.vm.scrollToTop();
+    expect(mockElement.scrollTop).toBe(0);
+  });
+
+  it("can scroll to top ___ container fail", () => {
+    const mockElement = document.createElement("div");
+    mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 });
+    mockElement.scrollTop = 100;
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([undefined]);
+    docSpy.mockReturnValue(undefined);
+    wrapper.vm.scrollToTop();
+    expect(mockElement.scrollTop).toBe(100);
   });
 });
