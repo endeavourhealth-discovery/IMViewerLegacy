@@ -179,13 +179,13 @@ export default defineComponent({
       )
         .then(res => {
           this.members = res.data;
+          this.expandMembersSizeCheck();
         })
         .catch(err => {
           this.$toast.add(
             LoggerService.error("Failed to get members from server", err)
           );
         });
-      this.expandMembersSizeCheck();
       this.loading = false;
       this.setTableWidth();
     },
@@ -254,13 +254,6 @@ export default defineComponent({
           ? a.entity.name.localeCompare(b.entity.name)
           : a.type.localeCompare(b.type)
       );
-    },
-
-    onNodeSelect(member: any) {
-      this.$router.push({
-        name: "Concept",
-        params: { selectedIri: member.concept["@id"] }
-      });
     },
 
     onResize() {
