@@ -152,10 +152,10 @@ export default defineComponent({
 
     async getShape() {
       await EntityService.getEntityShape("http://endhealth.info/im#ClassShape")
-        .then(res => {
+        .then((res: any) => {
           this.shape = res.data;
         })
-        .catch(err => {
+        .catch((err: any) => {
           this.$toast.add(
             LoggerService.error(
               "Editor failed to get entity shacl shape from server",

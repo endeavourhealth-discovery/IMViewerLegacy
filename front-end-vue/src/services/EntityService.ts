@@ -162,9 +162,66 @@ export default class EntityService {
     });
   }
 
-  public static getEntityShape(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/shape", {
-      params: { iri: iri }
+  // public static getEntityShape(iri: string): Promise<AxiosResponse<any>> {
+  //   return axios.get(this.api + "api/entity/shape", {
+  //     params: { iri: iri }
+  //   });
+  // }
+
+  public static getEntityShape(iri: string): Promise<any> {
+    return new Promise(resolve => {
+      resolve({
+        data: {
+          "@id": "http://endhealth.info/im#ClassShape",
+          "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+            {
+              "@id": "http://www.w3.org/ns/shacl#NodeShape",
+              name: "Node shape"
+            },
+            {
+              "@id": "http://www.w3.org/2002/07/owl#Class",
+              name: "Class"
+            }
+          ],
+          "http://www.w3.org/ns/shacl#property": [
+            {
+              "http://www.w3.org/ns/shacl#path": {
+                "@id": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+                name: "subClassOf"
+              },
+              "http://www.w3.org/ns/shacl#node": {
+                "@id": "http://endhealth.info/im#ClassExpressionShape",
+                name: "Class expression shape"
+              }
+            },
+            {
+              "http://www.w3.org/ns/shacl#path": {
+                "@id": "http://www.w3.org/2002/07/owl#equivalentClass",
+                name: "equivalentClass"
+              },
+              "http://www.w3.org/ns/shacl#node": {
+                "@id": "http://endhealth.info/im#ClassExpressionShape",
+                name: "Class expression shape"
+              }
+            }
+          ],
+          "http://endhealth.info#isA": [
+            {
+              "@id": "http://endhealth.info/im#ConceptShape",
+              name: "Concept shape"
+            }
+          ],
+          "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+            {
+              "@id": "http://endhealth.info/im#ConceptShape",
+              name: "Concept shape"
+            }
+          ],
+          "http://www.w3.org/2000/01/rdf-schema#comment":
+            "The schema for the definition of a Class concept",
+          "http://www.w3.org/2000/01/rdf-schema#label": "Class shape"
+        }
+      });
     });
   }
 }
