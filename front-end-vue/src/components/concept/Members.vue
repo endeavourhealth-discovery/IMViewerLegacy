@@ -256,14 +256,6 @@ export default defineComponent({
       );
     },
 
-    onNodeSelect(member: any) {
-      console.log(member);
-      this.$router.push({
-        name: "Concept",
-        params: { selectedIri: member.concept["@id"] }
-      });
-    },
-
     onResize() {
       this.setTableWidth();
     },
