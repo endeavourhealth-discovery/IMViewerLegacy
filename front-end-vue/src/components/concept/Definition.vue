@@ -2,28 +2,13 @@
   <div class="content-container">
     <div class="p-d-flex p-flex-row p-jc-start summary-container">
       <div class="left-side">
-        <div class="p-d-flex p-flex-row p-jc-start p-ai-center">
-          <p>
-            <strong>Name:</strong>
-            {{ concept.name }}
-          </p>
-        </div>
-        <p class="break-text">
-          <strong>Iri:</strong>
-          {{ concept.iri }}
-        </p>
-        <p>
-          <strong>Status: </strong>
-          {{ concept.status ? concept.status : "None" }}
-        </p>
-        <p>
-          <strong>Types: </strong>
-          {{ conceptTypes ? conceptTypes : "None" }}
-        </p>
+        <TextWithLabel label="Name" :text="concept.name" />
+        <TextWithLabel label="Iri" :text="concept.iri" />
+        <TextWithLabel label="Status" :text="concept.status ? concept.status : 'None'" />
+        <ArrayToNamesString label="Types" :array="concept.types" />
       </div>
       <div class="right-side" v-if="concept.description">
-        <strong>Description:</strong>
-        <Description :description="descriptionHTML" />
+        <TextWithHTML label="Description" :HTMLtext="concept.description" id="description" />
       </div>
     </div>
     <Divider />
@@ -76,44 +61,21 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
-import Description from "./Description.vue";
 import SemanticProperties from "./SemanticProperties.vue";
 import DataModelProperties from "./DataModelProperties.vue";
+import TextWithLabel from "@/components/concept/generics/TextWithLabel.vue";
+import ArrayToNamesString from "@/components/concept/generics/ArrayToNamesString.vue";
+import TextWithHTML from "@/components/concept/generics/TextWithHTML.vue";
 
 export default defineComponent({
   name: "Definition",
-  components: { Description, SemanticProperties, DataModelProperties },
+  components: { SemanticProperties, DataModelProperties, TextWithLabel, ArrayToNamesString, TextWithHTML },
   props: [
     "concept",
     "semanticProperties",
     "dataModelProperties",
     "contentHeight"
   ],
-  computed: {
-    conceptTypes(): string | undefined {
-      if ({}.hasOwnProperty.call(this.concept, "types")) {
-        return this.concept.types
-          .map(function(type: any) {
-            return type.name;
-          })
-          .join(", ");
-      } else {
-        return undefined;
-      }
-    },
-
-    descriptionHTML(): string | undefined {
-      if ({}.hasOwnProperty.call(this.concept, "description")) {
-        const text = this.concept.description.replace(
-          /<p>/g,
-          "</p>\n<p class='description-p'>"
-        );
-        return "<p class='description-p'>" + text + "</p>";
-      } else {
-        return undefined;
-      }
-    }
-  },
   data() {
     return {
       selected: {},
@@ -169,22 +131,10 @@ export default defineComponent({
   background-color: #135ba1 !important;
 }
 
-p {
-  margin: 0;
-}
-
 #synonyms-button {
   margin-left: 0.5em;
 }
 
-.break-text {
-  word-break: break-all;
-}
-
-.description {
-  height: 100%;
-  width: 100%;
-}
 .link {
   cursor: pointer;
 }
