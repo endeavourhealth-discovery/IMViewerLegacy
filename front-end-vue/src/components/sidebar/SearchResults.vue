@@ -168,10 +168,12 @@ export default defineComponent({
       const resultsContainer = document.getElementById(
         "search-results-container"
       ) as HTMLElement;
-      const scrollBox = resultsContainer.getElementsByClassName(
+      const scrollBox = resultsContainer?.getElementsByClassName(
         "p-datatable-wrapper"
       )[0] as HTMLElement;
-      scrollBox.scrollTop = 0;
+      if (scrollBox) {
+        scrollBox.scrollTop = 0;
+      }
     },
 
     hideOverlay(): void {
