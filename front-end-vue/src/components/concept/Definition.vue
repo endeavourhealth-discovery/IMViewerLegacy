@@ -2,13 +2,21 @@
   <div class="content-container">
     <div class="p-d-flex p-flex-row p-jc-start summary-container">
       <div class="left-side">
-        <TextWithLabel label="Name" :text="concept.name" />
-        <TextWithLabel label="Iri" :text="concept.iri" />
-        <TextWithLabel label="Status" :text="concept.status ? concept.status : 'None'" />
-        <ArrayToNamesString label="Types" :array="concept.types" />
+        <TextWithLabel label="Name" :text="concept.name" :size="50" />
+        <TextWithLabel label="Iri" :text="concept.iri" :size="50" />
+        <TextWithLabel
+          label="Status"
+          :text="concept.status ? concept.status : 'None'"
+          :size="50"
+        />
+        <ArrayToNamesString label="Types" :array="concept.types" :size="50" />
       </div>
       <div class="right-side" v-if="concept.description">
-        <TextWithHTML label="Description" :HTMLtext="concept.description" id="description" />
+        <TextWithHTML
+          label="Description"
+          :HTMLtext="concept.description"
+          id="description"
+        />
       </div>
     </div>
     <Divider />
@@ -69,7 +77,13 @@ import TextWithHTML from "@/components/concept/generics/TextWithHTML.vue";
 
 export default defineComponent({
   name: "Definition",
-  components: { SemanticProperties, DataModelProperties, TextWithLabel, ArrayToNamesString, TextWithHTML },
+  components: {
+    SemanticProperties,
+    DataModelProperties,
+    TextWithLabel,
+    ArrayToNamesString,
+    TextWithHTML
+  },
   props: [
     "concept",
     "semanticProperties",

@@ -23,9 +23,9 @@ export default defineComponent({
   methods: {
     init() {
       const text = this.HTMLtext.replace(
-          /<p>/g,
-          "</p>\n<p class='description-p'>"
-        );
+        /<p>/g,
+        "</p>\n<p class='description-p'>"
+      );
       this.convertedText = "<p class='description-p'>" + text + "</p>";
       const descContainer = document.getElementById(this.id);
       if (descContainer) {
@@ -36,6 +36,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
