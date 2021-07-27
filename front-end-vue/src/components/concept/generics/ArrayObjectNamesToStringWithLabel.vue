@@ -9,7 +9,7 @@
 import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
-  name: "ArrayToNamesString",
+  name: "ArrayObjectNamesToStringWithLabel",
   props: {
     label: { type: String },
     data: { type: Array as PropType<Array<string>> },
@@ -31,4 +31,12 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+p {
+  margin: 0;
+}
+
+.break-text {
+  word-break: break-all;
+}
+</style>

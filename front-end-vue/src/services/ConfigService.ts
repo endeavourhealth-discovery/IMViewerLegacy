@@ -35,21 +35,21 @@ export default class ConfigService {
           {
             label: "Status",
             predicate: IM.STATUS,
-            type: "TextWithLabel",
+            type: "ObjectNameWithLabel",
             size: "50%",
             order: 2
           },
           {
             label: "Types",
             predicate: RDF.TYPE,
-            type: "ArrayToNamesString",
+            type: "ArrayObjectNamesToStringWithLabel",
             size: "50%",
             order: 3
           },
           {
             label: "Description",
             predicate: RDFS.COMMENT,
-            type: "TextWithHTML",
+            type: "TextHTMLWithLabel",
             size: "100%",
             order: 4
           }

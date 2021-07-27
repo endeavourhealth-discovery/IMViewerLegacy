@@ -1,16 +1,18 @@
 <template>
-  <strong :style="{ width: size }">{{ label }}:</strong>
-  <ScrollPanel style="height: 100px" :style="{ width: size }" class="custom">
-    <!-- div content injected by javascript -->
-    <div :id="id"></div>
-  </ScrollPanel>
+  <p :style="{ width: size }">
+    <strong>{{ label }}:</strong>
+    <ScrollPanel style="height: 100px" class="custom">
+      <!-- div content injected by javascript -->
+      <div :id="id"></div>
+    </ScrollPanel>
+  </p>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "TextWithHTML",
+  name: "TextHTMLWithLabel",
   props: {
     label: { type: String },
     data: { type: String },

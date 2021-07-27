@@ -1,8 +1,9 @@
 <template>
   <div class="content-container">
-    <div class="p-d-flex p-flex-column p-jc-start summary-container">
+    <div class="summary-container">
       <template v-for="(config, index) in configs" :key="index">
         <component
+          v-if="concept[config.predicate]"
           :is="config.type"
           :label="config.label"
           :data="concept[config.predicate]"
@@ -13,7 +14,7 @@
       </template>
     </div>
     <Divider />
-    <div class="p-d-flex p-flex-row p-jc-start definitional-container">
+    <div class="definitional-container">
       <div class="left-side">
         <strong>is a: </strong>{{ concept.isa?.length }}
         <Listbox
@@ -64,18 +65,12 @@ import { defineComponent } from "vue";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import SemanticProperties from "./SemanticProperties.vue";
 import DataModelProperties from "./DataModelProperties.vue";
-import TextWithLabel from "@/components/concept/generics/TextWithLabel.vue";
-import ArrayToNamesString from "@/components/concept/generics/ArrayToNamesString.vue";
-import TextWithHTML from "@/components/concept/generics/TextWithHTML.vue";
 
 export default defineComponent({
   name: "Definition",
   components: {
     SemanticProperties,
-    DataModelProperties,
-    TextWithLabel,
-    ArrayToNamesString,
-    TextWithHTML
+    DataModelProperties
   },
   props: [
     "concept",
@@ -109,11 +104,16 @@ export default defineComponent({
 }
 
 .summary-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
   width: 100%;
-  gap: 7px;
 }
 
 .definitional-container {
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-start;
   gap: 7px;
 }
 

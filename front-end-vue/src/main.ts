@@ -74,9 +74,10 @@ import { FilterMatchMode, FilterOperator } from "primevue/api";
 import RadioButton from "primevue/radiobutton";
 import ConfirmPopup from "primevue/confirmpopup";
 
-import ArrayToNamesString from "@/components/concept/generics/ArrayToNamesString.vue";
-import TextWithHTML from "@/components/concept/generics/TextWithHTML.vue";
+import ArrayObjectNamesToStringWithLabel from "@/components/concept/generics/ArrayObjectNamesToStringWithLabel.vue";
+import TextHTMLWithLabel from "@/components/concept/generics/TextHTMLWithLabel.vue";
 import TextWithLabel from "@/components/concept/generics/TextWithLabel.vue";
+import ObjectNameWithLabel from "@/components/concept/generics/ObjectNameWithLabel.vue";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
@@ -141,8 +142,12 @@ const app = createApp(App)
   .component("RadioButton", RadioButton)
   .component("ConfirmPopup", ConfirmPopup)
 
-  .component("ArrayToNamesString", ArrayToNamesString)
-  .component("TextWithHTML", TextWithHTML)
-  .component("TextWithLabel", TextWithLabel);
+  .component(
+    "ArrayObjectNamesToStringWithLabel",
+    ArrayObjectNamesToStringWithLabel
+  )
+  .component("TextHTMLWithLabel", TextHTMLWithLabel)
+  .component("TextWithLabel", TextWithLabel)
+  .component("ObjectNameWithLabel", ObjectNameWithLabel);
 
 app.mount("#app");

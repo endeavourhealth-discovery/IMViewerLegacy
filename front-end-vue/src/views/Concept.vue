@@ -10,7 +10,13 @@
           >
             <i class="fas fa-sitemap" aria-hidden="true"></i>
           </button>
-          <div v-if="Object.keys(concept).length" class="copy-container">
+          <div
+            v-if="
+              Object.keys(concept).includes('isa') &&
+                Object.keys(concept).includes('subtypes')
+            "
+            class="copy-container"
+          >
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
@@ -60,7 +66,7 @@
                 :style="contentHeight"
               >
                 <Definition
-                  :concept="conceptFromShape"
+                  :concept="concept"
                   :semanticProperties="semanticProperties"
                   :dataModelProperties="dataModelProperties"
                   :contentHeight="contentHeightValue"
@@ -154,6 +160,9 @@ import EntityService from "@/services/EntityService";
 import ConfigService from "@/services/ConfigService";
 import LoggerService from "@/services/LoggerService";
 import SecondaryTree from "../components/concept/SecondaryTree.vue";
+import { IM } from "@/vocabulary/IM";
+import { RDF } from "@/vocabulary/RDF";
+import { RDFS } from "@/vocabulary/RDFS";
 
 export default defineComponent({
   name: "Concept",
@@ -186,11 +195,6 @@ export default defineComponent({
   watch: {
     async conceptIri() {
       this.init();
-    },
-    concept(newValue) {
-      if (newValue && Object.keys(newValue).length) {
-        this.setCopyMenuItems();
-      }
     }
   },
   async mounted() {
@@ -219,8 +223,7 @@ export default defineComponent({
       contentHeight: "",
       contentHeightValue: 0,
       copyMenuItems: [] as any,
-      configs: [] as any,
-      conceptFromShape: {} as any
+      configs: [] as any
     };
   },
   methods: {
@@ -243,57 +246,38 @@ export default defineComponent({
       this.$router.push({ name: "Create" });
     },
 
-    setContentHeight(): void {
-      const container = document.getElementById(
-        "concept-main-container"
-      ) as HTMLElement;
-      const header = container?.getElementsByClassName(
-        "p-panel-header"
-      )[0] as HTMLElement;
-      const nav = container?.getElementsByClassName(
-        "p-tabview-nav"
-      )[0] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
-      if (header && container && nav && currentFontSize) {
-        const calcHeight =
-          container.getBoundingClientRect().height -
-          header.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
-          4 * currentFontSize -
-          1;
-        this.contentHeight =
-          "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
-        this.contentHeightValue = calcHeight;
-      } else {
-        this.contentHeight = "height: 800px; max-height: 800px;";
-        this.contentHeightValue = 800;
-        LoggerService.error(
-          "Content sizing error",
-          "failed to get element(s) for concept content resizing"
-        );
-      }
-    },
-
     async getConcept(iri: string) {
       const predicates = this.configs.map((c: any) => c.predicate);
-      await EntityService.getPartialEntity(iri, predicates).then(res => {
-        this.conceptFromShape = res.data;
-      });
-
-      await EntityService.getEntityDefinitionDto(iri)
+      await EntityService.getPartialEntity(iri, predicates)
         .then(res => {
           this.concept = res.data;
         })
         .catch(err => {
           this.$toast.add(
             LoggerService.error(
-              "Failed to get concept definition dto from server",
+              "Failed to get concept partial entity from server.",
               err
             )
+          );
+        });
+
+      await EntityService.getPartialEntity(iri, [IM.IS_A])
+        .then(res => {
+          this.concept["isa"] = res.data[IM.IS_A];
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get isas from server.", err)
+          );
+        });
+
+      await EntityService.getEntityChildren(iri)
+        .then(res => {
+          this.concept["subtypes"] = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get subtypes from server.", err)
           );
         });
     },
@@ -343,8 +327,9 @@ export default defineComponent({
       this.getConfig("name");
       await this.getProperties(this.conceptIri);
       await this.getConcept(this.conceptIri);
-      this.types = this.concept.types;
-      this.header = this.concept.name;
+      this.types = this.concept[RDF.TYPE];
+      this.header = this.concept[RDFS.LABEL];
+      this.setCopyMenuItems();
       this.$store.commit(
         "updateSelectedEntityType",
         this.isSet
@@ -355,6 +340,41 @@ export default defineComponent({
           ? "Query"
           : "None"
       );
+    },
+
+    setContentHeight(): void {
+      const container = document.getElementById(
+        "concept-main-container"
+      ) as HTMLElement;
+      const header = container?.getElementsByClassName(
+        "p-panel-header"
+      )[0] as HTMLElement;
+      const nav = container?.getElementsByClassName(
+        "p-tabview-nav"
+      )[0] as HTMLElement;
+      const currentFontSize = parseFloat(
+        window
+          .getComputedStyle(document.documentElement, null)
+          .getPropertyValue("font-size")
+      );
+      if (header && container && nav && currentFontSize) {
+        const calcHeight =
+          container.getBoundingClientRect().height -
+          header.getBoundingClientRect().height -
+          nav.getBoundingClientRect().height -
+          4 * currentFontSize -
+          1;
+        this.contentHeight =
+          "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
+        this.contentHeightValue = calcHeight;
+      } else {
+        this.contentHeight = "height: 800px; max-height: 800px;";
+        this.contentHeightValue = 800;
+        LoggerService.error(
+          "Content sizing error",
+          "failed to get element(s) for concept content resizing"
+        );
+      }
     },
 
     openDownloadDialog(): void {
@@ -391,18 +411,18 @@ export default defineComponent({
           .map((item: any) => item.property.name)
           .join(",\n\t");
       }
-      if (this.concept.types.length > 0) {
-        typesString = this.concept.types
+      if (this.concept[RDF.TYPE].length > 0) {
+        typesString = this.concept[RDF.TYPE]
           .map((item: any) => item.name)
           .join(",\n\t");
       }
       let returnString =
         "Name: " +
-        this.concept.name +
+        this.concept[RDFS.LABEL] +
         ",\nIri: " +
-        this.concept.iri +
+        this.concept["@id"] +
         ",\nStatus: " +
-        this.concept.status +
+        this.concept[IM.STATUS].name +
         ",\nTypes: " +
         "[\n\t" +
         typesString +
@@ -469,8 +489,8 @@ export default defineComponent({
           .map((item: any) => item.property.name)
           .join(",\n\t");
       }
-      if (this.concept.types.length > 0) {
-        typesString = this.concept.types
+      if (this.concept[RDF.TYPE].length > 0) {
+        typesString = this.concept[RDF.TYPE]
           .map((item: any) => item.name)
           .join(",\n\t");
       }
@@ -506,7 +526,7 @@ export default defineComponent({
           label: "Name",
           command: async () => {
             await navigator.clipboard
-              .writeText("Name: " + this.concept.name)
+              .writeText("Name: " + this.concept[RDFS.LABEL])
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Name copied to clipboard")
@@ -523,7 +543,7 @@ export default defineComponent({
           label: "Iri",
           command: async () => {
             await navigator.clipboard
-              .writeText("Iri: " + this.concept.iri)
+              .writeText("Iri: " + this.concept["@id"])
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Iri copied to clipboard")
@@ -540,7 +560,7 @@ export default defineComponent({
           label: "Status",
           command: async () => {
             await navigator.clipboard
-              .writeText("Status: " + this.concept.status)
+              .writeText("Status: " + this.concept[IM.STATUS].name)
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Status copied to clipboard")
