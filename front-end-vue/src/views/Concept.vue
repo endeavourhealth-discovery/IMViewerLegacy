@@ -60,10 +60,11 @@
                 :style="contentHeight"
               >
                 <Definition
-                  :concept="concept"
+                  :concept="conceptFromShape"
                   :semanticProperties="semanticProperties"
                   :dataModelProperties="dataModelProperties"
                   :contentHeight="contentHeightValue"
+                  :configs="configs"
                 />
               </div>
             </TabPanel>
@@ -150,6 +151,7 @@ import { isValueSet, isClass, isQuery } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import EntityService from "@/services/EntityService";
+import ConfigService from "@/services/ConfigService";
 import LoggerService from "@/services/LoggerService";
 import SecondaryTree from "../components/concept/SecondaryTree.vue";
 
@@ -216,7 +218,9 @@ export default defineComponent({
       active: 0,
       contentHeight: "",
       contentHeightValue: 0,
-      copyMenuItems: [] as any
+      copyMenuItems: [] as any,
+      configs: [] as any,
+      conceptFromShape: {} as any
     };
   },
   methods: {
@@ -275,6 +279,11 @@ export default defineComponent({
     },
 
     async getConcept(iri: string) {
+      const predicates = this.configs.map((c: any) => c.predicate);
+      await EntityService.getPartialEntity(iri, predicates).then(res => {
+        this.conceptFromShape = res.data;
+      });
+
       await EntityService.getEntityDefinitionDto(iri)
         .then(res => {
           this.concept = res.data;
@@ -317,8 +326,21 @@ export default defineComponent({
         });
     },
 
+    async getConfig(name: string) {
+      await ConfigService.getConfig(name)
+        .then(res => {
+          this.configs = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get config data from server", err)
+          );
+        });
+    },
+
     async init() {
       this.active = 0;
+      this.getConfig("name");
       await this.getProperties(this.conceptIri);
       await this.getConcept(this.conceptIri);
       this.types = this.concept.types;

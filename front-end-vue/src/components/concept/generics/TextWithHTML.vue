@@ -1,6 +1,6 @@
 <template>
-  <strong>Description:</strong>
-  <ScrollPanel style="height: 100px" class="custom">
+  <strong :style="{ width: size }">{{ label }}:</strong>
+  <ScrollPanel style="height: 100px" :style="{ width: size }" class="custom">
     <!-- div content injected by javascript -->
     <div :id="id"></div>
   </ScrollPanel>
@@ -11,7 +11,12 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "TextWithHTML",
-  props: ["label", "HTMLtext", "id"],
+  props: {
+    label: { type: String },
+    data: { type: String },
+    size: { type: String },
+    id: { type: String }
+  },
   mounted() {
     this.init();
   },
@@ -22,10 +27,10 @@ export default defineComponent({
   },
   methods: {
     init() {
-      const text = this.HTMLtext.replace(
-        /<p>/g,
-        "</p>\n<p class='description-p'>"
-      );
+      if (!this.data || !this.id) {
+        return;
+      }
+      const text = this.data.replace(/<p>/g, "</p>\n<p class='description-p'>");
       this.convertedText = "<p class='description-p'>" + text + "</p>";
       const descContainer = document.getElementById(this.id);
       if (descContainer) {

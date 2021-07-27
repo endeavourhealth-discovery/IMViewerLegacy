@@ -1,5 +1,5 @@
 <template>
-  <p>
+  <p :style="{ width: size }">
     <strong>{{ label }}: </strong>
     <span>{{ arrayToString ? arrayToString : "None" }}</span>
   </p>
@@ -12,13 +12,13 @@ export default defineComponent({
   name: "ArrayToNamesString",
   props: {
     label: { type: String },
-    array: { type: Array as PropType<Array<string>> },
+    data: { type: Array as PropType<Array<string>> },
     size: { type: String }
   },
   computed: {
     arrayToString(): string | undefined {
-      if (Array.isArray(this.array)) {
-        return this.array
+      if (Array.isArray(this.data)) {
+        return this.data
           .map(function(item: any) {
             return item.name;
           })

@@ -1,7 +1,7 @@
 <template>
-  <p :style="'width: ' + size + '%;'">
+  <p :style="{ width: size }">
     <strong>{{ label }}: </strong>
-    <span class="break-text">{{ text }}</span>
+    <span class="break-text">{{ data }}</span>
   </p>
 </template>
 
@@ -10,7 +10,7 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "TextWithLabel",
-  props: { label: String, text: String, size: Number }
+  props: { label: String, data: String, size: String }
 });
 </script>
 

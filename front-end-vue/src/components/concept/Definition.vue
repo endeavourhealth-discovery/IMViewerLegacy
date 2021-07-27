@@ -1,23 +1,16 @@
 <template>
   <div class="content-container">
-    <div class="p-d-flex p-flex-row p-jc-start summary-container">
-      <div class="left-side">
-        <TextWithLabel label="Name" :text="concept.name" :size="50" />
-        <TextWithLabel label="Iri" :text="concept.iri" :size="50" />
-        <TextWithLabel
-          label="Status"
-          :text="concept.status ? concept.status : 'None'"
-          :size="50"
-        />
-        <ArrayToNamesString label="Types" :array="concept.types" :size="50" />
-      </div>
-      <div class="right-side" v-if="concept.description">
-        <TextWithHTML
-          label="Description"
-          :HTMLtext="concept.description"
-          id="description"
-        />
-      </div>
+    <div class="p-d-flex p-flex-column p-jc-start summary-container">
+      <template v-for="(config, index) in configs" :key="index">
+        <component
+          :is="config.type"
+          :label="config.label"
+          :data="concept[config.predicate]"
+          :size="config.size"
+          :id="config.type + index"
+        >
+        </component>
+      </template>
     </div>
     <Divider />
     <div class="p-d-flex p-flex-row p-jc-start definitional-container">
@@ -88,7 +81,8 @@ export default defineComponent({
     "concept",
     "semanticProperties",
     "dataModelProperties",
-    "contentHeight"
+    "contentHeight",
+    "configs"
   ],
   data() {
     return {
