@@ -52,6 +52,48 @@ export default class ConfigService {
             type: "TextHTMLWithLabel",
             size: "100%",
             order: 4
+          },
+          {
+            label: "Divider",
+            predicate: "isa",
+            type: "Divider",
+            size: "100%",
+            order: 5
+          },
+          {
+            label: "is a",
+            predicate: "isa",
+            type: "ListboxWithLabel",
+            size: "50%",
+            order: 6
+          },
+          {
+            label: "has sub types",
+            predicate: "subtypes",
+            type: "ListboxWithLabel",
+            size: "50%",
+            order: 7
+          },
+          {
+            label: "Divider",
+            predicate: "dataModelProperties",
+            type: "Divider",
+            size: "100%",
+            order: 8
+          },
+          {
+            label: "Semantic properties",
+            predicate: "semanticProperties",
+            type: "NameTypeDatatable",
+            size: "50%",
+            order: 9
+          },
+          {
+            label: "Data model properties",
+            predicate: "dataModelProperties",
+            type: "NameTypeInheritedCardinalityDataTable",
+            size: "50%",
+            order: 10
           }
         ]
       });

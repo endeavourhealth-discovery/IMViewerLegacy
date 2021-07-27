@@ -285,6 +285,7 @@ export default defineComponent({
     async getProperties(iri: string) {
       await EntityService.getSemanticProperties(iri)
         .then(res => {
+          this.concept["semanticProperties"] = res.data;
           this.semanticProperties = res.data;
         })
         .catch(err => {
@@ -298,6 +299,7 @@ export default defineComponent({
 
       await EntityService.getDataModelProperties(iri)
         .then(res => {
+          this.concept["dataModelProperties"] = res.data;
           this.dataModelProperties = res.data;
         })
         .catch(err => {
@@ -325,8 +327,8 @@ export default defineComponent({
     async init() {
       this.active = 0;
       this.getConfig("name");
-      await this.getProperties(this.conceptIri);
       await this.getConcept(this.conceptIri);
+      await this.getProperties(this.conceptIri);
       this.types = this.concept[RDF.TYPE];
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();

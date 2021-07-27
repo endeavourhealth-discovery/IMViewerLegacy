@@ -13,43 +13,8 @@
         </component>
       </template>
     </div>
-    <Divider />
-    <div class="definitional-container">
-      <div class="left-side">
-        <strong>is a: </strong>{{ concept.isa?.length }}
-        <Listbox
-          :options="concept.isa"
-          listStyle="height: 12rem;"
-          v-model="selected"
-          @change="navigate(selected['@id'])"
-        >
-          <template #option="slotProps">
-            <div>
-              {{ slotProps.option?.name || slotProps.option?.["@id"] }}
-            </div>
-          </template>
-        </Listbox>
-      </div>
-      <div class="right-side">
-        <strong>has sub types: </strong>{{ concept.subtypes?.length }}
-        <Listbox
-          :options="concept.subtypes"
-          listStyle="height: 12rem;"
-          v-model="selected"
-          @change="navigate(selected['@id'])"
-        >
-          <template #option="slotProps">
-            <div>
-              {{ slotProps.option.name || slotProps.option["@id"] }}
-            </div>
-          </template>
-        </Listbox>
-      </div>
-    </div>
-    <Divider />
     <SemanticProperties
       :semanticProperties="semanticProperties"
-      :dataModelProperties="dataModelProperties"
       :contentHeight="contentHeight"
     />
     <Divider />
