@@ -250,7 +250,13 @@ export default defineComponent({
     },
 
     async getConcept(iri: string) {
-      const predicates = this.configs.map((c: any) => c.predicate);
+      const predicates = this.configs
+        .filter((c: any) => c.type !== "Divider")
+        .filter((c: any) => c.predicate !== "subtypes")
+        .filter((c: any) => c.predicate !== "semanticProperties")
+        .filter((c: any) => c.predicate !== "dataModelProperties")
+        .map((c: any) => c.predicate);
+
       await EntityService.getPartialEntity(iri, predicates)
         .then(res => {
           this.concept = res.data;
@@ -261,16 +267,6 @@ export default defineComponent({
               "Failed to get concept partial entity from server.",
               err
             )
-          );
-        });
-
-      await EntityService.getPartialEntity(iri, [IM.IS_A])
-        .then(res => {
-          this.concept["isa"] = res.data[IM.IS_A];
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get isas from server.", err)
           );
         });
 
@@ -330,7 +326,7 @@ export default defineComponent({
 
     async init() {
       this.active = 0;
-      this.getConfig("definition");
+      await this.getConfig("definition");
       await this.getConcept(this.conceptIri);
       await this.getProperties(this.conceptIri);
       this.types = this.concept[RDF.TYPE];
