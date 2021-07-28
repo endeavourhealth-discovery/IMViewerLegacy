@@ -59,41 +59,4 @@ export default defineComponent({
   justify-content: flex-start;
   width: 100%;
 }
-
-.definitional-container {
-  display: flex;
-  flex-flow: row;
-  justify-content: flex-start;
-  gap: 7px;
-}
-
-.left-side {
-  width: 50%;
-}
-
-.right-side {
-  width: 50%;
-}
-
-.custom .p-scrollpanel-wrapper {
-  border-right: 9px solid #f4f4f4;
-}
-
-.custom .p-scrollpanel-bar {
-  background-color: #1976d2 !important;
-  opacity: 1;
-  transition: background-color 0.3s;
-}
-
-.custom .p-scrollpanel-bar:hover {
-  background-color: #135ba1 !important;
-}
-
-#synonyms-button {
-  margin-left: 0.5em;
-}
-
-.link {
-  cursor: pointer;
-}
 </style>

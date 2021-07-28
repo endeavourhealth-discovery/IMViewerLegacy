@@ -1,11 +1,9 @@
 <template>
-  <p :style="{ width: size }">
+  <div :style="{ width: size }">
     <strong>{{ label }}:</strong>
-    <ScrollPanel style="height: 100px" class="custom">
-      <!-- div content injected by javascript -->
-      <div :id="id"></div>
-    </ScrollPanel>
-  </p>
+    <!-- div content injected by javascript -->
+    <div :id="id"></div>
+  </div>
 </template>
 
 <script lang="ts">

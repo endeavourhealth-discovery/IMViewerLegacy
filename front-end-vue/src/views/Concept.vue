@@ -330,7 +330,7 @@ export default defineComponent({
 
     async init() {
       this.active = 0;
-      this.getConfig("name");
+      this.getConfig("definition");
       await this.getConcept(this.conceptIri);
       await this.getProperties(this.conceptIri);
       this.types = this.concept[RDF.TYPE];
