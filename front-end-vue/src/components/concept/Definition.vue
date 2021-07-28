@@ -18,33 +18,26 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import SemanticProperties from "./SemanticProperties.vue";
 import DataModelProperties from "./DataModelProperties.vue";
+import ArrayObjectNamesToStringWithLabel from "@/components/concept/generics/ArrayObjectNamesToStringWithLabel.vue";
+import TextHTMLWithLabel from "@/components/concept/generics/TextHTMLWithLabel.vue";
+import TextWithLabel from "@/components/concept/generics/TextWithLabel.vue";
+import ObjectNameWithLabel from "@/components/concept/generics/ObjectNameWithLabel.vue";
+import ListboxWithLabel from "@/components/concept/generics/ListboxWithLabel.vue";
 
 export default defineComponent({
   name: "Definition",
   components: {
     SemanticProperties,
-    DataModelProperties
+    DataModelProperties,
+    ArrayObjectNamesToStringWithLabel,
+    TextHTMLWithLabel,
+    TextWithLabel,
+    ObjectNameWithLabel,
+    ListboxWithLabel
   },
-  props: ["concept", "configs"],
-  data() {
-    return {
-      selected: {},
-      copyMenuItems: [] as any
-    };
-  },
-  methods: {
-    navigate(iri: any) {
-      const currentRoute = this.$route.name as RouteRecordName | undefined;
-      if (iri)
-        this.$router.push({
-          name: currentRoute,
-          params: { selectedIri: iri }
-        });
-    }
-  }
+  props: ["concept", "configs"]
 });
 </script>
 

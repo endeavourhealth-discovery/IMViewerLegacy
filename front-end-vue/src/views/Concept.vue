@@ -12,7 +12,7 @@
           </button>
           <div
             v-if="
-              Object.keys(concept).includes('isa') &&
+              Object.keys(concept).includes('http://endhealth.info/im#isA') &&
                 Object.keys(concept).includes('subtypes') &&
                 Object.keys(concept).includes('dataModelProperties')
             "
@@ -72,11 +72,7 @@
                 id="definition-container"
                 :style="contentHeight"
               >
-                <Definition
-                  :concept="concept"
-                  :contentHeight="contentHeightValue"
-                  :configs="configs"
-                />
+                <Definition :concept="concept" :configs="configs" />
               </div>
             </TabPanel>
             <TabPanel header="Terms">
@@ -241,7 +237,7 @@ export default defineComponent({
     directToEditRoute(): void {
       this.$router.push({
         name: "Edit",
-        params: { iri: this.concept.iri }
+        params: { iri: this.concept["@id"] }
       });
     },
 
@@ -393,8 +389,8 @@ export default defineComponent({
       let semanticPropertiesString = "";
       let dataModelPropertiesString = "";
       let typesString = "";
-      if (this.concept.isa.length > 0) {
-        isasString = this.concept.isa
+      if (this.concept[IM.IS_A].length > 0) {
+        isasString = this.concept[IM.IS_A]
           .map((item: any) => item.name)
           .join(",\n\t");
       }
@@ -445,9 +441,9 @@ export default defineComponent({
         "[\n\t" +
         dataModelPropertiesString +
         "\n]";
-      if (this.concept.description) {
+      if (this.concept[RDFS.COMMENT]) {
         returnString =
-          returnString + ",\nDescription: " + this.concept.description;
+          returnString + ",\nDescription: " + this.concept[RDFS.COMMENT].replace(/<p>/g, "\n");
       }
       return returnString;
     },
@@ -472,10 +468,10 @@ export default defineComponent({
       let dataModelPropertiesString = "";
       let typesString = "";
       if (
-        Object.prototype.hasOwnProperty.call(this.concept, "isa") &&
-        this.concept.isa.length > 0
+        Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A) &&
+        this.concept[IM.IS_A].length > 0
       ) {
-        isasString = this.concept.isa
+        isasString = this.concept[IM.IS_A]
           .map((item: any) => item.name)
           .join(",\n\t");
       }
@@ -686,12 +682,15 @@ export default defineComponent({
           }
         }
       ];
-      if (this.concept.description) {
+      if (this.concept[RDFS.COMMENT]) {
         this.copyMenuItems.push({
           label: "Description",
           command: async () => {
             await navigator.clipboard
-              .writeText("Description: " + this.concept.description)
+              .writeText(
+                "Description: " +
+                  this.concept[RDFS.COMMENT].replace(/<p>/g, "\n")
+              )
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Description copied to clipboard")

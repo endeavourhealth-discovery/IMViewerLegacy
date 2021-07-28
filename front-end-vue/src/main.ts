@@ -74,13 +74,6 @@ import { FilterMatchMode, FilterOperator } from "primevue/api";
 import RadioButton from "primevue/radiobutton";
 import ConfirmPopup from "primevue/confirmpopup";
 
-// Generics
-import ArrayObjectNamesToStringWithLabel from "@/components/concept/generics/ArrayObjectNamesToStringWithLabel.vue";
-import TextHTMLWithLabel from "@/components/concept/generics/TextHTMLWithLabel.vue";
-import TextWithLabel from "@/components/concept/generics/TextWithLabel.vue";
-import ObjectNameWithLabel from "@/components/concept/generics/ObjectNameWithLabel.vue";
-import ListboxWithLabel from "@/components/concept/generics/ListboxWithLabel.vue";
-
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
 
@@ -142,15 +135,6 @@ const app = createApp(App)
   .component("FilterMatchMode", FilterMatchMode)
   .component("FilterOperator", FilterOperator)
   .component("RadioButton", RadioButton)
-  .component("ConfirmPopup", ConfirmPopup)
-
-  .component(
-    "ArrayObjectNamesToStringWithLabel",
-    ArrayObjectNamesToStringWithLabel
-  )
-  .component("TextHTMLWithLabel", TextHTMLWithLabel)
-  .component("TextWithLabel", TextWithLabel)
-  .component("ObjectNameWithLabel", ObjectNameWithLabel)
-  .component("ListboxWithLabel", ListboxWithLabel);
+  .component("ConfirmPopup", ConfirmPopup);
 
 app.mount("#app");
