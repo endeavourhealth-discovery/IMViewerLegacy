@@ -13,7 +13,8 @@
           <div
             v-if="
               Object.keys(concept).includes('isa') &&
-                Object.keys(concept).includes('subtypes')
+                Object.keys(concept).includes('subtypes') &&
+                Object.keys(concept).includes('dataModelProperties')
             "
             class="copy-container"
           >
@@ -57,7 +58,13 @@
         <PanelHeader :types="types" :header="header" />
       </template>
       <div id="concept-content-dialogs-container">
-        <div v-if="Object.keys(concept).length" id="concept-panel-container">
+        <div
+          v-if="
+            Object.keys(concept).length &&
+              Object.keys(concept).includes('dataModelProperties')
+          "
+          id="concept-panel-container"
+        >
           <TabView v-model:activeIndex="active" :lazy="true">
             <TabPanel header="Definition">
               <div
@@ -67,8 +74,6 @@
               >
                 <Definition
                   :concept="concept"
-                  :semanticProperties="semanticProperties"
-                  :dataModelProperties="dataModelProperties"
                   :contentHeight="contentHeightValue"
                   :configs="configs"
                 />
@@ -212,8 +217,6 @@ export default defineComponent({
       editDialogView: true,
       showDownloadDialog: false,
       concept: {} as any,
-      semanticProperties: [] as any[],
-      dataModelProperties: [] as any[],
       definitionText: "",
       display: false,
       types: [],
@@ -286,7 +289,6 @@ export default defineComponent({
       await EntityService.getSemanticProperties(iri)
         .then(res => {
           this.concept["semanticProperties"] = res.data;
-          this.semanticProperties = res.data;
         })
         .catch(err => {
           this.$toast.add(
@@ -300,7 +302,6 @@ export default defineComponent({
       await EntityService.getDataModelProperties(iri)
         .then(res => {
           this.concept["dataModelProperties"] = res.data;
-          this.dataModelProperties = res.data;
         })
         .catch(err => {
           this.$toast.add(
@@ -316,6 +317,9 @@ export default defineComponent({
       await ConfigService.getConfig(name)
         .then(res => {
           this.configs = res.data;
+          this.configs.sort((a: any, b: any) => {
+            return a.order - b.order;
+          });
         })
         .catch(err => {
           this.$toast.add(
@@ -403,13 +407,13 @@ export default defineComponent({
           .map((item: any) => item.name)
           .join(",\n\t");
       }
-      if (this.semanticProperties.length > 0) {
-        semanticPropertiesString = this.semanticProperties
+      if (this.concept.semanticProperties.length > 0) {
+        semanticPropertiesString = this.concept.semanticProperties
           .map((item: any) => item.property.name)
           .join(",\n\t");
       }
-      if (this.dataModelProperties.length > 0) {
-        dataModelPropertiesString = this.dataModelProperties
+      if (this.concept.dataModelProperties.length > 0) {
+        dataModelPropertiesString = this.concept.dataModelProperties
           .map((item: any) => item.property.name)
           .join(",\n\t");
       }
@@ -471,23 +475,29 @@ export default defineComponent({
       let semanticPropertiesString = "";
       let dataModelPropertiesString = "";
       let typesString = "";
-      if ("isa" in this.concept && this.concept.isa.length > 0) {
+      if (
+        Object.prototype.hasOwnProperty.call(this.concept, "isa") &&
+        this.concept.isa.length > 0
+      ) {
         isasString = this.concept.isa
           .map((item: any) => item.name)
           .join(",\n\t");
       }
-      if ("subtypes" in this.concept && this.concept.subtypes.length > 0) {
+      if (
+        Object.prototype.hasOwnProperty.call(this.concept, "subtypes") &&
+        this.concept.subtypes.length > 0
+      ) {
         subTypesString = this.concept.subtypes
           .map((item: any) => item.name)
           .join(",\n\t");
       }
-      if (this.semanticProperties.length > 0) {
-        semanticPropertiesString = this.semanticProperties
+      if (this.concept.semanticProperties.length > 0) {
+        semanticPropertiesString = this.concept.semanticProperties
           .map((item: any) => item.property.name)
           .join(",\n\t");
       }
-      if (this.dataModelProperties.length > 0) {
-        dataModelPropertiesString = this.dataModelProperties
+      if (this.concept.dataModelProperties.length > 0) {
+        dataModelPropertiesString = this.concept.dataModelProperties
           .map((item: any) => item.property.name)
           .join(",\n\t");
       }

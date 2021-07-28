@@ -13,15 +13,6 @@
         </component>
       </template>
     </div>
-    <SemanticProperties
-      :semanticProperties="semanticProperties"
-      :contentHeight="contentHeight"
-    />
-    <Divider />
-    <DataModelProperties
-      :dataModelProperties="dataModelProperties"
-      :contentHeight="contentHeight"
-    />
   </div>
 </template>
 
@@ -37,13 +28,7 @@ export default defineComponent({
     SemanticProperties,
     DataModelProperties
   },
-  props: [
-    "concept",
-    "semanticProperties",
-    "dataModelProperties",
-    "contentHeight",
-    "configs"
-  ],
+  props: ["concept", "configs"],
   data() {
     return {
       selected: {},

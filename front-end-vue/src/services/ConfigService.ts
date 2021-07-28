@@ -84,16 +84,23 @@ export default class ConfigService {
           {
             label: "Semantic properties",
             predicate: "semanticProperties",
-            type: "NameTypeDatatable",
-            size: "50%",
+            type: "SemanticProperties",
+            size: "100%",
             order: 9
+          },
+          {
+            label: "Divider",
+            predicate: "dataModelProperties",
+            type: "Divider",
+            size: "100%",
+            order: 10
           },
           {
             label: "Data model properties",
             predicate: "dataModelProperties",
-            type: "NameTypeInheritedCardinalityDataTable",
-            size: "50%",
-            order: 10
+            type: "DataModelProperties",
+            size: "100%",
+            order: 11
           }
         ]
       });
