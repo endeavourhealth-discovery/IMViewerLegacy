@@ -143,9 +143,6 @@ export default defineComponent({
           if (type == "DataProperty") {
             searchRequest.typeFilter.push(ConceptType.DataProperty);
           }
-          if (type == "DataType") {
-            searchRequest.typeFilter.push(ConceptType.DataType);
-          }
           if (type == "Annotation") {
             searchRequest.typeFilter.push(ConceptType.Annotation);
           }

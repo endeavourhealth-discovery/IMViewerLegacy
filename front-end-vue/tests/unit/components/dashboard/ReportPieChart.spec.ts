@@ -100,6 +100,14 @@ describe("ReportPieChart.vue", () => {
     expect(EntityService.getPartialEntity).toBeCalledTimes(1);
   });
 
+  it("can remove eventListener", () => {
+    console.error = jest.fn();
+    const spy = jest.spyOn(global, "removeEventListener");
+    wrapper.unmount();
+    expect(spy).toHaveBeenCalled();
+    spy.mockReset();
+  });
+
   it("processes api return into realData, chartOptions and chartConceptTypes", async() => {
     const testChartConceptType = {
         "datasets": [

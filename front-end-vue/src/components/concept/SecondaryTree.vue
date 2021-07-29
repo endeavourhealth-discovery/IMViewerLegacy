@@ -145,7 +145,8 @@ export default defineComponent({
         listPosition: number;
       }[],
       parentPosition: 0,
-      hoveredResult: {} as ConceptSummary | any
+      hoveredResult: {} as ConceptSummary | any,
+      overlayLocation: {} as any
     };
   },
   async mounted() {
@@ -156,6 +157,11 @@ export default defineComponent({
       this.conceptAggregate.children,
       0
     );
+  },
+  beforeUnmount() {
+    if (Object.keys(this.overlayLocation).length) {
+      this.hidePopup(this.overlayLocation);
+    }
   },
   methods: {
     async getConceptAggregate(iri: string): Promise<void> {
@@ -268,17 +274,6 @@ export default defineComponent({
       return node;
     },
 
-    async onNodeSelect(node: any): Promise<void> {
-      this.alternateParents = [];
-      await this.getConceptAggregate(node.data);
-      this.createTree(
-        this.conceptAggregate.concept,
-        this.conceptAggregate.parents,
-        this.conceptAggregate.children,
-        0
-      );
-    },
-
     async expandChildren(node: TreeNode): Promise<void> {
       node.loading = true;
       if (!Object.prototype.hasOwnProperty.call(this.expandedKeys, node.key)) {
@@ -341,7 +336,7 @@ export default defineComponent({
           );
           this.root = [];
           this.root.push(parentNode);
-          await this.setExpandedParentParents(parentPosition);
+          await this.setExpandedParentParents();
           // this refreshes the keys so they start open if children and parents were both expanded
           this.expandedKeys = { ...this.expandedKeys };
         })
@@ -380,29 +375,24 @@ export default defineComponent({
       return parentNode;
     },
 
-    async setExpandedParentParents(parentPosition: number) {
+    async setExpandedParentParents() {
       await EntityService.getEntityParents(this.root[0].data)
         .then(res => {
+          this.currentParent = null;
           this.alternateParents = [];
           if (res.data.length) {
-            if (
-              res.data[0].name === "http://endhealth.info/im#DiscoveryOntology"
-            ) {
-              this.currentParent = null;
-            } else if (res.data.length === 1) {
+            if (res.data.length === 1) {
               this.parentPosition = 0;
               this.currentParent = {
                 name: res.data[0].name,
                 iri: res.data[0]["@id"],
                 listPosition: 0
               };
-              this.alternateParents = [];
             } else {
-              this.alternateParents = [];
               for (let i = 0; i < res.data.length; i++) {
-                if (i === parentPosition) {
+                if (i === 0) {
                   this.currentParent = {
-                    name: res.data[parentPosition].name,
+                    name: res.data[i].name,
                     iri: res.data[i]["@id"],
                     listPosition: i
                   };
@@ -416,8 +406,7 @@ export default defineComponent({
               }
             }
           } else {
-            this.currentParent = null;
-            this.alternateParents = [];
+            return;
           }
         })
         .catch(err => {
@@ -430,7 +419,14 @@ export default defineComponent({
         });
     },
 
+    async onNodeSelect() {
+      await this.$nextTick();
+      this.selectedKey = {};
+      this.selectedKey[this.conceptAggregate.concept[RDFS.LABEL]] = true;
+    },
+
     async showPopup(event: any, data: any): Promise<void> {
+      this.overlayLocation = event;
       const x = this.$refs.altTreeOP as any;
       x.show(event);
       await EntityService.getEntitySummary(data.data).then(res => {
@@ -441,11 +437,12 @@ export default defineComponent({
     hidePopup(event: any): void {
       const x = this.$refs.altTreeOP as any;
       x.hide(event);
+      this.overlayLocation = {};
     },
 
-    getConceptTypes(concept: any): any {
-      return concept
-        .map(function(type: any) {
+    getConceptTypes(types: any): any {
+      return types
+        .map((type: any) => {
           return type.name;
         })
         .join(", ");
@@ -469,5 +466,9 @@ export default defineComponent({
 .p-progress-spinner {
   width: 1.25em !important;
   height: 1.25em !important;
+}
+
+#secondary-tree-bar-container ::v-deep(.p-treenode-selectable) {
+  cursor: default !important;
 }
 </style>

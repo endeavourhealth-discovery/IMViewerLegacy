@@ -32,8 +32,8 @@
               placeholder="Keyword Search"
             />
           </span>
-          <div class="toggles-container">
-            <div class="toggle-label-container" v-if="!expandMembers">
+          <div class="checkboxes-container">
+            <div class="checkbox-label-container" v-if="!expandMembers">
               <label for="expandSubsets">Expand all subsets</label>
               <Checkbox
                 :disabled="expandMembers"
@@ -42,7 +42,7 @@
                 :binary="true"
               />
             </div>
-            <div class="toggle-label-container">
+            <div class="checkbox-label-container">
               <label for="expandMembers">
                 Expand all members
               </label>
@@ -68,11 +68,7 @@
         style="flex: 0 0 60%"
       />
       <Column field="code" header="Code" filter-field="code" />
-      <Column
-        field="scheme.name"
-        header="Scheme"
-        filter-field="scheme.name"
-      />
+      <Column field="scheme.name" header="Scheme" filter-field="scheme.name" />
       <template #groupheader="slotProps">
         <span v-for="subSet in subsets" :key="subSet">
           <span v-if="slotProps.data.type === subSet" class="group-header">
@@ -93,7 +89,6 @@
         </span>
       </template>
     </DataTable>
-    <ConfirmPopup />
   </div>
 </template>
 
@@ -184,13 +179,13 @@ export default defineComponent({
       )
         .then(res => {
           this.members = res.data;
+          this.expandMembersSizeCheck();
         })
         .catch(err => {
           this.$toast.add(
             LoggerService.error("Failed to get members from server", err)
           );
         });
-      this.expandMembersSizeCheck();
       this.loading = false;
       this.setTableWidth();
     },
@@ -255,22 +250,10 @@ export default defineComponent({
 
     sortMembers() {
       this.members.members = this.members.members.sort((a: any, b: any) =>
-          a.type.localeCompare(b.type) == 0
-            ? a.entity.name.localeCompare(b.entity.name)
-              : a.type.localeCompare(b.type)
+        a.type.localeCompare(b.type) == 0
+          ? a.entity.name.localeCompare(b.entity.name)
+          : a.type.localeCompare(b.type)
       );
-    },
-
-    onNodeSelect(member: any) {
-      this.$router.push({
-        name: "Concept",
-        params: { selectedIri: member.concept["@id"] }
-      });
-    },
-
-    toggle(event: any) {
-      const x = this.$refs.menu as any;
-      x.toggle(event);
     },
 
     onResize() {
@@ -286,6 +269,11 @@ export default defineComponent({
       )[0] as HTMLElement;
       if (table) {
         table.style.width = "100%";
+      } else {
+        LoggerService.error(
+          undefined,
+          "Failed to set members table width. Required element(s) not found."
+        );
       }
     }
   }
@@ -311,14 +299,14 @@ export default defineComponent({
   color: rgba(51, 153, 255, 0.8);
 }
 
-.toggles-container {
+.checkboxes-container {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   gap: 0.5rem;
 }
 
-.toggle-label-container {
+.checkbox-label-container {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
