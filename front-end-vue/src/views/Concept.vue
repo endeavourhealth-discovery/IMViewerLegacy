@@ -446,7 +446,9 @@ export default defineComponent({
         "\n]";
       if (this.concept[RDFS.COMMENT]) {
         returnString =
-          returnString + ",\nDescription: " + this.concept[RDFS.COMMENT].replace(/<p>/g, "\n");
+          returnString +
+          ",\nDescription: " +
+          this.concept[RDFS.COMMENT].replace(/<p>/g, "\n");
       }
       return returnString;
     },
