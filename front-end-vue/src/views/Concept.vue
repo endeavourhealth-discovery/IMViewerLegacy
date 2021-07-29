@@ -387,68 +387,48 @@ export default defineComponent({
     },
 
     copyConceptToClipboard(): string {
-      let isasString = "";
-      let subTypesString = "";
-      let semanticPropertiesString = "";
-      let dataModelPropertiesString = "";
-      let typesString = "";
-      if (this.concept[IM.IS_A].length > 0) {
-        isasString = this.concept[IM.IS_A]
-          .map((item: any) => item.name)
-          .join(",\n\t");
-      }
-      if (this.concept.subtypes.length > 0) {
-        subTypesString = this.concept.subtypes
-          .map((item: any) => item.name)
-          .join(",\n\t");
-      }
-      if (this.concept.semanticProperties.length > 0) {
-        semanticPropertiesString = this.concept.semanticProperties
-          .map((item: any) => item.property.name)
-          .join(",\n\t");
-      }
-      if (this.concept.dataModelProperties.length > 0) {
-        dataModelPropertiesString = this.concept.dataModelProperties
-          .map((item: any) => item.property.name)
-          .join(",\n\t");
-      }
-      if (this.concept[RDF.TYPE].length > 0) {
-        typesString = this.concept[RDF.TYPE]
-          .map((item: any) => item.name)
-          .join(",\n\t");
-      }
-      let returnString =
-        "Name: " +
-        this.concept[RDFS.LABEL] +
-        ",\nIri: " +
-        this.concept["@id"] +
-        ",\nStatus: " +
-        this.concept[IM.STATUS]?.name +
-        ",\nTypes: " +
-        "[\n\t" +
-        typesString +
-        "\n]" +
-        ",\nIs-a: " +
-        "[\n\t" +
-        isasString +
-        "\n]" +
-        ",\nSubtypes: " +
-        "[\n\t" +
-        subTypesString +
-        "\n]" +
-        ",\nSemantic properties: " +
-        "[\n\t" +
-        semanticPropertiesString +
-        "\n]" +
-        ",\nData model properties: " +
-        "[\n\t" +
-        dataModelPropertiesString +
-        "\n]";
-      if (this.concept[RDFS.COMMENT]) {
-        returnString =
-          returnString +
-          ",\nDescription: " +
-          this.concept[RDFS.COMMENT].replace(/<p>/g, "\n");
+      const totalKeys = Object.keys(this.concept).length;
+      let counter = 0;
+      let returnString = ""
+      let key: string;
+      let value: any;
+      for ([key, value] of Object.entries(this.concept)) {
+        let newString = "";
+        if (Array.isArray(value) && value.length) {
+          if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
+            newString = value.map(item => item.name).join(",\n\t");
+          } else if (Object.prototype.hasOwnProperty.call(value[0], "property")) {
+            newString = value.map(item => item.property.name).join(",\n\t");
+          } else {
+            LoggerService.error("Uncovered object property found for copyConceptToClipboard");
+          }
+          if (counter === 0) {
+            returnString = key + ": [\n\t" + newString + "\n],\n"
+          } else if (counter === totalKeys) {
+            returnString += key + ": [\n\t" + newString + "\n]"
+          } else {
+            returnString += key + ": [\n\t" + newString + "\n],\n"
+          }
+        } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "name")) {
+          newString = value.name;
+          if (counter === 0) {
+            returnString = key + ": " + newString + ",\n"
+          } else if (counter === totalKeys) {
+            returnString = key + ": " + newString
+          } else {
+            returnString += key + ": " + newString + ",\n"
+          }
+        } else {
+          newString = value as string;
+          if (counter === 0) {
+            returnString = key + ": " + newString + ",\n"
+          } else if (counter === totalKeys) {
+            returnString = key + ": " + newString
+          } else {
+            returnString += key + ": " + newString + ",\n"
+          }
+        }
+        counter ++;
       }
       return returnString;
     },
