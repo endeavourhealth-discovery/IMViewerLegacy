@@ -256,6 +256,9 @@ export default defineComponent({
       await EntityService.getPartialEntity(iri, predicates)
         .then(res => {
           this.concept = res.data;
+          if (!Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A)) {
+            this.concept[IM.IS_A] = [];
+          }
         })
         .catch(err => {
           this.$toast.add(
@@ -420,7 +423,7 @@ export default defineComponent({
         ",\nIri: " +
         this.concept["@id"] +
         ",\nStatus: " +
-        this.concept[IM.STATUS].name +
+        this.concept[IM.STATUS]?.name +
         ",\nTypes: " +
         "[\n\t" +
         typesString +
@@ -564,7 +567,7 @@ export default defineComponent({
           label: "Status",
           command: async () => {
             await navigator.clipboard
-              .writeText("Status: " + this.concept[IM.STATUS].name)
+              .writeText("Status: " + this.concept[IM.STATUS]?.name)
               .then(() => {
                 this.$toast.add(
                   LoggerService.success("Status copied to clipboard")

@@ -1,8 +1,8 @@
 <template>
-  <p :style="{ width: size }">
-    <strong>{{ label }}: </strong>
-    <span class="break-text">{{ data }}</span>
-  </p>
+  <div class="text-with-label-container" :style="{ width: size }">
+    <strong class="label">{{ label }}: </strong>
+    <span class="data break-text">{{ data }}</span>
+  </div>
 </template>
 
 <script lang="ts">
@@ -15,10 +15,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-p {
-  margin: 0;
-}
-
 .break-text {
   word-break: break-all;
 }
