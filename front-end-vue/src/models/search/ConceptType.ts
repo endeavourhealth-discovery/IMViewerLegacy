@@ -8,5 +8,5 @@ export class ConceptType {
   static Record = "http://endhealth.info/im#RecordType";
   static ValueSet = "http://endhealth.info/im#ValueSet";
   static Folder = "http://endhealth.info/im#Folder";
-  static Legacy = "http://endhealth.info/im#LegacyConcept";
+  static Legacy = "http://endhealth.info/im#LegacyEntity";
 }
