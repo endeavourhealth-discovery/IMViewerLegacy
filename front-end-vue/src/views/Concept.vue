@@ -396,44 +396,52 @@ export default defineComponent({
       let returnString = "";
       let newKey = this.configs.find((config: any) => config.predicate === key)
         .label;
-      if (Array.isArray(value) && value.length) {
-        if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
-          newString = value.map(item => item.name).join(",\n\t");
-        } else if (
-          Object.prototype.hasOwnProperty.call(value[0], "property") &&
-          Object.prototype.hasOwnProperty.call(value[0].property, "name")
-        ) {
-          newString = value.map(item => item.property.name).join(",\n\t");
+      if (Array.isArray(value)) {
+        if (value.length) {
+          if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
+            newString = value.map(item => item.name).join(",\n\t");
+          } else if (
+            Object.prototype.hasOwnProperty.call(value[0], "property") &&
+            Object.prototype.hasOwnProperty.call(value[0].property, "name")
+          ) {
+            newString = value.map(item => item.property.name).join(",\n\t");
+          } else {
+            LoggerService.error(
+              "Uncovered object property found for conceptObjectToCopyString within Concept.vue"
+            );
+          }
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ": [\n\t" + newString + "\n]";
+          } else if (counter === 0) {
+            returnString = newKey + ": [\n\t" + newString + "\n],\n";
+          } else {
+            returnString = newKey + ": [\n\t" + newString + "\n],\n";
+          }
         } else {
-          LoggerService.error(
-            "Uncovered object property found for conceptObjectToCopyString within Concept.vue"
-          );
-        }
-        if (counter === 0) {
-          returnString = newKey + ": [\n\t" + newString + "\n],\n";
-        } else if (counter === totalKeys) {
-          returnString = newKey + ": [\n\t" + newString + "\n]";
-        } else {
-          returnString = newKey + ": [\n\t" + newString + "\n],\n";
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ": [\n\t\n]";
+          } else {
+            returnString = newKey + ": [\n\t\n],\n";
+          }
         }
       } else if (
         Object.prototype.toString.call(value) === "[object Object]" &&
         Object.prototype.hasOwnProperty.call(value, "name")
       ) {
         newString = value.name;
-        if (counter === 0) {
-          returnString = newKey + ": " + newString + ",\n";
-        } else if (counter === totalKeys) {
+        if (counter === totalKeys - 1) {
           returnString = newKey + ": " + newString;
+        } else if (counter === 0) {
+          returnString = newKey + ": " + newString + ",\n";
         } else {
           returnString = newKey + ": " + newString + ",\n";
         }
       } else {
-        newString = value as string;
-        if (counter === 0) {
-          returnString = newKey + ": " + newString + ",\n";
-        } else if (counter === totalKeys) {
+        newString = value.replace(/<p>/g, "\n\t") as string;
+        if (counter === totalKeys - 1) {
           returnString = newKey + ": " + newString;
+        } else if (counter === 0) {
+          returnString = newKey + ": " + newString + ",\n";
         } else {
           returnString = newKey + ": " + newString + ",\n";
         }
@@ -506,7 +514,7 @@ export default defineComponent({
       let key: string;
       let value: any;
       for ([key, value] of Object.entries(this.concept)) {
-        let result = this.conceptObjectToCopyString(key, value, 0, 0);
+        let result = this.conceptObjectToCopyString(key, value, 0, 1);
         const label = result.label;
         const text = result.value;
         this.copyMenuItems.push({
