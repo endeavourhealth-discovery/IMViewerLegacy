@@ -389,46 +389,56 @@ export default defineComponent({
     copyConceptToClipboard(): string {
       const totalKeys = Object.keys(this.concept).length;
       let counter = 0;
-      let returnString = ""
+      let returnString = "";
       let key: string;
       let value: any;
       for ([key, value] of Object.entries(this.concept)) {
         let newString = "";
+        let newKey = this.configs.find(
+          (config: any) => config.predicate === key
+        ).label;
         if (Array.isArray(value) && value.length) {
           if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
             newString = value.map(item => item.name).join(",\n\t");
-          } else if (Object.prototype.hasOwnProperty.call(value[0], "property")) {
+          } else if (
+            Object.prototype.hasOwnProperty.call(value[0], "property")
+          ) {
             newString = value.map(item => item.property.name).join(",\n\t");
           } else {
-            LoggerService.error("Uncovered object property found for copyConceptToClipboard");
+            LoggerService.error(
+              "Uncovered object property found for copyConceptToClipboard"
+            );
           }
           if (counter === 0) {
-            returnString = key + ": [\n\t" + newString + "\n],\n"
+            returnString = newKey + ": [\n\t" + newString + "\n],\n";
           } else if (counter === totalKeys) {
-            returnString += key + ": [\n\t" + newString + "\n]"
+            returnString += newKey + ": [\n\t" + newString + "\n]";
           } else {
-            returnString += key + ": [\n\t" + newString + "\n],\n"
+            returnString += newKey + ": [\n\t" + newString + "\n],\n";
           }
-        } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "name")) {
+        } else if (
+          Object.prototype.toString.call(value) === "[object Object]" &&
+          Object.prototype.hasOwnProperty.call(value, "name")
+        ) {
           newString = value.name;
           if (counter === 0) {
-            returnString = key + ": " + newString + ",\n"
+            returnString = newKey + ": " + newString + ",\n";
           } else if (counter === totalKeys) {
-            returnString = key + ": " + newString
+            returnString = newKey + ": " + newString;
           } else {
-            returnString += key + ": " + newString + ",\n"
+            returnString += newKey + ": " + newString + ",\n";
           }
         } else {
           newString = value as string;
           if (counter === 0) {
-            returnString = key + ": " + newString + ",\n"
+            returnString = newKey + ": " + newString + ",\n";
           } else if (counter === totalKeys) {
-            returnString = key + ": " + newString
+            returnString = newKey + ": " + newString;
           } else {
-            returnString += key + ": " + newString + ",\n"
+            returnString += newKey + ": " + newString + ",\n";
           }
         }
-        counter ++;
+        counter++;
       }
       return returnString;
     },

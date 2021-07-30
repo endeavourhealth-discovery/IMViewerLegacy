@@ -3,7 +3,6 @@
     <div class="summary-container">
       <template v-for="(config, index) in configs" :key="index">
         <component
-          v-if="concept[config.predicate]"
           :is="config.type"
           :label="config.label"
           :data="concept[config.predicate]"

@@ -1,7 +1,7 @@
 <template>
   <div class="text-with-label-container" :style="{ width: size }">
     <strong class="label">{{ label }}: </strong>
-    <span class="data break-text">{{ data }}</span>
+    <span class="data break-text">{{ data ? data : "None" }}</span>
   </div>
 </template>
 
