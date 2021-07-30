@@ -251,6 +251,9 @@ export default defineComponent({
             }
           }
         }
+      } else {
+        this.currentParent = null;
+        this.alternateParents = [];
       }
     },
 

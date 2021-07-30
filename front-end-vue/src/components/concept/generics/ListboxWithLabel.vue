@@ -30,7 +30,7 @@ export default defineComponent({
   data() {
     return {
       selected: {} as any
-    }
+    };
   },
   methods: {
     navigate(iri: any) {
@@ -45,6 +45,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
