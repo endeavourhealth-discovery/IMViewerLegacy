@@ -47,7 +47,7 @@ describe("TextHTMLWithLabel.vue ___ descContainer", () => {
   });
 });
 
-describe("TextHTMLWithLabel.vue ___ noData", () => {
+describe("TextHTMLWithLabel.vue ___ id", () => {
   let wrapper: any;
   let docSpy: any;
   let mockElement: any;
@@ -62,6 +62,35 @@ describe("TextHTMLWithLabel.vue ___ noData", () => {
 
     wrapper = shallowMount(TextHTMLWithLabel, {
       props: { label: "Description", data: undefined, size: "100%", id: undefined }
+    });
+  });
+
+  it("can create convertedText", () => {
+    expect(wrapper.vm.convertedText).toBe("");
+  });
+
+  it("renders data", () => {
+    const label = wrapper.get(".label");
+    expect(label.text()).toBe("Description:");
+    expect(mockElement.innerHTML).toEqual("");
+  });
+});
+
+describe("TextHTMLWithLabel.vue ___ data", () => {
+  let wrapper: any;
+  let docSpy: any;
+  let mockElement: any;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+
+    docSpy = jest.spyOn(document, "getElementById");
+    mockElement = document.createElement("div");
+    mockElement.innerHTML = "";
+    docSpy.mockReturnValue(mockElement);
+
+    wrapper = shallowMount(TextHTMLWithLabel, {
+      props: { label: "Description", data: undefined, size: "100%", id: "TextHTMLWithLabel1" }
     });
   });
 
