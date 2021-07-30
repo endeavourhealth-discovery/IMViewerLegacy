@@ -386,6 +386,61 @@ export default defineComponent({
       this.showDownloadDialog = false;
     },
 
+    conceptObjectToCopyString(
+      key: string,
+      value: any,
+      counter: number,
+      totalKeys: number
+    ): { label: string; value: string } {
+      let newString = "";
+      let returnString = "";
+      let newKey = this.configs.find((config: any) => config.predicate === key)
+        .label;
+      if (Array.isArray(value) && value.length) {
+        if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
+          newString = value.map(item => item.name).join(",\n\t");
+        } else if (
+          Object.prototype.hasOwnProperty.call(value[0], "property") &&
+          Object.prototype.hasOwnProperty.call(value[0].property, "name")
+        ) {
+          newString = value.map(item => item.property.name).join(",\n\t");
+        } else {
+          LoggerService.error(
+            "Uncovered object property found for conceptObjectToCopyString within Concept.vue"
+          );
+        }
+        if (counter === 0) {
+          returnString = newKey + ": [\n\t" + newString + "\n],\n";
+        } else if (counter === totalKeys) {
+          returnString = newKey + ": [\n\t" + newString + "\n]";
+        } else {
+          returnString = newKey + ": [\n\t" + newString + "\n],\n";
+        }
+      } else if (
+        Object.prototype.toString.call(value) === "[object Object]" &&
+        Object.prototype.hasOwnProperty.call(value, "name")
+      ) {
+        newString = value.name;
+        if (counter === 0) {
+          returnString = newKey + ": " + newString + ",\n";
+        } else if (counter === totalKeys) {
+          returnString = newKey + ": " + newString;
+        } else {
+          returnString = newKey + ": " + newString + ",\n";
+        }
+      } else {
+        newString = value as string;
+        if (counter === 0) {
+          returnString = newKey + ": " + newString + ",\n";
+        } else if (counter === totalKeys) {
+          returnString = newKey + ": " + newString;
+        } else {
+          returnString = newKey + ": " + newString + ",\n";
+        }
+      }
+      return { label: newKey, value: returnString };
+    },
+
     copyConceptToClipboard(): string {
       const totalKeys = Object.keys(this.concept).length;
       let counter = 0;
@@ -393,51 +448,12 @@ export default defineComponent({
       let key: string;
       let value: any;
       for ([key, value] of Object.entries(this.concept)) {
-        let newString = "";
-        let newKey = this.configs.find(
-          (config: any) => config.predicate === key
-        ).label;
-        if (Array.isArray(value) && value.length) {
-          if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
-            newString = value.map(item => item.name).join(",\n\t");
-          } else if (
-            Object.prototype.hasOwnProperty.call(value[0], "property")
-          ) {
-            newString = value.map(item => item.property.name).join(",\n\t");
-          } else {
-            LoggerService.error(
-              "Uncovered object property found for copyConceptToClipboard"
-            );
-          }
-          if (counter === 0) {
-            returnString = newKey + ": [\n\t" + newString + "\n],\n";
-          } else if (counter === totalKeys) {
-            returnString += newKey + ": [\n\t" + newString + "\n]";
-          } else {
-            returnString += newKey + ": [\n\t" + newString + "\n],\n";
-          }
-        } else if (
-          Object.prototype.toString.call(value) === "[object Object]" &&
-          Object.prototype.hasOwnProperty.call(value, "name")
-        ) {
-          newString = value.name;
-          if (counter === 0) {
-            returnString = newKey + ": " + newString + ",\n";
-          } else if (counter === totalKeys) {
-            returnString = newKey + ": " + newString;
-          } else {
-            returnString += newKey + ": " + newString + ",\n";
-          }
-        } else {
-          newString = value as string;
-          if (counter === 0) {
-            returnString = newKey + ": " + newString + ",\n";
-          } else if (counter === totalKeys) {
-            returnString = newKey + ": " + newString;
-          } else {
-            returnString += newKey + ": " + newString + ",\n";
-          }
-        }
+        returnString += this.conceptObjectToCopyString(
+          key,
+          value,
+          counter,
+          totalKeys
+        ).value;
         counter++;
       }
       return returnString;
@@ -457,42 +473,6 @@ export default defineComponent({
     },
 
     setCopyMenuItems() {
-      let isasString = "";
-      let subTypesString = "";
-      let semanticPropertiesString = "";
-      let dataModelPropertiesString = "";
-      let typesString = "";
-      if (
-        Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A) &&
-        this.concept[IM.IS_A].length > 0
-      ) {
-        isasString = this.concept[IM.IS_A]
-          .map((item: any) => item.name)
-          .join(",\n\t");
-      }
-      if (
-        Object.prototype.hasOwnProperty.call(this.concept, "subtypes") &&
-        this.concept.subtypes.length > 0
-      ) {
-        subTypesString = this.concept.subtypes
-          .map((item: any) => item.name)
-          .join(",\n\t");
-      }
-      if (this.concept.semanticProperties.length > 0) {
-        semanticPropertiesString = this.concept.semanticProperties
-          .map((item: any) => item.property.name)
-          .join(",\n\t");
-      }
-      if (this.concept.dataModelProperties.length > 0) {
-        dataModelPropertiesString = this.concept.dataModelProperties
-          .map((item: any) => item.property.name)
-          .join(",\n\t");
-      }
-      if (this.concept[RDF.TYPE].length > 0) {
-        typesString = this.concept[RDF.TYPE]
-          .map((item: any) => item.name)
-          .join(",\n\t");
-      }
       this.copyMenuItems = [
         {
           label: "Copy",
@@ -520,181 +500,29 @@ export default defineComponent({
                 );
               });
           }
-        },
-        {
-          label: "Name",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("Name: " + this.concept[RDFS.LABEL])
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Name copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy name to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Iri",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("Iri: " + this.concept["@id"])
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Iri copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy iri to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Status",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("Status: " + this.concept[IM.STATUS]?.name)
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Status copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy status to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Types",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("Types: [\n\t" + typesString + "\n]")
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Types copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy types to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Is a",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("Is-a: [\n\t" + isasString + "\n]")
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Is-a's copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy is-a's to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Subtypes",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("Subtypes: [\n\t" + subTypesString + "\n]")
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Subtypes copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy subtypes to clipboard",
-                    err
-                  )
-                );
-              });
-          }
-        },
-        {
-          label: "Semantic properties",
-          command: async () => {
-            await navigator.clipboard
-              .writeText(
-                "Semantic properties: [\n\t" + semanticPropertiesString + "\n]"
-              )
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success(
-                    "Semantic properties copied to clipboard"
-                  )
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy semantic properties to clipboard",
-                    err
-                  )
-                );
-              });
-          }
-        },
-        {
-          label: "Data model properties",
-          command: async () => {
-            await navigator.clipboard
-              .writeText(
-                "Data model properties: [\n\t" +
-                  dataModelPropertiesString +
-                  "\n]"
-              )
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success(
-                    "Data model properties copied to clipboard"
-                  )
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy data model properties to clipboard",
-                    err
-                  )
-                );
-              });
-          }
         }
       ];
-      if (this.concept[RDFS.COMMENT]) {
+
+      let key: string;
+      let value: any;
+      for ([key, value] of Object.entries(this.concept)) {
+        let result = this.conceptObjectToCopyString(key, value, 0, 0);
+        const label = result.label;
+        const text = result.value;
         this.copyMenuItems.push({
-          label: "Description",
+          label: label,
           command: async () => {
             await navigator.clipboard
-              .writeText(
-                "Description: " +
-                  this.concept[RDFS.COMMENT].replace(/<p>/g, "\n")
-              )
+              .writeText(text)
               .then(() => {
                 this.$toast.add(
-                  LoggerService.success("Description copied to clipboard")
+                  LoggerService.success(label + " copied to clipboard")
                 );
               })
               .catch(err => {
                 this.$toast.add(
                   LoggerService.error(
-                    "Failed to copy description to clipboard",
+                    "Failed to copy " + label + " to clipboard",
                     err
                   )
                 );
