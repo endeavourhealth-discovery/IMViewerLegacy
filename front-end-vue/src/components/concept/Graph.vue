@@ -31,7 +31,7 @@
       </table>
     </template>
     <template #ISA="slotProps">
-      <table>
+      <table aria-label="graph isa's table">
         <thead>
           <tr>
             <th scope="col">Name</th>
@@ -45,7 +45,7 @@
       </table>
     </template>
     <template #SUBTYPE="slotProps">
-      <table>
+      <table aria-label="graph subtypes table">
         <thead>
           <tr>
             <th scope="col">Name</th>
