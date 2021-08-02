@@ -49,15 +49,17 @@
       class="tree-root"
     >
       <template #default="slotProps">
-        <span v-if="!slotProps.node.loading">
-          <i
-            :class="'fas fa-fw ' + slotProps.node.typeIcon"
-            :style="'color:' + slotProps.node.color"
-            aria-hidden="true"
-          />
-        </span>
-        <ProgressSpinner v-if="slotProps.node.loading" />
-        {{ slotProps.node.label }}
+        <div class="tree-row">
+          <span v-if="!slotProps.node.loading">
+            <i
+              :class="'fas fa-fw ' + slotProps.node.typeIcon"
+              :style="'color:' + slotProps.node.color"
+              aria-hidden="true"
+            />
+          </span>
+          <ProgressSpinner v-if="slotProps.node.loading" />
+          <span>{{ slotProps.node.label }}</span>
+        </div>
       </template>
     </Tree>
   </div>
@@ -404,13 +406,20 @@ export default defineComponent({
   height: 100%;
   overflow: auto;
 }
-.p-tree-toggler,
-.p-tree-toggler-icon {
+.tree-root ::v-deep(.p-tree-toggler) {
   min-width: 2rem;
 }
 
 .p-progress-spinner {
   width: 1.25em !important;
   height: 1.25em !important;
+}
+
+.tree-row {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0.25rem;
 }
 </style>

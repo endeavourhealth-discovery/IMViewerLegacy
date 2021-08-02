@@ -247,6 +247,23 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.concept).toStrictEqual({"@id":"http://snomed.info/sct#298382003","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#64217002","name":"Curvature of spine (disorder)"},{"@id":"http://snomed.info/sct#928000","name":"Disorder of musculoskeletal system (disorder)"},{"@id":"http://snomed.info/sct#699699005","name":"Disorder of vertebral column (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis deformity of spine (disorder)","subtypes":[{"name":"Acquired scoliosis (disorder)","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#205045003"}]});
   });
 
+  it("can getConcept ___ no isa", async() => {
+    await flushPromises();
+    jest.clearAllMocks();
+    await wrapper.vm.$nextTick();
+    EntityService.getPartialEntity = jest.fn().mockResolvedValue({data:{"@id":"http://snomed.info/sct#298382003","http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis deformity of spine (disorder)"}});
+    wrapper.vm.getConcept("http://snomed.info/sct#111266001");
+    EntityService.getEntityChildren = jest.fn().mockResolvedValue({ data: [{"name":"Acquired scoliosis (disorder)","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#205045003"}]});
+    jest.clearAllMocks();
+    wrapper.vm.getConcept("http://snomed.info/sct#298382003");
+    await flushPromises();
+    expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
+    expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", ["http://www.w3.org/2000/01/rdf-schema#label", "@id", "http://endhealth.info/im#status", "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "http://www.w3.org/2000/01/rdf-schema#comment", "http://endhealth.info/im#isA"]);
+    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(2);
+    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.concept).toStrictEqual({"@id":"http://snomed.info/sct#298382003","http://endhealth.info/im#isA":[],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis deformity of spine (disorder)","subtypes":[{"name":"Acquired scoliosis (disorder)","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#205045003"}]});
+  });
+
   it("can getConcept ___ fail", async() => {
     await flushPromises();
     await wrapper.vm.$nextTick();
@@ -294,6 +311,28 @@ describe("Concept.vue", () => {
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to get data model properties from server", { code: 403, message: "Data error"}));
   });
 
+  it("can getConfig ___ pass", async() => {
+    jest.clearAllMocks();
+    await flushPromises();
+    wrapper.vm.getConfig("description");
+    await flushPromises();
+    expect(ConfigService.getConfig).toHaveBeenCalledTimes(1);
+    expect(ConfigService.getConfig).toHaveBeenCalledWith("description");
+    expect(wrapper.vm.configs).toStrictEqual([{"label": "Name", "order": 0, "predicate": "http://www.w3.org/2000/01/rdf-schema#label", "size": "50%", "type": "TextWithLabel"}, {"label": "Iri", "order": 1, "predicate": "@id", "size": "50%", "type": "TextWithLabel"}, {"label": "Status", "order": 2, "predicate": "http://endhealth.info/im#status", "size": "50%", "type": "ObjectNameWithLabel"}, {"label": "Types", "order": 3, "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "size": "50%", "type": "ArrayObjectNamesToStringWithLabel"}, {"label": "Description", "order": 4, "predicate": "http://www.w3.org/2000/01/rdf-schema#comment", "size": "100%", "type": "TextHTMLWithLabel"}, {"label": "Divider", "order": 5, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Is a", "order": 6, "predicate": "http://endhealth.info/im#isA", "size": "50%", "type": "ListboxWithLabel"}, {"label": "Has sub types", "order": 7, "predicate": "subtypes", "size": "50%", "type": "ListboxWithLabel"}, {"label": "Divider", "order": 8, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Semantic properties", "order": 9, "predicate": "semanticProperties", "size": "100%", "type": "SemanticProperties"}, {"label": "Divider", "order": 10, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Data model properties", "order": 11, "predicate": "dataModelProperties", "size": "100%", "type": "DataModelProperties"}]);
+  });
+
+  it("can getConfig ___ fail", async() => {
+    ConfigService.getConfig = jest.fn().mockRejectedValue(false);
+    jest.clearAllMocks();
+    await flushPromises();
+    wrapper.vm.getConfig("description");
+    await flushPromises();
+    expect(ConfigService.getConfig).toHaveBeenCalledTimes(1);
+    expect(ConfigService.getConfig).toHaveBeenCalledWith("description");
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get config data from server"));
+  });
+
   it("Inits ___ Class", async() => {
     await flushPromises();
     jest.clearAllMocks();
@@ -331,6 +370,15 @@ describe("Concept.vue", () => {
     wrapper.vm.init();
     await flushPromises();
     expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Query");
+  });
+
+  it("Inits ___ None", async() => {
+    wrapper.vm.getProperties = jest.fn();
+    wrapper.vm.getConcept = jest.fn();
+    wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"name":"Other","@id":"http://endhealth.info/im#Other"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
+    wrapper.vm.init();
+    await flushPromises();
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "None");
   });
 
   it("can openDownloadDialog", async() => {

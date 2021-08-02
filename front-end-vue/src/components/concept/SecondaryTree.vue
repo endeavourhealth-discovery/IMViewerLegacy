@@ -37,6 +37,7 @@
     >
       <template #default="slotProps">
         <div
+          class="tree-row"
           @mouseover="showPopup($event, slotProps.node)"
           @mouseleave="hidePopup($event)"
         >
@@ -48,7 +49,7 @@
             />
           </span>
           <ProgressSpinner v-if="slotProps.node.loading" />
-          {{ slotProps.node.label }}
+          <span>{{ slotProps.node.label }}</span>
         </div>
       </template>
     </Tree>
@@ -461,6 +462,10 @@ export default defineComponent({
   padding-top: 0;
 }
 
+.tree-root ::v-deep(.p-tree-toggler) {
+  min-width: 2rem;
+}
+
 #secondary-tree-bar-container {
   height: 100%;
   border: 1px solid #dee2e6;
@@ -473,5 +478,13 @@ export default defineComponent({
 
 #secondary-tree-bar-container ::v-deep(.p-treenode-selectable) {
   cursor: default !important;
+}
+
+.tree-row {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0.25rem;
 }
 </style>
