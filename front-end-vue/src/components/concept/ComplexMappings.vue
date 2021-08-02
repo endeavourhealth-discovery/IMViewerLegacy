@@ -225,7 +225,7 @@ export default defineComponent({
     },
 
     createChartStructure(mappingObject: any): any {
-      if (!Object.keys(mappingObject).length) {
+      if (!mappingObject.length || !Object.keys(mappingObject).length) {
         return [];
       }
       const parentNode = {
