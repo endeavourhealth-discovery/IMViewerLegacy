@@ -393,6 +393,30 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.showDownloadDialog).toBe(false);
   });
 
+  it("can convert conceptObjectToCopyString ___ array 0 1", () => {
+    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [{"@id":"http://snomed.info/sct#64217002","name":"Curvature of spine (disorder)"},{"@id":"http://snomed.info/sct#928000","name":"Disorder of musculoskeletal system (disorder)"},{"@id":"http://snomed.info/sct#699699005","name":"Disorder of vertebral column (disorder)"}], 0, 1)).toStrictEqual({"label": "Is a", "value": "Is a: [\n\tCurvature of spine (disorder),\n\tDisorder of musculoskeletal system (disorder),\n\tDisorder of vertebral column (disorder)\n]"});
+  });
+
+  it("can convert conceptObjectToCopyString ___ array 1 4", () => {
+    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [{"@id":"http://snomed.info/sct#64217002","name":"Curvature of spine (disorder)"},{"@id":"http://snomed.info/sct#928000","name":"Disorder of musculoskeletal system (disorder)"},{"@id":"http://snomed.info/sct#699699005","name":"Disorder of vertebral column (disorder)"}], 1, 4)).toStrictEqual({"label": "Is a", "value": "Is a: [\n\tCurvature of spine (disorder),\n\tDisorder of musculoskeletal system (disorder),\n\tDisorder of vertebral column (disorder)\n],\n"});
+  });
+
+  it("can convert conceptObjectToCopyString ___ empty array 0 1", () => {
+    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [], 0, 1)).toStrictEqual({"label": "Is a", "value": "Is a: [\n\t\n]"});
+  });
+
+  it("can convert conceptObjectToCopyString ___ empty array 1 4", () => {
+    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [], 1, 4)).toStrictEqual({"label": "Is a", "value": "Is a: [\n\t\n],\n"});
+  });
+
+  it("can convert conceptObjectToCopyString ___ object 0 1", () => {
+    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#status", {"@id":"http://endhealth.info/im#Active","name":"Active"}, 0, 1)).toStrictEqual({"label": "Status", "value": "Status: Active"});
+  });
+
+  it("can convert conceptObjectToCopyString ___ object 1 4", () => {
+    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#status", {"@id":"http://endhealth.info/im#Active","name":"Active"}, 1, 4)).toStrictEqual({"label": "Status", "value": "Status: Active,\n"});
+  });
+
   it("can copy concept to clipboard", async() => {
     await flushPromises();
     expect(wrapper.vm.copyConceptToClipboard()).toBe("Iri: http://endhealth.info/im#CriticalCareEncounter,\nIs a: [\n\tHospital encounter\n],\nStatus: Active,\nDescription: An entry recording information about a criticial care encounter.\n\tcommon data model attributes for Critical care encounter,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Critical care encounter (record type),\nHas sub types: [\n\tAdult critical care encounter,\n\tNeonatal critical care encounter,\n\tPaediatric critical care encounter\n],\nSemantic properties: [\n\ttakes place in care setting\n],\nData model properties: [\n\thas admission source,\n\thas critical care unit function,\n\tadditional Practitioners\n]");

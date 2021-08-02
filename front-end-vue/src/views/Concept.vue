@@ -328,7 +328,9 @@ export default defineComponent({
       await this.getConfig("definition");
       await this.getConcept(this.conceptIri);
       await this.getProperties(this.conceptIri);
-      this.types = this.concept[RDF.TYPE];
+      this.types = Object.prototype.hasOwnProperty.call(this.concept, RDF.TYPE)
+        ? this.concept[RDF.TYPE]
+        : [];
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
       this.$store.commit(
@@ -412,8 +414,6 @@ export default defineComponent({
           }
           if (counter === totalKeys - 1) {
             returnString = newKey + ": [\n\t" + newString + "\n]";
-          } else if (counter === 0) {
-            returnString = newKey + ": [\n\t" + newString + "\n],\n";
           } else {
             returnString = newKey + ": [\n\t" + newString + "\n],\n";
           }
@@ -431,17 +431,14 @@ export default defineComponent({
         newString = value.name;
         if (counter === totalKeys - 1) {
           returnString = newKey + ": " + newString;
-        } else if (counter === 0) {
-          returnString = newKey + ": " + newString + ",\n";
         } else {
           returnString = newKey + ": " + newString + ",\n";
         }
       } else {
         newString = value.replace(/<p>/g, "\n\t") as string;
+        newString = value.replace(/\n/g, "\n\t") as string;
         if (counter === totalKeys - 1) {
           returnString = newKey + ": " + newString;
-        } else if (counter === 0) {
-          returnString = newKey + ": " + newString + ",\n";
         } else {
           returnString = newKey + ": " + newString + ",\n";
         }

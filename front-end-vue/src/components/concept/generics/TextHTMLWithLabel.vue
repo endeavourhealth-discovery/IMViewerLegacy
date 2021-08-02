@@ -40,6 +40,7 @@ export default defineComponent({
           text = text.slice(0, -3);
         }
         text = text.replace(/<p>/g, "</p><p class='" + this.id + "-p'>");
+        text = text.replace(/\n/g, "</p><p class='" + this.id + "-p'>");
         this.convertedText = "<p class='" + this.id + "-p'>" + text + "</p>";
         const descContainer = document.getElementById(this.id);
         if (descContainer) {
