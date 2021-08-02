@@ -435,8 +435,9 @@ export default defineComponent({
           returnString = newKey + ": " + newString + ",\n";
         }
       } else {
-        newString = value.replace(/<p>/g, "\n\t") as string;
-        newString = value.replace(/\n/g, "\n\t") as string;
+        newString = value
+          .replace(/\n/g, "\n\t")
+          .replace(/<p>/g, "\n\t") as string;
         if (counter === totalKeys - 1) {
           returnString = newKey + ": " + newString;
         } else {
