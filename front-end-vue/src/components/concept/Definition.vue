@@ -23,7 +23,7 @@ import ArrayObjectNamesToStringWithLabel from "@/components/concept/generics/Arr
 import TextHTMLWithLabel from "@/components/concept/generics/TextHTMLWithLabel.vue";
 import TextWithLabel from "@/components/concept/generics/TextWithLabel.vue";
 import ObjectNameWithLabel from "@/components/concept/generics/ObjectNameWithLabel.vue";
-import ListboxWithLabel from "@/components/concept/generics/ListboxWithLabel.vue";
+import ArrayObjectNameListboxWithLabel from "@/components/concept/generics/ArrayObjectNameListboxWithLabel.vue";
 
 export default defineComponent({
   name: "Definition",
@@ -34,7 +34,7 @@ export default defineComponent({
     TextHTMLWithLabel,
     TextWithLabel,
     ObjectNameWithLabel,
-    ListboxWithLabel
+    ArrayObjectNameListboxWithLabel
   },
   props: ["concept", "configs"]
 });
