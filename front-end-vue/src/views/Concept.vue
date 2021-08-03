@@ -420,6 +420,7 @@ export default defineComponent({
             newString = value.map(item => item.property.name).join(",\n\t");
           } else {
             LoggerService.error(
+              undefined,
               "Uncovered object property found for conceptObjectToCopyString within Concept.vue"
             );
           }

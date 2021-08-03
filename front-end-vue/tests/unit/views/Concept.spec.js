@@ -385,6 +385,16 @@ describe("Concept.vue", () => {
     expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "None");
   });
 
+  it("Inits ___ missing type", async() => {
+    wrapper.vm.getProperties = jest.fn();
+    wrapper.vm.getConcept = jest.fn();
+    wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
+    wrapper.vm.init();
+    await flushPromises();
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "None");
+    expect(wrapper.vm.types).toStrictEqual([]);
+  });
+
   it("can openDownloadDialog", async() => {
     wrapper.vm.openDownloadDialog();
     await wrapper.vm.$nextTick();
@@ -403,6 +413,18 @@ describe("Concept.vue", () => {
 
   it("can convert conceptObjectToCopyString ___ array 1 4", () => {
     expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [{"@id":"http://snomed.info/sct#64217002","name":"Curvature of spine (disorder)"},{"@id":"http://snomed.info/sct#928000","name":"Disorder of musculoskeletal system (disorder)"},{"@id":"http://snomed.info/sct#699699005","name":"Disorder of vertebral column (disorder)"}], 1, 4)).toStrictEqual({"label": "Is a", "value": "Is a: [\n\tCurvature of spine (disorder),\n\tDisorder of musculoskeletal system (disorder),\n\tDisorder of vertebral column (disorder)\n],\n"});
+  });
+
+  it("can convert conceptObjectToCopyString ___ array object property.name", () => {
+    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [{"@id":"http://snomed.info/sct#64217002","property": {"name":"Curvature of spine (disorder)"}},{"@id":"http://snomed.info/sct#928000","property": {"name":"Disorder of musculoskeletal system (disorder)"}},{"@id":"http://snomed.info/sct#699699005","property": {"name":"Disorder of vertebral column (disorder)"}}], 1, 4)).toStrictEqual({"label": "Is a", "value": "Is a: [\n\tCurvature of spine (disorder),\n\tDisorder of musculoskeletal system (disorder),\n\tDisorder of vertebral column (disorder)\n],\n"});
+  });
+
+  it("can convert conceptObjectToCopyString ___ array object error", () => {
+    const err = console.error;
+    console.error = jest.fn();
+    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [{"@id":"http://snomed.info/sct#64217002","property": {"firstName":"Curvature of spine (disorder)"}},{"@id":"http://snomed.info/sct#928000","property": {"firstName":"Disorder of musculoskeletal system (disorder)"}},{"@id":"http://snomed.info/sct#699699005","property": {"firstName":"Disorder of vertebral column (disorder)"}}], 1, 4)).toStrictEqual({"label": "Is a", "value": "Is a: [\n\t\n],\n"});
+    expect(console.error).toHaveBeenLastCalledWith("Uncovered object property found for conceptObjectToCopyString within Concept.vue");
+    console.error = err;
   });
 
   it("can convert conceptObjectToCopyString ___ empty array 0 1", () => {
