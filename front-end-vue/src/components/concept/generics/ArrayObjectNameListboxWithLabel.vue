@@ -37,8 +37,12 @@ export default defineComponent({
       if (
         Array.isArray(this.data) &&
         this.data.length &&
-        Object.prototype.toString.call(this.data[0]) === "[object Object]" &&
-        Object.prototype.hasOwnProperty.call(this.data[0], "name")
+        this.data.every(
+          item => Object.prototype.toString.call(item) === "[object Object]"
+        ) &&
+        this.data.every(item =>
+          Object.prototype.hasOwnProperty.call(item, "name")
+        )
       ) {
         return true;
       } else if (Array.isArray(this.data) && this.data.length === 0) {

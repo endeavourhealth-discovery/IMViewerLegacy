@@ -1,7 +1,9 @@
 <template>
   <p :style="{ width: size }">
-    <strong>{{ label }}: </strong>
-    <span>{{ arrayToString ? arrayToString : "None" }}</span>
+    <strong class="label">{{ label }}: </strong>
+    <span class="data-string">
+      {{ arrayToString ? arrayToString : "None" }}
+    </span>
   </p>
 </template>
 
@@ -17,7 +19,17 @@ export default defineComponent({
   },
   computed: {
     arrayToString(): string | undefined {
-      if (Array.isArray(this.data)) {
+      if (
+        this.data &&
+        Array.isArray(this.data) &&
+        this.data.length &&
+        this.data.every(
+          item => Object.prototype.toString.call(item) === "[object Object]"
+        ) &&
+        this.data.every(item =>
+          Object.prototype.hasOwnProperty.call(item, "name")
+        )
+      ) {
         return this.data
           .map(function(item: any) {
             return item.name;
