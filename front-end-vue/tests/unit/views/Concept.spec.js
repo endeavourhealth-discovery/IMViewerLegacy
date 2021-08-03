@@ -8,6 +8,7 @@ import LoggerService from "@/services/LoggerService";
 import PanelHeader from "@/components/concept/PanelHeader.vue";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
+import ProgressSpinner from "primevue/progressspinner";
 import Definition from "@/components/concept/Definition.vue";
 import Terms from "@/components/concept/Terms.vue";
 import ComplexMappings from "@/components/concept/ComplexMappings.vue";
@@ -100,7 +101,8 @@ describe("Concept.vue", () => {
           Graph,
           PanelHeader,
           Panel,
-          DownloadDialog
+          DownloadDialog,
+          ProgressSpinner
         },
         mocks: { $store: mockStore, $router: mockRouter, $toast: mockToast },
         directives: { "tooltip": Tooltip, "clipboard": VueClipboard }
@@ -341,6 +343,7 @@ describe("Concept.vue", () => {
     wrapper.vm.getConfig = jest.fn();
     wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
     wrapper.vm.init();
+    expect(wrapper.vm.loading).toBe(true);
     await flushPromises();
     expect(wrapper.vm.getConfig).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.getConfig).toHaveBeenCalledWith("definition");
@@ -351,6 +354,7 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.types).toStrictEqual([{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]);
     expect(wrapper.vm.header).toBe("Scoliosis caused by radiation (disorder)");
     expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Class");
+    expect(wrapper.vm.loading).toBe(false);
   });
 
 
