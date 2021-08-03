@@ -1,13 +1,10 @@
 <template>
   <p :style="{ width: size }">
-    <strong>{{ label }}: </strong>
-    <span
-      v-if="data && Object.prototype.hasOwnProperty.call(data, 'name')"
-      class="break-text"
-    >
+    <strong class="label">{{ label }}: </strong>
+    <span v-if="isObjectWithName" class="data break-text">
       {{ data.name }}
     </span>
-    <span v-else>None</span>
+    <span v-else class="data">None</span>
   </p>
 </template>
 
@@ -18,11 +15,20 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "TextWithLabel",
   props: { label: String, data: Object, size: String },
-  mounted() {
-    if (this.data && !Object.prototype.hasOwnProperty.call(this.data, "name")) {
-      LoggerService.error(
-        "Object has no property 'name' for use within component ObjectNameWithLabel.vue"
-      );
+  computed: {
+    isObjectWithName(): boolean {
+      if (
+        this.data &&
+        Object.prototype.toString.call(this.data) === "[object Object]" &&
+        Object.prototype.hasOwnProperty.call(this.data, "name")
+      ) {
+        return true;
+      } else {
+        LoggerService.error(
+          "No data, data is not Object or Object has no property 'name' for use within component ObjectNameWithLabel.vue"
+        );
+        return false;
+      }
     }
   }
 });
