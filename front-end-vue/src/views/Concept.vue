@@ -419,9 +419,9 @@ export default defineComponent({
           ) {
             newString = value.map(item => item.property.name).join(",\n\t");
           } else {
-            LoggerService.error(
+            LoggerService.warn(
               undefined,
-              "Uncovered object property found for conceptObjectToCopyString within Concept.vue"
+              "Uncovered object property or missing name found for conceptObjectToCopyString within Concept.vue"
             );
           }
           if (counter === totalKeys - 1) {
