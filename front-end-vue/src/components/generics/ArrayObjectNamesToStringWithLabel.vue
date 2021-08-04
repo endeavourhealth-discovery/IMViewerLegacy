@@ -1,0 +1,54 @@
+<template>
+  <p :style="{ width: size }">
+    <strong class="label">{{ label }}: </strong>
+    <span class="data-string">
+      {{ arrayToString ? arrayToString : "None" }}
+    </span>
+  </p>
+</template>
+
+<script lang="ts">
+import { defineComponent, PropType } from "vue";
+
+export default defineComponent({
+  name: "ArrayObjectNamesToStringWithLabel",
+  props: {
+    label: { type: String },
+    data: { type: Array as PropType<Array<string>> },
+    size: { type: String }
+  },
+  computed: {
+    arrayToString(): string | undefined {
+      if (
+        this.data &&
+        Array.isArray(this.data) &&
+        this.data.length &&
+        this.data.every(
+          item => Object.prototype.toString.call(item) === "[object Object]"
+        ) &&
+        this.data.every(item =>
+          Object.prototype.hasOwnProperty.call(item, "name")
+        )
+      ) {
+        return this.data
+          .map(function(item: any) {
+            return item.name;
+          })
+          .join(", ");
+      } else {
+        return undefined;
+      }
+    }
+  }
+});
+</script>
+
+<style scoped>
+p {
+  margin: 0;
+}
+
+.break-text {
+  word-break: break-all;
+}
+</style>

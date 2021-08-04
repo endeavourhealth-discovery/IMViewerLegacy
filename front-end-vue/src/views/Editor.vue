@@ -236,6 +236,11 @@ export default defineComponent({
           currentFontSize * 3 -
           2;
         this.contentHeight = "height: " + height + "px;";
+      } else {
+        LoggerService.error(
+          undefined,
+          "Failed to set content height for editor panels. Error finding required elements."
+        );
       }
     }
   }
