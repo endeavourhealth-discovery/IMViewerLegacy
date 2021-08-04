@@ -50,5 +50,6 @@ export default defineComponent({
   flex-flow: row wrap;
   justify-content: flex-start;
   width: 100%;
+  row-gap: 0.5rem;
 }
 </style>
