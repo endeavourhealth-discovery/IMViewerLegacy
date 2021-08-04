@@ -1,11 +1,11 @@
 import { shallowMount } from "@vue/test-utils";
 import Definition from "@/components/concept/Definition.vue";
 import Divider from "primevue/divider";
-import ArrayObjectNamesToStringWithLabel from "@/components/concept/generics/ArrayObjectNamesToStringWithLabel.vue";
-import TextHTMLWithLabel from "@/components/concept/generics/TextHTMLWithLabel.vue";
-import TextWithLabel from "@/components/concept/generics/TextWithLabel.vue";
-import ObjectNameWithLabel from "@/components/concept/generics/ObjectNameWithLabel.vue";
-import ArrayObjectNameListboxWithLabel from "@/components/concept/generics/ArrayObjectNameListboxWithLabel.vue";
+import ArrayObjectNamesToStringWithLabel from "@/components/generics/ArrayObjectNamesToStringWithLabel.vue";
+import TextHTMLWithLabel from "@/components/generics/TextHTMLWithLabel.vue";
+import TextWithLabel from "@/components/generics/TextWithLabel.vue";
+import ObjectNameWithLabel from "@/components/generics/ObjectNameWithLabel.vue";
+import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNameListboxWithLabel.vue";
 import SemanticProperties from "@/components/concept/SemanticProperties.vue";
 import DataModelProperties from "@/components/concept/DataModelProperties.vue";
 

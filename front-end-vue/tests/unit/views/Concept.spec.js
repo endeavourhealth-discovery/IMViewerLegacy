@@ -420,11 +420,11 @@ describe("Concept.vue", () => {
   });
 
   it("can convert conceptObjectToCopyString ___ array object error", () => {
-    const err = console.error;
-    console.error = jest.fn();
+    const err = console.warn;
+    console.warn = jest.fn();
     expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [{"@id":"http://snomed.info/sct#64217002","property": {"firstName":"Curvature of spine (disorder)"}},{"@id":"http://snomed.info/sct#928000","property": {"firstName":"Disorder of musculoskeletal system (disorder)"}},{"@id":"http://snomed.info/sct#699699005","property": {"firstName":"Disorder of vertebral column (disorder)"}}], 1, 4)).toStrictEqual({"label": "Is a", "value": "Is a: [\n\t\n],\n"});
-    expect(console.error).toHaveBeenLastCalledWith("Uncovered object property found for conceptObjectToCopyString within Concept.vue");
-    console.error = err;
+    expect(console.warn).toHaveBeenLastCalledWith("Uncovered object property or missing name found for key: http://endhealth.info/im#isA at conceptObjectToCopyString within Concept.vue");
+    console.warn = err;
   });
 
   it("can convert conceptObjectToCopyString ___ empty array 0 1", () => {

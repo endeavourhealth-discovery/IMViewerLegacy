@@ -421,7 +421,9 @@ export default defineComponent({
           } else {
             LoggerService.warn(
               undefined,
-              "Uncovered object property or missing name found for conceptObjectToCopyString within Concept.vue"
+              "Uncovered object property or missing name found for key: " +
+                key +
+                " at conceptObjectToCopyString within Concept.vue"
             );
           }
           if (counter === totalKeys - 1) {

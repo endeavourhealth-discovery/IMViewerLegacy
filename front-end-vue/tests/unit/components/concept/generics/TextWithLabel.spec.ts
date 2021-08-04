@@ -1,5 +1,5 @@
 import { shallowMount } from "@vue/test-utils";
-import TextWithLabel from "@/components/concept/generics/TextWithLabel.vue";
+import TextWithLabel from "@/components/generics/TextWithLabel.vue";
 
 describe("TextWithLabel.vue", () => {
   let wrapper: any;

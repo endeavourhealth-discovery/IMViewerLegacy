@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import ArrayObjectNameListboxWithLabel from "@/components/concept/generics/ArrayObjectNameListboxWithLabel.vue";
+import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNameListboxWithLabel.vue";
 import Listbox from "primevue/listbox";
 
 describe("ListboxWithLabel.vue", () => {
