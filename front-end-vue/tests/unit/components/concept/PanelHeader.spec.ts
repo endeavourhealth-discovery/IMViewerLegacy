@@ -17,6 +17,13 @@ describe("PanelHeader.vue", () => {
     expect(wrapper.vm.icon).toBe("far fa-fw fa-lightbulb");
   });
 
+  it("can watch types ___ 0 length", async() => {
+    wrapper.vm.$options.watch.types.call(wrapper.vm, []);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.color).toBe("");
+    expect(wrapper.vm.icon).toBe("");
+  });
+
   it("renders header text", () => {
     expect(wrapper.get("#entity-panel-header-text").text()).toBe("Scoliosis deformity of spine (disorder)");
   });

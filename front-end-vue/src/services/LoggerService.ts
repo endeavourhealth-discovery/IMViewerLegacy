@@ -23,7 +23,7 @@ export default {
 
   warn(toastMessage?: string, consoleData?: Error | string): ToastType | void {
     if (consoleData) {
-      console.log(consoleData);
+      console.warn(consoleData);
     }
     if (toastMessage) {
       return {

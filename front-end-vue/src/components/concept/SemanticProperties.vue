@@ -1,40 +1,46 @@
 <template>
-  <DataTable
-    :value="semanticProperties"
-    :paginator="semanticProperties.length > 5 ? true : false"
-    :rows="5"
-    id="semantic-properties-table"
-  >
-    <template #empty>
-      No records found
-    </template>
-    <template #header>
-      Semantic properties
-    </template>
-    <Column field="property.name" header="Name" :sortable="true">
-      <template #body="slotProps">
-        <div class="link" @click="navigate(slotProps.data.property?.['@id'])">
-          {{ slotProps.data.property?.name }}
-        </div>
+  <div id="semantic-properties-container" :style="{ width: size }">
+    <DataTable
+      :value="data"
+      :paginator="data.length > 5 ? true : false"
+      :rows="5"
+      id="semantic-properties-table"
+    >
+      <template #empty>
+        No records found
       </template>
-    </Column>
-    <Column field="type.name" header="Type" :sortable="true">
-      <template #body="slotProps">
-        <div class="link" @click="navigate(slotProps.data.type['@id'])">
-          {{ slotProps.data.type?.name || slotProps.data.type?.["@id"] }}
-        </div>
+      <template #header>
+        {{ label }}
       </template>
-    </Column>
-  </DataTable>
+      <Column field="property.name" header="Name" :sortable="true">
+        <template #body="slotProps">
+          <div class="link" @click="navigate(slotProps.data.property?.['@id'])">
+            {{ slotProps.data.property?.name }}
+          </div>
+        </template>
+      </Column>
+      <Column field="type.name" header="Type" :sortable="true">
+        <template #body="slotProps">
+          <div class="link" @click="navigate(slotProps.data.type['@id'])">
+            {{ slotProps.data.type?.name || slotProps.data.type?.["@id"] }}
+          </div>
+        </template>
+      </Column>
+    </DataTable>
+  </div>
 </template>
 <script lang="ts">
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
-import { defineComponent } from "@vue/runtime-core";
+import { defineComponent, PropType } from "@vue/runtime-core";
 
 export default defineComponent({
   name: "SemanticProperties",
   components: {},
-  props: ["semanticProperties", "contentHeight"],
+  props: {
+    label: { type: String },
+    data: { type: Array as PropType<Array<unknown>> },
+    size: { type: String }
+  },
   methods: {
     navigate(iri: any) {
       const currentRoute = this.$route.name as RouteRecordName | undefined;

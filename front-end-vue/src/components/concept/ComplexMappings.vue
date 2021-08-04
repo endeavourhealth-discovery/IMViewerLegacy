@@ -150,29 +150,30 @@ export default defineComponent({
           children: any[];
         }
       | undefined {
-      if (item === IM.ONE_OF) {
-        return {
-          key: location + "_" + positionInLevel,
-          type: "oneOf",
-          data: { label: "One of" },
-          children: [] as any
-        };
-      }
-      if (item === IM.COMBINATION_OF) {
-        return {
-          key: location + "_" + positionInLevel,
-          type: "comboOf",
-          data: { label: "Combination of" },
-          children: [] as any
-        };
-      }
-      if (item === IM.SOME_OF) {
-        return {
-          key: location + "_" + positionInLevel,
-          type: "someOf",
-          data: { label: "Some of" },
-          children: [] as any
-        };
+      switch (item) {
+        case IM.ONE_OF:
+          return {
+            key: location + "_" + positionInLevel,
+            type: "oneOf",
+            data: { label: "One of" },
+            children: [] as any
+          };
+        case IM.COMBINATION_OF:
+          return {
+            key: location + "_" + positionInLevel,
+            type: "comboOf",
+            data: { label: "Combination of" },
+            children: [] as any
+          };
+        case IM.SOME_OF:
+          return {
+            key: location + "_" + positionInLevel,
+            type: "someOf",
+            data: { label: "Some of" },
+            children: [] as any
+          };
+        default:
+          return undefined;
       }
     },
 
@@ -224,7 +225,7 @@ export default defineComponent({
     },
 
     createChartStructure(mappingObject: any): any {
-      if (!Object.keys(mappingObject).length) {
+      if (!mappingObject.length || !Object.keys(mappingObject).length) {
         return [];
       }
       const parentNode = {
