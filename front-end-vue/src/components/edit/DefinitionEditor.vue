@@ -73,7 +73,7 @@ import TextAreaWithLabel from "@/components/generics/editor/TextAreaWithLabel.vu
 import DropdownChildrenNameWithLabel from "@/components/generics/editor/DropdownChildrenNameWithLabel.vue";
 
 export default defineComponent({
-  name: "FormEditor",
+  name: "DefinitionEditor",
   components: {
     Card,
     TextInputWithLabel,
