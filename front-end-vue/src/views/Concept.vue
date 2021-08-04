@@ -68,6 +68,14 @@
           <TabView v-model:activeIndex="active" :lazy="true">
             <TabPanel header="Definition">
               <div
+                v-if="loading"
+                class="loading-container"
+                :style="contentHeight"
+              >
+                <ProgressSpinner />
+              </div>
+              <div
+                v-else
                 class="concept-panel-content"
                 id="definition-container"
                 :style="contentHeight"
@@ -210,6 +218,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false,
       editDialogView: true,
       showDownloadDialog: false,
       concept: {} as any,
@@ -324,6 +333,7 @@ export default defineComponent({
     },
 
     async init() {
+      this.loading = true;
       this.active = 0;
       await this.getConfig("definition");
       await this.getConcept(this.conceptIri);
@@ -343,6 +353,7 @@ export default defineComponent({
           ? "Query"
           : "None"
       );
+      this.loading = false;
     },
 
     setContentHeight(): void {
@@ -408,8 +419,11 @@ export default defineComponent({
           ) {
             newString = value.map(item => item.property.name).join(",\n\t");
           } else {
-            LoggerService.error(
-              "Uncovered object property found for conceptObjectToCopyString within Concept.vue"
+            LoggerService.warn(
+              undefined,
+              "Uncovered object property or missing name found for key: " +
+                key +
+                " at conceptObjectToCopyString within Concept.vue"
             );
           }
           if (counter === totalKeys - 1) {
@@ -579,6 +593,15 @@ export default defineComponent({
 .icons-container {
   display: flex;
   flex-flow: row nowrap;
+  align-items: center;
+}
+
+.loading-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
   align-items: center;
 }
 </style>

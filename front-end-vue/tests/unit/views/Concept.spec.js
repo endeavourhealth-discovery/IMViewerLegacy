@@ -8,6 +8,7 @@ import LoggerService from "@/services/LoggerService";
 import PanelHeader from "@/components/concept/PanelHeader.vue";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
+import ProgressSpinner from "primevue/progressspinner";
 import Definition from "@/components/concept/Definition.vue";
 import Terms from "@/components/concept/Terms.vue";
 import ComplexMappings from "@/components/concept/ComplexMappings.vue";
@@ -100,7 +101,8 @@ describe("Concept.vue", () => {
           Graph,
           PanelHeader,
           Panel,
-          DownloadDialog
+          DownloadDialog,
+          ProgressSpinner
         },
         mocks: { $store: mockStore, $router: mockRouter, $toast: mockToast },
         directives: { "tooltip": Tooltip, "clipboard": VueClipboard }
@@ -341,6 +343,7 @@ describe("Concept.vue", () => {
     wrapper.vm.getConfig = jest.fn();
     wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
     wrapper.vm.init();
+    expect(wrapper.vm.loading).toBe(true);
     await flushPromises();
     expect(wrapper.vm.getConfig).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.getConfig).toHaveBeenCalledWith("definition");
@@ -351,6 +354,7 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.types).toStrictEqual([{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]);
     expect(wrapper.vm.header).toBe("Scoliosis caused by radiation (disorder)");
     expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Class");
+    expect(wrapper.vm.loading).toBe(false);
   });
 
 
@@ -381,6 +385,16 @@ describe("Concept.vue", () => {
     expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "None");
   });
 
+  it("Inits ___ missing type", async() => {
+    wrapper.vm.getProperties = jest.fn();
+    wrapper.vm.getConcept = jest.fn();
+    wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
+    wrapper.vm.init();
+    await flushPromises();
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "None");
+    expect(wrapper.vm.types).toStrictEqual([]);
+  });
+
   it("can openDownloadDialog", async() => {
     wrapper.vm.openDownloadDialog();
     await wrapper.vm.$nextTick();
@@ -399,6 +413,18 @@ describe("Concept.vue", () => {
 
   it("can convert conceptObjectToCopyString ___ array 1 4", () => {
     expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [{"@id":"http://snomed.info/sct#64217002","name":"Curvature of spine (disorder)"},{"@id":"http://snomed.info/sct#928000","name":"Disorder of musculoskeletal system (disorder)"},{"@id":"http://snomed.info/sct#699699005","name":"Disorder of vertebral column (disorder)"}], 1, 4)).toStrictEqual({"label": "Is a", "value": "Is a: [\n\tCurvature of spine (disorder),\n\tDisorder of musculoskeletal system (disorder),\n\tDisorder of vertebral column (disorder)\n],\n"});
+  });
+
+  it("can convert conceptObjectToCopyString ___ array object property.name", () => {
+    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [{"@id":"http://snomed.info/sct#64217002","property": {"name":"Curvature of spine (disorder)"}},{"@id":"http://snomed.info/sct#928000","property": {"name":"Disorder of musculoskeletal system (disorder)"}},{"@id":"http://snomed.info/sct#699699005","property": {"name":"Disorder of vertebral column (disorder)"}}], 1, 4)).toStrictEqual({"label": "Is a", "value": "Is a: [\n\tCurvature of spine (disorder),\n\tDisorder of musculoskeletal system (disorder),\n\tDisorder of vertebral column (disorder)\n],\n"});
+  });
+
+  it("can convert conceptObjectToCopyString ___ array object error", () => {
+    const err = console.warn;
+    console.warn = jest.fn();
+    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [{"@id":"http://snomed.info/sct#64217002","property": {"firstName":"Curvature of spine (disorder)"}},{"@id":"http://snomed.info/sct#928000","property": {"firstName":"Disorder of musculoskeletal system (disorder)"}},{"@id":"http://snomed.info/sct#699699005","property": {"firstName":"Disorder of vertebral column (disorder)"}}], 1, 4)).toStrictEqual({"label": "Is a", "value": "Is a: [\n\t\n],\n"});
+    expect(console.warn).toHaveBeenLastCalledWith("Uncovered object property or missing name found for key: http://endhealth.info/im#isA at conceptObjectToCopyString within Concept.vue");
+    console.warn = err;
   });
 
   it("can convert conceptObjectToCopyString ___ empty array 0 1", () => {
