@@ -10,7 +10,7 @@
             id="form-editor-container"
             :style="contentHeight"
           >
-            <FormEditor
+            <DefinitionEditor
               v-if="Object.keys(conceptUpdated).length > 0"
               :iri="iri"
               :updatedConcept="conceptUpdated"
@@ -61,18 +61,21 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
-import FormEditor from "@/components/edit/FormEditor.vue";
+import DefinitionEditor from "@/components/edit/DefinitionEditor.vue";
 import EntityService from "@/services/EntityService";
 import ConfirmDialog from "primevue/confirmdialog";
 import MemberEditor from "@/components/edit/MemberEditor.vue";
 import LoggerService from "@/services/LoggerService";
+import { IM } from "@/vocabulary/IM";
+import { RDF } from "@/vocabulary/RDF";
+import { RDFS } from "@/vocabulary/RDFS";
 
 export default defineComponent({
   name: "Editor",
   components: {
     SideNav,
     ConfirmDialog,
-    FormEditor,
+    DefinitionEditor,
     MemberEditor
   },
   beforeRouteLeave(to, from, next) {
@@ -123,7 +126,18 @@ export default defineComponent({
   methods: {
     async fetchConceptData(): Promise<void> {
       if (this.iri) {
-        await EntityService.getEntityDefinitionDto(this.iri)
+        const predicates = [
+          "@id",
+          IM.IRI,
+          RDFS.LABEL,
+          RDFS.COMMENT,
+          IM.CODE,
+          IM.STATUS,
+          IM.CODE_SCHEME,
+          RDF.TYPE,
+          IM.IS_A
+        ];
+        await EntityService.getPartialEntity(this.iri, predicates)
           .then(res => {
             this.conceptOriginal = res.data;
             this.conceptUpdated = JSON.parse(JSON.stringify(res.data));

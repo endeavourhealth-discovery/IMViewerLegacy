@@ -2,7 +2,6 @@ import { SearchRequest } from "@/models/search/SearchRequest";
 import { ConceptDto } from "@/models/ConceptDto";
 import axios, { AxiosResponse, CancelToken } from "axios";
 import { ConceptNode } from "@/models/TTConcept/ConceptNode";
-import { IM } from "@/vocabulary/IM";
 
 export default class EntityService {
   public static async getPartialEntity(
@@ -112,10 +111,6 @@ export default class EntityService {
         parentSetName: parentSetName
       }
     });
-  }
-
-  public static async getSchemeOptions(): Promise<AxiosResponse<any>> {
-    return this.getEntityChildren(IM.CODE_SCHEME);
   }
 
   public static async saveEntity(
