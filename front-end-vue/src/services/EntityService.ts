@@ -161,4 +161,8 @@ export default class EntityService {
       params: { iri: iri }
     });
   }
+
+  public static getNamespaces(): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/namespaces");
+  }
 }

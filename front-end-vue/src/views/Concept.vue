@@ -318,7 +318,7 @@ export default defineComponent({
     },
 
     async getConfig(name: string) {
-      await ConfigService.getConfig(name)
+      await ConfigService.getComponentLayout(name)
         .then(res => {
           this.configs = res.data;
           this.configs.sort((a: any, b: any) => {
