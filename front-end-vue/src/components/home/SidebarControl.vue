@@ -61,11 +61,16 @@ import { ConceptStatus } from "@/models/ConceptStatus";
 import { ConceptType } from "@/models/search/ConceptType";
 import LoggerService from "@/services/LoggerService";
 import axios from "axios";
+import { mapState } from "vuex";
 
 export default defineComponent({
   name: "SidebarControl",
   components: { Hierarchy, History, SearchResults, Filters },
   props: ["focusHierarchy"],
+  computed: mapState([
+    "filterOptions",
+    "selectedFilters"
+  ]),
   emits: ["hierarchyFocused"],
   watch: {
     focusHierarchy(newValue) {
@@ -110,7 +115,7 @@ export default defineComponent({
         searchRequest.sortBy = SortBy.Usage;
         searchRequest.page = 1;
         searchRequest.size = 100;
-        searchRequest.schemeFilter = this.$store.state.filters.selectedSchemes.map(
+        searchRequest.schemeFilter = this.selectedFilters.selectedSchemes.map(
           (scheme: any) => scheme.iri
         );
         searchRequest.markIfDescendentOf = [
@@ -120,7 +125,7 @@ export default defineComponent({
         ];
 
         searchRequest.statusFilter = [];
-        this.$store.state.filters.selectedStatus.forEach((status: any) => {
+        this.selectedFilters.selectedStatus.forEach((status: any) => {
           if (status == "Active") {
             searchRequest.statusFilter.push(ConceptStatus.Active);
           }
@@ -133,7 +138,7 @@ export default defineComponent({
         });
 
         searchRequest.typeFilter = [];
-        this.$store.state.filters.selectedTypes.forEach((type: any) => {
+        this.selectedFilters.selectedTypes.forEach((type: any) => {
           if (type == "Class") {
             searchRequest.typeFilter.push(ConceptType.Class);
           }

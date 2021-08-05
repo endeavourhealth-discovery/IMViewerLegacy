@@ -3,7 +3,7 @@
     <span class="p-float-label">
       <MultiSelect
         id="status"
-        v-model="selectedStatus"
+        v-model="$store.state.selectedFilters.selectedStatus"
         @change="checkForSearch"
         :options="statusOptions"
         optionLabel="name"
@@ -17,7 +17,7 @@
     <span class="p-float-label">
       <MultiSelect
         id="scheme"
-        v-model="selectedSchemes"
+        v-model="$store.state.selectedFilters.selectedSchemes"
         @change="checkForSearch"
         :options="schemeOptions"
         optionLabel="name"
@@ -31,7 +31,7 @@
     <span class="p-float-label">
       <MultiSelect
         id="conceptType"
-        v-model="selectedTypes"
+        v-model="$store.state.selectedFilters.selectedTypes"
         @change="checkForSearch"
         :options="typeOptions"
         optionLabel="name"
@@ -58,7 +58,9 @@ export default defineComponent({
         this.configs = res.data;
       })
       .catch(err => {
-        this.$toast.add(LoggerService.error("Failed to get filter configs from server", err));
+        this.$toast.add(
+          LoggerService.error("Failed to get filter configs from server", err)
+        );
       });
 
     await EntityService.getNamespaces()
@@ -123,7 +125,7 @@ export default defineComponent({
             "@id": "http://endhealth.info/im#ValueSet",
             name: "Value set"
           }
-        ]
+        ];
       })
       .catch(err => {
         this.$toast.add(
@@ -133,17 +135,14 @@ export default defineComponent({
           )
         );
       });
-
-      this.setDefaults();
+    this.setFilters();
+    this.setDefaults();
   },
   data() {
     return {
       statusOptions: [] as any[],
       schemeOptions: [] as any[],
       typeOptions: [] as any[],
-      selectedStatus: [] as any[],
-      selectedSchemes: [] as any[],
-      selectedTypes: [] as any[],
       configs: {} as any
     };
   },
@@ -154,10 +153,21 @@ export default defineComponent({
       }
     },
 
+    setFilters() {
+      this.$store.commit("updateFilterOptions", { status: this.statusOptions, scheme: this.schemeOptions, type: this.typeOptions });
+    },
+
     setDefaults() {
-      this.selectedStatus = this.statusOptions.filter(item => this.configs.statusOptions.includes(item.name));
-      this.selectedSchemes = this.schemeOptions.filter(item => this.configs.schemeOptions.includes(item.name));
-      this.selectedTypes = this.typeOptions.filter(item => this.configs.typeOptions.includes(item.name));
+      const selectedStatus = this.statusOptions.filter(item =>
+        this.configs.statusOptions.includes(item.name)
+      );
+      const selectedSchemes = this.schemeOptions.filter(item =>
+        this.configs.schemeOptions.includes(item.name)
+      );
+      const selectedTypes = this.typeOptions.filter(item =>
+        this.configs.typeOptions.includes(item.name)
+      );
+      this.$store.commit("updateSelectedFilters", { selectedStatus: selectedStatus, selectedSchemes: selectedSchemes, selectedTypes: selectedTypes });
     }
   }
 });
