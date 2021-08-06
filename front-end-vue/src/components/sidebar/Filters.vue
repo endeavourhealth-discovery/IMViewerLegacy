@@ -53,88 +53,7 @@ export default defineComponent({
   components: {},
   props: ["search", "searchTerm"],
   async mounted() {
-    await ConfigService.getFilterDefaults()
-      .then(res => {
-        this.configs = res.data;
-      })
-      .catch(err => {
-        this.$toast.add(
-          LoggerService.error("Failed to get filter configs from server", err)
-        );
-      });
-
-    await EntityService.getNamespaces()
-      .then(res => {
-        this.schemeOptions = res.data;
-      })
-      .catch(err => {
-        this.$toast.add(
-          LoggerService.error(
-            "Failed to get scheme filter options from server",
-            err
-          )
-        );
-      });
-
-    await EntityService.getEntityChildren("http://endhealth.info/im#Status")
-      .then(res => {
-        this.statusOptions = res.data;
-      })
-      .catch(err => {
-        this.$toast.add(
-          LoggerService.error(
-            "Failed to get status filter options from server",
-            err
-          )
-        );
-      });
-
-    await EntityService.getEntityChildren("http://endhealth.info/im#EntityType")
-      .then(res => {
-        // this.typeOptions = res.data;
-        this.typeOptions = [
-          {
-            "@id": "http://www.w3.org/2002/07/owl#Class",
-            name: "Class"
-          },
-          {
-            "@id": "http://endhealth.info/im#Folder",
-            name: "Folder"
-          },
-          {
-            "@id": "http://endhealth.info/im#LegacyEntity",
-            name: "Legacy concept"
-          },
-          {
-            "@id": "http://www.w3.org/ns/shacl#NodeShape",
-            name: "Node shape"
-          },
-          {
-            "@id": "http://www.w3.org/2002/07/owl#ObjectProperty",
-            name: "ObjectProperty"
-          },
-          {
-            "@id": "http://endhealth.info/im#QueryTemplate",
-            name: "Query template"
-          },
-          {
-            "@id": "http://endhealth.info/im#RecordType",
-            name: "Record type"
-          },
-          {
-            "@id": "http://endhealth.info/im#ValueSet",
-            name: "Value set"
-          }
-        ];
-      })
-      .catch(err => {
-        this.$toast.add(
-          LoggerService.error(
-            "Failed to get type filter options from server",
-            err
-          )
-        );
-      });
+    await this.getFilterOptions();
     this.setFilters();
     this.setDefaults();
   },
@@ -176,6 +95,91 @@ export default defineComponent({
         schemes: selectedSchemes,
         types: selectedTypes
       });
+    },
+
+    async getFilterOptions() {
+      await ConfigService.getFilterDefaults()
+        .then(res => {
+          this.configs = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get filter configs from server", err)
+          );
+        });
+
+      await EntityService.getNamespaces()
+        .then(res => {
+          this.schemeOptions = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Failed to get scheme filter options from server",
+              err
+            )
+          );
+        });
+
+      await EntityService.getEntityChildren("http://endhealth.info/im#Status")
+        .then(res => {
+          this.statusOptions = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Failed to get status filter options from server",
+              err
+            )
+          );
+        });
+
+      await EntityService.getEntityChildren("http://endhealth.info/im#EntityType")
+        .then(res => {
+          // this.typeOptions = res.data;
+          this.typeOptions = [
+            {
+              "@id": "http://www.w3.org/2002/07/owl#Class",
+              name: "Class"
+            },
+            {
+              "@id": "http://endhealth.info/im#Folder",
+              name: "Folder"
+            },
+            {
+              "@id": "http://endhealth.info/im#LegacyEntity",
+              name: "Legacy concept"
+            },
+            {
+              "@id": "http://www.w3.org/ns/shacl#NodeShape",
+              name: "Node shape"
+            },
+            {
+              "@id": "http://www.w3.org/2002/07/owl#ObjectProperty",
+              name: "ObjectProperty"
+            },
+            {
+              "@id": "http://endhealth.info/im#QueryTemplate",
+              name: "Query template"
+            },
+            {
+              "@id": "http://endhealth.info/im#RecordType",
+              name: "Record type"
+            },
+            {
+              "@id": "http://endhealth.info/im#ValueSet",
+              name: "Value set"
+            }
+          ];
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Failed to get type filter options from server",
+              err
+            )
+          );
+        });
     }
   }
 });
