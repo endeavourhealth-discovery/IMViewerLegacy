@@ -3,7 +3,7 @@
     <span class="p-float-label">
       <MultiSelect
         id="status"
-        v-model="$store.state.selectedFilters.selectedStatus"
+        v-model="$store.state.selectedFilters.status"
         @change="checkForSearch"
         :options="statusOptions"
         optionLabel="name"
@@ -17,7 +17,7 @@
     <span class="p-float-label">
       <MultiSelect
         id="scheme"
-        v-model="$store.state.selectedFilters.selectedSchemes"
+        v-model="$store.state.selectedFilters.schemes"
         @change="checkForSearch"
         :options="schemeOptions"
         optionLabel="name"
@@ -31,7 +31,7 @@
     <span class="p-float-label">
       <MultiSelect
         id="conceptType"
-        v-model="$store.state.selectedFilters.selectedTypes"
+        v-model="$store.state.selectedFilters.types"
         @change="checkForSearch"
         :options="typeOptions"
         optionLabel="name"
@@ -154,7 +154,11 @@ export default defineComponent({
     },
 
     setFilters() {
-      this.$store.commit("updateFilterOptions", { status: this.statusOptions, scheme: this.schemeOptions, type: this.typeOptions });
+      this.$store.commit("updateFilterOptions", {
+        status: this.statusOptions,
+        scheme: this.schemeOptions,
+        type: this.typeOptions
+      });
     },
 
     setDefaults() {
@@ -167,7 +171,11 @@ export default defineComponent({
       const selectedTypes = this.typeOptions.filter(item =>
         this.configs.typeOptions.includes(item.name)
       );
-      this.$store.commit("updateSelectedFilters", { selectedStatus: selectedStatus, selectedSchemes: selectedSchemes, selectedTypes: selectedTypes });
+      this.$store.commit("updateSelectedFilters", {
+        status: selectedStatus,
+        schemes: selectedSchemes,
+        types: selectedTypes
+      });
     }
   }
 });

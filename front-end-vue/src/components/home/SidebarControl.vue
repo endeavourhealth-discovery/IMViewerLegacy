@@ -57,8 +57,6 @@ import SearchResults from "@/components/sidebar/SearchResults.vue";
 import Filters from "@/components/sidebar/Filters.vue";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
-import { ConceptStatus } from "@/models/ConceptStatus";
-import { ConceptType } from "@/models/search/ConceptType";
 import LoggerService from "@/services/LoggerService";
 import axios from "axios";
 import { mapState } from "vuex";
@@ -67,10 +65,7 @@ export default defineComponent({
   name: "SidebarControl",
   components: { Hierarchy, History, SearchResults, Filters },
   props: ["focusHierarchy"],
-  computed: mapState([
-    "filterOptions",
-    "selectedFilters"
-  ]),
+  computed: mapState(["filterOptions", "selectedFilters"]),
   emits: ["hierarchyFocused"],
   watch: {
     focusHierarchy(newValue) {
@@ -115,57 +110,18 @@ export default defineComponent({
         searchRequest.sortBy = SortBy.Usage;
         searchRequest.page = 1;
         searchRequest.size = 100;
-        searchRequest.schemeFilter = this.selectedFilters.selectedSchemes.map(
+        searchRequest.schemeFilter = this.selectedFilters.schemes.map(
           (scheme: any) => scheme.iri
         );
-        searchRequest.markIfDescendentOf = [
-          ":DiscoveryCommonDataModel",
-          ":SemanticConcept",
-          ":VSET_ValueSet"
-        ];
 
         searchRequest.statusFilter = [];
-        this.selectedFilters.selectedStatus.forEach((status: any) => {
-          if (status == "Active") {
-            searchRequest.statusFilter.push(ConceptStatus.Active);
-          }
-          if (status == "Draft") {
-            searchRequest.statusFilter.push(ConceptStatus.Draft);
-          }
-          if (status == "Inactive") {
-            searchRequest.statusFilter.push(ConceptStatus.Inactive);
-          }
+        this.selectedFilters.status.forEach((status: any) => {
+          searchRequest.statusFilter.push(status["@id"]);
         });
 
         searchRequest.typeFilter = [];
-        this.selectedFilters.selectedTypes.forEach((type: any) => {
-          if (type == "Class") {
-            searchRequest.typeFilter.push(ConceptType.Class);
-          }
-          if (type == "ObjectProperty") {
-            searchRequest.typeFilter.push(ConceptType.ObjectProperty);
-          }
-          if (type == "DataProperty") {
-            searchRequest.typeFilter.push(ConceptType.DataProperty);
-          }
-          if (type == "Annotation") {
-            searchRequest.typeFilter.push(ConceptType.Annotation);
-          }
-          if (type == "Individual") {
-            searchRequest.typeFilter.push(ConceptType.Individual);
-          }
-          if (type == "Record") {
-            searchRequest.typeFilter.push(ConceptType.Record);
-          }
-          if (type == "ValueSet") {
-            searchRequest.typeFilter.push(ConceptType.ValueSet);
-          }
-          if (type == "Folder") {
-            searchRequest.typeFilter.push(ConceptType.Folder);
-          }
-          if (type == "Legacy") {
-            searchRequest.typeFilter.push(ConceptType.Legacy);
-          }
+        this.selectedFilters.types.forEach((type: any) => {
+          searchRequest.typeFilter.push(type["@id"]);
         });
         if (this.request) {
           await this.request.cancel();

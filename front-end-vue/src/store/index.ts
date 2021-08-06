@@ -7,9 +7,7 @@ import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
 import LoggerService from "@/services/LoggerService";
 import { CustomAlert } from "@/models/user/CustomAlert";
-import { IM } from "@/vocabulary/IM";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
-import { ConceptReference } from "@/models/TTConcept/ConceptReference";
 import axios from "axios";
 
 export default createStore({
@@ -45,13 +43,13 @@ export default createStore({
       types: any[];
     },
     selectedFilters: {
-      selectedStatus: [],
-      selectedSchemes: [],
-      selectedTypes: []
+      status: [],
+      schemes: [],
+      types: []
     } as {
-      selectedStatus: any[];
-      selectedSchemes: any[];
-      selectedTypes: any[];
+      status: any[];
+      schemes: any[];
+      types: any[];
     }
   },
   mutations: {
