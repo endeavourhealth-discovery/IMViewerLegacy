@@ -24,34 +24,11 @@ describe("state", () => {
     expect(store.state.focusTree).toBe(false);
     expect(store.state.treeLocked).toBe(true);
     expect(store.state.selectedFilters).toEqual({
-      selectedStatus: ["Active", "Draft"],
-      selectedSchemes: [
-        {
-          iri: IM.DISCOVERY_CODE,
-          name: "Discovery code"
-        },
-        {
-          iri: IM.CODE_SCHEME_SNOMED,
-          name: "Snomed-CT code"
-        },
-        {
-          iri: IM.CODE_SCHEME_TERMS,
-          name: "Term based code"
-        }
-      ],
-      selectedTypes: [
-        "Class",
-        "ObjectProperty",
-        "DataProperty",
-        "DataType",
-        "Annotation",
-        "Individual",
-        "Record",
-        "ValueSet",
-        "Folder",
-        "Legacy"
-      ]
-    })
+      status: [],
+      schemes: [],
+      types: []
+    });
+    expect(store.state.filterOptions).toStrictEqual({status: [], schemes: [], types: []});
   });
 });
 
@@ -138,14 +115,24 @@ describe("mutations", () => {
     expect(store.state.treeLocked).toBe(false);
   });
 
-  it("can updateFilters", () => {
+  it("can updateSelectedFilters", () => {
     const testFilter = {
       selectedStatus: ["testActive", "testDraft"],
       selectedSchemes: [{ iri: "http://endhealth.info/im#test" }],
       selectedTypes: ["testClass", "testProperty"]
     };
-    store.commit("updateFilters", testFilter);
+    store.commit("updateSelectedFilters", testFilter);
     expect(store.state.selectedFilters).toEqual(testFilter);
+  });
+
+  it("can updateFilterOptions", () => {
+    const testFilter = {
+      selectedStatus: ["testActive", "testDraft"],
+      selectedSchemes: [{ iri: "http://endhealth.info/im#test" }],
+      selectedTypes: ["testClass", "testProperty"]
+    };
+    store.commit("updateFilterOptions", testFilter);
+    expect(store.state.filterOptions).toEqual(testFilter);
   });
 
   it("can fetchSearchResults ___ pass", async() => {
