@@ -47,6 +47,7 @@
         <thead>
           <tr>
             <th scope="col">Name</th>
+            <th scope="col">Scheme</th>
           </tr>
         </thead>
         <tbody>
@@ -57,6 +58,7 @@
             @mouseleave="toggle($event, mapItem, 'opTerm')"
           >
             <td>{{ mapItem.name }}</td>
+            <td>{{ mapItem.namespace }}</td>
           </tr>
         </tbody>
       </table>
@@ -145,10 +147,12 @@ export default defineComponent({
 
       await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO])
         .then(res => {
-          this.terms = res.data;
+          this.terms = res.data[IM.MATCHED_TO];
         })
         .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get concept terms from server", err));
+          this.$toast.add(
+            LoggerService.error("Failed to get concept terms from server", err)
+          );
         });
     },
 
@@ -232,7 +236,7 @@ export default defineComponent({
         return [
           this.createChartTableNode(
             mappedList.sort(this.byPriority),
-            location,
+            location + "_" + "0",
             positionInLevel,
             "childList"
           )
@@ -272,9 +276,14 @@ export default defineComponent({
         children: [] as any
       };
       parentNode.children = this.generateChildNodes(mappingObject, "0", 0, 0);
-      const termsChildren = this.generateTermNodes(this.terms, "0", 1, 0);
+      const termsChildren = this.generateTermNodes(
+        this.terms,
+        "0_" + parentNode.children.length,
+        0,
+        0
+      );
       parentNode.children.push({
-        key: "1_" + parentNode.children.length,
+        key: "0_" + parentNode.children.length,
         type: "terms",
         data: { label: "Term maps" },
         children: termsChildren
@@ -288,25 +297,41 @@ export default defineComponent({
       level: number,
       positionInLevel: number
     ) {
-      if (!Object.keys(terms).includes(IM.MATCHED_TO) || !terms[IM.MATCHED_TO].length) {
+      if (!Array.isArray(terms) || !terms.length) {
         return [];
       }
       const termsList = [] as any;
-      this.terms[IM.MATCHED_TO].forEach((term: any) => {
-        termsList.push({ name: term.name, iri: term["@id"] });
+      this.terms.forEach((term: any) => {
+        termsList.push({
+          name: term.name,
+          iri: term["@id"],
+          scheme: term.namespace
+        });
       });
-      return [this.createChartTableNode(
-        termsList.sort(this.byPriority),
-        location,
-        positionInLevel,
-        "termsList"
-      )];
+      return [
+        this.createChartTableNode(
+          termsList.sort(this.byScheme),
+          location,
+          positionInLevel,
+          "termsList"
+        )
+      ];
     },
 
     byPriority(a: any, b: any): number {
       if (a.priority < b.priority) {
         return -1;
       } else if (a.priority > b.priority) {
+        return 1;
+      } else {
+        return 0;
+      }
+    },
+
+    byScheme(a: any, b: any): number {
+      if (a.scheme < b.scheme) {
+        return -1;
+      } else if (a.scheme > b.scheme) {
         return 1;
       } else {
         return 0;

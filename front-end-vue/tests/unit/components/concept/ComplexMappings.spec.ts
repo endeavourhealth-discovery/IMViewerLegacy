@@ -16,7 +16,10 @@ describe("ComplexMappings.vue", () => {
       commit: jest.fn()
     };
 
-    EntityService.getPartialEntity = jest.fn().mockResolvedValue({ data: { "http://endhealth.info/im#hasMap": [{"http://endhealth.info/im#combinationOf":[{"http://endhealth.info/im#oneOf":[{"http://endhealth.info/im#matchedTo":{"@id":"http://endhealth.info/OPCS4#X109","name":"Unspecified amputation of foot"},"http://endhealth.info/im#mapAdvice":"ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE","http://endhealth.info/im#mapPriority":1,"http://endhealth.info/im#assuranceLevel":{"@id":"http://endhealth.info/im#NationallyAssuredUK","name":"Nationally assured UK level"}}]},{"http://endhealth.info/im#oneOf":[{"http://endhealth.info/im#matchedTo":{"@id":"http://endhealth.info/OPCS4#Z942","name":"Right sided operation"},"http://endhealth.info/im#mapAdvice":"ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE","http://endhealth.info/im#mapPriority":1,"http://endhealth.info/im#assuranceLevel":{"@id":"http://endhealth.info/im#NationallyAssuredUK","name":"Nationally assured UK level"}}]}]}]}});
+    EntityService.getPartialEntity = jest.fn()
+      .mockResolvedValueOnce({ data: { "http://endhealth.info/im#hasMap": [{"http://endhealth.info/im#combinationOf":[{"http://endhealth.info/im#oneOf":[{"http://endhealth.info/im#matchedTo":{"@id":"http://endhealth.info/OPCS4#X109","name":"Unspecified amputation of foot"},"http://endhealth.info/im#mapAdvice":"ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE","http://endhealth.info/im#mapPriority":1,"http://endhealth.info/im#assuranceLevel":{"@id":"http://endhealth.info/im#NationallyAssuredUK","name":"Nationally assured UK level"}}]},{"http://endhealth.info/im#oneOf":[{"http://endhealth.info/im#matchedTo":{"@id":"http://endhealth.info/OPCS4#Z942","name":"Right sided operation"},"http://endhealth.info/im#mapAdvice":"ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE","http://endhealth.info/im#mapPriority":1,"http://endhealth.info/im#assuranceLevel":{"@id":"http://endhealth.info/im#NationallyAssuredUK","name":"Nationally assured UK level"}}]}]}]}})
+      .mockResolvedValueOnce({ data: {"@id":"http://snomed.info/sct#298382003","http://endhealth.info/im#matchedTo":[{"@id":"http://endhealth.info/emis#Nyu55","name":"Scoliosis deformity of spine"},{"@id":"http://endhealth.info/emis#Nyu55","name":"Scoliosis deformity of spine"},{"@id":"http://endhealth.info/emis#^ESCTSC585225","name":"Scoliosis"},{"@id":"http://endhealth.info/tpp#Xa6vS","name":"Scoliosis deformity of spine"},{"@id":"http://endhealth.info/VISION#Nyu55"}]}});
+
 
     wrapper = shallowMount(ComplexMappings, {
       global: {
@@ -119,10 +122,5 @@ describe("ComplexMappings.vue", () => {
 
   it("can get bypriority ___ 0", () => {
     expect(wrapper.vm.byPriority({ priority: 2 }, { priority: 2 })).toBe(0);
-  });
-
-  it("can emit toTerms", () => {
-    wrapper.vm.toTerms();
-    expect(wrapper.emitted().toTermsClicked).toBeTruthy();
   });
 });
