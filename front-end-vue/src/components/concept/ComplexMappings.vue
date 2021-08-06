@@ -112,7 +112,7 @@ export default defineComponent({
           this.data = {};
         })
         .catch(() => {
-          this.mappings = [];
+          this.mappings = {};
           this.data = {};
         });
     },
@@ -196,6 +196,23 @@ export default defineComponent({
         return [
           this.createChartTableNode(
             matchedList.sort(this.byPriority),
+            location,
+            positionInLevel
+          )
+        ];
+      } else if (Object.keys(mapObject[0]).includes(IM.MAPPED_TO)) {
+        const mappedList = [] as any;
+        mapObject.forEach((item: any) => {
+          mappedList.push({
+            name: item[IM.MAPPED_TO].name,
+            iri: item[IM.MAPPED_TO]["@id"],
+            priority: item[IM.MAP_PRIORITY],
+            assuranceLevel: item[IM.ASSURANCE_LEVEL].name
+          });
+        });
+        return [
+          this.createChartTableNode(
+            mappedList.sort(this.byPriority),
             location,
             positionInLevel
           )

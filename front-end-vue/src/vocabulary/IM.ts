@@ -20,6 +20,7 @@ export class IM {
   public static ASSURANCE_LEVEL = IM.NAMESPACE + "assuranceLevel";
   public static COMBINATION_OF = IM.NAMESPACE + "combinationOf";
   public static SOME_OF = IM.NAMESPACE + "someOf";
+  public static MAPPED_TO = IM.NAMESPACE + "mappedTo";
   //maps assurance levels
   public static NATIONALLY_ASSURED_UK = IM.NAMESPACE + "NationallyAssuredUK";
 
