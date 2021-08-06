@@ -19,9 +19,7 @@
       <span>{{ slotProps.node.data.label }}</span>
     </template>
     <template #terms="slotProps">
-      <a class="terms-link" @click="toTerms">
-        <span>{{ slotProps.node.data.label }}</span>
-      </a>
+      <span>{{ slotProps.node.data.label }}</span>
     </template>
     <template #childList="slotProps">
       <table aria-label="Concept map children">
@@ -35,11 +33,30 @@
           <tr
             v-for="mapItem in slotProps.node.data.mapItems"
             :key="mapItem"
-            @mouseenter="toggle($event, mapItem)"
-            @mouseleave="toggle($event, mapItem)"
+            @mouseenter="toggle($event, mapItem, 'opMap')"
+            @mouseleave="toggle($event, mapItem, 'opMap')"
           >
             <td>{{ mapItem.name }}</td>
             <td>{{ mapItem.priority }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
+    <template #termsList="slotProps">
+      <table aria-label="Concept map terms children">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="mapItem in slotProps.node.data.mapItems"
+            :key="mapItem"
+            @mouseenter="toggle($event, mapItem, 'opTerm')"
+            @mouseleave="toggle($event, mapItem, 'opTerm')"
+          >
+            <td>{{ mapItem.name }}</td>
           </tr>
         </tbody>
       </table>
@@ -60,10 +77,19 @@
       </p>
     </div>
   </OverlayPanel>
+
+  <OverlayPanel ref="opTerm" id="overlay-panel-terms">
+    <div class="p-d-flex p-flex-column p-jc-start term-overlay">
+      <p><strong>Name: </strong>{{ hoveredResult.name }}</p>
+      <p><strong>Iri: </strong>{{ hoveredResult.iri }}</p>
+      <p><strong>Namespace: </strong>{{ hoveredResult.namespace }}</p>
+    </div>
+  </OverlayPanel>
 </template>
 
 <script lang="ts">
 import EntityService from "@/services/EntityService";
+import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
 
@@ -89,7 +115,8 @@ export default defineComponent({
     return {
       mappings: {} as any,
       data: {} as any,
-      hoveredResult: {} as any
+      hoveredResult: {} as any,
+      terms: {} as any
     };
   },
   async mounted() {
@@ -115,6 +142,14 @@ export default defineComponent({
           this.mappings = {};
           this.data = {};
         });
+
+      await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO])
+        .then(res => {
+          this.terms = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(LoggerService.error("Failed to get concept terms from server", err));
+        });
     },
 
     createChartTableNode(
@@ -125,7 +160,8 @@ export default defineComponent({
         priority: number;
       }[],
       location: string,
-      position: number
+      position: number,
+      type: string
     ): {
       key: string;
       type: string;
@@ -133,7 +169,7 @@ export default defineComponent({
     } {
       return {
         key: location + "_" + position,
-        type: "childList",
+        type: type,
         data: { mapItems: items }
       };
     },
@@ -183,24 +219,7 @@ export default defineComponent({
       level: number,
       positionInLevel: number
     ) {
-      if (Object.keys(mapObject[0]).includes(IM.MATCHED_TO)) {
-        const matchedList = [] as any;
-        mapObject.forEach((item: any) => {
-          matchedList.push({
-            name: item[IM.MATCHED_TO].name,
-            iri: item[IM.MATCHED_TO]["@id"],
-            priority: item[IM.MAP_PRIORITY],
-            assuranceLevel: item[IM.ASSURANCE_LEVEL].name
-          });
-        });
-        return [
-          this.createChartTableNode(
-            matchedList.sort(this.byPriority),
-            location,
-            positionInLevel
-          )
-        ];
-      } else if (Object.keys(mapObject[0]).includes(IM.MAPPED_TO)) {
+      if (Object.keys(mapObject[0]).includes(IM.MAPPED_TO)) {
         const mappedList = [] as any;
         mapObject.forEach((item: any) => {
           mappedList.push({
@@ -214,7 +233,8 @@ export default defineComponent({
           this.createChartTableNode(
             mappedList.sort(this.byPriority),
             location,
-            positionInLevel
+            positionInLevel,
+            "childList"
           )
         ];
       } else {
@@ -252,12 +272,35 @@ export default defineComponent({
         children: [] as any
       };
       parentNode.children = this.generateChildNodes(mappingObject, "0", 0, 0);
+      const termsChildren = this.generateTermNodes(this.terms, "0", 1, 0);
       parentNode.children.push({
-        key: "0" + parentNode.children.length,
+        key: "1_" + parentNode.children.length,
         type: "terms",
-        data: { label: "Term maps" }
+        data: { label: "Term maps" },
+        children: termsChildren
       });
       return parentNode;
+    },
+
+    generateTermNodes(
+      terms: any,
+      location: string,
+      level: number,
+      positionInLevel: number
+    ) {
+      if (!Object.keys(terms).includes(IM.MATCHED_TO) || !terms[IM.MATCHED_TO].length) {
+        return [];
+      }
+      const termsList = [] as any;
+      this.terms[IM.MATCHED_TO].forEach((term: any) => {
+        termsList.push({ name: term.name, iri: term["@id"] });
+      });
+      return [this.createChartTableNode(
+        termsList.sort(this.byPriority),
+        location,
+        positionInLevel,
+        "termsList"
+      )];
     },
 
     byPriority(a: any, b: any): number {
@@ -270,14 +313,10 @@ export default defineComponent({
       }
     },
 
-    toggle(event: any, data: any): void {
+    toggle(event: any, data: any, refId: string): void {
       this.hoveredResult = data;
-      const x = this.$refs.opMap as any;
+      const x = this.$refs[refId] as any;
       x.toggle(event);
-    },
-
-    toTerms() {
-      this.$emit("toTermsClicked");
     }
   }
 });
