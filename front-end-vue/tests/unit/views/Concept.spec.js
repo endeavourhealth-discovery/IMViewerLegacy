@@ -50,15 +50,15 @@ describe("Concept.vue", () => {
       "http://www.w3.org/2000/01/rdf-schema#label":"Critical care encounter (record type)",
       }});
     EntityService.getEntityChildren = jest.fn().mockResolvedValue({ data: [{"name":"Adult critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#1641000252107"},{"name":"Neonatal critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#831000252103"},{"name":"Paediatric critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#2811000252102"}]});
-    ConfigService.getConfig = jest.fn().mockResolvedValue({ data: [
+    ConfigService.getComponentLayout = jest.fn().mockResolvedValue({ data: [
       {"label":"Name","predicate":"http://www.w3.org/2000/01/rdf-schema#label","type":"TextWithLabel","size":"50%","order":0},
       {"label":"Iri","predicate":"@id","type":"TextWithLabel","size":"50%","order":1},
       {"label":"Status","predicate":"http://endhealth.info/im#status","type":"ObjectNameWithLabel","size":"50%","order":2},
       {"label":"Types","predicate":"http://www.w3.org/1999/02/22-rdf-syntax-ns#type","type":"ArrayObjectNamesToStringWithLabel","size":"50%","order":3},
       {"label":"Description","predicate":"http://www.w3.org/2000/01/rdf-schema#comment","type":"TextHTMLWithLabel","size":"100%","order":4},
       {"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":5},
-      {"label":"Is a","predicate":"http://endhealth.info/im#isA","type":"ListboxWithLabel","size":"50%","order":6},
-      {"label":"Has sub types","predicate":"subtypes","type":"ListboxWithLabel","size":"50%","order":7},
+      {"label":"Is a","predicate":"http://endhealth.info/im#isA","type":"ArrayObjectNameListboxWithLabel","size":"50%","order":6},
+      {"label":"Has sub types","predicate":"subtypes","type":"ArrayObjectNameListboxWithLabel","size":"50%","order":7},
       {"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":8},
       {"label":"Semantic properties","predicate":"semanticProperties","type":"SemanticProperties","size":"100%","order":9},
       {"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":10},
@@ -119,7 +119,7 @@ describe("Concept.vue", () => {
     await flushPromises();
     expect(wrapper.vm.editDialogView).toBeTruthy();
     expect(wrapper.vm.showDownloadDialog).toBeFalsy();
-    expect(wrapper.vm.configs).toStrictEqual([{"label":"Name","predicate":"http://www.w3.org/2000/01/rdf-schema#label","type":"TextWithLabel","size":"50%","order":0},{"label":"Iri","predicate":"@id","type":"TextWithLabel","size":"50%","order":1},{"label":"Status","predicate":"http://endhealth.info/im#status","type":"ObjectNameWithLabel","size":"50%","order":2},{"label":"Types","predicate":"http://www.w3.org/1999/02/22-rdf-syntax-ns#type","type":"ArrayObjectNamesToStringWithLabel","size":"50%","order":3},{"label":"Description","predicate":"http://www.w3.org/2000/01/rdf-schema#comment","type":"TextHTMLWithLabel","size":"100%","order":4},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":5},{"label":"Is a","predicate":"http://endhealth.info/im#isA","type":"ListboxWithLabel","size":"50%","order":6},{"label":"Has sub types","predicate":"subtypes","type":"ListboxWithLabel","size":"50%","order":7},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":8},{"label":"Semantic properties","predicate":"semanticProperties","type":"SemanticProperties","size":"100%","order":9},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":10},{"label":"Data model properties","predicate":"dataModelProperties","type":"DataModelProperties","size":"100%","order":11}]);
+    expect(wrapper.vm.configs).toStrictEqual([{"label":"Name","predicate":"http://www.w3.org/2000/01/rdf-schema#label","type":"TextWithLabel","size":"50%","order":0},{"label":"Iri","predicate":"@id","type":"TextWithLabel","size":"50%","order":1},{"label":"Status","predicate":"http://endhealth.info/im#status","type":"ObjectNameWithLabel","size":"50%","order":2},{"label":"Types","predicate":"http://www.w3.org/1999/02/22-rdf-syntax-ns#type","type":"ArrayObjectNamesToStringWithLabel","size":"50%","order":3},{"label":"Description","predicate":"http://www.w3.org/2000/01/rdf-schema#comment","type":"TextHTMLWithLabel","size":"100%","order":4},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":5},{"label":"Is a","predicate":"http://endhealth.info/im#isA","type":"ArrayObjectNameListboxWithLabel","size":"50%","order":6},{"label":"Has sub types","predicate":"subtypes","type":"ArrayObjectNameListboxWithLabel","size":"50%","order":7},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":8},{"label":"Semantic properties","predicate":"semanticProperties","type":"SemanticProperties","size":"100%","order":9},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":10},{"label":"Data model properties","predicate":"dataModelProperties","type":"DataModelProperties","size":"100%","order":11}]);
     expect(wrapper.vm.concept).toStrictEqual({
       "@id":"http://endhealth.info/im#CriticalCareEncounter",
       "http://endhealth.info/im#isA":[{"@id":"http://endhealth.info/im#1161000252102","name":"Hospital encounter"}],
@@ -318,19 +318,19 @@ describe("Concept.vue", () => {
     await flushPromises();
     wrapper.vm.getConfig("description");
     await flushPromises();
-    expect(ConfigService.getConfig).toHaveBeenCalledTimes(1);
-    expect(ConfigService.getConfig).toHaveBeenCalledWith("description");
-    expect(wrapper.vm.configs).toStrictEqual([{"label": "Name", "order": 0, "predicate": "http://www.w3.org/2000/01/rdf-schema#label", "size": "50%", "type": "TextWithLabel"}, {"label": "Iri", "order": 1, "predicate": "@id", "size": "50%", "type": "TextWithLabel"}, {"label": "Status", "order": 2, "predicate": "http://endhealth.info/im#status", "size": "50%", "type": "ObjectNameWithLabel"}, {"label": "Types", "order": 3, "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "size": "50%", "type": "ArrayObjectNamesToStringWithLabel"}, {"label": "Description", "order": 4, "predicate": "http://www.w3.org/2000/01/rdf-schema#comment", "size": "100%", "type": "TextHTMLWithLabel"}, {"label": "Divider", "order": 5, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Is a", "order": 6, "predicate": "http://endhealth.info/im#isA", "size": "50%", "type": "ListboxWithLabel"}, {"label": "Has sub types", "order": 7, "predicate": "subtypes", "size": "50%", "type": "ListboxWithLabel"}, {"label": "Divider", "order": 8, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Semantic properties", "order": 9, "predicate": "semanticProperties", "size": "100%", "type": "SemanticProperties"}, {"label": "Divider", "order": 10, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Data model properties", "order": 11, "predicate": "dataModelProperties", "size": "100%", "type": "DataModelProperties"}]);
+    expect(ConfigService.getComponentLayout).toHaveBeenCalledTimes(1);
+    expect(ConfigService.getComponentLayout).toHaveBeenCalledWith("description");
+    expect(wrapper.vm.configs).toStrictEqual([{"label": "Name", "order": 0, "predicate": "http://www.w3.org/2000/01/rdf-schema#label", "size": "50%", "type": "TextWithLabel"}, {"label": "Iri", "order": 1, "predicate": "@id", "size": "50%", "type": "TextWithLabel"}, {"label": "Status", "order": 2, "predicate": "http://endhealth.info/im#status", "size": "50%", "type": "ObjectNameWithLabel"}, {"label": "Types", "order": 3, "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "size": "50%", "type": "ArrayObjectNamesToStringWithLabel"}, {"label": "Description", "order": 4, "predicate": "http://www.w3.org/2000/01/rdf-schema#comment", "size": "100%", "type": "TextHTMLWithLabel"}, {"label": "Divider", "order": 5, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Is a", "order": 6, "predicate": "http://endhealth.info/im#isA", "size": "50%", "type": "ArrayObjectNameListboxWithLabel"}, {"label": "Has sub types", "order": 7, "predicate": "subtypes", "size": "50%", "type": "ArrayObjectNameListboxWithLabel"}, {"label": "Divider", "order": 8, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Semantic properties", "order": 9, "predicate": "semanticProperties", "size": "100%", "type": "SemanticProperties"}, {"label": "Divider", "order": 10, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Data model properties", "order": 11, "predicate": "dataModelProperties", "size": "100%", "type": "DataModelProperties"}]);
   });
 
   it("can getConfig ___ fail", async() => {
-    ConfigService.getConfig = jest.fn().mockRejectedValue(false);
+    ConfigService.getComponentLayout = jest.fn().mockRejectedValue(false);
     jest.clearAllMocks();
     await flushPromises();
     wrapper.vm.getConfig("description");
     await flushPromises();
-    expect(ConfigService.getConfig).toHaveBeenCalledTimes(1);
-    expect(ConfigService.getConfig).toHaveBeenCalledWith("description");
+    expect(ConfigService.getComponentLayout).toHaveBeenCalledTimes(1);
+    expect(ConfigService.getComponentLayout).toHaveBeenCalledWith("description");
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get config data from server"));
   });

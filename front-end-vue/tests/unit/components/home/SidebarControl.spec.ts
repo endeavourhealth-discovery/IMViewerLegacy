@@ -20,35 +20,8 @@ describe("SidebarControl.vue", () => {
     jest.clearAllMocks();
     mockStore = {
       state: {
-        filters: {
-          selectedStatus: ["Active", "Draft", "Inactive"],
-          selectedSchemes: [
-            {
-              iri: "http://endhealth.info/im#DiscoveryCodeScheme",
-              name: "Discovery code"
-            },
-            {
-              iri: "http://endhealth.info/im#SnomedCodeScheme",
-              name: "Snomed-CT code"
-            },
-            {
-              iri: "http://endhealth.info/im#TermOnlyCodeScheme",
-              name: "Term based code"
-            }
-          ],
-          selectedTypes: [
-            "Class",
-            "ObjectProperty",
-            "DataProperty",
-            "DataType",
-            "Annotation",
-            "Individual",
-            "Record",
-            "ValueSet",
-            "Folder",
-            "Legacy"
-          ]
-        }
+        selectedFilters: {"status":[{"name":"Active","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#Active"},{"name":"Draft","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#Draft"}],"schemes":[{"iri":"http://endhealth.info/im#","prefix":"im","name":"Discovery namespace"},{"iri":"http://snomed.info/sct#","prefix":"sn","name":"Snomed-CT namespace"}],"types":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"},{"@id":"http://endhealth.info/im#Folder","name":"Folder"},{"@id":"http://www.w3.org/ns/shacl#NodeShape","name":"Node shape"},{"@id":"http://www.w3.org/2002/07/owl#ObjectProperty","name":"ObjectProperty"},{"@id":"http://endhealth.info/im#QueryTemplate","name":"Query template"},{"@id":"http://endhealth.info/im#RecordType","name":"Record type"},{"@id":"http://endhealth.info/im#ValueSet","name":"Value set"}]},
+        filterOptions: {"status":[{"name":"Active","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#Active"},{"name":"Draft","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#Draft"},{"name":"Inactive","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#Inactive"}],"scheme":[{"iri":"http://endhealth.info/bc#","prefix":"bc","name":"Barts Cerner namespace"},{"iri":"http://endhealth.info/ceg16#","prefix":"ceg13","name":"CEG ethnicity 16+ category"},{"iri":"http://endhealth.info/im#","prefix":"im","name":"Discovery namespace"},{"iri":"http://endhealth.info/emis#","prefix":"emis","name":"EMIS (inc. Read2 like) namespace"},{"iri":"http://endhealth.info/icd10#","prefix":"icd10","name":"ICD10 namespace"},{"iri":"http://endhealth.info/reports#","prefix":"reports","name":"IM internal reports"},{"iri":"http://endhealth.info/kchapex#","prefix":"kchapex","name":"KCH Apex codes"},{"iri":"http://endhealth.info/kchwinpath#","prefix":"kchwinpath","name":"KCH Winpath codes"},{"iri":"http://endhealth.info/nhsethnic2001#","prefix":"nhse2001","name":"NHS Ethnicitity categories 2001 census"},{"iri":"http://endhealth.info/ods#","prefix":"ods","name":"ODS code scheme"},{"iri":"http://endhealth.info/opcs4#","prefix":"opcs4","name":"OPCS4 namespace"},{"iri":"https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1#","prefix":"orole","name":"OPS roles namespace"},{"iri":"http://www.w3.org/2002/07/owl#","prefix":"owl","name":"OWL2 namespace"},{"iri":"http://www.w3.org/ns/prov#","prefix":"prov","name":"PROV namespace"},{"iri":"http://endhealth.info/prsb#","prefix":"prsb","name":"PRSB namespace"},{"iri":"http://www.w3.org/1999/02/22-rdf-syntax-ns#","prefix":"rdf","name":"RDF namespace"},{"iri":"http://www.w3.org/2000/01/rdf-schema#","prefix":"rdfs","name":"RDFS namespace"},{"iri":"http://www.w3.org/ns/shacl#","prefix":"sh","name":"SHACL namespace"},{"iri":"http://snomed.info/sct#","prefix":"sn","name":"Snomed-CT namespace"},{"iri":"http://endhealth.info/tpp#","prefix":"tpp","name":"TPP (inc.CTV3) namespace"},{"iri":"http://endhealth.info/vision#","prefix":"vis","name":"Vision (incl. Read2) namespace"},{"iri":"http://www.w3.org/2001/XMLSchema#","prefix":"xsd","name":"xsd namespace"}],"type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"},{"@id":"http://endhealth.info/im#Folder","name":"Folder"},{"@id":"http://endhealth.info/im#LegacyEntity","name":"Legacy concept"},{"@id":"http://www.w3.org/ns/shacl#NodeShape","name":"Node shape"},{"@id":"http://www.w3.org/2002/07/owl#ObjectProperty","name":"ObjectProperty"},{"@id":"http://endhealth.info/im#QueryTemplate","name":"Query template"},{"@id":"http://endhealth.info/im#RecordType","name":"Record type"},{"@id":"http://endhealth.info/im#ValueSet","name":"Value set"}]}
       },
       commit: jest.fn(),
       dispatch: jest.fn().mockResolvedValue("true")
