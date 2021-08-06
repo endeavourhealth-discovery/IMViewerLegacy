@@ -23,7 +23,7 @@ describe("state", () => {
     expect(store.state.historyCount).toBe(0);
     expect(store.state.focusTree).toBe(false);
     expect(store.state.treeLocked).toBe(true);
-    expect(store.state.filters).toEqual({
+    expect(store.state.selectedFilters).toEqual({
       selectedStatus: ["Active", "Draft"],
       selectedSchemes: [
         {
@@ -145,7 +145,7 @@ describe("mutations", () => {
       selectedTypes: ["testClass", "testProperty"]
     };
     store.commit("updateFilters", testFilter);
-    expect(store.state.filters).toEqual(testFilter);
+    expect(store.state.selectedFilters).toEqual(testFilter);
   });
 
   it("can fetchSearchResults ___ pass", async() => {

@@ -3,9 +3,10 @@
     <span class="p-float-label">
       <MultiSelect
         id="status"
-        v-model="$store.state.filters.selectedStatus"
+        v-model="$store.state.selectedFilters.status"
         @change="checkForSearch"
         :options="statusOptions"
+        optionLabel="name"
         display="chip"
       />
       <label for="status">Select status:</label>
@@ -16,7 +17,7 @@
     <span class="p-float-label">
       <MultiSelect
         id="scheme"
-        v-model="$store.state.filters.selectedSchemes"
+        v-model="$store.state.selectedFilters.schemes"
         @change="checkForSearch"
         :options="schemeOptions"
         optionLabel="name"
@@ -30,9 +31,10 @@
     <span class="p-float-label">
       <MultiSelect
         id="conceptType"
-        v-model="$store.state.filters.selectedTypes"
+        v-model="$store.state.selectedFilters.types"
         @change="checkForSearch"
         :options="typeOptions"
+        optionLabel="name"
         display="chip"
       />
       <label for="scheme">Select concept type:</label>
@@ -41,76 +43,107 @@
 </template>
 
 <script lang="ts">
-import { IM } from "@/vocabulary/IM";
+import ConfigService from "@/services/ConfigService";
+import EntityService from "@/services/EntityService";
+import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "Filters",
   components: {},
   props: ["search", "searchTerm"],
+  async mounted() {
+    await ConfigService.getFilterDefaults()
+      .then(res => {
+        this.configs = res.data;
+      })
+      .catch(err => {
+        this.$toast.add(
+          LoggerService.error("Failed to get filter configs from server", err)
+        );
+      });
+
+    await EntityService.getNamespaces()
+      .then(res => {
+        this.schemeOptions = res.data;
+      })
+      .catch(err => {
+        this.$toast.add(
+          LoggerService.error(
+            "Failed to get scheme filter options from server",
+            err
+          )
+        );
+      });
+
+    await EntityService.getEntityChildren("http://endhealth.info/im#Status")
+      .then(res => {
+        this.statusOptions = res.data;
+      })
+      .catch(err => {
+        this.$toast.add(
+          LoggerService.error(
+            "Failed to get status filter options from server",
+            err
+          )
+        );
+      });
+
+    await EntityService.getEntityChildren("http://endhealth.info/im#EntityType")
+      .then(res => {
+        // this.typeOptions = res.data;
+        this.typeOptions = [
+          {
+            "@id": "http://www.w3.org/2002/07/owl#Class",
+            name: "Class"
+          },
+          {
+            "@id": "http://endhealth.info/im#Folder",
+            name: "Folder"
+          },
+          {
+            "@id": "http://endhealth.info/im#LegacyEntity",
+            name: "Legacy concept"
+          },
+          {
+            "@id": "http://www.w3.org/ns/shacl#NodeShape",
+            name: "Node shape"
+          },
+          {
+            "@id": "http://www.w3.org/2002/07/owl#ObjectProperty",
+            name: "ObjectProperty"
+          },
+          {
+            "@id": "http://endhealth.info/im#QueryTemplate",
+            name: "Query template"
+          },
+          {
+            "@id": "http://endhealth.info/im#RecordType",
+            name: "Record type"
+          },
+          {
+            "@id": "http://endhealth.info/im#ValueSet",
+            name: "Value set"
+          }
+        ];
+      })
+      .catch(err => {
+        this.$toast.add(
+          LoggerService.error(
+            "Failed to get type filter options from server",
+            err
+          )
+        );
+      });
+    this.setFilters();
+    this.setDefaults();
+  },
   data() {
     return {
-      statusOptions: ["Active", "Draft", "Inactive"] as string[],
-      schemeOptions: [
-        {
-          iri: IM.CODE_SCHEME_BARTS,
-          name: "Barts Cerner code"
-        },
-        {
-          iri: IM.CODE_SCHEME_CTV3,
-          name: "CTV3 Code"
-        },
-        {
-          iri: IM.DISCOVERY_CODE,
-          name: "Discovery code"
-        },
-        {
-          iri: IM.CODE_SCHEME_EMIS,
-          name: "EMIS local code"
-        },
-        {
-          iri: "http://endhealth.info/im#581000252100",
-          name: "Homerton Cerner code"
-        },
-        {
-          iri: IM.CODE_SCHEME_ICD10,
-          name: "ICD10 code"
-        },
-        {
-          iri: IM.CODE_SCHEME_OPCS4,
-          name: "OPCS4 code"
-        },
-        {
-          iri: IM.CODE_SCHEME_READ,
-          name: "Read 2 code"
-        },
-        {
-          iri: IM.CODE_SCHEME_SNOMED,
-          name: "Snomed-CT code"
-        },
-        {
-          iri: "http://endhealth.info/im#631000252102",
-          name: "TPP local codes"
-        },
-        {
-          iri: IM.CODE_SCHEME_TERMS,
-          name: "Term based code"
-        }
-      ] as { iri: string; name: string }[],
-      typeOptions: [
-        "Class",
-        "ObjectProperty",
-        "DataProperty",
-        "DataType",
-        "Annotation",
-        "Individual",
-        "Record",
-        "ValueSet",
-        "Folder",
-        "Term",
-        "Legacy",
-        "CategoryGroup"
-      ] as string[]
+      statusOptions: [] as any[],
+      schemeOptions: [] as any[],
+      typeOptions: [] as any[],
+      configs: {} as any
     };
   },
   methods: {
@@ -118,6 +151,31 @@ export default defineComponent({
       if (this.searchTerm.length > 2) {
         this.search();
       }
+    },
+
+    setFilters() {
+      this.$store.commit("updateFilterOptions", {
+        status: this.statusOptions,
+        scheme: this.schemeOptions,
+        type: this.typeOptions
+      });
+    },
+
+    setDefaults() {
+      const selectedStatus = this.statusOptions.filter(item =>
+        this.configs.statusOptions.includes(item.name)
+      );
+      const selectedSchemes = this.schemeOptions.filter(item =>
+        this.configs.schemeOptions.includes(item.name)
+      );
+      const selectedTypes = this.typeOptions.filter(item =>
+        this.configs.typeOptions.includes(item.name)
+      );
+      this.$store.commit("updateSelectedFilters", {
+        status: selectedStatus,
+        schemes: selectedSchemes,
+        types: selectedTypes
+      });
     }
   }
 });
