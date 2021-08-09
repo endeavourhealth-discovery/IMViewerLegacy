@@ -115,10 +115,10 @@ export default defineComponent({
   },
   data() {
     return {
-      mappings: {} as any,
+      mappings: [] as any,
       data: {} as any,
       hoveredResult: {} as any,
-      terms: {} as any
+      terms: [] as any
     };
   },
   async mounted() {
@@ -137,11 +137,17 @@ export default defineComponent({
     async getMappings(): Promise<void> {
       await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP])
         .then(res => {
-          this.mappings = res.data[IM.HAS_MAP] || {};
+          this.mappings = res.data[IM.HAS_MAP] || [];
           this.data = {};
         })
-        .catch(() => {
-          this.mappings = {};
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Failed to get concept complex maps from server",
+              err
+            )
+          );
+          this.mappings = [];
           this.data = {};
         });
 
@@ -151,8 +157,12 @@ export default defineComponent({
         })
         .catch(err => {
           this.$toast.add(
-            LoggerService.error("Failed to get concept terms from server", err)
+            LoggerService.error(
+              "Failed to get concept simple maps from server",
+              err
+            )
           );
+          this.terms = [];
         });
     },
 
@@ -220,7 +230,6 @@ export default defineComponent({
     generateChildNodes(
       mapObject: any,
       location: string,
-      level: number,
       positionInLevel: number
     ) {
       if (Object.keys(mapObject[0]).includes(IM.MAPPED_TO)) {
@@ -236,7 +245,7 @@ export default defineComponent({
         return [
           this.createChartTableNode(
             mappedList.sort(this.byPriority),
-            location + "_" + "0",
+            location,
             positionInLevel,
             "childList"
           )
@@ -253,9 +262,8 @@ export default defineComponent({
           if (mapNode) {
             mapNode.children = this.generateChildNodes(
               item[Object.keys(item)[0]],
-              location,
-              level + 1,
-              count
+              location + "_" + count,
+              0
             );
           }
           results.push(mapNode);
@@ -275,28 +283,22 @@ export default defineComponent({
         data: { label: "Has map" },
         children: [] as any
       };
-      parentNode.children = this.generateChildNodes(mappingObject, "0", 0, 0);
+      parentNode.children = this.generateChildNodes(mappingObject, "0", 0);
       const termsChildren = this.generateTermNodes(
         this.terms,
         "0_" + parentNode.children.length,
-        0,
         0
       );
       parentNode.children.push({
         key: "0_" + parentNode.children.length,
         type: "terms",
-        data: { label: "Term maps" },
+        data: { label: "Simple maps" },
         children: termsChildren
       });
       return parentNode;
     },
 
-    generateTermNodes(
-      terms: any,
-      location: string,
-      level: number,
-      positionInLevel: number
-    ) {
+    generateTermNodes(terms: any, location: string, positionInLevel: number) {
       if (!Array.isArray(terms) || !terms.length) {
         return [];
       }
