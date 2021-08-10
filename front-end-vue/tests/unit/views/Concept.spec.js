@@ -10,8 +10,7 @@ import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
 import ProgressSpinner from "primevue/progressspinner";
 import Definition from "@/components/concept/Definition.vue";
-import Terms from "@/components/concept/Terms.vue";
-import ComplexMappings from "@/components/concept/ComplexMappings.vue";
+import Mappings from "@/components/concept/Mappings.vue";
 import UsedIn from "@/components/concept/UsedIn.vue";
 import Graph from "@/components/concept/Graph.vue";
 import Members from "@/components/concept/Members.vue";
@@ -90,12 +89,11 @@ describe("Concept.vue", () => {
       global: {
         components: {
           Definition,
-          ComplexMappings,
+          Mappings,
           ContextMenu,
           Button,
           TabPanel,
           TabView,
-          Terms,
           SecondaryTree,
           UsedIn,
           Members,

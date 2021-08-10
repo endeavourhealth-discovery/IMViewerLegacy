@@ -1,5 +1,5 @@
 import { flushPromises, shallowMount } from "@vue/test-utils";
-import ComplexMappings from "@/components/concept/ComplexMappings.vue";
+import Mappings from "@/components/concept/Mappings.vue";
 import ProgressSpinner from "primevue/progressspinner";
 import OrganizationChart from "primevue/organizationchart";
 import OverlayPanel from "primevue/overlaypanel";
@@ -25,7 +25,7 @@ describe("ComplexMappings.vue", () => {
       .mockResolvedValueOnce({ data: {"@id":"http://snomed.info/sct#298382003","http://endhealth.info/im#matchedTo":[{"@id":"http://endhealth.info/emis#^ESCTAM784250","name":"Amputation of right foot", "namespace": "EMIS (inc. Read2 like) namespace"},{"@id":"http://endhealth.info/emis#^ESCTAM784250","name":"Amputation of right foot", "namespace": "EMIS (inc. Read2 like) namespace"}]}});
 
 
-    wrapper = shallowMount(ComplexMappings, {
+    wrapper = shallowMount(Mappings, {
       global: {
         components: { ProgressSpinner, OrganizationChart, OverlayPanel },
         mocks: { $store: mockStore, $toast: mockToast }

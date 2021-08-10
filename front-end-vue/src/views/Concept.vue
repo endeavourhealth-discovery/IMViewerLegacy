@@ -83,22 +83,13 @@
                 <Definition :concept="concept" :configs="configs" />
               </div>
             </TabPanel>
-            <TabPanel header="Terms">
-              <div
-                class="concept-panel-content"
-                id="terms-container"
-                :style="contentHeight"
-              >
-                <Terms :conceptIri="conceptIri" />
-              </div>
-            </TabPanel>
             <TabPanel header="Maps" v-if="isClass">
               <div
                 class="concept-panel-content"
-                id="complex-mappings-container"
+                id="mappings-container"
                 :style="contentHeight"
               >
-                <ComplexMappings
+                <Mappings
                   :conceptIri="conceptIri"
                   @toTermsClicked="showTerms"
                 />
@@ -156,12 +147,11 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Graph from "../components/concept/Graph.vue";
-import Terms from "../components/concept/Terms.vue";
 import Definition from "../components/concept/Definition.vue";
 import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
-import ComplexMappings from "../components/concept/ComplexMappings.vue";
+import Mappings from "../components/concept/Mappings.vue";
 import { isValueSet, isClass, isQuery } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
@@ -178,13 +168,12 @@ export default defineComponent({
   components: {
     PanelHeader,
     Graph,
-    Terms,
     UsedIn,
     Members,
     Definition,
     DownloadDialog,
     SecondaryTree,
-    ComplexMappings
+    Mappings
   },
   computed: {
     isSet(): boolean {

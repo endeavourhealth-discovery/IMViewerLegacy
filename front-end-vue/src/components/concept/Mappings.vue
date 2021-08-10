@@ -43,25 +43,7 @@
       </table>
     </template>
     <template #termsList="slotProps">
-      <table aria-label="Concept map terms children">
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Scheme</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="mapItem in slotProps.node.data.mapItems"
-            :key="mapItem"
-            @mouseenter="toggle($event, mapItem, 'opTerm')"
-            @mouseleave="toggle($event, mapItem, 'opTerm')"
-          >
-            <td>{{ mapItem.name }}</td>
-            <td>{{ mapItem.namespace }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <SimpleMaps :data="slotProps.node.data.mapItems" />
     </template>
     <template #default>
       <p class="p-text-centered">None</p>
@@ -94,9 +76,11 @@ import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
+import SimpleMaps from "@/components/concept/mapping/SimpleMaps.vue";
 
 export default defineComponent({
-  name: "ComplexMappings",
+  name: "Mappings",
+  components: { SimpleMaps },
   props: ["conceptIri"],
   emits: ["toTermsClicked"],
   watch: {

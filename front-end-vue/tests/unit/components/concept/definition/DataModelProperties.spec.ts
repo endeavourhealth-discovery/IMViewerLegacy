@@ -1,5 +1,5 @@
 import { shallowMount } from "@vue/test-utils";
-import DataModelProperties from "@/components/concept/DataModelProperties.vue";
+import DataModelProperties from "@/components/concept/definition/DataModelProperties.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 

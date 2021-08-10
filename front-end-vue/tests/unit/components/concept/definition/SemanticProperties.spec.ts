@@ -1,5 +1,5 @@
 import { shallowMount } from "@vue/test-utils";
-import SemanticProperties from "@/components/concept/SemanticProperties.vue";
+import SemanticProperties from "@/components/concept/definition/SemanticProperties.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 
