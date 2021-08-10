@@ -102,7 +102,8 @@ export default defineComponent({
       mappings: [] as any,
       data: {} as any,
       hoveredResult: {} as any,
-      terms: [] as any
+      terms: [] as any,
+      namespaces: [] as any
     };
   },
   async mounted() {
@@ -135,9 +136,26 @@ export default defineComponent({
           this.data = {};
         });
 
+      await EntityService.getNamespaces()
+        .then(res => {
+          this.namespaces = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get namespaces from server", err)
+          );
+        });
+
       await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO])
         .then(res => {
           this.terms = res.data[IM.MATCHED_TO];
+          this.terms.forEach((term: any) => {
+            term.scheme = this.namespaces.find(
+              (namespace: any) =>
+                namespace.iri === term["@id"].split("#")[0] + "#"
+            ).name;
+            term.code = term["@id"].split("#")[1];
+          });
         })
         .catch(err => {
           this.$toast.add(
@@ -291,7 +309,8 @@ export default defineComponent({
         termsList.push({
           name: term.name,
           iri: term["@id"],
-          scheme: term.namespace
+          scheme: term.scheme,
+          code: term.code
         });
       });
       return [
