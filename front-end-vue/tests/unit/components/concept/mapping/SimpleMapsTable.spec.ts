@@ -1,5 +1,5 @@
 import { flushPromises, shallowMount } from "@vue/test-utils";
-import SimpleMapsTable from "@/components/concept/complexMapping/Terms.vue";
+import SimpleMaps from "@/components/concept/Mapping/SimpleMaps.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 
@@ -20,7 +20,7 @@ describe("SimpleMapsTable.vue", () => {
     const warn = console.warn;
     console.warn = jest.fn();
 
-    wrapper = shallowMount(SimpleMapsTable, {
+    wrapper = shallowMount(SimpleMaps, {
       global: {
         components: { DataTable, Column },
         mocks: { $router: mockRouter }
