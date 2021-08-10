@@ -24,6 +24,7 @@ import TextHTMLWithLabel from "@/components/generics/TextHTMLWithLabel.vue";
 import TextWithLabel from "@/components/generics/TextWithLabel.vue";
 import ObjectNameWithLabel from "@/components/generics/ObjectNameWithLabel.vue";
 import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNameListboxWithLabel.vue";
+import TermsTable from "@/components/concept/TermsTable.vue";
 
 export default defineComponent({
   name: "Definition",
@@ -34,7 +35,8 @@ export default defineComponent({
     TextHTMLWithLabel,
     TextWithLabel,
     ObjectNameWithLabel,
-    ArrayObjectNameListboxWithLabel
+    ArrayObjectNameListboxWithLabel,
+    TermsTable
   },
   props: ["concept", "configs"]
 });

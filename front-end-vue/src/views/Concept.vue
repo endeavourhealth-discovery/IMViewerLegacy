@@ -260,6 +260,7 @@ export default defineComponent({
         .filter((c: any) => c.predicate !== "subtypes")
         .filter((c: any) => c.predicate !== "semanticProperties")
         .filter((c: any) => c.predicate !== "dataModelProperties")
+        .filter((c: any) => c.predicate !== "termCodes")
         .map((c: any) => c.predicate);
 
       await EntityService.getPartialEntity(iri, predicates)
@@ -285,6 +286,16 @@ export default defineComponent({
         .catch(err => {
           this.$toast.add(
             LoggerService.error("Failed to get subtypes from server.", err)
+          );
+        });
+
+      await EntityService.getEntityTermCodes(iri)
+        .then(res => {
+          this.concept["termCodes"] = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get terms from server", err)
           );
         });
     },
@@ -404,11 +415,16 @@ export default defineComponent({
       value: any,
       counter: number,
       totalKeys: number
-    ): { label: string; value: string } {
+    ): { label: string; value: string } | undefined {
       let newString = "";
       let returnString = "";
-      let newKey = this.configs.find((config: any) => config.predicate === key)
-        .label;
+      const label = this.configs.find(
+        (config: any) => config.predicate === key
+      );
+      if (!label) {
+        return;
+      }
+      let newKey = label.label;
       if (Array.isArray(value)) {
         if (value.length) {
           if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
@@ -468,12 +484,13 @@ export default defineComponent({
       let key: string;
       let value: any;
       for ([key, value] of Object.entries(this.concept)) {
-        returnString += this.conceptObjectToCopyString(
+        const copyString = this.conceptObjectToCopyString(
           key,
           value,
           counter,
           totalKeys
-        ).value;
+        );
+        if (copyString) returnString += copyString.value;
         counter++;
       }
       return returnString;
@@ -527,6 +544,7 @@ export default defineComponent({
       let value: any;
       for ([key, value] of Object.entries(this.concept)) {
         let result = this.conceptObjectToCopyString(key, value, 0, 1);
+        if (!result) return;
         const label = result.label;
         const text = result.value;
         this.copyMenuItems.push({
