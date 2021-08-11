@@ -4,6 +4,7 @@ import DataTable from "primevue/datatable";
 import InputText from "primevue/inputtext";
 import Checkbox from "primevue/checkbox";
 import Column from "primevue/column";
+import Button from "primevue/button";
 import EntityService from "@/services/EntityService";
 import { FilterMatchMode } from "primevue/api";
 import LoggerService from "@/services/LoggerService";
@@ -45,7 +46,7 @@ describe("Members.vue", () => {
 
     wrapper = shallowMount(Members, {
       global: {
-        components: { DataTable, InputText, Checkbox, Column },
+        components: { DataTable, InputText, Checkbox, Column, Button },
         mocks: { $router: mockRouter, $toast: mockToast }
       },
       props: { conceptIri: "http://endhealth.info/im#VSET_EthnicCategoryCEG16" }
@@ -217,7 +218,7 @@ describe("Members.vue", () => {
     wrapper.vm.setTableWidth = jest.fn();
     wrapper.vm.getMembers();
     expect(wrapper.vm.loading).toBe(true);
-    expect(wrapper.vm.expandedRowGroups).toStrictEqual(["MemberIncluded", "MemberXcluded"]);
+    expect(wrapper.vm.expandedRowGroups).toStrictEqual(["MemberExpanded"]);
     expect(wrapper.vm.selected).toStrictEqual({});
     expect(wrapper.vm.subsets).toStrictEqual([]);
     expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
@@ -304,7 +305,7 @@ describe("Members.vue", () => {
   it("can download ___ success", () => {
     const openStore = window.open;
     window.open = jest.fn().mockReturnValue(true);
-    wrapper.vm.download();
+    wrapper.vm.download(true);
     expect(window.open).toHaveBeenCalledTimes(1);
     expect(window.open).toHaveBeenCalledWith("/test/api/entity/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&members=true&expandMembers=true&format=excel");
     expect(mockToast.add).toHaveBeenCalledTimes(1);
@@ -315,7 +316,7 @@ describe("Members.vue", () => {
   it("can download ___ fail", () => {
     const openStore = window.open;
     window.open = jest.fn().mockReturnValue(false);
-    wrapper.vm.download();
+    wrapper.vm.download(true);
     expect(window.open).toHaveBeenCalledTimes(1);
     expect(window.open).toHaveBeenCalledWith("/test/api/entity/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&members=true&expandMembers=true&format=excel");
     expect(mockToast.add).toHaveBeenCalledTimes(1);
