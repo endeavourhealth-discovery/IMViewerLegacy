@@ -1,14 +1,14 @@
 <template>
-  <div id="term-table-container">
+  <div id="simple-maps-table-container">
     <DataTable
-      :value="terms"
+      :value="data"
       :rowsPerPageOptions="[25, 50, 100]"
-      :paginator="terms.length > rows ? true : false"
+      :paginator="data.length > rows ? true : false"
       :rows="rows"
       rowGroupMode="subheader"
-      groupRowsBy="scheme.name"
+      groupRowsBy="scheme"
       sortMode="single"
-      sortField="scheme.name"
+      sortField="scheme"
       :sortOrder="1"
       :scrollable="true"
       showGridlines
@@ -16,12 +16,12 @@
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
       currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} results"
       class="p-datatable-sm"
-      id="terms-table"
+      id="simple-maps-table"
       @page="scrollToTop"
       :loading="loading"
     >
-      <Column field="scheme.name" header="Scheme" />
-      <Column field="term" header="Term" style="flex: 0 0 65%" />
+      <Column field="scheme" header="Scheme" />
+      <Column field="name" header="Name" style="flex: 0 0 65%" />
       <Column
         field="code"
         header="Code"
@@ -29,11 +29,11 @@
       />
       <template #groupheader="slotProps">
         <span style="font-weight: 700; color:rgba(51,153,255,0.8)">
-          Scheme : {{ slotProps.data.scheme.name }}
+          Scheme : {{ slotProps.data.scheme }}
         </span>
       </template>
       <template #empty>
-        No terms found.
+        No simple maps found.
       </template>
       <template #loading>
         Loading data. Please wait...
@@ -43,21 +43,13 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
-import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
-  name: "Terms",
+  name: "SimpleMaps",
   components: {},
-  props: ["conceptIri"],
-  watch: {
-    async conceptIri(newValue) {
-      await this.getTerms(newValue);
-    }
-  },
+  props: ["data"],
   async mounted() {
     window.addEventListener("resize", this.onResize);
-    await this.getTerms(this.conceptIri);
     this.onResize();
   },
   beforeUnmount() {
@@ -67,7 +59,6 @@ export default defineComponent({
     return {
       selected: {} as any,
       loading: false,
-      terms: [],
       scrollHeight: "500px",
       rows: 25
     };
@@ -75,45 +66,11 @@ export default defineComponent({
   methods: {
     onResize(): void {
       this.setTableWidth();
-      this.setScrollHeight();
-    },
-
-    async getTerms(iri: string) {
-      this.loading = true;
-      await EntityService.getEntityTermCodes(iri)
-        .then(res => {
-          this.terms = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Concept term codes server request failed", err)
-          );
-        });
-      this.loading = false;
-    },
-
-    setScrollHeight(): void {
-      const container = document.getElementById(
-        "terms-container"
-      ) as HTMLElement;
-      const terms = document.getElementById("terms-table") as HTMLElement;
-      const paginator = terms?.getElementsByClassName(
-        "p-paginator"
-      )[0] as HTMLElement;
-      if (paginator && container) {
-        this.scrollHeight =
-          container.getBoundingClientRect().height -
-          paginator.getBoundingClientRect().height -
-          1 +
-          "px";
-      } else if (container) {
-        this.scrollHeight = container.getBoundingClientRect().height - 1 + "px";
-      }
     },
 
     setTableWidth(): void {
       const container = document.getElementById(
-        "terms-container"
+        "simple-maps-table-container"
       ) as HTMLElement;
       const table = container?.getElementsByClassName(
         "p-datatable-table"
@@ -125,7 +82,7 @@ export default defineComponent({
 
     scrollToTop(): void {
       const tableContainer = document.getElementById(
-        "term-table-container"
+        "simple-maps-table-container"
       ) as HTMLElement;
       const scrollBox = tableContainer?.getElementsByClassName(
         "p-datatable-wrapper"
@@ -139,19 +96,19 @@ export default defineComponent({
 </script>
 
 <style scoped>
-#term-table-container {
+#simple-maps-table-container {
   height: 100%;
   overflow-y: auto;
 }
 
-#term-table-container ::v-deep(.p-datatable) {
+#simple-maps-table-container ::v-deep(.p-datatable) {
   height: 100%;
   display: flex;
   flex-flow: column;
   justify-content: flex-start;
 }
 
-#term-table-container ::v-deep(.p-datatable-wrapper) {
+#simple-maps-table-container ::v-deep(.p-datatable-wrapper) {
   flex-grow: 6;
 }
 </style>

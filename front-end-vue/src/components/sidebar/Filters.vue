@@ -134,7 +134,9 @@ export default defineComponent({
           );
         });
 
-      await EntityService.getEntityChildren("http://endhealth.info/im#EntityType")
+      await EntityService.getEntityChildren(
+        "http://endhealth.info/im#EntityType"
+      )
         .then(res => {
           // this.typeOptions = res.data;
           this.typeOptions = [

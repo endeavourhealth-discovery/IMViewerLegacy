@@ -17,13 +17,14 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import SemanticProperties from "./SemanticProperties.vue";
-import DataModelProperties from "./DataModelProperties.vue";
+import SemanticProperties from "./definition/SemanticProperties.vue";
+import DataModelProperties from "./definition/DataModelProperties.vue";
 import ArrayObjectNamesToStringWithLabel from "@/components/generics/ArrayObjectNamesToStringWithLabel.vue";
 import TextHTMLWithLabel from "@/components/generics/TextHTMLWithLabel.vue";
 import TextWithLabel from "@/components/generics/TextWithLabel.vue";
 import ObjectNameWithLabel from "@/components/generics/ObjectNameWithLabel.vue";
 import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNameListboxWithLabel.vue";
+import TermsTable from "@/components/concept/definition/TermsTable.vue";
 
 export default defineComponent({
   name: "Definition",
@@ -34,7 +35,8 @@ export default defineComponent({
     TextHTMLWithLabel,
     TextWithLabel,
     ObjectNameWithLabel,
-    ArrayObjectNameListboxWithLabel
+    ArrayObjectNameListboxWithLabel,
+    TermsTable
   },
   props: ["concept", "configs"]
 });
