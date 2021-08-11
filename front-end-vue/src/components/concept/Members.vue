@@ -33,6 +33,20 @@
             />
           </span>
           <div class="checkboxes-container">
+            <div>
+              <Button
+                icon="pi pi-cloud-download"
+                label="Download definition"
+                @click="download(false)"
+              />
+            </div>
+            <div>
+              <Button
+                icon="pi pi-cloud-download"
+                label="Download expanded"
+                @click="download(true)"
+              />
+            </div>
             <div class="checkbox-label-container" v-if="!expandMembers">
               <label for="expandSubsets">Expand all subsets</label>
               <Checkbox
@@ -86,6 +100,12 @@
           class="group-header"
         >
           Excluded Members
+        </span>
+        <span
+          v-if="slotProps.data.type === 'MemberExpanded'"
+          class="group-header"
+        >
+          Expanded Members
         </span>
       </template>
     </DataTable>
@@ -167,7 +187,11 @@ export default defineComponent({
 
     async getMembers() {
       this.loading = true;
-      this.expandedRowGroups = ["MemberIncluded", "MemberXcluded"];
+      if (this.expandMembers) {
+        this.expandedRowGroups = ["MemberExpanded"];
+      } else {
+        this.expandedRowGroups = ["MemberIncluded", "MemberXcluded"];
+      }
       this.selected = {};
       this.subsets = [];
       await EntityService.getEntityMembers(
@@ -195,7 +219,8 @@ export default defineComponent({
         if (!this.subsets.some(e => e === member.type)) {
           if (
             member.type === "MemberIncluded" ||
-            member.type === "MemberXcluded"
+            member.type === "MemberXcluded" ||
+            member.type === "MemberExpanded"
           ) {
             return;
           }
@@ -215,7 +240,7 @@ export default defineComponent({
           confirmButtonText: "Download",
           showCancelButton: true
         }).then(result => {
-          if (result.isConfirmed) this.download();
+          if (result.isConfirmed) this.download(true);
           else {
             this.$toast.add(
               LoggerService.warn(
@@ -231,7 +256,7 @@ export default defineComponent({
       }
     },
 
-    download() {
+    download(expanded: boolean) {
       const modIri = (this.conceptIri as string)
         .replace(/\//gi, "%2F")
         .replace(/#/gi, "%23");
@@ -239,7 +264,9 @@ export default defineComponent({
         process.env.VUE_APP_API +
           "api/entity/download?iri=" +
           modIri +
-          "&members=true&expandMembers=true&format=excel"
+          "&members=true&expandMembers=" +
+          expanded +
+          "&format=excel"
       );
       if (!popup) {
         this.$toast.add(LoggerService.error("Download failed from server"));
@@ -301,7 +328,8 @@ export default defineComponent({
 
 .checkboxes-container {
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
+  justify-content: flex-end;
   align-items: center;
   gap: 0.5rem;
 }
