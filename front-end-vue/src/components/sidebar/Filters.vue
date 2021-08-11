@@ -1,9 +1,15 @@
 <template>
+  <div class="quick-filters-container">
+    <div class="quick-filter-container">
+      <label>Include legacy:</label>
+      <InputSwitch v-model="includeLegacy" />
+    </div>
+  </div>
   <div class="p-field">
     <span class="p-float-label">
       <MultiSelect
         id="status"
-        v-model="$store.state.selectedFilters.status"
+        v-model="selectedStatus"
         @change="checkForSearch"
         :options="statusOptions"
         optionLabel="name"
@@ -17,7 +23,7 @@
     <span class="p-float-label">
       <MultiSelect
         id="scheme"
-        v-model="$store.state.selectedFilters.schemes"
+        v-model="selectedSchemes"
         @change="checkForSearch"
         :options="schemeOptions"
         optionLabel="name"
@@ -31,7 +37,7 @@
     <span class="p-float-label">
       <MultiSelect
         id="conceptType"
-        v-model="$store.state.selectedFilters.types"
+        v-model="selectedTypes"
         @change="checkForSearch"
         :options="typeOptions"
         optionLabel="name"
@@ -46,12 +52,46 @@
 import ConfigService from "@/services/ConfigService";
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
+import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
+import { mapState } from "vuex";
 
 export default defineComponent({
   name: "Filters",
   components: {},
   props: ["search", "searchTerm"],
+  computed: mapState(["filterOptions", "selectedFilters"]),
+  watch: {
+    quickFilters(newValue) {
+      if (newValue.includeLegacy) {
+        console.log(this.selectedTypes.find(type => type["@id"] === IM.LEGACY_ENTITY))
+        if (!this.selectedTypes.find(type => type["@id"] === IM.LEGACY_ENTITY)) {
+          this.selectedTypes.push(this.typeOptions.find(type => type["@id"] === IM.LEGACY_ENTITY))
+        }
+      }
+    },
+    selectedStatus() {
+      this.$store.commit("updateSelectedFilters", {
+        status: this.selectedStatus,
+        schemes: this.selectedSchemes,
+        types: this.selectedTypes
+      });
+    },
+    selectedSchemes() {
+      this.$store.commit("updateSelectedFilters", {
+        status: this.selectedStatus,
+        schemes: this.selectedSchemes,
+        types: this.selectedTypes
+      });
+    },
+    selectedTypes() {
+      this.$store.commit("updateSelectedFilters", {
+        status: this.selectedStatus,
+        schemes: this.selectedSchemes,
+        types: this.selectedTypes
+      });
+    }
+  },
   async mounted() {
     await this.getFilterOptions();
     this.setFilters();
@@ -62,7 +102,11 @@ export default defineComponent({
       statusOptions: [] as any[],
       schemeOptions: [] as any[],
       typeOptions: [] as any[],
-      configs: {} as any
+      selectedStatus: [] as any[],
+      selectedSchemes: [] as any[],
+      selectedTypes: [] as any[],
+      configs: {} as any,
+      includeLegacy: false
     };
   },
   methods: {
@@ -81,20 +125,26 @@ export default defineComponent({
     },
 
     setDefaults() {
-      const selectedStatus = this.statusOptions.filter(item =>
-        this.configs.statusOptions.includes(item.name)
-      );
-      const selectedSchemes = this.schemeOptions.filter(item =>
-        this.configs.schemeOptions.includes(item.name)
-      );
-      const selectedTypes = this.typeOptions.filter(item =>
-        this.configs.typeOptions.includes(item.name)
-      );
-      this.$store.commit("updateSelectedFilters", {
-        status: selectedStatus,
-        schemes: selectedSchemes,
-        types: selectedTypes
-      });
+      if (!this.selectedFilters.status.length && !this.selectedFilters.schemes.length && !this.selectedFilters.types.length) {
+        this.selectedStatus = this.statusOptions.filter(item =>
+          this.configs.statusOptions.includes(item.name)
+        );
+        this.selectedSchemes = this.schemeOptions.filter(item =>
+          this.configs.schemeOptions.includes(item.name)
+        );
+        this.selectedTypes = this.typeOptions.filter(item =>
+          this.configs.typeOptions.includes(item.name)
+        );
+        this.$store.commit("updateSelectedFilters", {
+          status: this.selectedStatus,
+          schemes: this.selectedSchemes,
+          types: this.selectedTypes
+        });
+      } else {
+        this.selectedStatus = this.selectedFilters.status;
+        this.selectedSchemes = this.selectedFilters.schemes;
+        this.selectedTypes = this.selectedFilters.types;
+      }
     },
 
     async getFilterOptions() {
@@ -194,5 +244,20 @@ label {
 
 .p-field {
   margin-top: 1rem;
+}
+
+.quick-filters-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.quick-filter-container {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 </style>
