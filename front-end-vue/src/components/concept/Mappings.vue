@@ -151,6 +151,15 @@ export default defineComponent({
       await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO])
         .then(res => {
           this.terms = res.data[IM.MATCHED_TO];
+          if (this.terms && this.namespaces) {
+            this.terms.forEach((term: any) => {
+              term.scheme = this.namespaces.find(
+                (namespace: any) =>
+                  namespace.iri === term["@id"].split("#")[0] + "#"
+              ).name;
+              term.code = term["@id"].split("#")[1];
+            });
+          }
         })
         .catch(err => {
           this.$toast.add(
