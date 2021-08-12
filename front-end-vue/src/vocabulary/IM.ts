@@ -49,6 +49,4 @@ export class IM {
   public static DISCOVERY_CODE = IM.NAMESPACE + "DiscoveryCodeScheme";
 
   public static STATS_REPORT_ENTRY = IM.NAMESPACE + "hasStatsReportEntry";
-
-  public static LEGACY_ENTITY = IM.NAMESPACE + "LegacyEntity";
 }

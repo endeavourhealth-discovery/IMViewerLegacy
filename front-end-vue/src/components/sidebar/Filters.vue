@@ -52,7 +52,6 @@
 import ConfigService from "@/services/ConfigService";
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
-import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
 
@@ -60,7 +59,11 @@ export default defineComponent({
   name: "Filters",
   components: {},
   props: ["search", "searchTerm"],
-  computed: mapState(["filterOptions", "selectedFilters", "quickFiltersStatus"]),
+  computed: mapState([
+    "filterOptions",
+    "selectedFilters",
+    "quickFiltersStatus"
+  ]),
   watch: {
     includeLegacy(newValue) {
       this.setLegacy(newValue);
@@ -180,44 +183,10 @@ export default defineComponent({
         });
 
       await EntityService.getEntityChildren(
-        "http://endhealth.info/im#EntityType"
+        "http://endhealth.info/im#ModellingEntityType"
       )
         .then(res => {
-          // this.typeOptions = res.data;
-          this.typeOptions = [
-            {
-              "@id": "http://www.w3.org/2002/07/owl#Class",
-              name: "Class"
-            },
-            {
-              "@id": "http://endhealth.info/im#Folder",
-              name: "Folder"
-            },
-            {
-              "@id": "http://endhealth.info/im#LegacyEntity",
-              name: "Legacy concept"
-            },
-            {
-              "@id": "http://www.w3.org/ns/shacl#NodeShape",
-              name: "Node shape"
-            },
-            {
-              "@id": "http://www.w3.org/2002/07/owl#ObjectProperty",
-              name: "ObjectProperty"
-            },
-            {
-              "@id": "http://endhealth.info/im#QueryTemplate",
-              name: "Query template"
-            },
-            {
-              "@id": "http://endhealth.info/im#RecordType",
-              name: "Record type"
-            },
-            {
-              "@id": "http://endhealth.info/im#ValueSet",
-              name: "Value set"
-            }
-          ];
+          this.typeOptions = res.data;
         })
         .catch(err => {
           this.$toast.add(
@@ -230,32 +199,26 @@ export default defineComponent({
     },
 
     setLegacy(include: boolean) {
-      const legacyType = this.selectedTypes.findIndex(
-        type => type["@id"] === IM.LEGACY_ENTITY
-      );
       const emisScheme = this.selectedSchemes.findIndex(
         scheme => scheme.iri === "http://endhealth.info/emis#"
       );
       if (include) {
-        if (legacyType === -1) {
-          this.selectedTypes.push(
-            this.typeOptions.find(type => type["@id"] === IM.LEGACY_ENTITY)
-          );
-        }
         if (emisScheme === -1) {
           this.selectedSchemes.push(
-            this.schemeOptions.find(scheme => scheme.iri === "http://endhealth.info/emis#")
+            this.schemeOptions.find(
+              scheme => scheme.iri === "http://endhealth.info/emis#"
+            )
           );
         }
       } else {
-        if (legacyType > -1) {
-          this.selectedTypes.splice(legacyType, 1);
-        }
         if (emisScheme > -1) {
           this.selectedSchemes.splice(emisScheme, 1);
         }
       }
-      this.$store.commit("updateQuickFiltersStatus", { key: "includeLegacy", value: include });
+      this.$store.commit("updateQuickFiltersStatus", {
+        key: "includeLegacy",
+        value: include
+      });
     }
   }
 });
