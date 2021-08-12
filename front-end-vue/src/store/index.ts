@@ -50,7 +50,8 @@ export default createStore({
       status: any[];
       schemes: any[];
       types: any[];
-    }
+    },
+    quickFiltersStatus: new Map<string, boolean>()
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -73,6 +74,9 @@ export default createStore({
     },
     updateSelectedFilters(state, filters) {
       state.selectedFilters = filters;
+    },
+    updateQuickFiltersStatus(state, status) {
+      state.quickFiltersStatus.set(status.key, status.value);
     },
     updateLoading(state, loading) {
       state.loading.set(loading.key, loading.value);

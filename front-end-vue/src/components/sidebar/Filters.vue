@@ -60,36 +60,19 @@ export default defineComponent({
   name: "Filters",
   components: {},
   props: ["search", "searchTerm"],
-  computed: mapState(["filterOptions", "selectedFilters"]),
+  computed: mapState(["filterOptions", "selectedFilters", "quickFiltersStatus"]),
   watch: {
-    quickFilters(newValue) {
-      if (newValue.includeLegacy) {
-        console.log(this.selectedTypes.find(type => type["@id"] === IM.LEGACY_ENTITY))
-        if (!this.selectedTypes.find(type => type["@id"] === IM.LEGACY_ENTITY)) {
-          this.selectedTypes.push(this.typeOptions.find(type => type["@id"] === IM.LEGACY_ENTITY))
-        }
-      }
+    includeLegacy(newValue) {
+      this.setLegacy(newValue);
     },
     selectedStatus() {
-      this.$store.commit("updateSelectedFilters", {
-        status: this.selectedStatus,
-        schemes: this.selectedSchemes,
-        types: this.selectedTypes
-      });
+      this.updateStoreSelectedFilters();
     },
     selectedSchemes() {
-      this.$store.commit("updateSelectedFilters", {
-        status: this.selectedStatus,
-        schemes: this.selectedSchemes,
-        types: this.selectedTypes
-      });
+      this.updateStoreSelectedFilters();
     },
     selectedTypes() {
-      this.$store.commit("updateSelectedFilters", {
-        status: this.selectedStatus,
-        schemes: this.selectedSchemes,
-        types: this.selectedTypes
-      });
+      this.updateStoreSelectedFilters();
     }
   },
   async mounted() {
@@ -125,7 +108,11 @@ export default defineComponent({
     },
 
     setDefaults() {
-      if (!this.selectedFilters.status.length && !this.selectedFilters.schemes.length && !this.selectedFilters.types.length) {
+      if (
+        !this.selectedFilters.status.length &&
+        !this.selectedFilters.schemes.length &&
+        !this.selectedFilters.types.length
+      ) {
         this.selectedStatus = this.statusOptions.filter(item =>
           this.configs.statusOptions.includes(item.name)
         );
@@ -135,16 +122,24 @@ export default defineComponent({
         this.selectedTypes = this.typeOptions.filter(item =>
           this.configs.typeOptions.includes(item.name)
         );
-        this.$store.commit("updateSelectedFilters", {
-          status: this.selectedStatus,
-          schemes: this.selectedSchemes,
-          types: this.selectedTypes
-        });
+        this.updateStoreSelectedFilters();
       } else {
         this.selectedStatus = this.selectedFilters.status;
         this.selectedSchemes = this.selectedFilters.schemes;
         this.selectedTypes = this.selectedFilters.types;
       }
+
+      if (this.quickFiltersStatus.includeLegacy) {
+        this.includeLegacy = this.quickFiltersStatus.includeLegacy;
+      }
+    },
+
+    updateStoreSelectedFilters() {
+      this.$store.commit("updateSelectedFilters", {
+        status: this.selectedStatus,
+        schemes: this.selectedSchemes,
+        types: this.selectedTypes
+      });
     },
 
     async getFilterOptions() {
@@ -232,6 +227,35 @@ export default defineComponent({
             )
           );
         });
+    },
+
+    setLegacy(include: boolean) {
+      const legacyType = this.selectedTypes.findIndex(
+        type => type["@id"] === IM.LEGACY_ENTITY
+      );
+      const emisScheme = this.selectedSchemes.findIndex(
+        scheme => scheme.iri === "http://endhealth.info/emis#"
+      );
+      if (include) {
+        if (legacyType === -1) {
+          this.selectedTypes.push(
+            this.typeOptions.find(type => type["@id"] === IM.LEGACY_ENTITY)
+          );
+        }
+        if (emisScheme === -1) {
+          this.selectedSchemes.push(
+            this.schemeOptions.find(scheme => scheme.iri === "http://endhealth.info/emis#")
+          );
+        }
+      } else {
+        if (legacyType > -1) {
+          this.selectedTypes.splice(legacyType, 1);
+        }
+        if (emisScheme > -1) {
+          this.selectedSchemes.splice(emisScheme, 1);
+        }
+      }
+      this.$store.commit("updateQuickFiltersStatus", { key: "includeLegacy", value: include });
     }
   }
 });
