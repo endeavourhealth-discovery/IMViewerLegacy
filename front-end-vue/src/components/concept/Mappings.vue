@@ -90,6 +90,7 @@ export default defineComponent({
         value: true
       });
       await this.getMappings();
+      this.getSimpleMapsNamespaces();
       this.data = this.createChartStructure(this.mappings);
       this.$store.commit("updateLoading", {
         key: "mappings",
@@ -112,6 +113,7 @@ export default defineComponent({
       value: true
     });
     await this.getMappings();
+    this.getSimpleMapsNamespaces();
     this.data = this.createChartStructure(this.mappings);
     this.$store.commit("updateLoading", {
       key: "mappings",
@@ -323,6 +325,29 @@ export default defineComponent({
           "termsList"
         )
       ];
+    },
+
+    getSimpleMapsNamespaces() {
+      if (
+        this.terms &&
+        this.terms.length &&
+        this.namespaces &&
+        this.namespaces.length
+      ) {
+        this.terms.forEach((term: any) => {
+          const found = this.namespaces.find(
+            (namespace: any) =>
+              namespace.iri.toLowerCase() ===
+              (term["@id"].split("#")[0] + "#").toLowerCase()
+          );
+          if (found && Object.prototype.hasOwnProperty.call(found, "name")) {
+            term.scheme = found.name;
+          } else {
+            term.scheme = "None";
+          }
+          term.code = term["@id"].split("#")[1];
+        });
+      }
     },
 
     byPriority(a: any, b: any): number {

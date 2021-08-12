@@ -1,7 +1,7 @@
 import { flushPromises, mount } from "@vue/test-utils";
 import Filters from "@/components/sidebar/Filters.vue";
 import MultiSelect from "primevue/multiselect";
-import { IM } from "@/vocabulary/IM";
+import InputSwitch from "primevue/inputswitch";
 import ConfigService from "@/services/ConfigService";
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
@@ -18,7 +18,13 @@ describe("Filters.vue", () => {
           status: [],
           schemes: [],
           types: []
-        }
+        },
+        filterOptions: {
+          status: [],
+          schemes: [],
+          types: []
+        },
+        quickFiltersStatus: {  }
       },
       commit: jest.fn()
     };
@@ -52,7 +58,7 @@ describe("Filters.vue", () => {
     wrapper = mount(Filters, {
       props: { search: jest.fn(), searchTerm: "sco" },
       global: {
-        components: { MultiSelect },
+        components: { MultiSelect, InputSwitch },
         mocks: { $store: mockStore, $toast: mockToast }
       }
     });
