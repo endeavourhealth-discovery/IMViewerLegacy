@@ -9,7 +9,7 @@ import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
 
 export function isValueSet(conceptTypeElements: ConceptReference[]): boolean {
-  return conceptTypeElements?.some(
+  return conceptTypeElements.some(
     (e: any) =>
       e.iri === IM.SET ||
       e.iri === IM.QUERY_SET ||
@@ -23,7 +23,7 @@ export function isValueSet(conceptTypeElements: ConceptReference[]): boolean {
 }
 
 export function isClass(conceptTypeElements: ConceptReference[]): boolean {
-  return conceptTypeElements?.some(
+  return conceptTypeElements.some(
     (e: any) => e.iri === OWL.CLASS || e[IM.IRI] === OWL.CLASS
   );
 }
@@ -31,25 +31,25 @@ export function isClass(conceptTypeElements: ConceptReference[]): boolean {
 export function isRecordModel(
   conceptTypeElements: ConceptReference[]
 ): boolean {
-  return conceptTypeElements?.some((e: any) => {
+  return conceptTypeElements.some((e: any) => {
     return e.iri === SHACL.NODESHAPE || e[IM.IRI] === SHACL.NODESHAPE;
   });
 }
 
 export function isProperty(conceptTypeElements: ConceptReference[]): boolean {
-  return conceptTypeElements?.some((e: any) => {
+  return conceptTypeElements.some((e: any) => {
     return e[IM.IRI] === OWL.OBJECT_PROPERTY || e[IM.IRI] === IM.DATA_PROPERTY;
   });
 }
 
 export function isFolder(conceptTypeElements: ConceptReference[]): boolean {
-  return conceptTypeElements?.some((e: any) => {
+  return conceptTypeElements.some((e: any) => {
     return e[IM.IRI] === IM.FOLDER || e.iri === IM.FOLDER;
   });
 }
 
 export function isQuery(conceptTypeElements: ConceptReference[]): boolean {
-  return conceptTypeElements?.some((e: any) => {
+  return conceptTypeElements.some((e: any) => {
     return e[IM.IRI] === IM.QUERY_TEMPLATE || e.iri === IM.QUERY_TEMPLATE;
   });
 }

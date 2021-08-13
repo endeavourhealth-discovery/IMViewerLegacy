@@ -663,16 +663,6 @@ describe("Concept.vue", () => {
     expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Data model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n]");
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy Data model properties to clipboard"));
   });
-
-  it("can show terms", async() => {
-    const warn = console.warn;
-    console.warn = jest.fn();
-    wrapper.vm.showTerms();
-    await flushPromises();
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.active).toBe(1);
-    console.warn = warn;
-  })
 });
 
 
