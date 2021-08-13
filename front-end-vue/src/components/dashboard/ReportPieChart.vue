@@ -58,7 +58,7 @@ export default defineComponent({
             }
           }
         }
-      } as any,
+      } as ChartOptions,
       realData: {} as number[],
       chartConceptTypes: new PieChartData(
         [
