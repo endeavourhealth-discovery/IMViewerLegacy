@@ -1,7 +1,5 @@
-import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 import { User } from "@/models/user/User";
 import store from "@/store/index";
-import { IM } from "@/vocabulary/IM";
 import EntityService from "@/services/EntityService";
 import { flushPromises } from "@vue/test-utils";
 import LoggerService from "@/services/LoggerService";

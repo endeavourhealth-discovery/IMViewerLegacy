@@ -1,7 +1,6 @@
 import { SearchRequest } from "@/models/search/SearchRequest";
-import { ConceptDto } from "@/models/ConceptDto";
 import axios, { AxiosResponse, CancelToken } from "axios";
-import { ConceptNode } from "@/models/TTConcept/ConceptNode";
+import { ConceptNode } from "@/models/ConceptNode";
 import { IM } from "@/vocabulary/IM";
 
 export default class EntityService {
@@ -119,9 +118,9 @@ export default class EntityService {
   }
 
   public static async saveEntity(
-    conceptDto: ConceptDto
+    concept: any
   ): Promise<AxiosResponse<any>> {
-    return axios.post(this.api + "api/entity", conceptDto);
+    return axios.post(this.api + "api/entity", concept);
   }
 
   public static getEntityGraph(iri: string): Promise<AxiosResponse<any>> {

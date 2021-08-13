@@ -3,7 +3,7 @@
 // Class, Record Type
 // Everything else
 
-import { ConceptReference } from "@/models/TTConcept/ConceptReference";
+import { ConceptReference } from "@/models/ConceptReference";
 import { IM } from "@/vocabulary/IM";
 import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
