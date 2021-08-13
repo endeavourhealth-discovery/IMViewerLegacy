@@ -29,7 +29,7 @@
       />
       <template #groupheader="slotProps">
         <span style="font-weight: 700; color:rgba(51,153,255,0.8)">
-          Scheme : {{ slotProps.data.scheme }}
+          {{ slotProps.data.scheme }}
         </span>
       </template>
       <template #empty>

@@ -89,10 +89,7 @@
                 id="mappings-container"
                 :style="contentHeight"
               >
-                <Mappings
-                  :conceptIri="conceptIri"
-                  @toTermsClicked="showTerms"
-                />
+                <Mappings :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Used in">
@@ -557,10 +554,6 @@ export default defineComponent({
           }
         });
       }
-    },
-
-    showTerms() {
-      this.active = 1;
     }
   }
 });

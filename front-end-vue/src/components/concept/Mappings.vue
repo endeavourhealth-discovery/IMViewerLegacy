@@ -18,7 +18,7 @@
     <template #someOf="slotProps">
       <span>{{ slotProps.node.data.label }}</span>
     </template>
-    <template #terms="slotProps">
+    <template #simpleMaps="slotProps">
       <span>{{ slotProps.node.data.label }}</span>
     </template>
     <template #childList="slotProps">
@@ -42,7 +42,7 @@
         </tbody>
       </table>
     </template>
-    <template #termsList="slotProps">
+    <template #simpleMapsList="slotProps">
       <SimpleMaps
         v-if="slotProps.node.data.mapItems.length"
         :data="slotProps.node.data.mapItems"
@@ -66,8 +66,8 @@
     </div>
   </OverlayPanel>
 
-  <OverlayPanel ref="opTerm" id="overlay-panel-terms">
-    <div class="p-d-flex p-flex-column p-jc-start term-overlay">
+  <OverlayPanel ref="opSimpleMaps" id="overlay-panel-simple-maps">
+    <div class="p-d-flex p-flex-column p-jc-start simple-maps-overlay">
       <p><strong>Name: </strong>{{ hoveredResult.name }}</p>
       <p><strong>Iri: </strong>{{ hoveredResult.iri }}</p>
       <p><strong>Namespace: </strong>{{ hoveredResult.namespace }}</p>
@@ -86,7 +86,6 @@ export default defineComponent({
   name: "Mappings",
   components: { SimpleMaps },
   props: ["conceptIri"],
-  emits: ["toTermsClicked"],
   watch: {
     async conceptIri() {
       this.$store.commit("updateLoading", {
@@ -107,7 +106,7 @@ export default defineComponent({
       mappings: [] as any,
       data: {} as any,
       hoveredResult: {} as any,
-      terms: [] as any,
+      simpleMaps: [] as any,
       namespaces: [] as any
     };
   },
@@ -154,19 +153,19 @@ export default defineComponent({
 
       await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO])
         .then(res => {
-          this.terms = res.data[IM.MATCHED_TO];
-          if (this.terms && this.namespaces) {
-            this.terms.forEach((term: any) => {
+          this.simpleMaps = res.data[IM.MATCHED_TO];
+          if (this.simpleMaps && this.namespaces) {
+            this.simpleMaps.forEach((mapItem: any) => {
               const found = this.namespaces.find(
                 (namespace: any) =>
-                  namespace.iri === term["@id"].split("#")[0] + "#"
-              )
+                  namespace.iri === mapItem["@id"].split("#")[0] + "#"
+              );
               if (found) {
-                term.scheme = found.name;
+                mapItem.scheme = found.name;
               } else {
-                term.scheme = "None";
+                mapItem.scheme = "None";
               }
-              term.code = term["@id"].split("#")[1];
+              mapItem.code = mapItem["@id"].split("#")[1];
             });
           }
         })
@@ -177,7 +176,7 @@ export default defineComponent({
               err
             )
           );
-          this.terms = [];
+          this.simpleMaps = [];
         });
     },
 
@@ -299,64 +298,73 @@ export default defineComponent({
         children: [] as any
       };
       parentNode.children = this.generateChildNodes(mappingObject, "0", 0);
-      const termsChildren = this.generateTermNodes(
-        this.terms,
+      const simpleMapsChildren = this.generateSimpleMapsNodes(
+        this.simpleMaps,
         "0_" + parentNode.children.length,
         0
       );
       parentNode.children.push({
         key: "0_" + parentNode.children.length,
-        type: "terms",
+        type: "simpleMaps",
         data: { label: "Simple maps" },
-        children: termsChildren
+        children: simpleMapsChildren
       });
       return parentNode;
     },
 
-    generateTermNodes(terms: any, location: string, positionInLevel: number) {
-      if (!Array.isArray(terms) || !terms.length) {
+    generateSimpleMapsNodes(
+      simpleMaps: any,
+      location: string,
+      positionInLevel: number
+    ) {
+      if (!Array.isArray(simpleMaps) || !simpleMaps.length) {
         return [
-          this.createChartTableNode([], location, positionInLevel, "termsList")
+          this.createChartTableNode(
+            [],
+            location,
+            positionInLevel,
+            "simpleMapsList"
+          )
         ];
       }
-      const termsList = [] as any;
-      this.terms.forEach((term: any) => {
-        termsList.push({
-          name: term.name,
-          iri: term["@id"],
-          scheme: term.scheme,
-          code: term.code
+      const simpleMapsList = [] as any;
+      simpleMaps.forEach((mapItem: any) => {
+        simpleMapsList.push({
+          name: mapItem.name,
+          iri: mapItem["@id"],
+          scheme: mapItem.scheme,
+          code: mapItem.code
         });
       });
       return [
         this.createChartTableNode(
-          termsList.sort(this.byScheme),
+          simpleMapsList.sort(this.byScheme),
           location,
           positionInLevel,
-          "termsList"
+          "simpleMapsList"
         )
       ];
     },
 
     getSimpleMapsNamespaces() {
       if (
-        this.terms &&
-        this.terms.length &&
+        this.simpleMaps &&
+        this.simpleMaps.length &&
         this.namespaces &&
         this.namespaces.length
       ) {
-        this.terms.forEach((term: any) => {
+        this.simpleMaps.forEach((mapItem: any) => {
           const found = this.namespaces.find(
             (namespace: any) =>
               namespace.iri.toLowerCase() ===
-              (term["@id"].split("#")[0] + "#").toLowerCase()
+              (mapItem["@id"].split("#")[0] + "#").toLowerCase()
           );
           if (found && Object.prototype.hasOwnProperty.call(found, "name")) {
-            term.scheme = found.name;
+            mapItem.scheme = found.name;
           } else {
-            term.scheme = "None";
+            mapItem.scheme = "None";
           }
-          term.code = term["@id"].split("#")[1];
+          mapItem.code = mapItem["@id"].split("#")[1];
         });
       }
     },
@@ -425,9 +433,5 @@ th {
   height: 100%;
   width: 100%;
   overflow: auto;
-}
-
-.terms-link {
-  cursor: pointer;
 }
 </style>
