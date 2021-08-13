@@ -45,18 +45,20 @@ export default defineComponent({
       name: "" as string,
       description: "" as string,
       chartOptions: {
-        legend: {
-          position: "right",
-          onHover: function(e: any) {
-            e.target.style.cursor = "pointer";
-          }
-        },
-        hover: {
-          onHover: function(e: any) {
-            e.target.style.cursor = "default";
+        plugins: {
+          legend: {
+            position: "right",
+            onHover: function(e: any) {
+              e.target.style.cursor = "pointer";
+            }
+          },
+          hover: {
+            onHover: function(e: any) {
+              e.target.style.cursor = "default";
+            }
           }
         }
-      } as ChartOptions,
+      } as any,
       realData: {} as number[],
       chartConceptTypes: new PieChartData(
         [
@@ -139,7 +141,7 @@ export default defineComponent({
     setLegendOptions(): void {
       const width = window.innerWidth;
       if (width > 1750) {
-        this.chartOptions = {
+        this.chartOptions.plugins = {
           legend: {
             position: "right",
             labels: {
@@ -157,7 +159,7 @@ export default defineComponent({
           }
         };
       } else if (width > 1300) {
-        this.chartOptions = {
+        this.chartOptions.plugins = {
           legend: {
             position: "bottom",
             labels: {
@@ -175,7 +177,7 @@ export default defineComponent({
           }
         };
       } else if (width >= 1024) {
-        this.chartOptions = {
+        this.chartOptions.plugins = {
           legend: {
             position: "bottom",
             labels: {
@@ -193,7 +195,7 @@ export default defineComponent({
           }
         };
       } else if (width >= 892) {
-        this.chartOptions = {
+        this.chartOptions.plugins = {
           legend: {
             position: "right",
             labels: {
@@ -211,7 +213,7 @@ export default defineComponent({
           }
         };
       } else if (width >= 557) {
-        this.chartOptions = {
+        this.chartOptions.plugins = {
           legend: {
             position: "bottom",
             labels: {
@@ -229,7 +231,7 @@ export default defineComponent({
           }
         };
       } else if (width >= 0) {
-        this.chartOptions = {
+        this.chartOptions.plugins = {
           legend: {
             position: "bottom",
             labels: {
@@ -247,7 +249,7 @@ export default defineComponent({
           }
         };
       } else {
-        this.chartOptions = {
+        this.chartOptions.plugins = {
           legend: {
             display: false
           }
