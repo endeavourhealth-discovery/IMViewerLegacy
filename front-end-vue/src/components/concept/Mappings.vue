@@ -43,7 +43,11 @@
       </table>
     </template>
     <template #termsList="slotProps">
-      <SimpleMaps :data="slotProps.node.data.mapItems" />
+      <SimpleMaps
+        v-if="slotProps.node.data.mapItems.length"
+        :data="slotProps.node.data.mapItems"
+      />
+      <span v-else>None</span>
     </template>
     <template #default>
       <p class="p-text-centered">None</p>
@@ -153,10 +157,15 @@ export default defineComponent({
           this.terms = res.data[IM.MATCHED_TO];
           if (this.terms && this.namespaces) {
             this.terms.forEach((term: any) => {
-              term.scheme = this.namespaces.find(
+              const found = this.namespaces.find(
                 (namespace: any) =>
                   namespace.iri === term["@id"].split("#")[0] + "#"
-              ).name;
+              )
+              if (found) {
+                term.scheme = found.name;
+              } else {
+                term.scheme = "None";
+              }
               term.code = term["@id"].split("#")[1];
             });
           }
@@ -306,7 +315,9 @@ export default defineComponent({
 
     generateTermNodes(terms: any, location: string, positionInLevel: number) {
       if (!Array.isArray(terms) || !terms.length) {
-        return [];
+        return [
+          this.createChartTableNode([], location, positionInLevel, "termsList")
+        ];
       }
       const termsList = [] as any;
       this.terms.forEach((term: any) => {
