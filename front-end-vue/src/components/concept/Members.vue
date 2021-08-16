@@ -4,17 +4,17 @@
       :value="combinedMembers"
       showGridlines
       rowGroupMode="subheader"
-      groupRowsBy="type"
+      groupRowsBy="label"
       :expandableRowGroups="true"
       v-model:expandedRowGroups="expandedRowGroups"
       @rowgroupExpand="onRowGroupExpand"
       @rowgroupCollapse="onRowGroupCollapse"
       v-model:filters="filters1"
       filterDisplay="menu"
-      :globalFilterFields="['code', 'entity.name', 'scheme.name', 'type']"
+      :globalFilterFields="['code', 'entity.name', 'scheme.name', 'label']"
       :scrollable="true"
       sortMode="single"
-      sortField="type"
+      sortField="label"
       :sortOrder="1"
       class="p-datatable-sm"
       scrollHeight="flex"
@@ -85,24 +85,24 @@
       <Column field="scheme.name" header="Scheme" filter-field="scheme.name" />
       <template #groupheader="slotProps">
         <span v-for="subSet in subsets" :key="subSet">
-          <span v-if="slotProps.data.type === subSet" class="group-header">
+          <span v-if="slotProps.data.label === subSet" class="group-header">
             {{ subSet }}
           </span>
         </span>
         <span
-          v-if="slotProps.data.type === 'MemberIncluded'"
+          v-if="slotProps.data.type === 'INCLUDED'"
           class="group-header"
         >
           Included Members
         </span>
         <span
-          v-if="slotProps.data.type === 'MemberXcluded'"
+          v-if="slotProps.data.type === 'EXCLUDED'"
           class="group-header"
         >
           Excluded Members
         </span>
         <span
-          v-if="slotProps.data.type === 'MemberExpanded'"
+          v-if="slotProps.data.type === 'EXPANDED'"
           class="group-header"
         >
           Expanded Members
@@ -198,8 +198,7 @@ export default defineComponent({
         this.conceptIri as string,
         this.expandMembers,
         this.expandSubsets,
-        this.expandMembers ? 2000 : undefined,
-        undefined
+        this.expandMembers ? 2000 : undefined
       )
         .then(res => {
           this.members = res.data;
@@ -216,15 +215,15 @@ export default defineComponent({
 
     setSubsets() {
       this.combinedMembers.forEach((member: any) => {
-        if (!this.subsets.some(e => e === member.type)) {
+        if (!this.subsets.some(e => e === member.label)) {
           if (
-            member.type === "MemberIncluded" ||
-            member.type === "MemberXcluded" ||
-            member.type === "MemberExpanded"
+            member.label === "MemberIncluded" ||
+            member.label === "MemberXcluded" ||
+            member.label === "MemberExpanded"
           ) {
             return;
           }
-          this.subsets.push(member.type);
+          this.subsets.push(member.label);
         }
       });
     },
@@ -277,9 +276,9 @@ export default defineComponent({
 
     sortMembers() {
       this.members.members = this.members.members.sort((a: any, b: any) =>
-        a.type.localeCompare(b.type) == 0
+        a.label.localeCompare(b.label) == 0
           ? a.entity.name.localeCompare(b.entity.name)
-          : a.type.localeCompare(b.type)
+          : a.label.localeCompare(b.label)
       );
     },
 

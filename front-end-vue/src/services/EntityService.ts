@@ -99,16 +99,14 @@ export default class EntityService {
     iri: string,
     expandMembers?: boolean,
     expandSubsets?: boolean,
-    limit?: number,
-    parentIri?: string
+    limit?: number
   ): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/members", {
       params: {
         iri: iri,
         expandMembers: expandMembers,
         expandSubsets: expandSubsets,
-        limit: limit,
-        parentIri: parentIri
+        limit: limit
       }
     });
   }
