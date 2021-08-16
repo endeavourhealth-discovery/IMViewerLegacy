@@ -115,9 +115,7 @@ export default class EntityService {
     return this.getEntityChildren(IM.CODE_SCHEME);
   }
 
-  public static async saveEntity(
-    concept: any
-  ): Promise<AxiosResponse<any>> {
+  public static async saveEntity(concept: any): Promise<AxiosResponse<any>> {
     return axios.post(this.api + "api/entity", concept);
   }
 

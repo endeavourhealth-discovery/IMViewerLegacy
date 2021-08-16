@@ -89,22 +89,13 @@
             {{ subSet }}
           </span>
         </span>
-        <span
-          v-if="slotProps.data.type === 'INCLUDED'"
-          class="group-header"
-        >
+        <span v-if="slotProps.data.type === 'INCLUDED'" class="group-header">
           Included Members
         </span>
-        <span
-          v-if="slotProps.data.type === 'EXCLUDED'"
-          class="group-header"
-        >
+        <span v-if="slotProps.data.type === 'EXCLUDED'" class="group-header">
           Excluded Members
         </span>
-        <span
-          v-if="slotProps.data.type === 'EXPANDED'"
-          class="group-header"
-        >
+        <span v-if="slotProps.data.type === 'EXPANDED'" class="group-header">
           Expanded Members
         </span>
       </template>
@@ -216,14 +207,9 @@ export default defineComponent({
     setSubsets() {
       this.combinedMembers.forEach((member: any) => {
         if (!this.subsets.some(e => e === member.label)) {
-          if (
-            member.label === "MemberIncluded" ||
-            member.label === "MemberXcluded" ||
-            member.label === "MemberExpanded"
-          ) {
-            return;
+          if (member.type === "SUBSET") {
+            this.subsets.push(member.label);
           }
-          this.subsets.push(member.label);
         }
       });
     },
