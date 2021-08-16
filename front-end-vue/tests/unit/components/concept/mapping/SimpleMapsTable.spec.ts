@@ -1,5 +1,5 @@
 import { flushPromises, shallowMount } from "@vue/test-utils";
-import SimpleMaps from "@/components/concept/Mapping/SimpleMaps.vue";
+import SimpleMaps from "@/components/concept/mapping/SimpleMaps.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 
