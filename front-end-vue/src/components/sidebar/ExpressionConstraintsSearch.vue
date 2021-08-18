@@ -3,25 +3,30 @@
     <h3>Expression constraints language search</h3>
     <div id="query-builder-container">
       <div id="query-build">
-        <template v-for="(item) in queryBuild" :key="item.id">
+        <template v-for="item in queryBuild" :key="item.id">
           <component
-            :is="item.type"
-            :data="item.data"
+            :is="item.component"
+            :data="item"
             :id="item.id"
+            :position="item.position"
+            @editClicked="editItem"
+            @deleteClicked="deleteItem"
+            @addClicked="addItem"
           >
           </component>
         </template>
       </div>
       <div id="next-option-container">
         <AddLogic
-          id="logic-1"
-          :position="2"
-          @addLogicClicked="addLogic"
+          :id="'logic-' + queryBuild.length"
+          :position="queryBuild.length"
+          :data="null"
+          @addClicked="addItem"
         />
         <AddExpression
-          id="expression-1"
-          :position="1"
-          @addExpressionClicked="addExpression"
+          :id="'expression-' + queryBuild.length"
+          :position="queryBuild.length"
+          @addClicked="addItem"
         />
       </div>
     </div>
@@ -34,40 +39,69 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import AddLogic from "@/components/sidebar/expressionConstraintsSearch/addLogic.vue";
-import Logic from "@/components/sidebar/expressionConstraintsSearch/Logic.vue";
 import AddExpression from "@/components/sidebar/expressionConstraintsSearch/addExpression.vue";
 
 export default defineComponent({
   name: "QuerySearch",
   components: {
     AddLogic,
-    Logic,
     AddExpression
+  },
+  watch: {
+    queryBuild: {
+      handler() {
+        this.queryBuild.sort((a: any, b: any) => a.position - b.position);
+        this.generateQueryString();
+      },
+      deep: true
+    }
   },
   data() {
     return {
       queryString: "",
-      queryStringArray: [] as string[],
       queryBuild: [] as any[]
     };
   },
   methods: {
-    addLogic(data: any) {
-      this.queryBuild.push({ type: "Logic", id: data.id, data: data.value });
-      this.queryString += data.value;
+    addItem(data: any) {
+      if (data.type === "Logic") {
+        this.queryBuild.push({
+          type: data.type,
+          position: data.position,
+          id: data.id,
+          data: data.value,
+          label: data.value,
+          component: "AddLogic"
+        });
+      }
+
+      if (data.type === "Expression") {
+        const buildItem = {
+          type: data.type,
+          id: data.id,
+          position: data.position,
+          data: data.value,
+          label: data.value.code + " |" + data.value.name + "| ",
+          component: "AddExpression"
+        };
+        this.queryBuild.push(buildItem);
+      }
     },
 
-    buildStringFromArray() {
-      console.log("string builder");
+    generateQueryString() {
+      this.queryString = this.queryBuild.map(item => item.label).join(" ");
     },
 
-    buildQueryFromArray() {
-      console.log("query builder");
+    editItem(data: any) {
+      console.log("edit");
+      console.log(data);
     },
 
-    addExpression(data: any) {
-      this.queryStringArray.splice(data.position, 0, data.selectedResult.code + " |" + data.selectedResult.name);
-      console.log("add expression");
+    deleteItem(data: any) {
+      const index = this.queryBuild.findIndex(
+        item => item.position === data.position
+      );
+      this.queryBuild.splice(index, 1);
     }
   }
 });

@@ -178,15 +178,17 @@ export default defineComponent({
     },
 
     async fetchSearchResults(searchRequest: SearchRequest, cancelToken: any) {
-      await EntityService.advancedSearch(searchRequest, cancelToken).then(res => {
-        this.searchResults = res.data.entities;
-      }).catch(err => {
-        if (!err.message) {
-          LoggerService.info(undefined, "axios request cancelled");
-        } else {
-          LoggerService.error("Search results server request failed", err);
-        }
-      })
+      await EntityService.advancedSearch(searchRequest, cancelToken)
+        .then(res => {
+          this.searchResults = res.data.entities;
+        })
+        .catch(err => {
+          if (!err.message) {
+            LoggerService.info(undefined, "axios request cancelled");
+          } else {
+            LoggerService.error("Search results server request failed", err);
+          }
+        });
     },
 
     getPerspectiveByConceptType(conceptType: any): any {
@@ -230,7 +232,7 @@ export default defineComponent({
           return type.name;
         })
         .join(", ");
-    },
+    }
   }
 });
 </script>
