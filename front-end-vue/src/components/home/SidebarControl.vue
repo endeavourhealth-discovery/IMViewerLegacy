@@ -45,6 +45,13 @@
           <Filters :search="search" :searchTerm="searchTerm" />
         </div>
       </TabPanel>
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-search-plus icon-header" aria-hidden="true" />
+          <span>ECL search</span>
+        </template>
+        <ExpressionConstraintsSearch />
+      </TabPanel>
     </TabView>
   </div>
 </template>
@@ -55,6 +62,7 @@ import Hierarchy from "@/components/sidebar/Hierarchy.vue";
 import History from "@/components/sidebar/History.vue";
 import SearchResults from "@/components/sidebar/SearchResults.vue";
 import Filters from "@/components/sidebar/Filters.vue";
+import ExpressionConstraintsSearch from "@/components/sidebar/ExpressionConstraintsSearch.vue";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
 import LoggerService from "@/services/LoggerService";
@@ -63,7 +71,13 @@ import { mapState } from "vuex";
 
 export default defineComponent({
   name: "SidebarControl",
-  components: { Hierarchy, History, SearchResults, Filters },
+  components: {
+    Hierarchy,
+    History,
+    SearchResults,
+    Filters,
+    ExpressionConstraintsSearch
+  },
   props: ["focusHierarchy"],
   computed: mapState(["filterOptions", "selectedFilters"]),
   emits: ["hierarchyFocused"],
