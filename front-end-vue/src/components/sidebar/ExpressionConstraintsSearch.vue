@@ -28,6 +28,11 @@
           :position="queryBuild.length"
           @addClicked="addItem"
         />
+        <AddConstraint
+          :id="'constraint-' + queryBuild.length"
+          :position="queryBuild.length"
+          @addClicked="addItem"
+        />
       </div>
     </div>
     <div id="query-string-container">
@@ -40,12 +45,14 @@
 import { defineComponent } from "vue";
 import AddLogic from "@/components/sidebar/expressionConstraintsSearch/addLogic.vue";
 import AddExpression from "@/components/sidebar/expressionConstraintsSearch/addExpression.vue";
+import AddConstraint from "@/components/sidebar/expressionConstraintsSearch/addConstraint.vue";
 
 export default defineComponent({
   name: "QuerySearch",
   components: {
     AddLogic,
-    AddExpression
+    AddExpression,
+    AddConstraint
   },
   watch: {
     queryBuild: {
@@ -73,9 +80,7 @@ export default defineComponent({
           label: data.value,
           component: "AddLogic"
         });
-      }
-
-      if (data.type === "Expression") {
+      } else if (data.type === "Expression") {
         const buildItem = {
           type: data.type,
           id: data.id,
@@ -85,6 +90,15 @@ export default defineComponent({
           component: "AddExpression"
         };
         this.queryBuild.push(buildItem);
+      } else if (data.type === "Constraint") {
+        this.queryBuild.push({
+          type: data.type,
+          position: data.position,
+          id: data.id,
+          data: data.value,
+          label: data.value.symbol + " " + data.value.name,
+          component: "AddConstraint"
+        });
       }
     },
 
@@ -113,8 +127,7 @@ export default defineComponent({
           component: "AddLogic",
           edit: false
         };
-      }
-      if (data.type === "Expression") {
+      } else if (data.type === "Expression") {
         const buildItem = {
           type: data.type,
           id: data.id,
@@ -125,6 +138,16 @@ export default defineComponent({
           edit: false
         };
         this.queryBuild[index] = buildItem;
+      } else if (data.type === "Constraint") {
+        this.queryBuild[index] = {
+          type: data.type,
+          position: data.position,
+          id: data.id,
+          data: data.value,
+          label: data.value.symbol + " " + data.value.name,
+          component: "AddConstraint",
+          edit: false
+        };
       }
     }
   }
