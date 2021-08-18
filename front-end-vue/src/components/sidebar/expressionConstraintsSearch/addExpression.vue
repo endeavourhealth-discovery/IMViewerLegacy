@@ -3,14 +3,14 @@
     <p class="label">{{ data.label }}</p>
     <div class="buttons-container">
       <Button
-        icon="fas fa-pencil-alt"
-        class="p-button-rounded p-button-outlined p-button-secondary"
-        @click="editClicked"
-      />
-      <Button
         icon="fas fa-times"
         class="p-button-rounded p-button-outlined p-button-danger"
         @click="deleteClicked"
+      />
+      <Button
+        icon="fas fa-pencil-alt"
+        class="p-button-rounded p-button-outlined p-button-secondary"
+        @click="editClicked"
       />
     </div>
   </div>
@@ -21,10 +21,10 @@
       class="p-button-rounded p-button-outlined p-button-danger add-expression-button"
       @click="showOverlay"
     />
-    <OverlayPanel class="search-op" ref="miniSearchOP">
-      <SearchMiniOverlay @searchResultSelected="updateSelectedResult" />
-    </OverlayPanel>
   </div>
+  <OverlayPanel class="search-op" ref="miniSearchOP">
+    <SearchMiniOverlay @searchResultSelected="updateSelectedResult" />
+  </OverlayPanel>
 </template>
 
 <script lang="ts">
@@ -34,11 +34,12 @@ import SearchMiniOverlay from "@/components/sidebar/expressionConstraintsSearch/
 export default defineComponent({
   name: "addExpression",
   props: { id: String, position: Number, data: { required: false } },
-  emits: ["addClicked", "editClicked", "deleteClicked"],
+  emits: ["addClicked", "updateClicked", "deleteClicked"],
   components: { SearchMiniOverlay },
   data() {
     return {
-      selectedResult: {} as any
+      selectedResult: {} as any,
+      edit: false
     };
   },
   methods: {
@@ -54,17 +55,27 @@ export default defineComponent({
 
     updateSelectedResult(data: any) {
       this.selectedResult = data;
-      this.$emit("addClicked", {
-        value: this.selectedResult,
-        id: this.id,
-        position: this.position,
-        type: "Expression"
-      });
+      if (this.edit) {
+        this.$emit("updateClicked", {
+          value: this.selectedResult,
+          id: this.id,
+          position: this.position,
+          type: "Expression"
+        });
+      } else {
+        this.$emit("addClicked", {
+          value: this.selectedResult,
+          id: this.id,
+          position: this.position,
+          type: "Expression"
+        });
+      }
       this.hideOverlay();
     },
 
-    editClicked() {
-      this.$emit("editClicked", this.data);
+    editClicked(event: any) {
+      this.showOverlay(event);
+      this.edit = true;
     },
 
     deleteClicked() {
@@ -85,5 +96,25 @@ export default defineComponent({
 
 .confirm-button {
   margin-top: 1rem;
+}
+
+.query-item-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.label {
+  margin: 0 1rem 0 0;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+}
+
+.buttons-container {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
 }
 </style>

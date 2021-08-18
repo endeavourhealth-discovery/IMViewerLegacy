@@ -3,14 +3,14 @@
     <p class="label">{{ data.label }}</p>
     <div class="buttons-container">
       <Button
-        icon="fas fa-pencil-alt"
-        class="p-button-rounded p-button-outlined p-button-secondary"
-        @click="editClicked"
-      />
-      <Button
         icon="fas fa-times"
         class="p-button-rounded p-button-outlined p-button-danger"
         @click="deleteClicked"
+      />
+      <Button
+        icon="fas fa-pencil-alt"
+        class="p-button-rounded p-button-outlined p-button-secondary"
+        @click="editClicked"
       />
     </div>
   </div>
@@ -21,17 +21,16 @@
       class="p-button-rounded p-button-outlined p-button-danger add-logic-button"
       @click="showOverlay"
     />
-
-    <OverlayPanel ref="addLogicOP">
-      <SelectButton v-model="selected" :options="options" />
-      <Button
-        icon="fas fa-check"
-        label="Confirm"
-        class="p-button-success confirm-button"
-        @click="onConfirm"
-      />
-    </OverlayPanel>
   </div>
+  <OverlayPanel ref="addLogicOP">
+    <SelectButton v-model="selected" :options="options" />
+    <Button
+      icon="fas fa-check"
+      label="Confirm"
+      class="p-button-success confirm-button"
+      @click="onConfirm"
+    />
+  </OverlayPanel>
 </template>
 
 <script lang="ts">
@@ -40,21 +39,31 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "addLogic",
   props: { id: String, position: Number, data: { required: false } },
-  emits: ["addClicked", "editClicked", "deleteClicked"],
+  emits: ["addClicked", "deleteClicked", "updateClicked"],
   data() {
     return {
       options: ["AND", "OR"],
-      selected: "AND"
+      selected: "AND",
+      edit: false
     };
   },
   methods: {
     onConfirm() {
-      this.$emit("addClicked", {
-        id: this.id,
-        value: this.selected,
-        position: this.position,
-        type: "Logic"
-      });
+      if (this.edit) {
+        this.$emit("updateClicked", {
+          id: this.id,
+          value: this.selected,
+          position: this.position,
+          type: "Logic"
+        });
+      } else {
+        this.$emit("addClicked", {
+          id: this.id,
+          value: this.selected,
+          position: this.position,
+          type: "Logic"
+        });
+      }
       this.hideOverlay();
     },
 
@@ -68,8 +77,9 @@ export default defineComponent({
       x.show(event, event.target);
     },
 
-    editClicked() {
-      this.$emit("editClicked", this.data);
+    editClicked(event: any) {
+      this.showOverlay(event);
+      this.edit = true;
     },
 
     deleteClicked() {
@@ -90,5 +100,25 @@ export default defineComponent({
 
 .confirm-button {
   margin-top: 1rem;
+}
+
+.query-item-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.label {
+  margin: 0 1rem 0 0;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+}
+
+.buttons-container {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
 }
 </style>

@@ -9,9 +9,9 @@
             :data="item"
             :id="item.id"
             :position="item.position"
-            @editClicked="editItem"
             @deleteClicked="deleteItem"
             @addClicked="addItem"
+            @updateClicked="updateItem"
           >
           </component>
         </template>
@@ -92,16 +92,40 @@ export default defineComponent({
       this.queryString = this.queryBuild.map(item => item.label).join(" ");
     },
 
-    editItem(data: any) {
-      console.log("edit");
-      console.log(data);
-    },
-
     deleteItem(data: any) {
       const index = this.queryBuild.findIndex(
         item => item.position === data.position
       );
       this.queryBuild.splice(index, 1);
+    },
+
+    updateItem(data: any) {
+      const index = this.queryBuild.findIndex(
+        item => item.position === data.position
+      );
+      if (data.type === "Logic") {
+        this.queryBuild[index] = {
+          type: data.type,
+          position: data.position,
+          id: data.id,
+          data: data.value,
+          label: data.value,
+          component: "AddLogic",
+          edit: false
+        };
+      }
+      if (data.type === "Expression") {
+        const buildItem = {
+          type: data.type,
+          id: data.id,
+          position: data.position,
+          data: data.value,
+          label: data.value.code + " |" + data.value.name + "| ",
+          component: "AddExpression",
+          edit: false
+        };
+        this.queryBuild[index] = buildItem;
+      }
     }
   }
 });
