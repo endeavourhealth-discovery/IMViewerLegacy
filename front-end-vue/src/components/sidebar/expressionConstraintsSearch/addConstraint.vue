@@ -79,7 +79,7 @@ export default defineComponent({
           value: this.selected,
           position: this.position,
           type: "Constraint",
-          label: this.selected,
+          label: this.selected.symbol,
           component: "AddConstraint",
           edit: false
         });
@@ -89,7 +89,7 @@ export default defineComponent({
           value: this.selected,
           position: this.position,
           type: "Constraint",
-          label: this.selected,
+          label: this.selected.symbol,
           component: "AddConstraint",
           edit: false
         });
@@ -118,7 +118,7 @@ export default defineComponent({
         value: this.selected,
         position: this.position,
         type: "Constraint",
-        label: this.selected,
+        label: this.selected.symbol,
         component: "AddConstraint",
         edit: false
       });

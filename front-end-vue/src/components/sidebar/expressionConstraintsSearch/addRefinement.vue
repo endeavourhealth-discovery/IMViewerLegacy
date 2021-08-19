@@ -1,5 +1,12 @@
 <template>
   <div v-if="value" class="refinement-container">
+    <div class="buttons-container">
+      <Button
+        icon="fas fa-times"
+        class="p-button-rounded p-button-outlined p-button-danger"
+        @click="deleteClicked"
+      />
+    </div>
     <div
       v-if="value.children && value.children.length"
       class="refinement-children-container"
@@ -96,7 +103,7 @@ export default defineComponent({
         value: { children: [] },
         position: this.position,
         type: "Refinement",
-        label: this.generateRefinementLabel,
+        label: this.generateRefinementLabel(),
         component: "AddRefinement",
         edit: false
       });
@@ -133,10 +140,12 @@ export default defineComponent({
     },
 
     generateRefinementLabel(): string {
-      const labels = this.refinementBuild.map(item => item.label);
-      let label = labels.join(" ");
-      label = ": { " + label + " }";
-      return label;
+      let label = "";
+      if (this.refinementBuild.length) {
+        const labels = this.refinementBuild.map(item => item.label);
+        label = labels.join(" ");
+      }
+        return label = ": { " + label + " }";;
     }
   }
 });
@@ -148,5 +157,11 @@ export default defineComponent({
 }
 .add-refinement-button {
   border-style: dashed !important;
+}
+
+.buttons-container {
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-end;
 }
 </style>
