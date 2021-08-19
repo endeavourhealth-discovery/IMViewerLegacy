@@ -70,7 +70,7 @@ export default defineComponent({
           value: { children: this.refinementBuild },
           position: this.position,
           type: "Refinement",
-          label: "refinement",
+          label: this.generateRefinementLabel(),
           component: "AddRefinement",
           edit: false
         });
@@ -96,7 +96,7 @@ export default defineComponent({
         value: { children: [] },
         position: this.position,
         type: "Refinement",
-        label: "refinement",
+        label: this.generateRefinementLabel,
         component: "AddRefinement",
         edit: false
       });
@@ -108,7 +108,7 @@ export default defineComponent({
         value: { children: [] },
         position: this.position,
         type: "Refinement",
-        label: "refinement",
+        label: this.generateRefinementLabel(),
         component: "AddRefinement",
         edit: false
       });
@@ -130,6 +130,13 @@ export default defineComponent({
         item => item.position === data.position
       );
       this.refinementBuild[index] = data;
+    },
+
+    generateRefinementLabel(): string {
+      const labels = this.refinementBuild.map(item => item.label);
+      let label = labels.join(" ");
+      label = ": { " + label + " }";
+      return label;
     }
   }
 });
