@@ -1,6 +1,6 @@
 <template>
-  <div v-if="data" class="query-item-container">
-    <p class="label">{{ data.label }}</p>
+  <div v-if="value" class="query-item-container">
+    <p class="label">{{ value }}</p>
     <div class="buttons-container">
       <Button
         icon="fas fa-times"
@@ -38,7 +38,7 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "addLogic",
-  props: { id: String, position: Number, data: { required: false } },
+  props: { id: String, position: Number, value: { required: false } },
   emits: ["addClicked", "deleteClicked", "updateClicked"],
   data() {
     return {
@@ -54,14 +54,20 @@ export default defineComponent({
           id: this.id,
           value: this.selected,
           position: this.position,
-          type: "Logic"
+          type: "Logic",
+          component: "AddLogic",
+          label: this.selected,
+          edit: false
         });
       } else {
         this.$emit("addClicked", {
           id: this.id,
           value: this.selected,
           position: this.position,
-          type: "Logic"
+          type: "Logic",
+          component: "AddLogic",
+          label: this.selected,
+          edit: false
         });
       }
       this.hideOverlay();
@@ -83,7 +89,15 @@ export default defineComponent({
     },
 
     deleteClicked() {
-      this.$emit("deleteClicked", this.data);
+      this.$emit("deleteClicked", {
+        id: this.id,
+        value: this.selected,
+        position: this.position,
+        type: "Logic",
+        component: "AddLogic",
+        label: this.selected,
+        edit: false
+      });
     }
   }
 });

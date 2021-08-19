@@ -1,6 +1,6 @@
 <template>
-  <div v-if="data" class="query-item-container">
-    <p class="label">{{ data.label }}</p>
+  <div v-if="value" class="query-item-container">
+    <p class="label">{{ value.code }} |{{ value.name }}|</p>
     <div class="buttons-container">
       <Button
         icon="fas fa-times"
@@ -33,7 +33,7 @@ import SearchMiniOverlay from "@/components/sidebar/expressionConstraintsSearch/
 
 export default defineComponent({
   name: "addExpression",
-  props: { id: String, position: Number, data: { required: false } },
+  props: { id: String, position: Number, value: { required: false } },
   emits: ["addClicked", "updateClicked", "deleteClicked"],
   components: { SearchMiniOverlay },
   data() {
@@ -60,14 +60,22 @@ export default defineComponent({
           value: this.selectedResult,
           id: this.id,
           position: this.position,
-          type: "Expression"
+          type: "Expression",
+          label:
+            this.selectedResult.code + " |" + this.selectedResult.name + "| ",
+          component: "AddExpression",
+          edit: false
         });
       } else {
         this.$emit("addClicked", {
           value: this.selectedResult,
           id: this.id,
           position: this.position,
-          type: "Expression"
+          type: "Expression",
+          label:
+            this.selectedResult.code + " |" + this.selectedResult.name + "| ",
+          component: "AddExpression",
+          edit: false
         });
       }
       this.hideOverlay();
@@ -79,7 +87,16 @@ export default defineComponent({
     },
 
     deleteClicked() {
-      this.$emit("deleteClicked", this.data);
+      this.$emit("deleteClicked", {
+        value: this.selectedResult,
+        id: this.id,
+        position: this.position,
+        type: "Expression",
+        label:
+          this.selectedResult.code + " |" + this.selectedResult.name + "| ",
+        component: "AddExpression",
+        edit: false
+      });
     }
   }
 });

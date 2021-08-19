@@ -1,6 +1,6 @@
 <template>
-  <div v-if="data" class="query-item-container">
-    <p class="label">{{ data.label }}</p>
+  <div v-if="value" class="query-item-container">
+    <p class="label">{{ value.symbol }} {{ value.name }}</p>
     <div class="buttons-container">
       <Button
         icon="fas fa-times"
@@ -23,14 +23,19 @@
     />
   </div>
   <OverlayPanel ref="addConstraintOP">
-    <Dropdown v-model="selected" :options="options" optionLabel="name" placeholder="Select constraint" >
+    <Dropdown
+      v-model="selected"
+      :options="options"
+      optionLabel="name"
+      placeholder="Select constraint"
+    >
       <template #value="slotProps">
-        <span>{{ slotProps.value.symbol}}</span>
-        <span>{{ slotProps.value.name}}</span>
+        <span>{{ slotProps.value.symbol }} </span>
+        <span>{{ slotProps.value.name }}</span>
       </template>
       <template #option="slotProps">
-        <span>{{ slotProps.option.symbol }}</span>
-        <span>{{ slotProps.option.name}}</span>
+        <span>{{ slotProps.option.symbol }} </span>
+        <span>{{ slotProps.option.name }}</span>
       </template>
     </Dropdown>
     <Button
@@ -47,18 +52,20 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "addConstraint",
-  props: { id: String, position: Number, data: { required: false } },
+  props: { id: String, position: Number, value: { required: false } },
   emits: ["addClicked", "deleteClicked", "updateClicked"],
   data() {
     return {
       options: [
-        { name: "Child of", symbol: "<" },
-        { name: "Child or self of", symbol: "<<"},
-        { name: "NOT child of", symbol: "!<" },
-        { name: "Parent of", symbol: ">" },
-        { name: "Parent or self of", symbol: ">>"},
-        { name: "NOT parent of", symbol: "!>" },
-        { name: "Member of", symbol: "^"}
+        { name: "Descendant of", symbol: "<" },
+        { name: "Descendant or self of", symbol: "<<" },
+        { name: "Child of", symbol: "<!" },
+        { name: "Child or self of", symbol: "<<!" },
+        { name: "Ancestor of", symbol: ">" },
+        { name: "Ancestor or self of", symbol: ">>" },
+        { name: "Parent of", symbol: ">!" },
+        { name: "Parent or self of", symbol: ">>!" },
+        { name: "Member of", symbol: "^" }
       ],
       selected: { name: "Child of", symbol: "<" },
       edit: false
@@ -71,14 +78,20 @@ export default defineComponent({
           id: this.id,
           value: this.selected,
           position: this.position,
-          type: "Constraint"
+          type: "Constraint",
+          label: this.selected,
+          component: "AddConstraint",
+          edit: false
         });
       } else {
         this.$emit("addClicked", {
           id: this.id,
           value: this.selected,
           position: this.position,
-          type: "Constraint"
+          type: "Constraint",
+          label: this.selected,
+          component: "AddConstraint",
+          edit: false
         });
       }
       this.hideOverlay();
@@ -100,7 +113,15 @@ export default defineComponent({
     },
 
     deleteClicked() {
-      this.$emit("deleteClicked", this.data);
+      this.$emit("deleteClicked", {
+        id: this.id,
+        value: this.selected,
+        position: this.position,
+        type: "Constraint",
+        label: this.selected,
+        component: "AddConstraint",
+        edit: false
+      });
     }
   }
 });

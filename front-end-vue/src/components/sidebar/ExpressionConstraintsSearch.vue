@@ -6,7 +6,7 @@
         <template v-for="item in queryBuild" :key="item.id">
           <component
             :is="item.component"
-            :data="item"
+            :value="item.value"
             :id="item.id"
             :position="item.position"
             @deleteClicked="deleteItem"
@@ -20,7 +20,7 @@
         <AddLogic
           :id="'logic-' + queryBuild.length"
           :position="queryBuild.length"
-          :data="null"
+          :value="null"
           @addClicked="addItem"
         />
         <AddExpression
@@ -30,6 +30,11 @@
         />
         <AddConstraint
           :id="'constraint-' + queryBuild.length"
+          :position="queryBuild.length"
+          @addClicked="addItem"
+        />
+        <AddRefinement
+          :id="'refinement-' + queryBuild.length"
           :position="queryBuild.length"
           @addClicked="addItem"
         />
@@ -46,13 +51,15 @@ import { defineComponent } from "vue";
 import AddLogic from "@/components/sidebar/expressionConstraintsSearch/addLogic.vue";
 import AddExpression from "@/components/sidebar/expressionConstraintsSearch/addExpression.vue";
 import AddConstraint from "@/components/sidebar/expressionConstraintsSearch/addConstraint.vue";
+import AddRefinement from "@/components/sidebar/expressionConstraintsSearch/addRefinement.vue";
 
 export default defineComponent({
-  name: "QuerySearch",
+  name: "ExpressionConstraintsSearch",
   components: {
     AddLogic,
     AddExpression,
-    AddConstraint
+    AddConstraint,
+    AddRefinement
   },
   watch: {
     queryBuild: {
@@ -71,35 +78,7 @@ export default defineComponent({
   },
   methods: {
     addItem(data: any) {
-      if (data.type === "Logic") {
-        this.queryBuild.push({
-          type: data.type,
-          position: data.position,
-          id: data.id,
-          data: data.value,
-          label: data.value,
-          component: "AddLogic"
-        });
-      } else if (data.type === "Expression") {
-        const buildItem = {
-          type: data.type,
-          id: data.id,
-          position: data.position,
-          data: data.value,
-          label: data.value.code + " |" + data.value.name + "| ",
-          component: "AddExpression"
-        };
-        this.queryBuild.push(buildItem);
-      } else if (data.type === "Constraint") {
-        this.queryBuild.push({
-          type: data.type,
-          position: data.position,
-          id: data.id,
-          data: data.value,
-          label: data.value.symbol + " " + data.value.name,
-          component: "AddConstraint"
-        });
-      }
+      this.queryBuild.push(data);
     },
 
     generateQueryString() {
@@ -117,38 +96,7 @@ export default defineComponent({
       const index = this.queryBuild.findIndex(
         item => item.position === data.position
       );
-      if (data.type === "Logic") {
-        this.queryBuild[index] = {
-          type: data.type,
-          position: data.position,
-          id: data.id,
-          data: data.value,
-          label: data.value,
-          component: "AddLogic",
-          edit: false
-        };
-      } else if (data.type === "Expression") {
-        const buildItem = {
-          type: data.type,
-          id: data.id,
-          position: data.position,
-          data: data.value,
-          label: data.value.code + " |" + data.value.name + "| ",
-          component: "AddExpression",
-          edit: false
-        };
-        this.queryBuild[index] = buildItem;
-      } else if (data.type === "Constraint") {
-        this.queryBuild[index] = {
-          type: data.type,
-          position: data.position,
-          id: data.id,
-          data: data.value,
-          label: data.value.symbol + " " + data.value.name,
-          component: "AddConstraint",
-          edit: false
-        };
-      }
+      this.queryBuild[index] = data;
     }
   }
 });
