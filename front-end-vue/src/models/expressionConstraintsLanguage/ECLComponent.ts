@@ -2,5 +2,6 @@ export enum ECLComponent {
   LOGIC = "AddLogic",
   CONSTRAINT = "AddConstraint",
   EXPRESSION = "AddExpression",
-  REFINEMENT = "AddRefinement"
+  REFINEMENT = "AddRefinement",
+  OPERATOR = "AddOperator"
 }

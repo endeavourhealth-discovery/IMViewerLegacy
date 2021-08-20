@@ -25,7 +25,17 @@
       </template>
     </div>
     <div class="next-refinement-container">
-      <AddLogic
+      <template v-for="nextOption in nextOptions" :key="nextOption">
+        <component
+          :is="nextOption.component"
+          :id="nextOption.type + '-' + refinementBuild.length"
+          :position="refinementBuild.length"
+          :value="null"
+          @addClicked="addChild"
+        >
+        </component>
+      </template>
+      <!-- <AddLogic
         :id="'logic-' + refinementBuild.length"
         :position="refinementBuild.length"
         :value="null"
@@ -48,7 +58,7 @@
           :value="{ level: value.level }"
           @addClicked="addChild"
         />
-      </div>
+      </div> -->
     </div>
   </div>
   <div v-else>
@@ -66,6 +76,7 @@ import { defineComponent, PropType } from "@vue/runtime-core";
 import AddLogic from "@/components/sidebar/expressionConstraintsSearch/addLogic.vue";
 import AddExpression from "@/components/sidebar/expressionConstraintsSearch/addExpression.vue";
 import AddConstraint from "@/components/sidebar/expressionConstraintsSearch/addConstraint.vue";
+import AddOperator from "@/components/sidebar/expressionConstraintsSearch/addOperator.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 
@@ -77,7 +88,7 @@ export default defineComponent({
     value: { type: Object as PropType<{ children: any[], level: number }>, required: false }
   },
   emits: ["addClicked", "deleteClicked", "updateClicked"],
-  components: { AddLogic, AddExpression, AddConstraint },
+  components: { AddLogic, AddExpression, AddConstraint, AddOperator },
   watch: {
     refinementBuild: {
       handler() {
@@ -91,6 +102,7 @@ export default defineComponent({
           component: ECLComponent.REFINEMENT,
           edit: false
         });
+        this.generateNextOptions();
       },
       deep: true
     }
@@ -103,7 +115,8 @@ export default defineComponent({
   data() {
     return {
       refinementBuild: [] as any[],
-      refinementString: ""
+      refinementString: "",
+      nextOptions: [{ component: ECLComponent.EXPRESSION, type: ECLType.EXPRESSION }]
     };
   },
   methods: {
@@ -156,6 +169,34 @@ export default defineComponent({
         label = labels.join(" ");
       }
         return label = ": { " + label + " }";;
+    },
+
+    generateNextOptions() {
+      if (!this.refinementBuild.length) {
+        this.nextOptions = [{ component: ECLComponent.EXPRESSION, type: ECLType.EXPRESSION }];
+        return;
+      }
+      switch (this.refinementBuild[this.refinementBuild.length - 1].type) {
+        case ECLType.EXPRESSION:
+          if (this.refinementBuild.length === 1 || this.refinementBuild.length === 7) {
+            this.nextOptions = [{ component: ECLComponent.OPERATOR, type: ECLType.OPERATOR }];
+          } else {
+            this.nextOptions = [{ component: ECLComponent.LOGIC, type: ECLType.LOGIC }];
+          }
+          break;
+        case ECLType.CONSTRAINT:
+          this.nextOptions = [{ component: ECLComponent.EXPRESSION, type: ECLType.EXPRESSION }];
+          break;
+        case ECLType.LOGIC:
+          this.nextOptions = [{ component: ECLComponent.CONSTRAINT, type: ECLType.CONSTRAINT }];
+          break;
+        case ECLType.REFINEMENT:
+          this.nextOptions = [{ component: ECLComponent.REFINEMENT, type: ECLType.REFINEMENT }];
+          break;
+        case ECLType.OPERATOR:
+          this.nextOptions = [{ component: ECLComponent.CONSTRAINT, type: ECLType.CONSTRAINT}];
+          break;
+      }
     }
   }
 });
