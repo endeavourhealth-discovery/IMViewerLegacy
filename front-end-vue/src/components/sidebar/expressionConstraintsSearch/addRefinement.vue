@@ -1,5 +1,5 @@
 <template>
-  <div v-if="value" class="refinement-container">
+  <div v-if="value && value.children" class="refinement-container">
     <div class="buttons-container">
       <Button
         icon="fas fa-times"
@@ -41,6 +41,14 @@
         :position="refinementBuild.length"
         @addClicked="addChild"
       />
+      <div v-if="value.children && value.children.length">
+        <AddRefinement
+          :id="'refinement-' + refinementBuild.length"
+          :position="refinementBuild.length"
+          :value="{ level: value.level }"
+          @addClicked="addChild"
+        />
+      </div>
     </div>
   </div>
   <div v-else>
@@ -64,7 +72,7 @@ export default defineComponent({
   props: {
     id: String,
     position: Number,
-    value: { type: Object as PropType<{ children: any[] }>, required: false }
+    value: { type: Object as PropType<{ children: any[], level: number }>, required: false }
   },
   emits: ["addClicked", "deleteClicked", "updateClicked"],
   components: { AddLogic, AddExpression, AddConstraint },
@@ -74,7 +82,7 @@ export default defineComponent({
         this.refinementBuild.sort((a: any, b: any) => a.position - b.position);
         this.$emit("updateClicked", {
           id: this.id,
-          value: { children: this.refinementBuild },
+          value: { children: this.refinementBuild, level: this.value?.level },
           position: this.position,
           type: "Refinement",
           label: this.generateRefinementLabel(),
@@ -100,7 +108,7 @@ export default defineComponent({
     onConfirm() {
       this.$emit("addClicked", {
         id: this.id,
-        value: { children: [] },
+        value: { children: [], level: this.value?.level ? this.value?.level + 1 : 1 },
         position: this.position,
         type: "Refinement",
         label: this.generateRefinementLabel(),
