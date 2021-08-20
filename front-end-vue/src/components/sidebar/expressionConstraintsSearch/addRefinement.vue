@@ -85,7 +85,10 @@ export default defineComponent({
   props: {
     id: String,
     position: Number,
-    value: { type: Object as PropType<{ children: any[], level: number }>, required: false }
+    value: {
+      type: Object as PropType<{ children: any[], level: number }>,
+      required: false
+    }
   },
   emits: ["addClicked", "deleteClicked", "updateClicked"],
   components: { AddLogic, AddExpression, AddConstraint, AddOperator },
@@ -116,14 +119,22 @@ export default defineComponent({
     return {
       refinementBuild: [] as any[],
       refinementString: "",
-      nextOptions: [{ component: ECLComponent.EXPRESSION, type: ECLType.EXPRESSION }]
+      nextOptions: [
+        {
+          component: ECLComponent.EXPRESSION,
+          type: ECLType.EXPRESSION
+        }
+      ]
     };
   },
   methods: {
     onConfirm() {
       this.$emit("addClicked", {
         id: this.id,
-        value: { children: [], level: this.value?.level ? this.value?.level + 1 : 1 },
+        value: {
+          children: [],
+          level: this.value?.level ? this.value?.level + 1 : 1
+        },
         position: this.position,
         type: ECLType.REFINEMENT,
         label: this.generateRefinementLabel(),
@@ -168,33 +179,71 @@ export default defineComponent({
         const labels = this.refinementBuild.map(item => item.label);
         label = labels.join(" ");
       }
-        return label = ": { " + label + " }";;
+      return (label = ": { " + label + " }");
     },
 
     generateNextOptions() {
       if (!this.refinementBuild.length) {
-        this.nextOptions = [{ component: ECLComponent.EXPRESSION, type: ECLType.EXPRESSION }];
+        this.nextOptions = [
+          {
+            component: ECLComponent.EXPRESSION,
+            type: ECLType.EXPRESSION
+          }
+        ];
         return;
       }
       switch (this.refinementBuild[this.refinementBuild.length - 1].type) {
         case ECLType.EXPRESSION:
-          if (this.refinementBuild.length === 1 || this.refinementBuild.length === 7) {
-            this.nextOptions = [{ component: ECLComponent.OPERATOR, type: ECLType.OPERATOR }];
+          if (
+            this.refinementBuild.length === 1 ||
+            this.refinementBuild.length === 7
+          ) {
+            this.nextOptions = [
+              {
+                component: ECLComponent.OPERATOR,
+                type: ECLType.OPERATOR
+              }
+            ];
           } else {
-            this.nextOptions = [{ component: ECLComponent.LOGIC, type: ECLType.LOGIC }];
+            this.nextOptions = [
+              {
+                component: ECLComponent.LOGIC,
+                type: ECLType.LOGIC
+              }
+            ];
           }
           break;
         case ECLType.CONSTRAINT:
-          this.nextOptions = [{ component: ECLComponent.EXPRESSION, type: ECLType.EXPRESSION }];
+          this.nextOptions = [
+            {
+              component: ECLComponent.EXPRESSION,
+              type: ECLType.EXPRESSION
+            }
+          ];
           break;
         case ECLType.LOGIC:
-          this.nextOptions = [{ component: ECLComponent.CONSTRAINT, type: ECLType.CONSTRAINT }];
+          this.nextOptions = [
+            {
+              component: ECLComponent.CONSTRAINT,
+              type: ECLType.CONSTRAINT
+            }
+          ];
           break;
         case ECLType.REFINEMENT:
-          this.nextOptions = [{ component: ECLComponent.REFINEMENT, type: ECLType.REFINEMENT }];
+          this.nextOptions = [
+            {
+              component: ECLComponent.REFINEMENT,
+              type: ECLType.REFINEMENT
+            }
+          ];
           break;
         case ECLType.OPERATOR:
-          this.nextOptions = [{ component: ECLComponent.CONSTRAINT, type: ECLType.CONSTRAINT}];
+          this.nextOptions = [
+            {
+              component: ECLComponent.CONSTRAINT,
+              type: ECLType.CONSTRAINT
+            }
+          ];
           break;
       }
     }

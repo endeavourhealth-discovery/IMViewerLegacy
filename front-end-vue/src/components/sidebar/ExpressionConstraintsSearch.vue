@@ -65,7 +65,12 @@ export default defineComponent({
     return {
       queryString: "",
       queryBuild: [] as any[],
-      nextOptions: [{ component: ECLComponent.CONSTRAINT, type: ECLType.CONSTRAINT }] as any[]
+      nextOptions: [
+        {
+          component: ECLComponent.CONSTRAINT,
+          type: ECLType.CONSTRAINT
+        }
+      ] as any[]
     };
   },
   methods: {
@@ -93,21 +98,50 @@ export default defineComponent({
 
     generateNextOptions() {
       if (!this.queryBuild.length) {
-        this.nextOptions = [{ component: ECLComponent.CONSTRAINT, type: ECLType.CONSTRAINT }];
+        this.nextOptions = [
+          {
+            component: ECLComponent.CONSTRAINT,
+            type: ECLType.CONSTRAINT
+          }
+        ];
         return;
       }
-      switch (this.queryBuild[this.queryBuild.length -1].type) {
+      switch (this.queryBuild[this.queryBuild.length - 1].type) {
         case ECLType.CONSTRAINT:
-          this.nextOptions = [{ component: ECLComponent.EXPRESSION, type: ECLType.EXPRESSION }];
+          this.nextOptions = [
+            {
+              component: ECLComponent.EXPRESSION,
+              type: ECLType.EXPRESSION
+            }
+          ];
           break;
         case ECLType.LOGIC:
-          this.nextOptions = [{ component: ECLComponent.CONSTRAINT, type: ECLType.CONSTRAINT }];
+          this.nextOptions = [
+            {
+              component: ECLComponent.CONSTRAINT,
+              type: ECLType.CONSTRAINT
+            }
+          ];
           break;
         case ECLType.EXPRESSION:
-          this.nextOptions = [{ component: ECLComponent.REFINEMENT, type: ECLType.REFINEMENT }, { component: ECLComponent.LOGIC, type: ECLType.LOGIC }];
+          this.nextOptions = [
+            {
+              component: ECLComponent.REFINEMENT,
+              type: ECLType.REFINEMENT
+            },
+            {
+              component: ECLComponent.LOGIC,
+              type: ECLType.LOGIC
+            }
+          ];
           break;
         case ECLType.REFINEMENT:
-          this.nextOptions = [{ component: ECLComponent.REFINEMENT, type: ECLType.REFINEMENT }];
+          this.nextOptions = [
+            {
+              component: ECLComponent.REFINEMENT,
+              type: ECLType.REFINEMENT
+            }
+          ];
           break;
       }
     }
