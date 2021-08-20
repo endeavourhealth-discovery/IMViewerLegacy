@@ -34,6 +34,8 @@
 </template>
 
 <script lang="ts">
+import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
+import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -54,8 +56,8 @@ export default defineComponent({
           id: this.id,
           value: this.selected,
           position: this.position,
-          type: "Logic",
-          component: "AddLogic",
+          type: ECLType.LOGIC,
+          component: ECLComponent.LOGIC,
           label: this.selected,
           edit: false
         });
@@ -64,8 +66,8 @@ export default defineComponent({
           id: this.id,
           value: this.selected,
           position: this.position,
-          type: "Logic",
-          component: "AddLogic",
+          type: ECLType.LOGIC,
+          component: ECLComponent.LOGIC,
           label: this.selected,
           edit: false
         });
@@ -93,8 +95,8 @@ export default defineComponent({
         id: this.id,
         value: this.selected,
         position: this.position,
-        type: "Logic",
-        component: "AddLogic",
+        type: ECLType.LOGIC,
+        component: ECLComponent.LOGIC,
         label: this.selected,
         edit: false
       });

@@ -66,6 +66,8 @@ import { defineComponent, PropType } from "@vue/runtime-core";
 import AddLogic from "@/components/sidebar/expressionConstraintsSearch/addLogic.vue";
 import AddExpression from "@/components/sidebar/expressionConstraintsSearch/addExpression.vue";
 import AddConstraint from "@/components/sidebar/expressionConstraintsSearch/addConstraint.vue";
+import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
+import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 
 export default defineComponent({
   name: "AddRefinement",
@@ -84,9 +86,9 @@ export default defineComponent({
           id: this.id,
           value: { children: this.refinementBuild, level: this.value?.level },
           position: this.position,
-          type: "Refinement",
+          type: ECLType.REFINEMENT,
           label: this.generateRefinementLabel(),
-          component: "AddRefinement",
+          component: ECLComponent.REFINEMENT,
           edit: false
         });
       },
@@ -110,9 +112,9 @@ export default defineComponent({
         id: this.id,
         value: { children: [], level: this.value?.level ? this.value?.level + 1 : 1 },
         position: this.position,
-        type: "Refinement",
+        type: ECLType.REFINEMENT,
         label: this.generateRefinementLabel(),
-        component: "AddRefinement",
+        component: ECLComponent.REFINEMENT,
         edit: false
       });
     },
@@ -122,9 +124,9 @@ export default defineComponent({
         id: this.id,
         value: { children: [] },
         position: this.position,
-        type: "Refinement",
+        type: ECLType.REFINEMENT,
         label: this.generateRefinementLabel(),
-        component: "AddRefinement",
+        component: ECLComponent.REFINEMENT,
         edit: false
       });
     },

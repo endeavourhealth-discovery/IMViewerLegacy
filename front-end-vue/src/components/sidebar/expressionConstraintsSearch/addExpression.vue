@@ -30,6 +30,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import SearchMiniOverlay from "@/components/sidebar/expressionConstraintsSearch/SearchMiniOverlay.vue";
+import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
+import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 
 export default defineComponent({
   name: "addExpression",
@@ -60,10 +62,10 @@ export default defineComponent({
           value: this.selectedResult,
           id: this.id,
           position: this.position,
-          type: "Expression",
+          type: ECLType.EXPRESSION,
           label:
             this.selectedResult.code + " |" + this.selectedResult.name + "| ",
-          component: "AddExpression",
+          component: ECLComponent.EXPRESSION,
           edit: false
         });
       } else {
@@ -71,10 +73,10 @@ export default defineComponent({
           value: this.selectedResult,
           id: this.id,
           position: this.position,
-          type: "Expression",
+          type: ECLType.EXPRESSION,
           label:
             this.selectedResult.code + " |" + this.selectedResult.name + "| ",
-          component: "AddExpression",
+          component: ECLComponent.EXPRESSION,
           edit: false
         });
       }

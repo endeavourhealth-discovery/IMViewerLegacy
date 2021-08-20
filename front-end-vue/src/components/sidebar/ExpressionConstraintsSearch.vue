@@ -17,27 +17,15 @@
         </template>
       </div>
       <div id="next-option-container">
-        <AddLogic
-          :id="'logic-' + queryBuild.length"
-          :position="queryBuild.length"
-          :value="null"
-          @addClicked="addItem"
-        />
-        <AddExpression
-          :id="'expression-' + queryBuild.length"
-          :position="queryBuild.length"
-          @addClicked="addItem"
-        />
-        <AddConstraint
-          :id="'constraint-' + queryBuild.length"
-          :position="queryBuild.length"
-          @addClicked="addItem"
-        />
-        <AddRefinement
-          :id="'refinement-' + queryBuild.length"
-          :position="queryBuild.length"
-          @addClicked="addItem"
-        />
+        <template v-for="nextOption in nextOptions" :key="nextOption">
+          <component
+            :is="nextOption.component"
+            :id="nextOption.type + '-' + queryBuild.length"
+            :position="queryBuild.length"
+            :value="null"
+            @addClicked="addItem"
+          ></component>
+        </template>
       </div>
     </div>
     <div id="query-string-container">
@@ -52,6 +40,8 @@ import AddLogic from "@/components/sidebar/expressionConstraintsSearch/addLogic.
 import AddExpression from "@/components/sidebar/expressionConstraintsSearch/addExpression.vue";
 import AddConstraint from "@/components/sidebar/expressionConstraintsSearch/addConstraint.vue";
 import AddRefinement from "@/components/sidebar/expressionConstraintsSearch/addRefinement.vue";
+import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
+import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 
 export default defineComponent({
   name: "ExpressionConstraintsSearch",
@@ -66,6 +56,7 @@ export default defineComponent({
       handler() {
         this.queryBuild.sort((a: any, b: any) => a.position - b.position);
         this.generateQueryString();
+        this.generateNextOptions();
       },
       deep: true
     }
@@ -73,7 +64,8 @@ export default defineComponent({
   data() {
     return {
       queryString: "",
-      queryBuild: [] as any[]
+      queryBuild: [] as any[],
+      nextOptions: [{ component: ECLComponent.CONSTRAINT, type: ECLType.CONSTRAINT }] as any[]
     };
   },
   methods: {
@@ -97,6 +89,27 @@ export default defineComponent({
         item => item.position === data.position
       );
       this.queryBuild[index] = data;
+    },
+
+    generateNextOptions() {
+      if (!this.queryBuild.length) {
+        this.nextOptions = [{ component: ECLComponent.CONSTRAINT, type: ECLType.CONSTRAINT }];
+        return;
+      }
+      switch (this.queryBuild[this.queryBuild.length -1].type) {
+        case ECLType.CONSTRAINT:
+          this.nextOptions = [{ component: ECLComponent.EXPRESSION, type: ECLType.EXPRESSION }];
+          break;
+        case ECLType.LOGIC:
+          this.nextOptions = [{ component: ECLComponent.CONSTRAINT, type: ECLType.CONSTRAINT }];
+          break;
+        case ECLType.EXPRESSION:
+          this.nextOptions = [{ component: ECLComponent.REFINEMENT, type: ECLType.REFINEMENT }, { component: ECLComponent.LOGIC, type: ECLType.LOGIC }];
+          break;
+        case ECLType.REFINEMENT:
+          this.nextOptions = [{ component: ECLComponent.REFINEMENT, type: ECLType.REFINEMENT }];
+          break;
+      }
     }
   }
 });
