@@ -79,7 +79,17 @@ export default defineComponent({
     },
 
     generateQueryString() {
-      this.queryString = this.queryBuild.map(item => item.label).join(" ");
+      let primaryRefinementSet = false;
+      this.queryString = this.queryBuild
+        .map(item => {
+          if (item.type === ECLType.REFINEMENT && !primaryRefinementSet) {
+            primaryRefinementSet = true;
+            return ": " + item.label;
+          } else {
+            return item.label;
+          }
+        })
+        .join(" ");
     },
 
     deleteItem(data: any) {
@@ -120,6 +130,10 @@ export default defineComponent({
             {
               component: ECLComponent.CONSTRAINT,
               type: ECLType.CONSTRAINT
+            },
+            {
+              component: ECLComponent.REFINEMENT,
+              type: ECLType.REFINEMENT
             }
           ];
           break;

@@ -37,30 +37,6 @@
         >
         </component>
       </template>
-      <!-- <AddLogic
-        :id="'logic-' + refinementBuild.length"
-        :position="refinementBuild.length"
-        :value="null"
-        @addClicked="addChild"
-      />
-      <AddExpression
-        :id="'expression-' + refinementBuild.length"
-        :position="refinementBuild.length"
-        @addClicked="addChild"
-      />
-      <AddConstraint
-        :id="'constraint-' + refinementBuild.length"
-        :position="refinementBuild.length"
-        @addClicked="addChild"
-      />
-      <div v-if="value.children && value.children.length">
-        <AddRefinement
-          :id="'refinement-' + refinementBuild.length"
-          :position="refinementBuild.length"
-          :value="{ level: value.level }"
-          @addClicked="addChild"
-        />
-      </div> -->
     </div>
   </div>
   <div v-else>
@@ -88,7 +64,11 @@ export default defineComponent({
     id: String,
     position: Number,
     value: {
-      type: Object as PropType<{ children: any[], level: number }>,
+      type: Object as PropType<{
+        children: any[];
+        level: number;
+        group: boolean;
+      }>,
       required: false
     }
   },
@@ -165,7 +145,7 @@ export default defineComponent({
         label: this.generateRefinementLabel(),
         component: ECLComponent.REFINEMENT,
         edit: false
-      }
+      };
     },
 
     generateRefinementLabel(): string {
@@ -175,9 +155,9 @@ export default defineComponent({
         label = labels.join(" ");
       }
       if (this.group) {
-        return (label = ": { " + label + " }");
+        return (label = "{ " + label + " }");
       } else {
-        return label = ": " + label;
+        return label;
       }
     },
 
@@ -195,7 +175,8 @@ export default defineComponent({
         case ECLType.EXPRESSION:
           if (
             this.refinementBuild.length === 1 ||
-            this.refinementBuild.length === 7
+            this.refinementBuild[this.refinementBuild.length - 2].type ===
+              ECLType.LOGIC
           ) {
             this.nextOptions = [
               {
@@ -225,6 +206,10 @@ export default defineComponent({
             {
               component: ECLComponent.CONSTRAINT,
               type: ECLType.CONSTRAINT
+            },
+            {
+              component: ECLComponent.EXPRESSION,
+              type: ECLType.EXPRESSION
             }
           ];
           break;
@@ -241,6 +226,10 @@ export default defineComponent({
             {
               component: ECLComponent.CONSTRAINT,
               type: ECLType.CONSTRAINT
+            },
+            {
+              component: ECLComponent.EXPRESSION,
+              type: ECLType.EXPRESSION
             }
           ];
           break;

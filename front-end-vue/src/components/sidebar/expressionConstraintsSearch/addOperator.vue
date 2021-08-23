@@ -23,7 +23,11 @@
     />
   </div>
   <OverlayPanel ref="addOperatorOP">
-    <SelectButton v-model="selected" :options="options" optionLabel="longSyntax" />
+    <SelectButton
+      v-model="selected"
+      :options="options"
+      optionLabel="longSyntax"
+    />
     <Button
       icon="fas fa-check"
       label="Confirm"
@@ -45,7 +49,7 @@ export default defineComponent({
   data() {
     return {
       options: [
-        { symbol: "=", longSyntax: "Equals"},
+        { symbol: "=", longSyntax: "Equals" },
         { symbol: "!=", longSyntax: "Not equals" }
       ],
       selected: { symbol: "=", longSyntax: "Equals" },
@@ -71,7 +75,7 @@ export default defineComponent({
         component: ECLComponent.OPERATOR,
         label: this.selected.symbol,
         edit: false
-      }
+      };
     },
 
     hideOverlay(): void {

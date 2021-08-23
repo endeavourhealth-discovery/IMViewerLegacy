@@ -1,6 +1,6 @@
 <template>
   <div v-if="value" class="query-item-container">
-    <p class="label">{{ value.symbol }} {{ value.name }}</p>
+    <p class="label">{{ value.name }}</p>
     <div class="buttons-container">
       <Button
         icon="fas fa-times"
