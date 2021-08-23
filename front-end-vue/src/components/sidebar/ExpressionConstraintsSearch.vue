@@ -29,7 +29,7 @@
       </div>
     </div>
     <div id="query-string-container">
-      {{ queryString }}
+      <pre>{{ queryString }}</pre>
     </div>
   </div>
 </template>
@@ -84,12 +84,16 @@ export default defineComponent({
         .map(item => {
           if (item.type === ECLType.REFINEMENT && !primaryRefinementSet) {
             primaryRefinementSet = true;
-            return ": " + item.label;
+            return ":\n\t" + item.label;
+          } else if (item.type === ECLType.REFINEMENT && primaryRefinementSet) {
+            return "\t" + item.label;
+          } else if (item.type === ECLType.LOGIC) {
+            return item.label + "\n";
           } else {
             return item.label;
           }
         })
-        .join(" ");
+        .join(" ").replaceAll("\n ", "\n");
     },
 
     deleteItem(data: any) {
@@ -175,5 +179,11 @@ export default defineComponent({
 
 #query-builder-container {
   flex-grow: 100;
+  overflow: auto;
+}
+
+#query-string-container {
+  width: 100%;
+  overflow: auto;
 }
 </style>

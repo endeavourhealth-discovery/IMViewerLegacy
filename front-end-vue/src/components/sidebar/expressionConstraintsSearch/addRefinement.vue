@@ -95,7 +95,6 @@ export default defineComponent({
   data() {
     return {
       refinementBuild: [] as any[],
-      refinementString: "",
       nextOptions: [
         {
           component: ECLComponent.EXPRESSION,
@@ -151,8 +150,14 @@ export default defineComponent({
     generateRefinementLabel(): string {
       let label = "";
       if (this.refinementBuild.length) {
-        const labels = this.refinementBuild.map(item => item.label);
-        label = labels.join(" ");
+        const labels = this.refinementBuild.map(item => {
+          if (item.type === ECLType.LOGIC) {
+            return (item.label + "\n\t");
+          } else {
+            return item.label;
+          }
+        });
+        label = labels.join(" ").replaceAll("\n ", "\n");
       }
       if (this.group) {
         return (label = "{ " + label + " }");
@@ -176,6 +181,8 @@ export default defineComponent({
           if (
             this.refinementBuild.length === 1 ||
             this.refinementBuild[this.refinementBuild.length - 2].type ===
+              ECLType.LOGIC ||
+            this.refinementBuild[this.refinementBuild.length - 3].type ===
               ECLType.LOGIC
           ) {
             this.nextOptions = [
