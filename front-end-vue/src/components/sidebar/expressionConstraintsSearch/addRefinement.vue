@@ -1,6 +1,8 @@
 <template>
   <div v-if="value && value.children" class="refinement-container">
     <div class="buttons-container">
+      <label for="switch">Group</label>
+      <InputSwitch v-model="group" />
       <Button
         icon="fas fa-times"
         class="p-button-rounded p-button-outlined p-button-danger"
@@ -96,18 +98,13 @@ export default defineComponent({
     refinementBuild: {
       handler() {
         this.refinementBuild.sort((a: any, b: any) => a.position - b.position);
-        this.$emit("updateClicked", {
-          id: this.id,
-          value: { children: this.refinementBuild, level: this.value?.level },
-          position: this.position,
-          type: ECLType.REFINEMENT,
-          label: this.generateRefinementLabel(),
-          component: ECLComponent.REFINEMENT,
-          edit: false
-        });
+        this.$emit("updateClicked", this.createRefinement());
         this.generateNextOptions();
       },
       deep: true
+    },
+    group() {
+      this.$emit("updateClicked", this.createRefinement());
     }
   },
   mounted() {
@@ -124,35 +121,17 @@ export default defineComponent({
           component: ECLComponent.EXPRESSION,
           type: ECLType.EXPRESSION
         }
-      ]
+      ],
+      group: false
     };
   },
   methods: {
     onConfirm() {
-      this.$emit("addClicked", {
-        id: this.id,
-        value: {
-          children: [],
-          level: this.value?.level ? this.value?.level + 1 : 1
-        },
-        position: this.position,
-        type: ECLType.REFINEMENT,
-        label: this.generateRefinementLabel(),
-        component: ECLComponent.REFINEMENT,
-        edit: false
-      });
+      this.$emit("addClicked", this.createRefinement());
     },
 
     deleteClicked() {
-      this.$emit("deleteClicked", {
-        id: this.id,
-        value: { children: [] },
-        position: this.position,
-        type: ECLType.REFINEMENT,
-        label: this.generateRefinementLabel(),
-        component: ECLComponent.REFINEMENT,
-        edit: false
-      });
+      this.$emit("deleteClicked", this.createRefinement());
     },
 
     addChild(data: any) {
@@ -173,13 +152,33 @@ export default defineComponent({
       this.refinementBuild[index] = data;
     },
 
+    createRefinement() {
+      return {
+        id: this.id,
+        value: {
+          children: this.refinementBuild,
+          level: this.value?.level ? this.value?.level + 1 : 1,
+          group: this.group
+        },
+        position: this.position,
+        type: ECLType.REFINEMENT,
+        label: this.generateRefinementLabel(),
+        component: ECLComponent.REFINEMENT,
+        edit: false
+      }
+    },
+
     generateRefinementLabel(): string {
       let label = "";
       if (this.refinementBuild.length) {
         const labels = this.refinementBuild.map(item => item.label);
         label = labels.join(" ");
       }
-      return (label = ": { " + label + " }");
+      if (this.group) {
+        return (label = ": { " + label + " }");
+      } else {
+        return label = ": " + label;
+      }
     },
 
     generateNextOptions() {
