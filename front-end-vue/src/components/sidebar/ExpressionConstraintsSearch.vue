@@ -138,8 +138,8 @@ export default defineComponent({
         case ECLType.REFINEMENT:
           this.nextOptions = [
             {
-              component: ECLComponent.REFINEMENT,
-              type: ECLType.REFINEMENT
+              component: ECLComponent.LOGIC,
+              type: ECLType.LOGIC
             }
           ];
           break;

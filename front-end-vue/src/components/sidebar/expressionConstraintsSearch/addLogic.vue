@@ -44,7 +44,7 @@ export default defineComponent({
   emits: ["addClicked", "deleteClicked", "updateClicked"],
   data() {
     return {
-      options: ["AND", "OR"],
+      options: ["AND", "OR", "MINUS"],
       selected: "AND",
       edit: false
     };

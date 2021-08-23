@@ -1,6 +1,6 @@
 <template>
   <div v-if="value" class="query-item-container">
-    <p class="label">{{ value }}</p>
+    <p class="label">{{ value.longSyntax }}</p>
     <div class="buttons-container">
       <Button
         icon="fas fa-times"
@@ -23,7 +23,7 @@
     />
   </div>
   <OverlayPanel ref="addOperatorOP">
-    <SelectButton v-model="selected" :options="options" />
+    <SelectButton v-model="selected" :options="options" optionLabel="longSyntax" />
     <Button
       icon="fas fa-check"
       label="Confirm"
@@ -44,35 +44,34 @@ export default defineComponent({
   emits: ["addClicked", "deleteClicked", "updateClicked"],
   data() {
     return {
-      options: ["="],
-      selected: "=",
+      options: [
+        { symbol: "=", longSyntax: "Equals"},
+        { symbol: "!=", longSyntax: "Not equals" }
+      ],
+      selected: { symbol: "=", longSyntax: "Equals" },
       edit: false
     };
   },
   methods: {
     onConfirm() {
       if (this.edit) {
-        this.$emit("updateClicked", {
-          id: this.id,
-          value: this.selected,
-          position: this.position,
-          type: ECLType.OPERATOR,
-          component: ECLComponent.OPERATOR,
-          label: this.selected,
-          edit: false
-        });
+        this.$emit("updateClicked", this.createOperator());
       } else {
-        this.$emit("addClicked", {
-          id: this.id,
-          value: this.selected,
-          position: this.position,
-          type: ECLType.OPERATOR,
-          component: ECLComponent.OPERATOR,
-          label: this.selected,
-          edit: false
-        });
+        this.$emit("addClicked", this.createOperator());
       }
       this.hideOverlay();
+    },
+
+    createOperator() {
+      return {
+        id: this.id,
+        value: this.selected,
+        position: this.position,
+        type: ECLType.OPERATOR,
+        component: ECLComponent.OPERATOR,
+        label: this.selected.symbol,
+        edit: false
+      }
     },
 
     hideOverlay(): void {
@@ -91,15 +90,7 @@ export default defineComponent({
     },
 
     deleteClicked() {
-      this.$emit("deleteClicked", {
-        id: this.id,
-        value: this.selected,
-        position: this.position,
-        type: ECLType.OPERATOR,
-        component: ECLComponent.OPERATOR,
-        label: this.selected,
-        edit: false
-      });
+      this.$emit("deleteClicked", this.createOperator());
     }
   }
 });
