@@ -1,6 +1,7 @@
 <template>
   <div v-if="value" class="query-item-container">
-    <p class="label">{{ value.code }} |{{ value.name }}|</p>
+    <p v-if="value.name === 'ANY'" class="label">{{ value.name }}</p>
+    <p v-else class="label">{{ value.code }} |{{ value.name }}|</p>
     <div class="buttons-container">
       <Button
         icon="fas fa-times"
@@ -58,27 +59,9 @@ export default defineComponent({
     updateSelectedResult(data: any) {
       this.selectedResult = data;
       if (this.edit) {
-        this.$emit("updateClicked", {
-          value: this.selectedResult,
-          id: this.id,
-          position: this.position,
-          type: ECLType.EXPRESSION,
-          label:
-            this.selectedResult.code + " |" + this.selectedResult.name + "| ",
-          component: ECLComponent.EXPRESSION,
-          edit: false
-        });
+        this.$emit("updateClicked", this.createExpression());
       } else {
-        this.$emit("addClicked", {
-          value: this.selectedResult,
-          id: this.id,
-          position: this.position,
-          type: ECLType.EXPRESSION,
-          label:
-            this.selectedResult.code + " |" + this.selectedResult.name + "| ",
-          component: ECLComponent.EXPRESSION,
-          edit: false
-        });
+        this.$emit("addClicked", this.createExpression());
       }
       this.hideOverlay();
     },
@@ -99,6 +82,24 @@ export default defineComponent({
         component: "AddExpression",
         edit: false
       });
+    },
+
+    createExpression() {
+      let label;
+      if (this.selectedResult.name === "ANY") {
+        label = "*";
+      } else {
+        label = this.selectedResult.code + " |" + this.selectedResult.name;
+      }
+      return {
+        value: this.selectedResult,
+        id: this.id,
+        position: this.position,
+        type: ECLType.EXPRESSION,
+        label: label,
+        component: ECLComponent.EXPRESSION,
+        edit: false
+      }
     }
   }
 });

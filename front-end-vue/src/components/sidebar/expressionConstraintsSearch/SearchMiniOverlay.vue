@@ -1,5 +1,6 @@
 <template>
   <InputText
+    ref="miniSearchInput"
     type="text"
     v-model="searchTerm"
     @input="debounceForSearch"
@@ -149,6 +150,17 @@ export default defineComponent({
     },
 
     async search(): Promise<void> {
+      if (this.searchTerm.toUpperCase() === "ANY" || this.searchTerm === "*") {
+        this.searchResults = [
+          {
+            code: "",
+            name: "ANY",
+            match: "ANY",
+            entityType: [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }]
+          }
+        ];
+        return;
+      }
       if (this.searchTerm.length > 2) {
         const searchRequest = new SearchRequest();
         searchRequest.termFilter = this.searchTerm;
@@ -222,6 +234,9 @@ export default defineComponent({
 
     showDetailsOverlay(event: any, data: any) {
       this.hoveredResult = data;
+      if (this.hoveredResult.name === "ANY") {
+        return;
+      }
       const x = this.$refs.detailsOP as any;
       x.show(event, event.target);
     },

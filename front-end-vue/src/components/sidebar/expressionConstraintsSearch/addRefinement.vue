@@ -1,42 +1,48 @@
 <template>
   <div v-if="value && value.children" class="refinement-container">
-    <div class="buttons-container">
-      <label for="switch">Group</label>
-      <InputSwitch v-model="group" />
-      <Button
-        icon="fas fa-times"
-        class="p-button-rounded p-button-outlined p-button-danger"
-        @click="deleteClicked"
-      />
+    <div class="switch-button-container">
+      <div class="buttons-container">
+        <Button
+          icon="fas fa-times"
+          class="p-button-rounded p-button-outlined p-button-danger"
+          @click="deleteClicked"
+        />
+      </div>
+      <div class="switch-container">
+        <label for="switch">Group</label>
+        <InputSwitch v-model="group" />
+      </div>
     </div>
-    <div
-      v-if="value.children && value.children.length"
-      class="refinement-children-container"
-    >
-      <template v-for="child in value.children" :key="child.id">
-        <component
-          :is="child.component"
-          :value="child.value"
-          :id="child.id"
-          :position="child.position"
-          @deleteClicked="deleteChild"
-          @addClicked="addChild"
-          @updateClicked="updateChild"
-        >
-        </component>
-      </template>
-    </div>
-    <div class="next-refinement-container">
-      <template v-for="nextOption in nextOptions" :key="nextOption">
-        <component
-          :is="nextOption.component"
-          :id="nextOption.type + '-' + refinementBuild.length"
-          :position="refinementBuild.length"
-          :value="null"
-          @addClicked="addChild"
-        >
-        </component>
-      </template>
+    <div class="refinement-children-next-container">
+      <div
+        v-if="value.children && value.children.length"
+        class="refinement-children-container"
+      >
+        <template v-for="child in value.children" :key="child.id">
+          <component
+            :is="child.component"
+            :value="child.value"
+            :id="child.id"
+            :position="child.position"
+            @deleteClicked="deleteChild"
+            @addClicked="addChild"
+            @updateClicked="updateChild"
+          >
+          </component>
+        </template>
+      </div>
+      <div class="next-refinement-container">
+        <template v-for="nextOption in nextOptions" :key="nextOption">
+          <component
+            :is="nextOption.component"
+            :id="nextOption.type + '-' + refinementBuild.length"
+            :position="refinementBuild.length"
+            :value="null"
+            @addClicked="addChild"
+          >
+          </component>
+        </template>
+      </div>
     </div>
   </div>
   <div v-else>
@@ -248,10 +254,38 @@ export default defineComponent({
 
 <style scoped>
 .refinement-container {
-  border: 1px solid #dee2e6;
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
 }
+
 .add-refinement-button {
   border-style: dashed !important;
+}
+
+.switch-button-container {
+  order: 2;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.switch-container {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+}
+
+.refinement-children-next-container {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  border: 1px solid #dee2e6;
+  padding: 1rem;
+  margin: 0 1em 0 0;
 }
 
 .buttons-container {
