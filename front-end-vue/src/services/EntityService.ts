@@ -160,4 +160,12 @@ export default class EntityService {
   public static getNamespaces(): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/namespaces");
   }
+
+  public static ECLSearch(
+    searchECLString: string
+  ): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/eclSearch", {
+      params: { searchString: searchECLString }
+    });
+  }
 }

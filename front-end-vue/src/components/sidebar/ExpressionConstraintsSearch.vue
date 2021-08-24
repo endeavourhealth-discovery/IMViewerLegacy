@@ -5,7 +5,12 @@
     <Textarea v-model="queryString" id="query-string-container" />
     <div class="button-container">
       <Button label="ECL builder" @click="showBuilder" class="p-button-help" />
-      <Button label="Search" @click="search" class="p-button-primary" />
+      <Button
+        label="Search"
+        @click="search"
+        class="p-button-primary"
+        :disabled="!queryString.length"
+      />
     </div>
     <div class="results-container">
       <SearchResults :searchResults="searchResults" :loading="loading" />
@@ -22,6 +27,8 @@
 import { defineComponent } from "vue";
 import Builder from "@/components/sidebar/expressionConstraintsSearch/Builder.vue";
 import SearchResults from "@/components/sidebar/SearchResults.vue";
+import EntityService from "@/services/EntityService";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "ExpressionConstraintsSearch",
@@ -47,8 +54,23 @@ export default defineComponent({
       this.showDialog = true;
     },
 
-    search() {
+    async search() {
       console.log("Searching...");
+      if (this.queryString) {
+        this.loading = true;
+        await EntityService.ECLSearch(this.queryString)
+          .then(res => {
+            this.searchResults = res.data;
+          })
+          .catch(err => {
+            this.$toast.add(
+              LoggerService.error(
+                "ECL search failed at server. Please check the ECL query for any errors.",
+                err
+              )
+            );
+          });
+      }
     }
   }
 });
