@@ -257,9 +257,9 @@ export default defineComponent({
   overflow: auto;
 }
 
-#query-build ::v-deep(.query-item-container) {
+/* #query-build ::v-deep(.query-item-container) {
   flex-basis: 100%;
-}
+} */
 
 #query-build ::v-deep(.refinement-container) {
   flex-basis: 100%;

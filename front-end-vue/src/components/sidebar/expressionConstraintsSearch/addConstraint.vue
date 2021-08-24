@@ -1,6 +1,9 @@
 <template>
   <div v-if="value" class="query-item-container" :id="id">
-    <p class="label">{{ value.name }}</p>
+    <div class="label-container">
+      <span class="float-text">Constraint</span>
+      <p class="label">{{ value.name }}</p>
+    </div>
     <div class="buttons-container">
       <Button
         icon="fas fa-times"
@@ -149,10 +152,11 @@ export default defineComponent({
   align-items: center;
 }
 
-.label {
+.label-container {
   margin: 0 1rem 0 0;
   padding: 1rem;
   border: 1px solid #dee2e6;
+  position: relative;
 }
 
 .buttons-container {
@@ -164,5 +168,13 @@ export default defineComponent({
 
 .p-dropdown {
   width: 10rem;
+}
+
+.float-text {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 0.75rem;
+  color: #6c757d;
 }
 </style>

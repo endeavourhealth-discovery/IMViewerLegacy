@@ -14,6 +14,7 @@
       </div>
     </div>
     <div class="refinement-children-next-container">
+      <span class="float-text">Refinement</span>
       <div
         v-if="value.children && value.children.length"
         class="refinement-children-container"
@@ -289,6 +290,7 @@ export default defineComponent({
   border: 1px solid #dee2e6;
   padding: 1rem;
   margin: 0 1em 0 0;
+  position: relative;
 }
 
 .refinement-children-container {
@@ -302,5 +304,13 @@ export default defineComponent({
   display: flex;
   flex-flow: row;
   justify-content: flex-end;
+}
+
+.float-text {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 0.75rem;
+  color: #6c757d;
 }
 </style>
