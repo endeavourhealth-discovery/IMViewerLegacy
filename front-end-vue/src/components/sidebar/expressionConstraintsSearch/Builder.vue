@@ -40,7 +40,16 @@
     </div>
     <div id="build-string-container">
       <h3>Output:</h3>
-      <pre class="output-string">{{ queryString }}</pre>
+      <div class="string-copy-container">
+        <pre class="output-string">{{ queryString }}</pre>
+        <Button
+          icon="far fa-copy"
+          v-tooltip.left="'Copy to clipboard'"
+          v-clipboard:copy="copyToClipboard()"
+          v-clipboard:success="onCopy"
+          v-clipboard:error="onCopyError"
+        />
+      </div>
     </div>
     <template #footer>
       <Button
@@ -67,6 +76,7 @@ import AddConstraint from "@/components/sidebar/expressionConstraintsSearch/addC
 import AddRefinement from "@/components/sidebar/expressionConstraintsSearch/addRefinement.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "Builder",
@@ -213,7 +223,19 @@ export default defineComponent({
           ];
           break;
       }
-    }
+    },
+
+    copyToClipboard(): string {
+      return this.queryString;
+    },
+
+    onCopy(): void {
+      this.$toast.add(LoggerService.success("Value copied to clipboard"));
+    },
+
+    onCopyError(): void {
+      this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
+    },
   }
 });
 </script>
@@ -259,7 +281,16 @@ export default defineComponent({
 .output-string {
   background-color: #f8f9fa;
   border: 1px solid #e9ecef;
+  padding: 1rem;
   margin: 0;
+  height: 100%;
+  flex-grow: 100;
+}
+
+.string-copy-container {
   height: calc(100% - 1.75rem - 1.5rem);
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
 }
 </style>

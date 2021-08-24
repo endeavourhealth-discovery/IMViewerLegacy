@@ -2,7 +2,16 @@
   <div id="query-search-container">
     <h3>Expression constraints language search</h3>
     <p class="info">Enter expression</p>
-    <Textarea v-model="queryString" id="query-string-container" />
+    <div class="text-copy-container">
+      <Textarea v-model="queryString" id="query-string-container" />
+      <Button
+        icon="far fa-copy"
+        v-tooltip.left="'Copy to clipboard'"
+        v-clipboard:copy="copyToClipboard()"
+        v-clipboard:success="onCopy"
+        v-clipboard:error="onCopyError"
+      />
+    </div>
     <div class="button-container">
       <Button label="ECL builder" @click="showBuilder" class="p-button-help" />
       <Button
@@ -71,7 +80,19 @@ export default defineComponent({
             );
           });
       }
-    }
+    },
+
+    copyToClipboard(): string {
+      return this.queryString;
+    },
+
+    onCopy(): void {
+      this.$toast.add(LoggerService.success("Value copied to clipboard"));
+    },
+
+    onCopyError(): void {
+      this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
+    },
   }
 });
 </script>
@@ -113,6 +134,7 @@ export default defineComponent({
   height: 10rem;
   overflow: auto;
   margin: 0 0 1rem 0;
+  flex-grow: 100;
 }
 
 .info {
@@ -129,5 +151,12 @@ export default defineComponent({
 .results-container {
   width: 100%;
   flex-grow: 10;
+}
+
+.text-copy-container {
+  width: 100%;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
 }
 </style>
