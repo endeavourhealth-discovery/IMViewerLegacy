@@ -1,9 +1,9 @@
 <template>
   <div id="query-search-container">
     <h3>Expression constraints language search</h3>
-    <p class="info">Enter expression</p>
+    <h5 class="info">ECL expression:</h5>
     <div class="text-copy-container">
-      <Textarea v-model="queryString" id="query-string-container" />
+      <Textarea v-model="queryString" id="query-string-container" placeholder="Enter expression here or use the ECL builder to generate your search..." />
       <Button
         icon="far fa-copy"
         v-tooltip.left="'Copy to clipboard'"
@@ -133,12 +133,12 @@ export default defineComponent({
   width: 100%;
   height: 10rem;
   overflow: auto;
-  margin: 0 0 1rem 0;
   flex-grow: 100;
 }
 
 .info {
   align-self: flex-start;
+  margin: 0 0 0.5rem 0;
 }
 
 .button-container {
@@ -158,5 +158,6 @@ export default defineComponent({
   display: flex;
   flex-flow: row;
   align-items: center;
+  margin: 0 0 1rem 0;
 }
 </style>
