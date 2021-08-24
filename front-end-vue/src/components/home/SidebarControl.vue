@@ -41,7 +41,7 @@
         <div
           class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container"
         >
-          <SearchResults />
+          <SearchResults :searchResults="searchResults" :loading="loading" />
           <Filters :search="search" :searchTerm="searchTerm" />
         </div>
       </TabPanel>
@@ -79,7 +79,7 @@ export default defineComponent({
     ExpressionConstraintsSearch
   },
   props: ["focusHierarchy"],
-  computed: mapState(["filterOptions", "selectedFilters"]),
+  computed: mapState(["filterOptions", "selectedFilters", "searchResults"]),
   emits: ["hierarchyFocused"],
   watch: {
     focusHierarchy(newValue) {
@@ -96,7 +96,8 @@ export default defineComponent({
       debounce: 0,
       request: null as any,
       windowHeight: 0,
-      windowWidth: 0
+      windowWidth: 0,
+      loading: false
     };
   },
   mounted() {
@@ -114,10 +115,7 @@ export default defineComponent({
 
     async search(): Promise<void> {
       if (this.searchTerm.length > 2) {
-        this.$store.commit("updateLoading", {
-          key: "searchResults",
-          value: true
-        });
+        this.loading = true;
         this.active = 2;
         const searchRequest = new SearchRequest();
         searchRequest.termFilter = this.searchTerm;
@@ -149,18 +147,12 @@ export default defineComponent({
           })
           .then((res: string) => {
             if (res === "false") {
-              this.$store.commit("updateLoading", {
-                key: "searchResults",
-                value: false
-              });
+              this.loading = false;
               this.$toast.add(
                 LoggerService.error("Search results server request failed")
               );
             } else {
-              this.$store.commit("updateLoading", {
-                key: "searchResults",
-                value: false
-              });
+              this.loading = false;
             }
           });
       } else {

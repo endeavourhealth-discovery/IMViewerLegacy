@@ -1,9 +1,6 @@
 <template>
   <div id="search-results-container" class="p-field">
-    <div
-      class="p-d-flex p-flex-row p-jc-center"
-      v-if="$store.state.loading.get('searchResults')"
-    >
+    <div v-if="loading" class="p-d-flex p-flex-row p-jc-center">
       <div class="p-text-center">
         <ProgressSpinner />
       </div>
@@ -124,8 +121,7 @@
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { SearchResponse } from "@/models/search/SearchResponse";
 import LoggerService from "@/services/LoggerService";
-import { defineComponent } from "vue";
-import { mapState } from "vuex";
+import { defineComponent, PropType } from "vue";
 import {
   getColourFromType,
   getIconFromType
@@ -134,7 +130,10 @@ import {
 export default defineComponent({
   name: "SearchResults",
   components: {},
-  computed: mapState(["searchResults"]),
+  props: {
+    searchResults: { type: Array as PropType<Array<unknown>> },
+    loading: Boolean
+  },
   watch: {
     searchResults(newValue) {
       this.results = newValue;

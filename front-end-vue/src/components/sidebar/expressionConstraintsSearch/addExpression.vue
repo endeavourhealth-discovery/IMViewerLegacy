@@ -99,7 +99,7 @@ export default defineComponent({
         label: label,
         component: ECLComponent.EXPRESSION,
         edit: false
-      }
+      };
     }
   }
 });

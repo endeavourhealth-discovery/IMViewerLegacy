@@ -156,7 +156,9 @@ export default defineComponent({
             code: "",
             name: "ANY",
             match: "ANY",
-            entityType: [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }]
+            entityType: [
+              { "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }
+            ]
           }
         ];
         return;

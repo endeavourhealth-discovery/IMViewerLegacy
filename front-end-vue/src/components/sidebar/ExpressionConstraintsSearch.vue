@@ -1,167 +1,54 @@
 <template>
   <div id="query-search-container">
     <h3>Expression constraints language search</h3>
-    <div id="query-builder-container">
-      <div id="query-build">
-        <template v-for="item in queryBuild" :key="item.id">
-          <component
-            :is="item.component"
-            :value="item.value"
-            :id="item.id"
-            :position="item.position"
-            @deleteClicked="deleteItem"
-            @addClicked="addItem"
-            @updateClicked="updateItem"
-          >
-          </component>
-        </template>
-      </div>
-      <div id="next-option-container">
-        <template v-for="nextOption in nextOptions" :key="nextOption">
-          <component
-            :is="nextOption.component"
-            :id="nextOption.type + '-' + queryBuild.length"
-            :position="queryBuild.length"
-            :value="null"
-            @addClicked="addItem"
-          ></component>
-        </template>
-      </div>
+    <p class="info">Enter expression</p>
+    <Textarea v-model="queryString" id="query-string-container" />
+    <div class="button-container">
+      <Button label="ECL builder" @click="showBuilder" class="p-button-help" />
+      <Button label="Search" @click="search" class="p-button-primary" />
     </div>
-    <div id="query-string-container">
-      <pre>{{ queryString }}</pre>
+    <div class="results-container">
+      <SearchResults :searchResults="searchResults" :loading="loading" />
     </div>
   </div>
+  <Builder
+    :showDialog="showDialog"
+    @ECLSubmitted="updateECL"
+    @closeDialog="showDialog = false"
+  />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import AddLogic from "@/components/sidebar/expressionConstraintsSearch/addLogic.vue";
-import AddExpression from "@/components/sidebar/expressionConstraintsSearch/addExpression.vue";
-import AddConstraint from "@/components/sidebar/expressionConstraintsSearch/addConstraint.vue";
-import AddRefinement from "@/components/sidebar/expressionConstraintsSearch/addRefinement.vue";
-import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
-import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
+import Builder from "@/components/sidebar/expressionConstraintsSearch/Builder.vue";
+import SearchResults from "@/components/sidebar/SearchResults.vue";
 
 export default defineComponent({
   name: "ExpressionConstraintsSearch",
   components: {
-    AddLogic,
-    AddExpression,
-    AddConstraint,
-    AddRefinement
-  },
-  watch: {
-    queryBuild: {
-      handler() {
-        this.queryBuild.sort((a: any, b: any) => a.position - b.position);
-        this.generateQueryString();
-        this.generateNextOptions();
-      },
-      deep: true
-    }
+    Builder,
+    SearchResults
   },
   data() {
     return {
       queryString: "",
-      queryBuild: [] as any[],
-      nextOptions: [
-        {
-          component: ECLComponent.CONSTRAINT,
-          type: ECLType.CONSTRAINT
-        }
-      ] as any[]
+      showDialog: false,
+      searchResults: [] as any[],
+      loading: false
     };
   },
   methods: {
-    addItem(data: any) {
-      this.queryBuild.push(data);
+    updateECL(data: string) {
+      this.queryString = data;
+      this.showDialog = false;
     },
 
-    generateQueryString() {
-      let primaryRefinementSet = false;
-      this.queryString = this.queryBuild
-        .map(item => {
-          if (item.type === ECLType.REFINEMENT && !primaryRefinementSet) {
-            primaryRefinementSet = true;
-            return ":\n\t" + item.label;
-          } else if (item.type === ECLType.REFINEMENT && primaryRefinementSet) {
-            return "\t" + item.label;
-          } else if (item.type === ECLType.LOGIC) {
-            return item.label + "\n";
-          } else {
-            return item.label;
-          }
-        })
-        .join(" ").replaceAll("\n ", "\n");
+    showBuilder() {
+      this.showDialog = true;
     },
 
-    deleteItem(data: any) {
-      const index = this.queryBuild.findIndex(
-        item => item.position === data.position
-      );
-      this.queryBuild.splice(index, 1);
-    },
-
-    updateItem(data: any) {
-      const index = this.queryBuild.findIndex(
-        item => item.position === data.position
-      );
-      this.queryBuild[index] = data;
-    },
-
-    generateNextOptions() {
-      if (!this.queryBuild.length) {
-        this.nextOptions = [
-          {
-            component: ECLComponent.CONSTRAINT,
-            type: ECLType.CONSTRAINT
-          }
-        ];
-        return;
-      }
-      switch (this.queryBuild[this.queryBuild.length - 1].type) {
-        case ECLType.CONSTRAINT:
-          this.nextOptions = [
-            {
-              component: ECLComponent.EXPRESSION,
-              type: ECLType.EXPRESSION
-            }
-          ];
-          break;
-        case ECLType.LOGIC:
-          this.nextOptions = [
-            {
-              component: ECLComponent.CONSTRAINT,
-              type: ECLType.CONSTRAINT
-            },
-            {
-              component: ECLComponent.REFINEMENT,
-              type: ECLType.REFINEMENT
-            }
-          ];
-          break;
-        case ECLType.EXPRESSION:
-          this.nextOptions = [
-            {
-              component: ECLComponent.REFINEMENT,
-              type: ECLType.REFINEMENT
-            },
-            {
-              component: ECLComponent.LOGIC,
-              type: ECLType.LOGIC
-            }
-          ];
-          break;
-        case ECLType.REFINEMENT:
-          this.nextOptions = [
-            {
-              component: ECLComponent.LOGIC,
-              type: ECLType.LOGIC
-            }
-          ];
-          break;
-      }
+    search() {
+      console.log("Searching...");
     }
   }
 });
@@ -201,6 +88,24 @@ export default defineComponent({
 
 #query-string-container {
   width: 100%;
+  height: 10rem;
   overflow: auto;
+  margin: 0 0 1rem 0;
+}
+
+.info {
+  align-self: flex-start;
+}
+
+.button-container {
+  display: flex;
+  flex-flow: row;
+  gap: 1rem;
+  margin: 0 0 1rem 0;
+}
+
+.results-container {
+  width: 100%;
+  flex-grow: 10;
 }
 </style>

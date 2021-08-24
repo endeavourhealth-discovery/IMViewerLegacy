@@ -158,7 +158,7 @@ export default defineComponent({
       if (this.refinementBuild.length) {
         const labels = this.refinementBuild.map(item => {
           if (item.type === ECLType.LOGIC) {
-            return (item.label + "\n\t");
+            return item.label + "\n\t";
           } else {
             return item.label;
           }
