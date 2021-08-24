@@ -4,8 +4,9 @@
     :modal="true"
     :closable="false"
     :maximizable="true"
-    :style="{ width: '80vw' }"
+    :style="{ width: '80vw', height: '80vh', display: 'flex', flexFlow: 'column nowrap' }"
     id="builder-dialog"
+    :contentStyle="{ flexGrow: '100' }"
   >
     <template #header>
       <h3>ECL Builder:</h3>
@@ -37,8 +38,9 @@
         </template>
       </div>
     </div>
-    <div id="query-string-container">
-      <pre>{{ queryString }}</pre>
+    <div id="build-string-container">
+      <h3>Output:</h3>
+      <pre class="output-string">{{ queryString }}</pre>
     </div>
     <template #footer>
       <Button
@@ -50,7 +52,7 @@
       <Button
         label="OK"
         icon="pi pi-check"
-        class="p-button-success"
+        class="p-button-primary"
         @click="submit"
       />
     </template>
@@ -107,8 +109,11 @@ export default defineComponent({
       this.$emit("closeDialog");
     },
 
-    addItem(data: any) {
+    async addItem(data: any) {
       this.queryBuild.push(data);
+      await this.$nextTick();
+      const itemToScrollTo = document.getElementById(data.id);
+      itemToScrollTo?.scrollIntoView();
     },
 
     generateQueryString() {
@@ -164,16 +169,28 @@ export default defineComponent({
           ];
           break;
         case ECLType.LOGIC:
-          this.nextOptions = [
-            {
-              component: ECLComponent.CONSTRAINT,
-              type: ECLType.CONSTRAINT
-            },
-            {
-              component: ECLComponent.REFINEMENT,
-              type: ECLType.REFINEMENT
-            }
-          ];
+          if (
+            this.queryBuild[this.queryBuild.length - 2].type ===
+            ECLType.REFINEMENT
+          ) {
+            this.nextOptions = [
+              {
+                component: ECLComponent.REFINEMENT,
+                type: ECLType.REFINEMENT
+              }
+            ];
+          } else {
+            this.nextOptions = [
+              {
+                component: ECLComponent.CONSTRAINT,
+                type: ECLType.CONSTRAINT
+              },
+              {
+                component: ECLComponent.EXPRESSION,
+                type: ECLType.EXPRESSION
+              }
+            ];
+          }
           break;
         case ECLType.EXPRESSION:
           this.nextOptions = [
@@ -204,18 +221,26 @@ export default defineComponent({
 <style scoped>
 #query-builder-container {
   width: 100%;
-  height: 70vh;
-  flex-grow: 100;
-  overflow: auto;
+  height: calc(80% - 2rem);
 }
 
 #query-build {
   display: flex;
-  flex-flow: column nowrap;
-  justify-content: flex-start;
-  align-items: center;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: flex-start;
   gap: 1rem;
   margin: 0 0 1rem 0;
+  max-height: calc(100% - 2rem);
+  overflow: auto;
+}
+
+#query-build ::v-deep(.query-item-container) {
+  flex-basis: 100%;
+}
+
+#query-build ::v-deep(.refinement-container) {
+  flex-basis: 100%;
 }
 
 #next-option-container {
@@ -223,15 +248,18 @@ export default defineComponent({
   display: flex;
   flex-flow: row;
   justify-content: center;
+  min-height: 2rem;
 }
 
 #build-string-container {
   width: 100%;
-  overflow: auto;
+  height: 20%;
 }
 
-#builder-dialog ::v-deep(.p-dialog-content) {
-  flex-grow: 100;
-  background-color: hotpink;
+.output-string {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  margin: 0;
+  height: calc(100% - 1.75rem - 1.5rem);
 }
 </style>

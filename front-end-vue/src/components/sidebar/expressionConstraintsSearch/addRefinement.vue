@@ -1,5 +1,5 @@
 <template>
-  <div v-if="value && value.children" class="refinement-container">
+  <div v-if="value && value.children" class="refinement-container" :id="id">
     <div class="switch-button-container">
       <div class="buttons-container">
         <Button
@@ -119,8 +119,11 @@ export default defineComponent({
       this.$emit("deleteClicked", this.createRefinement());
     },
 
-    addChild(data: any) {
+    async addChild(data: any) {
       this.refinementBuild.push(data);
+      await this.$nextTick();
+      const itemToScrollTo = document.getElementById(data.id);
+      itemToScrollTo?.scrollIntoView();
     },
 
     deleteChild(data: any) {
@@ -286,6 +289,13 @@ export default defineComponent({
   border: 1px solid #dee2e6;
   padding: 1rem;
   margin: 0 1em 0 0;
+}
+
+.refinement-children-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
 }
 
 .buttons-container {

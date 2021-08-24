@@ -1,5 +1,5 @@
 <template>
-  <div v-if="value" class="query-item-container">
+  <div v-if="value" class="query-item-container" :id="id">
     <p v-if="value.name === 'ANY'" class="label">{{ value.name }}</p>
     <p v-else class="label">{{ value.code }} |{{ value.name }}|</p>
     <div class="buttons-container">
