@@ -64,27 +64,28 @@ describe("SidebarControl.vue", () => {
   it("only searches with 3 or more characters ___ 0", async() => {
     wrapper.vm.searchTerm = "";
     wrapper.vm.search();
+    expect(wrapper.vm.loading).toBe(false);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.active).toBe(0);
-    expect(mockStore.commit).not.toHaveBeenCalled();
     expect(mockStore.dispatch).not.toHaveBeenCalled();
   });
 
   it("only searches with 3 or more characters ___ 2", async() => {
     wrapper.vm.searchTerm = "we";
     wrapper.vm.search();
+    expect(wrapper.vm.loading).toBe(false);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.active).toBe(0);
-    expect(mockStore.commit).not.toHaveBeenCalled();
     expect(mockStore.dispatch).not.toHaveBeenCalled();
   });
 
-  it("only searches with 3 or more characters ___ 2", async() => {
+  it("only searches with 3 or more characters ___ 3", async() => {
     wrapper.vm.searchTerm = "sco";
     wrapper.vm.search();
+    expect(wrapper.vm.loading).toBe(true);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.active).toBe(2);
-    expect(mockStore.commit).toHaveBeenCalled();
+    expect(mockStore.dispatch).toHaveBeenCalled();
   });
 
   it("cancels existing requests on new search", async() => {
@@ -102,14 +103,11 @@ describe("SidebarControl.vue", () => {
   it("updated loading on dispatch success", async() => {
     wrapper.vm.searchTerm = "sco";
     wrapper.vm.search();
+    expect(wrapper.vm.loading).toBe(true);
     await wrapper.vm.$nextTick();
     await flushPromises();
     expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", {
-      key: "searchResults",
-      value: false
-    });
+    expect(wrapper.vm.loading).toBe(false);
     expect(mockToast.add).not.toHaveBeenCalled();
   });
 
@@ -117,14 +115,11 @@ describe("SidebarControl.vue", () => {
     mockStore.dispatch = jest.fn().mockResolvedValue("false")
     wrapper.vm.searchTerm = "sco";
     wrapper.vm.search();
+    expect(wrapper.vm.loading).toBe(true);
     await wrapper.vm.$nextTick();
     await flushPromises();
     expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", {
-      key: "searchResults",
-      value: false
-    });
+    expect(wrapper.vm.loading).toBe(false);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Search results server request failed"));
   });
 
