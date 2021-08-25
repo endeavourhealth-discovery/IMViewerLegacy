@@ -243,7 +243,7 @@ export default defineComponent({
 <style scoped>
 #query-builder-container {
   width: 100%;
-  height: calc(80% - 2rem);
+  height: calc(100% - 10rem - 2rem);
 }
 
 #query-build {
@@ -275,7 +275,7 @@ export default defineComponent({
 
 #build-string-container {
   width: 100%;
-  height: 20%;
+  height: 10rem;
 }
 
 .output-string {
@@ -285,6 +285,7 @@ export default defineComponent({
   margin: 0;
   height: 100%;
   flex-grow: 100;
+  overflow-y: auto;
 }
 
 .string-copy-container {

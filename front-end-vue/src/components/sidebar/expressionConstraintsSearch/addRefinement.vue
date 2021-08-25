@@ -182,6 +182,10 @@ export default defineComponent({
           {
             component: ECLComponent.EXPRESSION,
             type: ECLType.EXPRESSION
+          },
+          {
+            component: ECLComponent.CONSTRAINT,
+            type: ECLType.CONSTRAINT
           }
         ];
         return;
