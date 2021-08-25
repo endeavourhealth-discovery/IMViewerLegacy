@@ -2,8 +2,8 @@
   <div v-if="value" class="query-item-container" :id="id">
     <div class="label-container">
       <span class="float-text">Expression</span>
-        <p v-if="value.name === 'ANY'" class="label">{{ value.name }}</p>
-        <p v-else class="label">{{ value.code }} |{{ value.name }}|</p>
+      <p v-if="value.name === 'ANY'" class="label">{{ value.name }}</p>
+      <p v-else class="label">{{ value.code }} |{{ value.name }}|</p>
     </div>
     <div class="buttons-container">
       <Button

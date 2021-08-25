@@ -72,7 +72,7 @@ export default defineComponent({
         { name: "Parent or self of", symbol: ">>!" },
         { name: "Member of", symbol: "^" }
       ],
-      selected: { name: "Child of", symbol: "<" },
+      selected: { name: "Descendant of", symbol: "<" },
       edit: false
     };
   },
@@ -167,7 +167,7 @@ export default defineComponent({
 }
 
 .p-dropdown {
-  width: 10rem;
+  width: 15rem;
 }
 
 .float-text {
