@@ -6,6 +6,7 @@ import Workflow from "../views/Workflow.vue";
 import UPRN from "../views/Uprn.vue";
 import User from "../views/User.vue";
 import Editor from "../views/Editor.vue";
+import Mapping from "../views/Mapping.vue";
 import Login from "../components/user/Login.vue";
 import Register from "../components/user/Register.vue";
 import UserDetails from "../components/user/UserDetails.vue";
@@ -139,6 +140,14 @@ const routes: Array<RouteRecordRaw> = [
     path: "/workflow",
     name: "Workflow",
     component: Workflow,
+    meta: {
+      requiresLicense: true
+    }
+  },
+  {
+    path: "/mapping",
+    name: "Mapping",
+    component: Mapping,
     meta: {
       requiresLicense: true
     }
