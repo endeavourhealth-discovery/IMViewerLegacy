@@ -3,5 +3,6 @@ export enum ECLComponent {
   CONSTRAINT = "AddConstraint",
   EXPRESSION = "AddExpression",
   REFINEMENT = "AddRefinement",
-  OPERATOR = "AddOperator"
+  OPERATOR = "AddOperator",
+  FOCUS_CONCEPT = "AddFocusConcept"
 }

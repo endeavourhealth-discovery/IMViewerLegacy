@@ -1,53 +1,24 @@
 <template>
-  <div v-if="value" class="query-item-container" :id="id">
+  <div class="query-item-container" :id="id">
     <div class="label-container">
       <span class="float-text">Constraint</span>
-      <p class="label">{{ value.name }}</p>
-    </div>
-    <div class="buttons-container">
-      <Button
-        icon="fas fa-times"
-        class="p-button-rounded p-button-outlined p-button-danger"
-        @click="deleteClicked"
-      />
-      <Button
-        icon="fas fa-pencil-alt"
-        class="p-button-rounded p-button-outlined p-button-secondary"
-        @click="editClicked"
-      />
+      <Dropdown
+        v-model="selected"
+        :options="options"
+        optionLabel="name"
+        placeholder="Select constraint"
+      >
+        <template #value="slotProps">
+          <span>{{ slotProps.value.name }}</span>
+        </template>
+        <template #option="slotProps">
+          <span>
+            {{ slotProps.option.symbol }} {{ slotProps.option.name }}
+          </span>
+        </template>
+      </Dropdown>
     </div>
   </div>
-  <div v-else>
-    <Button
-      icon="fas fa-plus"
-      label="Add constraint"
-      class="p-button-rounded p-button-outlined p-button-danger add-logic-button"
-      @click="showOverlay"
-    />
-  </div>
-  <OverlayPanel ref="addConstraintOP">
-    <Dropdown
-      v-model="selected"
-      :options="options"
-      optionLabel="name"
-      placeholder="Select constraint"
-    >
-      <template #value="slotProps">
-        <span>{{ slotProps.value.symbol }} </span>
-        <span>{{ slotProps.value.name }}</span>
-      </template>
-      <template #option="slotProps">
-        <span>{{ slotProps.option.symbol }} </span>
-        <span>{{ slotProps.option.name }}</span>
-      </template>
-    </Dropdown>
-    <Button
-      icon="fas fa-check"
-      label="Confirm"
-      class="p-button-success confirm-button"
-      @click="onConfirm"
-    />
-  </OverlayPanel>
 </template>
 
 <script lang="ts">
@@ -58,10 +29,19 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "addConstraint",
   props: { id: String, position: Number, value: { required: false } },
-  emits: ["addClicked", "deleteClicked", "updateClicked"],
+  emits: ["updateClicked"],
+  watch: {
+    selected() {
+      this.onConfirm();
+    }
+  },
+  mounted() {
+    this.selected = this.options[0];
+  },
   data() {
     return {
       options: [
+        { name: "Self", symbol: "" },
         { name: "Descendant of", symbol: "<" },
         { name: "Descendant or self of", symbol: "<<" },
         { name: "Child of", symbol: "<!" },
@@ -72,60 +52,18 @@ export default defineComponent({
         { name: "Parent or self of", symbol: ">>!" },
         { name: "Member of", symbol: "^" }
       ],
-      selected: { name: "Descendant of", symbol: "<" },
-      edit: false
+      selected: {} as any
     };
   },
   methods: {
     onConfirm() {
-      if (this.edit) {
-        this.$emit("updateClicked", {
-          id: this.id,
-          value: this.selected,
-          position: this.position,
-          type: ECLType.CONSTRAINT,
-          label: this.selected.symbol,
-          component: ECLComponent.CONSTRAINT,
-          edit: false
-        });
-      } else {
-        this.$emit("addClicked", {
-          id: this.id,
-          value: this.selected,
-          position: this.position,
-          type: ECLType.CONSTRAINT,
-          label: this.selected.symbol,
-          component: ECLComponent.CONSTRAINT,
-          edit: false
-        });
-      }
-      this.hideOverlay();
-    },
-
-    hideOverlay(): void {
-      const x = this.$refs.addConstraintOP as any;
-      x.hide();
-    },
-
-    showOverlay(event: any): void {
-      const x = this.$refs.addConstraintOP as any;
-      x.show(event, event.target);
-    },
-
-    editClicked(event: any) {
-      this.showOverlay(event);
-      this.edit = true;
-    },
-
-    deleteClicked() {
-      this.$emit("deleteClicked", {
+      this.$emit("updateClicked", {
         id: this.id,
         value: this.selected,
         position: this.position,
         type: ECLType.CONSTRAINT,
         label: this.selected.symbol,
-        component: ECLComponent.CONSTRAINT,
-        edit: false
+        component: ECLComponent.CONSTRAINT
       });
     }
   }
@@ -133,18 +71,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.add-logic-button {
-  border-style: dashed !important;
-}
-
-.p-button-label {
-  padding-left: 0.5rem;
-}
-
-.confirm-button {
-  margin-top: 1rem;
-}
-
 .query-item-container {
   display: flex;
   flex-flow: row nowrap;
@@ -157,13 +83,6 @@ export default defineComponent({
   padding: 1rem;
   border: 1px solid #dee2e6;
   position: relative;
-}
-
-.buttons-container {
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: center;
-  align-items: center;
 }
 
 .p-dropdown {

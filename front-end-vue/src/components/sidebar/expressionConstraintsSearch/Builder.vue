@@ -71,9 +71,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import AddLogic from "@/components/sidebar/expressionConstraintsSearch/addLogic.vue";
-import AddExpression from "@/components/sidebar/expressionConstraintsSearch/addExpression.vue";
-import AddConstraint from "@/components/sidebar/expressionConstraintsSearch/addConstraint.vue";
 import AddRefinement from "@/components/sidebar/expressionConstraintsSearch/addRefinement.vue";
+import AddFocusConcept from "@/components/sidebar/expressionConstraintsSearch/addFocusConcept.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 import LoggerService from "@/services/LoggerService";
@@ -82,9 +81,8 @@ export default defineComponent({
   name: "Builder",
   components: {
     AddLogic,
-    AddExpression,
-    AddConstraint,
-    AddRefinement
+    AddRefinement,
+    AddFocusConcept
   },
   props: { showDialog: Boolean },
   emits: ["ECLSubmitted", "closeDialog"],
@@ -104,8 +102,8 @@ export default defineComponent({
       queryBuild: [] as any[],
       nextOptions: [
         {
-          component: ECLComponent.CONSTRAINT,
-          type: ECLType.CONSTRAINT
+          component: ECLComponent.FOCUS_CONCEPT,
+          type: ECLType.FOCUS_CONCEPT
         }
       ] as any[]
     };
@@ -163,54 +161,30 @@ export default defineComponent({
       if (!this.queryBuild.length) {
         this.nextOptions = [
           {
-            component: ECLComponent.CONSTRAINT,
-            type: ECLType.CONSTRAINT
+            component: ECLComponent.FOCUS_CONCEPT,
+            type: ECLType.FOCUS_CONCEPT
           }
         ];
         return;
       }
       switch (this.queryBuild[this.queryBuild.length - 1].type) {
-        case ECLType.CONSTRAINT:
+        case ECLType.FOCUS_CONCEPT:
           this.nextOptions = [
             {
-              component: ECLComponent.EXPRESSION,
-              type: ECLType.EXPRESSION
+              component: ECLComponent.LOGIC,
+              type: ECLType.LOGIC
+            },
+            {
+              component: ECLComponent.REFINEMENT,
+              type: ECLType.REFINEMENT
             }
           ];
           break;
         case ECLType.LOGIC:
-          if (
-            this.queryBuild[this.queryBuild.length - 2].type ===
-            ECLType.REFINEMENT
-          ) {
-            this.nextOptions = [
-              {
-                component: ECLComponent.REFINEMENT,
-                type: ECLType.REFINEMENT
-              }
-            ];
-          } else {
-            this.nextOptions = [
-              {
-                component: ECLComponent.CONSTRAINT,
-                type: ECLType.CONSTRAINT
-              },
-              {
-                component: ECLComponent.EXPRESSION,
-                type: ECLType.EXPRESSION
-              }
-            ];
-          }
-          break;
-        case ECLType.EXPRESSION:
           this.nextOptions = [
             {
-              component: ECLComponent.REFINEMENT,
-              type: ECLType.REFINEMENT
-            },
-            {
-              component: ECLComponent.LOGIC,
-              type: ECLType.LOGIC
+              component: ECLComponent.FOCUS_CONCEPT,
+              type: ECLType.FOCUS_CONCEPT
             }
           ];
           break;
@@ -257,9 +231,9 @@ export default defineComponent({
   overflow: auto;
 }
 
-/* #query-build ::v-deep(.query-item-container) {
+#query-build ::v-deep(.focus-concept-container) {
   flex-basis: 100%;
-} */
+}
 
 #query-build ::v-deep(.refinement-container) {
   flex-basis: 100%;
