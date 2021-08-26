@@ -58,15 +58,15 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "@vue/runtime-core";
-import AddLogic from "@/components/sidebar/expressionConstraintsSearch/addLogic.vue";
-import AddExpression from "@/components/sidebar/expressionConstraintsSearch/addExpression.vue";
-import AddConstraint from "@/components/sidebar/expressionConstraintsSearch/addConstraint.vue";
-import AddOperator from "@/components/sidebar/expressionConstraintsSearch/addOperator.vue";
+import Logic from "@/components/sidebar/expressionConstraintsSearch/Logic.vue";
+import Expression from "@/components/sidebar/expressionConstraintsSearch/Expression.vue";
+import Constraint from "@/components/sidebar/expressionConstraintsSearch/Constraint.vue";
+import Operator from "@/components/sidebar/expressionConstraintsSearch/Operator.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 
 export default defineComponent({
-  name: "AddRefinement",
+  name: "Refinement",
   props: {
     id: String,
     position: Number,
@@ -80,7 +80,7 @@ export default defineComponent({
     }
   },
   emits: ["addClicked", "deleteClicked", "updateClicked"],
-  components: { AddLogic, AddExpression, AddConstraint, AddOperator },
+  components: { Logic, Expression, Constraint, Operator },
   watch: {
     refinementBuild: {
       handler() {

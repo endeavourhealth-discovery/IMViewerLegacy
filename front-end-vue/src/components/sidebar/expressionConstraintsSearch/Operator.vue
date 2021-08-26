@@ -46,7 +46,7 @@ import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
-  name: "addOperator",
+  name: "Operator",
   props: { id: String, position: Number, value: { required: false } },
   emits: ["addClicked", "deleteClicked", "updateClicked"],
   data() {

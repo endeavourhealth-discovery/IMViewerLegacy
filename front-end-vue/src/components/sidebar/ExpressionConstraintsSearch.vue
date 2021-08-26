@@ -3,7 +3,11 @@
     <h3>Expression constraints language search</h3>
     <h5 class="info">ECL expression:</h5>
     <div class="text-copy-container">
-      <Textarea v-model="queryString" id="query-string-container" placeholder="Enter expression here or use the ECL builder to generate your search..." />
+      <Textarea
+        v-model="queryString"
+        id="query-string-container"
+        placeholder="Enter expression here or use the ECL builder to generate your search..."
+      />
       <Button
         icon="far fa-copy"
         v-tooltip.left="'Copy to clipboard'"
@@ -92,7 +96,7 @@ export default defineComponent({
 
     onCopyError(): void {
       this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
-    },
+    }
   }
 });
 </script>

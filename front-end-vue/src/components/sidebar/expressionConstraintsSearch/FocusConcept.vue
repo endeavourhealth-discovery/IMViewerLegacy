@@ -1,21 +1,26 @@
 <template>
-  <div v-if="value && value.children" class="focus-concept-container" :id="id">
+  <div class="focus-concept-container" :id="id">
     <div class="switch-button-container">
       <div class="buttons-container">
         <Button
-          icon="fas fa-times"
+          icon="fas fa-minus"
           class="p-button-rounded p-button-outlined p-button-danger"
           @click="deleteClicked"
+        />
+        <Button
+          icon="fas fa-plus"
+          class="p-button-rounded p-button-outlined p-button-success"
+          @click="addNextClicked"
         />
       </div>
     </div>
     <div class="focus-concept-children-next-container">
       <span class="float-text">Focus concept</span>
       <div
-        v-if="value.children && value.children.length"
+        v-if="focusConceptBuild && focusConceptBuild.length"
         class="focus-concept-children-container"
       >
-        <template v-for="child in value.children" :key="child.id">
+        <template v-for="child in focusConceptBuild" :key="child.id">
           <component
             :is="child.component"
             :value="child.value"
@@ -26,41 +31,21 @@
           </component>
         </template>
       </div>
-      <!-- <div class="next-focus-concept-container">
-        <template v-for="nextOption in nextOptions" :key="nextOption">
-          <component
-            :is="nextOption.component"
-            :id="nextOption.type + '-' + focusConceptBuild.length"
-            :position="focusConceptBuild.length"
-            :value="null"
-            @addClicked="addChild"
-          >
-          </component>
-        </template>
-      </div> -->
     </div>
-  </div>
-  <div v-else>
-    <Button
-      icon="fas fa-plus"
-      label="Add focus concept"
-      class="p-button-rounded p-button-outlined p-button-danger add-focus-concept-button"
-      @click="onConfirm"
-    />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from "@vue/runtime-core";
-import AddLogic from "@/components/sidebar/expressionConstraintsSearch/addLogic.vue";
-import AddExpression from "@/components/sidebar/expressionConstraintsSearch/addExpression.vue";
-import AddConstraint from "@/components/sidebar/expressionConstraintsSearch/addConstraint.vue";
-import AddOperator from "@/components/sidebar/expressionConstraintsSearch/addOperator.vue";
+import Logic from "@/components/sidebar/expressionConstraintsSearch/Logic.vue";
+import Expression from "@/components/sidebar/expressionConstraintsSearch/Expression.vue";
+import Constraint from "@/components/sidebar/expressionConstraintsSearch/Constraint.vue";
+import Operator from "@/components/sidebar/expressionConstraintsSearch/Operator.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 
 export default defineComponent({
-  name: "AddFocusConcept",
+  name: "FocusConcept",
   props: {
     id: String,
     position: Number,
@@ -72,38 +57,25 @@ export default defineComponent({
       required: false
     }
   },
-  emits: ["addClicked", "deleteClicked", "updateClicked"],
-  components: { AddLogic, AddExpression, AddConstraint, AddOperator },
+  emits: ["addNextOptionsClicked", "deleteClicked", "updateClicked"],
+  components: { Logic, Expression, Constraint, Operator },
   watch: {
     focusConceptBuild: {
       handler() {
-        this.focusConceptBuild.sort((a: any, b: any) => a.position - b.position);
+        this.focusConceptBuild.sort(
+          (a: any, b: any) => a.position - b.position
+        );
         this.$emit("updateClicked", this.createFocusConcept());
       },
       deep: true
     }
   },
+  mounted() {
+    this.setStartBuild();
+  },
   data() {
     return {
-      focusConceptBuild: [
-        {
-          component: ECLComponent.CONSTRAINT,
-          id: this.id + "constraint",
-          label: null,
-          position: 0,
-          type: ECLType.CONSTRAINT,
-          value: null
-        },
-        {
-          component: ECLComponent.EXPRESSION,
-          edit: false,
-          id: this.id + "expression",
-          label: null,
-          position: 1,
-          type: ECLType.EXPRESSION,
-          value: null
-        }
-      ] as any[],
+      focusConceptBuild: [] as any[],
       nextOptions: [
         {
           component: ECLComponent.EXPRESSION,
@@ -113,10 +85,6 @@ export default defineComponent({
     };
   },
   methods: {
-    onConfirm() {
-      this.$emit("addClicked", this.createFocusConcept());
-    },
-
     deleteClicked() {
       this.$emit("deleteClicked", this.createFocusConcept());
     },
@@ -142,11 +110,15 @@ export default defineComponent({
       this.focusConceptBuild[index] = data;
     },
 
+    addNextClicked() {
+      this.$emit("addNextOptionsClicked", { previousComponent: ECLType.FOCUS_CONCEPT, previousPosition: this.position });
+    },
+
     createFocusConcept() {
       return {
         id: this.id,
         value: {
-          children: this.focusConceptBuild,
+          children: this.focusConceptBuild
         },
         position: this.position,
         type: ECLType.FOCUS_CONCEPT,
@@ -170,6 +142,32 @@ export default defineComponent({
       }
       return label;
     },
+
+    setStartBuild() {
+      if (this.value && this.value.children) {
+        this.focusConceptBuild = this.value.children;
+      } else {
+        this.focusConceptBuild = [
+          {
+            component: ECLComponent.CONSTRAINT,
+            id: this.id + "constraint",
+            label: null,
+            position: 0,
+            type: ECLType.CONSTRAINT,
+            value: null
+          },
+          {
+            component: ECLComponent.EXPRESSION,
+            edit: false,
+            id: this.id + "expression",
+            label: null,
+            position: 1,
+            type: ECLType.EXPRESSION,
+            value: null
+          }
+        ];
+      }
+    }
   }
 });
 </script>

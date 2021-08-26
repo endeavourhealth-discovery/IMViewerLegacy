@@ -27,7 +27,7 @@ import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "addConstraint",
+  name: "Constraint",
   props: { id: String, position: Number, value: { required: false } },
   emits: ["updateClicked"],
   watch: {
@@ -36,7 +36,11 @@ export default defineComponent({
     }
   },
   mounted() {
-    this.selected = this.options[0];
+    if (this.value) {
+      this.selected = this.value;
+    } else {
+      this.selected = this.options[0];
+    }
   },
   data() {
     return {

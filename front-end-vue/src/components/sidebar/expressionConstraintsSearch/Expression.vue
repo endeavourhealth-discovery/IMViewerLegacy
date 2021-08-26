@@ -2,8 +2,17 @@
   <div class="query-item-container" :id="id">
     <div class="label-container">
       <span class="float-text">Expression</span>
-      <p v-if="selectedResult.name === 'ANY'" @click="editClicked" class="label">{{ selectedResult.name }}</p>
-      <p v-else @click="editClicked" class="label">{{ selectedResult.code }} |{{ selectedResult.name }}|</p>
+      <p
+        v-if="selectedResult.name === 'ANY'"
+        @click="editClicked"
+        class="label"
+        v-tooltip.bottom="'Click to change'"
+      >
+        {{ selectedResult.name }}
+      </p>
+      <p v-else @click="editClicked" class="label">
+        {{ selectedResult.code }} |{{ selectedResult.name }}|
+      </p>
     </div>
   </div>
   <OverlayPanel class="search-op" ref="miniSearchOP">
@@ -18,12 +27,16 @@ import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 
 export default defineComponent({
-  name: "addExpression",
+  name: "Expression",
   props: { id: String, position: Number, value: { required: false } },
   emits: ["updateClicked"],
   components: { SearchMiniOverlay },
   mounted() {
-    this.updateSelectedResult({ name: "ANY" });
+    if (this.value) {
+      this.updateSelectedResult(this.value);
+    } else {
+      this.updateSelectedResult({ name: "ANY" });
+    }
   },
   data() {
     return {
@@ -64,7 +77,7 @@ export default defineComponent({
         position: this.position,
         type: ECLType.EXPRESSION,
         label: label,
-        component: ECLComponent.EXPRESSION,
+        component: ECLComponent.EXPRESSION
       };
     }
   }
