@@ -75,13 +75,7 @@ export default defineComponent({
   },
   data() {
     return {
-      focusConceptBuild: [] as any[],
-      nextOptions: [
-        {
-          component: ECLComponent.EXPRESSION,
-          type: ECLType.EXPRESSION
-        }
-      ]
+      focusConceptBuild: [] as any[]
     };
   },
   methods: {

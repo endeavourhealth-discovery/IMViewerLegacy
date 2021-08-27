@@ -1,11 +1,16 @@
 <template>
-  <div v-if="value && value.children" class="refinement-container" :id="id">
+  <div class="refinement-container" :id="id">
     <div class="switch-button-container">
       <div class="buttons-container">
         <Button
-          icon="fas fa-times"
+          icon="fas fa-minus"
           class="p-button-rounded p-button-outlined p-button-danger"
           @click="deleteClicked"
+        />
+        <Button
+          icon="fas fa-plus"
+          class="p-button-rounded p-button-outlined p-button-success"
+          @click="addNextClicked"
         />
       </div>
       <div class="switch-container">
@@ -16,7 +21,7 @@
     <div class="refinement-children-next-container">
       <span class="float-text">Refinement</span>
       <div
-        v-if="value.children && value.children.length"
+        v-if="value && value.children && value.children.length"
         class="refinement-children-container"
       >
         <template v-for="child in value.children" :key="child.id">
@@ -25,9 +30,11 @@
             :value="child.value"
             :id="child.id"
             :position="child.position"
+            :last="refinementBuild.length -1 === child.position ? true : false"
             @deleteClicked="deleteChild"
             @addClicked="addChild"
             @updateClicked="updateChild"
+            @addNextOptionsClicked="addNextOptions"
           >
           </component>
         </template>
@@ -46,14 +53,6 @@
       </div>
     </div>
   </div>
-  <div v-else>
-    <Button
-      icon="fas fa-plus"
-      label="Add refinement"
-      class="p-button-rounded p-button-outlined p-button-danger add-refinement-button"
-      @click="onConfirm"
-    />
-  </div>
 </template>
 
 <script lang="ts">
@@ -62,6 +61,7 @@ import Logic from "@/components/sidebar/expressionConstraintsSearch/Logic.vue";
 import Expression from "@/components/sidebar/expressionConstraintsSearch/Expression.vue";
 import Constraint from "@/components/sidebar/expressionConstraintsSearch/Constraint.vue";
 import Operator from "@/components/sidebar/expressionConstraintsSearch/Operator.vue";
+import AddNext from "@/components/sidebar/expressionConstraintsSearch/AddNext.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 
@@ -79,8 +79,8 @@ export default defineComponent({
       required: false
     }
   },
-  emits: ["addClicked", "deleteClicked", "updateClicked"],
-  components: { Logic, Expression, Constraint, Operator },
+  emits: ["addNextOptionsClicked", "addClicked", "deleteClicked", "updateClicked"],
+  components: { Logic, Expression, Constraint, Operator, AddNext },
   watch: {
     refinementBuild: {
       handler() {

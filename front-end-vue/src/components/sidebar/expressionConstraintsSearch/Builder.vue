@@ -24,6 +24,7 @@
             :value="item.value"
             :id="item.id"
             :position="item.position"
+            :last="queryBuild.length - 1 === item.position ? true : false"
             @deleteClicked="deleteItem"
             @addClicked="addItem"
             @updateClicked="updateItem"
@@ -66,7 +67,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Logic from "@/components/sidebar/expressionConstraintsSearch/Logic.vue";
-import Refinement from "@/components/sidebar/expressionConstraintsSearch/Refinement.vue";
+import RefinementGroup from "@/components/sidebar/expressionConstraintsSearch/RefinementGroup.vue";
 import FocusConcept from "@/components/sidebar/expressionConstraintsSearch/FocusConcept.vue";
 import AddNext from "@/components/sidebar/expressionConstraintsSearch/AddNext.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
@@ -77,7 +78,7 @@ export default defineComponent({
   name: "Builder",
   components: {
     Logic,
-    Refinement,
+    RefinementGroup,
     FocusConcept,
     AddNext
   },
@@ -111,7 +112,18 @@ export default defineComponent({
     },
 
     async addNextOptions(data: any) {
-      this.queryBuild.splice(data.previousPosition,0,this.getNextOptions(data.previousPosition, data.previousComponent))
+      if (this.queryBuild[data.previousPosition + 1].type === ECLType.ADD_NEXT) {
+        this.queryBuild[data.previousPosition + 1] = this.getNextOptions(data.previousPosition, data.previousComponent);
+      } else {
+        this.queryBuild.splice(
+          data.previousPosition,
+          0,
+          this.getNextOptions(
+            data.previousPosition,
+            data.previousComponent
+          )
+        );
+      }
       await this.$nextTick();
       const itemToScrollTo = document.getElementById(data.id);
       itemToScrollTo?.scrollIntoView();
@@ -204,14 +216,14 @@ export default defineComponent({
             component: ECLComponent.LOGIC
           };
           break;
-        case ECLType.REFINEMENT:
+        case ECLType.REFINEMENT_GROUP:
           result = {
-            id: ECLType.REFINEMENT + "_" + position,
+            id: ECLType.REFINEMENT_GROUP + "_" + position,
             value: null,
             position: position,
-            type: ECLType.REFINEMENT,
+            type: ECLType.REFINEMENT_GROUP,
             label: null,
-            component: ECLComponent.REFINEMENT
+            component: ECLComponent.REFINEMENT_GROUP
           };
           break;
         case ECLType.FOCUS_CONCEPT:

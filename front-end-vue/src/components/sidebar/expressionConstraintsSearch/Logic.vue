@@ -59,7 +59,6 @@ export default defineComponent({
         type: ECLType.LOGIC,
         component: ECLComponent.LOGIC,
         label: this.selected,
-        edit: false
       });
     },
 
@@ -71,7 +70,6 @@ export default defineComponent({
         type: ECLType.LOGIC,
         component: ECLComponent.LOGIC,
         label: this.selected,
-        edit: false
       });
     },
 

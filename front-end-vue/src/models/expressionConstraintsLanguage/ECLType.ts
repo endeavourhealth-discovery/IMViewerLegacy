@@ -5,5 +5,6 @@ export enum ECLType {
   REFINEMENT = "refinement",
   OPERATOR = "operator",
   FOCUS_CONCEPT = "focusConcept",
-  ADD_NEXT = "addNext"
+  ADD_NEXT = "addNext",
+  REFINEMENT_GROUP = "refinementGroup"
 }
