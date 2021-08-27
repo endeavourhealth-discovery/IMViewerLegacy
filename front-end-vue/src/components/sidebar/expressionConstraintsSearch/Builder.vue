@@ -358,6 +358,7 @@ export default defineComponent({
 .output-string {
   background-color: #f8f9fa;
   border: 1px solid #e9ecef;
+  border-radius: 3px;
   padding: 1rem;
   margin: 0;
   height: 100%;

@@ -114,14 +114,12 @@ export default defineComponent({
     generateRefinementLabel(): string {
       let label = "";
       if (this.refinementBuild.length) {
-        const labels = this.refinementBuild.map(item => {
-          if (item.type === ECLType.LOGIC) {
-            return item.label + "\n\t";
-          } else {
-            return item.label;
-          }
-        });
-        label = labels.join(" ").replaceAll("\n ", "\n");
+        const labels = this.refinementBuild.map(item => item.label);
+        label = labels
+          .join(" ")
+          .replaceAll("\n ", "\n")
+          .replaceAll("  ", " ")
+          .trim();
       }
       return label;
     },
@@ -209,7 +207,8 @@ export default defineComponent({
   flex-flow: column nowrap;
   justify-content: flex-start;
   align-items: center;
-  border: 1px solid #dee2e6;
+  border: 1px solid #56a902;
+  border-radius: 3px;
   padding: 1rem;
   margin: 0 1em 0 0;
   position: relative;
@@ -226,6 +225,7 @@ export default defineComponent({
   display: flex;
   flex-flow: row;
   justify-content: flex-end;
+  gap: 0.5rem;
 }
 
 .float-text {

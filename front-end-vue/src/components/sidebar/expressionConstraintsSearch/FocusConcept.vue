@@ -119,7 +119,10 @@ export default defineComponent({
             return item.label;
           }
         });
-        label = labels.join(" ").replaceAll("\n ", "\n");
+        label = labels
+          .join(" ")
+          .replaceAll("\n ", "\n")
+          .trim();
       }
       return label;
     },
@@ -183,7 +186,8 @@ export default defineComponent({
   flex-flow: column nowrap;
   justify-content: flex-start;
   align-items: center;
-  border: 1px solid #dee2e6;
+  border: 1px solid #47b8e0;
+  border-radius: 3px;
   padding: 1rem;
   margin: 0 1em 0 0;
   position: relative;
@@ -200,6 +204,7 @@ export default defineComponent({
   display: flex;
   flex-flow: row;
   justify-content: flex-end;
+  gap: 0.5rem;
 }
 
 .float-text {

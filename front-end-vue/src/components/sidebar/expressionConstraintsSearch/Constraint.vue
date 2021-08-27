@@ -85,7 +85,8 @@ export default defineComponent({
 .label-container {
   margin: 0 1rem 0 0;
   padding: 1rem;
-  border: 1px solid #dee2e6;
+  border: 1px solid #ffc952;
+  border-radius: 3px;
   position: relative;
 }
 

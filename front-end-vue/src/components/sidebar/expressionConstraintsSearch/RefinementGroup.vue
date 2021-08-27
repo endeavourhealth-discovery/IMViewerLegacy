@@ -2,7 +2,7 @@
   <div class="refinement-group-container" :id="id">
     <div class="switch-button-container">
       <div class="switch-container">
-        <label for="switch">Group refinements</label>
+        <label for="switch">Group</label>
         <InputSwitch v-model="group" />
       </div>
       <div class="buttons-container">
@@ -273,12 +273,15 @@ export default defineComponent({
             return item.label;
           }
         });
-        label = labels.join(" ").replaceAll("\n ", "\n");
+        label = labels
+          .join(" ")
+          .replaceAll("\n ", "\n")
+          .trim();
       }
       if (this.group) {
-        return (label = "{ " + label + " }");
+        return (label = ":\n\t{" + label + "}");
       } else {
-        return label;
+        return ":\n\t" + label;
       }
     },
 
@@ -331,6 +334,7 @@ export default defineComponent({
   flex-flow: column nowrap;
   justify-content: center;
   align-items: flex-start;
+  gap: 1rem;
 }
 
 .switch-container {
@@ -344,7 +348,8 @@ export default defineComponent({
   flex-flow: column nowrap;
   justify-content: flex-start;
   align-items: center;
-  border: 1px solid #dee2e6;
+  border: 1px solid #d499b9;
+  border-radius: 3px;
   padding: 1rem;
   margin: 0 1em 0 0;
   position: relative;
@@ -355,12 +360,14 @@ export default defineComponent({
   flex-flow: row wrap;
   justify-content: center;
   align-items: center;
+  gap: 1rem;
 }
 
 .buttons-container {
   display: flex;
   flex-flow: row;
   justify-content: flex-end;
+  gap: 0.5rem;
 }
 
 .float-text {
