@@ -13,40 +13,20 @@
           @click="addNextClicked"
         />
       </div>
-      <div class="switch-container">
-        <label for="switch">Group</label>
-        <InputSwitch v-model="group" />
-      </div>
     </div>
     <div class="refinement-children-next-container">
       <span class="float-text">Refinement</span>
       <div
-        v-if="value && value.children && value.children.length"
+        v-if="refinementBuild && refinementBuild.length"
         class="refinement-children-container"
       >
-        <template v-for="child in value.children" :key="child.id">
+        <template v-for="child in refinementBuild" :key="child.id">
           <component
             :is="child.component"
             :value="child.value"
             :id="child.id"
             :position="child.position"
-            :last="refinementBuild.length -1 === child.position ? true : false"
-            @deleteClicked="deleteChild"
-            @addClicked="addChild"
             @updateClicked="updateChild"
-            @addNextOptionsClicked="addNextOptions"
-          >
-          </component>
-        </template>
-      </div>
-      <div class="next-refinement-container">
-        <template v-for="nextOption in nextOptions" :key="nextOption">
-          <component
-            :is="nextOption.component"
-            :id="nextOption.type + '-' + refinementBuild.length"
-            :position="refinementBuild.length"
-            :value="null"
-            @addClicked="addChild"
           >
           </component>
         </template>
@@ -57,11 +37,9 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "@vue/runtime-core";
-import Logic from "@/components/sidebar/expressionConstraintsSearch/Logic.vue";
 import Expression from "@/components/sidebar/expressionConstraintsSearch/Expression.vue";
 import Constraint from "@/components/sidebar/expressionConstraintsSearch/Constraint.vue";
 import Operator from "@/components/sidebar/expressionConstraintsSearch/Operator.vue";
-import AddNext from "@/components/sidebar/expressionConstraintsSearch/AddNext.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 
@@ -73,20 +51,17 @@ export default defineComponent({
     value: {
       type: Object as PropType<{
         children: any[];
-        level: number;
-        group: boolean;
       }>,
       required: false
     }
   },
-  emits: ["addNextOptionsClicked", "addClicked", "deleteClicked", "updateClicked"],
-  components: { Logic, Expression, Constraint, Operator, AddNext },
+  emits: ["addNextOptionsClicked", "deleteClicked", "updateClicked"],
+  components: { Expression, Constraint, Operator },
   watch: {
     refinementBuild: {
       handler() {
         this.refinementBuild.sort((a: any, b: any) => a.position - b.position);
         this.$emit("updateClicked", this.createRefinement());
-        this.generateNextOptions();
       },
       deep: true
     },
@@ -95,43 +70,16 @@ export default defineComponent({
     }
   },
   mounted() {
-    if (this.value && this.value.children && this.value.children.length) {
-      this.refinementBuild = [...this.value.children];
-    }
+    this.setStartBuild();
   },
   data() {
     return {
-      refinementBuild: [] as any[],
-      nextOptions: [
-        {
-          component: ECLComponent.EXPRESSION,
-          type: ECLType.EXPRESSION
-        }
-      ],
-      group: false
+      refinementBuild: [] as any[]
     };
   },
   methods: {
-    onConfirm() {
-      this.$emit("addClicked", this.createRefinement());
-    },
-
     deleteClicked() {
       this.$emit("deleteClicked", this.createRefinement());
-    },
-
-    async addChild(data: any) {
-      this.refinementBuild.push(data);
-      await this.$nextTick();
-      const itemToScrollTo = document.getElementById(data.id);
-      itemToScrollTo?.scrollIntoView();
-    },
-
-    deleteChild(data: any) {
-      const index = this.refinementBuild.findIndex(
-        child => child.position === data.position
-      );
-      this.refinementBuild.splice(index, 1);
     },
 
     updateChild(data: any) {
@@ -141,13 +89,19 @@ export default defineComponent({
       this.refinementBuild[index] = data;
     },
 
+    addNextClicked() {
+      this.$emit("addNextOptionsClicked", {
+        previousComponent: ECLType.REFINEMENT,
+        previousPosition: this.position,
+        parentGroup: ECLType.REFINEMENT_GROUP
+      });
+    },
+
     createRefinement() {
       return {
         id: this.id,
         value: {
-          children: this.refinementBuild,
-          level: this.value?.level ? this.value?.level + 1 : 1,
-          group: this.group
+          children: this.refinementBuild
         },
         position: this.position,
         type: ECLType.REFINEMENT,
@@ -169,91 +123,55 @@ export default defineComponent({
         });
         label = labels.join(" ").replaceAll("\n ", "\n");
       }
-      if (this.group) {
-        return (label = "{ " + label + " }");
-      } else {
-        return label;
-      }
+      return label;
     },
 
-    generateNextOptions() {
-      if (!this.refinementBuild.length) {
-        this.nextOptions = [
+    setStartBuild() {
+      if (this.value && this.value.children) {
+        this.refinementBuild = [...this.value.children];
+      } else {
+        this.refinementBuild = [
+          {
+            component: ECLComponent.CONSTRAINT,
+            id: this.id + ECLType.CONSTRAINT,
+            label: null,
+            position: 0,
+            type: ECLType.CONSTRAINT,
+            value: null
+          },
           {
             component: ECLComponent.EXPRESSION,
-            type: ECLType.EXPRESSION
+            id: this.id + ECLType.EXPRESSION,
+            label: null,
+            position: 1,
+            type: ECLType.EXPRESSION,
+            value: null
+          },
+          {
+            component: ECLComponent.OPERATOR,
+            id: this.id + ECLType.OPERATOR,
+            label: null,
+            position: 2,
+            type: ECLType.OPERATOR,
+            value: null
           },
           {
             component: ECLComponent.CONSTRAINT,
-            type: ECLType.CONSTRAINT
+            id: this.id + ECLType.CONSTRAINT,
+            label: null,
+            position: 3,
+            type: ECLType.CONSTRAINT,
+            value: null
+          },
+          {
+            component: ECLComponent.EXPRESSION,
+            id: this.id + ECLType.EXPRESSION,
+            label: null,
+            position: 4,
+            type: ECLType.OPERATOR,
+            value: null
           }
         ];
-        return;
-      }
-      switch (this.refinementBuild[this.refinementBuild.length - 1].type) {
-        case ECLType.EXPRESSION:
-          if (
-            this.refinementBuild.length === 1 ||
-            this.refinementBuild[this.refinementBuild.length - 2].type ===
-              ECLType.LOGIC ||
-            this.refinementBuild[this.refinementBuild.length - 3].type ===
-              ECLType.LOGIC
-          ) {
-            this.nextOptions = [
-              {
-                component: ECLComponent.OPERATOR,
-                type: ECLType.OPERATOR
-              }
-            ];
-          } else {
-            this.nextOptions = [
-              {
-                component: ECLComponent.LOGIC,
-                type: ECLType.LOGIC
-              }
-            ];
-          }
-          break;
-        case ECLType.CONSTRAINT:
-          this.nextOptions = [
-            {
-              component: ECLComponent.EXPRESSION,
-              type: ECLType.EXPRESSION
-            }
-          ];
-          break;
-        case ECLType.LOGIC:
-          this.nextOptions = [
-            {
-              component: ECLComponent.CONSTRAINT,
-              type: ECLType.CONSTRAINT
-            },
-            {
-              component: ECLComponent.EXPRESSION,
-              type: ECLType.EXPRESSION
-            }
-          ];
-          break;
-        case ECLType.REFINEMENT:
-          this.nextOptions = [
-            {
-              component: ECLComponent.REFINEMENT,
-              type: ECLType.REFINEMENT
-            }
-          ];
-          break;
-        case ECLType.OPERATOR:
-          this.nextOptions = [
-            {
-              component: ECLComponent.CONSTRAINT,
-              type: ECLType.CONSTRAINT
-            },
-            {
-              component: ECLComponent.EXPRESSION,
-              type: ECLType.EXPRESSION
-            }
-          ];
-          break;
       }
     }
   }

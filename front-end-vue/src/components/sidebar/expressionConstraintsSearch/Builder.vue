@@ -112,15 +112,22 @@ export default defineComponent({
     },
 
     async addNextOptions(data: any) {
-      if (this.queryBuild[data.previousPosition + 1].type === ECLType.ADD_NEXT) {
-        this.queryBuild[data.previousPosition + 1] = this.getNextOptions(data.previousPosition, data.previousComponent);
+      if (
+        this.queryBuild[data.previousPosition + 1].type === ECLType.ADD_NEXT
+      ) {
+        this.queryBuild[data.previousPosition + 1] = this.getNextOptions(
+          data.previousPosition,
+          data.previousComponent,
+          data.parentGroup
+        );
       } else {
         this.queryBuild.splice(
           data.previousPosition,
           0,
           this.getNextOptions(
             data.previousPosition,
-            data.previousComponent
+            data.previousComponent,
+            data.parentGroup
           )
         );
       }
@@ -130,13 +137,19 @@ export default defineComponent({
     },
 
     addItem(data: any) {
-      this.queryBuild[data.position] = this.generateNewComponent(data.selectedType, data.position);
+      this.queryBuild[data.position] = this.generateNewComponent(
+        data.selectedType,
+        data.position
+      );
       this.updatePositions(data.position);
-      if (this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT) {
+      if (
+        this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT
+      ) {
         this.queryBuild.push(
           this.getNextOptions(
             this.queryBuild.length - 1,
-            this.queryBuild[this.queryBuild.length - 1].type
+            this.queryBuild[this.queryBuild.length - 1].type,
+            "builder"
           )
         );
       }
@@ -169,19 +182,22 @@ export default defineComponent({
       if (data.position === 0) {
         this.queryBuild.unshift(this.setStartBuild()[0]);
       }
-      if (this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT) {
+      if (
+        this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT
+      ) {
         this.queryBuild.push(
           this.getNextOptions(
             this.queryBuild.length - 1,
-            this.queryBuild[this.queryBuild.length - 1].type
+            this.queryBuild[this.queryBuild.length - 1].type,
+            ""
           )
         );
       } else {
-        this.queryBuild[this.queryBuild.length - 1] =
-          this.getNextOptions(
-            this.queryBuild.length - 2,
-            this.queryBuild[this.queryBuild.length - 2].type
-          );
+        this.queryBuild[this.queryBuild.length - 1] = this.getNextOptions(
+          this.queryBuild.length - 2,
+          this.queryBuild[this.queryBuild.length - 2].type,
+          ""
+        );
       }
     },
 
@@ -192,15 +208,19 @@ export default defineComponent({
       this.queryBuild[index] = data;
     },
 
-    getNextOptions(position: number, previous: string) {
+    getNextOptions(position: number, previous: string, group: string) {
       return {
         id: "addNext" + "_" + (position + 1),
-        value: { previousPosition: position, previousComponent: previous },
+        value: {
+          previousPosition: position,
+          previousComponent: previous,
+          parentGroup: group
+        },
         position: position + 1,
         type: ECLType.ADD_NEXT,
         label: null,
         component: ECLComponent.ADD_NEXT
-      }
+      };
     },
 
     generateNewComponent(type: string, position: number) {
@@ -271,7 +291,7 @@ export default defineComponent({
         if (item.position > startPosition) {
           item.position = item.position + 1;
         }
-      })
+      });
     },
 
     copyToClipboard(): string {

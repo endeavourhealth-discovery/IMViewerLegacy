@@ -31,8 +31,9 @@ export default defineComponent({
     last: Boolean,
     value: {
       type: Object as PropType<{
-        previousComponent: string,
-        previousPosition: number
+        previousComponent: string;
+        previousPosition: number;
+        parentGroup: string;
       }>,
       required: true
     }
@@ -48,7 +49,10 @@ export default defineComponent({
   },
   methods: {
     addItem(selectedOption: string) {
-      this.$emit("addClicked", { selectedType: selectedOption, position: this.value.previousPosition + 1 });
+      this.$emit("addClicked", {
+        selectedType: selectedOption,
+        position: this.value.previousPosition + 1
+      });
     },
 
     deleteClicked() {
@@ -68,9 +72,16 @@ export default defineComponent({
           this.options = [ECLType.LOGIC, ECLType.REFINEMENT_GROUP];
           break;
         case ECLType.LOGIC:
-          this.options = [ECLType.FOCUS_CONCEPT];
+          if (this.value.parentGroup === ECLType.REFINEMENT_GROUP) {
+            this.options = [ECLType.REFINEMENT];
+          } else {
+            this.options = [ECLType.FOCUS_CONCEPT];
+          }
           break;
         case ECLType.REFINEMENT_GROUP:
+          this.options = [ECLType.LOGIC];
+          break;
+        case ECLType.REFINEMENT:
           this.options = [ECLType.LOGIC];
           break;
         default:

@@ -31,7 +31,12 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "Logic",
   props: { id: String, position: Number, value: String },
-  emits: ["addClicked", "deleteClicked", "updateClicked", "addNextOptionsClicked"],
+  emits: [
+    "addClicked",
+    "deleteClicked",
+    "updateClicked",
+    "addNextOptionsClicked"
+  ],
   watch: {
     selected() {
       this.onConfirm();
@@ -47,7 +52,7 @@ export default defineComponent({
   data() {
     return {
       options: ["AND", "OR", "MINUS"],
-      selected: "",
+      selected: ""
     };
   },
   methods: {
@@ -58,7 +63,7 @@ export default defineComponent({
         position: this.position,
         type: ECLType.LOGIC,
         component: ECLComponent.LOGIC,
-        label: this.selected,
+        label: this.selected
       });
     },
 
@@ -69,12 +74,15 @@ export default defineComponent({
         position: this.position,
         type: ECLType.LOGIC,
         component: ECLComponent.LOGIC,
-        label: this.selected,
+        label: this.selected
       });
     },
 
     addNextClicked() {
-      this.$emit("addNextOptionsClicked", { previousComponent: ECLType.LOGIC, previousPosition: this.position });
+      this.$emit("addNextOptionsClicked", {
+        previousComponent: ECLType.LOGIC,
+        previousPosition: this.position
+      });
     }
   }
 });

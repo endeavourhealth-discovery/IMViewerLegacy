@@ -21,13 +21,15 @@
     <div class="refinement-group-children-next-container">
       <span class="float-text">Refinement group</span>
       <div class="refinement-group-children-container">
-        <template v-for="item in refinementBuild" :key="item.id">
+        <template v-for="item in refinementGroupBuild" :key="item.id">
           <component
             :is="item.component"
             :value="item.value"
             :id="item.id"
             :position="item.position"
-            :last="refinementBuild.length -1 === item.position ? true : false"
+            :last="
+              refinementGroupBuild.length - 1 === item.position ? true : false
+            "
             @deleteClicked="deleteItem"
             @addClicked="addItem"
             @updateClicked="updateItem"
@@ -44,6 +46,7 @@
 import { defineComponent, PropType } from "@vue/runtime-core";
 import Refinement from "@/components/sidebar/expressionConstraintsSearch/Refinement.vue";
 import AddNext from "@/components/sidebar/expressionConstraintsSearch/AddNext.vue";
+import Logic from "@/components/sidebar/expressionConstraintsSearch/Logic.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 
@@ -60,12 +63,19 @@ export default defineComponent({
       required: false
     }
   },
-  emits: ["addNextOptionsClicked", "addClicked", "deleteClicked", "updateClicked"],
-  components: { Refinement, AddNext },
+  emits: [
+    "addNextOptionsClicked",
+    "addClicked",
+    "deleteClicked",
+    "updateClicked"
+  ],
+  components: { Refinement, AddNext, Logic },
   watch: {
-    refinementBuild: {
+    refinementGroupBuild: {
       handler() {
-        this.refinementBuild.sort((a: any, b: any) => a.position - b.position);
+        this.refinementGroupBuild.sort(
+          (a: any, b: any) => a.position - b.position
+        );
         this.$emit("updateClicked", this.createRefinementGroup());
       },
       deep: true
@@ -75,11 +85,11 @@ export default defineComponent({
     }
   },
   mounted() {
-    this.refinementBuild = this.setStartBuild();
+    this.refinementGroupBuild = this.setStartBuild();
   },
   data() {
     return {
-      refinementBuild: [] as any[],
+      refinementGroupBuild: [] as any[],
       group: false
     };
   },
@@ -93,15 +103,25 @@ export default defineComponent({
     },
 
     async addNextOptions(data: any) {
-      if (this.refinementBuild[data.previousPosition + 1].type === ECLType.ADD_NEXT) {
-        this.refinementBuild[data.previousPosition + 1] = this.getNextOptions(data.previousPosition, data.previousComponent);
+      if (
+        this.refinementGroupBuild[data.previousPosition + 1].type ===
+        ECLType.ADD_NEXT
+      ) {
+        this.refinementGroupBuild[
+          data.previousPosition + 1
+        ] = this.getNextOptions(
+          data.previousPosition,
+          data.previousComponent,
+          data.parentGroup
+        );
       } else {
-        this.refinementBuild.splice(
+        this.refinementGroupBuild.splice(
           data.previousPosition,
           0,
           this.getNextOptions(
             data.previousPosition,
-            data.previousComponent
+            data.previousComponent,
+            data.parentGroup
           )
         );
       }
@@ -111,71 +131,92 @@ export default defineComponent({
     },
 
     addNextClicked() {
-      this.$emit("addNextOptionsClicked", { previousComponent: ECLType.REFINEMENT_GROUP, previousPosition: this.position });
+      this.$emit("addNextOptionsClicked", {
+        previousComponent: ECLType.REFINEMENT_GROUP,
+        previousPosition: this.position
+      });
     },
 
     async addItem(data: any) {
-      this.refinementBuild[data.position] = this.generateNewComponent(data.selectedType, data.position);
+      this.refinementGroupBuild[data.position] = this.generateNewComponent(
+        data.selectedType,
+        data.position
+      );
       this.updatePositions(data.position);
-      if (this.refinementBuild[this.refinementBuild.length - 1].type !== ECLType.ADD_NEXT) {
-        this.refinementBuild.push(
+      if (
+        this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type !==
+        ECLType.ADD_NEXT
+      ) {
+        this.refinementGroupBuild.push(
           this.getNextOptions(
-            this.refinementBuild.length - 1,
-            this.refinementBuild[this.refinementBuild.length - 1].type
+            this.refinementGroupBuild.length - 1,
+            this.refinementGroupBuild[this.refinementGroupBuild.length - 1]
+              .type,
+            ECLType.REFINEMENT_GROUP
           )
         );
       }
-
     },
 
     deleteItem(data: any) {
-      const index = this.refinementBuild.findIndex(
+      const index = this.refinementGroupBuild.findIndex(
         child => child.position === data.position
       );
-      this.refinementBuild.splice(index, 1);
+      this.refinementGroupBuild.splice(index, 1);
       if (data.position === 0) {
-        this.refinementBuild.unshift(this.setStartBuild()[0]);
+        this.refinementGroupBuild.unshift(this.setStartBuild()[0]);
       }
-      if (this.refinementBuild[this.refinementBuild.length - 1].type !== ECLType.ADD_NEXT) {
-        this.refinementBuild.push(
+      if (
+        this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type !==
+        ECLType.ADD_NEXT
+      ) {
+        this.refinementGroupBuild.push(
           this.getNextOptions(
-            this.refinementBuild.length - 1,
-            this.refinementBuild[this.refinementBuild.length - 1].type
+            this.refinementGroupBuild.length - 1,
+            this.refinementGroupBuild[this.refinementGroupBuild.length - 1]
+              .type,
+            ""
           )
         );
       } else {
-        this.refinementBuild[this.refinementBuild.length - 1] =
-          this.getNextOptions(
-            this.refinementBuild.length - 2,
-            this.refinementBuild[this.refinementBuild.length - 2].type
-          );
+        this.refinementGroupBuild[
+          this.refinementGroupBuild.length - 1
+        ] = this.getNextOptions(
+          this.refinementGroupBuild.length - 2,
+          this.refinementGroupBuild[this.refinementGroupBuild.length - 2].type,
+          ""
+        );
       }
     },
 
     updateItem(data: any) {
-      const index = this.refinementBuild.findIndex(
+      const index = this.refinementGroupBuild.findIndex(
         item => item.position === data.position
       );
-      this.refinementBuild[index] = data;
+      this.refinementGroupBuild[index] = data;
     },
 
-    getNextOptions(position: number, previous: string) {
+    getNextOptions(position: number, previous: string, group: string) {
       return {
         id: "addNext" + "_" + (position + 1),
-        value: { previousPosition: position, previousComponent: previous },
+        value: {
+          previousPosition: position,
+          previousComponent: previous,
+          parentGroup: group
+        },
         position: position + 1,
         type: ECLType.ADD_NEXT,
         label: null,
         component: ECLComponent.ADD_NEXT
-      }
+      };
     },
 
     updatePositions(startPosition: number) {
-      this.refinementBuild.forEach((item: any) => {
+      this.refinementGroupBuild.forEach((item: any) => {
         if (item.position > startPosition) {
           item.position = item.position + 1;
         }
-      })
+      });
     },
 
     generateNewComponent(type: string, position: number) {
@@ -211,7 +252,7 @@ export default defineComponent({
       return {
         id: this.id,
         value: {
-          children: this.refinementBuild,
+          children: this.refinementGroupBuild,
           group: this.group
         },
         position: this.position,
@@ -224,8 +265,8 @@ export default defineComponent({
 
     generateRefinementLabel(): string {
       let label = "";
-      if (this.refinementBuild.length) {
-        const labels = this.refinementBuild.map(item => {
+      if (this.refinementGroupBuild.length) {
+        const labels = this.refinementGroupBuild.map(item => {
           if (item.type === ECLType.LOGIC) {
             return item.label + "\n\t";
           } else {
@@ -265,7 +306,7 @@ export default defineComponent({
             type: ECLType.ADD_NEXT,
             label: null
           }
-        ]
+        ];
       }
     }
   }

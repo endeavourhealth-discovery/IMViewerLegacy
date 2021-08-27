@@ -37,10 +37,8 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "@vue/runtime-core";
-import Logic from "@/components/sidebar/expressionConstraintsSearch/Logic.vue";
 import Expression from "@/components/sidebar/expressionConstraintsSearch/Expression.vue";
 import Constraint from "@/components/sidebar/expressionConstraintsSearch/Constraint.vue";
-import Operator from "@/components/sidebar/expressionConstraintsSearch/Operator.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 
@@ -52,13 +50,12 @@ export default defineComponent({
     value: {
       type: Object as PropType<{
         children: any[];
-        level: number;
       }>,
       required: false
     }
   },
   emits: ["addNextOptionsClicked", "deleteClicked", "updateClicked"],
-  components: { Logic, Expression, Constraint, Operator },
+  components: { Expression, Constraint },
   watch: {
     focusConceptBuild: {
       handler() {
@@ -83,20 +80,6 @@ export default defineComponent({
       this.$emit("deleteClicked", this.createFocusConcept());
     },
 
-    async addChild(data: any) {
-      this.focusConceptBuild.push(data);
-      await this.$nextTick();
-      const itemToScrollTo = document.getElementById(data.id);
-      itemToScrollTo?.scrollIntoView();
-    },
-
-    deleteChild(data: any) {
-      const index = this.focusConceptBuild.findIndex(
-        child => child.position === data.position
-      );
-      this.focusConceptBuild.splice(index, 1);
-    },
-
     updateChild(data: any) {
       const index = this.focusConceptBuild.findIndex(
         item => item.position === data.position
@@ -105,7 +88,11 @@ export default defineComponent({
     },
 
     addNextClicked() {
-      this.$emit("addNextOptionsClicked", { previousComponent: ECLType.FOCUS_CONCEPT, previousPosition: this.position });
+      this.$emit("addNextOptionsClicked", {
+        previousComponent: ECLType.FOCUS_CONCEPT,
+        previousPosition: this.position,
+        parentGroup: ECLType.FOCUS_CONCEPT
+      });
     },
 
     createFocusConcept() {
@@ -139,12 +126,12 @@ export default defineComponent({
 
     setStartBuild() {
       if (this.value && this.value.children) {
-        this.focusConceptBuild = this.value.children;
+        this.focusConceptBuild = [...this.value.children];
       } else {
         this.focusConceptBuild = [
           {
             component: ECLComponent.CONSTRAINT,
-            id: this.id + "constraint",
+            id: this.id + ECLType.CONSTRAINT,
             label: null,
             position: 0,
             type: ECLType.CONSTRAINT,
@@ -152,8 +139,7 @@ export default defineComponent({
           },
           {
             component: ECLComponent.EXPRESSION,
-            edit: false,
-            id: this.id + "expression",
+            id: this.id + ECLType.EXPRESSION,
             label: null,
             position: 1,
             type: ECLType.EXPRESSION,
