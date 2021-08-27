@@ -4,7 +4,12 @@
     :modal="true"
     :closable="false"
     :maximizable="true"
-    :style="{ width: '80vw', height: '80vh', display: 'flex', flexFlow: 'column nowrap' }"
+    :style="{
+      width: '80vw',
+      height: '80vh',
+      display: 'flex',
+      flexFlow: 'column nowrap'
+    }"
     id="builder-dialog"
     :contentStyle="{ flexGrow: '100' }"
   >
@@ -19,22 +24,13 @@
             :value="item.value"
             :id="item.id"
             :position="item.position"
+            :last="queryBuild.length - 1 === item.position ? true : false"
             @deleteClicked="deleteItem"
             @addClicked="addItem"
             @updateClicked="updateItem"
+            @addNextOptionsClicked="addNextOptions"
           >
           </component>
-        </template>
-      </div>
-      <div id="next-option-container">
-        <template v-for="nextOption in nextOptions" :key="nextOption">
-          <component
-            :is="nextOption.component"
-            :id="nextOption.type + '-' + queryBuild.length"
-            :position="queryBuild.length"
-            :value="null"
-            @addClicked="addItem"
-          ></component>
         </template>
       </div>
     </div>
@@ -70,10 +66,10 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import AddLogic from "@/components/sidebar/expressionConstraintsSearch/addLogic.vue";
-import AddExpression from "@/components/sidebar/expressionConstraintsSearch/addExpression.vue";
-import AddConstraint from "@/components/sidebar/expressionConstraintsSearch/addConstraint.vue";
-import AddRefinement from "@/components/sidebar/expressionConstraintsSearch/addRefinement.vue";
+import Logic from "@/components/sidebar/expressionConstraintsSearch/Logic.vue";
+import RefinementGroup from "@/components/sidebar/expressionConstraintsSearch/RefinementGroup.vue";
+import FocusConcept from "@/components/sidebar/expressionConstraintsSearch/FocusConcept.vue";
+import AddNext from "@/components/sidebar/expressionConstraintsSearch/AddNext.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 import LoggerService from "@/services/LoggerService";
@@ -81,10 +77,10 @@ import LoggerService from "@/services/LoggerService";
 export default defineComponent({
   name: "Builder",
   components: {
-    AddLogic,
-    AddExpression,
-    AddConstraint,
-    AddRefinement
+    Logic,
+    RefinementGroup,
+    FocusConcept,
+    AddNext
   },
   props: { showDialog: Boolean },
   emits: ["ECLSubmitted", "closeDialog"],
@@ -93,21 +89,17 @@ export default defineComponent({
       handler() {
         this.queryBuild.sort((a: any, b: any) => a.position - b.position);
         this.generateQueryString();
-        this.generateNextOptions();
       },
       deep: true
     }
   },
+  mounted() {
+    this.queryBuild = this.setStartBuild();
+  },
   data() {
     return {
       queryString: "",
-      queryBuild: [] as any[],
-      nextOptions: [
-        {
-          component: ECLComponent.CONSTRAINT,
-          type: ECLType.CONSTRAINT
-        }
-      ] as any[]
+      queryBuild: [] as any[]
     };
   },
   methods: {
@@ -119,11 +111,48 @@ export default defineComponent({
       this.$emit("closeDialog");
     },
 
-    async addItem(data: any) {
-      this.queryBuild.push(data);
+    async addNextOptions(data: any) {
+      if (
+        this.queryBuild[data.previousPosition + 1].type === ECLType.ADD_NEXT
+      ) {
+        this.queryBuild[data.previousPosition + 1] = this.getNextOptions(
+          data.previousPosition,
+          data.previousComponent,
+          data.parentGroup
+        );
+      } else {
+        this.queryBuild.splice(
+          data.previousPosition,
+          0,
+          this.getNextOptions(
+            data.previousPosition,
+            data.previousComponent,
+            data.parentGroup
+          )
+        );
+      }
       await this.$nextTick();
       const itemToScrollTo = document.getElementById(data.id);
       itemToScrollTo?.scrollIntoView();
+    },
+
+    addItem(data: any) {
+      this.queryBuild[data.position] = this.generateNewComponent(
+        data.selectedType,
+        data.position
+      );
+      this.updatePositions(data.position);
+      if (
+        this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT
+      ) {
+        this.queryBuild.push(
+          this.getNextOptions(
+            this.queryBuild.length - 1,
+            this.queryBuild[this.queryBuild.length - 1].type,
+            "builder"
+          )
+        );
+      }
     },
 
     generateQueryString() {
@@ -150,6 +179,26 @@ export default defineComponent({
         item => item.position === data.position
       );
       this.queryBuild.splice(index, 1);
+      if (data.position === 0) {
+        this.queryBuild.unshift(this.setStartBuild()[0]);
+      }
+      if (
+        this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT
+      ) {
+        this.queryBuild.push(
+          this.getNextOptions(
+            this.queryBuild.length - 1,
+            this.queryBuild[this.queryBuild.length - 1].type,
+            ""
+          )
+        );
+      } else {
+        this.queryBuild[this.queryBuild.length - 1] = this.getNextOptions(
+          this.queryBuild.length - 2,
+          this.queryBuild[this.queryBuild.length - 2].type,
+          ""
+        );
+      }
     },
 
     updateItem(data: any) {
@@ -159,70 +208,90 @@ export default defineComponent({
       this.queryBuild[index] = data;
     },
 
-    generateNextOptions() {
-      if (!this.queryBuild.length) {
-        this.nextOptions = [
-          {
-            component: ECLComponent.CONSTRAINT,
-            type: ECLType.CONSTRAINT
-          }
-        ];
-        return;
-      }
-      switch (this.queryBuild[this.queryBuild.length - 1].type) {
-        case ECLType.CONSTRAINT:
-          this.nextOptions = [
-            {
-              component: ECLComponent.EXPRESSION,
-              type: ECLType.EXPRESSION
-            }
-          ];
-          break;
+    getNextOptions(position: number, previous: string, group: string) {
+      return {
+        id: "addNext" + "_" + (position + 1),
+        value: {
+          previousPosition: position,
+          previousComponent: previous,
+          parentGroup: group
+        },
+        position: position + 1,
+        type: ECLType.ADD_NEXT,
+        label: null,
+        component: ECLComponent.ADD_NEXT
+      };
+    },
+
+    generateNewComponent(type: string, position: number) {
+      let result;
+      switch (type) {
         case ECLType.LOGIC:
-          if (
-            this.queryBuild[this.queryBuild.length - 2].type ===
-            ECLType.REFINEMENT
-          ) {
-            this.nextOptions = [
-              {
-                component: ECLComponent.REFINEMENT,
-                type: ECLType.REFINEMENT
-              }
-            ];
-          } else {
-            this.nextOptions = [
-              {
-                component: ECLComponent.CONSTRAINT,
-                type: ECLType.CONSTRAINT
-              },
-              {
-                component: ECLComponent.EXPRESSION,
-                type: ECLType.EXPRESSION
-              }
-            ];
-          }
+          result = {
+            id: ECLType.LOGIC + "_" + position,
+            value: null,
+            position: position,
+            type: ECLType.LOGIC,
+            label: null,
+            component: ECLComponent.LOGIC
+          };
           break;
-        case ECLType.EXPRESSION:
-          this.nextOptions = [
-            {
-              component: ECLComponent.REFINEMENT,
-              type: ECLType.REFINEMENT
-            },
-            {
-              component: ECLComponent.LOGIC,
-              type: ECLType.LOGIC
-            }
-          ];
+        case ECLType.REFINEMENT_GROUP:
+          result = {
+            id: ECLType.REFINEMENT_GROUP + "_" + position,
+            value: null,
+            position: position,
+            type: ECLType.REFINEMENT_GROUP,
+            label: null,
+            component: ECLComponent.REFINEMENT_GROUP
+          };
           break;
-        case ECLType.REFINEMENT:
-          this.nextOptions = [
-            {
-              component: ECLComponent.LOGIC,
-              type: ECLType.LOGIC
-            }
-          ];
+        case ECLType.FOCUS_CONCEPT:
+          result = {
+            id: ECLType.FOCUS_CONCEPT + "_" + position,
+            value: null,
+            position: position,
+            type: ECLType.FOCUS_CONCEPT,
+            label: null,
+            component: ECLComponent.FOCUS_CONCEPT
+          };
+          break;
+        default:
           break;
       }
+      return result;
+    },
+
+    setStartBuild() {
+      return [
+        {
+          component: ECLComponent.FOCUS_CONCEPT,
+          id: ECLType.FOCUS_CONCEPT + "_" + 0,
+          value: null,
+          position: 0,
+          type: ECLType.FOCUS_CONCEPT,
+          label: null
+        },
+        {
+          id: ECLType.ADD_NEXT + "_" + 1,
+          value: {
+            previousPosition: 0,
+            previousComponent: ECLType.FOCUS_CONCEPT
+          },
+          position: 1,
+          type: ECLType.ADD_NEXT,
+          label: null,
+          component: ECLComponent.ADD_NEXT
+        }
+      ];
+    },
+
+    updatePositions(startPosition: number) {
+      this.queryBuild.forEach((item: any) => {
+        if (item.position > startPosition) {
+          item.position = item.position + 1;
+        }
+      });
     },
 
     copyToClipboard(): string {
@@ -235,7 +304,7 @@ export default defineComponent({
 
     onCopyError(): void {
       this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
-    },
+    }
   }
 });
 </script>
@@ -257,11 +326,19 @@ export default defineComponent({
   overflow: auto;
 }
 
-/* #query-build ::v-deep(.query-item-container) {
+#query-build ::v-deep(.focus-concept-container) {
   flex-basis: 100%;
-} */
+}
 
 #query-build ::v-deep(.refinement-container) {
+  flex-basis: 100%;
+}
+
+#query-build ::v-deep(.logic-container) {
+  flex-basis: 100%;
+}
+
+#query-build ::v-deep(.add-next-container) {
   flex-basis: 100%;
 }
 
@@ -281,6 +358,7 @@ export default defineComponent({
 .output-string {
   background-color: #f8f9fa;
   border: 1px solid #e9ecef;
+  border-radius: 3px;
   padding: 1rem;
   margin: 0;
   height: 100%;

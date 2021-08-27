@@ -11,7 +11,6 @@
   />
   <div class="search-results-container">
     <DataTable
-      v-if="searchResults.length"
       :value="searchResults"
       v-model:selection="selectedResult"
       @row-select="onNodeSelect"
@@ -164,6 +163,8 @@ export default defineComponent({
         return;
       }
       if (this.searchTerm.length > 2) {
+        this.searchResults = [];
+        this.loading = true;
         const searchRequest = new SearchRequest();
         searchRequest.termFilter = this.searchTerm;
         searchRequest.sortBy = SortBy.Usage;
@@ -187,7 +188,8 @@ export default defineComponent({
         }
         const axiosSource = axios.CancelToken.source();
         this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
-        this.fetchSearchResults(searchRequest, axiosSource.token);
+        await this.fetchSearchResults(searchRequest, axiosSource.token);
+        this.loading = false;
       }
     },
 

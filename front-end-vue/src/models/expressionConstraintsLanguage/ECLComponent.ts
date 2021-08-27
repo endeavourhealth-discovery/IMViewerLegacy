@@ -1,7 +1,10 @@
 export enum ECLComponent {
-  LOGIC = "AddLogic",
-  CONSTRAINT = "AddConstraint",
-  EXPRESSION = "AddExpression",
-  REFINEMENT = "AddRefinement",
-  OPERATOR = "AddOperator"
+  LOGIC = "Logic",
+  CONSTRAINT = "Constraint",
+  EXPRESSION = "Expression",
+  REFINEMENT = "Refinement",
+  OPERATOR = "Operator",
+  FOCUS_CONCEPT = "FocusConcept",
+  ADD_NEXT = "AddNext",
+  REFINEMENT_GROUP = "RefinementGroup"
 }
