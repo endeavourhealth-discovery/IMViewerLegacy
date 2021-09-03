@@ -18,6 +18,10 @@ import Logout from "../components/user/Logout.vue";
 import ForgotPassword from "../components/user/ForgotPassword.vue";
 import ForgotPasswordSubmit from "../components/user/ForgotPasswordSubmit.vue";
 import SnomedLicense from "../views/SnomedLicense.vue";
+import ContentUpload from "../components/mapping-wizard/ContentUpload.vue";
+import MappingDocument from "../components/mapping-wizard/MappingDocument.vue";
+import PredicateValidation from "../components/mapping-wizard/PredicateValidation.vue";
+import Confirmation from "../components/mapping-wizard/Confirmation.vue";
 import store from "@/store/index";
 import { nextTick } from "vue";
 
@@ -157,6 +161,28 @@ const routes: Array<RouteRecordRaw> = [
     path: "/mapping/wizard",
     name: "MappingWizard",
     component: MappingWizard,
+    children: [
+      {
+        path: "",
+        name: "UploadContent",
+        component: ContentUpload
+      },
+      {
+        path: "document",
+        name: "MappingDocument",
+        component: MappingDocument
+      },
+      {
+        path: "validation",
+        name: "PredicateValidation",
+        component: PredicateValidation
+      },
+      {
+        path: "confirmation",
+        name: "Confirmation",
+        component: Confirmation
+      }
+    ],
     meta: {
       requiresLicense: true
     }
