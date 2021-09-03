@@ -1,44 +1,11 @@
 <template>
   <div class="panel-content">
-    <div class="p-fluid p-formgrid p-grid">
-      <div class="p-field p-col-12 p-md-8">
-        <label for="graph">Graph</label>
-        <InputText id="graph" type="text" v-model="graph" />
-      </div>
-      <div class="p-field p-col-12 p-md-4">
-        <label for="nested">Nested</label>
-        <Dropdown
-          inputId="nested"
-          v-model="nested"
-          :options="options"
-          optionLabel="name"
-          optionValue="value"
-          placeholder="Is content nested"
-        />
-      </div>
-      <div class="p-field p-col-12 p-md-12">
-        <label for="contentFile">Content File</label>
-        <FileUpload
-          ref="contentFile"
-          name="demo[]"
-          :customUpload="true"
-          :auto="true"
-          @uploader="uploadContent"
-          @clear="resetContent"
-          :preview-width="0"
-          @remove="resetContent"
-          accept=".txt, .csv, .tsv, .json"
-          chooseLabel="Select"
-          :fileLimit="1"
-        >
-          <template #empty>
-            <p>Drag and drop files here to upload.</p>
-          </template>
-        </FileUpload>
-      </div>
-    </div>
+    <h2>New predicates that will be created.</h2>
+
+    <Listbox v-model="selectedCity" :options="newPredicates" />
   </div>
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
+    <Button label="Back" @click="prevPage" />
     <Button label="Next" @click="nextPage" />
   </div>
 </template>
@@ -48,38 +15,32 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "PredicateValidation",
-  computed: {
-    isValid(): boolean {
-      return !!this.contentFile && !!this.graph && !!this.nested;
-    }
-  },
+  computed: {},
   data() {
     return {
-      contentFile: "",
-      graph: "",
-      nested: "",
-      options: [
-        { name: "Yes", value: "true" },
-        { name: "No", value: "false" }
+      pageIndex: 3,
+      newPredicates: [
+        "http://endhealth.info/im#county",
+        "http://endhealth.info/im#uprn",
+        "http://endhealth.info/im#country",
+        "http://endhealth.info/im#town",
+        "http://endhealth.info/im#hasAddress",
+        "http://endhealth.info/im#addressLine1",
+        "http://endhealth.info/im#addressLine2",
+        "http://endhealth.info/im#addressLine3",
+        "http://endhealth.info/im#postcode"
       ]
     };
   },
   methods: {
-    uploadContent(event: any) {
-      this.contentFile = event.files[0];
-    },
-    resetContent() {
-      const x = this.$refs.contentFile as any;
-      x.uploadedFileCount = 0;
-    },
     nextPage() {
       this.$emit("next-page", {
-        formData: {
-          contentFile: this.contentFile,
-          graph: this.graph,
-          nested: this.nested
-        },
-        pageIndex: 0
+        pageIndex: this.pageIndex
+      });
+    },
+    prevPage() {
+      this.$emit("prev-page", {
+        pageIndex: this.pageIndex
       });
     }
   }

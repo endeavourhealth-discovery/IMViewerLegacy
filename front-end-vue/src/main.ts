@@ -74,6 +74,7 @@ import RadioButton from "primevue/radiobutton";
 import ConfirmPopup from "primevue/confirmpopup";
 import InputSwitch from "primevue/inputswitch";
 import Steps from "primevue/steps";
+import Editor from "primevue/editor";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
@@ -138,6 +139,7 @@ const app = createApp(App)
   .component("RadioButton", RadioButton)
   .component("ConfirmPopup", ConfirmPopup)
   .component("Steps", Steps)
+  .component("Editor", Editor)
   .component("InputSwitch", InputSwitch);
 
 app.mount("#app");

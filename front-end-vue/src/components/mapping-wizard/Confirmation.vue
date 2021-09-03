@@ -1,45 +1,10 @@
 <template>
   <div class="panel-content">
-    <div class="p-fluid p-formgrid p-grid">
-      <div class="p-field p-col-12 p-md-8">
-        <label for="graph">Graph</label>
-        <InputText id="graph" type="text" v-model="graph" />
-      </div>
-      <div class="p-field p-col-12 p-md-4">
-        <label for="nested">Nested</label>
-        <Dropdown
-          inputId="nested"
-          v-model="nested"
-          :options="options"
-          optionLabel="name"
-          optionValue="value"
-          placeholder="Is content nested"
-        />
-      </div>
-      <div class="p-field p-col-12 p-md-12">
-        <label for="contentFile">Content File</label>
-        <FileUpload
-          ref="contentFile"
-          name="demo[]"
-          :customUpload="true"
-          :auto="true"
-          @uploader="uploadContent"
-          @clear="resetContent"
-          :preview-width="0"
-          @remove="resetContent"
-          accept=".txt, .csv, .tsv, .json"
-          chooseLabel="Select"
-          :fileLimit="1"
-        >
-          <template #empty>
-            <p>Drag and drop files here to upload.</p>
-          </template>
-        </FileUpload>
-      </div>
-    </div>
+    <h2>Preview</h2>
   </div>
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
-    <Button label="Next" @click="nextPage" />
+    <Button label="Back" @click="prevPage" />
+    <Button label="Submit" @click="submit" />
   </div>
 </template>
 
@@ -55,7 +20,9 @@ export default defineComponent({
   },
   data() {
     return {
+      pageIndex: 4,
       contentFile: "",
+      mappingFile: "",
       graph: "",
       nested: "",
       options: [
@@ -65,22 +32,45 @@ export default defineComponent({
     };
   },
   methods: {
-    uploadContent(event: any) {
-      this.contentFile = event.files[0];
-    },
-    resetContent() {
-      const x = this.$refs.contentFile as any;
-      x.uploadedFileCount = 0;
-    },
-    nextPage() {
-      this.$emit("next-page", {
-        formData: {
-          contentFile: this.contentFile,
-          graph: this.graph,
-          nested: this.nested
-        },
-        pageIndex: 0
+    prevPage() {
+      this.$emit("prev-page", {
+        pageIndex: this.pageIndex
       });
+    },
+    async submit() {
+      //   this.loading = true;
+      //   MappingService.getMappedTTDocument(this.getFormData())
+      //     .then((response) => {
+      //       this.loading = false;
+      //       this.download(response);
+      //     })
+      //     .catch((error) => {
+      //       this.loading = false;
+      //       this.$toast.add(
+      //         LoggerService.error("Request failed from server", error.message)
+      //       );
+      //     });
+    },
+    download(response: any) {
+      const json = JSON.stringify(response);
+      const blob = new Blob([json], { type: "application/json" });
+      const fileURL = URL.createObjectURL(blob);
+
+      const fileLink = document.createElement("a");
+
+      fileLink.href = fileURL;
+      fileLink.setAttribute("download", "response.json");
+      document.body.appendChild(fileLink);
+
+      fileLink.click();
+    },
+    getFormData(): FormData {
+      const formData = new FormData();
+      formData.append("contentFile", this.contentFile);
+      //   formData.append("mappingFile", this.mappingFile);
+      formData.append("graph", this.graph);
+      formData.append("nested", this.nested);
+      return formData;
     }
   }
 });

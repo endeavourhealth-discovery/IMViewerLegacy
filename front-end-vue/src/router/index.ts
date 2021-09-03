@@ -21,6 +21,7 @@ import SnomedLicense from "../views/SnomedLicense.vue";
 import ContentUpload from "../components/mapping-wizard/ContentUpload.vue";
 import MappingDocument from "../components/mapping-wizard/MappingDocument.vue";
 import PredicateValidation from "../components/mapping-wizard/PredicateValidation.vue";
+import DocumentValidation from "../components/mapping-wizard/DocumentValidation.vue";
 import Confirmation from "../components/mapping-wizard/Confirmation.vue";
 import store from "@/store/index";
 import { nextTick } from "vue";
@@ -173,7 +174,12 @@ const routes: Array<RouteRecordRaw> = [
         component: MappingDocument
       },
       {
-        path: "validation",
+        path: "validation/document",
+        name: "DocumentValidation",
+        component: DocumentValidation
+      },
+      {
+        path: "validation/predicate",
         name: "PredicateValidation",
         component: PredicateValidation
       },

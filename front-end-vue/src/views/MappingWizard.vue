@@ -19,9 +19,6 @@
         </router-view>
       </TabPanel>
     </Panel>
-    <div v-if="loading" class="loading-container">
-      <ProgressSpinner />
-    </div>
   </div>
 </template>
 
@@ -47,8 +44,12 @@ export default defineComponent({
           to: "/mapping/wizard/document"
         },
         {
+          label: "Document validation",
+          to: "/mapping/wizard/validation/document"
+        },
+        {
           label: "Predicate validation",
-          to: "/mapping/wizard/validation"
+          to: "/mapping/wizard/validation/predicate"
         },
         {
           label: "Confirmation",
@@ -68,6 +69,8 @@ export default defineComponent({
       for (let field in event.formData) {
         this.formObject[field] = event.formData[field];
       }
+
+      console.log(this.formObject);
 
       this.$router.push(this.items[event.pageIndex + 1].to);
     },

@@ -1,44 +1,102 @@
 <template>
   <div class="panel-content">
-    <div class="p-fluid p-formgrid p-grid">
-      <div class="p-field p-col-12 p-md-8">
-        <label for="graph">Graph</label>
-        <InputText id="graph" type="text" v-model="graph" />
-      </div>
-      <div class="p-field p-col-12 p-md-4">
-        <label for="nested">Nested</label>
-        <Dropdown
-          inputId="nested"
-          v-model="nested"
-          :options="options"
-          optionLabel="name"
-          optionValue="value"
-          placeholder="Is content nested"
-        />
-      </div>
-      <div class="p-field p-col-12 p-md-12">
-        <label for="contentFile">Content File</label>
-        <FileUpload
-          ref="contentFile"
-          name="demo[]"
-          :customUpload="true"
-          :auto="true"
-          @uploader="uploadContent"
-          @clear="resetContent"
-          :preview-width="0"
-          @remove="resetContent"
-          accept=".txt, .csv, .tsv, .json"
-          chooseLabel="Select"
-          :fileLimit="1"
-        >
-          <template #empty>
-            <p>Drag and drop files here to upload.</p>
-          </template>
-        </FileUpload>
+    <div v-for="item in rmlMappingNum" :key="item">
+      <div class="p-fluid p-formgrid p-grid">
+        <div class="p-field p-col-12 p-md-4">
+          <span class="p-float-label">
+            <InputText type="text" v-model="source" />
+            <label>Source</label>
+          </span>
+        </div>
+        <div class="p-field p-col-12 p-md-4">
+          <span class="p-float-label">
+            <InputText type="text" v-model="referenceFormulation" />
+            <label>Reference Formulation</label>
+          </span>
+        </div>
+        <div class="p-field p-col-12 p-md-4">
+          <span class="p-float-label">
+            <InputText type="text" v-model="iterator" />
+            <label>Iterator</label>
+          </span>
+        </div>
+        <div class="p-field p-col-12 p-md-3">
+          <span class="p-float-label">
+            <InputText type="text" v-model="name" />
+            <label>Mapping Name</label>
+          </span>
+        </div>
+        <div class="p-field p-col-12 p-md-3">
+          <span class="p-float-label">
+            <Dropdown v-model="subjectMapType" :options="subjectMapOptions" />
+            <label>SubjectMap Type</label>
+          </span>
+        </div>
+
+        <div class="p-field p-col-12 p-md-3">
+          <span class="p-float-label">
+            <label>SubjectMap Value</label>
+            <InputText type="text" v-model="subjectMapValue" />
+          </span>
+        </div>
+        <div class="p-field p-col-12 p-md-3">
+          <span class="p-float-label">
+            <InputText type="text" v-model="clasz" />
+            <label for="graph">Class</label>
+          </span>
+        </div>
+
+        <div class="p-field p-col-12 p-md-3">
+          <span class="p-float-label">
+            <label for="graph">ObjectMap Property</label>
+            <InputText id="graph" type="text" v-model="graph" />
+          </span>
+        </div>
+        <div class="p-field p-col-12 p-md-3">
+          <span class="p-float-label">
+            <Dropdown
+              inputId="subjectMapType"
+              v-model="subjectMapType"
+              :options="objectMapOptions"
+            />
+            <label for="graph">ObjectMap Type</label>
+          </span>
+        </div>
+        <div class="p-field p-col-12 p-md-3">
+          <span class="p-float-label">
+            <InputText id="graph" type="text" v-model="graph" />
+            <label for="graph">ObjectMap Value</label>
+          </span>
+        </div>
+        <div class="p-field p-col-12 p-md-1">
+          <Button
+            class="p-button-danger"
+            icon="pi pi-minus"
+            @click="deleteObject"
+          >
+          </Button>
+        </div>
+        <div class="p-field p-col-12 p-md-1">
+          <label> </label>
+          <Button icon="pi pi-plus" @click="addObject" class="p-button-success">
+          </Button>
+        </div>
+        <div class="p-field p-col-12 p-md-6 button">
+          <Button
+            label="Delete"
+            :disabled="rmlMappingNum == 1"
+            @click="deleteMapping"
+            class="p-button-danger"
+          />
+        </div>
+        <div class="p-field p-col-12 p-md-6">
+          <Button label="Add" @click="addMapping" class="p-button-success" />
+        </div>
       </div>
     </div>
   </div>
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
+    <Button label="Back" @click="prevPage" />
     <Button label="Next" @click="nextPage" />
   </div>
 </template>
@@ -50,36 +108,46 @@ export default defineComponent({
   name: "MappingDocument",
   computed: {
     isValid(): boolean {
-      return !!this.contentFile && !!this.graph && !!this.nested;
+      return true;
     }
   },
   data() {
     return {
-      contentFile: "",
-      graph: "",
-      nested: "",
-      options: [
-        { name: "Yes", value: "true" },
-        { name: "No", value: "false" }
+      rmlMappingNum: 1,
+      pageIndex: 1,
+      source: "",
+      referenceFormulation: "",
+      iterator: "",
+      name: "",
+      subjectMapType: "",
+      subjectMapValue: "",
+      clasz: "",
+      objectMaps: "",
+      subjectMapOptions: ["constant", "reference", "template", "functionValue"],
+      objectMapOptions: [
+        "constant",
+        "reference",
+        "template",
+        "functionValue",
+        "parentTriplesMap"
       ]
     };
   },
   methods: {
-    uploadContent(event: any) {
-      this.contentFile = event.files[0];
+    addMapping() {
+      this.rmlMappingNum++;
     },
-    resetContent() {
-      const x = this.$refs.contentFile as any;
-      x.uploadedFileCount = 0;
+    deleteMapping() {
+      this.rmlMappingNum--;
     },
     nextPage() {
       this.$emit("next-page", {
-        formData: {
-          contentFile: this.contentFile,
-          graph: this.graph,
-          nested: this.nested
-        },
-        pageIndex: 0
+        pageIndex: this.pageIndex
+      });
+    },
+    prevPage() {
+      this.$emit("prev-page", {
+        pageIndex: this.pageIndex
       });
     }
   }
@@ -101,6 +169,10 @@ export default defineComponent({
   flex-flow: row;
   justify-content: center;
   align-items: center;
+}
+
+.p-field {
+  margin-bottom: 30px;
 }
 
 #button-bar {
