@@ -73,6 +73,7 @@ import { FilterMatchMode, FilterOperator } from "primevue/api";
 import RadioButton from "primevue/radiobutton";
 import ConfirmPopup from "primevue/confirmpopup";
 import InputSwitch from "primevue/inputswitch";
+import Steps from "primevue/steps";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
@@ -136,6 +137,7 @@ const app = createApp(App)
   .component("FilterOperator", FilterOperator)
   .component("RadioButton", RadioButton)
   .component("ConfirmPopup", ConfirmPopup)
+  .component("Steps", Steps)
   .component("InputSwitch", InputSwitch);
 
 app.mount("#app");
