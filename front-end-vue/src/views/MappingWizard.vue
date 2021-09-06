@@ -29,7 +29,7 @@ import SideNav from "@/components/home/SideNav.vue";
 export default defineComponent({
   name: "MappingWizard",
   components: {
-    SideNav
+    SideNav,
   },
   computed: {},
   data() {
@@ -37,31 +37,32 @@ export default defineComponent({
       items: [
         {
           label: "Upload content",
-          to: "/mapping/wizard"
+          to: "/mapping/wizard",
         },
         {
           label: "Mapping document",
-          to: "/mapping/wizard/document"
+          to: "/mapping/wizard/document",
         },
         {
           label: "Document validation",
-          to: "/mapping/wizard/validation/document"
+          to: "/mapping/wizard/validation/document",
         },
         {
           label: "Predicate validation",
-          to: "/mapping/wizard/validation/predicate"
+          to: "/mapping/wizard/validation/predicate",
         },
         {
           label: "Confirmation",
-          to: "/mapping/wizard/confirmation"
-        }
+          to: "/mapping/wizard/confirmation",
+        },
       ],
       formObject: {
         contentFile: "",
         graph: "",
         nested: "",
-        mapDocument: ""
-      } as any
+        mapDocument: "",
+        mapDocumentString: "",
+      } as any,
     };
   },
   methods: {
@@ -77,19 +78,7 @@ export default defineComponent({
     prevPage(event: any) {
       this.$router.push(this.items[event.pageIndex - 1].to);
     },
-    complete() {
-      this.$toast.add({
-        severity: "success",
-        summary: "Order submitted",
-        detail:
-          "Dear, " +
-          this.formObject.firstname +
-          " " +
-          this.formObject.lastname +
-          " your order completed."
-      });
-    }
-  }
+  },
 });
 </script>
 

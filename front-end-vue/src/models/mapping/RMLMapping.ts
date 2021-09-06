@@ -1,6 +1,18 @@
+import { PredicateObjectMap } from "./PredicateObjectMap";
+import { ReferenceFormulationEnum } from "./ReferenceFormulationEnum";
+import { SubjectMapTypeEnum } from "./SubjectMapTypeEnum";
+
 export interface RMLMapping {
+  id: number;
   name: string;
-  logicalSource: string;
-  subjectMap: string;
-  objectMap: string;
+  
+  source: string;
+  referenceFormulation: ReferenceFormulationEnum;
+  iterator: string;
+
+  subjectMapType: SubjectMapTypeEnum;
+  subjectMapValue: string;
+  class: string;
+
+  objectMaps: PredicateObjectMap[];
 }

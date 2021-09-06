@@ -1,91 +1,99 @@
 <template>
   <div class="panel-content">
-    <div v-for="item in rmlMappingNum" :key="item">
+    <div v-for="mapping in mappings" :key="mapping.id">
       <div class="p-fluid p-formgrid p-grid">
         <div class="p-field p-col-12 p-md-4">
           <span class="p-float-label">
-            <InputText type="text" v-model="source" />
-            <label>Source</label>
+            <InputText type="text" v-model="mapping.name" />
+            <label>Mapping Name</label>
           </span>
         </div>
         <div class="p-field p-col-12 p-md-4">
           <span class="p-float-label">
-            <InputText type="text" v-model="referenceFormulation" />
+            <InputText type="text" v-model="mapping.referenceFormulation" />
             <label>Reference Formulation</label>
           </span>
         </div>
         <div class="p-field p-col-12 p-md-4">
           <span class="p-float-label">
-            <InputText type="text" v-model="iterator" />
+            <InputText type="text" v-model="mapping.iterator" />
             <label>Iterator</label>
           </span>
         </div>
-        <div class="p-field p-col-12 p-md-3">
+
+        <div class="p-field p-col-12 p-md-4">
           <span class="p-float-label">
-            <InputText type="text" v-model="name" />
-            <label>Mapping Name</label>
-          </span>
-        </div>
-        <div class="p-field p-col-12 p-md-3">
-          <span class="p-float-label">
-            <Dropdown v-model="subjectMapType" :options="subjectMapOptions" />
+            <Dropdown
+              v-model="mapping.subjectMapType"
+              :options="subjectMapOptions"
+            />
             <label>SubjectMap Type</label>
           </span>
         </div>
 
-        <div class="p-field p-col-12 p-md-3">
+        <div class="p-field p-col-12 p-md-4">
           <span class="p-float-label">
+            <InputText type="text" v-model="mapping.subjectMapValue" />
             <label>SubjectMap Value</label>
-            <InputText type="text" v-model="subjectMapValue" />
           </span>
         </div>
-        <div class="p-field p-col-12 p-md-3">
+        <div class="p-field p-col-12 p-md-4">
           <span class="p-float-label">
-            <InputText type="text" v-model="clasz" />
+            <InputText type="text" v-model="mapping.class" />
             <label for="graph">Class</label>
           </span>
         </div>
+      </div>
 
-        <div class="p-field p-col-12 p-md-3">
-          <span class="p-float-label">
-            <label for="graph">ObjectMap Property</label>
-            <InputText id="graph" type="text" v-model="graph" />
-          </span>
+      <div v-for="predicate in mapping.objectMaps" :key="predicate.id">
+        <div class="p-fluid p-formgrid p-grid">
+          <div class="p-field p-col-3">
+            <span class="p-float-label">
+              <InputText id="graph" type="text" v-model="predicate.property" />
+              <label for="graph">ObjectMap Property</label>
+            </span>
+          </div>
+          <div class="p-field p-col-3">
+            <span class="p-float-label">
+              <Dropdown
+                inputId="subjectMapType"
+                v-model="predicate.type"
+                :options="objectMapOptions"
+              />
+              <label for="graph">ObjectMap Type</label>
+            </span>
+          </div>
+          <div class="p-field p-col-3">
+            <span class="p-float-label">
+              <InputText id="graph" type="text" v-model="predicate.value" />
+              <label for="graph">ObjectMap Value</label>
+            </span>
+          </div>
+          <div class="p-field p-col">
+            <Button
+              label="Remove ObjectMap"
+              class="p-button-danger"
+              @click="removeObjectMap(mapping, predicate.id)"
+            >
+            </Button>
+          </div>
+          <div class="p-field p-col">
+            <Button
+              label="Add ObjectMap"
+              @click="addObjectMap(mapping)"
+              class="p-button-success"
+            >
+            </Button>
+          </div>
         </div>
-        <div class="p-field p-col-12 p-md-3">
-          <span class="p-float-label">
-            <Dropdown
-              inputId="subjectMapType"
-              v-model="subjectMapType"
-              :options="objectMapOptions"
-            />
-            <label for="graph">ObjectMap Type</label>
-          </span>
-        </div>
-        <div class="p-field p-col-12 p-md-3">
-          <span class="p-float-label">
-            <InputText id="graph" type="text" v-model="graph" />
-            <label for="graph">ObjectMap Value</label>
-          </span>
-        </div>
-        <div class="p-field p-col-12 p-md-1">
-          <Button
-            class="p-button-danger"
-            icon="pi pi-minus"
-            @click="deleteObject"
-          >
-          </Button>
-        </div>
-        <div class="p-field p-col-12 p-md-1">
-          <label> </label>
-          <Button icon="pi pi-plus" @click="addObject" class="p-button-success">
-          </Button>
-        </div>
+      </div>
+
+      <div class="p-fluid p-grid">
         <div class="p-field p-col-12 p-md-6 button">
           <Button
             label="Delete"
-            :disabled="rmlMappingNum == 1"
-            @click="deleteMapping"
+            :disabled="mappings.length == 1"
+            @click="deleteMapping(mapping.id)"
             class="p-button-danger"
           />
         </div>
@@ -102,55 +110,65 @@
 </template>
 
 <script lang="ts">
+import { ObjectMapTypeEnum } from "@/models/mapping/ObjectMapTypeEnum";
+import { SubjectMapTypeEnum } from "@/models/mapping/SubjectMapTypeEnum";
+import { RMLMapping } from "@/models/mapping/RMLMapping";
 import { defineComponent } from "vue";
+import { PredicateObjectMap } from "@/models/mapping/PredicateObjectMap";
 
 export default defineComponent({
   name: "MappingDocument",
   computed: {
     isValid(): boolean {
       return true;
-    }
+    },
   },
   data() {
     return {
-      rmlMappingNum: 1,
       pageIndex: 1,
-      source: "",
-      referenceFormulation: "",
-      iterator: "",
-      name: "",
-      subjectMapType: "",
-      subjectMapValue: "",
-      clasz: "",
-      objectMaps: "",
-      subjectMapOptions: ["constant", "reference", "template", "functionValue"],
-      objectMapOptions: [
-        "constant",
-        "reference",
-        "template",
-        "functionValue",
-        "parentTriplesMap"
-      ]
+      mapDocumentString: "",
+      mappings: [
+        { id: 0, objectMaps: [{ id: 0 }] as PredicateObjectMap[] },
+      ] as RMLMapping[],
+      subjectMapOptions: Object.values(SubjectMapTypeEnum),
+      objectMapOptions: Object.values(ObjectMapTypeEnum),
     };
   },
   methods: {
-    addMapping() {
-      this.rmlMappingNum++;
+    addObjectMap(mapping: RMLMapping) {
+      mapping.objectMaps.push({
+        id: mapping.objectMaps.length,
+      } as PredicateObjectMap);
     },
-    deleteMapping() {
-      this.rmlMappingNum--;
+    removeObjectMap(mapping: RMLMapping, predicateId: number) {
+      const newObjectMaps = mapping.objectMaps.filter((obj) => {
+        return obj.id !== predicateId;
+      });
+      mapping.objectMaps = newObjectMaps;
+    },
+    addMapping() {
+      this.mappings.push({
+        id: this.mappings.length,
+        objectMaps: [{ id: 0 }] as PredicateObjectMap[],
+      } as RMLMapping);
+    },
+    deleteMapping(id: number) {
+      const newMappings = this.mappings.filter((obj) => {
+        return obj.id !== id;
+      });
+      this.mappings = newMappings;
     },
     nextPage() {
       this.$emit("next-page", {
-        pageIndex: this.pageIndex
+        pageIndex: this.pageIndex,
       });
     },
     prevPage() {
       this.$emit("prev-page", {
-        pageIndex: this.pageIndex
+        pageIndex: this.pageIndex,
       });
-    }
-  }
+    },
+  },
 });
 </script>
 
