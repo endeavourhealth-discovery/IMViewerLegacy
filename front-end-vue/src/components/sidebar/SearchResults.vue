@@ -272,28 +272,6 @@ export default defineComponent({
         counter++;
       }
       return returnString;
-      // let typesString = "";
-      // if (data.entityType.length > 0) {
-      //   typesString = data.entityType
-      //     .map((item: any) => item.name)
-      //     .join(",\n\t");
-      // }
-      // return (
-      //   "Name: " +
-      //   data.name +
-      //   ",\nIri: " +
-      //   data.iri +
-      //   ",\nCode: " +
-      //   data.code +
-      //   ",\nStatus: " +
-      //   data.status.name +
-      //   ",\nScheme: " +
-      //   data.scheme.name +
-      //   ",\nTypes: " +
-      //   "[\n\t" +
-      //   typesString +
-      //   "\n]"
-      // );
     },
 
     onCopy(): void {
