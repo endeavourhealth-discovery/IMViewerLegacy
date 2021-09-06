@@ -129,6 +129,7 @@ describe("Mappings.vue", () => {
   });
 
   it("can create chart structure ___ empty mappingObject", () => {
+    wrapper.vm.simpleMaps = [];
     expect(wrapper.vm.createChartStructure([])).toStrictEqual([]);
   });
 
