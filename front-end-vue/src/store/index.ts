@@ -118,8 +118,6 @@ export default createStore({
       state.selectedEntityType = type;
     },
     updateModuleSelectedEntities(state, data) {
-      console.log(data.module);
-      console.log(data.iri);
       switch (data.module) {
         case "Set":
           state.moduleSelectedEntities.sets = data.iri;
