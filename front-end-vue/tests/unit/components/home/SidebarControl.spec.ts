@@ -83,7 +83,7 @@ describe("SidebarControl.vue", () => {
     wrapper.vm.searchTerm = "sco";
     wrapper.vm.search();
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.active).toBe(2);
+    expect(wrapper.vm.active).toBe(1);
     expect(mockStore.commit).toHaveBeenCalled();
   });
 
