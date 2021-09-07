@@ -149,7 +149,12 @@ import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
 import Mappings from "../components/concept/Mappings.vue";
-import { isValueSet, isClass, isQuery } from "@/helpers/ConceptTypeMethods";
+import {
+  isValueSet,
+  isClass,
+  isQuery,
+  isRecordModel
+} from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import EntityService from "@/services/EntityService";
@@ -159,6 +164,7 @@ import SecondaryTree from "../components/concept/SecondaryTree.vue";
 import { IM } from "@/vocabulary/IM";
 import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
+import { MODULE_IRIS } from "@/helpers/ModuleIris";
 
 export default defineComponent({
   name: "Concept",
@@ -185,7 +191,11 @@ export default defineComponent({
       return isQuery(this.types);
     },
 
-    ...mapState(["conceptIri"])
+    isRecordModel(): boolean {
+      return isRecordModel(this.types);
+    },
+
+    ...mapState(["conceptIri", "selectedEntityType"])
   },
   watch: {
     async conceptIri() {
@@ -340,16 +350,22 @@ export default defineComponent({
         : [];
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
-      this.$store.commit(
-        "updateSelectedEntityType",
-        this.isSet
+      const type = this.isSet
           ? "Set"
+          : this.isRecordModel
+          ? "RecordModel"
           : this.isClass
           ? "Class"
           : this.isQuery
           ? "Query"
           : "None"
+      this.$store.commit(
+        "updateSelectedEntityType",
+        type
       );
+      if (!MODULE_IRIS.includes(this.conceptIri)) {
+        this.$store.commit("updateModuleSelectedEntities", { module: type, iri: this.conceptIri });
+      }
       this.loading = false;
     },
 

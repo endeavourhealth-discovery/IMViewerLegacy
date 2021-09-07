@@ -79,6 +79,7 @@ import {
   getIconFromType
 } from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
+import { MODULE_IRIS } from "@/helpers/ModuleIris";
 
 export default defineComponent({
   name: "Hierarchy",
@@ -93,7 +94,7 @@ export default defineComponent({
   ]),
   watch: {
     async conceptIri(newValue) {
-      if (this.homeIris.includes(newValue)) {
+      if (MODULE_IRIS.includes(newValue)) {
         this.selectedKey = {};
         await this.getConceptAggregate(newValue);
         this.createTree(
@@ -152,13 +153,7 @@ export default defineComponent({
       root: [] as TreeNode[],
       expandedKeys: {} as any,
       selectedKey: {} as any,
-      parentLabel: "",
-      homeIris: [
-        IM.NAMESPACE + "Sets",
-        IM.NAMESPACE + "DiscoveryOntology",
-        IM.NAMESPACE + "QT_QueryTemplates",
-        IM.NAMESPACE + "InformationModel"
-      ]
+      parentLabel: ""
     };
   },
   async mounted() {
@@ -168,7 +163,7 @@ export default defineComponent({
       this.conceptAggregate.parents,
       this.conceptAggregate.children
     );
-    if (!this.homeIris.includes(this.conceptAggregate.concept[IM.IRI])) {
+    if (!MODULE_IRIS.includes(this.conceptAggregate.concept[IM.IRI])) {
       this.$store.commit("updateHistory", {
         url: this.$route.fullPath,
         conceptName: this.conceptAggregate.concept[RDFS.LABEL],
@@ -202,16 +197,13 @@ export default defineComponent({
       });
     },
     createTree(concept: any, parentHierarchy: any, children: any): void {
-      if (this.root.length == 0) {
+      // if (this.root.length == 0) {
+      //   this.refreshTree(concept, parentHierarchy, children);
+      // } else if (
+      //   this.homeIris.includes(concept[IM.IRI])
+      // ) {
         this.refreshTree(concept, parentHierarchy, children);
-      } else if (
-        concept[IM.IRI] === IM.NAMESPACE + "InformationModel" ||
-        concept[IM.IRI] === IM.NAMESPACE + "DiscoveryOntology" ||
-        concept[IM.IRI] === IM.NAMESPACE + "Sets" ||
-        concept[IM.IRI] === IM.NAMESPACE + "QT_QueryTemplates"
-      ) {
-        this.refreshTree(concept, parentHierarchy, children);
-      }
+      // }
     },
 
     refreshTree(concept: any, parentHierarchy: any, children: any): void {
@@ -267,10 +259,7 @@ export default defineComponent({
 
     onNodeSelect(node: any): void {
       if (
-        node.data === IM.NAMESPACE + "InformationModel" ||
-        node.data === IM.NAMESPACE + "DiscoveryOntology" ||
-        node.data === IM.NAMESPACE + "Sets" ||
-        node.data === IM.NAMESPACE + "QT_QueryTemplates"
+        MODULE_IRIS.includes(node.data)
       ) {
         this.$router.push({ name: "Dashboard" });
       } else {
