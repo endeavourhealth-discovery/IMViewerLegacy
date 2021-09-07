@@ -8,7 +8,7 @@
         </div>
         <router-view
           v-slot="{ Component }"
-          :formData="formObject"
+          :formObject="formObject"
           @prevPage="prevPage($event)"
           @nextPage="nextPage($event)"
           @complete="complete"
@@ -25,6 +25,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
+import { MappingFormObject } from "@/models/mapping/MappingFormObject";
 
 export default defineComponent({
   name: "MappingWizard",
@@ -56,19 +57,13 @@ export default defineComponent({
           to: "/mapping/wizard/confirmation",
         },
       ],
-      formObject: {
-        contentFile: "",
-        graph: "",
-        nested: "",
-        mapDocument: "",
-        mapDocumentString: "",
-      } as any,
+      formObject: {} as MappingFormObject,
     };
   },
   methods: {
     nextPage(event: any) {
       for (let field in event.formData) {
-        this.formObject[field] = event.formData[field];
+        (this.formObject as any)[field] = event.formData[field];
       }
 
       console.log(this.formObject);

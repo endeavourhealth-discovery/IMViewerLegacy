@@ -9,47 +9,44 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { MappingFormObject } from "@/models/mapping/MappingFormObject";
+import LoggerService from "@/services/LoggerService";
+import MappingService from "@/services/MappingService";
+import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   name: "Confirmation",
-  computed: {
-    isValid(): boolean {
-      return !!this.contentFile && !!this.graph && !!this.nested;
-    }
+  props: {
+    formObject: {
+      type: Object as PropType<MappingFormObject>,
+      required: true,
+    },
   },
   data() {
     return {
+      loading: true,
       pageIndex: 4,
-      contentFile: "",
-      mappingFile: "",
-      graph: "",
-      nested: "",
-      options: [
-        { name: "Yes", value: "true" },
-        { name: "No", value: "false" }
-      ]
     };
   },
   methods: {
     prevPage() {
       this.$emit("prev-page", {
-        pageIndex: this.pageIndex
+        pageIndex: this.pageIndex,
       });
     },
     async submit() {
-      //   this.loading = true;
-      //   MappingService.getMappedTTDocument(this.getFormData())
-      //     .then((response) => {
-      //       this.loading = false;
-      //       this.download(response);
-      //     })
-      //     .catch((error) => {
-      //       this.loading = false;
-      //       this.$toast.add(
-      //         LoggerService.error("Request failed from server", error.message)
-      //       );
-      //     });
+      this.loading = true;
+      MappingService.getMappedTTDocument(this.getFormData())
+        .then((response) => {
+          this.loading = false;
+          this.download(response);
+        })
+        .catch((error) => {
+          this.loading = false;
+          this.$toast.add(
+            LoggerService.error("Request failed from server", error.message)
+          );
+        });
     },
     download(response: any) {
       const json = JSON.stringify(response);
@@ -66,13 +63,13 @@ export default defineComponent({
     },
     getFormData(): FormData {
       const formData = new FormData();
-      formData.append("contentFile", this.contentFile);
-      //   formData.append("mappingFile", this.mappingFile);
-      formData.append("graph", this.graph);
-      formData.append("nested", this.nested);
+      formData.append("contentFile", this.formObject.contentFile);
+      formData.append("mappingFile", this.formObject.mapDocumentString);
+      formData.append("graph", this.formObject.graph);
+      formData.append("nested", this.formObject.nested);
       return formData;
-    }
-  }
+    },
+  },
 });
 </script>
 

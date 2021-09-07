@@ -11,39 +11,50 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { MappingFormObject } from "@/models/mapping/MappingFormObject";
+import MappingService from "@/services/MappingService";
+import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   name: "PredicateValidation",
+  props: {
+    formObject: {
+      type: Object as PropType<MappingFormObject>,
+      required: true,
+    },
+  },
   computed: {},
   data() {
     return {
       pageIndex: 3,
       newPredicates: [
-        "http://endhealth.info/im#county",
-        "http://endhealth.info/im#uprn",
-        "http://endhealth.info/im#country",
-        "http://endhealth.info/im#town",
-        "http://endhealth.info/im#hasAddress",
-        "http://endhealth.info/im#addressLine1",
-        "http://endhealth.info/im#addressLine2",
-        "http://endhealth.info/im#addressLine3",
-        "http://endhealth.info/im#postcode"
-      ]
+        
+      ],
     };
   },
+  async mounted() {
+    this.newPredicates = await this.getNewPredicates();
+  },
   methods: {
+    async getNewPredicates() {
+      return await MappingService.getNewPredicates(this.getFormData());
+    },
+    getFormData(): FormData {
+      const formData = new FormData();
+      formData.append("mapDocument", this.formObject.mapDocument);
+      return formData;
+    },
     nextPage() {
       this.$emit("next-page", {
-        pageIndex: this.pageIndex
+        pageIndex: this.pageIndex,
       });
     },
     prevPage() {
       this.$emit("prev-page", {
-        pageIndex: this.pageIndex
+        pageIndex: this.pageIndex,
       });
-    }
-  }
+    },
+  },
 });
 </script>
 

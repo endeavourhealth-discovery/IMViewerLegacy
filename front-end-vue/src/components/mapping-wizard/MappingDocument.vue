@@ -10,7 +10,10 @@
         </div>
         <div class="p-field p-col-12 p-md-4">
           <span class="p-float-label">
-            <InputText type="text" v-model="mapping.referenceFormulation" />
+            <Dropdown
+              v-model="mapping.referenceFormulation"
+              :options="referenceFormulationOptions"
+            />
             <label>Reference Formulation</label>
           </span>
         </div>
@@ -113,8 +116,10 @@
 import { ObjectMapTypeEnum } from "@/models/mapping/ObjectMapTypeEnum";
 import { SubjectMapTypeEnum } from "@/models/mapping/SubjectMapTypeEnum";
 import { RMLMapping } from "@/models/mapping/RMLMapping";
+import { buildMapDocumentString } from "@/helpers/MapDocumentHelper";
 import { defineComponent } from "vue";
 import { PredicateObjectMap } from "@/models/mapping/PredicateObjectMap";
+import { ReferenceFormulationEnum } from "@/models/mapping/ReferenceFormulationEnum";
 
 export default defineComponent({
   name: "MappingDocument",
@@ -130,6 +135,7 @@ export default defineComponent({
       mappings: [
         { id: 0, objectMaps: [{ id: 0 }] as PredicateObjectMap[] },
       ] as RMLMapping[],
+      referenceFormulationOptions: Object.values(ReferenceFormulationEnum),
       subjectMapOptions: Object.values(SubjectMapTypeEnum),
       objectMapOptions: Object.values(ObjectMapTypeEnum),
     };
@@ -159,7 +165,11 @@ export default defineComponent({
       this.mappings = newMappings;
     },
     nextPage() {
+      this.mapDocumentString = buildMapDocumentString(this.mappings);
       this.$emit("next-page", {
+        formData: {
+          mapDocumentString: this.mapDocumentString,
+        },
         pageIndex: this.pageIndex,
       });
     },
