@@ -1,4 +1,4 @@
-import { IM } from "@/vocabulary/IM"
+import { IM } from "@/vocabulary/IM";
 
 export const MODULE_IRIS = [
   IM.MODULE_ONTOLOGY,
@@ -7,4 +7,4 @@ export const MODULE_IRIS = [
   IM.MODULE_CATALOGUE,
   IM.MODULE_QUERIES,
   IM.MODULE_IM
-]
+];

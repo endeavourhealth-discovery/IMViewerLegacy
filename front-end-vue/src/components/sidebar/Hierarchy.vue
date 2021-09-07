@@ -197,13 +197,7 @@ export default defineComponent({
       });
     },
     createTree(concept: any, parentHierarchy: any, children: any): void {
-      // if (this.root.length == 0) {
-      //   this.refreshTree(concept, parentHierarchy, children);
-      // } else if (
-      //   this.homeIris.includes(concept[IM.IRI])
-      // ) {
-        this.refreshTree(concept, parentHierarchy, children);
-      // }
+      this.refreshTree(concept, parentHierarchy, children);
     },
 
     refreshTree(concept: any, parentHierarchy: any, children: any): void {
@@ -258,9 +252,7 @@ export default defineComponent({
     },
 
     onNodeSelect(node: any): void {
-      if (
-        MODULE_IRIS.includes(node.data)
-      ) {
+      if (MODULE_IRIS.includes(node.data)) {
         this.$router.push({ name: "Dashboard" });
       } else {
         this.$router.push({

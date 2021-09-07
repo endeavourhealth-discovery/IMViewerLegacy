@@ -351,20 +351,20 @@ export default defineComponent({
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
       const type = this.isSet
-          ? "Set"
-          : this.isRecordModel
-          ? "RecordModel"
-          : this.isClass
-          ? "Class"
-          : this.isQuery
-          ? "Query"
-          : "None"
-      this.$store.commit(
-        "updateSelectedEntityType",
-        type
-      );
+        ? "Set"
+        : this.isRecordModel
+        ? "RecordModel"
+        : this.isClass
+        ? "Class"
+        : this.isQuery
+        ? "Query"
+        : "None";
+      this.$store.commit("updateSelectedEntityType", type);
       if (!MODULE_IRIS.includes(this.conceptIri)) {
-        this.$store.commit("updateModuleSelectedEntities", { module: type, iri: this.conceptIri });
+        this.$store.commit("updateModuleSelectedEntities", {
+          module: type,
+          iri: this.conceptIri
+        });
       }
       this.loading = false;
     },

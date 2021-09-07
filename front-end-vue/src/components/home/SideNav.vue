@@ -110,8 +110,9 @@ export default defineComponent({
       }
     },
     sideNavHierarchyFocus(newValue, oldValue) {
-      if (newValue.name !== oldValue.name)
-      this.handleCenterIconClick(newValue);
+      if (newValue.name !== oldValue.name) {
+        this.handleCenterIconClick(newValue);
+      }
     }
   },
   data() {
@@ -233,10 +234,7 @@ export default defineComponent({
         fullName: "Information Model",
         iri: IM.MODULE_IM
       });
-      this.$store.commit(
-        "updateConceptIri",
-        IM.MODULE_IM
-      );
+      this.$store.commit("updateConceptIri", IM.MODULE_IM);
       this.$emit("hierarchyFocusSelected");
       this.$router.push({ name: "Dashboard" });
     },
@@ -256,19 +254,34 @@ export default defineComponent({
         });
         switch (item.name) {
           case "Ontology":
-            this.$store.commit("updateConceptIri", this.moduleSelectedEntities.ontology);
+            this.$store.commit(
+              "updateConceptIri",
+              this.moduleSelectedEntities.ontology
+            );
             break;
           case "Sets":
-            this.$store.commit("updateConceptIri", this.moduleSelectedEntities.sets);
+            this.$store.commit(
+              "updateConceptIri",
+              this.moduleSelectedEntities.sets
+            );
             break;
           case "Queries":
-            this.$store.commit("updateConceptIri", this.moduleSelectedEntities.queries);
+            this.$store.commit(
+              "updateConceptIri",
+              this.moduleSelectedEntities.queries
+            );
             break;
           case "DataModel":
-            this.$store.commit("updateConceptIri", this.moduleSelectedEntities.dataModel);
+            this.$store.commit(
+              "updateConceptIri",
+              this.moduleSelectedEntities.dataModel
+            );
             break;
           case "Catalogue":
-            this.$store.commit("updateConceptIri", this.moduleSelectedEntities.catalogue);
+            this.$store.commit(
+              "updateConceptIri",
+              this.moduleSelectedEntities.catalogue
+            );
             break;
           default:
             // this.$store.commit("updateConceptIri", item.iri);

@@ -131,7 +131,7 @@ export default createStore({
         case "Query":
           state.moduleSelectedEntities.queries = data.iri;
           break;
-          // add case for catalogue when type in known
+        // add case for catalogue when type in known
         default:
           break;
       }
