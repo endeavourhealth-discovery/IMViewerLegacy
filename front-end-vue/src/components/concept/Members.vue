@@ -14,7 +14,7 @@
       :globalFilterFields="['code', 'entity.name', 'scheme.name', 'label']"
       :scrollable="true"
       sortMode="single"
-      sortField="label"
+      sortField="position"
       :sortOrder="1"
       class="p-datatable-sm"
       scrollHeight="flex"
@@ -80,7 +80,14 @@
         header="Name"
         filter-field="entity.name"
         style="flex: 0 0 60%"
-      />
+      >
+        <template #body="slotProps">
+          <div v-if="slotProps.data.type === 'COMPLEX'">
+            <Button label="Show" />
+          </div>
+          <span v-else>{{ slotProps.data.entity.name }}</span>
+        </template>
+      </Column>
       <Column field="code" header="Code" filter-field="code" />
       <Column field="scheme.name" header="Scheme" filter-field="scheme.name" />
       <template #groupheader="slotProps">
@@ -97,6 +104,9 @@
         </span>
         <span v-if="slotProps.data.type === 'EXPANDED'" class="group-header">
           Expanded Members
+        </span>
+        <span v-if="slotProps.data.type === 'COMPLEX'" class="group-header">
+          Complex Members
         </span>
       </template>
     </DataTable>
