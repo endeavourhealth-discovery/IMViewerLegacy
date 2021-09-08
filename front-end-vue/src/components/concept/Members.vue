@@ -83,7 +83,7 @@
       >
         <template #body="slotProps">
           <div v-if="slotProps.data.type === 'COMPLEX'">
-            <Button label="Show" />
+            <Button label="Show" @click="openComplexMembersDialog" />
           </div>
           <span v-else>{{ slotProps.data.entity.name }}</span>
         </template>
@@ -111,6 +111,12 @@
       </template>
     </DataTable>
   </div>
+  <ComplexMembers
+    v-if="showComplexMembersDialog"
+    @closeComplexMembersDialog="closeComplexMembersDialog"
+    :showDialog="showComplexMembersDialog"
+    :conceptIri="conceptIri"
+  />
 </template>
 
 <script lang="ts">
@@ -119,13 +125,15 @@ import EntityService from "@/services/EntityService";
 import { FilterMatchMode } from "primevue/api";
 import Swal from "sweetalert2";
 import LoggerService from "@/services/LoggerService";
+import ComplexMembers from "@/components/concept/members/ComplexMembers.vue";
 
 export default defineComponent({
   name: "Members",
-  components: {},
+  components: { ComplexMembers },
   props: {
-    conceptIri: String
+    conceptIri: { type: String, required: true }
   },
+  emits: ["memberClick"],
   watch: {
     async conceptIri() {
       this.expandMembers = false;
@@ -164,7 +172,8 @@ export default defineComponent({
       expandSubsets: false,
       selected: {} as any,
       subsets: [] as any[],
-      expandedRowGroups: ["MemberIncluded", "MemberXcluded"]
+      expandedRowGroups: ["MemberIncluded", "MemberXcluded"],
+      showComplexMembersDialog: false
     };
   },
   methods: {
@@ -297,6 +306,14 @@ export default defineComponent({
           "Failed to set members table width. Required element(s) not found."
         );
       }
+    },
+
+    openComplexMembersDialog() {
+      this.showComplexMembersDialog = true;
+    },
+
+    closeComplexMembersDialog() {
+      this.showComplexMembersDialog = false;
     }
   }
 });
