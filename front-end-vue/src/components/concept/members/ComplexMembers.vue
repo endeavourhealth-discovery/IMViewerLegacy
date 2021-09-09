@@ -4,19 +4,19 @@
     :modal="true"
     :closable="false"
     :maximizable="true"
-    :style="{ width: '50vw'}"
+    :style="{ width: '50vw' }"
   >
-  <template #header>
-    Complex members
-  </template>
-  <template #footer>
-    <Button
-      label="Close"
-      icon="pi pi-times"
-      class="p-button-secondary"
-      @click="closeComplexMembersDialog"
-    />
-  </template>
+    <template #header>
+      Complex members
+    </template>
+    <template #footer>
+      <Button
+        label="Close"
+        icon="pi pi-times"
+        class="p-button-secondary"
+        @click="closeComplexMembersDialog"
+      />
+    </template>
   </Dialog>
 </template>
 
@@ -27,7 +27,10 @@ import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "ComplexMembers",
-  props: { conceptIri: { type: String, required: true }, showDialog: { type: Boolean, required: true } },
+  props: {
+    conceptIri: { type: String, required: true },
+    showDialog: { type: Boolean, required: true }
+  },
   emits: ["closeComplexMembersDialog"],
   watch: {
     async conceptIri() {
@@ -72,6 +75,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
