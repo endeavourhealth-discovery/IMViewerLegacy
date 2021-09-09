@@ -1,5 +1,8 @@
 <template>
   <div id="concept-main-container">
+    <!-- <div v-if="loading" class="loading-container">
+      <ProgressSpinner />
+    </div> -->
     <Panel>
       <template #icons>
         <div class="icons-container">
@@ -58,13 +61,7 @@
         <PanelHeader :types="types" :header="header" />
       </template>
       <div id="concept-content-dialogs-container">
-        <div
-          v-if="
-            Object.keys(concept).length &&
-              Object.keys(concept).includes('dataModelProperties')
-          "
-          id="concept-panel-container"
-        >
+        <div id="concept-panel-container">
           <TabView v-model:activeIndex="active" :lazy="true">
             <TabPanel header="Definition">
               <div
