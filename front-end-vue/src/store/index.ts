@@ -7,9 +7,7 @@ import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
 import LoggerService from "@/services/LoggerService";
 import { CustomAlert } from "@/models/user/CustomAlert";
-import { IM } from "@/vocabulary/IM";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
-import { ConceptReference } from "@/models/TTConcept/ConceptReference";
 import axios from "axios";
 
 export default createStore({
@@ -35,39 +33,25 @@ export default createStore({
       iri: "http://endhealth.info/im#DiscoveryOntology"
     } as { name: string; iri: string },
     selectedEntityType: "",
-    filters: {
-      selectedStatus: ["Active", "Draft"],
-      selectedSchemes: [
-        {
-          iri: IM.DISCOVERY_CODE,
-          name: "Discovery code"
-        },
-        {
-          iri: IM.CODE_SCHEME_SNOMED,
-          name: "Snomed-CT code"
-        },
-        {
-          iri: IM.CODE_SCHEME_TERMS,
-          name: "Term based code"
-        }
-      ],
-      selectedTypes: [
-        "Class",
-        "ObjectProperty",
-        "DataProperty",
-        "DataType",
-        "Annotation",
-        "Individual",
-        "Record",
-        "ValueSet",
-        "Folder",
-        "Legacy"
-      ]
+    filterOptions: {
+      status: [],
+      schemes: [],
+      types: []
     } as {
-      selectedStatus: string[];
-      selectedSchemes: ConceptReference[];
-      selectedTypes: string[];
-    }
+      status: any[];
+      schemes: any[];
+      types: any[];
+    },
+    selectedFilters: {
+      status: [],
+      schemes: [],
+      types: []
+    } as {
+      status: any[];
+      schemes: any[];
+      types: any[];
+    },
+    quickFiltersStatus: new Map<string, boolean>()
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -85,8 +69,14 @@ export default createStore({
     updateSearchResults(state, searchResults) {
       state.searchResults = searchResults;
     },
-    updateFilters(state, filters) {
-      state.filters = filters;
+    updateFilterOptions(state, filters) {
+      state.filterOptions = filters;
+    },
+    updateSelectedFilters(state, filters) {
+      state.selectedFilters = filters;
+    },
+    updateQuickFiltersStatus(state, status) {
+      state.quickFiltersStatus.set(status.key, status.value);
     },
     updateLoading(state, loading) {
       state.loading.set(loading.key, loading.value);

@@ -4,19 +4,6 @@
     <div class="home">
       <div class="p-grid">
         <div class="p-col-3">
-          <span class="p-input-icon-left" style="width: 100%">
-            <i class="pi pi-search" aria-hidden="true" />
-            <InputText
-              type="text"
-              v-model="searchTerm"
-              @input="this.active = 2"
-              @change="search()"
-              placeholder="Search"
-              class="p-inputtext-lg"
-              autoWidth="false"
-              style="width: 100%"
-            />
-          </span>
           <TabView class="sidemenu" v-model:activeIndex="active">
             <TabPanel>
               <template #header>
@@ -27,173 +14,57 @@
                 />
                 <span>Workflows</span>
               </template>
-
               <Listbox
                 v-model="selectedWorkflow"
-                :options="workflows"
-                optionLabel="name"
+                :options="workflowTypes"
+                :onClick="createPanel()"
               >
                 <template #option="slotProps">
                   <div>
-                    <span>{{ slotProps.option.name }}</span>
-                    <Divider />
+                    <span>{{ slotProps.option }}</span>
                   </div>
                 </template>
               </Listbox>
             </TabPanel>
           </TabView>
         </div>
-
         <div
           class="p-col-9"
           style="height: calc(100vh - 123px); overflow: auto"
         >
           <div class="p-grid">
-            <div
-              class="p-col-12"
-              v-if="selectedWorkflow.value == 'createWorkflow'"
-            >
-              <Panel header="Create Concept Workflow" :toggleable="true">
+            <div class="p-col-12">
+              <Panel :toggleable="true">
+                <template #header> {{ selectedWorkflow }} Workflow </template>
+                <div id="diagram"></div>
                 <DataTable
-                  :value="createTable"
+                  :value="concepts"
                   class="p-datatable-sm"
                   :paginator="true"
                   :rows="10"
-                  v-model:expandedRows="expandedRows"
-                  dataKey="taskId"
+                  dataKey="id"
                   stripedRows
                   v-model:filters="filters1"
+                  multiple="false"
                 >
                   <template #header>
                     <div class="p-d-flex p-jc-between">
-                      <span
-                        >All tasks currently in the Create Concept
-                        Workflow</span
-                      >
+                      <span>
+                        All tasks currently in the
+                        {{ selectedWorkflow }}
+                        Workflow
+                      </span>
                       <span class="p-input-icon-left">
                         <i class="pi pi-search" aria-hidden="true" />
                         <InputText
-                          v-model="filters1['global'].value"
+                          v-model="filters['global'].value"
                           placeholder="Keyword Search"
                         />
                       </span>
                     </div>
                   </template>
-
-                  <!-- <template #header> Ontology Data </template> -->
-                  <Column :expander="true" headerStyle="width: 3rem" />
-                  <Column field="taskId" header="Task Id"></Column>
-                  <Column field="currentStep" header="Current Step"></Column>
-                  <Column field="status" header="Status"></Column>
-                  <Column field="author" header="Author"></Column>
-                  <Column field="createdDate" header="Created Date"></Column>
-                  <Column field="updatedDate" header="Updated Date"></Column>
-
-                  <template #expansion="slotProps">
-                    <div class="orders-subtable" style="width: 100%">
-                      <Timeline
-                        :value="slotProps.data.workflow"
-                        layout="horizontal"
-                        align="bottom"
-                      >
-                        <template #opposite="slotProps">
-                          <div v-if="slotProps.item.active">
-                            Current task: {{ slotProps.item.active }}
-                          </div>
-                          <div
-                            class="p-grid"
-                            v-if="
-                              slotProps.item.step == 3 && slotProps.item.active
-                            "
-                          >
-                            <div class="p-col-4">
-                              <Button label="Approve" />
-                            </div>
-                            <div class="p-col-4">
-                              <Button label="Deny" class="p-button-secondary" />
-                            </div>
-                          </div>
-                        </template>
-                        <template #content="slotProps">
-                          {{ slotProps.item.taskName }}
-                        </template>
-                      </Timeline>
-                    </div>
-                  </template>
-                </DataTable>
-              </Panel>
-            </div>
-
-            <div
-              class="p-col-12"
-              v-if="selectedWorkflow.value == 'updateWorkflow'"
-            >
-              <Panel header="Update Concept Workflow" :toggleable="true">
-                <DataTable
-                  :value="updateTable"
-                  class="p-datatable-sm"
-                  :paginator="true"
-                  :rows="10"
-                  v-model:expandedRows="expandedRows2"
-                  dataKey="taskId"
-                  stripedRows
-                  v-model:filters="filters2"
-                >
-                  <template #header>
-                    <div class="p-d-flex p-jc-between">
-                      <span
-                        >All tasks currently in the Update Concept
-                        Workflow</span
-                      >
-                      <span class="p-input-icon-left">
-                        <i class="pi pi-search" aria-hidden="true" />
-                        <InputText
-                          v-model="filters2['global'].value"
-                          placeholder="Keyword Search"
-                        />
-                      </span>
-                    </div>
-                  </template>
-                  <!-- <template #header> Ontology Data </template> -->
-                  <Column :expander="true" headerStyle="width: 3rem" />
-                  <Column field="taskId" header="Task Id"></Column>
-                  <Column field="currentStep" header="Current Step"></Column>
-                  <Column field="status" header="Status"></Column>
-                  <Column field="author" header="Author"></Column>
-                  <Column field="createdDate" header="Created Date"></Column>
-                  <Column field="updatedDate" header="Updated Date"></Column>
-
-                  <template #expansion="slotProps">
-                    <div class="orders-subtable" style="width: 100%">
-                      <Timeline
-                        :value="slotProps.data.workflow"
-                        layout="horizontal"
-                        align="bottom"
-                      >
-                        <template #opposite="slotProps">
-                          <div v-if="slotProps.item.active">
-                            Current task: {{ slotProps.item.active }}
-                          </div>
-                          <div
-                            class="p-grid"
-                            v-if="
-                              slotProps.item.step == 3 && slotProps.item.active
-                            "
-                          >
-                            <div class="p-col-4">
-                              <Button label="Approve" />
-                            </div>
-                            <div class="p-col-4">
-                              <Button label="Deny" class="p-button-secondary" />
-                            </div>
-                          </div>
-                        </template>
-                        <template #content="slotProps">
-                          {{ slotProps.item.taskName }}
-                        </template>
-                      </Timeline>
-                    </div>
-                  </template>
+                  <Column field="name" header="Task Name"></Column>
+                  <Column field="state" header="Current State"></Column>
                 </DataTable>
               </Panel>
             </div>
@@ -207,10 +78,12 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
-// import SidebarControl from "@/components/sidebar/SidebarControl.vue";
-import { FilterMatchMode, FilterOperator } from "primevue/api";
+import WorkflowService from "@/services/WorkflowService";
+import LoggerService from "@/services/LoggerService";
+
+import { FilterMatchMode } from "primevue/api";
 import { Filters } from "@/models/workflow/Filters";
-import { WorkflowItem } from "@/models/workflow/WorkFlowItem";
+import * as d3 from "d3";
 
 export default defineComponent({
   name: "Workflow",
@@ -220,194 +93,212 @@ export default defineComponent({
   },
   data() {
     return {
-      createTable: [] as any,
-      updateTable: [] as any,
-      expandedRows: [],
-      expandedRows2: [],
-      selectedWorkflow: {
-        name: "Create New Concept Workflow",
-        value: "createWorkflow"
-      } as { name: string; value: string },
-      workflows: [
-        { name: "Create New Concept Workflow", value: "createWorkflow" },
-        { name: "Update Concept Workflow", value: "updateWorkflow" }
-      ] as { name: string; value: string }[],
-      filters1: {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        name: {
-          operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
-        },
-        "country.name": {
-          operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
-        },
-        representative: { value: null, matchMode: FilterMatchMode.IN },
-        date: {
-          operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
-        },
-        balance: {
-          operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
-        },
-        status: {
-          operator: FilterOperator.OR,
-          constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
-        },
-        activity: { value: null, matchMode: FilterMatchMode.BETWEEN },
-        verified: { value: null, matchMode: FilterMatchMode.EQUALS }
-      } as Filters,
-
-      filters2: {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        name: {
-          operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
-        },
-        "country.name": {
-          operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]
-        },
-        representative: { value: null, matchMode: FilterMatchMode.IN },
-        date: {
-          operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
-        },
-        balance: {
-          operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
-        },
-        status: {
-          operator: FilterOperator.OR,
-          constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }]
-        },
-        activity: { value: null, matchMode: FilterMatchMode.BETWEEN },
-        verified: { value: null, matchMode: FilterMatchMode.EQUALS }
-      } as Filters,
-
-      createWorkflow: [
-        {
-          taskName: "Request to create new Concept",
-          step: 1,
-          automated: false,
-          active: false
-        },
-        {
-          taskName: "Create definition for new Draft Concept",
-          step: 2,
-          automated: false,
-          active: false
-        },
-        {
-          taskName: "Approve/Deny definition for Concept",
-          step: 3,
-          automated: false,
-          active: false
-        },
-        {
-          taskName: "Change concept status to Active",
-          step: 4,
-          automated: true,
-          active: false
-        }
-      ] as WorkflowItem[],
-      updateWorkflow: [
-        {
-          taskName: "Request to change existing Concept",
-          step: 1,
-          automated: false,
-          active: false
-        },
-        {
-          taskName: "Create definition for updated Concept as Draft",
-          step: 2,
-          automated: false,
-          active: false
-        },
-        {
-          taskName: "Approve/Deny new definition for Concept",
-          step: 3,
-          automated: false,
-          active: false
-        },
-        {
-          taskName: "Replace concept definition and archive old concept",
-          step: 4,
-          automated: true,
-          active: false
-        }
-      ] as WorkflowItem[]
+      links: [{ source: "", name: "", target: "" }],
+      genData: [] as any,
+      width: 500,
+      height: 300,
+      padding: 10,
+      tasks: [],
+      workflows: [],
+      concepts: [] as any,
+      selectedWorkflow: "Concept",
+      workflowTypes: [] as any,
+      filters: {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+      } as Filters
     };
   },
   mounted() {
-    this.generateCreateTable();
-    this.generateUpdateTable();
+    this.getWorkflowTasks();
+    this.getWorkflows();
   },
   methods: {
-    generateCreateTable(): void {
-      let x = 100;
-
-      while (x > 0) {
-        const currentStep = Math.floor(Math.random() * 4) + 1;
-        this.createTable.push({
-          taskId: "Define concept " + Math.floor(Math.random() * 100) + 1,
-          currentStep: currentStep,
-          status: currentStep == 4 ? "Complete" : "In Progress",
-          workflow: this.generateWorkflow(this.createWorkflow, currentStep),
-          author: "user " + Math.floor(Math.random() * 100) + 1,
-          createdDate: new Date().toDateString(),
-          updatedDate: new Date().toDateString()
-        });
-        x--;
+    createPanel() {
+      const doc = document.getElementById("diagram");
+      if (doc != null) {
+        doc.innerHTML = "";
       }
-    },
-
-    generateUpdateTable(): void {
-      let x = 100;
-
-      while (x > 0) {
-        const currentStep = Math.floor(Math.random() * 4) + 1;
-
-        this.updateTable.push({
-          taskId: "Update Concept " + Math.floor(Math.random() * 100) + 1,
-          currentStep: currentStep,
-          status: currentStep == 4 ? "Complete" : "In Progress",
-          workflow: this.generateWorkflow(this.updateWorkflow, currentStep),
-          author: "user " + Math.floor(Math.random() * 100) + 1,
-          createdDate: new Date().toDateString(),
-          updatedDate: new Date().toDateString()
-        });
-        x--;
-      }
-    },
-
-    generateWorkflow(workflow: WorkflowItem[], step: number): WorkflowItem[] {
-      const customWorkFlow: WorkflowItem[] = [];
-      console.log(workflow);
-
-      workflow.forEach((item: WorkflowItem) => {
-        if (item.step == step) {
-          customWorkFlow.push({
-            taskName: item.taskName,
-            step: item.step,
-            automated: item.automated,
-            active: true
-          });
+      this.getTasks();
+      this.getTransitions();
+      const w = 900;
+      const h = 200;
+      const color = d3.scaleOrdinal(this.events, d3.schemeSet1);
+      const links = this.transData.links.map((d: any) => Object.create(d));
+      const nodes = this.transData.nodes.map((d: any) => Object.create(d));
+      const simulation = d3
+        .forceSimulation(nodes)
+        .force(
+          "link",
+          d3.forceLink(links).id((d: any) => d.id)
+        )
+        .force("charge", d3.forceManyBody().strength(-2000))
+        .force("x", d3.forceX().strength(0.05))
+        .force("y", d3.forceY().strength(0.2));
+      const svg = d3
+        .select("#diagram")
+        .append("svg")
+        .attr("viewBox", [-w / 2 + 50, -h / 2 + 10, w, h] as any)
+        .attr("width", w)
+        .attr("height", h);
+      // Per-type markers, as they don't inherit styles.
+      svg
+        .append("defs")
+        .selectAll("marker")
+        .data(this.events)
+        .join("marker")
+        .attr("id", (d: any) => `arrow-${d}`)
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 15)
+        .attr("refY", -0.5)
+        .attr("markerWidth", 6)
+        .attr("markerHeight", 6)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M0,-5L10,0L0,5");
+      const link = svg
+        .append("g")
+        .attr("fill", "none")
+        .attr("stroke-width", 1.5)
+        .selectAll("path")
+        .data(links)
+        .join("path")
+        .attr("stroke", (d: any) => color(d.name))
+        .attr(
+          "marker-end",
+          (d: any) => `url(${new URL(`#arrow-${d.name}`, location as any)})`
+        );
+      const node = svg
+        .append("g")
+        .attr("fill", "currentColor")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-linejoin", "round")
+        .selectAll("g")
+        .data(nodes)
+        .join("g");
+      node
+        .append("circle")
+        .attr("stroke", "black")
+        .attr("fill", "white")
+        .attr("stroke-width", 2)
+        .attr("r", 3);
+      node
+        .append("text")
+        .attr("x", 5)
+        .attr("y", -5)
+        .text((d: any) => d.id)
+        .clone(true)
+        .lower()
+        .attr("fill", "black")
+        .attr("stroke", "white")
+        .attr("stroke-width", 1)
+        .style("font-size", 12);
+      simulation.on("tick", () => {
+        link.attr("d", linkArc);
+        node.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
+      });
+      const legend = svg
+        .append("g")
+        .selectAll("g")
+        .data(this.events.reverse())
+        .enter()
+        .append("g")
+        .attr(
+          "transform",
+          (d, i) => `translate(${w / 2 - 100},${i * 20 - 50})`
+        );
+      legend
+        .append("rect")
+        .attr("width", 15)
+        .attr("height", 3)
+        .attr("fill", color as any);
+      legend
+        .append("text")
+        .attr("x", 20)
+        .attr("y", 2)
+        .attr("dy", "0.35em")
+        .text((d: any) => d)
+        .style("font-size", 12);
+      function linkArc(d: any) {
+        const r = Math.hypot(d.target.x - d.source.x, d.target.y - d.source.y);
+        if (d.target.x - d.source.x == 0 && d.target.y - d.source.y == 0) {
+          return `M${d.source.x},${d.source.y}A 15, 15 0 1, 0 ${d.target.x +
+            1},${d.target.y + 1}`;
         } else {
-          customWorkFlow.push(item);
+          return `M${d.source.x},${d.source.y}A${r},${r} 0 0,1 ${d.target.x},${d.target.y}`;
+        }
+      }
+    },
+    async getWorkflows() {
+      await WorkflowService.getWorkflows().then(res => {
+        this.workflows = res.data;
+      });
+      this.workflows.forEach((w: any) => {
+        this.workflowTypes.push(w.type);
+      });
+    },
+    async getTransitions() {
+      this.links = [];
+      this.workflows.forEach((w: any) => {
+        if (w.type == this.selectedWorkflow) {
+          w.validStates.forEach((s: any) => {
+            if (w.transitions[s]) {
+              const trans = w.transitions[s];
+              w.validEvents.forEach((e: any) => {
+                if (trans[e]) {
+                  this.links.push({
+                    source: s,
+                    name: e,
+                    target: trans[e]
+                  });
+                }
+              });
+            }
+          });
         }
       });
-
-      return customWorkFlow;
+    },
+    async getTasks() {
+      this.concepts = [];
+      this.tasks.forEach((t: any) => {
+        if (t.workflow == this.selectedWorkflow) {
+          this.concepts.push(t);
+        }
+      });
+    },
+    async getWorkflowTasks() {
+      await WorkflowService.getWorkflowTasks()
+        .then(res => {
+          this.tasks = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get workflows from server", err)
+          );
+        });
+    }
+  },
+  computed: {
+    events(): any {
+      return Array.from(new Set(this.links.map((d: any) => d.name)));
+    },
+    transData(): any {
+      return {
+        nodes: Array.from(
+          new Set(this.links.flatMap((l: any) => [l.source, l.target])),
+          id => ({ id })
+        ),
+        links: this.links
+      };
     }
   }
 });
 </script>
-
 <style scoped>
 .p-timeline-event {
   min-width: 200px;
+}
+svg .withcss {
+  marker-mid: url(#mid_arrow);
 }
 .p-timeline-event-content {
   min-height: 88px;

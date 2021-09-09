@@ -311,6 +311,24 @@ describe("updateUser", () => {
     expect(Auth.updateUserAttributes).toHaveBeenCalledTimes(0);
     expect(promiseResult).toStrictEqual(new CustomAlert(403, "Authentication error with server", err));
   });
+
+  it("returns 500 with auth fail", async () => {
+    Auth.currentAuthenticatedUser = jest.fn().mockRejectedValue(false);
+    Auth.updateUserAttributes = jest.fn().mockRejectedValue(false);
+    const updatedUser = new User("devtestupdated", "Bill", "Williams", "bill.williams@ergosoft.co.uk", "87654321", { value: "colour/003-man.png" });
+    updatedUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g08")
+    const result = AuthService.updateUser(updatedUser);
+    let promiseResult: any;
+    let err: any;
+    result.then(res => {
+      err = res.error
+      promiseResult = res
+    })
+    await flushPromises();
+    expect(Auth.currentAuthenticatedUser).toHaveBeenCalledTimes(1);
+    expect(Auth.updateUserAttributes).toHaveBeenCalledTimes(0);
+    expect(promiseResult).toStrictEqual(new CustomAlert(500, "Error authenticating current user", err));
+  });
 });
 
 describe("changePassword", () => {

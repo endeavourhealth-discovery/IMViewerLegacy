@@ -1,5 +1,5 @@
 import { shallowMount } from "@vue/test-utils";
-import SemanticProperties from "@/components/concept/SemanticProperties.vue";
+import SemanticProperties from "@/components/concept/definition/SemanticProperties.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 
@@ -21,7 +21,7 @@ describe("SemanticProperties.vue", () => {
         components: { DataTable, Column },
         mocks: { $route: mockRoute, $router: mockRouter }
       },
-      props: { semanticProperties: [{"property":{"name":"Associated morphology (attribute)","@id":"http://snomed.info/sct#116676008"},"type":{"name":"Lateral abnormal curvature (morphologic abnormality)","@id":"http://snomed.info/sct#31739005"}}], contentHeight: 100 }
+      props: { label: "Semantic properties", data: [{"property":{"name":"Associated morphology (attribute)","@id":"http://snomed.info/sct#116676008"},"type":{"name":"Lateral abnormal curvature (morphologic abnormality)","@id":"http://snomed.info/sct#31739005"}}], size: "100%" }
     });
   });
 

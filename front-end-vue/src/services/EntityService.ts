@@ -1,7 +1,6 @@
 import { SearchRequest } from "@/models/search/SearchRequest";
-import { ConceptDto } from "@/models/ConceptDto";
 import axios, { AxiosResponse, CancelToken } from "axios";
-import { ConceptNode } from "@/models/TTConcept/ConceptNode";
+import { ConceptNode } from "@/models/ConceptNode";
 import { IM } from "@/vocabulary/IM";
 
 export default class EntityService {
@@ -100,16 +99,14 @@ export default class EntityService {
     iri: string,
     expandMembers?: boolean,
     expandSubsets?: boolean,
-    limit?: number,
-    parentSetName?: string
+    limit?: number
   ): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/members", {
       params: {
         iri: iri,
         expandMembers: expandMembers,
         expandSubsets: expandSubsets,
-        limit: limit,
-        parentSetName: parentSetName
+        limit: limit
       }
     });
   }
@@ -118,10 +115,8 @@ export default class EntityService {
     return this.getEntityChildren(IM.CODE_SCHEME);
   }
 
-  public static async saveEntity(
-    conceptDto: ConceptDto
-  ): Promise<AxiosResponse<any>> {
-    return axios.post(this.api + "api/entity", conceptDto);
+  public static async saveEntity(concept: any): Promise<AxiosResponse<any>> {
+    return axios.post(this.api + "api/entity", concept);
   }
 
   public static getEntityGraph(iri: string): Promise<AxiosResponse<any>> {
@@ -160,5 +155,9 @@ export default class EntityService {
     return axios.get(this.api + "api/entity/summary", {
       params: { iri: iri }
     });
+  }
+
+  public static getNamespaces(): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/namespaces");
   }
 }

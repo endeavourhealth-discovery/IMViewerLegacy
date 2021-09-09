@@ -158,7 +158,7 @@ describe("SecondaryTree.vue", () => {
     wrapper.vm.currentParent = {};
     wrapper.vm.alternateParents = [];
     wrapper.vm.setParents([], 0);
-    expect(wrapper.vm.currentParent).toStrictEqual({});
+    expect(wrapper.vm.currentParent).toStrictEqual(null);
     expect(wrapper.vm.alternateParents).toStrictEqual([]);
   });
 

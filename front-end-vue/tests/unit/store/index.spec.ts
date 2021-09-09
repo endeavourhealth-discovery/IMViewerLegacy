@@ -1,13 +1,12 @@
-import { ConceptAggregate } from "@/models/TTConcept/ConceptAggregate";
 import { User } from "@/models/user/User";
 import store from "@/store/index";
-import { IM } from "@/vocabulary/IM";
 import EntityService from "@/services/EntityService";
 import { flushPromises } from "@vue/test-utils";
 import LoggerService from "@/services/LoggerService";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import AuthService from "@/services/AuthService";
 import { CustomAlert } from "@/models/user/CustomAlert";
+import axios from "axios";
 
 describe("state", () => {
   it("should start with the correct values", () => {
@@ -23,35 +22,13 @@ describe("state", () => {
     expect(store.state.historyCount).toBe(0);
     expect(store.state.focusTree).toBe(false);
     expect(store.state.treeLocked).toBe(true);
-    expect(store.state.filters).toEqual({
-      selectedStatus: ["Active", "Draft"],
-      selectedSchemes: [
-        {
-          iri: IM.DISCOVERY_CODE,
-          name: "Discovery code"
-        },
-        {
-          iri: IM.CODE_SCHEME_SNOMED,
-          name: "Snomed-CT code"
-        },
-        {
-          iri: IM.CODE_SCHEME_TERMS,
-          name: "Term based code"
-        }
-      ],
-      selectedTypes: [
-        "Class",
-        "ObjectProperty",
-        "DataProperty",
-        "DataType",
-        "Annotation",
-        "Individual",
-        "Record",
-        "ValueSet",
-        "Folder",
-        "Legacy"
-      ]
-    })
+    expect(store.state.selectedFilters).toEqual({
+      status: [],
+      schemes: [],
+      types: []
+    });
+    expect(store.state.filterOptions).toStrictEqual({status: [], schemes: [], types: []});
+    expect(store.state.quickFiltersStatus).toEqual(new Map<string, boolean>());
   });
 });
 
@@ -60,6 +37,11 @@ describe("mutations", () => {
     const testConceptIri = "http://www.endhealth.info/im#test";
     store.commit("updateConceptIri", testConceptIri);
     expect(store.state.conceptIri).toEqual(testConceptIri);
+  });
+
+  it("can updateCancelSource", () => {
+    store.commit("updateCancelSource");
+    expect(Object.keys(store.state.cancelSource)).toEqual(["token", "cancel"]);
   });
 
   it("can updateHistory", () => {
@@ -138,14 +120,48 @@ describe("mutations", () => {
     expect(store.state.treeLocked).toBe(false);
   });
 
-  it("can updateFilters", () => {
+  it("can updateSelectedFilters", () => {
     const testFilter = {
       selectedStatus: ["testActive", "testDraft"],
       selectedSchemes: [{ iri: "http://endhealth.info/im#test" }],
       selectedTypes: ["testClass", "testProperty"]
     };
-    store.commit("updateFilters", testFilter);
-    expect(store.state.filters).toEqual(testFilter);
+    store.commit("updateSelectedFilters", testFilter);
+    expect(store.state.selectedFilters).toEqual(testFilter);
+  });
+
+  it("can updateQuickFiltersStatus", () => {
+    const testfilters = new Map<string, boolean>()
+    testfilters.set("legacy", true);
+    store.commit("updateQuickFiltersStatus", {key: "legacy", value: true});
+    expect(store.state.quickFiltersStatus).toEqual(testfilters);
+  });
+
+  it("can updateloading", () => {
+    const testLoading = new Map<string, boolean>()
+    testLoading.set("concept", true);
+    store.commit("updateLoading", {key: "concept", value: true});
+    expect(store.state.loading).toEqual(testLoading);
+  });
+
+  it("can updateFilterOptions", () => {
+    const testFilter = {
+      selectedStatus: ["testActive", "testDraft"],
+      selectedSchemes: [{ iri: "http://endhealth.info/im#test" }],
+      selectedTypes: ["testClass", "testProperty"]
+    };
+    store.commit("updateFilterOptions", testFilter);
+    expect(store.state.filterOptions).toEqual(testFilter);
+  });
+
+  it("can updateSideNavHierarchyFocus", () => {
+    store.commit("updateSideNavHierarchyFocus", true);
+    expect(store.state.sideNavHierarchyFocus).toBe(true);
+  });
+
+  it("can updateSelectedEntityType", () => {
+    store.commit("updateSelectedEntityType", "class");
+    expect(store.state.selectedEntityType).toBe("class");
   });
 
   it("can fetchSearchResults ___ pass", async() => {

@@ -4,17 +4,17 @@
       :value="combinedMembers"
       showGridlines
       rowGroupMode="subheader"
-      groupRowsBy="type"
+      groupRowsBy="label"
       :expandableRowGroups="true"
       v-model:expandedRowGroups="expandedRowGroups"
       @rowgroupExpand="onRowGroupExpand"
       @rowgroupCollapse="onRowGroupCollapse"
       v-model:filters="filters1"
       filterDisplay="menu"
-      :globalFilterFields="['code', 'entity.name', 'scheme.name', 'type']"
+      :globalFilterFields="['code', 'entity.name', 'scheme.name', 'label']"
       :scrollable="true"
       sortMode="single"
-      sortField="type"
+      sortField="label"
       :sortOrder="1"
       class="p-datatable-sm"
       scrollHeight="flex"
@@ -33,6 +33,20 @@
             />
           </span>
           <div class="checkboxes-container">
+            <div>
+              <Button
+                icon="pi pi-cloud-download"
+                label="Download definition"
+                @click="download(false)"
+              />
+            </div>
+            <div>
+              <Button
+                icon="pi pi-cloud-download"
+                label="Download expanded"
+                @click="download(true)"
+              />
+            </div>
             <div class="checkbox-label-container" v-if="!expandMembers">
               <label for="expandSubsets">Expand all subsets</label>
               <Checkbox
@@ -71,21 +85,18 @@
       <Column field="scheme.name" header="Scheme" filter-field="scheme.name" />
       <template #groupheader="slotProps">
         <span v-for="subSet in subsets" :key="subSet">
-          <span v-if="slotProps.data.type === subSet" class="group-header">
+          <span v-if="slotProps.data.label === subSet" class="group-header">
             {{ subSet }}
           </span>
         </span>
-        <span
-          v-if="slotProps.data.type === 'MemberIncluded'"
-          class="group-header"
-        >
+        <span v-if="slotProps.data.type === 'INCLUDED'" class="group-header">
           Included Members
         </span>
-        <span
-          v-if="slotProps.data.type === 'MemberXcluded'"
-          class="group-header"
-        >
+        <span v-if="slotProps.data.type === 'EXCLUDED'" class="group-header">
           Excluded Members
+        </span>
+        <span v-if="slotProps.data.type === 'EXPANDED'" class="group-header">
+          Expanded Members
         </span>
       </template>
     </DataTable>
@@ -167,15 +178,18 @@ export default defineComponent({
 
     async getMembers() {
       this.loading = true;
-      this.expandedRowGroups = ["MemberIncluded", "MemberXcluded"];
+      if (this.expandMembers) {
+        this.expandedRowGroups = ["MemberExpanded"];
+      } else {
+        this.expandedRowGroups = ["MemberIncluded", "MemberXcluded"];
+      }
       this.selected = {};
       this.subsets = [];
       await EntityService.getEntityMembers(
         this.conceptIri as string,
         this.expandMembers,
         this.expandSubsets,
-        this.expandMembers ? 2000 : undefined,
-        undefined
+        this.expandMembers ? 2000 : undefined
       )
         .then(res => {
           this.members = res.data;
@@ -192,14 +206,10 @@ export default defineComponent({
 
     setSubsets() {
       this.combinedMembers.forEach((member: any) => {
-        if (!this.subsets.some(e => e === member.type)) {
-          if (
-            member.type === "MemberIncluded" ||
-            member.type === "MemberXcluded"
-          ) {
-            return;
+        if (!this.subsets.some(e => e === member.label)) {
+          if (member.type === "SUBSET") {
+            this.subsets.push(member.label);
           }
-          this.subsets.push(member.type);
         }
       });
     },
@@ -215,7 +225,7 @@ export default defineComponent({
           confirmButtonText: "Download",
           showCancelButton: true
         }).then(result => {
-          if (result.isConfirmed) this.download();
+          if (result.isConfirmed) this.download(true);
           else {
             this.$toast.add(
               LoggerService.warn(
@@ -231,7 +241,7 @@ export default defineComponent({
       }
     },
 
-    download() {
+    download(expanded: boolean) {
       const modIri = (this.conceptIri as string)
         .replace(/\//gi, "%2F")
         .replace(/#/gi, "%23");
@@ -239,7 +249,9 @@ export default defineComponent({
         process.env.VUE_APP_API +
           "api/entity/download?iri=" +
           modIri +
-          "&members=true&expandMembers=true&format=excel"
+          "&members=true&expandMembers=" +
+          expanded +
+          "&format=excel"
       );
       if (!popup) {
         this.$toast.add(LoggerService.error("Download failed from server"));
@@ -250,9 +262,9 @@ export default defineComponent({
 
     sortMembers() {
       this.members.members = this.members.members.sort((a: any, b: any) =>
-        a.type.localeCompare(b.type) == 0
+        a.label.localeCompare(b.label) == 0
           ? a.entity.name.localeCompare(b.entity.name)
-          : a.type.localeCompare(b.type)
+          : a.label.localeCompare(b.label)
       );
     },
 
@@ -301,7 +313,8 @@ export default defineComponent({
 
 .checkboxes-container {
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
+  justify-content: flex-end;
   align-items: center;
   gap: 0.5rem;
 }

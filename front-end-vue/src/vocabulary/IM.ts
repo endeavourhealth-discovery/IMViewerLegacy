@@ -4,7 +4,7 @@ export class IM {
   public static IRI = "@id";
   public static CODE = IM.NAMESPACE + "code";
   public static SCHEME = IM.NAMESPACE + "scheme";
-  public static STATUS = IM.NAMESPACE + "status";
+  public static STATUS = IM.NAMESPACE + "Status";
   public static IS_A = IM.NAMESPACE + "isA";
   public static ROLE_GROUP = IM.NAMESPACE + "roleGroup";
   public static IS_CONTAINED_IN = IM.NAMESPACE + "isContainedIn";
@@ -20,6 +20,7 @@ export class IM {
   public static ASSURANCE_LEVEL = IM.NAMESPACE + "assuranceLevel";
   public static COMBINATION_OF = IM.NAMESPACE + "combinationOf";
   public static SOME_OF = IM.NAMESPACE + "someOf";
+  public static MAPPED_TO = IM.NAMESPACE + "mappedTo";
   //maps assurance levels
   public static NATIONALLY_ASSURED_UK = IM.NAMESPACE + "NationallyAssuredUK";
 

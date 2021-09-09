@@ -10,7 +10,14 @@
           >
             <i class="fas fa-sitemap" aria-hidden="true"></i>
           </button>
-          <div v-if="Object.keys(concept).length" class="copy-container">
+          <div
+            v-if="
+              Object.keys(concept).includes('http://endhealth.info/im#isA') &&
+                Object.keys(concept).includes('subtypes') &&
+                Object.keys(concept).includes('dataModelProperties')
+            "
+            class="copy-container"
+          >
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
@@ -51,41 +58,38 @@
         <PanelHeader :types="types" :header="header" />
       </template>
       <div id="concept-content-dialogs-container">
-        <div v-if="Object.keys(concept).length" id="concept-panel-container">
+        <div
+          v-if="
+            Object.keys(concept).length &&
+              Object.keys(concept).includes('dataModelProperties')
+          "
+          id="concept-panel-container"
+        >
           <TabView v-model:activeIndex="active" :lazy="true">
             <TabPanel header="Definition">
               <div
+                v-if="loading"
+                class="loading-container"
+                :style="contentHeight"
+              >
+                <ProgressSpinner />
+              </div>
+              <div
+                v-else
                 class="concept-panel-content"
                 id="definition-container"
                 :style="contentHeight"
               >
-                <Definition
-                  :concept="concept"
-                  :semanticProperties="semanticProperties"
-                  :dataModelProperties="dataModelProperties"
-                  :contentHeight="contentHeightValue"
-                />
-              </div>
-            </TabPanel>
-            <TabPanel header="Terms">
-              <div
-                class="concept-panel-content"
-                id="terms-container"
-                :style="contentHeight"
-              >
-                <Terms :conceptIri="conceptIri" />
+                <Definition :concept="concept" :configs="configs" />
               </div>
             </TabPanel>
             <TabPanel header="Maps" v-if="isClass">
               <div
                 class="concept-panel-content"
-                id="complex-mappings-container"
+                id="mappings-container"
                 :style="contentHeight"
               >
-                <ComplexMappings
-                  :conceptIri="conceptIri"
-                  @toTermsClicked="showTerms"
-                />
+                <Mappings :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Used in">
@@ -140,31 +144,33 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Graph from "../components/concept/Graph.vue";
-import Terms from "../components/concept/Terms.vue";
 import Definition from "../components/concept/Definition.vue";
 import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
-import ComplexMappings from "../components/concept/ComplexMappings.vue";
+import Mappings from "../components/concept/Mappings.vue";
 import { isValueSet, isClass, isQuery } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import EntityService from "@/services/EntityService";
+import ConfigService from "@/services/ConfigService";
 import LoggerService from "@/services/LoggerService";
 import SecondaryTree from "../components/concept/SecondaryTree.vue";
+import { IM } from "@/vocabulary/IM";
+import { RDF } from "@/vocabulary/RDF";
+import { RDFS } from "@/vocabulary/RDFS";
 
 export default defineComponent({
   name: "Concept",
   components: {
     PanelHeader,
     Graph,
-    Terms,
     UsedIn,
     Members,
     Definition,
     DownloadDialog,
     SecondaryTree,
-    ComplexMappings
+    Mappings
   },
   computed: {
     isSet(): boolean {
@@ -184,11 +190,6 @@ export default defineComponent({
   watch: {
     async conceptIri() {
       this.init();
-    },
-    concept(newValue) {
-      if (newValue && Object.keys(newValue).length) {
-        this.setCopyMenuItems();
-      }
     }
   },
   async mounted() {
@@ -203,11 +204,10 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false,
       editDialogView: true,
       showDownloadDialog: false,
       concept: {} as any,
-      semanticProperties: [] as any[],
-      dataModelProperties: [] as any[],
       definitionText: "",
       display: false,
       types: [],
@@ -216,7 +216,8 @@ export default defineComponent({
       active: 0,
       contentHeight: "",
       contentHeightValue: 0,
-      copyMenuItems: [] as any
+      copyMenuItems: [] as any,
+      configs: [] as any
     };
   },
   methods: {
@@ -231,12 +232,125 @@ export default defineComponent({
     directToEditRoute(): void {
       this.$router.push({
         name: "Edit",
-        params: { iri: this.concept.iri }
+        params: { iri: this.concept["@id"] }
       });
     },
 
     directToCreateRoute(): void {
       this.$router.push({ name: "Create" });
+    },
+
+    async getConcept(iri: string) {
+      const predicates = this.configs
+        .filter((c: any) => c.type !== "Divider")
+        .filter((c: any) => c.predicate !== "subtypes")
+        .filter((c: any) => c.predicate !== "semanticProperties")
+        .filter((c: any) => c.predicate !== "dataModelProperties")
+        .filter((c: any) => c.predicate !== "termCodes")
+        .map((c: any) => c.predicate);
+
+      await EntityService.getPartialEntity(iri, predicates)
+        .then(res => {
+          this.concept = res.data;
+          if (!Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A)) {
+            this.concept[IM.IS_A] = [];
+          }
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Failed to get concept partial entity from server.",
+              err
+            )
+          );
+        });
+
+      await EntityService.getEntityChildren(iri)
+        .then(res => {
+          this.concept["subtypes"] = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get subtypes from server.", err)
+          );
+        });
+
+      await EntityService.getEntityTermCodes(iri)
+        .then(res => {
+          this.concept["termCodes"] = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get terms from server", err)
+          );
+        });
+    },
+
+    async getProperties(iri: string) {
+      await EntityService.getSemanticProperties(iri)
+        .then(res => {
+          this.concept["semanticProperties"] = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Failed to get semantic properties from server",
+              err
+            )
+          );
+        });
+
+      await EntityService.getDataModelProperties(iri)
+        .then(res => {
+          this.concept["dataModelProperties"] = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error(
+              "Failed to get data model properties from server",
+              err
+            )
+          );
+        });
+    },
+
+    async getConfig(name: string) {
+      await ConfigService.getComponentLayout(name)
+        .then(res => {
+          this.configs = res.data;
+          this.configs.sort((a: any, b: any) => {
+            return a.order - b.order;
+          });
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get config data from server", err)
+          );
+        });
+    },
+
+    async init() {
+      this.loading = true;
+      this.active = 0;
+      await this.getConfig("definition");
+      await this.getConcept(this.conceptIri);
+      await this.getProperties(this.conceptIri);
+      this.types = Object.prototype.hasOwnProperty.call(this.concept, RDF.TYPE)
+        ? this.concept[RDF.TYPE]
+        : [];
+      this.header = this.concept[RDFS.LABEL];
+      this.setCopyMenuItems();
+      this.$store.commit(
+        "updateSelectedEntityType",
+        this.isSet
+          ? "Set"
+          : this.isClass
+          ? "Class"
+          : this.isQuery
+          ? "Query"
+          : "None"
+      );
+      this.loading = false;
     },
 
     setContentHeight(): void {
@@ -274,67 +388,6 @@ export default defineComponent({
       }
     },
 
-    async getConcept(iri: string) {
-      await EntityService.getEntityDefinitionDto(iri)
-        .then(res => {
-          this.concept = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get concept definition dto from server",
-              err
-            )
-          );
-        });
-    },
-
-    async getProperties(iri: string) {
-      await EntityService.getSemanticProperties(iri)
-        .then(res => {
-          this.semanticProperties = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get semantic properties from server",
-              err
-            )
-          );
-        });
-
-      await EntityService.getDataModelProperties(iri)
-        .then(res => {
-          this.dataModelProperties = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get data model properties from server",
-              err
-            )
-          );
-        });
-    },
-
-    async init() {
-      this.active = 0;
-      await this.getProperties(this.conceptIri);
-      await this.getConcept(this.conceptIri);
-      this.types = this.concept.types;
-      this.header = this.concept.name;
-      this.$store.commit(
-        "updateSelectedEntityType",
-        this.isSet
-          ? "Set"
-          : this.isClass
-          ? "Class"
-          : this.isQuery
-          ? "Query"
-          : "None"
-      );
-    },
-
     openDownloadDialog(): void {
       this.showDownloadDialog = true;
     },
@@ -343,67 +396,88 @@ export default defineComponent({
       this.showDownloadDialog = false;
     },
 
+    conceptObjectToCopyString(
+      key: string,
+      value: any,
+      counter: number,
+      totalKeys: number
+    ): { label: string; value: string } | undefined {
+      let newString = "";
+      let returnString = "";
+      const label = this.configs.find(
+        (config: any) => config.predicate === key
+      );
+      if (!label) {
+        return;
+      }
+      let newKey = label.label;
+      if (Array.isArray(value)) {
+        if (value.length) {
+          if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
+            newString = value.map(item => item.name).join(",\n\t");
+          } else if (
+            Object.prototype.hasOwnProperty.call(value[0], "property") &&
+            Object.prototype.hasOwnProperty.call(value[0].property, "name")
+          ) {
+            newString = value.map(item => item.property.name).join(",\n\t");
+          } else {
+            LoggerService.warn(
+              undefined,
+              "Uncovered object property or missing name found for key: " +
+                key +
+                " at conceptObjectToCopyString within Concept.vue"
+            );
+          }
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ": [\n\t" + newString + "\n]";
+          } else {
+            returnString = newKey + ": [\n\t" + newString + "\n],\n";
+          }
+        } else {
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ": [\n\t\n]";
+          } else {
+            returnString = newKey + ": [\n\t\n],\n";
+          }
+        }
+      } else if (
+        Object.prototype.toString.call(value) === "[object Object]" &&
+        Object.prototype.hasOwnProperty.call(value, "name")
+      ) {
+        newString = value.name;
+        if (counter === totalKeys - 1) {
+          returnString = newKey + ": " + newString;
+        } else {
+          returnString = newKey + ": " + newString + ",\n";
+        }
+      } else {
+        newString = value
+          .replace(/\n/g, "\n\t")
+          .replace(/<p>/g, "\n\t") as string;
+        if (counter === totalKeys - 1) {
+          returnString = newKey + ": " + newString;
+        } else {
+          returnString = newKey + ": " + newString + ",\n";
+        }
+      }
+      return { label: newKey, value: returnString };
+    },
+
     copyConceptToClipboard(): string {
-      let isasString = "";
-      let subTypesString = "";
-      let semanticPropertiesString = "";
-      let dataModelPropertiesString = "";
-      let typesString = "";
-      if (this.concept.isa.length > 0) {
-        isasString = this.concept.isa
-          .map((item: any) => item.name)
-          .join(",\n\t");
-      }
-      if (this.concept.subtypes.length > 0) {
-        subTypesString = this.concept.subtypes
-          .map((item: any) => item.name)
-          .join(",\n\t");
-      }
-      if (this.semanticProperties.length > 0) {
-        semanticPropertiesString = this.semanticProperties
-          .map((item: any) => item.property.name)
-          .join(",\n\t");
-      }
-      if (this.dataModelProperties.length > 0) {
-        dataModelPropertiesString = this.dataModelProperties
-          .map((item: any) => item.property.name)
-          .join(",\n\t");
-      }
-      if (this.concept.types.length > 0) {
-        typesString = this.concept.types
-          .map((item: any) => item.name)
-          .join(",\n\t");
-      }
-      let returnString =
-        "Name: " +
-        this.concept.name +
-        ",\nIri: " +
-        this.concept.iri +
-        ",\nStatus: " +
-        this.concept.status +
-        ",\nTypes: " +
-        "[\n\t" +
-        typesString +
-        "\n]" +
-        ",\nIs-a: " +
-        "[\n\t" +
-        isasString +
-        "\n]" +
-        ",\nSubtypes: " +
-        "[\n\t" +
-        subTypesString +
-        "\n]" +
-        ",\nSemantic properties: " +
-        "[\n\t" +
-        semanticPropertiesString +
-        "\n]" +
-        ",\nData model properties: " +
-        "[\n\t" +
-        dataModelPropertiesString +
-        "\n]";
-      if (this.concept.description) {
-        returnString =
-          returnString + ",\nDescription: " + this.concept.description;
+      const totalKeys = Object.keys(this.concept).length;
+      let counter = 0;
+      let returnString = "";
+      let key: string;
+      let value: any;
+      for ([key, value] of Object.entries(this.concept)) {
+        const copyString = this.conceptObjectToCopyString(
+          key,
+          value,
+          counter,
+          totalKeys
+        );
+        if (copyString) returnString += copyString.value;
+        counter++;
       }
       return returnString;
     },
@@ -422,36 +496,6 @@ export default defineComponent({
     },
 
     setCopyMenuItems() {
-      let isasString = "";
-      let subTypesString = "";
-      let semanticPropertiesString = "";
-      let dataModelPropertiesString = "";
-      let typesString = "";
-      if ("isa" in this.concept && this.concept.isa.length > 0) {
-        isasString = this.concept.isa
-          .map((item: any) => item.name)
-          .join(",\n\t");
-      }
-      if ("subtypes" in this.concept && this.concept.subtypes.length > 0) {
-        subTypesString = this.concept.subtypes
-          .map((item: any) => item.name)
-          .join(",\n\t");
-      }
-      if (this.semanticProperties.length > 0) {
-        semanticPropertiesString = this.semanticProperties
-          .map((item: any) => item.property.name)
-          .join(",\n\t");
-      }
-      if (this.dataModelProperties.length > 0) {
-        dataModelPropertiesString = this.dataModelProperties
-          .map((item: any) => item.property.name)
-          .join(",\n\t");
-      }
-      if (this.concept.types.length > 0) {
-        typesString = this.concept.types
-          .map((item: any) => item.name)
-          .join(",\n\t");
-      }
       this.copyMenuItems = [
         {
           label: "Copy",
@@ -479,178 +523,30 @@ export default defineComponent({
                 );
               });
           }
-        },
-        {
-          label: "Name",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("Name: " + this.concept.name)
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Name copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy name to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Iri",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("Iri: " + this.concept.iri)
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Iri copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy iri to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Status",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("Status: " + this.concept.status)
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Status copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy status to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Types",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("Types: [\n\t" + typesString + "\n]")
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Types copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy types to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Is a",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("Is-a: [\n\t" + isasString + "\n]")
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Is-a's copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy is-a's to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Subtypes",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("Subtypes: [\n\t" + subTypesString + "\n]")
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Subtypes copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy subtypes to clipboard",
-                    err
-                  )
-                );
-              });
-          }
-        },
-        {
-          label: "Semantic properties",
-          command: async () => {
-            await navigator.clipboard
-              .writeText(
-                "Semantic properties: [\n\t" + semanticPropertiesString + "\n]"
-              )
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success(
-                    "Semantic properties copied to clipboard"
-                  )
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy semantic properties to clipboard",
-                    err
-                  )
-                );
-              });
-          }
-        },
-        {
-          label: "Data model properties",
-          command: async () => {
-            await navigator.clipboard
-              .writeText(
-                "Data model properties: [\n\t" +
-                  dataModelPropertiesString +
-                  "\n]"
-              )
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success(
-                    "Data model properties copied to clipboard"
-                  )
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy data model properties to clipboard",
-                    err
-                  )
-                );
-              });
-          }
         }
       ];
-      if (this.concept.description) {
+
+      let key: string;
+      let value: any;
+      for ([key, value] of Object.entries(this.concept)) {
+        let result = this.conceptObjectToCopyString(key, value, 0, 1);
+        if (!result) return;
+        const label = result.label;
+        const text = result.value;
         this.copyMenuItems.push({
-          label: "Description",
+          label: label,
           command: async () => {
             await navigator.clipboard
-              .writeText("Description: " + this.concept.description)
+              .writeText(text)
               .then(() => {
                 this.$toast.add(
-                  LoggerService.success("Description copied to clipboard")
+                  LoggerService.success(label + " copied to clipboard")
                 );
               })
               .catch(err => {
                 this.$toast.add(
                   LoggerService.error(
-                    "Failed to copy description to clipboard",
+                    "Failed to copy " + label + " to clipboard",
                     err
                   )
                 );
@@ -658,10 +554,6 @@ export default defineComponent({
           }
         });
       }
-    },
-
-    showTerms() {
-      this.active = 1;
     }
   }
 });
@@ -701,6 +593,15 @@ export default defineComponent({
 .icons-container {
   display: flex;
   flex-flow: row nowrap;
+  align-items: center;
+}
+
+.loading-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
   align-items: center;
 }
 </style>
