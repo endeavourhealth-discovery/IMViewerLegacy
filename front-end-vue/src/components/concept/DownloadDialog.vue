@@ -64,6 +64,22 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
+            :disabled="!includeTerms"
+            id="terms"
+            :binary="true"
+            value="Include terms"
+            v-model="includeTerms"
+          />
+          <label
+            class="label"
+            :class="includeTerms ? null : 'inactive-text'"
+            for="terms"
+          >
+            Include terms
+          </label>
+        </div>
+        <div class="checkbox-label">
+          <Checkbox
             :disabled="!includeDataModelProperties"
             id="data-model-properties"
             :binary="true"
@@ -182,6 +198,7 @@ export default defineComponent({
       concept: {},
       parents: [] as any,
       children: [] as any,
+      terms: [] as any,
       dataModelProperties: [],
       semanticProperties: [],
       members: {} as any,
@@ -192,6 +209,7 @@ export default defineComponent({
       includeParents: true,
       includeInactive: false,
       includeSemanticProperties: false,
+      includeTerms: false,
       loading: false,
       RDFS_LABEL: RDFS.LABEL,
       format: {
@@ -239,6 +257,8 @@ export default defineComponent({
         this.includeParents +
         "&semanticProperties=" +
         this.includeSemanticProperties +
+        "&terms=" +
+        this.includeTerms +
         "&inactive=" +
         this.includeInactive;
       const popup = window.open(url);
@@ -278,6 +298,13 @@ export default defineComponent({
           this.$toast.add(
             LoggerService.error("Failed to get children data from server", err)
           );
+        });
+      await EntityService.getEntityTermCodes(iri)
+        .then(res => {
+          this.terms = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(LoggerService.error("Failed to get terms from server", err));
         });
       await EntityService.getDataModelProperties(iri)
         .then(res => {
@@ -319,6 +346,7 @@ export default defineComponent({
     setIncludeBooleans() {
       this.includeParents = !!this.parents.length;
       this.includeChildren = !!this.children.length;
+      this.includeTerms = !!this.terms.length;
       this.includeDataModelProperties = !!this.dataModelProperties.length;
       this.includeSemanticProperties = !!this.semanticProperties.length;
       this.includeMembers =
