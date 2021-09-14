@@ -1,10 +1,31 @@
 <template>
   <div class="panel-content">
-    <h2>Preview</h2>
+    <Card>
+      <template #title> Confirmation </template>
+      <template #content>
+        <div class="p-field p-col-12">
+          <label for="class">Graph: </label>
+          <b>{{ formObject.graph ? formObject.graph : "-" }} </b>
+        </div>
+        <div class="p-field p-col-12">
+          <label for="Age">Nested: </label>
+          <b>{{ formObject.nested ? formObject.nested : "-" }}</b>
+        </div>
+        <div class="p-field p-col-12">
+          <label for="Age">Content File: </label>
+          <b>{{ formObject.contentFile ? formObject.contentFile : "-" }}</b>
+        </div>
+        <div class="p-field p-col-12">
+          <label for="Age">Map Document: </label>
+          <b>{{ formObject.mapDocument ? formObject.mapDocument : "-" }}</b>
+        </div>
+      </template>
+    </Card>
   </div>
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
     <Button label="Back" @click="prevPage" />
-    <Button label="Submit" @click="submit" />
+    <Button v-if="!complete" label="Submit" @click="submit" :loading="loading"/>
+    <Button v-if="complete" label="New" @click="this.$router.push('/mapping/wizard')" />
   </div>
 </template>
 
@@ -16,6 +37,7 @@ import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   name: "Confirmation",
+  emits: ["prev-page", "next-page"],
   props: {
     formObject: {
       type: Object as PropType<MappingFormObject>,
@@ -24,7 +46,8 @@ export default defineComponent({
   },
   data() {
     return {
-      loading: true,
+      loading: false,
+      complete: false,
       pageIndex: 4,
     };
   },
@@ -34,12 +57,16 @@ export default defineComponent({
         pageIndex: this.pageIndex,
       });
     },
+
     async submit() {
       this.loading = true;
       MappingService.getMappedTTDocument(this.getFormData())
         .then((response) => {
           this.loading = false;
           this.download(response);
+          this.$toast.add(
+            LoggerService.success("Request was successful. Download should begin shortly.")
+          );
         })
         .catch((error) => {
           this.loading = false;
@@ -47,6 +74,7 @@ export default defineComponent({
             LoggerService.error("Request failed from server", error.message)
           );
         });
+        this.complete = true;
     },
     download(response: any) {
       const json = JSON.stringify(response);
@@ -64,7 +92,7 @@ export default defineComponent({
     getFormData(): FormData {
       const formData = new FormData();
       formData.append("contentFile", this.formObject.contentFile);
-      formData.append("mappingFile", this.formObject.mapDocumentString);
+      formData.append("mappingFile", this.formObject.mapDocument);
       formData.append("graph", this.formObject.graph);
       formData.append("nested", this.formObject.nested);
       return formData;
@@ -88,6 +116,10 @@ export default defineComponent({
   flex-flow: row;
   justify-content: center;
   align-items: center;
+}
+
+.p-card {
+  box-shadow: unset;
 }
 
 #button-bar {

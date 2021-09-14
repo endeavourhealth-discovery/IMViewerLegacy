@@ -1,7 +1,7 @@
 export enum ObjectMapTypeEnum {
-    constant = "constant",
-    reference = "reference",
-    template = "template",
-    functionValue = "functionValue",
-    parentTriplesMap = "parentTriplesMap",
+    constant = "rr:constant",
+    reference = "rml:reference",
+    template = "rr:template",
+    functionValue = "fnml:functionValue",
+    parentTriplesMap = "rr:parentTriplesMap",
 }

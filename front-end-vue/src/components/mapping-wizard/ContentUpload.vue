@@ -1,5 +1,6 @@
 <template
-  ><div class="panel-content">
+  >
+  <div class="panel-content">
     <div class="p-fluid p-formgrid p-grid">
       <div class="p-field p-col-12 p-md-8">
         <label for="graph">Graph</label>
@@ -44,28 +45,41 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { MappingFormObject } from "@/models/mapping/MappingFormObject";
+import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   name: "ContentUpload",
+  emits: ["next-page", "prev-page"],
+  props: {
+    formObject: {
+      type: Object as PropType<MappingFormObject>,
+      required: true,
+    },
+  },
   computed: {
     isValid(): boolean {
       return !!this.contentFile && !!this.graph && !!this.nested;
-    }
+    },
   },
   data() {
     return {
       contentFile: "",
+      contentFileName: "",
+      contentFileType: "",
       graph: "",
       nested: "",
       options: [
         { name: "Yes", value: "true" },
-        { name: "No", value: "false" }
-      ]
+        { name: "No", value: "false" },
+      ],
     };
   },
   methods: {
     uploadContent(event: any) {
+      console.log(event.files[0].type);
+      this.contentFileName = event.files[0].name;
+      this.contentFileType = event.files[0].type;
       this.contentFile = event.files[0];
     },
     resetContent() {
@@ -76,13 +90,15 @@ export default defineComponent({
       this.$emit("next-page", {
         formData: {
           contentFile: this.contentFile,
+          contentFileName: this.contentFileName,
+          contentFileType: this.contentFileType,
           graph: this.graph,
-          nested: this.nested
+          nested: this.nested,
         },
-        pageIndex: 0
+        pageIndex: 0,
       });
-    }
-  }
+    },
+  },
 });
 </script>
 

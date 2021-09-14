@@ -2,21 +2,23 @@
   <div class="panel-content">
     <h2>New predicates that will be created.</h2>
 
-    <Listbox v-model="selectedCity" :options="newPredicates" />
+    <Listbox :options="newPredicates" />
   </div>
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
     <Button label="Back" @click="prevPage" />
-    <Button label="Next" @click="nextPage" />
+    <Button label="Next" @click="nextPage" :loading="loading"/>
   </div>
 </template>
 
 <script lang="ts">
 import { MappingFormObject } from "@/models/mapping/MappingFormObject";
+import LoggerService from "@/services/LoggerService";
 import MappingService from "@/services/MappingService";
 import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   name: "PredicateValidation",
+  emits: ["next-page", "prev-page"],
   props: {
     formObject: {
       type: Object as PropType<MappingFormObject>,
@@ -27,24 +29,27 @@ export default defineComponent({
   data() {
     return {
       pageIndex: 3,
-      newPredicates: [
-        
-      ],
+      newPredicates: [],
+      loading: false,
     };
   },
   async mounted() {
+    this.loading = true;
     this.newPredicates = await this.getNewPredicates();
+    this.loading = false;
   },
   methods: {
     async getNewPredicates() {
-      return await MappingService.getNewPredicates(this.getFormData());
+      return await MappingService.getNewPredicates(
+        this.getNewPredicateFormData()
+      );
     },
-    getFormData(): FormData {
+    getNewPredicateFormData(): FormData {
       const formData = new FormData();
       formData.append("mapDocument", this.formObject.mapDocument);
       return formData;
     },
-    nextPage() {
+    async nextPage() {
       this.$emit("next-page", {
         pageIndex: this.pageIndex,
       });

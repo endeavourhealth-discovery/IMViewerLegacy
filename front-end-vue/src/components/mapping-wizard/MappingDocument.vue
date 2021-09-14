@@ -80,18 +80,18 @@
             >
             </Button>
           </div>
-          <div class="p-field p-col">
-            <Button
-              label="Add ObjectMap"
-              @click="addObjectMap(mapping)"
-              class="p-button-success"
-            >
-            </Button>
-          </div>
         </div>
       </div>
 
       <div class="p-fluid p-grid">
+        <div class="p-field p-col-12 p-md-12 button">
+          <Button
+            label="Add ObjectMap"
+            @click="addObjectMap(mapping)"
+            class="p-button-success"
+          >
+          </Button>
+        </div>
         <div class="p-field p-col-12 p-md-6 button">
           <Button
             label="Delete"
@@ -117,12 +117,20 @@ import { ObjectMapTypeEnum } from "@/models/mapping/ObjectMapTypeEnum";
 import { SubjectMapTypeEnum } from "@/models/mapping/SubjectMapTypeEnum";
 import { RMLMapping } from "@/models/mapping/RMLMapping";
 import { buildMapDocumentString } from "@/helpers/MapDocumentHelper";
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
 import { PredicateObjectMap } from "@/models/mapping/PredicateObjectMap";
 import { ReferenceFormulationEnum } from "@/models/mapping/ReferenceFormulationEnum";
+import { MappingFormObject } from "@/models/mapping/MappingFormObject";
 
 export default defineComponent({
   name: "MappingDocument",
+  emits: ["next-page", "prev-page"],
+  props: {
+    formObject: {
+      type: Object as PropType<MappingFormObject>,
+      required: true,
+    },
+  },
   computed: {
     isValid(): boolean {
       return true;
@@ -165,7 +173,10 @@ export default defineComponent({
       this.mappings = newMappings;
     },
     nextPage() {
-      this.mapDocumentString = buildMapDocumentString(this.mappings);
+      this.mapDocumentString = buildMapDocumentString(
+        this.formObject,
+        this.mappings
+      );
       this.$emit("next-page", {
         formData: {
           mapDocumentString: this.mapDocumentString,

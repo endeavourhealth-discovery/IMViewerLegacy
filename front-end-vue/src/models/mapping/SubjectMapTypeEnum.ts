@@ -1,6 +1,6 @@
 export enum SubjectMapTypeEnum {
-    constant = "constant",
-    reference = "reference",
-    template = "template",
-    functionValue = "functionValue",
+    constant = "rr:constant",
+    reference = "rml:reference",
+    template = "rr:template",
+    functionValue = "fnml:functionValue"
 }
