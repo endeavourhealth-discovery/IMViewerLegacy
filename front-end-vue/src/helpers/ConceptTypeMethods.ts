@@ -23,9 +23,21 @@ export function isValueSet(conceptTypeElements: ConceptReference[]): boolean {
 }
 
 export function isClass(conceptTypeElements: ConceptReference[]): boolean {
-  return conceptTypeElements.some(
-    (e: any) => e.iri === OWL.CLASS || e[IM.IRI] === OWL.CLASS
-  );
+  if (
+    conceptTypeElements.some(
+      (e: any) => e.iri === OWL.CLASS || e[IM.IRI] === OWL.CLASS
+    ) &&
+    !conceptTypeElements.some(
+      (e: any) => e.iri === SHACL.NODESHAPE || e[IM.IRI] === SHACL.NODESHAPE
+    )
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+  // return conceptTypeElements.some(
+  //   (e: any) => e.iri === OWL.CLASS || e[IM.IRI] === OWL.CLASS
+  // );
 }
 
 export function isRecordModel(
