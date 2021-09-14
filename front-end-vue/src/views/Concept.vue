@@ -1,5 +1,8 @@
 <template>
   <div id="concept-main-container">
+    <!-- <div v-if="loading" class="loading-container">
+      <ProgressSpinner />
+    </div> -->
     <Panel>
       <template #icons>
         <div class="icons-container">
@@ -58,13 +61,7 @@
         <PanelHeader :types="types" :header="header" />
       </template>
       <div id="concept-content-dialogs-container">
-        <div
-          v-if="
-            Object.keys(concept).length &&
-              Object.keys(concept).includes('dataModelProperties')
-          "
-          id="concept-panel-container"
-        >
+        <div id="concept-panel-container">
           <TabView v-model:activeIndex="active" :lazy="true">
             <TabPanel header="Definition">
               <div
@@ -149,7 +146,12 @@ import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
 import Mappings from "../components/concept/Mappings.vue";
-import { isValueSet, isClass, isQuery } from "@/helpers/ConceptTypeMethods";
+import {
+  isValueSet,
+  isClass,
+  isQuery,
+  isRecordModel
+} from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import EntityService from "@/services/EntityService";
@@ -159,6 +161,7 @@ import SecondaryTree from "../components/concept/SecondaryTree.vue";
 import { IM } from "@/vocabulary/IM";
 import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
+import { MODULE_IRIS } from "@/helpers/ModuleIris";
 
 export default defineComponent({
   name: "Concept",
@@ -185,11 +188,19 @@ export default defineComponent({
       return isQuery(this.types);
     },
 
-    ...mapState(["conceptIri"])
+    isRecordModel(): boolean {
+      return isRecordModel(this.types);
+    },
+
+    ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel"])
   },
   watch: {
     async conceptIri() {
       this.init();
+    },
+
+    selectedEntityType(newValue, oldValue) {
+      this.setActivePanel(newValue, oldValue);
     }
   },
   async mounted() {
@@ -331,7 +342,6 @@ export default defineComponent({
 
     async init() {
       this.loading = true;
-      this.active = 0;
       await this.getConfig("definition");
       await this.getConcept(this.conceptIri);
       await this.getProperties(this.conceptIri);
@@ -340,17 +350,31 @@ export default defineComponent({
         : [];
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
-      this.$store.commit(
-        "updateSelectedEntityType",
-        this.isSet
-          ? "Set"
-          : this.isClass
-          ? "Class"
-          : this.isQuery
-          ? "Query"
-          : "None"
-      );
+      const type = this.isSet
+        ? "Set"
+        : this.isRecordModel
+        ? "RecordModel"
+        : this.isClass
+        ? "Class"
+        : this.isQuery
+        ? "Query"
+        : "None";
+      this.$store.commit("updateSelectedEntityType", type);
+      if (!MODULE_IRIS.includes(this.conceptIri)) {
+        this.$store.commit("updateModuleSelectedEntities", {
+          module: type,
+          iri: this.conceptIri
+        });
+      }
       this.loading = false;
+    },
+
+    setActivePanel(newType: string, oldType: string) {
+      if (newType === oldType) {
+        this.active = this.conceptActivePanel;
+      } else {
+        this.active = 0;
+      }
     },
 
     setContentHeight(): void {

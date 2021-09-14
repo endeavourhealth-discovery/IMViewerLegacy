@@ -3,6 +3,7 @@ import SideNav from "@/components/home/SideNav.vue";
 import Menu from "primevue/menu";
 import { User } from "@/models/user/User";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { IM } from "@/vocabulary/IM";
 
 describe("SideNav.spec ___ not logged in", () => {
   let wrapper: any;
@@ -16,7 +17,14 @@ describe("SideNav.spec ___ not logged in", () => {
         currentUser: null,
         isLoggedIn: false,
         sideNavHierarchyFocus: {name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" },
-        selectedEntityType: "Class"
+        selectedEntityType: "Class",
+        moduleSelectedEntities: {
+          ontology: IM.MODULE_ONTOLOGY,
+          sets: IM.MODULE_SETS,
+          dataModel: IM.MODULE_DATA_MODEL,
+          catalogue: IM.MODULE_CATALOGUE,
+          queries: IM.MODULE_QUERIES
+        }
       },
       commit: jest.fn()
     };
@@ -124,13 +132,14 @@ describe("SideNav.spec ___ not logged in", () => {
   });
 
   it("can handleCenterIconClick", async() => {
-    wrapper.vm.handleCenterIconClick({ name: "Ontology", iri: "http://endhealth.info/im#Discoveryontology", route: "Dashboard" });
+    wrapper.vm.handleCenterIconClick({ name: "Ontology", iri: "http://endhealth.info/im#Discoveryontology", fullName: "Ontologies", route: "Dashboard" });
     await wrapper.vm.$nextTick();
     expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSideNavHierarchyFocus", {
       name: "Ontology",
+      fullName: "Ontologies",
       iri: "http://endhealth.info/im#Discoveryontology"
     });
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateConceptIri", "http://endhealth.info/im#Discoveryontology");
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateConceptIri", "http://endhealth.info/im#DiscoveryOntology");
     expect(wrapper.emitted().hierarchyFocusSelected).toBeTruthy();
     expect(mockRouter.push).toHaveBeenCalledWith({ name: "Dashboard" });
   });

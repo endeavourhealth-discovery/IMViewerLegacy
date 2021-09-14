@@ -128,8 +128,41 @@ describe("Mappings.vue", () => {
     expect(wrapper.vm.createChartStructure([{"http://endhealth.info/im#combinationOf":[{"http://endhealth.info/im#oneOf":[{"http://endhealth.info/im#mappedTo":{"@id":"http://endhealth.info/OPCS4#X109","name":"Unspecified amputation of foot"},"http://endhealth.info/im#mapAdvice":"ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE","http://endhealth.info/im#mapPriority":1,"http://endhealth.info/im#assuranceLevel":{"@id":"http://endhealth.info/im#NationallyAssuredUK","name":"Nationally assured UK level"}}]},{"http://endhealth.info/im#oneOf":[{"http://endhealth.info/im#mappedTo":{"@id":"http://endhealth.info/OPCS4#Z942","name":"Right sided operation"},"http://endhealth.info/im#mapAdvice":"ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE","http://endhealth.info/im#mapPriority":1,"http://endhealth.info/im#assuranceLevel":{"@id":"http://endhealth.info/im#NationallyAssuredUK","name":"Nationally assured UK level"}}]}]}])).toStrictEqual({"key":"0","type":"hasMap","data":{"label":"Has map"},"children":[{"key":"0_0","type":"comboOf","data":{"label":"Combination of"},"children":[{"key":"0_0_0","type":"oneOf","data":{"label":"One of"},"children":[{"key":"0_0_0_0","type":"childList","data":{"mapItems":[{"name":"Unspecified amputation of foot","iri":"http://endhealth.info/OPCS4#X109","priority":1,"assuranceLevel":"Nationally assured UK level"}]}}]},{"key":"0_0_1","type":"oneOf","data":{"label":"One of"},"children":[{"key":"0_0_1_0","type":"childList","data":{"mapItems":[{"name":"Right sided operation","iri":"http://endhealth.info/OPCS4#Z942","priority":1,"assuranceLevel":"Nationally assured UK level"}]}}]}]},{"key":"0_1","type":"simpleMaps","data":{"label":"Simple maps"},"children":[{"key":"0_1_0","type":"simpleMapsList","data":{"mapItems":[{"name":"Amputation of right foot","iri":"http://endhealth.info/emis#^ESCTAM784250","scheme":"EMIS (inc. Read2 like) namespace","code":"^ESCTAM784250"},{"name":"Amputation of right foot","iri":"http://endhealth.info/emis#^ESCTAM784250","scheme":"EMIS (inc. Read2 like) namespace","code":"^ESCTAM784250"}]}}]}]});
   });
 
+  it("can createChartStructure ___ complex only", () => {
+    wrapper.vm.simpleMaps = [];
+    expect(wrapper.vm.createChartStructure([{"http://endhealth.info/im#combinationOf":[{"http://endhealth.info/im#oneOf":[{"http://endhealth.info/im#mappedTo":{"@id":"http://endhealth.info/OPCS4#X109","name":"Unspecified amputation of foot"},"http://endhealth.info/im#mapAdvice":"ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE","http://endhealth.info/im#mapPriority":1,"http://endhealth.info/im#assuranceLevel":{"@id":"http://endhealth.info/im#NationallyAssuredUK","name":"Nationally assured UK level"}}]},{"http://endhealth.info/im#oneOf":[{"http://endhealth.info/im#mappedTo":{"@id":"http://endhealth.info/OPCS4#Z942","name":"Right sided operation"},"http://endhealth.info/im#mapAdvice":"ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE","http://endhealth.info/im#mapPriority":1,"http://endhealth.info/im#assuranceLevel":{"@id":"http://endhealth.info/im#NationallyAssuredUK","name":"Nationally assured UK level"}}]}]}])).toStrictEqual({"key":"0","type":"hasMap","data":{"label":"Has map"},"children":[{"key":"0_0","type":"comboOf","data":{"label":"Combination of"},"children":[{"key":"0_0_0","type":"oneOf","data":{"label":"One of"},"children":[{"key":"0_0_0_0","type":"childList","data":{"mapItems":[{"name":"Unspecified amputation of foot","iri":"http://endhealth.info/OPCS4#X109","priority":1,"assuranceLevel":"Nationally assured UK level"}]}}]},{"key":"0_0_1","type":"oneOf","data":{"label":"One of"},"children":[{"key":"0_0_1_0","type":"childList","data":{"mapItems":[{"name":"Right sided operation","iri":"http://endhealth.info/OPCS4#Z942","priority":1,"assuranceLevel":"Nationally assured UK level"}]}}]}]}]});
+  });
+
   it("can create chart structure ___ empty mappingObject", () => {
+    wrapper.vm.simpleMaps = [];
     expect(wrapper.vm.createChartStructure([])).toStrictEqual([]);
+  });
+
+  it("can create chart structure ___ simple maps only", () => {
+    expect(wrapper.vm.createChartStructure([])).toStrictEqual({
+      "children": [
+        {
+          "children": [
+            {
+              "data": {
+                "mapItems": [
+                  {"code": "^ESCTAM784250", "iri": "http://endhealth.info/emis#^ESCTAM784250", "name": "Amputation of right foot", "scheme": "EMIS (inc. Read2 like) namespace"},
+                  {"code": "^ESCTAM784250", "iri": "http://endhealth.info/emis#^ESCTAM784250", "name": "Amputation of right foot", "scheme": "EMIS (inc. Read2 like) namespace"}
+                ]
+              },
+              "key": "0_0_0",
+              "type": "simpleMapsList"
+            }
+          ],
+          "data": {"label": "Simple maps"},
+          "key": "0_0",
+          "type": "simpleMaps"
+        }
+      ],
+      "data": {"label": "Has map"},
+      "key": "0",
+      "type": "hasMap"
+    });
   });
 
   it("can get bypriority ___ 1", () => {

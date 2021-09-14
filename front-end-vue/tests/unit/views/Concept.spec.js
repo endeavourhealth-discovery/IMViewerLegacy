@@ -66,7 +66,8 @@ describe("Concept.vue", () => {
     ]});
     mockStore = {
       state: {
-        conceptIri: "http://endhealth.info/im#CriticalCareEncounter"
+        conceptIri: "http://endhealth.info/im#CriticalCareEncounter",
+        selectedEntityType: "Class"
       },
       commit: jest.fn(),
       dispatch: jest.fn()
@@ -360,7 +361,8 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.getConcept).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
     expect(wrapper.vm.types).toStrictEqual([{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]);
     expect(wrapper.vm.header).toBe("Scoliosis caused by radiation (disorder)");
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Class");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "Class");
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateModuleSelectedEntities", { module: "Class", iri: "http://endhealth.info/im#CriticalCareEncounter" });
     expect(wrapper.vm.loading).toBe(false);
   });
 
@@ -371,7 +373,8 @@ describe("Concept.vue", () => {
     wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"name":"Concept Set","@id":"http://endhealth.info/im#ConceptSet"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
     wrapper.vm.init();
     await flushPromises();
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Set");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "Set");
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateModuleSelectedEntities", { module: "Set", iri: "http://endhealth.info/im#CriticalCareEncounter" });
   });
 
   it("Inits ___ Query", async() => {
@@ -380,7 +383,8 @@ describe("Concept.vue", () => {
     wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"name":"Query template","@id":"http://endhealth.info/im#QueryTemplate"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
     wrapper.vm.init();
     await flushPromises();
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Query");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "Query");
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateModuleSelectedEntities", { module: "Query", iri: "http://endhealth.info/im#CriticalCareEncounter" });
   });
 
   it("Inits ___ None", async() => {
@@ -389,7 +393,8 @@ describe("Concept.vue", () => {
     wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"name":"Other","@id":"http://endhealth.info/im#Other"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
     wrapper.vm.init();
     await flushPromises();
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "None");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "None");
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateModuleSelectedEntities", { module: "None", iri: "http://endhealth.info/im#CriticalCareEncounter" });
   });
 
   it("Inits ___ missing type", async() => {
@@ -398,7 +403,8 @@ describe("Concept.vue", () => {
     wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
     wrapper.vm.init();
     await flushPromises();
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "None");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "None");
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateModuleSelectedEntities", { module: "None", iri: "http://endhealth.info/im#CriticalCareEncounter" });
     expect(wrapper.vm.types).toStrictEqual([]);
   });
 

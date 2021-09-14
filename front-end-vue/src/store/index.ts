@@ -9,6 +9,7 @@ import LoggerService from "@/services/LoggerService";
 import { CustomAlert } from "@/models/user/CustomAlert";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import axios from "axios";
+import { IM } from "@/vocabulary/IM";
 
 export default createStore({
   // update stateType.ts when adding new state!
@@ -51,7 +52,15 @@ export default createStore({
       schemes: any[];
       types: any[];
     },
-    quickFiltersStatus: new Map<string, boolean>()
+    quickFiltersStatus: new Map<string, boolean>(),
+    moduleSelectedEntities: {
+      ontology: IM.MODULE_ONTOLOGY,
+      sets: IM.MODULE_SETS,
+      dataModel: IM.MODULE_DATA_MODEL,
+      catalogue: IM.MODULE_CATALOGUE,
+      queries: IM.MODULE_QUERIES
+    },
+    conceptActivePanel: 0 as number
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -108,6 +117,28 @@ export default createStore({
     },
     updateSelectedEntityType(state, type) {
       state.selectedEntityType = type;
+    },
+    updateModuleSelectedEntities(state, data) {
+      switch (data.module) {
+        case "Set":
+          state.moduleSelectedEntities.sets = data.iri;
+          break;
+        case "RecordModel":
+          state.moduleSelectedEntities.dataModel = data.iri;
+          break;
+        case "Class":
+          state.moduleSelectedEntities.ontology = data.iri;
+          break;
+        case "Query":
+          state.moduleSelectedEntities.queries = data.iri;
+          break;
+        // add case for catalogue when type in known
+        default:
+          break;
+      }
+    },
+    updateConceptActivePanel(state, number) {
+      state.conceptActivePanel = number;
     }
   },
   actions: {

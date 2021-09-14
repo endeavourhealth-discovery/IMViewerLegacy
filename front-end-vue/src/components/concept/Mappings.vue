@@ -288,27 +288,34 @@ export default defineComponent({
     },
 
     createChartStructure(mappingObject: any): any {
-      if (!mappingObject.length || !Object.keys(mappingObject).length) {
-        return [];
-      }
       const parentNode = {
         key: "0",
         type: "hasMap",
         data: { label: "Has map" },
         children: [] as any
       };
-      parentNode.children = this.generateChildNodes(mappingObject, "0", 0);
-      const simpleMapsChildren = this.generateSimpleMapsNodes(
-        this.simpleMaps,
-        "0_" + parentNode.children.length,
-        0
-      );
-      parentNode.children.push({
-        key: "0_" + parentNode.children.length,
-        type: "simpleMaps",
-        data: { label: "Simple maps" },
-        children: simpleMapsChildren
-      });
+      if (
+        (!mappingObject.length || !Object.keys(mappingObject).length) &&
+        !this.simpleMaps.length
+      ) {
+        return [];
+      }
+      if (mappingObject.length && Object.keys(mappingObject).length) {
+        parentNode.children = this.generateChildNodes(mappingObject, "0", 0);
+      }
+      if (this.simpleMaps.length) {
+        const simpleMapsChildren = this.generateSimpleMapsNodes(
+          this.simpleMaps,
+          "0_" + parentNode.children.length,
+          0
+        );
+        parentNode.children.push({
+          key: "0_" + parentNode.children.length,
+          type: "simpleMaps",
+          data: { label: "Simple maps" },
+          children: simpleMapsChildren
+        });
+      }
       return parentNode;
     },
 

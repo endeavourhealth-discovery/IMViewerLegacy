@@ -61,6 +61,7 @@
 </template>
 
 <script lang="ts">
+import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
 
@@ -70,7 +71,8 @@ export default defineComponent({
     "currentUser",
     "isLoggedIn",
     "sideNavHierarchyFocus",
-    "selectedEntityType"
+    "selectedEntityType",
+    "moduleSelectedEntities"
   ]),
   emits: ["hierarchyFocusSelected"],
   watch: {
@@ -90,13 +92,26 @@ export default defineComponent({
             iri: this.menuItems[1].iri
           });
           break;
-        case "Query":
+        case "RecordModel":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[2].name,
             fullName: this.menuItems[2].fullName,
             iri: this.menuItems[2].iri
           });
           break;
+        // add case for catalogue when type is known
+        case "Query":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[4].name,
+            fullName: this.menuItems[4].fullName,
+            iri: this.menuItems[4].iri
+          });
+          break;
+      }
+    },
+    sideNavHierarchyFocus(newValue, oldValue) {
+      if (newValue.name !== oldValue.name) {
+        this.handleCenterIconClick(newValue);
       }
     }
   },
@@ -145,21 +160,35 @@ export default defineComponent({
           name: "Ontology",
           fullName: "Ontologies",
           route: "Dashboard",
-          iri: "http://endhealth.info/im#DiscoveryOntology"
+          iri: IM.MODULE_ONTOLOGY
         },
         {
           icon: ["fas", "layer-group"],
           name: "Sets",
           fullName: "Concept sets and value sets",
           route: "Dashboard",
-          iri: "http://endhealth.info/im#Sets"
+          iri: IM.MODULE_SETS
+        },
+        {
+          icon: ["fas", "archive"],
+          name: "DataModel",
+          fullName: "Data model",
+          route: "Dashboard",
+          iri: IM.MODULE_DATA_MODEL
+        },
+        {
+          icon: ["fas", "fax"],
+          name: "Catalogue",
+          fullName: "Catalogue",
+          route: "Dashboard",
+          iri: IM.MODULE_CATALOGUE
         },
         {
           icon: ["fas", "search"],
           name: "Queries",
           fullName: "Query templates",
           route: "Dashboard",
-          iri: "http://endhealth.info/im#QT_QueryTemplates"
+          iri: IM.MODULE_QUERIES
         }
         // {
         //   icon: ["fas", "tasks"],
@@ -203,12 +232,9 @@ export default defineComponent({
       this.$store.commit("updateSideNavHierarchyFocus", {
         name: "InformationModel",
         fullName: "Information Model",
-        iri: "http://endhealth.info/im#InformationModel"
+        iri: IM.MODULE_IM
       });
-      this.$store.commit(
-        "updateConceptIri",
-        "http://endhealth.info/im#InformationModel"
-      );
+      this.$store.commit("updateConceptIri", IM.MODULE_IM);
       this.$emit("hierarchyFocusSelected");
       this.$router.push({ name: "Dashboard" });
     },
@@ -217,14 +243,50 @@ export default defineComponent({
       if (
         item.name === "Ontology" ||
         item.name === "Sets" ||
-        item.name === "Queries"
+        item.name === "Queries" ||
+        item.name === "DataModel" ||
+        item.name === "Catalogue"
       ) {
         this.$store.commit("updateSideNavHierarchyFocus", {
           name: item.name,
           fullName: item.fullName,
           iri: item.iri
         });
-        this.$store.commit("updateConceptIri", item.iri);
+        switch (item.name) {
+          case "Ontology":
+            this.$store.commit(
+              "updateConceptIri",
+              this.moduleSelectedEntities.ontology
+            );
+            break;
+          case "Sets":
+            this.$store.commit(
+              "updateConceptIri",
+              this.moduleSelectedEntities.sets
+            );
+            break;
+          case "Queries":
+            this.$store.commit(
+              "updateConceptIri",
+              this.moduleSelectedEntities.queries
+            );
+            break;
+          case "DataModel":
+            this.$store.commit(
+              "updateConceptIri",
+              this.moduleSelectedEntities.dataModel
+            );
+            break;
+          case "Catalogue":
+            this.$store.commit(
+              "updateConceptIri",
+              this.moduleSelectedEntities.catalogue
+            );
+            break;
+          default:
+            // this.$store.commit("updateConceptIri", item.iri);
+            break;
+        }
         this.$emit("hierarchyFocusSelected");
       }
       this.$router.push({ name: item.route });
