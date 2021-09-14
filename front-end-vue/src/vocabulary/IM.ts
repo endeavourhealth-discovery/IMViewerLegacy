@@ -51,4 +51,11 @@ export class IM {
   public static DISCOVERY_CODE = IM.NAMESPACE + "DiscoveryCodeScheme";
 
   public static STATS_REPORT_ENTRY = IM.NAMESPACE + "hasStatsReportEntry";
+
+  public static MODULE_ONTOLOGY = IM.NAMESPACE + "DiscoveryOntology";
+  public static MODULE_SETS = IM.NAMESPACE + "Sets";
+  public static MODULE_DATA_MODEL = IM.NAMESPACE + "DiscoveryCommonDataModel";
+  public static MODULE_CATALOGUE = IM.NAMESPACE + "Catalogue";
+  public static MODULE_QUERIES = IM.NAMESPACE + "QT_QueryTemplates";
+  public static MODULE_IM = IM.NAMESPACE + "InformationModel";
 }
