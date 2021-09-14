@@ -59,7 +59,8 @@ export default createStore({
       dataModel: IM.MODULE_DATA_MODEL,
       catalogue: IM.MODULE_CATALOGUE,
       queries: IM.MODULE_QUERIES
-    }
+    },
+    conceptActivePanel: 0 as number
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -135,6 +136,9 @@ export default createStore({
         default:
           break;
       }
+    },
+    updateConceptActivePanel(state, number) {
+      state.conceptActivePanel = number;
     }
   },
   actions: {
