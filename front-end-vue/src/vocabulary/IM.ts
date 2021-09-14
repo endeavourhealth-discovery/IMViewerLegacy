@@ -10,6 +10,8 @@ export class IM {
   public static IS_CONTAINED_IN = IM.NAMESPACE + "isContainedIn";
   public static PROPERTY_GROUP = IM.NAMESPACE + "propertyGroup";
   public static INHERITED_FROM = IM.NAMESPACE + "inheritedFrom";
+  public static IS_CHILD_OF = IM.NAMESPACE + "isChildOf";
+  public static HAS_CHILDREN = IM.NAMESPACE + "hasChildren";
 
   // mapping
   public static HAS_MAP = IM.NAMESPACE + "hasMap";
