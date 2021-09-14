@@ -27,13 +27,6 @@
       </TabPanel>
       <TabPanel>
         <template #header>
-          <i class="fas fa-history icon-header" aria-hidden="true" />
-          <span>History</span>
-        </template>
-        <History />
-      </TabPanel>
-      <TabPanel>
-        <template #header>
           <i class="fas fa-search icon-header" aria-hidden="true" />
           <span>Search results</span>
         </template>
@@ -44,6 +37,13 @@
           <SearchResults />
           <Filters :search="search" :searchTerm="searchTerm" />
         </div>
+      </TabPanel>
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-history icon-header" aria-hidden="true" />
+          <span>History</span>
+        </template>
+        <History />
       </TabPanel>
     </TabView>
   </div>
@@ -104,7 +104,7 @@ export default defineComponent({
           key: "searchResults",
           value: true
         });
-        this.active = 2;
+        this.active = 1;
         const searchRequest = new SearchRequest();
         searchRequest.termFilter = this.searchTerm;
         searchRequest.sortBy = SortBy.Usage;
