@@ -172,7 +172,7 @@ export default defineComponent({
       expandSubsets: false,
       selected: {} as any,
       subsets: [] as any[],
-      expandedRowGroups: ["MemberIncluded", "MemberXcluded"],
+      expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"],
       showComplexMembersDialog: false
     };
   },
@@ -200,7 +200,7 @@ export default defineComponent({
       if (this.expandMembers) {
         this.expandedRowGroups = ["MemberExpanded"];
       } else {
-        this.expandedRowGroups = ["MemberIncluded", "MemberXcluded"];
+        this.expandedRowGroups = ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"];
       }
       this.selected = {};
       this.subsets = [];
