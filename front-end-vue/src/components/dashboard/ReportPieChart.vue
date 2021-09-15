@@ -49,12 +49,10 @@ export default defineComponent({
           legend: {
             position: "right",
             onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
+              e.native.target.style.cursor = "pointer";
+            },
+            onLeave: function(e: any) {
+              e.native.target.style.cursor = "default";
             }
           }
         }
@@ -149,14 +147,12 @@ export default defineComponent({
               fontSize: 12
             },
             onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
+              e.native.target.style.cursor = "pointer";
+            },
+            onLeave: function(e: any) {
+              e.native.target.style.cursor = "default";
             }
           },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
-            }
-          }
         };
       } else if (width > 1300) {
         this.chartOptions.plugins = {
@@ -167,12 +163,10 @@ export default defineComponent({
               fontSize: 10
             },
             onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
+              e.native.target.style.cursor = "pointer";
+            },
+            onLeave: function(e: any) {
+              e.native.target.style.cursor = "default";
             }
           }
         };
@@ -185,12 +179,10 @@ export default defineComponent({
               fontSize: 8
             },
             onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
+              e.native.target.style.cursor = "pointer";
+            },
+            onLeave: function(e: any) {
+              e.native.target.style.cursor = "default";
             }
           }
         };
@@ -203,12 +195,10 @@ export default defineComponent({
               fontSize: 8
             },
             onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
+              e.native.target.style.cursor = "pointer";
+            },
+            onLeave: function(e: any) {
+              e.native.target.style.cursor = "default";
             }
           }
         };
@@ -221,12 +211,10 @@ export default defineComponent({
               fontSize: 6
             },
             onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
+              e.native.target.style.cursor = "pointer";
+            },
+            onLeave: function(e: any) {
+              e.native.target.style.cursor = "default";
             }
           }
         };
@@ -239,12 +227,10 @@ export default defineComponent({
               fontSize: 4
             },
             onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
+              e.native.target.style.cursor = "pointer";
+            },
+            onLeave: function(e: any) {
+              e.native.target.style.cursor = "default";
             }
           }
         };
