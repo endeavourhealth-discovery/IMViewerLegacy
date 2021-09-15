@@ -86,6 +86,7 @@ export default defineComponent({
 #complex-strings-container {
   border: 1px solid black;
   border-radius: 3px;
+  padding: 1rem;
 }
 
 #complex-strings-container ::v-deep(p) {
