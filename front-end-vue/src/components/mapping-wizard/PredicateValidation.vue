@@ -1,12 +1,13 @@
 <template>
-  <div class="panel-content">
-    <h2>New predicates that will be created.</h2>
-
-    <Listbox :options="newPredicates" />
-  </div>
+  <Card id="container">
+    <template #title> New predicates that will be created </template>
+    <template #content>
+      <Listbox :options="newPredicates" />
+    </template>
+  </Card>
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
     <Button label="Back" @click="prevPage" />
-    <Button label="Next" @click="nextPage" :loading="loading"/>
+    <Button label="Next" @click="nextPage" :loading="loading" />
   </div>
 </template>
 
@@ -66,8 +67,8 @@ export default defineComponent({
 <style scoped>
 #container {
   margin: 1rem;
-  height: calc(100vh - 2rem);
-  width: 100%;
+  height: calc(100vh - 19rem);
+  width: 98%;
   overflow-y: auto;
   background-color: #ffffff;
   border: 1px solid #dee2e6;

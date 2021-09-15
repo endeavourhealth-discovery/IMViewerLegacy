@@ -1,44 +1,67 @@
-<template
-  >
-  <div class="panel-content">
-    <div class="p-fluid p-formgrid p-grid">
-      <div class="p-field p-col-12 p-md-8">
-        <label for="graph">Graph</label>
-        <InputText id="graph" type="text" v-model="graph" />
+<template>
+  <Card id="container">
+    <template #title> New predicates that will be created </template>
+    <template #content>
+      <div class="p-fluid p-formgrid p-grid">
+        <div class="p-field p-col-12 p-md-8">
+          <label for="graph">Graph</label>
+          <InputText id="graph" type="text" v-model="graph" />
+        </div>
+        <div class="p-field p-col-12 p-md-4">
+          <label for="nested">Nested</label>
+          <Dropdown
+            inputId="nested"
+            v-model="nested"
+            :options="options"
+            optionLabel="name"
+            optionValue="value"
+            placeholder="Is content nested"
+          />
+        </div>
+        <div class="p-field p-col-6 p-md-6">
+          <label for="contentFile">Content File</label>
+          <FileUpload
+            ref="contentFile"
+            name="demo[]"
+            :customUpload="true"
+            :auto="true"
+            @uploader="uploadContent"
+            @clear="resetContent"
+            :preview-width="0"
+            @remove="resetContent"
+            accept=".txt, .csv, .tsv, .json"
+            chooseLabel="Select"
+            :fileLimit="1"
+          >
+            <template #empty>
+              <p>Drag and drop files here to upload.</p>
+            </template>
+          </FileUpload>
+        </div>
+        <div class="p-field p-col-6 p-md-6">
+          <label for="contentFile">Map Document (Optional)</label>
+          <FileUpload
+            ref="mapDocument"
+            name="demo[]"
+            :customUpload="true"
+            :auto="true"
+            @uploader="uploadMapDocument"
+            @clear="resetMapDocument"
+            :preview-width="0"
+            @remove="resetMapDocument"
+            accept=".ttl"
+            chooseLabel="Select"
+            :fileLimit="1"
+          >
+            <template #empty>
+              <p>Drag and drop files here to upload.</p>
+            </template>
+          </FileUpload>
+        </div>
       </div>
-      <div class="p-field p-col-12 p-md-4">
-        <label for="nested">Nested</label>
-        <Dropdown
-          inputId="nested"
-          v-model="nested"
-          :options="options"
-          optionLabel="name"
-          optionValue="value"
-          placeholder="Is content nested"
-        />
-      </div>
-      <div class="p-field p-col-12 p-md-12">
-        <label for="contentFile">Content File</label>
-        <FileUpload
-          ref="contentFile"
-          name="demo[]"
-          :customUpload="true"
-          :auto="true"
-          @uploader="uploadContent"
-          @clear="resetContent"
-          :preview-width="0"
-          @remove="resetContent"
-          accept=".txt, .csv, .tsv, .json"
-          chooseLabel="Select"
-          :fileLimit="1"
-        >
-          <template #empty>
-            <p>Drag and drop files here to upload.</p>
-          </template>
-        </FileUpload>
-      </div>
-    </div>
-  </div>
+    </template>
+  </Card>
+
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
     <Button label="Next" @click="nextPage" />
   </div>
@@ -47,6 +70,7 @@
 <script lang="ts">
 import { MappingFormObject } from "@/models/mapping/MappingFormObject";
 import { defineComponent, PropType } from "vue";
+import { readFileSync } from "fs";
 
 export default defineComponent({
   name: "ContentUpload",
@@ -67,6 +91,9 @@ export default defineComponent({
       contentFile: "",
       contentFileName: "",
       contentFileType: "",
+      mapDocument: "",
+      mapDocumentName: "",
+      mapDocumentString: "",
       graph: "",
       nested: "",
       options: [
@@ -76,11 +103,22 @@ export default defineComponent({
     };
   },
   methods: {
+    async convertFileToString(file: any) {
+      return await (file as Blob).text();
+    },
     uploadContent(event: any) {
-      console.log(event.files[0].type);
       this.contentFileName = event.files[0].name;
       this.contentFileType = event.files[0].type;
       this.contentFile = event.files[0];
+    },
+    async uploadMapDocument(event: any) {
+      this.mapDocument = event.files[0];
+      this.mapDocumentName = event.files[0].name;
+      this.mapDocumentString = await this.convertFileToString(this.mapDocument);
+    },
+    resetMapDocument() {
+      const x = this.$refs.mapDocument as any;
+      x.uploadedFileCount = 0;
     },
     resetContent() {
       const x = this.$refs.contentFile as any;
@@ -92,10 +130,13 @@ export default defineComponent({
           contentFile: this.contentFile,
           contentFileName: this.contentFileName,
           contentFileType: this.contentFileType,
+          mapDocument: this.mapDocument,
+          mapDocumentName: this.mapDocumentName,
+          mapDocumentString: this.mapDocumentString,
           graph: this.graph,
           nested: this.nested,
         },
-        pageIndex: 0,
+        pageIndex: !this.mapDocument ? 0 : 1,
       });
     },
   },
@@ -105,8 +146,8 @@ export default defineComponent({
 <style scoped>
 #container {
   margin: 1rem;
-  height: calc(100vh - 2rem);
-  width: 100%;
+  height: calc(100vh - 19rem);
+  width: 98%;
   overflow-y: auto;
   background-color: #ffffff;
   border: 1px solid #dee2e6;

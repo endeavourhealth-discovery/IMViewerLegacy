@@ -2,10 +2,10 @@
   <SideNav />
   <div id="container">
     <Panel header="Mapping Wizard">
-      <TabPanel>
-        <div class="card">
-          <Steps :model="items" :readonly="true" />
-        </div>
+      <div class="card">
+        <Steps :model="items" :readonly="true" />
+      </div>
+      <div id="content">
         <router-view
           v-slot="{ Component }"
           :formObject="formObject"
@@ -16,7 +16,7 @@
             <component :is="Component" />
           </keep-alive>
         </router-view>
-      </TabPanel>
+      </div>
     </Panel>
   </div>
 </template>
@@ -81,7 +81,7 @@ export default defineComponent({
   margin: 1rem;
   height: calc(100vh - 2rem);
   width: 100%;
-  overflow-y: auto;
+  overflow-y: hidden;
   background-color: #ffffff;
   border: 1px solid #dee2e6;
 }
@@ -96,5 +96,10 @@ export default defineComponent({
 #button-bar {
   padding: 0 2rem 1rem 0;
   gap: 0.5rem;
+}
+
+#content {
+  height: calc(100vh - 14rem);
+  border: unset;
 }
 </style>

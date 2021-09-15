@@ -1,31 +1,43 @@
 <template>
-  <div class="panel-content">
-    <Card>
-      <template #title> Confirmation </template>
-      <template #content>
-        <div class="p-field p-col-12">
-          <label for="class">Graph: </label>
-          <b>{{ formObject.graph ? formObject.graph : "-" }} </b>
-        </div>
-        <div class="p-field p-col-12">
-          <label for="Age">Nested: </label>
-          <b>{{ formObject.nested ? formObject.nested : "-" }}</b>
-        </div>
-        <div class="p-field p-col-12">
-          <label for="Age">Content File: </label>
-          <b>{{ formObject.contentFile ? formObject.contentFile : "-" }}</b>
-        </div>
-        <div class="p-field p-col-12">
-          <label for="Age">Map Document: </label>
-          <b>{{ formObject.mapDocument ? formObject.mapDocument : "-" }}</b>
-        </div>
-      </template>
-    </Card>
-  </div>
+  <Card id="container">
+    <template #title> Confirmation </template>
+    <template #content>
+      <div class="p-field p-col-12">
+        <label for="class">Graph: </label>
+        <b>{{ formObject.graph ? " " + formObject.graph : " -" }} </b>
+      </div>
+      <div class="p-field p-col-12">
+        <label for="Age">Nested: </label>
+        <b>{{ formObject.nested ? " " + formObject.nested : " -" }}</b>
+      </div>
+      <div class="p-field p-col-12">
+        <label for="Age">Content File: </label>
+        <b>{{
+          formObject.contentFile ? " " + formObject.contentFileName : " -"
+        }}</b>
+      </div>
+      <div class="p-field p-col-12">
+        <label for="Age">Map Document: </label>
+        <b>{{
+          formObject.mapDocument ? " " + formObject.mapDocumentName : " -"
+        }}</b>
+      </div>
+    </template>
+  </Card>
+
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
     <Button label="Back" @click="prevPage" />
-    <Button v-if="!complete" label="Submit" @click="submit" :loading="loading"/>
-    <Button v-if="complete" label="New" @click="this.$router.push('/mapping/wizard')" />
+    <Button
+      v-if="!complete"
+      label="Submit"
+      @click="submit"
+      :loading="loading"
+    />
+    <Button
+      v-if="complete"
+      label="New"
+      @click="this.$router.push('/mapping/wizard')"
+    />
   </div>
 </template>
 
@@ -65,7 +77,9 @@ export default defineComponent({
           this.loading = false;
           this.download(response);
           this.$toast.add(
-            LoggerService.success("Request was successful. Download should begin shortly.")
+            LoggerService.success(
+              "Request was successful. Download should begin shortly."
+            )
           );
         })
         .catch((error) => {
@@ -74,7 +88,7 @@ export default defineComponent({
             LoggerService.error("Request failed from server", error.message)
           );
         });
-        this.complete = true;
+      this.complete = true;
     },
     download(response: any) {
       const json = JSON.stringify(response);
@@ -104,8 +118,8 @@ export default defineComponent({
 <style scoped>
 #container {
   margin: 1rem;
-  height: calc(100vh - 2rem);
-  width: 100%;
+  height: calc(100vh - 19rem);
+  width: 98%;
   overflow-y: auto;
   background-color: #ffffff;
   border: 1px solid #dee2e6;

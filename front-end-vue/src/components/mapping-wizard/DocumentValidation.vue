@@ -1,12 +1,10 @@
 <template>
-  <div class="panel-content">
-    <Card>
-      <template #title> MapDocument.ttl </template>
-      <template #content>
-        <div id="monaco-container"></div>
-      </template>
-    </Card>
-  </div>
+  <Card id="container">
+    <template #title> MapDocument.ttl </template>
+    <template #content>
+      <div id="monaco-container"></div>
+    </template>
+  </Card>
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
     <Button label="Back" @click="prevPage" />
     <Button label="Download" @click="download" />
@@ -83,6 +81,15 @@ export default defineComponent({
 </script>
 
 <style scoped>
+#container {
+  margin: 1rem;
+  height: calc(100vh - 19rem);
+  width: 98%;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+}
+
 #button-bar {
   padding: 0 2rem 1rem 0;
   gap: 0.5rem;

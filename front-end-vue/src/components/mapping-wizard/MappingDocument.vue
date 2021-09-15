@@ -1,108 +1,120 @@
 <template>
-  <div class="panel-content">
-    <div v-for="mapping in mappings" :key="mapping.id">
-      <div class="p-fluid p-formgrid p-grid">
-        <div class="p-field p-col-12 p-md-6">
-          <span class="p-float-label">
-            <InputText type="text" v-model="mapping.name" />
-            <label>Mapping Name</label>
-          </span>
-        </div>
-        <div class="p-field p-col-12 p-md-6">
-          <span class="p-float-label">
-            <InputText type="text" v-model="mapping.iterator" :disabled="formObject.contentFileType==='text/csv'"/>
-            <label>Iterator</label>
-          </span>
-        </div>
-
-        <div class="p-field p-col-12 p-md-4">
-          <span class="p-float-label">
-            <Dropdown
-              v-model="mapping.subjectMapType"
-              :options="subjectMapOptions"
-            />
-            <label>SubjectMap Type</label>
-          </span>
-        </div>
-
-        <div class="p-field p-col-12 p-md-4">
-          <span class="p-float-label">
-            <InputText type="text" v-model="mapping.subjectMapValue" />
-            <label>SubjectMap Value</label>
-          </span>
-        </div>
-        <div class="p-field p-col-12 p-md-4">
-          <span class="p-float-label">
-            <InputText type="text" v-model="mapping.class" />
-            <label for="graph">Class</label>
-          </span>
-        </div>
-      </div>
-
-      <div v-for="predicate in mapping.objectMaps" :key="predicate.id">
+  <Card id="container">
+    <template #title> Create a new Map Document </template>
+    <template #content>
+      <div v-for="mapping in mappings" :key="mapping.id">
         <div class="p-fluid p-formgrid p-grid">
-          <div class="p-field p-col">
+          <div class="p-field p-col-12 p-md-6">
             <span class="p-float-label">
-              <InputText id="graph" type="text" v-model="predicate.property" />
-              <label for="graph">ObjectMap Property</label>
+              <InputText type="text" v-model="mapping.name" />
+              <label>Mapping Name</label>
             </span>
           </div>
-          <div class="p-field p-col">
+          <div class="p-field p-col-12 p-md-6">
+            <span class="p-float-label">
+              <InputText
+                type="text"
+                v-model="mapping.iterator"
+                :disabled="formObject.contentFileType === 'text/csv'"
+              />
+              <label>Iterator</label>
+            </span>
+          </div>
+
+          <div class="p-field p-col-12 p-md-4">
             <span class="p-float-label">
               <Dropdown
-                inputId="subjectMapType"
-                v-model="predicate.type"
-                :options="objectMapOptions"
+                v-model="mapping.subjectMapType"
+                :options="subjectMapOptions"
               />
-              <label for="graph">ObjectMap Type</label>
+              <label>SubjectMap Type</label>
             </span>
           </div>
-          <div class="p-field p-col">
+
+          <div class="p-field p-col-12 p-md-4">
             <span class="p-float-label">
-              <InputText id="graph" type="text" v-model="predicate.value" />
-              <label for="graph">ObjectMap Value</label>
+              <InputText type="text" v-model="mapping.subjectMapValue" />
+              <label>SubjectMap Value</label>
             </span>
           </div>
-          <div class="p-field p-col-1">
+          <div class="p-field p-col-12 p-md-4">
+            <span class="p-float-label">
+              <InputText type="text" v-model="mapping.class" />
+              <label for="graph">Class</label>
+            </span>
+          </div>
+        </div>
+
+        <div v-for="predicate in mapping.objectMaps" :key="predicate.id">
+          <div class="p-fluid p-formgrid p-grid">
+            <div class="p-field p-col">
+              <span class="p-float-label">
+                <InputText
+                  id="graph"
+                  type="text"
+                  v-model="predicate.property"
+                />
+                <label for="graph">ObjectMap Property</label>
+              </span>
+            </div>
+            <div class="p-field p-col">
+              <span class="p-float-label">
+                <Dropdown
+                  inputId="subjectMapType"
+                  v-model="predicate.type"
+                  :options="objectMapOptions"
+                />
+                <label for="graph">ObjectMap Type</label>
+              </span>
+            </div>
+            <div class="p-field p-col">
+              <span class="p-float-label">
+                <InputText id="graph" type="text" v-model="predicate.value" />
+                <label for="graph">ObjectMap Value</label>
+              </span>
+            </div>
+            <div class="p-field p-col-1">
+              <Button
+                icon="pi pi-times"
+                class="p-button-danger p-button-raised p-button-rounded"
+                @click="removeObjectMap(mapping, predicate.id)"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="p-fluid p-grid">
+          <div class="p-field p-col-12 p-md-6 button">
             <Button
-              icon="pi pi-times"
-              class="p-button-danger p-button-raised p-button-rounded"
-              @click="removeObjectMap(mapping, predicate.id)"
+              label="Add ObjectMap"
+              @click="addObjectMap(mapping)"
+              class="p-button-success"
+            >
+            </Button>
+          </div>
+          <div class="p-field p-col-12 p-md-6 button">
+            <Button
+              label="Delete"
+              :disabled="mappings.length == 1"
+              @click="deleteMapping(mapping.id)"
+              class="p-button-danger"
             />
           </div>
         </div>
       </div>
-
       <div class="p-fluid p-grid">
-        <div class="p-field p-col-12 p-md-6 button">
+        <div class="p-field p-col button">
           <Button
-            label="Add ObjectMap"
-            @click="addObjectMap(mapping)"
-            class="p-button-success"
-          >
-          </Button>
-        </div>
-        <div class="p-field p-col-12 p-md-6 button">
-          <Button
-            label="Delete"
-            :disabled="mappings.length == 1"
-            @click="deleteMapping(mapping.id)"
-            class="p-button-danger"
+            @click="addMapping"
+            id="add-mapping"
+            label="Add RML Mapping"
+            class="p-button-outlined p-button-lg p-button-plain"
           />
         </div>
       </div>
-    </div>
-    <div class="p-fluid p-grid">
-      <div class="p-field p-col button">
-        <Button
-          @click="addMapping"
-          id="add-mapping"
-          label="New RML Mapping"
-          class="p-button-outlined p-button-lg p-button-plain"
-        />
-      </div>
-    </div>
-  </div>
+    </template>
+  </Card>
+
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
     <Button label="Back" @click="prevPage" />
     <Button label="Next" @click="nextPage" />
@@ -193,8 +205,8 @@ export default defineComponent({
 <style scoped>
 #container {
   margin: 1rem;
-  height: calc(100vh - 2rem);
-  width: 100%;
+  height: calc(100vh - 19rem);
+  width: 98%;
   overflow-y: auto;
   background-color: #ffffff;
   border: 1px solid #dee2e6;
