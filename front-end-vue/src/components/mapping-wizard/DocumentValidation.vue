@@ -36,6 +36,7 @@ export default defineComponent({
     };
   },
   mounted() {
+    this.mapDocumentString = this.formObject.mapDocumentString;
     this.initMonaco();
   },
   methods: {
@@ -52,7 +53,7 @@ export default defineComponent({
       });
     },
     download() {
-      const blob = new Blob([this.mapDocumentString!]);
+      const blob = new Blob([this.mapDocumentString]);
       const fileURL = URL.createObjectURL(blob);
 
       const fileLink = document.createElement("a");

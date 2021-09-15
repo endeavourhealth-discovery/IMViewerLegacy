@@ -24,7 +24,6 @@ function getRmlMaps(formObject: MappingFormObject, mappings: RMLMapping[]) {
   mappings.forEach(mapping => {
     returnValue += getSubjectMap(formObject, mapping);
     returnValue += getObjectMaps(mapping);
-    returnValue.replace(/.$/, ".");
   })
   return returnValue;
 }
@@ -33,18 +32,19 @@ function getSubjectMap(formObject: MappingFormObject, mapping: RMLMapping) {
   let subjectMap = `
 <#${mapping.name}> a rr:TriplesMap;
   rml:logicalSource [
-  rml:source "${formObject.contentFileName}";
-  rml:referenceFormulation ${getReferenceFormulation(formObject.contentFileType)};`;
-  subjectMap += mapping.iterator ? `rml:iterator "${mapping.iterator}"];]` : `
+    rml:source "${formObject.contentFileName}";
+    rml:referenceFormulation ${getReferenceFormulation(formObject.contentFileType)};`;
+  subjectMap += mapping.iterator ? `
+    rml:iterator "${mapping.iterator}"];]` : `
   ];
   `
   subjectMap += `
   rr:subjectMap [
   `
   subjectMap += getPredicateObjectMap(mapping.subjectMapType, mapping.subjectMapValue);
-  subjectMap += 
-  `; 
-  rr:class ${mapping.class}
+  subjectMap +=
+    `; 
+    rr:class ${mapping.class}
   ];
   `
 
@@ -72,7 +72,7 @@ function getObjectMaps(mapping: RMLMapping) {
     objectMaps += ` ]
   ];`;
   })
-  return objectMaps;
+  return objectMaps.slice(0, -1) + ".";
 }
 
 function getPredicateObjectMap(type: ObjectMapTypeEnum | SubjectMapTypeEnum, value: string) {
