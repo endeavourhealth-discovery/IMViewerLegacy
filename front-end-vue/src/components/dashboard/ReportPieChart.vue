@@ -152,7 +152,7 @@ export default defineComponent({
             onLeave: function(e: any) {
               e.native.target.style.cursor = "default";
             }
-          },
+          }
         };
       } else if (width > 1300) {
         this.chartOptions.plugins = {

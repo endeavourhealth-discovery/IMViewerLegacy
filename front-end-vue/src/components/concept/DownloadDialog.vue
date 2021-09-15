@@ -340,10 +340,7 @@ export default defineComponent({
             this.hasChildren = res.data[IM.HAS_CHILDREN];
           }
           if (
-            Object.prototype.hasOwnProperty.call(
-              this.concept,
-              IM.IS_A
-            ) &&
+            Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A) &&
             res.data[IM.IS_A].length
           ) {
             this.isA = res.data[IM.IS_A];

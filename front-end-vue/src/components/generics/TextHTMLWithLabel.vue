@@ -1,9 +1,9 @@
 <template>
   <div class="text-html-with-label-container" :style="{ width: size }">
     <strong class="label">{{ label }}: </strong>
-    <span v-if="!data" class="text-html-container" >None</span>
+    <span v-if="!data" class="text-html-container">None</span>
     <!-- span content injected by javascript -->
-    <div v-else class="text-html-container" v-html="convertedText" :id="id"></div>
+    <div v-else class="text-html-container" v-html="convertedText" :id="id" />
   </div>
 </template>
 
