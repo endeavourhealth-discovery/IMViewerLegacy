@@ -241,7 +241,7 @@ export default defineComponent({
     },
 
     handleCenterIconClick(item: any) {
-      let route = "Dashboard";
+      let route = item.route;
       let moduleIri = "";
       if (
         item.name === "Ontology" ||
