@@ -37,6 +37,9 @@ export default defineComponent({
     this.mapDocumentString = this.formObject.mapDocumentString;
     this.initMonaco();
   },
+  beforeUnmount() {
+    monaco.editor.getModels()[0].dispose();
+  },
   methods: {
     initMonaco() {
       monaco.editor.create(document.getElementById("monaco-container")!, {

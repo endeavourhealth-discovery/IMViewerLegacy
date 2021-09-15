@@ -2,7 +2,10 @@
   <Card id="container">
     <template #title> New predicates that will be created </template>
     <template #content>
-      <Listbox :options="newPredicates" />
+      <Listbox
+        :options="newPredicates"
+        :emptyMessage="loading ? 'Loading' : 'No new predicates'"
+      />
     </template>
   </Card>
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">

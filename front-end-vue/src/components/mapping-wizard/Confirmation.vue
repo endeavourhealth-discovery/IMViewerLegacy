@@ -23,6 +23,11 @@
         }}</b>
       </div>
     </template>
+    <template #footer>
+      <div v-if="loading" class="loading-container">
+        <ProgressSpinner />
+      </div>
+    </template>
   </Card>
 
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
@@ -31,6 +36,7 @@
       v-if="!complete"
       label="Submit"
       @click="submit"
+      :disabled="!isValid"
       :loading="loading"
     />
     <Button
@@ -54,6 +60,16 @@ export default defineComponent({
     formObject: {
       type: Object as PropType<MappingFormObject>,
       required: true,
+    },
+  },
+  computed: {
+    isValid(): boolean {
+      return (
+        !!this.formObject.contentFile &&
+        !!this.formObject.graph &&
+        !!this.formObject.nested &&
+        !!this.formObject.mapDocument
+      );
     },
   },
   data() {
