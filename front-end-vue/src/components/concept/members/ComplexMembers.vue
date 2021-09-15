@@ -13,7 +13,12 @@
     <div v-if="loading">
       <ProgressSpinner />
     </div>
-    <div v-else v-for="member in complexMembers" :key="member" id="complex-strings-container">
+    <div
+      v-else
+      v-for="member in complexMembers"
+      :key="member"
+      id="complex-strings-container"
+    >
       <p id="html-container" v-html="member"></p>
     </div>
     <template #footer>
