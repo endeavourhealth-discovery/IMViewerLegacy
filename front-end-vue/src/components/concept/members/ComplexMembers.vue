@@ -5,10 +5,17 @@
     :closable="false"
     :maximizable="true"
     :style="{ width: '50vw' }"
+    id="complex-members-dialog"
   >
     <template #header>
       Complex members
     </template>
+    <div v-if="loading">
+      <ProgressSpinner />
+    </div>
+    <div v-else v-for="member in complexMembers" :key="member" id="complex-strings-container">
+      <p id="html-container" v-html="member"></p>
+    </div>
     <template #footer>
       <Button
         label="Close"
@@ -75,4 +82,13 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+#complex-strings-container {
+  border: 1px solid black;
+  border-radius: 3px;
+}
+
+#complex-strings-container ::v-deep(p) {
+  margin-bottom: 0 !important;
+}
+</style>
