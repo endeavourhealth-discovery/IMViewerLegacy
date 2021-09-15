@@ -13,6 +13,7 @@ export function buildMapDocumentString(formObject: MappingFormObject, mappings: 
 @prefix fnml: <http://semweb.mmlab.be/ns/fnml#> .
 @prefix shacl: <http://www.w3.org/ns/shacl#> .
 @prefix rs: <http://prsb.info/rs#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @base <http://endhealth.info/mapping/prsb.ttl#> .
 `;
   mapDocumentString += getRmlMaps(formObject, mappings);
@@ -40,7 +41,7 @@ function getSubjectMap(formObject: MappingFormObject, mapping: RMLMapping) {
   `
   subjectMap += `
   rr:subjectMap [
-  `
+   `
   subjectMap += getPredicateObjectMap(mapping.subjectMapType, mapping.subjectMapValue);
   subjectMap +=
     `; 

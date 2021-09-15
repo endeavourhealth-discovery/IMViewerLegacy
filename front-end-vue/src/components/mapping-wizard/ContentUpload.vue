@@ -63,14 +63,13 @@
   </Card>
 
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
-    <Button label="Next" @click="nextPage" />
+    <Button label="Next" @click="nextPage" :disabled="!isValid" />
   </div>
 </template>
 
 <script lang="ts">
 import { MappingFormObject } from "@/models/mapping/MappingFormObject";
 import { defineComponent, PropType } from "vue";
-import { readFileSync } from "fs";
 
 export default defineComponent({
   name: "ContentUpload",
@@ -101,6 +100,16 @@ export default defineComponent({
         { name: "No", value: "false" },
       ],
     };
+  },
+  mounted() {
+    this.contentFile = this.formObject.contentFile;
+    this.contentFileName = this.formObject.contentFileName;
+    this.contentFileType = this.formObject.contentFileType;
+    this.mapDocument = this.formObject.mapDocument;
+    this.mapDocumentName = this.formObject.mapDocumentName;
+    this.mapDocumentString = this.formObject.mapDocumentString;
+    this.graph = this.formObject.graph;
+    this.nested = this.formObject.nested;
   },
   methods: {
     async convertFileToString(file: any) {

@@ -1,6 +1,6 @@
 <template>
   <Card id="container">
-    <template #title> Create a new Map Document </template>
+    <template #title> Create Map document </template>
     <template #content>
       <div v-for="mapping in mappings" :key="mapping.id">
         <div class="p-fluid p-formgrid p-grid">
