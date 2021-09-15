@@ -2,24 +2,15 @@
   <div class="panel-content">
     <div v-for="mapping in mappings" :key="mapping.id">
       <div class="p-fluid p-formgrid p-grid">
-        <div class="p-field p-col-12 p-md-4">
+        <div class="p-field p-col-12 p-md-6">
           <span class="p-float-label">
             <InputText type="text" v-model="mapping.name" />
             <label>Mapping Name</label>
           </span>
         </div>
-        <div class="p-field p-col-12 p-md-4">
+        <div class="p-field p-col-12 p-md-6">
           <span class="p-float-label">
-            <Dropdown
-              v-model="mapping.referenceFormulation"
-              :options="referenceFormulationOptions"
-            />
-            <label>Reference Formulation</label>
-          </span>
-        </div>
-        <div class="p-field p-col-12 p-md-4">
-          <span class="p-float-label">
-            <InputText type="text" v-model="mapping.iterator" />
+            <InputText type="text" v-model="mapping.iterator" :disabled="formObject.contentFileType==='text/csv'"/>
             <label>Iterator</label>
           </span>
         </div>
@@ -50,13 +41,13 @@
 
       <div v-for="predicate in mapping.objectMaps" :key="predicate.id">
         <div class="p-fluid p-formgrid p-grid">
-          <div class="p-field p-col-3">
+          <div class="p-field p-col">
             <span class="p-float-label">
               <InputText id="graph" type="text" v-model="predicate.property" />
               <label for="graph">ObjectMap Property</label>
             </span>
           </div>
-          <div class="p-field p-col-3">
+          <div class="p-field p-col">
             <span class="p-float-label">
               <Dropdown
                 inputId="subjectMapType"
@@ -66,25 +57,24 @@
               <label for="graph">ObjectMap Type</label>
             </span>
           </div>
-          <div class="p-field p-col-3">
+          <div class="p-field p-col">
             <span class="p-float-label">
               <InputText id="graph" type="text" v-model="predicate.value" />
               <label for="graph">ObjectMap Value</label>
             </span>
           </div>
-          <div class="p-field p-col">
+          <div class="p-field p-col-1">
             <Button
-              label="Remove ObjectMap"
-              class="p-button-danger"
+              icon="pi pi-times"
+              class="p-button-danger p-button-raised p-button-rounded"
               @click="removeObjectMap(mapping, predicate.id)"
-            >
-            </Button>
+            />
           </div>
         </div>
       </div>
 
       <div class="p-fluid p-grid">
-        <div class="p-field p-col-12 p-md-12 button">
+        <div class="p-field p-col-12 p-md-6 button">
           <Button
             label="Add ObjectMap"
             @click="addObjectMap(mapping)"
@@ -100,9 +90,16 @@
             class="p-button-danger"
           />
         </div>
-        <div class="p-field p-col-12 p-md-6">
-          <Button label="Add" @click="addMapping" class="p-button-success" />
-        </div>
+      </div>
+    </div>
+    <div class="p-fluid p-grid">
+      <div class="p-field p-col button">
+        <Button
+          @click="addMapping"
+          id="add-mapping"
+          label="New RML Mapping"
+          class="p-button-outlined p-button-lg p-button-plain"
+        />
       </div>
     </div>
   </div>
@@ -212,6 +209,18 @@ export default defineComponent({
 
 .p-field {
   margin-bottom: 30px;
+}
+
+#add-mapping {
+  border: dashed 2px #dee2e6;
+  box-shadow: unset;
+  vertical-align: middle;
+}
+
+#add-mapping:hover {
+  border: dashed 2px #ff7a59;
+  color: #ff7a59;
+  background: #fff;
 }
 
 #button-bar {

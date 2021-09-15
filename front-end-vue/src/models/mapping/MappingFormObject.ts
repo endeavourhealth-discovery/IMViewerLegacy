@@ -5,5 +5,6 @@ export interface MappingFormObject {
     graph: string,
     nested: string,
     mapDocument: string,
+    mapDocumentName: string,
     mapDocumentString: string,
 }
