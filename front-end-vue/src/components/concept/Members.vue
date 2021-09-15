@@ -14,7 +14,7 @@
       :globalFilterFields="['code', 'entity.name', 'scheme.name', 'label']"
       :scrollable="true"
       sortMode="single"
-      sortField="position"
+      sortField="label"
       :sortOrder="1"
       class="p-datatable-sm"
       scrollHeight="flex"
