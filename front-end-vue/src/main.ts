@@ -75,6 +75,8 @@ import ConfirmPopup from "primevue/confirmpopup";
 import InputSwitch from "primevue/inputswitch";
 import Steps from "primevue/steps";
 import Editor from "primevue/editor";
+import AutoComplete from 'primevue/autocomplete';
+
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
@@ -140,6 +142,7 @@ const app = createApp(App)
   .component("ConfirmPopup", ConfirmPopup)
   .component("Steps", Steps)
   .component("Editor", Editor)
+  .component("AutoComplete", AutoComplete)
   .component("InputSwitch", InputSwitch);
 
 app.mount("#app");

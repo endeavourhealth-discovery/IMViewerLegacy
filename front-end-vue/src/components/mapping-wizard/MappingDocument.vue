@@ -33,7 +33,15 @@
 
           <div class="p-field p-col-12 p-md-4">
             <span class="p-float-label">
-              <InputText type="text" v-model="mapping.subjectMapValue" />
+              <AutoComplete
+                v-if="isReferenceType(mapping.subjectMapType)"
+                v-model="mapping.subjectMapValue"
+                :dropdown="true"
+                @complete="searchReference(mapping.subjectMapValue)"
+                :suggestions="filteredSuggestions"
+              />
+
+              <InputText v-else type="text" v-model="mapping.subjectMapValue" />
               <label>SubjectMap Value</label>
             </span>
           </div>
@@ -69,7 +77,19 @@
             </div>
             <div class="p-field p-col">
               <span class="p-float-label">
-                <InputText id="graph" type="text" v-model="predicate.value" />
+                <AutoComplete
+                  v-if="isReferenceType(predicate.type)"
+                  v-model="predicate.value"
+                  :dropdown="true"
+                  @complete="searchReference(predicate.value)"
+                  :suggestions="filteredSuggestions"
+                />
+                <InputText
+                  v-else
+                  id="graph"
+                  type="text"
+                  v-model="predicate.value"
+                />
                 <label for="graph">ObjectMap Value</label>
               </span>
             </div>
@@ -130,6 +150,7 @@ import { defineComponent, PropType } from "vue";
 import { PredicateObjectMap } from "@/models/mapping/PredicateObjectMap";
 import { ReferenceFormulationEnum } from "@/models/mapping/ReferenceFormulationEnum";
 import { MappingFormObject } from "@/models/mapping/MappingFormObject";
+import MappingService from "@/services/MappingService";
 
 export default defineComponent({
   name: "MappingDocument",
@@ -149,6 +170,8 @@ export default defineComponent({
     return {
       pageIndex: 1,
       mapDocumentString: "",
+      referenceSuggestions: [] as string[],
+      filteredSuggestions: [] as string[],
       mappings: [
         { id: 0, objectMaps: [{ id: 0 }] as PredicateObjectMap[] },
       ] as RMLMapping[],
@@ -157,7 +180,32 @@ export default defineComponent({
       objectMapOptions: Object.values(ObjectMapTypeEnum),
     };
   },
+  async mounted() {
+    const formData = new FormData();
+    formData.append("contentFile", this.formObject.contentFile);
+    this.referenceSuggestions = await MappingService.getReferenceSuggestions(
+      formData
+    );
+  },
   methods: {
+    isReferenceType(type: ObjectMapTypeEnum | SubjectMapTypeEnum) {
+      if (ObjectMapTypeEnum.reference === type) return true;
+      return false;
+    },
+    searchReference(ref: string) {
+      let filteredItems = [];
+
+      for (let i = 0; i < this.referenceSuggestions.length; i++) {
+        let item = this.referenceSuggestions[i];
+        if (ref && item.toLowerCase().indexOf(ref.toLowerCase()) === 0) {
+          filteredItems.push(item);
+        }
+      }
+
+      this.filteredSuggestions = filteredItems.length
+        ? filteredItems
+        : this.referenceSuggestions;
+    },
     addObjectMap(mapping: RMLMapping) {
       mapping.objectMaps.push({
         id: mapping.objectMaps.length,

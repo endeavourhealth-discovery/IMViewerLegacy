@@ -12,4 +12,9 @@ export default class MappingService {
     const response = await axios.post(this.api + "api/mapping/newPredicates", formData);
     return response.data;
   }
+
+  static async getReferenceSuggestions(formData: FormData): Promise<string[]> {
+    const response = await axios.post(this.api + "api/mapping/references", formData);
+    return response.data;
+  }
 }
