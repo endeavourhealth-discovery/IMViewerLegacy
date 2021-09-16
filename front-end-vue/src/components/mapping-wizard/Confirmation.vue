@@ -19,7 +19,9 @@
       <div class="p-field p-col-12">
         <label for="Age">Map Document: </label>
         <b>{{
-          formObject.mapDocument ? " " + formObject.mapDocumentName : " -"
+          formObject.mapDocument
+            ? " " + (formObject.mapDocumentName || "newMap.ttl")
+            : " -"
         }}</b>
       </div>
     </template>
