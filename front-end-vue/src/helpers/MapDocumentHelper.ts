@@ -3,6 +3,10 @@ import { ObjectMapTypeEnum } from "@/models/mapping/ObjectMapTypeEnum";
 import { RMLMapping } from "@/models/mapping/RMLMapping";
 import { SubjectMapTypeEnum } from "@/models/mapping/SubjectMapTypeEnum";
 
+export function getAllAvailableReferences(): string[] {
+  return [];
+}
+
 export function buildMapDocumentString(formObject: MappingFormObject, mappings: RMLMapping[]): string {
   let mapDocumentString = `
 @prefix rr: <http://www.w3.org/ns/r2rml#> .
