@@ -32,34 +32,82 @@
       >
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!includeParents"
-            id="parents"
+            :disabled="!includeIsA"
+            id="is-a"
             :binary="true"
-            value="Include parents"
-            v-model="includeParents"
+            value="Include is a"
+            v-model="includeIsA"
           />
           <label
             class="label"
-            :class="includeParents ? null : 'inactive-text'"
-            for="parents"
+            :class="includeIsA ? null : 'inactive-text'"
+            for="is-a"
           >
-            Include parents
+            Include is a's
           </label>
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!includeChildren"
-            id="children"
+            :disabled="!includeHasSubTypes"
+            id="has-sub-types"
             :binary="true"
-            value="Include children"
-            v-model="includeChildren"
+            value="Include has sub types"
+            v-model="includeHasSubTypes"
           />
           <label
             class="label"
-            :class="includeChildren ? null : 'inactive-text'"
-            for="children"
+            :class="includeHasSubTypes ? null : 'inactive-text'"
+            for="has-sub-types"
           >
-            Include children
+            Include has sub types
+          </label>
+        </div>
+        <div class="checkbox-label">
+          <Checkbox
+            :disabled="!includeIsChildOf"
+            id="is-child-of"
+            :binary="true"
+            value="Include is child of"
+            v-model="includeIsChildOf"
+          />
+          <label
+            class="label"
+            :class="includeIsChildOf ? null : 'inactive-text'"
+            for="is-child-of"
+          >
+            Include is child of
+          </label>
+        </div>
+        <div class="checkbox-label">
+          <Checkbox
+            :disabled="!includeHasChildren"
+            id="has-children"
+            :binary="true"
+            value="Include has children"
+            v-model="includeHasChildren"
+          />
+          <label
+            class="label"
+            :class="includeHasChildren ? null : 'inactive-text'"
+            for="has-children"
+          >
+            Include has children
+          </label>
+        </div>
+        <div class="checkbox-label">
+          <Checkbox
+            :disabled="!includeTerms"
+            id="terms"
+            :binary="true"
+            value="Include terms"
+            v-model="includeTerms"
+          />
+          <label
+            class="label"
+            :class="includeTerms ? null : 'inactive-text'"
+            for="terms"
+          >
+            Include terms
           </label>
         </div>
         <div class="checkbox-label">
@@ -163,6 +211,7 @@ import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 import { RDFS } from "@/vocabulary/RDFS";
+import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
   name: "DownloadDialog",
@@ -180,18 +229,24 @@ export default defineComponent({
   data() {
     return {
       concept: {},
-      parents: [] as any,
-      children: [] as any,
+      isA: [] as any,
+      hasSubTypes: [] as any,
+      isChildOf: [] as any,
+      hasChildren: [] as any,
+      terms: [] as any,
       dataModelProperties: [],
       semanticProperties: [],
       members: {} as any,
-      includeChildren: true,
+      includeHasSubTypes: true,
       includeDataModelProperties: true,
       includeMembers: true,
       expandMembers: false,
-      includeParents: true,
+      includeIsA: true,
+      includeIsChildOf: false,
+      includeHasChildren: false,
       includeInactive: false,
       includeSemanticProperties: false,
+      includeTerms: false,
       loading: false,
       RDFS_LABEL: RDFS.LABEL,
       format: {
@@ -227,18 +282,24 @@ export default defineComponent({
         modIri +
         "&format=" +
         this.format.value +
-        "&children=" +
-        this.includeChildren +
+        "&hasSubTypes=" +
+        this.includeHasSubTypes +
         "&dataModelProperties=" +
         this.includeDataModelProperties +
         "&members=" +
         this.includeMembers +
         "&expandMembers=" +
         this.expandMembers +
-        "&parents=" +
-        this.includeParents +
+        "&isA=" +
+        this.includeIsA +
         "&semanticProperties=" +
         this.includeSemanticProperties +
+        "&terms=" +
+        this.includeTerms +
+        "&isChildOf=" +
+        this.includeIsChildOf +
+        "&hasChildren=" +
+        this.includeHasChildren +
         "&inactive=" +
         this.includeInactive;
       const popup = window.open(url);
@@ -252,31 +313,60 @@ export default defineComponent({
 
     async init(iri: string) {
       this.loading = true;
-      await EntityService.getPartialEntity(iri, [RDFS.LABEL])
+      await EntityService.getPartialEntity(iri, [
+        RDFS.LABEL,
+        IM.IS_CHILD_OF,
+        IM.HAS_CHILDREN,
+        IM.IS_A
+      ])
         .then(res => {
           this.concept = res.data;
+          if (
+            Object.prototype.hasOwnProperty.call(
+              this.concept,
+              IM.IS_CHILD_OF
+            ) &&
+            res.data[IM.IS_CHILD_OF].length
+          ) {
+            this.isChildOf = res.data[IM.IS_CHILD_OF];
+          }
+          if (
+            Object.prototype.hasOwnProperty.call(
+              this.concept,
+              IM.HAS_CHILDREN
+            ) &&
+            res.data[IM.HAS_CHILDREN]
+          ) {
+            this.hasChildren = res.data[IM.HAS_CHILDREN];
+          }
+          if (
+            Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A) &&
+            res.data[IM.IS_A].length
+          ) {
+            this.isA = res.data[IM.IS_A];
+          }
         })
         .catch(err => {
           this.$toast.add(
             LoggerService.error("Failed to get concept data from server", err)
           );
         });
-      await EntityService.getEntityParents(iri)
-        .then(res => {
-          this.parents = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get parents data from server", err)
-          );
-        });
       await EntityService.getEntityChildren(iri)
         .then(res => {
-          this.children = res.data;
+          this.hasSubTypes = res.data;
         })
         .catch(err => {
           this.$toast.add(
             LoggerService.error("Failed to get children data from server", err)
+          );
+        });
+      await EntityService.getEntityTermCodes(iri)
+        .then(res => {
+          this.terms = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get terms from server", err)
           );
         });
       await EntityService.getDataModelProperties(iri)
@@ -317,8 +407,11 @@ export default defineComponent({
     },
 
     setIncludeBooleans() {
-      this.includeParents = !!this.parents.length;
-      this.includeChildren = !!this.children.length;
+      this.includeIsA = !!this.isA.length;
+      this.includeHasSubTypes = !!this.hasSubTypes.length;
+      this.includeIsChildOf = !!this.isChildOf.length;
+      this.includeHasChildren = !!this.hasChildren.length;
+      this.includeTerms = !!this.terms.length;
       this.includeDataModelProperties = !!this.dataModelProperties.length;
       this.includeSemanticProperties = !!this.semanticProperties.length;
       this.includeMembers =

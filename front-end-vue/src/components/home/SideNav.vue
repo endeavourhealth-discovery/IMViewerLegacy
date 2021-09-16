@@ -64,6 +64,7 @@
 import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
+import { MODULE_IRIS } from "@/helpers/ModuleIris";
 
 export default defineComponent({
   name: "SideNav",
@@ -240,6 +241,8 @@ export default defineComponent({
     },
 
     handleCenterIconClick(item: any) {
+      let route = item.route;
+      let moduleIri = "";
       if (
         item.name === "Ontology" ||
         item.name === "Sets" ||
@@ -258,30 +261,50 @@ export default defineComponent({
               "updateConceptIri",
               this.moduleSelectedEntities.ontology
             );
+            if (!MODULE_IRIS.includes(this.moduleSelectedEntities.ontology)) {
+              route = "Concept";
+              moduleIri = this.moduleSelectedEntities.ontology;
+            }
             break;
           case "Sets":
             this.$store.commit(
               "updateConceptIri",
               this.moduleSelectedEntities.sets
             );
+            if (!MODULE_IRIS.includes(this.moduleSelectedEntities.sets)) {
+              route = "Concept";
+              moduleIri = this.moduleSelectedEntities.sets;
+            }
             break;
           case "Queries":
             this.$store.commit(
               "updateConceptIri",
               this.moduleSelectedEntities.queries
             );
+            if (!MODULE_IRIS.includes(this.moduleSelectedEntities.queries)) {
+              route = "Concept";
+              moduleIri = this.moduleSelectedEntities.queries;
+            }
             break;
           case "DataModel":
             this.$store.commit(
               "updateConceptIri",
               this.moduleSelectedEntities.dataModel
             );
+            if (!MODULE_IRIS.includes(this.moduleSelectedEntities.dataModel)) {
+              route = "Concept";
+              moduleIri = this.moduleSelectedEntities.dataModel;
+            }
             break;
           case "Catalogue":
             this.$store.commit(
               "updateConceptIri",
               this.moduleSelectedEntities.catalogue
             );
+            if (!MODULE_IRIS.includes(this.moduleSelectedEntities.catalogue)) {
+              route = "Concept";
+              moduleIri = this.moduleSelectedEntities.catalogue;
+            }
             break;
           default:
             // this.$store.commit("updateConceptIri", item.iri);
@@ -289,7 +312,14 @@ export default defineComponent({
         }
         this.$emit("hierarchyFocusSelected");
       }
-      this.$router.push({ name: item.route });
+      if (moduleIri !== "") {
+        this.$router.push({
+          name: route,
+          params: { selectedIri: moduleIri }
+        });
+      } else {
+        this.$router.push({ name: route });
+      }
     }
   }
 });

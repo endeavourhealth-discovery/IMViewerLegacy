@@ -1,5 +1,8 @@
 <template>
   <div id="concept-main-container">
+    <!-- <div v-if="loading" class="loading-container">
+      <ProgressSpinner />
+    </div> -->
     <Panel>
       <template #icons>
         <div class="icons-container">
@@ -58,13 +61,7 @@
         <PanelHeader :types="types" :header="header" />
       </template>
       <div id="concept-content-dialogs-container">
-        <div
-          v-if="
-            Object.keys(concept).length &&
-              Object.keys(concept).includes('dataModelProperties')
-          "
-          id="concept-panel-container"
-        >
+        <div id="concept-panel-container">
           <TabView v-model:activeIndex="active" :lazy="true">
             <TabPanel header="Definition">
               <div
@@ -195,11 +192,15 @@ export default defineComponent({
       return isRecordModel(this.types);
     },
 
-    ...mapState(["conceptIri", "selectedEntityType"])
+    ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel"])
   },
   watch: {
     async conceptIri() {
       this.init();
+    },
+
+    selectedEntityType(newValue, oldValue) {
+      this.setActivePanel(newValue, oldValue);
     }
   },
   async mounted() {
@@ -341,7 +342,6 @@ export default defineComponent({
 
     async init() {
       this.loading = true;
-      this.active = 0;
       await this.getConfig("definition");
       await this.getConcept(this.conceptIri);
       await this.getProperties(this.conceptIri);
@@ -367,6 +367,14 @@ export default defineComponent({
         });
       }
       this.loading = false;
+    },
+
+    setActivePanel(newType: string, oldType: string) {
+      if (newType === oldType) {
+        this.active = this.conceptActivePanel;
+      } else {
+        this.active = 0;
+      }
     },
 
     setContentHeight(): void {

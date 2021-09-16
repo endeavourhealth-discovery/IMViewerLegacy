@@ -153,8 +153,8 @@ export default defineComponent({
 
       await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO])
         .then(res => {
-          this.simpleMaps = res.data[IM.MATCHED_TO];
-          if (this.simpleMaps && this.namespaces) {
+          this.simpleMaps = res.data[IM.MATCHED_TO] || [];
+          if (this.simpleMaps.length && this.namespaces) {
             this.simpleMaps.forEach((mapItem: any) => {
               const found = this.namespaces.find(
                 (namespace: any) =>

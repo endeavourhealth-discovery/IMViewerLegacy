@@ -4,7 +4,7 @@
     <div class="home">
       <div class="p-grid">
         <div class="p-col-3">
-          <TabView class="sidemenu" v-model:activeIndex="active">
+          <TabView v-model:activeIndex="active">
             <TabPanel>
               <template #header>
                 <i
@@ -17,7 +17,7 @@
               <Listbox
                 v-model="selectedWorkflow"
                 :options="workflowTypes"
-                :onClick="createPanel()"
+                @click="createPanel()"
               >
                 <template #option="slotProps">
                   <div>
@@ -34,17 +34,17 @@
         >
           <div class="p-grid">
             <div class="p-col-12">
-              <Panel :toggleable="true">
+              <Panel>
                 <template #header> {{ selectedWorkflow }} Workflow </template>
                 <div id="diagram"></div>
                 <DataTable
-                  :value="concepts"
+                  :value="tasks"
                   class="p-datatable-sm"
                   :paginator="true"
                   :rows="10"
                   dataKey="id"
                   stripedRows
-                  v-model:filters="filters1"
+                  v-model:filters="filters"
                   multiple="false"
                 >
                   <template #header>
@@ -89,37 +89,93 @@ export default defineComponent({
   name: "Workflow",
   components: {
     SideNav
-    // SidebarControl
   },
   data() {
     return {
       links: [{ source: "", name: "", target: "" }],
-      genData: [] as any,
       width: 500,
       height: 300,
       padding: 10,
-      tasks: [],
+      tasksData: [],
       workflows: [],
-      concepts: [] as any,
+      tasks: [] as any,
       selectedWorkflow: "Concept",
       workflowTypes: [] as any,
       filters: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
-      } as Filters
+      } as Filters,
+      active: 0,
+      currentWorkflow: "" as any
     };
   },
   mounted() {
-    this.getWorkflowTasks();
     this.getWorkflows();
+    this.getWorkflowTasks();
   },
   methods: {
-    createPanel() {
+    async getWorkflows() {
+      await WorkflowService.getWorkflows().then(res => {
+        this.workflows = res.data;
+      });
+      this.workflows.forEach((workflow: any) => {
+        this.workflowTypes.push(workflow.type);
+      });
+    },
+    async getWorkflowTasks() {
+      await WorkflowService.getWorkflowTasks()
+          .then(res => {
+            this.tasksData = res.data;
+          })
+          .catch(err => {
+            this.$toast.add(
+                LoggerService.error("Failed to get workflows from server", err)
+            );
+          });
+      this.createPanel();
+    },
+    createPanel(){
+      if(this.selectedWorkflow==null){
+        this.selectedWorkflow = this.currentWorkflow;
+      }
+      this.getTransitions();
+      this.getTasks();
+      this.createDiagram();
+      this.currentWorkflow = this.selectedWorkflow;
+    },
+    getTransitions() {
+      this.links = [];
+      this.workflows.forEach((workflow: any) => {
+        if (workflow.type == this.selectedWorkflow) {
+          workflow.validStates.forEach((state: any) => {
+            if (workflow.transitions[state]) {
+              const transition = workflow.transitions[state];
+              workflow.validEvents.forEach((event: any) => {
+                if (transition[event]) {
+                  this.links.push({
+                                    source: state,
+                                    name: event,
+                                    target: transition[event]
+                                  });
+                }
+              });
+            }
+          });
+        }
+      });
+    },
+    getTasks() {
+      this.tasks = [];
+      this.tasksData.forEach((task: any) => {
+        if (task.workflow == this.selectedWorkflow) {
+          this.tasks.push(task);
+        }
+      });
+    },
+    createDiagram() {
       const doc = document.getElementById("diagram");
       if (doc != null) {
         doc.innerHTML = "";
       }
-      this.getTasks();
-      this.getTransitions();
       const w = 900;
       const h = 200;
       const color = d3.scaleOrdinal(this.events, d3.schemeSet1);
@@ -148,10 +204,10 @@ export default defineComponent({
         .join("marker")
         .attr("id", (d: any) => `arrow-${d}`)
         .attr("viewBox", "0 -5 10 10")
-        .attr("refX", 15)
+        .attr("refX", 17)
         .attr("refY", -0.5)
-        .attr("markerWidth", 6)
-        .attr("markerHeight", 6)
+        .attr("markerWidth", 5)
+        .attr("markerHeight", 5)
         .attr("orient", "auto")
         .append("path")
         .attr("d", "M0,-5L10,0L0,5");
@@ -180,11 +236,11 @@ export default defineComponent({
         .attr("stroke", "black")
         .attr("fill", "white")
         .attr("stroke-width", 2)
-        .attr("r", 3);
+        .attr("r", 4);
       node
         .append("text")
-        .attr("x", 5)
-        .attr("y", -5)
+        .attr("x", -20)
+        .attr("y", -20)
         .text((d: any) => d.id)
         .clone(true)
         .lower()
@@ -199,7 +255,7 @@ export default defineComponent({
       const legend = svg
         .append("g")
         .selectAll("g")
-        .data(this.events.reverse())
+        .data(this.events)
         .enter()
         .append("g")
         .attr(
@@ -221,60 +277,12 @@ export default defineComponent({
       function linkArc(d: any) {
         const r = Math.hypot(d.target.x - d.source.x, d.target.y - d.source.y);
         if (d.target.x - d.source.x == 0 && d.target.y - d.source.y == 0) {
-          return `M${d.source.x},${d.source.y}A 15, 15 0 1, 0 ${d.target.x +
-            1},${d.target.y + 1}`;
+          return `M${d.source.x},${d.source.y}A 15, 15 1 1, 1 ${d.target.x -
+            1},${d.target.y - 1}`;
         } else {
-          return `M${d.source.x},${d.source.y}A${r},${r} 0 0,1 ${d.target.x},${d.target.y}`;
+          return `M${d.source.x},${d.source.y-2}A${r},${r} 0 0,0 ${d.target.x},${d.target.y+2}`;
         }
       }
-    },
-    async getWorkflows() {
-      await WorkflowService.getWorkflows().then(res => {
-        this.workflows = res.data;
-      });
-      this.workflows.forEach((w: any) => {
-        this.workflowTypes.push(w.type);
-      });
-    },
-    async getTransitions() {
-      this.links = [];
-      this.workflows.forEach((w: any) => {
-        if (w.type == this.selectedWorkflow) {
-          w.validStates.forEach((s: any) => {
-            if (w.transitions[s]) {
-              const trans = w.transitions[s];
-              w.validEvents.forEach((e: any) => {
-                if (trans[e]) {
-                  this.links.push({
-                    source: s,
-                    name: e,
-                    target: trans[e]
-                  });
-                }
-              });
-            }
-          });
-        }
-      });
-    },
-    async getTasks() {
-      this.concepts = [];
-      this.tasks.forEach((t: any) => {
-        if (t.workflow == this.selectedWorkflow) {
-          this.concepts.push(t);
-        }
-      });
-    },
-    async getWorkflowTasks() {
-      await WorkflowService.getWorkflowTasks()
-        .then(res => {
-          this.tasks = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get workflows from server", err)
-          );
-        });
     }
   },
   computed: {
