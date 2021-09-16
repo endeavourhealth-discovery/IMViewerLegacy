@@ -39,11 +39,7 @@
       :disabled="!isValid"
       :loading="loading"
     />
-    <Button
-      v-if="complete"
-      label="New"
-      @click="this.$router.push('/mapping/wizard')"
-    />
+    <Button v-if="complete" label="New" @click="newMap" />
   </div>
 </template>
 
@@ -83,6 +79,22 @@ export default defineComponent({
     prevPage() {
       this.$emit("prev-page", {
         pageIndex: this.pageIndex,
+      });
+    },
+
+    newMap() {
+      this.$emit("next-page", {
+        formData: {
+          contentFile: "",
+          contentFileName: "",
+          contentFileType: "",
+          graph: "",
+          nested: "",
+          mapDocument: "",
+          mapDocumentName: "",
+          mapDocumentString: "",
+        } as MappingFormObject,
+        pageIndex: -1,
       });
     },
 
