@@ -2,11 +2,17 @@
   <div v-if="isArrayObjectWithName" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}: </strong>
-      <span>{{ data.length }}</span>
+      <span>&nbsp;({{ data.length }})</span>
       <Button
         icon="pi pi-plus"
         class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
-        v-styleclass="{ selector: '#' + id, enterClass: 'p-d-none', enterActiveClass: 'my-fadein', leaveActiveClass: 'my-fadeout', leaveToClass: 'p-d-none' }"
+        v-styleclass="{
+          selector: '#' + id,
+          enterClass: 'p-d-none',
+          enterActiveClass: 'my-fadein',
+          leaveActiveClass: 'my-fadeout',
+          leaveToClass: 'p-d-none'
+        }"
       />
     </div>
     <Listbox
@@ -94,13 +100,21 @@ export default defineComponent({
 }
 
 @keyframes my-fadein {
-  0% { opacity: 0 }
-  100% { opacity: 1 }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes my-fadeout {
-  0% { opacity: 1 }
-  100% { opacity: 0 }
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .my-fadein {

@@ -1,8 +1,9 @@
 <template>
   <div class="text-section-header-container" :style="{ width: size }">
-      <strong class="text-section-header">{{ label }}</strong>
+    <strong class="text-section-header">
+      {{ label }}
+    </strong>
   </div>
-
 </template>
 
 <script lang="ts">
@@ -11,10 +12,10 @@ import { defineComponent } from "@vue/runtime-core";
 export default defineComponent({
   name: "TextSectionHeader",
   props: {
-    label: {  type: String },
+    label: { type: String },
     size: { type: String },
     id: { type: String }
-  },
+  }
 });
 </script>
 
