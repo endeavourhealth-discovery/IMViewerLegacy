@@ -1,10 +1,26 @@
 <template>
   <div id="datamodel-properties-container" :style="{ width: size }">
+    <div class="head-container">
+      <strong class="label">{{ label }}: </strong>
+      <span>&nbsp;({{ data.length }})</span>
+      <Button
+        icon="pi pi-plus"
+        class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
+        v-styleclass="{
+          selector: '#datamodel-properties-table',
+          enterClass: 'p-d-none',
+          enterActiveClass: 'my-fadein',
+          leaveActiveClass: 'my-fadeout',
+          leaveToClass: 'p-d-none'
+        }"
+      />
+    </div>
     <DataTable
       :value="data"
       :paginator="data.length > 5 ? true : false"
       :rows="5"
       id="datamodel-properties-table"
+      class="p-d-none"
     >
       <template #empty>
         No records found
@@ -85,8 +101,41 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 div.link {
   cursor: pointer;
+}
+
+.head-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+@keyframes my-fadein {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes my-fadeout {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.my-fadein {
+  animation: my-fadein 150ms linear;
+}
+
+.my-fadeout {
+  animation: my-fadeout 150ms linear;
 }
 </style>
