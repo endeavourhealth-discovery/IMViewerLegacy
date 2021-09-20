@@ -31,8 +31,9 @@ export default createStore({
     sideNavHierarchyFocus: {
       name: "Ontology",
       fullName: "Ontologies",
-      iri: "http://endhealth.info/im#DiscoveryOntology"
-    } as { name: string; iri: string },
+      iri: "http://endhealth.info/im#DiscoveryOntology",
+      route: "Dashboard"
+    } as { name: string; iri: string; fullName: string; route: string; },
     selectedEntityType: "",
     filterOptions: {
       status: [],
