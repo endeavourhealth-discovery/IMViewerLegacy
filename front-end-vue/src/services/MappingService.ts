@@ -1,3 +1,4 @@
+import { MapDocument } from "@/models/mapping/MapDocument";
 import axios from "axios";
 
 export default class MappingService {
@@ -15,6 +16,17 @@ export default class MappingService {
 
   static async getReferenceSuggestions(formData: FormData): Promise<string[]> {
     const response = await axios.post(this.api + "api/mapping/references", formData);
+    return response.data;
+  }
+
+  static async getMapDocuments(): Promise<MapDocument[]> {
+    const response = await axios.get(this.api + "api/mapping/mapDocument");
+    console.log(response.data)
+    return response.data;
+  }
+
+  static async getMapDocument(id: number): Promise<MapDocument> {
+    const response = await axios.get(this.api + "api/mapping/mapDocument/" + id);
     return response.data;
   }
 }

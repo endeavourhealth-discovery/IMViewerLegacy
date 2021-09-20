@@ -2,7 +2,6 @@ import { MappingFormObject } from "@/models/mapping/MappingFormObject";
 import { ObjectMapTypeEnum } from "@/models/mapping/ObjectMapTypeEnum";
 import { RMLMapping } from "@/models/mapping/RMLMapping";
 import { SubjectMapTypeEnum } from "@/models/mapping/SubjectMapTypeEnum";
-import { ParserATNSimulator } from "antlr4ts/atn/ParserATNSimulator";
 
 export async function getTreeNodesFromJson(file: any) {
   const json = JSON.parse(await (file as Blob).text());

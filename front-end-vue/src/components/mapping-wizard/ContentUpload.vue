@@ -3,7 +3,7 @@
     <template #title> New predicates that will be created </template>
     <template #content>
       <div class="p-fluid p-formgrid p-grid">
-        <div class="p-field p-col-12 p-md-8">
+        <div class="p-field p-col-12 p-md-4">
           <label for="graph">Graph</label>
           <InputText id="graph" type="text" v-model="graph" />
         </div>
@@ -16,6 +16,15 @@
             optionLabel="name"
             optionValue="value"
             placeholder="Is content nested"
+          />
+        </div>
+        <div class="p-field p-col-12 p-md-4">
+          <label for="nested">Map Document (Optional)</label>
+          <Dropdown
+            v-model="selectedMapDocument"
+            :options="mapDocumentOptions"
+            optionLabel="name"
+            placeholder="Choose from library"
           />
         </div>
         <div class="p-field p-col-6 p-md-6">
@@ -39,7 +48,7 @@
           </FileUpload>
         </div>
         <div class="p-field p-col-6 p-md-6">
-          <label for="contentFile">Map Document (Optional)</label>
+          <label for="mapDocument">Map Document (Optional)</label>
           <FileUpload
             ref="mapDocument"
             name="demo[]"
@@ -69,6 +78,7 @@
 
 <script lang="ts">
 import { MappingFormObject } from "@/models/mapping/MappingFormObject";
+import MappingService from "@/services/MappingService";
 import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
@@ -95,13 +105,15 @@ export default defineComponent({
       mapDocumentString: "",
       graph: "",
       nested: "",
+      selectedMapDocument: "",
+      mapDocumentOptions: [] as any[],
       options: [
         { name: "Yes", value: "true" },
         { name: "No", value: "false" },
       ],
     };
   },
-  mounted() {
+  async mounted() {
     this.contentFile = this.formObject.contentFile;
     this.contentFileName = this.formObject.contentFileName;
     this.contentFileType = this.formObject.contentFileType;
@@ -110,8 +122,23 @@ export default defineComponent({
     this.mapDocumentString = this.formObject.mapDocumentString;
     this.graph = this.formObject.graph;
     this.nested = this.formObject.nested;
+    this.selectedMapDocument = this.formObject.selectedMapDocument;
+    this.mapDocumentOptions = await this.getMapDocumentOptions();
   },
   methods: {
+    async getMapDocumentOptions() {
+      return (await MappingService.getMapDocuments()).map((mapDocument) => {
+        return { value: mapDocument.dbid, name: mapDocument.filename };
+      });
+    },
+    async getSelectedMapDocumentContent() {
+      const document = (
+        await MappingService.getMapDocument(
+          (this.selectedMapDocument as any).value
+        )
+      ).document;
+      return await new Blob([Buffer.from(document, "base64")]).text();
+    },
     async convertFileToString(file: any) {
       return await (file as Blob).text();
     },
@@ -122,6 +149,7 @@ export default defineComponent({
     },
     async uploadMapDocument(event: any) {
       this.mapDocument = event.files[0];
+      console.log(event.files[0]);
       this.mapDocumentName = event.files[0].name;
       this.mapDocumentString = await this.convertFileToString(this.mapDocument);
     },
@@ -133,7 +161,10 @@ export default defineComponent({
       const x = this.$refs.contentFile as any;
       x.uploadedFileCount = 0;
     },
-    nextPage() {
+    async nextPage() {
+      if (this.selectedMapDocument) {
+        this.mapDocumentString = await this.getSelectedMapDocumentContent();
+      }
       this.$emit("next-page", {
         formData: {
           contentFile: this.contentFile,
