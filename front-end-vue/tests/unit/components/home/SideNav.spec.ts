@@ -137,7 +137,8 @@ describe("SideNav.spec ___ not logged in", () => {
     expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSideNavHierarchyFocus", {
       name: "Ontology",
       fullName: "Ontologies",
-      iri: "http://endhealth.info/im#Discoveryontology"
+      iri: "http://endhealth.info/im#Discoveryontology",
+      route: "Dashboard"
     });
     expect(mockStore.commit).toHaveBeenLastCalledWith("updateConceptIri", "http://endhealth.info/im#DiscoveryOntology");
     expect(wrapper.emitted().hierarchyFocusSelected).toBeTruthy();
@@ -156,21 +157,21 @@ describe("SideNav.spec ___ not logged in", () => {
     wrapper.vm.$options.watch.selectedEntityType.call(wrapper.vm, "Class");
     await wrapper.vm.$nextTick();
     expect(mockStore.commit).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledWith("updateSideNavHierarchyFocus", {"fullName": "Ontologies", "iri": "http://endhealth.info/im#DiscoveryOntology", "name": "Ontology"})
+    expect(mockStore.commit).toHaveBeenCalledWith("updateSideNavHierarchyFocus", {"fullName": "Ontologies", "iri": "http://endhealth.info/im#DiscoveryOntology", "name": "Ontology", "route": "Dashboard"})
   });
 
   it("can watch selectedEntityType ___ Set", async() => {
     wrapper.vm.$options.watch.selectedEntityType.call(wrapper.vm, "Set");
     await wrapper.vm.$nextTick();
     expect(mockStore.commit).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledWith("updateSideNavHierarchyFocus", {"fullName": "Concept sets and value sets", "iri": "http://endhealth.info/im#Sets", "name": "Sets"})
+    expect(mockStore.commit).toHaveBeenCalledWith("updateSideNavHierarchyFocus", {"fullName": "Concept sets and value sets", "iri": "http://endhealth.info/im#Sets", "name": "Sets", "route": "Dashboard"})
   });
 
   it("can watch selectedEntityType ___ Query", async() => {
     wrapper.vm.$options.watch.selectedEntityType.call(wrapper.vm, "Query");
     await wrapper.vm.$nextTick();
     expect(mockStore.commit).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledWith("updateSideNavHierarchyFocus", {"fullName": "Query templates", "iri": "http://endhealth.info/im#QT_QueryTemplates", "name": "Queries"})
+    expect(mockStore.commit).toHaveBeenCalledWith("updateSideNavHierarchyFocus", {"fullName": "Query templates", "iri": "http://endhealth.info/im#QT_QueryTemplates", "name": "Queries", "route": "Dashboard"})
   });
 });
 

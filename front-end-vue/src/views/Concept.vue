@@ -150,7 +150,8 @@ import {
   isValueSet,
   isClass,
   isQuery,
-  isRecordModel
+  isRecordModel,
+  isFolder
 } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
@@ -190,6 +191,10 @@ export default defineComponent({
 
     isRecordModel(): boolean {
       return isRecordModel(this.types);
+    },
+
+    isFolder(): boolean {
+      return isFolder(this.types);
     },
 
     ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel"])
@@ -361,15 +366,20 @@ export default defineComponent({
         : [];
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
-      const type = this.isSet
-        ? "Set"
-        : this.isRecordModel
-        ? "RecordModel"
-        : this.isClass
-        ? "Class"
-        : this.isQuery
-        ? "Query"
-        : "None";
+      let type;
+      if (this.isSet) {
+        type = "Set"
+      } else if (this.isClass) {
+        type = "Class"
+      } else if (this.isQuery) {
+        type = "Query"
+      } else if (this.isFolder) {
+        type = "Folder"
+      } else if (this.isRecordModel) {
+        type = "RecordModel"
+      } else {
+        type = "None"
+      }
       this.$store.commit("updateSelectedEntityType", type);
       if (!MODULE_IRIS.includes(this.conceptIri)) {
         this.$store.commit("updateModuleSelectedEntities", {

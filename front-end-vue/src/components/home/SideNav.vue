@@ -73,7 +73,8 @@ export default defineComponent({
     "isLoggedIn",
     "sideNavHierarchyFocus",
     "selectedEntityType",
-    "moduleSelectedEntities"
+    "moduleSelectedEntities",
+    "conceptIri"
   ]),
   emits: ["hierarchyFocusSelected"],
   watch: {
@@ -83,21 +84,24 @@ export default defineComponent({
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[0].name,
             fullName: this.menuItems[0].fullName,
-            iri: this.menuItems[0].iri
+            iri: this.menuItems[0].iri,
+            route: this.menuItems[0].route
           });
           break;
         case "Set":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[1].name,
             fullName: this.menuItems[1].fullName,
-            iri: this.menuItems[1].iri
+            iri: this.menuItems[1].iri,
+            route: this.menuItems[1].route
           });
           break;
         case "RecordModel":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[2].name,
             fullName: this.menuItems[2].fullName,
-            iri: this.menuItems[2].iri
+            iri: this.menuItems[2].iri,
+            route: this.menuItems[2].route
           });
           break;
         // add case for catalogue when type is known
@@ -105,8 +109,15 @@ export default defineComponent({
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[4].name,
             fullName: this.menuItems[4].fullName,
-            iri: this.menuItems[4].iri
+            iri: this.menuItems[4].iri,
+            route: this.menuItems[4].route
           });
+          break;
+        case "Folder":
+          this.handleCenterIconClick(this.sideNavHierarchyFocus);
+          break;
+        default:
+          console.log("unknown selectedEntityType detected in sidenav watcher");
           break;
       }
     },
@@ -253,7 +264,8 @@ export default defineComponent({
         this.$store.commit("updateSideNavHierarchyFocus", {
           name: item.name,
           fullName: item.fullName,
-          iri: item.iri
+          iri: item.iri,
+          route: "Dashboard"
         });
         switch (item.name) {
           case "Ontology":
