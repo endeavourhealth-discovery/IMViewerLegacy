@@ -163,6 +163,7 @@ import { IM } from "@/vocabulary/IM";
 import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
+import { OWL } from "@/vocabulary/OWL";
 
 export default defineComponent({
   name: "Concept",
@@ -263,6 +264,7 @@ export default defineComponent({
         .filter((c: any) => c.predicate !== "semanticProperties")
         .filter((c: any) => c.predicate !== "dataModelProperties")
         .filter((c: any) => c.predicate !== "termCodes")
+        .filter((c: any) => c.predicate !== "axioms")
         .map((c: any) => c.predicate);
 
       await EntityService.getPartialEntity(iri, predicates)
@@ -495,7 +497,9 @@ export default defineComponent({
         } else {
           returnString = newKey + ": " + newString + ",\n";
         }
-      } else {
+      } else if (key === "axioms") {
+        returnString = this.axiomToString(value.entity);
+      } else if (typeof value === "string") {
         newString = value
           .replace(/\n/g, "\n\t")
           .replace(/<p>/g, "\n\t") as string;
@@ -504,6 +508,8 @@ export default defineComponent({
         } else {
           returnString = newKey + ": " + newString + ",\n";
         }
+      } else {
+        returnString = JSON.stringify(value);
       }
       return { label: newKey, value: returnString };
     },
@@ -599,6 +605,53 @@ export default defineComponent({
           }
         });
       }
+    },
+
+    axiomToString(entity: any): string {
+      let axiomString = "";
+      let depth = 1;
+      if (Object.prototype.hasOwnProperty.call(entity, OWL.EQUIVALENT_CLASS)) {
+        axiomString += "equivalent class";
+        let axiom = entity[OWL.EQUIVALENT_CLASS];
+        axiom.forEach((element: any) => {
+          axiomString += this.processAxiom(element, depth);
+        });
+      }
+      return axiomString;
+    },
+
+    processAxiom(axiom: any, depth: number) {
+      let axiomString = "";
+      if (Array.isArray(axiom)) {
+        console.log("array");
+        axiom.forEach((element: any) => {
+          axiomString += this.childToString(element, depth + 1);
+        });
+      }
+      if (Object.prototype.toString.call(axiom) === "[object Object]") {
+        console.log("object");
+        axiomString += this.childToString(axiom, depth + 1);
+      }
+      return axiomString;
+    },
+
+    childToString(child: any, depth: number) {
+      let childString = "";
+      if (Object.prototype.toString.call(child) === "[object Object]") {
+        if (Object.prototype.hasOwnProperty.call(child, "name")) {
+          childString += "\n" + "\t".repeat(depth) + child.name;
+        }
+        if (Object.prototype.hasOwnProperty.call(child, OWL.INTERSECTION_OF)) {
+          childString += "\n" + "\t".repeat(depth) + "intersection of";
+          childString += this.childToString(child[OWL.INTERSECTION_OF], depth + 1);
+        }
+        if (Object.prototype.hasOwnProperty.call(child, OWL.SOME_VALUES_FROM)) {
+          for (const key in child) {
+            childString += "\n" + "\t".repeat(depth) + child[key].name;
+          }
+        }
+      }
+      return childString;
     }
   }
 });
