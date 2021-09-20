@@ -325,6 +325,16 @@ export default defineComponent({
         });
     },
 
+    async getAxioms(iri: string) {
+      await EntityService.getAxioms(iri)
+        .then(res => {
+          this.concept["axioms"] = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(LoggerService.error("Failed to get axioms from server", err));
+        });
+    },
+
     async getConfig(name: string) {
       await ConfigService.getComponentLayout(name)
         .then(res => {
@@ -345,6 +355,7 @@ export default defineComponent({
       await this.getConfig("definition");
       await this.getConcept(this.conceptIri);
       await this.getProperties(this.conceptIri);
+      await this.getAxioms(this.conceptIri);
       this.types = Object.prototype.hasOwnProperty.call(this.concept, RDF.TYPE)
         ? this.concept[RDF.TYPE]
         : [];
