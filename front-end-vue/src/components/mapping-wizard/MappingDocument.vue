@@ -34,11 +34,23 @@
           <div class="p-field p-col-12 p-md-4">
             <span class="p-float-label">
               <AutoComplete
-                v-if="isReferenceType(mapping.subjectMapType)"
+                v-if="
+                  isReferenceType(mapping.subjectMapType) &&
+                  formObject.contentFileType === 'text/csv'
+                "
                 v-model="mapping.subjectMapValue"
                 :dropdown="true"
                 @complete="searchReference(mapping.subjectMapValue)"
                 :suggestions="filteredSuggestions"
+              />
+
+              <TreeSelect
+                v-else-if="
+                  isReferenceType(mapping.subjectMapType) &&
+                  formObject.contentFileType === 'application/json'
+                "
+                v-model="mapping.subjectMapValue"
+                :options="nodes"
               />
 
               <InputText v-else type="text" v-model="mapping.subjectMapValue" />
@@ -145,7 +157,10 @@
 import { ObjectMapTypeEnum } from "@/models/mapping/ObjectMapTypeEnum";
 import { SubjectMapTypeEnum } from "@/models/mapping/SubjectMapTypeEnum";
 import { RMLMapping } from "@/models/mapping/RMLMapping";
-import { buildMapDocumentString } from "@/helpers/MapDocumentHelper";
+import {
+  buildMapDocumentString,
+  getTreeNodesFromJson,
+} from "@/helpers/MapDocumentHelper";
 import { defineComponent, PropType } from "vue";
 import { PredicateObjectMap } from "@/models/mapping/PredicateObjectMap";
 import { ReferenceFormulationEnum } from "@/models/mapping/ReferenceFormulationEnum";
@@ -178,6 +193,7 @@ export default defineComponent({
       referenceFormulationOptions: Object.values(ReferenceFormulationEnum),
       subjectMapOptions: Object.values(SubjectMapTypeEnum),
       objectMapOptions: Object.values(ObjectMapTypeEnum),
+      nodes: [] as any[],
     };
   },
   async mounted() {
@@ -186,6 +202,7 @@ export default defineComponent({
     this.referenceSuggestions = await MappingService.getReferenceSuggestions(
       formData
     );
+    this.nodes = await getTreeNodesFromJson(this.formObject.contentFile);
   },
   methods: {
     isReferenceType(type: ObjectMapTypeEnum | SubjectMapTypeEnum) {

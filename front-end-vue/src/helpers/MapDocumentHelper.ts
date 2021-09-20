@@ -2,9 +2,37 @@ import { MappingFormObject } from "@/models/mapping/MappingFormObject";
 import { ObjectMapTypeEnum } from "@/models/mapping/ObjectMapTypeEnum";
 import { RMLMapping } from "@/models/mapping/RMLMapping";
 import { SubjectMapTypeEnum } from "@/models/mapping/SubjectMapTypeEnum";
+import { ParserATNSimulator } from "antlr4ts/atn/ParserATNSimulator";
 
-export function getAllAvailableReferences(): string[] {
-  return [];
+export async function getTreeNodesFromJson(file: any) {
+  const json = JSON.parse(await (file as Blob).text());
+  const nodes = [] as any[];
+  const nodeSet = new Set<string>();
+  const index = 0;
+
+  addTreeNode(index, nodes, json, null);
+
+  return nodes;
+}
+
+function addTreeNode(index: number, nodes: any[], json: any, parent: any) {
+  if (Object.keys(json) && (typeof json === "object")) {
+    for (const field in json as any) {
+      const node = {
+        key: parent ? parent.key + "_" + index : index,
+        label: parent ? (isNaN(field as any) ? parent.label + "." + field : parent.label + "[" + field + "]") : field,
+        data: field,
+        children: []
+      };
+      if (parent) {
+        parent.children.push(node);
+      } else {
+        nodes.push(node);
+      }
+      index++;
+      addTreeNode(index, nodes, json[field], node);
+    }
+  }
 }
 
 export function buildMapDocumentString(formObject: MappingFormObject, mappings: RMLMapping[]): string {

@@ -76,6 +76,7 @@ import InputSwitch from "primevue/inputswitch";
 import Steps from "primevue/steps";
 import Editor from "primevue/editor";
 import AutoComplete from 'primevue/autocomplete';
+import TreeSelect from 'primevue/treeselect';
 
 
 import { Amplify, Auth } from "aws-amplify";
@@ -143,6 +144,7 @@ const app = createApp(App)
   .component("Steps", Steps)
   .component("Editor", Editor)
   .component("AutoComplete", AutoComplete)
+  .component("TreeSelect", TreeSelect)
   .component("InputSwitch", InputSwitch);
 
 app.mount("#app");
