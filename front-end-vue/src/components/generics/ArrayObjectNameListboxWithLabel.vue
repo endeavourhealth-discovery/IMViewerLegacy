@@ -4,8 +4,9 @@
       <strong class="label">{{ label }}: </strong>
       <span>&nbsp;({{ data.length }})</span>
       <Button
-        icon="pi pi-plus"
+        :icon="buttonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
         class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
+        @click="setButtonExpanded"
         v-styleclass="{
           selector: '#' + id,
           enterClass: 'p-d-none',
@@ -75,7 +76,8 @@ export default defineComponent({
   },
   data() {
     return {
-      selected: {} as any
+      selected: {} as any,
+      buttonExpanded: false
     };
   },
   methods: {
@@ -86,6 +88,10 @@ export default defineComponent({
           name: currentRoute,
           params: { selectedIri: iri }
         });
+    },
+
+    setButtonExpanded() {
+      this.buttonExpanded ? this.buttonExpanded = false : this.buttonExpanded = true;
     }
   }
 });

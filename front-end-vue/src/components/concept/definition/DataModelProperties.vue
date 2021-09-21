@@ -4,8 +4,9 @@
       <strong class="label">{{ label }}: </strong>
       <span>&nbsp;({{ data.length }})</span>
       <Button
-        icon="pi pi-plus"
+        :icon="buttonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
         class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
+        @click="setButtonExpanded()"
         v-styleclass="{
           selector: '#datamodel-properties-table',
           enterClass: 'p-d-none',
@@ -88,6 +89,11 @@ export default defineComponent({
     data: { type: Array as PropType<Array<unknown>> },
     size: { type: String }
   },
+  data() {
+    return {
+      buttonExpanded: false
+    };
+  },
   methods: {
     navigate(iri: any) {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
@@ -96,6 +102,10 @@ export default defineComponent({
           name: currentRoute,
           params: { selectedIri: iri }
         });
+    },
+
+    setButtonExpanded() {
+      this.buttonExpanded ? this.buttonExpanded = false : this.buttonExpanded = true;
     }
   }
 });

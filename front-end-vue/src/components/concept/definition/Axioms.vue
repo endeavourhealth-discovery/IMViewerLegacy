@@ -4,8 +4,9 @@
       <strong class="label">{{ label }}</strong>
       <span v-if="Object.prototype.hasOwnProperty.call(axiomObject, 'entity')">&nbsp;({{ axiomObject.predicates.length - 1 }})</span>
       <Button
-        icon="pi pi-plus"
+        :icon="buttonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
         class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
+        @click="setButtonExpanded()"
         v-styleclass="{
           selector: '#axiom-string',
           enterClass: 'p-d-none',
@@ -40,7 +41,8 @@ export default defineComponent({
   },
   data() {
     return {
-      axiomObject: {} as any
+      axiomObject: {} as any,
+      buttonExpanded: false
     }
   },
   methods: {
@@ -52,6 +54,10 @@ export default defineComponent({
         .catch(err => {
           this.$toast.add(LoggerService.error("Failed to get axioms from server", err));
         });
+    },
+
+    setButtonExpanded() {
+      this.buttonExpanded ? this.buttonExpanded = false : this.buttonExpanded = true;
     }
   }
 })
@@ -61,6 +67,7 @@ export default defineComponent({
 #axiom-string {
   border: 1px solid #dee2e6;
   border-radius: 3px;
+  padding: 0.5rem;
 }
 
 .head-container {
