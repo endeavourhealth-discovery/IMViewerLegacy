@@ -149,9 +149,9 @@ export default defineComponent({
     },
     async uploadMapDocument(event: any) {
       this.mapDocument = event.files[0];
-      console.log(event.files[0]);
       this.mapDocumentName = event.files[0].name;
       this.mapDocumentString = await this.convertFileToString(this.mapDocument);
+      this.selectedMapDocument = "";
     },
     resetMapDocument() {
       const x = this.$refs.mapDocument as any;
@@ -164,6 +164,8 @@ export default defineComponent({
     async nextPage() {
       if (this.selectedMapDocument) {
         this.mapDocumentString = await this.getSelectedMapDocumentContent();
+        this.mapDocumentName = (this.selectedMapDocument as any).name;
+        (this.mapDocument as any) = new Blob([this.mapDocumentString]);
       }
       this.$emit("next-page", {
         formData: {
