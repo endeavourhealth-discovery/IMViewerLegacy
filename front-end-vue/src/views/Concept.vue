@@ -234,7 +234,8 @@ export default defineComponent({
       contentHeight: "",
       contentHeightValue: 0,
       copyMenuItems: [] as any,
-      configs: [] as any
+      configs: [] as any,
+      axiomObject: {} as any
     };
   },
   methods: {
@@ -335,7 +336,8 @@ export default defineComponent({
     async getAxioms(iri: string) {
       await EntityService.getAxioms(iri)
         .then(res => {
-          this.concept["axioms"] = res.data;
+          this.axiomObject = res.data;
+          this.concept["axioms"] = this.axiomToString(this.axiomObject.entity);
         })
         .catch(err => {
           this.$toast.add(LoggerService.error("Failed to get axioms from server", err));
@@ -497,8 +499,6 @@ export default defineComponent({
         } else {
           returnString = newKey + ": " + newString + ",\n";
         }
-      } else if (key === "axioms") {
-        returnString = this.axiomToString(value.entity);
       } else if (typeof value === "string") {
         newString = value
           .replace(/\n/g, "\n\t")
@@ -623,13 +623,11 @@ export default defineComponent({
     processAxiom(axiom: any, depth: number) {
       let axiomString = "";
       if (Array.isArray(axiom)) {
-        console.log("array");
         axiom.forEach((element: any) => {
           axiomString += this.childToString(element, depth + 1);
         });
       }
       if (Object.prototype.toString.call(axiom) === "[object Object]") {
-        console.log("object");
         axiomString += this.childToString(axiom, depth + 1);
       }
       return axiomString;
@@ -643,11 +641,20 @@ export default defineComponent({
         }
         if (Object.prototype.hasOwnProperty.call(child, OWL.INTERSECTION_OF)) {
           childString += "\n" + "\t".repeat(depth) + "intersection of";
-          childString += this.childToString(child[OWL.INTERSECTION_OF], depth + 1);
+          childString += this.processAxiom(child[OWL.INTERSECTION_OF], depth + 1);
         }
         if (Object.prototype.hasOwnProperty.call(child, OWL.SOME_VALUES_FROM)) {
           for (const key in child) {
-            childString += "\n" + "\t".repeat(depth) + child[key].name;
+            if (key === RDF.TYPE) {
+              childString += "\n" + "\t".repeat(depth) + child[key].name;
+            }
+            if (key === OWL.ON_PROPERTY) {
+              childString += "\n" + "\t".repeat(depth) + child[key].name;
+            }
+            if (key === OWL.SOME_VALUES_FROM) {
+              childString += "\n" + "\t".repeat(depth) + "some values from";
+              childString += this.processAxiom(child[OWL.SOME_VALUES_FROM], depth + 1);
+            }
           }
         }
       }
