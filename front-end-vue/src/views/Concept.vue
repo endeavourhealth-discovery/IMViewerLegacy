@@ -611,8 +611,15 @@ export default defineComponent({
       let axiomString = "";
       let depth = 1;
       if (Object.prototype.hasOwnProperty.call(entity, OWL.EQUIVALENT_CLASS)) {
-        axiomString += "equivalent class";
+        axiomString += "Equivalent class";
         let axiom = entity[OWL.EQUIVALENT_CLASS];
+        axiom.forEach((element: any) => {
+          axiomString += this.processAxiom(element, depth);
+        });
+      }
+      if (Object.prototype.hasOwnProperty.call(entity, RDFS.SUB_PROPERTY_OF)) {
+        axiomString += "Sub property of";
+        let axiom = entity[RDFS.SUB_PROPERTY_OF];
         axiom.forEach((element: any) => {
           axiomString += this.processAxiom(element, depth);
         });
@@ -637,22 +644,22 @@ export default defineComponent({
       let childString = "";
       if (Object.prototype.toString.call(child) === "[object Object]") {
         if (Object.prototype.hasOwnProperty.call(child, "name")) {
-          childString += "\n" + "\t".repeat(depth) + child.name;
+          childString += "\n" + "    ".repeat(depth) + child.name;
         }
         if (Object.prototype.hasOwnProperty.call(child, OWL.INTERSECTION_OF)) {
-          childString += "\n" + "\t".repeat(depth) + "intersection of";
+          childString += "\n" + "    ".repeat(depth) + "Intersection of";
           childString += this.processAxiom(child[OWL.INTERSECTION_OF], depth + 1);
         }
         if (Object.prototype.hasOwnProperty.call(child, OWL.SOME_VALUES_FROM)) {
           for (const key in child) {
             if (key === RDF.TYPE) {
-              childString += "\n" + "\t".repeat(depth) + child[key].name;
+              childString += "\n" + "    ".repeat(depth) + child[key].name;
             }
             if (key === OWL.ON_PROPERTY) {
-              childString += "\n" + "\t".repeat(depth) + child[key].name;
+              childString += "\n" + "    ".repeat(depth) + child[key].name;
             }
             if (key === OWL.SOME_VALUES_FROM) {
-              childString += "\n" + "\t".repeat(depth) + "some values from";
+              childString += "\n" + "    ".repeat(depth) + "Some values from";
               childString += this.processAxiom(child[OWL.SOME_VALUES_FROM], depth + 1);
             }
           }

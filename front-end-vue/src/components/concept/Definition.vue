@@ -27,6 +27,7 @@ import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNa
 import TermsTable from "@/components/concept/definition/TermsTable.vue";
 import TextSectionHeader from "@/components/generics/TextSectionHeader.vue";
 import SectionDivider from "@/components/generics/SectionDivider.vue";
+import Axioms from "@/components/concept/definition/Axioms.vue";
 
 export default defineComponent({
   name: "Definition",
@@ -40,7 +41,8 @@ export default defineComponent({
     ArrayObjectNameListboxWithLabel,
     TermsTable,
     TextSectionHeader,
-    SectionDivider
+    SectionDivider,
+    Axioms
   },
   props: ["concept", "configs"]
 });

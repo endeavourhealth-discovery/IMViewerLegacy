@@ -4,4 +4,5 @@ export class RDFS {
   public static LABEL = RDFS.NAMESPACE + "label";
   public static COMMENT = RDFS.NAMESPACE + "comment";
   public static SUBCLASS = RDFS.NAMESPACE + "subClassOf";
+  public static SUB_PROPERTY_OF = RDFS.NAMESPACE + "subPropertyOf";
 }
