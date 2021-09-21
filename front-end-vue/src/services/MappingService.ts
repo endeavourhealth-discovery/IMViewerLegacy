@@ -21,7 +21,6 @@ export default class MappingService {
 
   static async getMapDocuments(): Promise<MapDocument[]> {
     const response = await axios.get(this.api + "api/mapping/mapDocument");
-    console.log(response.data)
     return response.data;
   }
 

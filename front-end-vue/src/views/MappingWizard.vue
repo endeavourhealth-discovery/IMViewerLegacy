@@ -62,8 +62,6 @@ export default defineComponent({
       for (let field in event.formData) {
         (this.formObject as any)[field] = event.formData[field];
       }
-      console.log(event.formData);
-      console.log(this.formObject);
 
       this.$router.push(this.items[event.pageIndex + 1].to);
     },

@@ -90,11 +90,22 @@
             <div class="p-field p-col">
               <span class="p-float-label">
                 <AutoComplete
-                  v-if="isReferenceType(predicate.type)"
+                  v-if="
+                    isReferenceType(predicate.type) &&
+                    formObject.contentFileType === 'text/csv'
+                  "
                   v-model="predicate.value"
                   :dropdown="true"
                   @complete="searchReference(predicate.value)"
                   :suggestions="filteredSuggestions"
+                />
+                <TreeSelect
+                  v-else-if="
+                    isReferenceType(predicate.type) &&
+                    formObject.contentFileType === 'application/json'
+                  "
+                  v-model="predicate.value"
+                  :options="nodes"
                 />
                 <InputText
                   v-else
