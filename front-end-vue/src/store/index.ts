@@ -33,7 +33,7 @@ export default createStore({
       fullName: "Ontologies",
       iri: "http://endhealth.info/im#DiscoveryOntology",
       route: "Dashboard"
-    } as { name: string; iri: string; fullName: string; route: string; },
+    } as { name: string; iri: string; fullName: string; route: string },
     selectedEntityType: "",
     filterOptions: {
       status: [],
