@@ -1,6 +1,6 @@
 <template>
   <Card id="container">
-    <template #title> New predicates that will be created </template>
+    <template #title> New predicates that need to be created before proceeding</template>
     <template #content>
       <Listbox
         :options="newPredicates"
@@ -10,7 +10,7 @@
   </Card>
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
     <Button label="Back" @click="prevPage" />
-    <Button label="Next" @click="nextPage" :loading="loading" />
+    <Button label="Next" @click="nextPage" :loading="loading" :disabled="newPredicates.length"/>
   </div>
 </template>
 
