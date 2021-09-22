@@ -16,8 +16,8 @@
           <div
             v-if="
               Object.keys(concept).includes('http://endhealth.info/im#isA') &&
-                Object.keys(concept).includes('subtypes') &&
-                Object.keys(concept).includes('dataModelProperties')
+              Object.keys(concept).includes('subtypes') &&
+              Object.keys(concept).includes('dataModelProperties')
             "
             class="copy-container"
           >
@@ -80,7 +80,7 @@
                 <Definition :concept="concept" :configs="configs" />
               </div>
             </TabPanel>
-            <TabPanel header="Maps" v-if="isClass">
+            <TabPanel header="Maps" v-if="showMappings">
               <div
                 class="concept-panel-content"
                 id="mappings-container"
@@ -98,7 +98,7 @@
                 <UsedIn :conceptIri="conceptIri" />
               </div>
             </TabPanel>
-            <TabPanel header="Graph" v-if="isClass">
+            <TabPanel header="Graph" v-if="showGraph">
               <div
                 class="concept-panel-content"
                 id="graph-container"
@@ -146,14 +146,7 @@ import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
 import Mappings from "../components/concept/Mappings.vue";
-import {
-  isValueSet,
-  isClass,
-  isQuery,
-  isRecordModel,
-  isFolder,
-  isProperty
-} from "@/helpers/ConceptTypeMethods";
+import { isOfTypes, isValueSet } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import EntityService from "@/services/EntityService";
@@ -165,6 +158,7 @@ import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
 import { OWL } from "@/vocabulary/OWL";
+import { SHACL } from "@/vocabulary/SHACL";
 
 export default defineComponent({
   name: "Concept",
@@ -176,34 +170,45 @@ export default defineComponent({
     Definition,
     DownloadDialog,
     SecondaryTree,
-    Mappings
+    Mappings,
   },
   computed: {
     isSet(): boolean {
       return isValueSet(this.types);
     },
 
+    showGraph(): boolean {
+      return isOfTypes(this.types, OWL.CLASS, SHACL.NODESHAPE);
+    },
+
+    showMappings(): boolean {
+      return (
+        isOfTypes(this.types, OWL.CLASS) &&
+        !isOfTypes(this.types, SHACL.NODESHAPE)
+      );
+    },
+
     isClass(): boolean {
-      return isClass(this.types);
+      return isOfTypes(this.types, OWL.CLASS);
     },
 
     isQuery(): boolean {
-      return isQuery(this.types);
+      return isOfTypes(this.types, IM.QUERY_TEMPLATE);
     },
 
     isRecordModel(): boolean {
-      return isRecordModel(this.types);
+      return isOfTypes(this.types, SHACL.NODESHAPE);
     },
 
     isFolder(): boolean {
-      return isFolder(this.types);
+      return isOfTypes(this.types, IM.FOLDER);
     },
 
     isProperty(): boolean {
-      return isProperty(this.types);
+      return isOfTypes(this.types, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY);
     },
 
-    ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel"])
+    ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel"]),
   },
   watch: {
     async conceptIri() {
@@ -212,7 +217,7 @@ export default defineComponent({
 
     selectedEntityType(newValue, oldValue) {
       this.setActivePanel(newValue, oldValue);
-    }
+    },
   },
   async mounted() {
     await this.init();
@@ -240,7 +245,7 @@ export default defineComponent({
       contentHeightValue: 0,
       copyMenuItems: [] as any,
       configs: [] as any,
-      axiomObject: {} as any
+      axiomObject: {} as any,
     };
   },
   methods: {
@@ -255,7 +260,7 @@ export default defineComponent({
     directToEditRoute(): void {
       this.$router.push({
         name: "Edit",
-        params: { iri: this.concept["@id"] }
+        params: { iri: this.concept["@id"] },
       });
     },
 
@@ -274,13 +279,13 @@ export default defineComponent({
         .map((c: any) => c.predicate);
 
       await EntityService.getPartialEntity(iri, predicates)
-        .then(res => {
+        .then((res) => {
           this.concept = res.data;
           if (!Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A)) {
             this.concept[IM.IS_A] = [];
           }
         })
-        .catch(err => {
+        .catch((err) => {
           this.$toast.add(
             LoggerService.error(
               "Failed to get concept partial entity from server.",
@@ -290,20 +295,20 @@ export default defineComponent({
         });
 
       await EntityService.getEntityChildren(iri)
-        .then(res => {
+        .then((res) => {
           this.concept["subtypes"] = res.data;
         })
-        .catch(err => {
+        .catch((err) => {
           this.$toast.add(
             LoggerService.error("Failed to get subtypes from server.", err)
           );
         });
 
       await EntityService.getEntityTermCodes(iri)
-        .then(res => {
+        .then((res) => {
           this.concept["termCodes"] = res.data;
         })
-        .catch(err => {
+        .catch((err) => {
           this.$toast.add(
             LoggerService.error("Failed to get terms from server", err)
           );
@@ -312,10 +317,10 @@ export default defineComponent({
 
     async getProperties(iri: string) {
       await EntityService.getSemanticProperties(iri)
-        .then(res => {
+        .then((res) => {
           this.concept["semanticProperties"] = res.data;
         })
-        .catch(err => {
+        .catch((err) => {
           this.$toast.add(
             LoggerService.error(
               "Failed to get semantic properties from server",
@@ -325,10 +330,10 @@ export default defineComponent({
         });
 
       await EntityService.getDataModelProperties(iri)
-        .then(res => {
+        .then((res) => {
           this.concept["dataModelProperties"] = res.data;
         })
-        .catch(err => {
+        .catch((err) => {
           this.$toast.add(
             LoggerService.error(
               "Failed to get data model properties from server",
@@ -340,23 +345,23 @@ export default defineComponent({
 
     async getAxioms(iri: string) {
       await EntityService.getAxioms(iri)
-        .then(res => {
+        .then((res) => {
           this.axiomObject = res.data;
           if (
             Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")
           ) {
             const predicateCount = Object.keys(this.axiomObject.entity)
-              .filter(key => key !== RDF.TYPE)
-              .filter(key => key !== RDFS.COMMENT)
-              .filter(key => key !== RDFS.LABEL)
-              .filter(key => key !== "@id").length;
+              .filter((key) => key !== RDF.TYPE)
+              .filter((key) => key !== RDFS.COMMENT)
+              .filter((key) => key !== RDFS.LABEL)
+              .filter((key) => key !== "@id").length;
             this.concept["axioms"] = {
               axiomString: this.axiomToString(this.axiomObject.entity),
-              count: predicateCount
+              count: predicateCount,
             };
           }
         })
-        .catch(err => {
+        .catch((err) => {
           this.$toast.add(
             LoggerService.error("Failed to get axioms from server", err)
           );
@@ -365,13 +370,13 @@ export default defineComponent({
 
     async getConfig(name: string) {
       await ConfigService.getComponentLayout(name)
-        .then(res => {
+        .then((res) => {
           this.configs = res.data;
           this.configs.sort((a: any, b: any) => {
             return a.order - b.order;
           });
         })
-        .catch(err => {
+        .catch((err) => {
           this.$toast.add(
             LoggerService.error("Failed to get config data from server", err)
           );
@@ -414,7 +419,7 @@ export default defineComponent({
       if (!MODULE_IRIS.includes(this.conceptIri)) {
         this.$store.commit("updateModuleSelectedEntities", {
           module: type,
-          iri: this.conceptIri
+          iri: this.conceptIri,
         });
       }
     },
@@ -488,12 +493,12 @@ export default defineComponent({
       if (Array.isArray(value)) {
         if (value.length) {
           if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
-            newString = value.map(item => item.name).join(",\n\t");
+            newString = value.map((item) => item.name).join(",\n\t");
           } else if (
             Object.prototype.hasOwnProperty.call(value[0], "property") &&
             Object.prototype.hasOwnProperty.call(value[0].property, "name")
           ) {
-            newString = value.map(item => item.property.name).join(",\n\t");
+            newString = value.map((item) => item.property.name).join(",\n\t");
           } else {
             LoggerService.warn(
               undefined,
@@ -585,10 +590,10 @@ export default defineComponent({
       this.copyMenuItems = [
         {
           label: "Copy",
-          disabled: true
+          disabled: true,
         },
         {
-          separator: true
+          separator: true,
         },
         {
           label: "All",
@@ -600,7 +605,7 @@ export default defineComponent({
                   LoggerService.success("Concept copied to clipboard")
                 );
               })
-              .catch(err => {
+              .catch((err) => {
                 this.$toast.add(
                   LoggerService.error(
                     "Failed to copy concept to clipboard",
@@ -608,8 +613,8 @@ export default defineComponent({
                   )
                 );
               });
-          }
-        }
+          },
+        },
       ];
 
       let key: string;
@@ -629,7 +634,7 @@ export default defineComponent({
                   LoggerService.success(label + " copied to clipboard")
                 );
               })
-              .catch(err => {
+              .catch((err) => {
                 this.$toast.add(
                   LoggerService.error(
                     "Failed to copy " + label + " to clipboard",
@@ -637,7 +642,7 @@ export default defineComponent({
                   )
                 );
               });
-          }
+          },
         });
       }
     },
@@ -712,8 +717,8 @@ export default defineComponent({
         }
       }
       return childString;
-    }
-  }
+    },
+  },
 });
 </script>
 <style scoped>
