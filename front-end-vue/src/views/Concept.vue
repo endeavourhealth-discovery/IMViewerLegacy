@@ -342,7 +342,18 @@ export default defineComponent({
       await EntityService.getAxioms(iri)
         .then(res => {
           this.axiomObject = res.data;
-          this.concept["axioms"] = this.axiomToString(this.axiomObject.entity);
+          if (Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")) {
+            const predicateCount = Object.keys(this.axiomObject.entity)
+              .filter(key => key !== RDF.TYPE)
+              .filter(key => key !== RDFS.COMMENT)
+              .filter(key => key !== RDFS.LABEL)
+              .filter(key => key !== "@id")
+              .length
+            this.concept["axioms"] = {
+              axiomString: this.axiomToString(this.axiomObject.entity),
+              count: predicateCount
+            };
+          }
         })
         .catch(err => {
           this.$toast.add(LoggerService.error("Failed to get axioms from server", err));
