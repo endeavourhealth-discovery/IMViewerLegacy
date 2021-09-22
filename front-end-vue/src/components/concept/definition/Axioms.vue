@@ -18,9 +18,9 @@
         }"
       />
     </div>
-    <pre id="axiom-string" class="p-d-none">
-      {{ data.axiomString.length ? data.axiomString : "None" }}
-    </pre>
+    <pre id="axiom-string" class="p-d-none">{{
+      data.axiomString.length ? data.axiomString : "None"
+    }}</pre>
   </div>
 </template>
 
