@@ -7,6 +7,7 @@ import { JSONPath } from 'jsonpath-plus';
 export async function getTreeNodesFromJson(file: any) {
   const json = JSON.parse(await (file as Blob).text());
   const nodes = [] as any[];
+  const nodeSet = new Set<string>();
   const index = 0;
   const node = {
     key: index,
@@ -14,25 +15,28 @@ export async function getTreeNodesFromJson(file: any) {
     data: "$",
     children: []
   }
-  addTreeNode(index, nodes, json, node);
+  addTreeNode(index, nodeSet, nodes, json, node);
   nodes.push(node)
   return nodes;
 
 }
 
-function addTreeNode(index: number, nodes: any[], json: any, parent: any) {
+function addTreeNode(index: number, nodeSet: Set<string>, nodes: any[], json: any, parent: any) {
   if (Object.keys(json) && (typeof json === "object")) {
     for (const field in json as any) {
+      const labelData = parent ? (isNaN(field as any) ? parent.label + "." + field : parent.label + "[*]") : field;
       const node = {
         key: parent ? parent.key + "_" + index : index,
-        label: parent ? (isNaN(field as any) ? parent.label + "." + field : parent.label + "[*]") : field,
-        data: parent ? (isNaN(field as any) ? parent.label + "." + field : parent.label + "[*]") : field,
+        label: labelData,
+        data: labelData,
         children: []
       };
-
-      parent.children.push(node);
+      if (!nodeSet.has(labelData)) {
+        parent.children.push(node);
+      }
+      nodeSet.add(labelData);
       index++;
-      addTreeNode(index, nodes, json[field], node);
+      addTreeNode(index, nodeSet, nodes, json[field], node);
     }
   }
 }
