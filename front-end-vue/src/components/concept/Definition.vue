@@ -60,4 +60,11 @@ export default defineComponent({
   width: 100%;
   row-gap: 0.5rem;
 }
+
+.summary-container ::v-deep(.expand-button) {
+  height: 1.5rem !important;
+  width: 0.75rem !important;
+  padding: 0.4375rem 0.7rem !important;
+  margin-left: 0.5rem;
+}
 </style>
