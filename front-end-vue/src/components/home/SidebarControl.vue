@@ -6,7 +6,7 @@
         type="text"
         v-model="searchTerm"
         @input="debounceForSearch"
-        @keydown="checkKey($event)"
+        @keyup.enter="search"
         placeholder="Search"
         class="p-inputtext-lg search-input"
         autoWidth="false"
@@ -35,7 +35,7 @@
           class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container"
         >
           <SearchResults />
-          <Filters :search="search" :searchTerm="searchTerm" />
+          <Filters :search="search" />
         </div>
       </TabPanel>
       <TabPanel>
@@ -159,12 +159,6 @@ export default defineComponent({
       this.debounce = window.setTimeout(() => {
         this.search();
       }, 600);
-    },
-
-    checkKey(event: any) {
-      if (event.code === "Enter") {
-        this.search();
-      }
     },
 
     setContainerHeights(): void {

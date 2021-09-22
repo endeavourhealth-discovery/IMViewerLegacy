@@ -172,7 +172,7 @@ export default defineComponent({
   height: 100%;
 }
 
-#usedin-table-container ::v-deep(.p-datatable) {
+/* #usedin-table-container ::v-deep(.p-datatable) {
   height: 100%;
   display: flex;
   flex-flow: column;
@@ -181,5 +181,5 @@ export default defineComponent({
 
 #usedin-table-container ::v-deep(.p-datatable-wrapper) {
   flex-grow: 6;
-}
+} */
 </style>

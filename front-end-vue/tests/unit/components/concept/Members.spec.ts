@@ -89,7 +89,7 @@ describe("Members.vue", () => {
     expect(wrapper.vm.expandSubsets).toBe(false);
     expect(wrapper.vm.selected).toStrictEqual({});
     expect(wrapper.vm.subsets).toStrictEqual(["Subset - \"other Black, African or Caribbean background\"", "Subset - African"]);
-    expect(wrapper.vm.expandedRowGroups).toStrictEqual(["MemberIncluded", "MemberXcluded"]);
+    expect(wrapper.vm.expandedRowGroups).toStrictEqual(["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]);
   });
 
   it("adds event listener to setTableWidth on resize", async() => {
@@ -171,7 +171,7 @@ describe("Members.vue", () => {
     wrapper.vm.setTableWidth = jest.fn();
     wrapper.vm.getMembers();
     expect(wrapper.vm.loading).toBe(true);
-    expect(wrapper.vm.expandedRowGroups).toStrictEqual(["MemberIncluded", "MemberXcluded"]);
+    expect(wrapper.vm.expandedRowGroups).toStrictEqual(["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]);
     expect(wrapper.vm.selected).toStrictEqual({});
     expect(wrapper.vm.subsets).toStrictEqual([]);
     expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
@@ -202,7 +202,7 @@ describe("Members.vue", () => {
     wrapper.vm.setTableWidth = jest.fn();
     wrapper.vm.getMembers();
     expect(wrapper.vm.loading).toBe(true);
-    expect(wrapper.vm.expandedRowGroups).toStrictEqual(["MemberIncluded", "MemberXcluded"]);
+    expect(wrapper.vm.expandedRowGroups).toStrictEqual(["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]);
     expect(wrapper.vm.selected).toStrictEqual({});
     expect(wrapper.vm.subsets).toStrictEqual([]);
     expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
