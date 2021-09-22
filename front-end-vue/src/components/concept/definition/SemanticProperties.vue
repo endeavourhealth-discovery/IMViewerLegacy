@@ -61,7 +61,7 @@ export default defineComponent({
   data() {
     return {
       buttonExpanded: false
-    }
+    };
   },
   methods: {
     navigate(iri: any) {
@@ -74,7 +74,9 @@ export default defineComponent({
     },
 
     setButtonExpanded() {
-      this.buttonExpanded ? this.buttonExpanded = false : this.buttonExpanded = true;
+      this.buttonExpanded
+        ? (this.buttonExpanded = false)
+        : (this.buttonExpanded = true);
     }
   }
 });

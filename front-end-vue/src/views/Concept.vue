@@ -342,13 +342,14 @@ export default defineComponent({
       await EntityService.getAxioms(iri)
         .then(res => {
           this.axiomObject = res.data;
-          if (Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")) {
+          if (
+            Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")
+          ) {
             const predicateCount = Object.keys(this.axiomObject.entity)
               .filter(key => key !== RDF.TYPE)
               .filter(key => key !== RDFS.COMMENT)
               .filter(key => key !== RDFS.LABEL)
-              .filter(key => key !== "@id")
-              .length
+              .filter(key => key !== "@id").length;
             this.concept["axioms"] = {
               axiomString: this.axiomToString(this.axiomObject.entity),
               count: predicateCount
@@ -356,7 +357,9 @@ export default defineComponent({
           }
         })
         .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get axioms from server", err));
+          this.$toast.add(
+            LoggerService.error("Failed to get axioms from server", err)
+          );
         });
     },
 
@@ -521,12 +524,15 @@ export default defineComponent({
         } else {
           returnString = newKey + ": " + newString + ",\n";
         }
-      } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "axiomString")) {
+      } else if (
+        Object.prototype.toString.call(value) === "[object Object]" &&
+        Object.prototype.hasOwnProperty.call(value, "axiomString")
+      ) {
         newString = value.axiomString;
         if (counter === totalKeys - 1) {
-          returnString = newKey + ": \"\n" + newString + "\n\"";
+          returnString = newKey + ': "\n"' + newString + '\n"';
         } else {
-          returnString = newKey + ": \"\n" + newString + "\n\",\n";
+          returnString = newKey + ': "\n' + newString + '\n",\n';
         }
       } else if (typeof value === "string") {
         newString = value
@@ -694,9 +700,14 @@ export default defineComponent({
           if (Object.prototype.hasOwnProperty.call(child, OWL.ON_PROPERTY)) {
             childString += " on property " + child[OWL.ON_PROPERTY].name;
           }
-          if (Object.prototype.hasOwnProperty.call(child, OWL.SOME_VALUES_FROM)) {
+          if (
+            Object.prototype.hasOwnProperty.call(child, OWL.SOME_VALUES_FROM)
+          ) {
             childString += "\n" + "    ".repeat(depth + 1) + "Some values from";
-            childString += this.processAxiom(child[OWL.SOME_VALUES_FROM], depth + 1);
+            childString += this.processAxiom(
+              child[OWL.SOME_VALUES_FROM],
+              depth + 1
+            );
           }
         }
       }

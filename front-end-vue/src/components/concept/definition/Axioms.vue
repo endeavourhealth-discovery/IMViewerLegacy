@@ -2,7 +2,9 @@
   <div id="axioms-container" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}</strong>
-      <span v-if="Object.prototype.hasOwnProperty.call(data, 'count')">&nbsp;({{ data.count }})</span>
+      <span v-if="Object.prototype.hasOwnProperty.call(data, 'count')">
+        &nbsp;({{ data.count }})
+      </span>
       <Button
         :icon="buttonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
         class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
@@ -16,7 +18,9 @@
         }"
       />
     </div>
-    <pre id="axiom-string" class="p-d-none">{{ data.axiomString.length ? data.axiomString : "None" }}</pre>
+    <pre id="axiom-string" class="p-d-none">
+      {{ data.axiomString.length ? data.axiomString : "None" }}
+    </pre>
   </div>
 </template>
 
@@ -33,14 +37,16 @@ export default defineComponent({
   data() {
     return {
       buttonExpanded: false
-    }
+    };
   },
   methods: {
     setButtonExpanded() {
-      this.buttonExpanded ? this.buttonExpanded = false : this.buttonExpanded = true;
+      this.buttonExpanded
+        ? (this.buttonExpanded = false)
+        : (this.buttonExpanded = true);
     }
   }
-})
+});
 </script>
 
 <style scoped>
