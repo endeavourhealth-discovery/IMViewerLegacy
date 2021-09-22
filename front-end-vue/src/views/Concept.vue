@@ -530,7 +530,7 @@ export default defineComponent({
       ) {
         newString = value.axiomString;
         if (counter === totalKeys - 1) {
-          returnString = newKey + ': "\n"' + newString + '\n"';
+          returnString = newKey + ': "\n' + newString + '\n"';
         } else {
           returnString = newKey + ': "\n' + newString + '\n",\n';
         }
