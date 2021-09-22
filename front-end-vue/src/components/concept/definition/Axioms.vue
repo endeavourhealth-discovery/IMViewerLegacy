@@ -2,7 +2,7 @@
   <div id="axioms-container" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}</strong>
-      <span v-if="Object.prototype.hasOwnProperty.call(axiomObject, 'entity')">&nbsp;({{ axiomObject.predicates.length - 1 }})</span>
+      <span v-if="Object.prototype.hasOwnProperty.call(axiomObject, 'entity')">&nbsp;({{ predicateCount }})</span>
       <Button
         :icon="buttonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
         class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
@@ -25,6 +25,8 @@ import { defineComponent } from "@vue/runtime-core";
 import { mapState } from "vuex";
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
+import { RDF } from "@/vocabulary/RDF";
+import { RDFS } from "@/vocabulary/RDFS";
 
 export default defineComponent({
   name: "Axioms",
@@ -42,6 +44,8 @@ export default defineComponent({
   data() {
     return {
       axiomObject: {} as any,
+      predicateCount: 0,
+      predicates: [] as string[],
       buttonExpanded: false
     }
   },
@@ -50,6 +54,8 @@ export default defineComponent({
       await EntityService.getAxioms(this.conceptIri)
         .then(res => {
           this.axiomObject = res.data;
+          this.predicates = Object.keys(this.axiomObject.entity).filter(key => key !== RDF.TYPE).filter(key => key !== RDFS.COMMENT).filter(key => key !== RDFS.LABEL).filter(key => key !== "@id");
+          this.predicateCount = this.predicates.length;
         })
         .catch(err => {
           this.$toast.add(LoggerService.error("Failed to get axioms from server", err));

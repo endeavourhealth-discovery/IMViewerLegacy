@@ -624,6 +624,13 @@ export default defineComponent({
           axiomString += this.processAxiom(element, depth);
         });
       }
+      if (Object.prototype.hasOwnProperty.call(entity, RDFS.SUBCLASS_OF)) {
+        axiomString += "Subclass of";
+        let axiom = entity[RDFS.SUBCLASS_OF];
+        axiom.forEach((element: any) => {
+          axiomString += this.processAxiom(element, depth);
+        });
+      }
       return axiomString;
     },
 
