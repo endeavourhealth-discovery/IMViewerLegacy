@@ -1,6 +1,8 @@
 import { mount } from "@vue/test-utils";
 import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNameListboxWithLabel.vue";
 import Listbox from "primevue/listbox";
+import Button from "primevue/button";
+import StyleClass from "primevue/styleclass";
 
 describe("ListboxWithLabel.vue", () => {
   let wrapper;
@@ -15,8 +17,9 @@ describe("ListboxWithLabel.vue", () => {
 
     wrapper = mount(ArrayObjectNameListboxWithLabel, {
       global: {
-        components: { Listbox },
-        mocks: { $route: mockRoute, $router: mockRouter }
+        components: { Listbox, Button },
+        mocks: { $route: mockRoute, $router: mockRouter },
+        directives: { styleclass: StyleClass }
       },
       props: { label: "Is a", size: "50%", data: [{"@id":"http://snomed.info/sct#12903001","name":"Acquired curvature of spine (disorder)"},{"@id":"http://snomed.info/sct#298382003","name":"Scoliosis deformity of spine (disorder)"}] }
     });

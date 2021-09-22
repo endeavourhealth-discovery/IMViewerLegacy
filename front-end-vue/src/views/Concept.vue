@@ -204,6 +204,10 @@ export default defineComponent({
       return isOfTypes(this.types, IM.FOLDER);
     },
 
+    isProperty(): boolean {
+      return isOfTypes(this.types, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY);
+    },
+
     ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel"]),
   },
   watch: {
@@ -241,6 +245,7 @@ export default defineComponent({
       contentHeightValue: 0,
       copyMenuItems: [] as any,
       configs: [] as any,
+      axiomObject: {} as any,
     };
   },
   methods: {
@@ -270,6 +275,7 @@ export default defineComponent({
         .filter((c: any) => c.predicate !== "semanticProperties")
         .filter((c: any) => c.predicate !== "dataModelProperties")
         .filter((c: any) => c.predicate !== "termCodes")
+        .filter((c: any) => c.predicate !== "axioms")
         .map((c: any) => c.predicate);
 
       await EntityService.getPartialEntity(iri, predicates)
@@ -337,6 +343,31 @@ export default defineComponent({
         });
     },
 
+    async getAxioms(iri: string) {
+      await EntityService.getAxioms(iri)
+        .then((res) => {
+          this.axiomObject = res.data;
+          if (
+            Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")
+          ) {
+            const predicateCount = Object.keys(this.axiomObject.entity)
+              .filter((key) => key !== RDF.TYPE)
+              .filter((key) => key !== RDFS.COMMENT)
+              .filter((key) => key !== RDFS.LABEL)
+              .filter((key) => key !== "@id").length;
+            this.concept["axioms"] = {
+              axiomString: this.axiomToString(this.axiomObject.entity),
+              count: predicateCount,
+            };
+          }
+        })
+        .catch((err) => {
+          this.$toast.add(
+            LoggerService.error("Failed to get axioms from server", err)
+          );
+        });
+    },
+
     async getConfig(name: string) {
       await ConfigService.getComponentLayout(name)
         .then((res) => {
@@ -357,11 +388,17 @@ export default defineComponent({
       await this.getConfig("definition");
       await this.getConcept(this.conceptIri);
       await this.getProperties(this.conceptIri);
+      await this.getAxioms(this.conceptIri);
       this.types = Object.prototype.hasOwnProperty.call(this.concept, RDF.TYPE)
         ? this.concept[RDF.TYPE]
         : [];
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
+      this.setStoreType();
+      this.loading = false;
+    },
+
+    setStoreType() {
       let type;
       if (this.isSet) {
         type = "Set";
@@ -373,6 +410,8 @@ export default defineComponent({
         type = "Folder";
       } else if (this.isRecordModel) {
         type = "RecordModel";
+      } else if (this.isProperty) {
+        type = "Property";
       } else {
         type = "None";
       }
@@ -383,7 +422,6 @@ export default defineComponent({
           iri: this.conceptIri,
         });
       }
-      this.loading = false;
     },
 
     setActivePanel(newType: string, oldType: string) {
@@ -491,7 +529,17 @@ export default defineComponent({
         } else {
           returnString = newKey + ": " + newString + ",\n";
         }
-      } else {
+      } else if (
+        Object.prototype.toString.call(value) === "[object Object]" &&
+        Object.prototype.hasOwnProperty.call(value, "axiomString")
+      ) {
+        newString = value.axiomString;
+        if (counter === totalKeys - 1) {
+          returnString = newKey + ': "\n' + newString + '\n"';
+        } else {
+          returnString = newKey + ': "\n' + newString + '\n",\n';
+        }
+      } else if (typeof value === "string") {
         newString = value
           .replace(/\n/g, "\n\t")
           .replace(/<p>/g, "\n\t") as string;
@@ -500,6 +548,8 @@ export default defineComponent({
         } else {
           returnString = newKey + ": " + newString + ",\n";
         }
+      } else {
+        returnString = JSON.stringify(value);
       }
       return { label: newKey, value: returnString };
     },
@@ -595,6 +645,78 @@ export default defineComponent({
           },
         });
       }
+    },
+
+    axiomToString(entity: any): string {
+      let axiomString = "";
+      let depth = 0;
+      if (Object.prototype.hasOwnProperty.call(entity, OWL.EQUIVALENT_CLASS)) {
+        axiomString += "Equivalent class";
+        let axiom = entity[OWL.EQUIVALENT_CLASS];
+        axiom.forEach((element: any) => {
+          axiomString += this.processAxiom(element, depth);
+        });
+      }
+      if (Object.prototype.hasOwnProperty.call(entity, RDFS.SUB_PROPERTY_OF)) {
+        axiomString += "Sub property of";
+        let axiom = entity[RDFS.SUB_PROPERTY_OF];
+        axiom.forEach((element: any) => {
+          axiomString += this.processAxiom(element, depth);
+        });
+      }
+      if (Object.prototype.hasOwnProperty.call(entity, RDFS.SUBCLASS_OF)) {
+        axiomString += "Subclass of";
+        let axiom = entity[RDFS.SUBCLASS_OF];
+        axiom.forEach((element: any) => {
+          axiomString += this.processAxiom(element, depth);
+        });
+      }
+      return axiomString;
+    },
+
+    processAxiom(axiom: any, depth: number) {
+      let axiomString = "";
+      if (Array.isArray(axiom)) {
+        axiom.forEach((element: any) => {
+          axiomString += this.childToString(element, depth + 1);
+        });
+      }
+      if (Object.prototype.toString.call(axiom) === "[object Object]") {
+        axiomString += this.childToString(axiom, depth + 1);
+      }
+      return axiomString;
+    },
+
+    childToString(child: any, depth: number) {
+      let childString = "";
+      if (Object.prototype.toString.call(child) === "[object Object]") {
+        if (Object.prototype.hasOwnProperty.call(child, "name")) {
+          childString += "\n" + "    ".repeat(depth) + child.name;
+        }
+        if (Object.prototype.hasOwnProperty.call(child, OWL.INTERSECTION_OF)) {
+          childString += "\n" + "    ".repeat(depth) + "Intersection of";
+          childString += this.processAxiom(child[OWL.INTERSECTION_OF], depth);
+        }
+        if (Object.prototype.hasOwnProperty.call(child, RDF.TYPE)) {
+          childString += "\n" + "    ".repeat(depth) + "Having";
+          if (Object.prototype.hasOwnProperty.call(child, RDF.TYPE)) {
+            childString += " type " + child[RDF.TYPE].name;
+          }
+          if (Object.prototype.hasOwnProperty.call(child, OWL.ON_PROPERTY)) {
+            childString += " on property " + child[OWL.ON_PROPERTY].name;
+          }
+          if (
+            Object.prototype.hasOwnProperty.call(child, OWL.SOME_VALUES_FROM)
+          ) {
+            childString += "\n" + "    ".repeat(depth + 1) + "Some values from";
+            childString += this.processAxiom(
+              child[OWL.SOME_VALUES_FROM],
+              depth + 1
+            );
+          }
+        }
+      }
+      return childString;
     },
   },
 });
