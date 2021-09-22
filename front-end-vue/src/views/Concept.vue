@@ -151,7 +151,8 @@ import {
   isClass,
   isQuery,
   isRecordModel,
-  isFolder
+  isFolder,
+  isProperty
 } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
@@ -196,6 +197,10 @@ export default defineComponent({
 
     isFolder(): boolean {
       return isFolder(this.types);
+    },
+
+    isProperty(): boolean {
+      return isProperty(this.types);
     },
 
     ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel"])
@@ -370,6 +375,11 @@ export default defineComponent({
         : [];
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
+      this.setStoreType();
+      this.loading = false;
+    },
+
+    setStoreType() {
       let type;
       if (this.isSet) {
         type = "Set";
@@ -381,6 +391,8 @@ export default defineComponent({
         type = "Folder";
       } else if (this.isRecordModel) {
         type = "RecordModel";
+      } else if (this.isProperty) {
+        type = "Property";
       } else {
         type = "None";
       }
@@ -391,7 +403,6 @@ export default defineComponent({
           iri: this.conceptIri
         });
       }
-      this.loading = false;
     },
 
     setActivePanel(newType: string, oldType: string) {
