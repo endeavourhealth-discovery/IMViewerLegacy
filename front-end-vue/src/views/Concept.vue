@@ -372,17 +372,17 @@ export default defineComponent({
       this.setCopyMenuItems();
       let type;
       if (this.isSet) {
-        type = "Set"
+        type = "Set";
       } else if (this.isClass) {
-        type = "Class"
+        type = "Class";
       } else if (this.isQuery) {
-        type = "Query"
+        type = "Query";
       } else if (this.isFolder) {
-        type = "Folder"
+        type = "Folder";
       } else if (this.isRecordModel) {
-        type = "RecordModel"
+        type = "RecordModel";
       } else {
-        type = "None"
+        type = "None";
       }
       this.$store.commit("updateSelectedEntityType", type);
       if (!MODULE_IRIS.includes(this.conceptIri)) {

@@ -31,7 +31,7 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
       state: {
         conceptIri: "http://endhealth.info/im#DiscoveryOntology",
         focusTree: false,
-        treeLocked: true,
+        treeLocked: false,
         sideNavHierarchyFocus: {name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" }
       },
       commit: jest.fn(),
@@ -114,6 +114,7 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
 
   it("can resetConcept", async() => {
     wrapper.vm.createTree = jest.fn();
+    wrapper.vm.getConceptAggregate = jest.fn();
     wrapper.vm.parentLabel = "Test label";
     wrapper.vm.selectedKey = { name: "test selected key" };
     wrapper.vm.$nextTick();
@@ -133,6 +134,7 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
 
   it("can resetConcept ___ InformationModel", async() => {
     wrapper.vm.createTree = jest.fn();
+    wrapper.vm.getConceptAggregate = jest.fn();
     wrapper.vm.parentLabel = "Information Model";
     wrapper.vm.selectedKey = { name: "test selected key" };
     wrapper.vm.$nextTick();
@@ -233,18 +235,22 @@ describe("Hierarchy.vue ___ Concept", () => {
 
   it("handles focusTree changes ___ true", async() => {
     wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.getConceptAggregate = jest.fn();
     wrapper.vm.$options.watch.focusTree.call(wrapper.vm, true);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.getConceptAggregate).toHaveBeenCalledTimes(1);
     expect(mockStore.commit).toHaveBeenCalledWith("updateFocusTree", false);
     expect(wrapper.emitted().showTree).toBeTruthy();
   });
 
   it("handles focusTree changes ___ false", async() => {
     wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.getConceptAggregate = jest.fn();
     wrapper.vm.$options.watch.focusTree.call(wrapper.vm, false);
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(0);
+    expect(wrapper.vm.refreshTree).not.toHaveBeenCalled();
+    expect(wrapper.vm.getConceptAggregate).not.toHaveBeenCalled();
     expect(wrapper.emitted().showTree).toBeFalsy();
   });
 
@@ -259,21 +265,25 @@ describe("Hierarchy.vue ___ Concept", () => {
     wrapper.vm.refreshTree = jest.fn();
     wrapper.vm.$options.watch.active.call(wrapper.vm, 1, 0);
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(0);
+    expect(wrapper.vm.refreshTree).not.toHaveBeenCalled();
   });
 
   it("handles treeLocked changes ___ refresh", async() => {
     wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.getConceptAggregate = jest.fn();
     wrapper.vm.$options.watch.treeLocked.call(wrapper.vm, false);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.getConceptAggregate).toHaveBeenCalledTimes(1);
   });
 
   it("handles treeLocked changes ___ no refresh", async() => {
     wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.getConceptAggregate = jest.fn();
     wrapper.vm.$options.watch.treeLocked.call(wrapper.vm, true);
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(0);
+    expect(wrapper.vm.refreshTree).not.toHaveBeenCalled();
+    expect(wrapper.vm.getConceptAggregate).not.toHaveBeenCalled();
   });
 
   it("createsTree ___ no root", () => {

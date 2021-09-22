@@ -59,7 +59,7 @@ describe("Filters.vue", () => {
     .mockResolvedValueOnce({ data: [{"name":"Class","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://www.w3.org/2002/07/owl#Class"},{"name":"Concept Set","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#ConceptSet"},{"name":"Folder","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#Folder"},{"name":"Node shape","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://www.w3.org/ns/shacl#NodeShape"},{"name":"ObjectProperty","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://www.w3.org/2002/07/owl#ObjectProperty"},{"name":"Property","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2000/01/rdf-schema#Class"}],"@id":"http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"},{"name":"Query template","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#QueryTemplate"},{"name":"Record type","hasChildren":false,"type":[{"name":"Node shape","@id":"http://www.w3.org/ns/shacl#NodeShape"}],"@id":"http://endhealth.info/im#RecordType"},{"name":"Value set","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#ValueSet"}]});
 
     wrapper = mount(Filters, {
-      props: { search: jest.fn(), searchTerm: "sco" },
+      props: { search: jest.fn() },
       global: {
         components: { MultiSelect, InputSwitch },
         mocks: { $store: mockStore, $toast: mockToast }
@@ -107,11 +107,5 @@ describe("Filters.vue", () => {
   it("can check for search", () => {
     wrapper.vm.checkForSearch();
     expect(wrapper.vm.search).toHaveBeenCalled();
-  });
-
-  it("can check for search ___ no searchterm", async() => {
-    await wrapper.setProps({ searchTerm: "" });
-    wrapper.vm.checkForSearch();
-    expect(wrapper.vm.search).not.toHaveBeenCalled();
   });
 })
