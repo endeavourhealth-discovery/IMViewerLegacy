@@ -8,13 +8,18 @@ import { IM } from "@/vocabulary/IM";
 import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
 
-export function isOfTypes(conceptTypeElements: ConceptReference[], ...types: string[]): boolean {
+export function isOfTypes(
+  conceptTypeElements: ConceptReference[],
+  ...types: string[]
+): boolean {
   let found = false;
   let index = 0;
   while (!found && index < types.length) {
-    if (conceptTypeElements.some(
-      (e: any) => e.iri === types[index] || e[IM.IRI] === types[index]
-    )) {
+    if (
+      conceptTypeElements.some(
+        (e: any) => e.iri === types[index] || e[IM.IRI] === types[index]
+      )
+    ) {
       found = true;
     }
     index++;
@@ -22,7 +27,7 @@ export function isOfTypes(conceptTypeElements: ConceptReference[], ...types: str
   return found;
 }
 
-export function isValueSet(conceptTypes: ConceptReference[]) {
+export function isValueSet(conceptTypes: ConceptReference[]): boolean {
   return isOfTypes(
     conceptTypes,
     IM.SET,
@@ -37,11 +42,7 @@ export function getIconFromType(conceptTypes: ConceptReference[]): string {
     return "fas fa-fw fa-project-diagram";
   }
 
-  if (isOfTypes(
-    conceptTypes,
-    OWL.OBJECT_PROPERTY,
-    IM.DATA_PROPERTY
-  )) {
+  if (isOfTypes(conceptTypes, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY)) {
     return "far fa-fw fa-edit";
   }
 
@@ -69,11 +70,7 @@ export function getColourFromType(conceptTypes: ConceptReference[]): string {
     return bgsFixed[0];
   }
 
-  if (isOfTypes(
-    conceptTypes,
-    OWL.OBJECT_PROPERTY,
-    IM.DATA_PROPERTY
-  )) {
+  if (isOfTypes(conceptTypes, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY)) {
     return bgsFixed[5];
   }
 
@@ -91,5 +88,3 @@ export function getColourFromType(conceptTypes: ConceptReference[]): string {
 
   return bgsFixed[4];
 }
-
-
