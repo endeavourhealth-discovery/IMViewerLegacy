@@ -1,14 +1,16 @@
 <template>
-  <div id="term-codes-container" :style="{ width: size }">
+  <div id="axioms-container" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}</strong>
-      <span>&nbsp;({{ data.length }})</span>
+      <span v-if="Object.prototype.hasOwnProperty.call(data, 'count')">
+        &nbsp;({{ data.count }})
+      </span>
       <Button
         :icon="buttonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
         class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
-        @click="setButtonExpanded"
+        @click="setButtonExpanded()"
         v-styleclass="{
-          selector: '#term-codes-table',
+          selector: '#axiom-string',
           enterClass: 'p-d-none',
           enterActiveClass: 'my-fadein',
           leaveActiveClass: 'my-fadeout',
@@ -16,44 +18,21 @@
         }"
       />
     </div>
-    <DataTable
-      :value="data"
-      :paginator="data.length > 5 ? true : false"
-      :rows="5"
-      id="term-codes-table"
-      class="p-d-none"
-    >
-      <template #empty>
-        No records found
-      </template>
-      <Column field="name" header="Name" :sortable="true">
-        <template #body="slotProps">
-          <div>
-            {{ slotProps.data.name }}
-          </div>
-        </template>
-      </Column>
-      <Column field="code" header="Code" :sortable="true">
-        <template #body="slotProps">
-          <div>
-            {{ slotProps.data.code || "None" }}
-          </div>
-        </template>
-      </Column>
-    </DataTable>
+    <pre id="axiom-string" class="p-d-none">
+      {{ data.axiomString.length ? data.axiomString : "None" }}
+    </pre>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
-  name: "TermsTable",
+  name: "Axioms",
   props: {
     label: { type: String },
-    data: { type: Array as PropType<Array<unknown>> },
-    size: { type: String },
-    id: { type: String }
+    data: { type: Object },
+    size: { type: String }
   },
   data() {
     return {
@@ -70,16 +49,20 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
+#axiom-string {
+  border: 1px solid #dee2e6;
+  border-radius: 3px;
+  padding: 0.5rem;
+  margin: 0.5rem 0 0 0;
+  overflow: auto;
+}
+
 .head-container {
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
-}
-
-#term-codes-table {
-  margin: 0.5rem 0 0 0;
 }
 
 @keyframes my-fadein {
