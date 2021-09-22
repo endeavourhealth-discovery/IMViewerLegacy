@@ -12,11 +12,7 @@
           </div>
           <div class="p-field p-col-12 p-md-6">
             <span class="p-float-label">
-              <InputText
-                type="text"
-                v-model="mapping.iterator"
-                :disabled="formObject.contentFileType === 'text/csv'"
-              />
+              <TreeSelect v-model="mapping.iterator" :options="nodes" />
               <label>Iterator</label>
             </span>
           </div>
@@ -44,13 +40,18 @@
                 :suggestions="filteredSuggestions"
               />
 
-              <TreeSelect
+              <AutoComplete
                 v-else-if="
                   isReferenceType(mapping.subjectMapType) &&
                   formObject.contentFileType === 'application/json'
                 "
                 v-model="mapping.subjectMapValue"
-                :options="nodes"
+                :dropdown="true"
+                @complete="
+                  searchJsonReference(mapping.subjectMapValue, mapping.iterator)
+                "
+                :suggestions="filteredJsonSuggestions"
+                :virtualScrollerOptions="{ itemSize: 31 }"
               />
 
               <InputText v-else type="text" v-model="mapping.subjectMapValue" />
@@ -99,14 +100,21 @@
                   @complete="searchReference(predicate.value)"
                   :suggestions="filteredSuggestions"
                 />
-                <TreeSelect
+
+                <AutoComplete
                   v-else-if="
                     isReferenceType(predicate.type) &&
                     formObject.contentFileType === 'application/json'
                   "
                   v-model="predicate.value"
-                  :options="nodes"
+                  :dropdown="true"
+                  @complete="
+                    searchJsonReference(predicate.value, mapping.iterator)
+                  "
+                  :suggestions="filteredJsonSuggestions"
+                  :virtualScrollerOptions="{ itemSize: 31 }"
                 />
+
                 <InputText
                   v-else
                   id="graph"
@@ -170,7 +178,9 @@ import { SubjectMapTypeEnum } from "@/models/mapping/SubjectMapTypeEnum";
 import { RMLMapping } from "@/models/mapping/RMLMapping";
 import {
   buildMapDocumentString,
+  getNodeValueByKey,
   getTreeNodesFromJson,
+  getValueSuggestions,
 } from "@/helpers/MapDocumentHelper";
 import { defineComponent, PropType } from "vue";
 import { PredicateObjectMap } from "@/models/mapping/PredicateObjectMap";
@@ -198,6 +208,7 @@ export default defineComponent({
       mapDocumentString: "",
       referenceSuggestions: [] as string[],
       filteredSuggestions: [] as string[],
+      filteredJsonSuggestions: [] as string[],
       mappings: [
         { id: 0, objectMaps: [{ id: 0 }] as PredicateObjectMap[] },
       ] as RMLMapping[],
@@ -219,6 +230,27 @@ export default defineComponent({
     isReferenceType(type: ObjectMapTypeEnum | SubjectMapTypeEnum) {
       if (ObjectMapTypeEnum.reference === type) return true;
       return false;
+    },
+    async searchJsonReference(ref: string, iterator: any) {
+      const referenceJsonSuggestions = Array.from(
+        await getValueSuggestions(
+          this.formObject.contentFile,
+          getNodeValueByKey(this.nodes, iterator)
+        )
+      );
+
+      let filteredItems = [];
+
+      for (let i = 0; i < referenceJsonSuggestions.length; i++) {
+        let item = referenceJsonSuggestions[i];
+        if (ref && item.toLowerCase().indexOf(ref.toLowerCase()) === 0) {
+          filteredItems.push(item);
+        }
+      }
+
+      this.filteredJsonSuggestions = filteredItems.length
+        ? filteredItems
+        : referenceJsonSuggestions;
     },
     searchReference(ref: string) {
       let filteredItems = [];
@@ -258,6 +290,10 @@ export default defineComponent({
       this.mappings = newMappings;
     },
     nextPage() {
+      this.mappings.forEach((mapping) => {
+        mapping.iterator = getNodeValueByKey(this.nodes, mapping.iterator);
+      });
+
       this.mapDocumentString = buildMapDocumentString(
         this.formObject,
         this.mappings

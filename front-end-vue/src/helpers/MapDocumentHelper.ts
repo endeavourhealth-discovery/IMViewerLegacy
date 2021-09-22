@@ -2,16 +2,22 @@ import { MappingFormObject } from "@/models/mapping/MappingFormObject";
 import { ObjectMapTypeEnum } from "@/models/mapping/ObjectMapTypeEnum";
 import { RMLMapping } from "@/models/mapping/RMLMapping";
 import { SubjectMapTypeEnum } from "@/models/mapping/SubjectMapTypeEnum";
+import { JSONPath } from 'jsonpath-plus';
 
 export async function getTreeNodesFromJson(file: any) {
   const json = JSON.parse(await (file as Blob).text());
   const nodes = [] as any[];
-  const nodeSet = new Set<string>();
   const index = 0;
-
-  addTreeNode(index, nodes, json, null);
-
+  const node = {
+    key: index,
+    label: "$",
+    data: "$",
+    children: []
+  }
+  addTreeNode(index, nodes, json, node);
+  nodes.push(node)
   return nodes;
+
 }
 
 function addTreeNode(index: number, nodes: any[], json: any, parent: any) {
@@ -19,17 +25,55 @@ function addTreeNode(index: number, nodes: any[], json: any, parent: any) {
     for (const field in json as any) {
       const node = {
         key: parent ? parent.key + "_" + index : index,
-        label: parent ? (isNaN(field as any) ? parent.label + "." + field : parent.label + "[" + field + "]") : field,
-        data: field,
+        label: parent ? (isNaN(field as any) ? parent.label + "." + field : parent.label + "[*]") : field,
+        data: parent ? (isNaN(field as any) ? parent.label + "." + field : parent.label + "[*]") : field,
         children: []
       };
-      if (parent) {
-        parent.children.push(node);
-      } else {
-        nodes.push(node);
-      }
+
+      parent.children.push(node);
       index++;
       addTreeNode(index, nodes, json[field], node);
+    }
+  }
+}
+
+export function getNodeValueByKey(nodes: any[], iterator: string) {
+  if (!iterator) {
+    return "$";
+  }
+  const results = [] as any[];
+  const key = Object.keys(iterator)[0];
+  nodes.forEach(node => {
+    searchForValueByKey(node, key, results);
+  })
+  return results[0];
+}
+
+function searchForValueByKey(node: any, key: string, results: any[]) {
+  if (node.key === key) {
+    results.push(node.data);
+  } else if (node.children) {
+    node.children.forEach((child: any) => {
+      searchForValueByKey(child, key, results);
+    });
+  }
+  return;
+}
+
+export async function getValueSuggestions(file: any, iterator: string) {
+  const json = JSON.parse(await (file as Blob).text());
+  const result = JSONPath({ path: iterator, json });
+  const suggestionSet = new Set<string>();
+  addSuggestion(suggestionSet, result, null);
+  return suggestionSet;
+}
+
+function addSuggestion(suggestionSet: Set<string>, json: any, parent: any) {
+  if (Object.keys(json) && (typeof json === "object")) {
+    for (const field in json as any) {
+      const suggestion = parent ? (isNaN(field as any) ? parent + "." + field : parent + "[*]") : isNaN(field as any) ? field : "";
+      suggestionSet.add(suggestion);
+      addSuggestion(suggestionSet, json[field], suggestion);
     }
   }
 }
@@ -67,7 +111,8 @@ function getSubjectMap(formObject: MappingFormObject, mapping: RMLMapping) {
     rml:source "${formObject.contentFileName}";
     rml:referenceFormulation ${getReferenceFormulation(formObject.contentFileType)};`;
   subjectMap += mapping.iterator ? `
-    rml:iterator "${mapping.iterator}"];]` : `
+    rml:iterator "${mapping.iterator}"
+  ];` : `
   ];
   `
   subjectMap += `
