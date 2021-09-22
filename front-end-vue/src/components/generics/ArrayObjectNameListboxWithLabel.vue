@@ -23,7 +23,7 @@
       @change="navigate(selected['@id'])"
       emptyMessage="None"
       :id="id"
-      class="p-d-none"
+      class="array-listbox p-d-none"
     >
       <template #option="slotProps">
         <div class="data-name">
@@ -103,6 +103,10 @@ export default defineComponent({
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
+}
+
+.array-listbox {
+  margin: 0.5rem 0 0 0;
 }
 
 @keyframes my-fadein {

@@ -76,6 +76,10 @@ export default defineComponent({
   align-items: center;
 }
 
+#term-codes-table {
+  margin: 0.5rem 0 0 0;
+}
+
 @keyframes my-fadein {
   0% {
     opacity: 0;

@@ -48,7 +48,7 @@ export default defineComponent({
   border: 1px solid #dee2e6;
   border-radius: 3px;
   padding: 0.5rem;
-  margin: 0;
+  margin: 0.5rem 0 0 0;
   overflow: auto;
 }
 

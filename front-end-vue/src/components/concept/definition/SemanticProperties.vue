@@ -81,6 +81,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+#semantic-properties-table {
+  margin: 0.5rem 0 0 0;
+}
+
 div.link {
   cursor: pointer;
 }
