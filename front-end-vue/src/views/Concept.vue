@@ -521,6 +521,13 @@ export default defineComponent({
         } else {
           returnString = newKey + ": " + newString + ",\n";
         }
+      } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "axiomString")) {
+        newString = value.axiomString;
+        if (counter === totalKeys - 1) {
+          returnString = newKey + ": \"\n" + newString + "\n\"";
+        } else {
+          returnString = newKey + ": \"\n" + newString + "\n\",\n";
+        }
       } else if (typeof value === "string") {
         newString = value
           .replace(/\n/g, "\n\t")
