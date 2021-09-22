@@ -128,7 +128,7 @@ export default defineComponent({
       const fileLink = document.createElement("a");
 
       fileLink.href = fileURL;
-      fileLink.setAttribute("download", "response.json");
+      fileLink.setAttribute("download", this.formObject.contentFileName + "_mapped.json");
       document.body.appendChild(fileLink);
 
       fileLink.click();
