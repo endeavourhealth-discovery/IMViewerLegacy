@@ -87,7 +87,6 @@
 
 <script lang="ts">
 import { ConceptReference } from "@/models/ConceptReference";
-import { ConceptStatus } from "@/models/ConceptStatus";
 import EntityService from "@/services/EntityService";
 import { defineComponent } from "@vue/runtime-core";
 import Dropdown from "primevue/dropdown";
@@ -109,15 +108,14 @@ export default defineComponent({
   data() {
     return {
       conceptDto: JSON.parse(JSON.stringify(this.updatedConcept)),
-      schemeOptions: [] as ConceptReference[],
-      statusOptions: Object.keys(ConceptStatus).filter(f =>
-        isNaN(Number(f))
-      ) as any,
+      schemeOptions: [] as any[],
+      statusOptions: [] as any[],
       loading: false
     };
   },
   async mounted() {
-    this.schemeOptions = (await EntityService.getSchemeOptions()).data;
+    this.schemeOptions = (await EntityService.getNamespaces()).data;
+    this.statusOptions = (await EntityService.getEntityChildren("http://endhealth.info/im#Status")).data
   },
   methods: {}
 });
