@@ -123,18 +123,18 @@ export default defineComponent({
     },
     async getWorkflowTasks() {
       await WorkflowService.getWorkflowTasks()
-          .then(res => {
-            this.tasksData = res.data;
-          })
-          .catch(err => {
-            this.$toast.add(
-                LoggerService.error("Failed to get workflows from server", err)
-            );
-          });
+        .then(res => {
+          this.tasksData = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(
+            LoggerService.error("Failed to get workflows from server", err)
+          );
+        });
       this.createPanel();
     },
-    createPanel(){
-      if(this.selectedWorkflow==null){
+    createPanel() {
+      if (this.selectedWorkflow == null) {
         this.selectedWorkflow = this.currentWorkflow;
       }
       this.getTransitions();
@@ -152,10 +152,10 @@ export default defineComponent({
               workflow.validEvents.forEach((event: any) => {
                 if (transition[event]) {
                   this.links.push({
-                                    source: state,
-                                    name: event,
-                                    target: transition[event]
-                                  });
+                    source: state,
+                    name: event,
+                    target: transition[event]
+                  });
                 }
               });
             }
@@ -280,7 +280,9 @@ export default defineComponent({
           return `M${d.source.x},${d.source.y}A 15, 15 1 1, 1 ${d.target.x -
             1},${d.target.y - 1}`;
         } else {
-          return `M${d.source.x},${d.source.y-2}A${r},${r} 0 0,0 ${d.target.x},${d.target.y+2}`;
+          return `M${d.source.x},${d.source.y - 2}A${r},${r} 0 0,0 ${
+            d.target.x
+          },${d.target.y + 2}`;
         }
       }
     }
