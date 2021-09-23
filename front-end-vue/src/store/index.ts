@@ -54,13 +54,14 @@ export default createStore({
       types: any[];
     },
     quickFiltersStatus: new Map<string, boolean>(),
-    moduleSelectedEntities: {
-      ontology: IM.MODULE_ONTOLOGY,
-      sets: IM.MODULE_SETS,
-      dataModel: IM.MODULE_DATA_MODEL,
-      catalogue: IM.MODULE_CATALOGUE,
-      queries: IM.MODULE_QUERIES
-    },
+    moduleSelectedEntities: new Map([
+      ["Ontology", IM.MODULE_ONTOLOGY],
+      ["Sets", IM.MODULE_SETS],
+      ["DataModel", IM.MODULE_DATA_MODEL],
+      ["Catalogue", IM.MODULE_CATALOGUE],
+      ["Queries", IM.MODULE_QUERIES]
+    ]),
+    activeModule: "default",
     conceptActivePanel: 0 as number
   },
   mutations: {
@@ -120,26 +121,13 @@ export default createStore({
       state.selectedEntityType = type;
     },
     updateModuleSelectedEntities(state, data) {
-      switch (data.module) {
-        case "Set":
-          state.moduleSelectedEntities.sets = data.iri;
-          break;
-        case "RecordModel":
-          state.moduleSelectedEntities.dataModel = data.iri;
-          break;
-        case "Class":
-          state.moduleSelectedEntities.ontology = data.iri;
-          break;
-        case "Query":
-          state.moduleSelectedEntities.queries = data.iri;
-          break;
-        // add case for catalogue when type in known
-        default:
-          break;
-      }
+      state.moduleSelectedEntities.set(data.module, data.iri);
     },
     updateConceptActivePanel(state, number) {
       state.conceptActivePanel = number;
+    },
+    updateActiveModule(state, module) {
+      state.activeModule = module;
     }
   },
   actions: {

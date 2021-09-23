@@ -208,7 +208,12 @@ export default defineComponent({
       return isOfTypes(this.types, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY);
     },
 
-    ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel"])
+    ...mapState([
+      "conceptIri",
+      "selectedEntityType",
+      "conceptActivePanel",
+      "activeModule"
+    ])
   },
   watch: {
     async conceptIri() {
@@ -401,20 +406,17 @@ export default defineComponent({
     setStoreType() {
       let type;
       if (this.isSet) {
-        type = "Set";
+        type = "Sets";
       } else if (this.isClass && !this.isRecordModel) {
-        type = "Class";
+        type = "Ontology";
       } else if (this.isQuery) {
-        type = "Query";
-      } else if (this.isFolder) {
-        type = "Folder";
+        type = "Queries";
       } else if (this.isRecordModel) {
-        type = "RecordModel";
-      } else if (this.isProperty) {
-        type = "Property";
+        type = "DataModel";
       } else {
-        type = "None";
+        type = this.activeModule;
       }
+
       this.$store.commit("updateSelectedEntityType", type);
       if (!MODULE_IRIS.includes(this.conceptIri)) {
         this.$store.commit("updateModuleSelectedEntities", {

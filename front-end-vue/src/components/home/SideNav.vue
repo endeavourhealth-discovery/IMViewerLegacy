@@ -80,7 +80,7 @@ export default defineComponent({
   watch: {
     selectedEntityType(newValue) {
       switch (newValue) {
-        case "Class":
+        case "Ontology":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[0].name,
             fullName: this.menuItems[0].fullName,
@@ -88,7 +88,7 @@ export default defineComponent({
             route: this.menuItems[0].route
           });
           break;
-        case "Set":
+        case "Sets":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[1].name,
             fullName: this.menuItems[1].fullName,
@@ -96,7 +96,7 @@ export default defineComponent({
             route: this.menuItems[1].route
           });
           break;
-        case "RecordModel":
+        case "DataModel":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[2].name,
             fullName: this.menuItems[2].fullName,
@@ -105,7 +105,7 @@ export default defineComponent({
           });
           break;
         // add case for catalogue when type is known
-        case "Query":
+        case "Queries":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[4].name,
             fullName: this.menuItems[4].fullName,
@@ -267,60 +267,14 @@ export default defineComponent({
           iri: item.iri,
           route: "Dashboard"
         });
-        switch (item.name) {
-          case "Ontology":
-            this.$store.commit(
-              "updateConceptIri",
-              this.moduleSelectedEntities.ontology
-            );
-            if (!MODULE_IRIS.includes(this.moduleSelectedEntities.ontology)) {
-              route = "Concept";
-              moduleIri = this.moduleSelectedEntities.ontology;
-            }
-            break;
-          case "Sets":
-            this.$store.commit(
-              "updateConceptIri",
-              this.moduleSelectedEntities.sets
-            );
-            if (!MODULE_IRIS.includes(this.moduleSelectedEntities.sets)) {
-              route = "Concept";
-              moduleIri = this.moduleSelectedEntities.sets;
-            }
-            break;
-          case "Queries":
-            this.$store.commit(
-              "updateConceptIri",
-              this.moduleSelectedEntities.queries
-            );
-            if (!MODULE_IRIS.includes(this.moduleSelectedEntities.queries)) {
-              route = "Concept";
-              moduleIri = this.moduleSelectedEntities.queries;
-            }
-            break;
-          case "DataModel":
-            this.$store.commit(
-              "updateConceptIri",
-              this.moduleSelectedEntities.dataModel
-            );
-            if (!MODULE_IRIS.includes(this.moduleSelectedEntities.dataModel)) {
-              route = "Concept";
-              moduleIri = this.moduleSelectedEntities.dataModel;
-            }
-            break;
-          case "Catalogue":
-            this.$store.commit(
-              "updateConceptIri",
-              this.moduleSelectedEntities.catalogue
-            );
-            if (!MODULE_IRIS.includes(this.moduleSelectedEntities.catalogue)) {
-              route = "Concept";
-              moduleIri = this.moduleSelectedEntities.catalogue;
-            }
-            break;
-          default:
-            // this.$store.commit("updateConceptIri", item.iri);
-            break;
+        this.$store.commit(
+          "updateConceptIri",
+          this.moduleSelectedEntities.get(item.name)
+        );
+        this.$store.commit("updateActiveModule", item.name);
+        if (!MODULE_IRIS.includes(this.moduleSelectedEntities.get(item.name))) {
+          route = "Concept";
+          moduleIri = this.moduleSelectedEntities.get(item.name);
         }
         this.$emit("hierarchyFocusSelected");
       }
