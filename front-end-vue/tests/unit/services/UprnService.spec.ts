@@ -20,6 +20,13 @@ describe("UprnService.ts", () => {
     expect(result).toBe("axios get return");
   });
 
+  it("can find uprn ___ no area", async() => {
+    const result = await UprnService.findUprn("test address");
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(api + "/getinfo", { params: { adrec: "test address" }, auth: { username: username, password: password } });
+    expect(result).toBe("axios get return");
+  });
+
   it("can get uprn", async() => {
     const result = await UprnService.getUprn(123456);
     expect(axios.get).toHaveBeenCalledTimes(1);

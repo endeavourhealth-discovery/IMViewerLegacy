@@ -8,7 +8,7 @@ export default class UprnService {
 
   public static async findUprn(
     address: string,
-    area: string
+    area?: string
   ): Promise<AxiosResponse<any>> {
     const config = {
       params: { adrec: address },
