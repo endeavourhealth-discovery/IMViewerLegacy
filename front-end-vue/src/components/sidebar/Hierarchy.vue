@@ -94,9 +94,9 @@ export default defineComponent({
   ]),
   watch: {
     async conceptIri(newValue) {
+      this.selectedKey = {};
       if (!this.treeLocked) {
         if (MODULE_IRIS.includes(newValue)) {
-          this.selectedKey = {};
           await this.getConceptAggregate(newValue);
           this.createTree(
             this.conceptAggregate.concept,
