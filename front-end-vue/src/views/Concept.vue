@@ -402,7 +402,7 @@ export default defineComponent({
       let type;
       if (this.isSet) {
         type = "Set";
-      } else if (this.isClass) {
+      } else if (this.isClass && !this.isRecordModel) {
         type = "Class";
       } else if (this.isQuery) {
         type = "Query";
