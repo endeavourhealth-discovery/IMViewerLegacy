@@ -2,15 +2,13 @@
   <div id="axioms-container" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}</strong>
-      <span v-if="Object.prototype.hasOwnProperty.call(data, 'count')">
-        &nbsp;({{ data.count }})
-      </span>
+      <span>&nbsp;({{ data.count }})</span>
       <Button
         :icon="buttonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
         class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
         @click="setButtonExpanded()"
         v-styleclass="{
-          selector: '#axiom-string',
+          selector: '.axiom-string',
           enterClass: 'p-d-none',
           enterActiveClass: 'my-fadein',
           leaveActiveClass: 'my-fadeout',
@@ -18,9 +16,7 @@
         }"
       />
     </div>
-    <pre id="axiom-string" class="p-d-none">{{
-      data.axiomString.length ? data.axiomString : "None"
-    }}</pre>
+    <pre class="p-d-none axiom-string">{{ data.axiomString }}</pre>
   </div>
 </template>
 
@@ -31,12 +27,25 @@ export default defineComponent({
   name: "Axioms",
   props: {
     label: { type: String },
-    data: { type: Object },
+    data: { type: Object, required: true },
     size: { type: String }
+  },
+  mounted() {
+    if (
+      Object.prototype.hasOwnProperty.call(this.data, "axiomString") &&
+      this.data.axiomString.length
+    ) {
+      this.axiomString = this.data.axiomString;
+    }
+    if (Object.prototype.hasOwnProperty.call(this.data, "count")) {
+      this.count = this.data.count;
+    }
   },
   data() {
     return {
-      buttonExpanded: false
+      buttonExpanded: false,
+      axiomString: "None",
+      count: 0
     };
   },
   methods: {
@@ -50,7 +59,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-#axiom-string {
+.axiom-string {
   border: 1px solid #dee2e6;
   border-radius: 3px;
   padding: 0.5rem;

@@ -27,7 +27,7 @@ export function isOfTypes(
   return found;
 }
 
-export function isValueSet(conceptTypes: ConceptReference[]) {
+export function isValueSet(conceptTypes: ConceptReference[]): boolean {
   return isOfTypes(
     conceptTypes,
     IM.SET,
