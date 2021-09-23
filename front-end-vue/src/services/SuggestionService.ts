@@ -9,7 +9,7 @@ export default class SuggestionService {
     word: string
   ): Promise<ConceptReference[]> {
     const response = await axios.get<ConceptReference[]>(
-      this.api + "api/concept/referenceSuggestions",
+      this.api + "api/entity/referenceSuggestions",
       {
         params: {
           keyword: keyword,
