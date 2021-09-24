@@ -16,7 +16,7 @@ export function isOfTypes(
   let index = 0;
   while (!found && index < types.length) {
     if (
-      conceptTypeElements.some(
+      conceptTypeElements?.some(
         (e: any) => e.iri === types[index] || e[IM.IRI] === types[index]
       )
     ) {
