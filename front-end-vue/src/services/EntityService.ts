@@ -168,4 +168,16 @@ export default class EntityService {
       params: { searchString: searchECLString }
     });
   }
+
+  public static getComplexMembers(iri: string): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/complexMembers", {
+      params: { iri: iri }
+    });
+  }
+
+  public static getAxioms(iri: string): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/axioms", {
+      params: { iri: iri }
+    });
+  }
 }

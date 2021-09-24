@@ -6,6 +6,7 @@ import LoggerService from "@/services/LoggerService";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import AuthService from "@/services/AuthService";
 import { CustomAlert } from "@/models/user/CustomAlert";
+import axios from "axios";
 
 describe("state", () => {
   it("should start with the correct values", () => {
@@ -27,6 +28,7 @@ describe("state", () => {
       types: []
     });
     expect(store.state.filterOptions).toStrictEqual({status: [], schemes: [], types: []});
+    expect(store.state.quickFiltersStatus).toEqual(new Map<string, boolean>());
   });
 });
 
@@ -35,6 +37,11 @@ describe("mutations", () => {
     const testConceptIri = "http://www.endhealth.info/im#test";
     store.commit("updateConceptIri", testConceptIri);
     expect(store.state.conceptIri).toEqual(testConceptIri);
+  });
+
+  it("can updateCancelSource", () => {
+    store.commit("updateCancelSource");
+    expect(Object.keys(store.state.cancelSource)).toEqual(["token", "cancel"]);
   });
 
   it("can updateHistory", () => {
@@ -123,6 +130,20 @@ describe("mutations", () => {
     expect(store.state.selectedFilters).toEqual(testFilter);
   });
 
+  it("can updateQuickFiltersStatus", () => {
+    const testfilters = new Map<string, boolean>()
+    testfilters.set("legacy", true);
+    store.commit("updateQuickFiltersStatus", {key: "legacy", value: true});
+    expect(store.state.quickFiltersStatus).toEqual(testfilters);
+  });
+
+  it("can updateloading", () => {
+    const testLoading = new Map<string, boolean>()
+    testLoading.set("concept", true);
+    store.commit("updateLoading", {key: "concept", value: true});
+    expect(store.state.loading).toEqual(testLoading);
+  });
+
   it("can updateFilterOptions", () => {
     const testFilter = {
       selectedStatus: ["testActive", "testDraft"],
@@ -131,6 +152,16 @@ describe("mutations", () => {
     };
     store.commit("updateFilterOptions", testFilter);
     expect(store.state.filterOptions).toEqual(testFilter);
+  });
+
+  it("can updateSideNavHierarchyFocus", () => {
+    store.commit("updateSideNavHierarchyFocus", true);
+    expect(store.state.sideNavHierarchyFocus).toBe(true);
+  });
+
+  it("can updateSelectedEntityType", () => {
+    store.commit("updateSelectedEntityType", "class");
+    expect(store.state.selectedEntityType).toBe("class");
   });
 
   it("can fetchSearchResults ___ pass", async() => {

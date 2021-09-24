@@ -9,6 +9,7 @@ import LoggerService from "@/services/LoggerService";
 import { CustomAlert } from "@/models/user/CustomAlert";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import axios from "axios";
+import { IM } from "@/vocabulary/IM";
 
 export default createStore({
   // update stateType.ts when adding new state!
@@ -30,8 +31,9 @@ export default createStore({
     sideNavHierarchyFocus: {
       name: "Ontology",
       fullName: "Ontologies",
-      iri: "http://endhealth.info/im#DiscoveryOntology"
-    } as { name: string; iri: string },
+      iri: "http://endhealth.info/im#DiscoveryOntology",
+      route: "Dashboard"
+    } as { name: string; iri: string; fullName: string; route: string },
     selectedEntityType: "",
     filterOptions: {
       status: [],
@@ -51,7 +53,16 @@ export default createStore({
       schemes: any[];
       types: any[];
     },
-    quickFiltersStatus: new Map<string, boolean>()
+    quickFiltersStatus: new Map<string, boolean>(),
+    moduleSelectedEntities: new Map([
+      ["Ontology", IM.MODULE_ONTOLOGY],
+      ["Sets", IM.MODULE_SETS],
+      ["DataModel", IM.MODULE_DATA_MODEL],
+      ["Catalogue", IM.MODULE_CATALOGUE],
+      ["Queries", IM.MODULE_QUERIES]
+    ]),
+    activeModule: "default",
+    conceptActivePanel: 0 as number
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -108,6 +119,15 @@ export default createStore({
     },
     updateSelectedEntityType(state, type) {
       state.selectedEntityType = type;
+    },
+    updateModuleSelectedEntities(state, data) {
+      state.moduleSelectedEntities.set(data.module, data.iri);
+    },
+    updateConceptActivePanel(state, number) {
+      state.conceptActivePanel = number;
+    },
+    updateActiveModule(state, module) {
+      state.activeModule = module;
     }
   },
   actions: {

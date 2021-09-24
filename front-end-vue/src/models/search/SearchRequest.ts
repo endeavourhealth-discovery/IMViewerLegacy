@@ -1,11 +1,9 @@
-import { ConceptType } from "./ConceptType";
-import { ConceptStatus } from "./../ConceptStatus";
 import { SortBy } from "./SortBy";
 
 export class SearchRequest {
   termFilter!: string;
-  statusFilter!: ConceptStatus[];
-  typeFilter!: ConceptType[];
+  statusFilter!: string[];
+  typeFilter!: string[];
   schemeFilter!: string[];
   descendentFilter!: string[];
   markIfDescendentOf!: string[];

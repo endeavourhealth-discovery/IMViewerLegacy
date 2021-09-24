@@ -153,8 +153,8 @@ export default defineComponent({
 
       await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO])
         .then(res => {
-          this.simpleMaps = res.data[IM.MATCHED_TO];
-          if (this.simpleMaps && this.namespaces) {
+          this.simpleMaps = res.data[IM.MATCHED_TO] || [];
+          if (this.simpleMaps.length && this.namespaces) {
             this.simpleMaps.forEach((mapItem: any) => {
               const found = this.namespaces.find(
                 (namespace: any) =>
@@ -288,27 +288,34 @@ export default defineComponent({
     },
 
     createChartStructure(mappingObject: any): any {
-      if (!mappingObject.length || !Object.keys(mappingObject).length) {
-        return [];
-      }
       const parentNode = {
         key: "0",
         type: "hasMap",
         data: { label: "Has map" },
         children: [] as any
       };
-      parentNode.children = this.generateChildNodes(mappingObject, "0", 0);
-      const simpleMapsChildren = this.generateSimpleMapsNodes(
-        this.simpleMaps,
-        "0_" + parentNode.children.length,
-        0
-      );
-      parentNode.children.push({
-        key: "0_" + parentNode.children.length,
-        type: "simpleMaps",
-        data: { label: "Simple maps" },
-        children: simpleMapsChildren
-      });
+      if (
+        (!mappingObject.length || !Object.keys(mappingObject).length) &&
+        !this.simpleMaps.length
+      ) {
+        return [];
+      }
+      if (mappingObject.length && Object.keys(mappingObject).length) {
+        parentNode.children = this.generateChildNodes(mappingObject, "0", 0);
+      }
+      if (this.simpleMaps.length) {
+        const simpleMapsChildren = this.generateSimpleMapsNodes(
+          this.simpleMaps,
+          "0_" + parentNode.children.length,
+          0
+        );
+        parentNode.children.push({
+          key: "0_" + parentNode.children.length,
+          type: "simpleMaps",
+          data: { label: "Simple maps" },
+          children: simpleMapsChildren
+        });
+      }
       return parentNode;
     },
 

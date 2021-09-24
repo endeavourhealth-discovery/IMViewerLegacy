@@ -86,12 +86,12 @@
 </template>
 
 <script lang="ts">
-import { ConceptReference } from "@/models/ConceptReference";
-import { ConceptStatus } from "@/models/ConceptStatus";
 import EntityService from "@/services/EntityService";
 import { defineComponent } from "@vue/runtime-core";
 import Dropdown from "primevue/dropdown";
 import Card from "primevue/card";
+import LoggerService from "@/services/LoggerService";
+import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
   name: "FormEditor",
@@ -109,15 +109,30 @@ export default defineComponent({
   data() {
     return {
       conceptDto: JSON.parse(JSON.stringify(this.updatedConcept)),
-      schemeOptions: [] as ConceptReference[],
-      statusOptions: Object.keys(ConceptStatus).filter(f =>
-        isNaN(Number(f))
-      ) as any,
+      schemeOptions: [] as any[],
+      statusOptions: [] as any[],
       loading: false
     };
   },
   async mounted() {
-    this.schemeOptions = (await EntityService.getSchemeOptions()).data;
+    await EntityService.getNamespaces()
+      .then(res => {
+        this.schemeOptions = res.data;
+      })
+      .catch(err => {
+        this.$toast.add(
+          LoggerService.error("Failed to get scheme options from server", err)
+        );
+      });
+    await EntityService.getEntityChildren(IM.STATUS)
+      .then(res => {
+        this.statusOptions = res.data;
+      })
+      .catch(err => {
+        this.$toast.add(
+          LoggerService.error("Failed to get status options from server", err)
+        );
+      });
   },
   methods: {}
 });

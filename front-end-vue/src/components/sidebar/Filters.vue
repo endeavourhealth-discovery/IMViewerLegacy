@@ -58,7 +58,7 @@ import { mapState } from "vuex";
 export default defineComponent({
   name: "Filters",
   components: {},
-  props: ["search", "searchTerm"],
+  props: ["search"],
   computed: mapState([
     "filterOptions",
     "selectedFilters",
@@ -97,9 +97,8 @@ export default defineComponent({
   },
   methods: {
     checkForSearch() {
-      if (this.searchTerm.length > 2) {
-        this.search();
-      }
+      this.updateStoreSelectedFilters();
+      this.search();
     },
 
     setFilters() {

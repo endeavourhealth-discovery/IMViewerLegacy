@@ -79,6 +79,7 @@ import {
   getIconFromType
 } from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
+import { MODULE_IRIS } from "@/helpers/ModuleIris";
 
 export default defineComponent({
   name: "Hierarchy",
@@ -89,59 +90,43 @@ export default defineComponent({
     "conceptIri",
     "focusTree",
     "treeLocked",
-    "sideNavHierarchyFocus"
+    "sideNavHierarchyFocus",
+    "history"
   ]),
   watch: {
     async conceptIri(newValue) {
-      if (this.homeIris.includes(newValue)) {
+      await this.getConceptAggregate(newValue);
+      if (!this.treeLocked) {
         this.selectedKey = {};
-        await this.getConceptAggregate(newValue);
-        this.createTree(
-          this.conceptAggregate.concept,
-          this.conceptAggregate.parents,
-          this.conceptAggregate.children
-        );
-      } else {
-        await this.getConceptAggregate(newValue);
-        this.createTree(
-          this.conceptAggregate.concept,
-          this.conceptAggregate.parents,
-          this.conceptAggregate.children
-        );
-        this.$store.commit("updateHistory", {
-          url: this.$route.fullPath,
-          conceptName: this.conceptAggregate.concept[RDFS.LABEL],
-          view: this.$route.name
-        } as HistoryItem);
+        this.refreshTree();
+      }
+      this.updateHistory();
+    },
+    async sideNavHierarchyFocus(newValue, oldValue) {
+      if (newValue.iri !== oldValue.iri) {
+        this.selectedKey = {};
+        await this.getConceptAggregate(this.conceptIri);
+        this.refreshTree();
+        this.updateHistory();
       }
     },
-    focusTree(newValue) {
+    async focusTree(newValue) {
       if (newValue === true) {
-        this.refreshTree(
-          this.conceptAggregate.concept,
-          this.conceptAggregate.parents,
-          this.conceptAggregate.children
-        );
+        await this.getConceptAggregate(this.conceptIri);
+        this.refreshTree();
         this.$store.commit("updateFocusTree", false);
         this.$emit("showTree");
       }
     },
     active(newValue, oldValue) {
       if (!this.treeLocked && newValue === 0 && oldValue !== 0) {
-        this.refreshTree(
-          this.conceptAggregate.concept,
-          this.conceptAggregate.parents,
-          this.conceptAggregate.children
-        );
+        this.refreshTree();
       }
     },
-    treeLocked(newValue) {
+    async treeLocked(newValue) {
       if (!newValue) {
-        this.refreshTree(
-          this.conceptAggregate.concept,
-          this.conceptAggregate.parents,
-          this.conceptAggregate.children
-        );
+        await this.getConceptAggregate(this.conceptIri);
+        this.refreshTree();
       }
     }
   },
@@ -152,31 +137,24 @@ export default defineComponent({
       root: [] as TreeNode[],
       expandedKeys: {} as any,
       selectedKey: {} as any,
-      parentLabel: "",
-      homeIris: [
-        IM.NAMESPACE + "Sets",
-        IM.NAMESPACE + "DiscoveryOntology",
-        IM.NAMESPACE + "QT_QueryTemplates",
-        IM.NAMESPACE + "InformationModel"
-      ]
+      parentLabel: ""
     };
   },
   async mounted() {
     await this.getConceptAggregate(this.conceptIri);
-    this.createTree(
-      this.conceptAggregate.concept,
-      this.conceptAggregate.parents,
-      this.conceptAggregate.children
-    );
-    if (!this.homeIris.includes(this.conceptAggregate.concept[IM.IRI])) {
-      this.$store.commit("updateHistory", {
-        url: this.$route.fullPath,
-        conceptName: this.conceptAggregate.concept[RDFS.LABEL],
-        view: this.$route.name
-      } as HistoryItem);
-    }
+    this.refreshTree();
+    this.updateHistory();
   },
   methods: {
+    updateHistory() {
+      if (!MODULE_IRIS.includes(this.conceptIri)) {
+        this.$store.commit("updateHistory", {
+          url: this.$route.fullPath,
+          conceptName: this.conceptAggregate.concept[RDFS.LABEL],
+          view: this.$route.name
+        } as HistoryItem);
+      }
+    },
     async getConceptAggregate(iri: string) {
       await Promise.all([
         EntityService.getPartialEntity(iri, [
@@ -201,20 +179,11 @@ export default defineComponent({
         );
       });
     },
-    createTree(concept: any, parentHierarchy: any, children: any): void {
-      if (this.root.length == 0) {
-        this.refreshTree(concept, parentHierarchy, children);
-      } else if (
-        concept[IM.IRI] === IM.NAMESPACE + "InformationModel" ||
-        concept[IM.IRI] === IM.NAMESPACE + "DiscoveryOntology" ||
-        concept[IM.IRI] === IM.NAMESPACE + "Sets" ||
-        concept[IM.IRI] === IM.NAMESPACE + "QT_QueryTemplates"
-      ) {
-        this.refreshTree(concept, parentHierarchy, children);
-      }
-    },
 
-    refreshTree(concept: any, parentHierarchy: any, children: any): void {
+    refreshTree(): void {
+      const concept = this.conceptAggregate.concept;
+      const parentHierarchy = this.conceptAggregate.parents;
+      const children = this.conceptAggregate.children;
       this.expandedKeys = {};
       const selectedConcept = this.createTreeNode(
         concept[RDFS.LABEL],
@@ -266,12 +235,7 @@ export default defineComponent({
     },
 
     onNodeSelect(node: any): void {
-      if (
-        node.data === IM.NAMESPACE + "InformationModel" ||
-        node.data === IM.NAMESPACE + "DiscoveryOntology" ||
-        node.data === IM.NAMESPACE + "Sets" ||
-        node.data === IM.NAMESPACE + "QT_QueryTemplates"
-      ) {
+      if (MODULE_IRIS.includes(node.data)) {
         this.$router.push({ name: "Dashboard" });
       } else {
         this.$router.push({
@@ -371,13 +335,15 @@ export default defineComponent({
         });
     },
 
-    resetConcept(): void {
+    async resetConcept(): Promise<void> {
       if (this.parentLabel !== "Information Model") {
         this.parentLabel = "";
       }
       this.selectedKey = {};
       this.$emit("showTree");
       this.$store.commit("updateConceptIri", this.sideNavHierarchyFocus.iri);
+      await this.getConceptAggregate(this.conceptIri);
+      this.refreshTree();
       this.$router.push({ name: "Dashboard" });
     },
 

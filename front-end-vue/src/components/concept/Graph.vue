@@ -24,7 +24,7 @@
           <tr v-for="prop in slotProps.node.leafNodes" :key="prop">
             <td @click="navigate(prop.iri)">{{ prop.name }}</td>
             <td @click="navigate(prop.valueTypeIri)">
-              {{ prop.valueTypeName }}
+              {{ prop.valueTypeName || getTypeFromIri(prop.valueTypeIri) }}
             </td>
           </tr>
         </tbody>
@@ -91,6 +91,14 @@ export default defineComponent({
     }
   },
   methods: {
+    getTypeFromIri(iri: string) {
+      switch (iri) {
+        case "http://www.w3.org/2001/XMLSchema#string":
+          return "String";
+        default:
+          return "String";
+      }
+    },
     async getGraph(iri: string) {
       this.loading = true;
       await EntityService.getEntityGraph(iri)

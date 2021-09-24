@@ -8,58 +8,41 @@ import { IM } from "@/vocabulary/IM";
 import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
 
-export function isValueSet(conceptTypeElements: ConceptReference[]): boolean {
-  return conceptTypeElements.some(
-    (e: any) =>
-      e.iri === IM.SET ||
-      e.iri === IM.QUERY_SET ||
-      e.iri === IM.VALUE_SET ||
-      e.iri === IM.CONCEPT_SET ||
-      e[IM.IRI] === IM.SET ||
-      e[IM.IRI] === IM.QUERY_SET ||
-      e[IM.IRI] === IM.VALUE_SET ||
-      e[IM.IRI] === IM.CONCEPT_SET
-  );
-}
-
-export function isClass(conceptTypeElements: ConceptReference[]): boolean {
-  return conceptTypeElements.some(
-    (e: any) => e.iri === OWL.CLASS || e[IM.IRI] === OWL.CLASS
-  );
-}
-
-export function isRecordModel(
-  conceptTypeElements: ConceptReference[]
+export function isOfTypes(
+  conceptTypeElements: ConceptReference[],
+  ...types: string[]
 ): boolean {
-  return conceptTypeElements.some((e: any) => {
-    return e.iri === SHACL.NODESHAPE || e[IM.IRI] === SHACL.NODESHAPE;
-  });
+  let found = false;
+  let index = 0;
+  while (!found && index < types.length) {
+    if (
+      conceptTypeElements?.some(
+        (e: any) => e.iri === types[index] || e[IM.IRI] === types[index]
+      )
+    ) {
+      found = true;
+    }
+    index++;
+  }
+  return found;
 }
 
-export function isProperty(conceptTypeElements: ConceptReference[]): boolean {
-  return conceptTypeElements.some((e: any) => {
-    return e[IM.IRI] === OWL.OBJECT_PROPERTY || e[IM.IRI] === IM.DATA_PROPERTY;
-  });
-}
-
-export function isFolder(conceptTypeElements: ConceptReference[]): boolean {
-  return conceptTypeElements.some((e: any) => {
-    return e[IM.IRI] === IM.FOLDER || e.iri === IM.FOLDER;
-  });
-}
-
-export function isQuery(conceptTypeElements: ConceptReference[]): boolean {
-  return conceptTypeElements.some((e: any) => {
-    return e[IM.IRI] === IM.QUERY_TEMPLATE || e.iri === IM.QUERY_TEMPLATE;
-  });
+export function isValueSet(conceptTypes: ConceptReference[]): boolean {
+  return isOfTypes(
+    conceptTypes,
+    IM.SET,
+    IM.QUERY_SET,
+    IM.VALUE_SET,
+    IM.CONCEPT_SET
+  );
 }
 
 export function getIconFromType(conceptTypes: ConceptReference[]): string {
-  if (isRecordModel(conceptTypes)) {
+  if (isOfTypes(conceptTypes, SHACL.NODESHAPE)) {
     return "fas fa-fw fa-project-diagram";
   }
 
-  if (isProperty(conceptTypes)) {
+  if (isOfTypes(conceptTypes, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY)) {
     return "far fa-fw fa-edit";
   }
 
@@ -67,11 +50,11 @@ export function getIconFromType(conceptTypes: ConceptReference[]): string {
     return "fas fa-fw fa-tasks";
   }
 
-  if (isFolder(conceptTypes)) {
+  if (isOfTypes(conceptTypes, IM.FOLDER)) {
     return "fas fa-fw fa-folder";
   }
 
-  if (isQuery(conceptTypes)) {
+  if (isOfTypes(conceptTypes, IM.QUERY_TEMPLATE)) {
     return "fas fa-fw fa-search";
   }
 
@@ -83,11 +66,11 @@ export function getColourFromType(conceptTypes: ConceptReference[]): string {
   const bgs = palette("tol-rainbow", 6);
   const bgsFixed = bgs.map((color: string) => "#" + color + "88");
 
-  if (isRecordModel(conceptTypes)) {
+  if (isOfTypes(conceptTypes, SHACL.NODESHAPE)) {
     return bgsFixed[0];
   }
 
-  if (isProperty(conceptTypes)) {
+  if (isOfTypes(conceptTypes, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY)) {
     return bgsFixed[5];
   }
 
@@ -95,11 +78,11 @@ export function getColourFromType(conceptTypes: ConceptReference[]): string {
     return bgsFixed[2];
   }
 
-  if (isFolder(conceptTypes)) {
+  if (isOfTypes(conceptTypes, IM.FOLDER)) {
     return bgsFixed[1];
   }
 
-  if (isQuery(conceptTypes)) {
+  if (isOfTypes(conceptTypes, IM.QUERY_TEMPLATE)) {
     return bgsFixed[3];
   }
 

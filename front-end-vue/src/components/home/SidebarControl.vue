@@ -6,7 +6,7 @@
         type="text"
         v-model="searchTerm"
         @input="debounceForSearch"
-        @keydown="checkKey($event)"
+        @keyup.enter="search"
         placeholder="Search"
         class="p-inputtext-lg search-input"
         autoWidth="false"
@@ -27,13 +27,6 @@
       </TabPanel>
       <TabPanel>
         <template #header>
-          <i class="fas fa-history icon-header" aria-hidden="true" />
-          <span>History</span>
-        </template>
-        <History />
-      </TabPanel>
-      <TabPanel>
-        <template #header>
           <i class="fas fa-search icon-header" aria-hidden="true" />
           <span>Search results</span>
         </template>
@@ -44,6 +37,13 @@
           <SearchResults :searchResults="searchResults" :loading="loading" />
           <Filters :search="search" :searchTerm="searchTerm" />
         </div>
+      </TabPanel>
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-history icon-header" aria-hidden="true" />
+          <span>History</span>
+        </template>
+        <History />
       </TabPanel>
       <TabPanel>
         <template #header>
@@ -165,12 +165,6 @@ export default defineComponent({
       this.debounce = window.setTimeout(() => {
         this.search();
       }, 600);
-    },
-
-    checkKey(event: any) {
-      if (event.code === "Enter") {
-        this.search();
-      }
     },
 
     setContainerHeights(): void {

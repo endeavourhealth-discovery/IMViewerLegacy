@@ -61,8 +61,10 @@
 </template>
 
 <script lang="ts">
+import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
+import { MODULE_IRIS } from "@/helpers/ModuleIris";
 
 export default defineComponent({
   name: "SideNav",
@@ -70,33 +72,58 @@ export default defineComponent({
     "currentUser",
     "isLoggedIn",
     "sideNavHierarchyFocus",
-    "selectedEntityType"
+    "selectedEntityType",
+    "moduleSelectedEntities",
+    "conceptIri"
   ]),
   emits: ["hierarchyFocusSelected"],
   watch: {
     selectedEntityType(newValue) {
       switch (newValue) {
-        case "Class":
+        case "Ontology":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[0].name,
             fullName: this.menuItems[0].fullName,
-            iri: this.menuItems[0].iri
+            iri: this.menuItems[0].iri,
+            route: this.menuItems[0].route
           });
           break;
-        case "Set":
+        case "Sets":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[1].name,
             fullName: this.menuItems[1].fullName,
-            iri: this.menuItems[1].iri
+            iri: this.menuItems[1].iri,
+            route: this.menuItems[1].route
           });
           break;
-        case "Query":
+        case "DataModel":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[2].name,
             fullName: this.menuItems[2].fullName,
-            iri: this.menuItems[2].iri
+            iri: this.menuItems[2].iri,
+            route: this.menuItems[2].route
           });
           break;
+        // add case for catalogue when type is known
+        case "Queries":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[4].name,
+            fullName: this.menuItems[4].fullName,
+            iri: this.menuItems[4].iri,
+            route: this.menuItems[4].route
+          });
+          break;
+        case "Folder":
+          this.handleCenterIconClick(this.sideNavHierarchyFocus);
+          break;
+        default:
+          console.log("unknown selectedEntityType detected in sidenav watcher");
+          break;
+      }
+    },
+    sideNavHierarchyFocus(newValue, oldValue) {
+      if (newValue.name !== oldValue.name) {
+        this.handleCenterIconClick(newValue);
       }
     }
   },
@@ -145,21 +172,35 @@ export default defineComponent({
           name: "Ontology",
           fullName: "Ontologies",
           route: "Dashboard",
-          iri: "http://endhealth.info/im#DiscoveryOntology"
+          iri: IM.MODULE_ONTOLOGY
         },
         {
           icon: ["fas", "layer-group"],
           name: "Sets",
           fullName: "Concept sets and value sets",
           route: "Dashboard",
-          iri: "http://endhealth.info/im#Sets"
+          iri: IM.MODULE_SETS
+        },
+        {
+          icon: ["fas", "archive"],
+          name: "DataModel",
+          fullName: "Data model",
+          route: "Dashboard",
+          iri: IM.MODULE_DATA_MODEL
+        },
+        {
+          icon: ["fas", "fax"],
+          name: "Catalogue",
+          fullName: "Catalogue",
+          route: "Dashboard",
+          iri: IM.MODULE_CATALOGUE
         },
         {
           icon: ["fas", "search"],
           name: "Queries",
           fullName: "Query templates",
           route: "Dashboard",
-          iri: "http://endhealth.info/im#QT_QueryTemplates"
+          iri: IM.MODULE_QUERIES
         }
         // {
         //   icon: ["fas", "tasks"],
@@ -203,31 +244,48 @@ export default defineComponent({
       this.$store.commit("updateSideNavHierarchyFocus", {
         name: "InformationModel",
         fullName: "Information Model",
-        iri: "http://endhealth.info/im#InformationModel"
+        iri: IM.MODULE_IM
       });
-      this.$store.commit(
-        "updateConceptIri",
-        "http://endhealth.info/im#InformationModel"
-      );
+      this.$store.commit("updateConceptIri", IM.MODULE_IM);
       this.$emit("hierarchyFocusSelected");
       this.$router.push({ name: "Dashboard" });
     },
 
     handleCenterIconClick(item: any) {
+      let route = item.route;
+      let moduleIri = "";
       if (
         item.name === "Ontology" ||
         item.name === "Sets" ||
-        item.name === "Queries"
+        item.name === "Queries" ||
+        item.name === "DataModel" ||
+        item.name === "Catalogue"
       ) {
         this.$store.commit("updateSideNavHierarchyFocus", {
           name: item.name,
           fullName: item.fullName,
-          iri: item.iri
+          iri: item.iri,
+          route: "Dashboard"
         });
-        this.$store.commit("updateConceptIri", item.iri);
+        this.$store.commit(
+          "updateConceptIri",
+          this.moduleSelectedEntities.get(item.name)
+        );
+        this.$store.commit("updateActiveModule", item.name);
+        if (!MODULE_IRIS.includes(this.moduleSelectedEntities.get(item.name))) {
+          route = "Concept";
+          moduleIri = this.moduleSelectedEntities.get(item.name);
+        }
         this.$emit("hierarchyFocusSelected");
       }
-      this.$router.push({ name: item.route });
+      if (moduleIri !== "") {
+        this.$router.push({
+          name: route,
+          params: { selectedIri: moduleIri }
+        });
+      } else {
+        this.$router.push({ name: route });
+      }
     }
   }
 });

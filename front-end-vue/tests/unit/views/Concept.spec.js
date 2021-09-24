@@ -50,6 +50,7 @@ describe("Concept.vue", () => {
       }});
     EntityService.getEntityChildren = jest.fn().mockResolvedValue({ data: [{"name":"Adult critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#1641000252107"},{"name":"Neonatal critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#831000252103"},{"name":"Paediatric critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#2811000252102"}]});
     EntityService.getEntityTermCodes = jest.fn().mockResolvedValue({ data: [{"name":"Critical care encounter (record type)"}]});
+    EntityService.getAxioms = jest.fn().mockResolvedValue({ data: {"entity":{"@id":"http://endhealth.info/im#841000252107","http://www.w3.org/2000/01/rdf-schema#comment":"An entry recording information about a criticial care encounter.<p>common data model attributes for Critical care encounter","http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Critical care encounter","http://www.w3.org/2002/07/owl#equivalentClass":[{"http://www.w3.org/2002/07/owl#intersectionOf":[{"@id":"http://endhealth.info/im#1161000252102","name":"Hospital encounter"},{"http://www.w3.org/2002/07/owl#someValuesFrom":{"@id":"http://endhealth.info/im#211000252109","name":"Critical care unit function"},"http://www.w3.org/2002/07/owl#onProperty":{"@id":"http://endhealth.info/im#51000252106","name":"takes place in care setting"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":{"@id":"http://www.w3.org/2002/07/owl#Restriction","name":"Restriction"}}]}]},"predicates":[{"name":"someValuesFrom","@id":"http://www.w3.org/2002/07/owl#someValuesFrom"},{"name":"comment","@id":"http://www.w3.org/2000/01/rdf-schema#comment"},{"name":"onProperty","@id":"http://www.w3.org/2002/07/owl#onProperty"},{"name":"type","@id":"http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},{"name":"intersectionOf","@id":"http://www.w3.org/2002/07/owl#intersectionOf"},{"name":"label","@id":"http://www.w3.org/2000/01/rdf-schema#label"},{"name":"equivalentClass","@id":"http://www.w3.org/2002/07/owl#equivalentClass"}]}})
     ConfigService.getComponentLayout = jest.fn().mockResolvedValue({ data: [
       {"label":"Name","predicate":"http://www.w3.org/2000/01/rdf-schema#label","type":"TextWithLabel","size":"50%","order":0},
       {"label":"Iri","predicate":"@id","type":"TextWithLabel","size":"50%","order":1},
@@ -66,7 +67,8 @@ describe("Concept.vue", () => {
     ]});
     mockStore = {
       state: {
-        conceptIri: "http://endhealth.info/im#CriticalCareEncounter"
+        conceptIri: "http://endhealth.info/im#CriticalCareEncounter",
+        selectedEntityType: "Class"
       },
       commit: jest.fn(),
       dispatch: jest.fn()
@@ -121,6 +123,7 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.configs).toStrictEqual([{"label":"Name","predicate":"http://www.w3.org/2000/01/rdf-schema#label","type":"TextWithLabel","size":"50%","order":0},{"label":"Iri","predicate":"@id","type":"TextWithLabel","size":"50%","order":1},{"label":"Status","predicate":"http://endhealth.info/im#status","type":"ObjectNameWithLabel","size":"50%","order":2},{"label":"Types","predicate":"http://www.w3.org/1999/02/22-rdf-syntax-ns#type","type":"ArrayObjectNamesToStringWithLabel","size":"50%","order":3},{"label":"Description","predicate":"http://www.w3.org/2000/01/rdf-schema#comment","type":"TextHTMLWithLabel","size":"100%","order":4},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":5},{"label":"Is a","predicate":"http://endhealth.info/im#isA","type":"ArrayObjectNameListboxWithLabel","size":"50%","order":6},{"label":"Has sub types","predicate":"subtypes","type":"ArrayObjectNameListboxWithLabel","size":"50%","order":7},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":8},{"label":"Semantic properties","predicate":"semanticProperties","type":"SemanticProperties","size":"100%","order":9},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":10},{"label":"Data model properties","predicate":"dataModelProperties","type":"DataModelProperties","size":"100%","order":11}]);
     expect(wrapper.vm.concept).toStrictEqual({
       "@id":"http://endhealth.info/im#CriticalCareEncounter",
+      "axioms":{"axiomString":"Equivalent class\n    Intersection of\n        Hospital encounter\n        Having type Restriction on property takes place in care setting\n            Some values from\n                Critical care unit function","count": 1},
       "http://endhealth.info/im#isA":[{"@id":"http://endhealth.info/im#1161000252102","name":"Hospital encounter"}],
       "http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},
       "http://www.w3.org/2000/01/rdf-schema#comment":"An entry recording information about a criticial care encounter.<p>common data model attributes for Critical care encounter",
@@ -360,7 +363,8 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.getConcept).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
     expect(wrapper.vm.types).toStrictEqual([{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]);
     expect(wrapper.vm.header).toBe("Scoliosis caused by radiation (disorder)");
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Class");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "Ontology");
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateModuleSelectedEntities", { module: "Ontology", iri: "http://endhealth.info/im#CriticalCareEncounter" });
     expect(wrapper.vm.loading).toBe(false);
   });
 
@@ -371,7 +375,8 @@ describe("Concept.vue", () => {
     wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"name":"Concept Set","@id":"http://endhealth.info/im#ConceptSet"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
     wrapper.vm.init();
     await flushPromises();
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Set");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "Sets");
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateModuleSelectedEntities", { module: "Sets", iri: "http://endhealth.info/im#CriticalCareEncounter" });
   });
 
   it("Inits ___ Query", async() => {
@@ -380,26 +385,8 @@ describe("Concept.vue", () => {
     wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"name":"Query template","@id":"http://endhealth.info/im#QueryTemplate"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
     wrapper.vm.init();
     await flushPromises();
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Query");
-  });
-
-  it("Inits ___ None", async() => {
-    wrapper.vm.getProperties = jest.fn();
-    wrapper.vm.getConcept = jest.fn();
-    wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"name":"Other","@id":"http://endhealth.info/im#Other"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
-    wrapper.vm.init();
-    await flushPromises();
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "None");
-  });
-
-  it("Inits ___ missing type", async() => {
-    wrapper.vm.getProperties = jest.fn();
-    wrapper.vm.getConcept = jest.fn();
-    wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
-    wrapper.vm.init();
-    await flushPromises();
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "None");
-    expect(wrapper.vm.types).toStrictEqual([]);
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "Queries");
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateModuleSelectedEntities", { module: "Queries", iri: "http://endhealth.info/im#CriticalCareEncounter" });
   });
 
   it("can openDownloadDialog", async() => {
@@ -452,7 +439,7 @@ describe("Concept.vue", () => {
 
   it("can copy concept to clipboard", async() => {
     await flushPromises();
-    expect(wrapper.vm.copyConceptToClipboard()).toBe("Iri: http://endhealth.info/im#CriticalCareEncounter,\nIs a: [\n\tHospital encounter\n],\nStatus: Active,\nDescription: An entry recording information about a criticial care encounter.\n\tcommon data model attributes for Critical care encounter,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Critical care encounter (record type),\nHas sub types: [\n\tAdult critical care encounter,\n\tNeonatal critical care encounter,\n\tPaediatric critical care encounter\n],\nSemantic properties: [\n\ttakes place in care setting\n],\nData model properties: [\n\thas admission source,\n\thas critical care unit function,\n\tadditional Practitioners\n]");
+    expect(wrapper.vm.copyConceptToClipboard()).toBe("Iri: http://endhealth.info/im#CriticalCareEncounter,\nIs a: [\n\tHospital encounter\n],\nStatus: Active,\nDescription: An entry recording information about a criticial care encounter.\n\tcommon data model attributes for Critical care encounter,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Critical care encounter (record type),\nHas sub types: [\n\tAdult critical care encounter,\n\tNeonatal critical care encounter,\n\tPaediatric critical care encounter\n],\nSemantic properties: [\n\ttakes place in care setting\n],\nData model properties: [\n\thas admission source,\n\thas critical care unit function,\n\tadditional Practitioners\n],\n");
   });
 
   it("can copy concept to clipboard ___ empty arrays", async() => {

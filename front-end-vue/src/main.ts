@@ -10,11 +10,10 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library, dom } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
-import { fab } from "@fortawesome/free-brands-svg-icons";
 
 dom.watch();
 
-library.add(fas, far, fab);
+library.add(fas, far);
 
 import "primevue/resources/themes/saga-blue/theme.css"; //theme
 
@@ -74,6 +73,7 @@ import { FilterMatchMode, FilterOperator } from "primevue/api";
 import RadioButton from "primevue/radiobutton";
 import ConfirmPopup from "primevue/confirmpopup";
 import InputSwitch from "primevue/inputswitch";
+import StyleClass from "primevue/styleclass";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
@@ -92,6 +92,7 @@ const app = createApp(App)
     appendToBody: true
   })
   .directive("tooltip", Tooltip)
+  .directive("styleclass", StyleClass)
   .component("Card", Card)
   .component("ProgressSpinner", ProgressSpinner)
   .component("TabView", TabView)

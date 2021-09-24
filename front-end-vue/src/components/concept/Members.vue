@@ -80,7 +80,14 @@
         header="Name"
         filter-field="entity.name"
         style="flex: 0 0 60%"
-      />
+      >
+        <template #body="slotProps">
+          <div v-if="slotProps.data.type === 'COMPLEX'">
+            <Button label="Show" @click="openComplexMembersDialog" />
+          </div>
+          <span v-else>{{ slotProps.data.entity.name }}</span>
+        </template>
+      </Column>
       <Column field="code" header="Code" filter-field="code" />
       <Column field="scheme.name" header="Scheme" filter-field="scheme.name" />
       <template #groupheader="slotProps">
@@ -98,9 +105,18 @@
         <span v-if="slotProps.data.type === 'EXPANDED'" class="group-header">
           Expanded Members
         </span>
+        <span v-if="slotProps.data.type === 'COMPLEX'" class="group-header">
+          Complex Members
+        </span>
       </template>
     </DataTable>
   </div>
+  <ComplexMembers
+    v-if="showComplexMembersDialog"
+    @closeComplexMembersDialog="closeComplexMembersDialog"
+    :showDialog="showComplexMembersDialog"
+    :conceptIri="conceptIri"
+  />
 </template>
 
 <script lang="ts">
@@ -109,13 +125,15 @@ import EntityService from "@/services/EntityService";
 import { FilterMatchMode } from "primevue/api";
 import Swal from "sweetalert2";
 import LoggerService from "@/services/LoggerService";
+import ComplexMembers from "@/components/concept/members/ComplexMembers.vue";
 
 export default defineComponent({
   name: "Members",
-  components: {},
+  components: { ComplexMembers },
   props: {
-    conceptIri: String
+    conceptIri: { type: String, required: true }
   },
+  emits: ["memberClick"],
   watch: {
     async conceptIri() {
       this.expandMembers = false;
@@ -154,7 +172,12 @@ export default defineComponent({
       expandSubsets: false,
       selected: {} as any,
       subsets: [] as any[],
-      expandedRowGroups: ["MemberIncluded", "MemberXcluded"]
+      expandedRowGroups: [
+        "a_MemberIncluded",
+        "b_MemberExcluded",
+        "z_ComplexMember"
+      ],
+      showComplexMembersDialog: false
     };
   },
   methods: {
@@ -181,7 +204,11 @@ export default defineComponent({
       if (this.expandMembers) {
         this.expandedRowGroups = ["MemberExpanded"];
       } else {
-        this.expandedRowGroups = ["MemberIncluded", "MemberXcluded"];
+        this.expandedRowGroups = [
+          "a_MemberIncluded",
+          "b_MemberExcluded",
+          "z_ComplexMember"
+        ];
       }
       this.selected = {};
       this.subsets = [];
@@ -287,6 +314,14 @@ export default defineComponent({
           "Failed to set members table width. Required element(s) not found."
         );
       }
+    },
+
+    openComplexMembersDialog() {
+      this.showComplexMembersDialog = true;
+    },
+
+    closeComplexMembersDialog() {
+      this.showComplexMembersDialog = false;
     }
   }
 });

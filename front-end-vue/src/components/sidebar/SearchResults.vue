@@ -195,29 +195,82 @@ export default defineComponent({
         .join(", ");
     },
 
-    copyConceptToClipboard(data: any): string {
-      let typesString = "";
-      if (data.entityType.length > 0) {
-        typesString = data.entityType
-          .map((item: any) => item.name)
-          .join(",\n\t");
+    conceptObjectToCopyString(
+      key: string,
+      value: any,
+      counter: number,
+      totalKeys: number
+    ): { label: string; value: string } | undefined {
+      let newString = "";
+      let returnString = "";
+      let newKey = key;
+      if (Array.isArray(value)) {
+        if (value.length) {
+          if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
+            newString = value.map(item => item.name).join(",\n\t");
+          } else if (
+            Object.prototype.hasOwnProperty.call(value[0], "property") &&
+            Object.prototype.hasOwnProperty.call(value[0].property, "name")
+          ) {
+            newString = value.map(item => item.property.name).join(",\n\t");
+          } else {
+            LoggerService.warn(
+              undefined,
+              "Uncovered object property or missing name found for key: " +
+                key +
+                " at conceptObjectToCopyString within SearchResults.vue"
+            );
+          }
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ": [\n\t" + newString + "\n]";
+          } else {
+            returnString = newKey + ": [\n\t" + newString + "\n],\n";
+          }
+        } else {
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ": [\n\t\n]";
+          } else {
+            returnString = newKey + ": [\n\t\n],\n";
+          }
+        }
+      } else if (
+        Object.prototype.toString.call(value) === "[object Object]" &&
+        Object.prototype.hasOwnProperty.call(value, "name")
+      ) {
+        newString = value.name;
+        if (counter === totalKeys - 1) {
+          returnString = newKey + ": " + newString;
+        } else {
+          returnString = newKey + ": " + newString + ",\n";
+        }
+      } else {
+        newString = value;
+        if (counter === totalKeys - 1) {
+          returnString = newKey + ": " + newString;
+        } else {
+          returnString = newKey + ": " + newString + ",\n";
+        }
       }
-      return (
-        "Name: " +
-        data.name +
-        ",\nIri: " +
-        data.iri +
-        ",\nCode: " +
-        data.code +
-        ",\nStatus: " +
-        data.status.name +
-        ",\nScheme: " +
-        data.scheme.name +
-        ",\nTypes: " +
-        "[\n\t" +
-        typesString +
-        "\n]"
-      );
+      return { label: newKey, value: returnString };
+    },
+
+    copyConceptToClipboard(data: any): string {
+      const totalKeys = Object.keys(data).length;
+      let counter = 0;
+      let returnString = "";
+      let key: string;
+      let value: any;
+      for ([key, value] of Object.entries(data)) {
+        const copyString = this.conceptObjectToCopyString(
+          key,
+          value,
+          counter,
+          totalKeys
+        );
+        if (copyString) returnString += copyString.value;
+        counter++;
+      }
+      return returnString;
     },
 
     onCopy(): void {
@@ -261,110 +314,37 @@ export default defineComponent({
                 );
               });
           }
-        },
-        {
-          label: "Name",
-          command: async () => {
-            await navigator.clipboard
-              .writeText(this.hoveredResult.name)
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Name copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy name to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Iri",
-          command: async () => {
-            await navigator.clipboard
-              .writeText(this.hoveredResult.iri)
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Iri copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy iri to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Code",
-          command: async () => {
-            await navigator.clipboard
-              .writeText(this.hoveredResult.code)
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Code copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy code to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Status",
-          command: async () => {
-            await navigator.clipboard
-              .writeText(this.hoveredResult.status.name)
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Status copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy status to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Scheme",
-          command: async () => {
-            await navigator.clipboard
-              .writeText(this.hoveredResult.scheme.name)
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Scheme copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy scheme to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Types",
-          command: async () => {
-            await navigator.clipboard
-              .writeText(this.getConceptTypes(this.hoveredResult))
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Types copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy types to clipboard", err)
-                );
-              });
-          }
         }
       ];
+
+      let key: string;
+      let value: any;
+      for ([key, value] of Object.entries(this.hoveredResult)) {
+        let result = this.conceptObjectToCopyString(key, value, 0, 1);
+        if (!result) return;
+        const label = result.label;
+        const text = result.value;
+        this.copyMenuItems.push({
+          label: label,
+          command: async () => {
+            await navigator.clipboard
+              .writeText(text)
+              .then(() => {
+                this.$toast.add(
+                  LoggerService.success(label + " copied to clipboard")
+                );
+              })
+              .catch(err => {
+                this.$toast.add(
+                  LoggerService.error(
+                    "Failed to copy " + label + " to clipboard",
+                    err
+                  )
+                );
+              });
+          }
+        });
+      }
     }
   }
 });
