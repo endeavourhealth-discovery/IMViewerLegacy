@@ -90,88 +90,43 @@ export default defineComponent({
     "conceptIri",
     "focusTree",
     "treeLocked",
-    "sideNavHierarchyFocus"
+    "sideNavHierarchyFocus",
+    "history"
   ]),
   watch: {
     async conceptIri(newValue) {
-      this.selectedKey = {};
+      await this.getConceptAggregate(newValue);
       if (!this.treeLocked) {
-        if (MODULE_IRIS.includes(newValue)) {
-          await this.getConceptAggregate(newValue);
-          this.createTree(
-            this.conceptAggregate.concept,
-            this.conceptAggregate.parents,
-            this.conceptAggregate.children
-          );
-        } else {
-          await this.getConceptAggregate(newValue);
-          this.createTree(
-            this.conceptAggregate.concept,
-            this.conceptAggregate.parents,
-            this.conceptAggregate.children
-          );
-          this.$store.commit("updateHistory", {
-            url: this.$route.fullPath,
-            conceptName: this.conceptAggregate.concept[RDFS.LABEL],
-            view: this.$route.name
-          } as HistoryItem);
-        }
+        this.selectedKey = {};
+        this.refreshTree();
       }
+      this.updateHistory();
     },
     async sideNavHierarchyFocus(newValue, oldValue) {
       if (newValue.iri !== oldValue.iri) {
-        if (MODULE_IRIS.includes(newValue)) {
-          this.selectedKey = {};
-          await this.getConceptAggregate(this.conceptIri);
-          this.createTree(
-            this.conceptAggregate.concept,
-            this.conceptAggregate.parents,
-            this.conceptAggregate.children
-          );
-        } else {
-          await this.getConceptAggregate(this.conceptIri);
-          this.createTree(
-            this.conceptAggregate.concept,
-            this.conceptAggregate.parents,
-            this.conceptAggregate.children
-          );
-          this.$store.commit("updateHistory", {
-            url: this.$route.fullPath,
-            conceptName: this.conceptAggregate.concept[RDFS.LABEL],
-            view: this.$route.name
-          } as HistoryItem);
-        }
+        this.selectedKey = {};
+        await this.getConceptAggregate(this.conceptIri);
+        this.refreshTree();
+        this.updateHistory();
       }
     },
     async focusTree(newValue) {
       if (newValue === true) {
         await this.getConceptAggregate(this.conceptIri);
-        this.refreshTree(
-          this.conceptAggregate.concept,
-          this.conceptAggregate.parents,
-          this.conceptAggregate.children
-        );
+        this.refreshTree();
         this.$store.commit("updateFocusTree", false);
         this.$emit("showTree");
       }
     },
     active(newValue, oldValue) {
       if (!this.treeLocked && newValue === 0 && oldValue !== 0) {
-        this.refreshTree(
-          this.conceptAggregate.concept,
-          this.conceptAggregate.parents,
-          this.conceptAggregate.children
-        );
+        this.refreshTree();
       }
     },
     async treeLocked(newValue) {
       if (!newValue) {
         await this.getConceptAggregate(this.conceptIri);
-        this.refreshTree(
-          this.conceptAggregate.concept,
-          this.conceptAggregate.parents,
-          this.conceptAggregate.children
-        );
+        this.refreshTree();
       }
     }
   },
@@ -187,20 +142,19 @@ export default defineComponent({
   },
   async mounted() {
     await this.getConceptAggregate(this.conceptIri);
-    this.createTree(
-      this.conceptAggregate.concept,
-      this.conceptAggregate.parents,
-      this.conceptAggregate.children
-    );
-    if (!MODULE_IRIS.includes(this.conceptAggregate.concept[IM.IRI])) {
-      this.$store.commit("updateHistory", {
-        url: this.$route.fullPath,
-        conceptName: this.conceptAggregate.concept[RDFS.LABEL],
-        view: this.$route.name
-      } as HistoryItem);
-    }
+    this.refreshTree();
+    this.updateHistory();
   },
   methods: {
+    updateHistory() {
+      if (!MODULE_IRIS.includes(this.conceptIri)) {
+        this.$store.commit("updateHistory", {
+          url: this.$route.fullPath,
+          conceptName: this.conceptAggregate.concept[RDFS.LABEL],
+          view: this.$route.name
+        } as HistoryItem);
+      }
+    },
     async getConceptAggregate(iri: string) {
       await Promise.all([
         EntityService.getPartialEntity(iri, [
@@ -225,11 +179,11 @@ export default defineComponent({
         );
       });
     },
-    createTree(concept: any, parentHierarchy: any, children: any): void {
-      this.refreshTree(concept, parentHierarchy, children);
-    },
 
-    refreshTree(concept: any, parentHierarchy: any, children: any): void {
+    refreshTree(): void {
+      const concept = this.conceptAggregate.concept;
+      const parentHierarchy = this.conceptAggregate.parents;
+      const children = this.conceptAggregate.children;
       this.expandedKeys = {};
       const selectedConcept = this.createTreeNode(
         concept[RDFS.LABEL],
@@ -389,11 +343,7 @@ export default defineComponent({
       this.$emit("showTree");
       this.$store.commit("updateConceptIri", this.sideNavHierarchyFocus.iri);
       await this.getConceptAggregate(this.conceptIri);
-      this.createTree(
-        this.conceptAggregate.concept,
-        this.conceptAggregate.parents,
-        this.conceptAggregate.children
-      );
+      this.refreshTree();
       this.$router.push({ name: "Dashboard" });
     },
 
