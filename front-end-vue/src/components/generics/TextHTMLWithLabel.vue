@@ -52,6 +52,7 @@ export default defineComponent({
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;
+  padding: 0.25rem 0.5rem 0 0;
 }
 
 .label {
