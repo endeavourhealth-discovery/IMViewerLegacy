@@ -86,11 +86,12 @@
 </template>
 
 <script lang="ts">
-import { ConceptReference } from "@/models/ConceptReference";
 import EntityService from "@/services/EntityService";
 import { defineComponent } from "@vue/runtime-core";
 import Dropdown from "primevue/dropdown";
 import Card from "primevue/card";
+import LoggerService from "@/services/LoggerService";
+import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
   name: "FormEditor",
@@ -114,8 +115,24 @@ export default defineComponent({
     };
   },
   async mounted() {
-    this.schemeOptions = (await EntityService.getNamespaces()).data;
-    this.statusOptions = (await EntityService.getEntityChildren("http://endhealth.info/im#Status")).data
+    await EntityService.getNamespaces()
+      .then(res => {
+        this.schemeOptions = res.data;
+      })
+      .catch(err => {
+        this.$toast.add(
+          LoggerService.error("Failed to get scheme options from server", err)
+        );
+      });
+    await EntityService.getEntityChildren(IM.STATUS)
+      .then(res => {
+        this.statusOptions = res.data;
+      })
+      .catch(err => {
+        this.$toast.add(
+          LoggerService.error("Failed to get status options from server", err)
+        );
+      });
   },
   methods: {}
 });
