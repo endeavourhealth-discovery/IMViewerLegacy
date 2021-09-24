@@ -9,10 +9,13 @@ import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
 
 export function isOfTypes(conceptTypeElements: ConceptReference[], ...types: string[]): boolean {
+  if (!conceptTypeElements || !conceptTypeElements.length) {
+    return false;
+  }
   let found = false;
   let index = 0;
   while (!found && index < types.length) {
-    if (conceptTypeElements?.some((e: any) => e.iri === types[index] || e[IM.IRI] === types[index])) {
+    if (conceptTypeElements.some((e: any) => e.iri === types[index] || e[IM.IRI] === types[index])) {
       found = true;
     }
     index++;
