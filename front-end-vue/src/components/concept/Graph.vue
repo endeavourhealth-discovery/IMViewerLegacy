@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container"
-    v-if="loading"
-  >
+  <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container" v-if="loading">
     <ProgressSpinner />
   </div>
   <OrganizationChart v-else :value="graph" :collapsible="true">
@@ -106,12 +103,7 @@ export default defineComponent({
           this.graph = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get entity graph data from server",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Failed to get entity graph data from server", err));
         });
       this.loading = false;
     },

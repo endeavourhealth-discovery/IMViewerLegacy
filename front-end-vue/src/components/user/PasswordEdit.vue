@@ -1,8 +1,6 @@
 <template>
   <div v-if="currentUser" class="p-d-flex p-flex-row p-ai-center">
-    <Card
-      class="p-d-flex p-flex-column p-jc-sm-around p-ai-center password-edit-card"
-    >
+    <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center password-edit-card">
       <template #header>
         <img
           id="user-icon"
@@ -18,18 +16,10 @@
         Change password
       </template>
       <template #content>
-        <div
-          class="p-fluid p-d-flex p-flex-column p-jc-start password-edit-form"
-        >
+        <div class="p-fluid p-d-flex p-flex-column p-jc-start password-edit-form">
           <div v-if="currentUser.username" class="p-field">
             <label for="userName">Username</label>
-            <InputText
-              class="p-text-capitalize"
-              id="username"
-              type="text"
-              :value="currentUser.username"
-              disabled
-            />
+            <InputText class="p-text-capitalize" id="username" type="text" :value="currentUser.username" disabled />
           </div>
           <div class="p-field">
             <label for="passwordOld">Current password</label>
@@ -37,67 +27,34 @@
           </div>
           <div class="p-field">
             <label for="passwordNew1">New password</label>
-            <InputText
-              id="passwordNew1"
-              type="password"
-              v-model="passwordNew1"
-            />
-            <InlineMessage
-              v-if="passwordStrength === 'strong'"
-              severity="success"
-            >
+            <InputText id="passwordNew1" type="password" v-model="passwordNew1" />
+            <InlineMessage v-if="passwordStrength === 'strong'" severity="success">
               Password strength: Strong
             </InlineMessage>
-            <InlineMessage
-              v-if="passwordStrength === 'medium'"
-              severity="success"
-            >
+            <InlineMessage v-if="passwordStrength === 'medium'" severity="success">
               Password strength: Medium
             </InlineMessage>
             <InlineMessage v-if="passwordStrength === 'weak'" severity="warn">
               Password strength: Weak
             </InlineMessage>
-            <InlineMessage
-              v-if="passwordStrength === 'fail' && passwordNew1 !== ''"
-              severity="error"
-            >
+            <InlineMessage v-if="passwordStrength === 'fail' && passwordNew1 !== ''" severity="error">
               Invalid password
             </InlineMessage>
             <small id="password-help">
-              Password must be a minimum length of 8 characters. Improve
-              password strength with a mixture of UPPERCASE, lowercase, numbers
-              and special characters [!@#$%^&*].
+              Password must be a minimum length of 8 characters. Improve password strength with a mixture of UPPERCASE, lowercase, numbers and special
+              characters [!@#$%^&*].
             </small>
           </div>
           <div class="p-field">
             <label for="passwordNew2">Confirm new password</label>
-            <InputText
-              id="passwordNew2"
-              type="password"
-              v-model="passwordNew2"
-              v-on:blur="setShowPassword2Message"
-              @keyup="checkKey"
-            />
+            <InputText id="passwordNew2" type="password" v-model="passwordNew2" v-on:blur="setShowPassword2Message" @keyup="checkKey" />
             <InlineMessage v-if="showPassword2Message" severity="error">
               New passwords do not match!
             </InlineMessage>
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
-            <Button
-              v-if="setButtonDisabled()"
-              class="user-edit"
-              type="submit"
-              label="Change password"
-              disabled
-              v-on:click.prevent="handleEditSubmit"
-            />
-            <Button
-              v-else
-              class="user-edit"
-              type="submit"
-              label="Change password"
-              v-on:click.prevent="handleEditSubmit"
-            />
+            <Button v-if="setButtonDisabled()" class="user-edit" type="submit" label="Change password" disabled v-on:click.prevent="handleEditSubmit" />
+            <Button v-else class="user-edit" type="submit" label="Change password" v-on:click.prevent="handleEditSubmit" />
           </div>
         </div>
       </template>
@@ -107,10 +64,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import {
-  verifyPasswordsMatch,
-  checkPasswordStrength
-} from "@/helpers/UserMethods";
+import { verifyPasswordsMatch, checkPasswordStrength } from "@/helpers/UserMethods";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 import { mapState } from "vuex";
 import Swal from "sweetalert2";
@@ -154,25 +108,23 @@ export default defineComponent({
         this.passwordStrengthOld !== PasswordStrength.fail &&
         this.passwordDifferentFromOriginal()
       ) {
-        AuthService.changePassword(this.passwordOld, this.passwordNew1).then(
-          res => {
-            if (res.status === 200) {
-              Swal.fire({
-                icon: "success",
-                title: "Success",
-                text: "Password successfully updated"
-              }).then(() => {
-                this.$router.push({ name: "Home" });
-              });
-            } else {
-              Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: res.message
-              });
-            }
+        AuthService.changePassword(this.passwordOld, this.passwordNew1).then(res => {
+          if (res.status === 200) {
+            Swal.fire({
+              icon: "success",
+              title: "Success",
+              text: "Password successfully updated"
+            }).then(() => {
+              this.$router.push({ name: "Home" });
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: res.message
+            });
           }
-        );
+        });
       } else if (!this.passwordDifferentFromOriginal()) {
         Swal.fire({
           icon: "error",
@@ -183,8 +135,7 @@ export default defineComponent({
         Swal.fire({
           icon: "error",
           title: "Error",
-          text:
-            "Error updating password. Authentication error or new passwords do not match."
+          text: "Error updating password. Authentication error or new passwords do not match."
         });
       }
     },
@@ -204,11 +155,7 @@ export default defineComponent({
     },
 
     setButtonDisabled(): boolean {
-      if (
-        this.passwordStrength !== PasswordStrength.fail &&
-        this.passwordsMatch &&
-        this.passwordOld !== ""
-      ) {
+      if (this.passwordStrength !== PasswordStrength.fail && this.passwordsMatch && this.passwordOld !== "") {
         return false;
       } else {
         return true;

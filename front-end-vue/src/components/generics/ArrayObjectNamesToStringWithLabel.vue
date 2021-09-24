@@ -23,12 +23,8 @@ export default defineComponent({
         this.data &&
         Array.isArray(this.data) &&
         this.data.length &&
-        this.data.every(
-          item => Object.prototype.toString.call(item) === "[object Object]"
-        ) &&
-        this.data.every(item =>
-          Object.prototype.hasOwnProperty.call(item, "name")
-        )
+        this.data.every(item => Object.prototype.toString.call(item) === "[object Object]") &&
+        this.data.every(item => Object.prototype.hasOwnProperty.call(item, "name"))
       ) {
         return this.data
           .map(function(item: any) {

@@ -8,18 +8,11 @@ import { IM } from "@/vocabulary/IM";
 import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
 
-export function isOfTypes(
-  conceptTypeElements: ConceptReference[],
-  ...types: string[]
-): boolean {
+export function isOfTypes(conceptTypeElements: ConceptReference[], ...types: string[]): boolean {
   let found = false;
   let index = 0;
   while (!found && index < types.length) {
-    if (
-      conceptTypeElements?.some(
-        (e: any) => e.iri === types[index] || e[IM.IRI] === types[index]
-      )
-    ) {
+    if (conceptTypeElements?.some((e: any) => e.iri === types[index] || e[IM.IRI] === types[index])) {
       found = true;
     }
     index++;
@@ -28,13 +21,7 @@ export function isOfTypes(
 }
 
 export function isValueSet(conceptTypes: ConceptReference[]): boolean {
-  return isOfTypes(
-    conceptTypes,
-    IM.SET,
-    IM.QUERY_SET,
-    IM.VALUE_SET,
-    IM.CONCEPT_SET
-  );
+  return isOfTypes(conceptTypes, IM.SET, IM.QUERY_SET, IM.VALUE_SET, IM.CONCEPT_SET);
 }
 
 export function getIconFromType(conceptTypes: ConceptReference[]): string {

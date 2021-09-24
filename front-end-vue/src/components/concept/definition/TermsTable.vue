@@ -16,13 +16,7 @@
         }"
       />
     </div>
-    <DataTable
-      :value="data"
-      :paginator="data.length > 5 ? true : false"
-      :rows="5"
-      id="term-codes-table"
-      class="p-d-none"
-    >
+    <DataTable :value="data" :paginator="data.length > 5 ? true : false" :rows="5" id="term-codes-table" class="p-d-none">
       <template #empty>
         No records found
       </template>
@@ -62,9 +56,7 @@ export default defineComponent({
   },
   methods: {
     setButtonExpanded() {
-      this.buttonExpanded
-        ? (this.buttonExpanded = false)
-        : (this.buttonExpanded = true);
+      this.buttonExpanded ? (this.buttonExpanded = false) : (this.buttonExpanded = true);
     }
   }
 });

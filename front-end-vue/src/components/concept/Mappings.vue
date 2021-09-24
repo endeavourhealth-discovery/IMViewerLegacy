@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container"
-    v-if="$store.state.loading.get('mappings')"
-  >
+  <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container" v-if="$store.state.loading.get('mappings')">
     <ProgressSpinner />
   </div>
   <OrganizationChart v-else :value="data">
@@ -43,10 +40,7 @@
       </table>
     </template>
     <template #simpleMapsList="slotProps">
-      <SimpleMaps
-        v-if="slotProps.node.data.mapItems.length"
-        :data="slotProps.node.data.mapItems"
-      />
+      <SimpleMaps v-if="slotProps.node.data.mapItems.length" :data="slotProps.node.data.mapItems" />
       <span v-else>None</span>
     </template>
     <template #default>
@@ -131,12 +125,7 @@ export default defineComponent({
           this.data = {};
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get concept complex maps from server",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Failed to get concept complex maps from server", err));
           this.mappings = [];
           this.data = {};
         });
@@ -146,9 +135,7 @@ export default defineComponent({
           this.namespaces = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get namespaces from server", err)
-          );
+          this.$toast.add(LoggerService.error("Failed to get namespaces from server", err));
         });
 
       await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO])
@@ -156,10 +143,7 @@ export default defineComponent({
           this.simpleMaps = res.data[IM.MATCHED_TO] || [];
           if (this.simpleMaps.length && this.namespaces) {
             this.simpleMaps.forEach((mapItem: any) => {
-              const found = this.namespaces.find(
-                (namespace: any) =>
-                  namespace.iri === mapItem["@id"].split("#")[0] + "#"
-              );
+              const found = this.namespaces.find((namespace: any) => namespace.iri === mapItem["@id"].split("#")[0] + "#");
               if (found) {
                 mapItem.scheme = found.name;
               } else {
@@ -170,12 +154,7 @@ export default defineComponent({
           }
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get concept simple maps from server",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Failed to get concept simple maps from server", err));
           this.simpleMaps = [];
         });
     },
@@ -241,11 +220,7 @@ export default defineComponent({
       }
     },
 
-    generateChildNodes(
-      mapObject: any,
-      location: string,
-      positionInLevel: number
-    ) {
+    generateChildNodes(mapObject: any, location: string, positionInLevel: number) {
       if (Object.keys(mapObject[0]).includes(IM.MAPPED_TO)) {
         const mappedList = [] as any;
         mapObject.forEach((item: any) => {
@@ -256,29 +231,14 @@ export default defineComponent({
             assuranceLevel: item[IM.ASSURANCE_LEVEL].name
           });
         });
-        return [
-          this.createChartTableNode(
-            mappedList.sort(this.byPriority),
-            location,
-            positionInLevel,
-            "childList"
-          )
-        ];
+        return [this.createChartTableNode(mappedList.sort(this.byPriority), location, positionInLevel, "childList")];
       } else {
         const results = [];
         let count = 0;
         for (const item of mapObject) {
-          let mapNode = this.createChartMapNode(
-            Object.keys(item)[0],
-            location,
-            count
-          );
+          let mapNode = this.createChartMapNode(Object.keys(item)[0], location, count);
           if (mapNode) {
-            mapNode.children = this.generateChildNodes(
-              item[Object.keys(item)[0]],
-              location + "_" + count,
-              0
-            );
+            mapNode.children = this.generateChildNodes(item[Object.keys(item)[0]], location + "_" + count, 0);
           }
           results.push(mapNode);
           count++;
@@ -294,21 +254,14 @@ export default defineComponent({
         data: { label: "Has map" },
         children: [] as any
       };
-      if (
-        (!mappingObject.length || !Object.keys(mappingObject).length) &&
-        !this.simpleMaps.length
-      ) {
+      if ((!mappingObject.length || !Object.keys(mappingObject).length) && !this.simpleMaps.length) {
         return [];
       }
       if (mappingObject.length && Object.keys(mappingObject).length) {
         parentNode.children = this.generateChildNodes(mappingObject, "0", 0);
       }
       if (this.simpleMaps.length) {
-        const simpleMapsChildren = this.generateSimpleMapsNodes(
-          this.simpleMaps,
-          "0_" + parentNode.children.length,
-          0
-        );
+        const simpleMapsChildren = this.generateSimpleMapsNodes(this.simpleMaps, "0_" + parentNode.children.length, 0);
         parentNode.children.push({
           key: "0_" + parentNode.children.length,
           type: "simpleMaps",
@@ -319,20 +272,9 @@ export default defineComponent({
       return parentNode;
     },
 
-    generateSimpleMapsNodes(
-      simpleMaps: any,
-      location: string,
-      positionInLevel: number
-    ) {
+    generateSimpleMapsNodes(simpleMaps: any, location: string, positionInLevel: number) {
       if (!Array.isArray(simpleMaps) || !simpleMaps.length) {
-        return [
-          this.createChartTableNode(
-            [],
-            location,
-            positionInLevel,
-            "simpleMapsList"
-          )
-        ];
+        return [this.createChartTableNode([], location, positionInLevel, "simpleMapsList")];
       }
       const simpleMapsList = [] as any;
       simpleMaps.forEach((mapItem: any) => {
@@ -343,29 +285,13 @@ export default defineComponent({
           code: mapItem.code
         });
       });
-      return [
-        this.createChartTableNode(
-          simpleMapsList.sort(this.byScheme),
-          location,
-          positionInLevel,
-          "simpleMapsList"
-        )
-      ];
+      return [this.createChartTableNode(simpleMapsList.sort(this.byScheme), location, positionInLevel, "simpleMapsList")];
     },
 
     getSimpleMapsNamespaces() {
-      if (
-        this.simpleMaps &&
-        this.simpleMaps.length &&
-        this.namespaces &&
-        this.namespaces.length
-      ) {
+      if (this.simpleMaps && this.simpleMaps.length && this.namespaces && this.namespaces.length) {
         this.simpleMaps.forEach((mapItem: any) => {
-          const found = this.namespaces.find(
-            (namespace: any) =>
-              namespace.iri.toLowerCase() ===
-              (mapItem["@id"].split("#")[0] + "#").toLowerCase()
-          );
+          const found = this.namespaces.find((namespace: any) => namespace.iri.toLowerCase() === (mapItem["@id"].split("#")[0] + "#").toLowerCase());
           if (found && Object.prototype.hasOwnProperty.call(found, "name")) {
             mapItem.scheme = found.name;
           } else {

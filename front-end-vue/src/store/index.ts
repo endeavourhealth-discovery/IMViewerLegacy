@@ -22,9 +22,7 @@ export default createStore({
     currentUser: {} as User,
     registeredUsername: "" as string,
     isLoggedIn: false as boolean,
-    snomedLicenseAccepted: localStorage.getItem(
-      "snomedLicenseAccepted"
-    ) as string,
+    snomedLicenseAccepted: localStorage.getItem("snomedLicenseAccepted") as string,
     historyCount: 0 as number,
     focusTree: false as boolean,
     treeLocked: true as boolean,
@@ -131,10 +129,7 @@ export default createStore({
     }
   },
   actions: {
-    async fetchSearchResults(
-      { commit },
-      data: { searchRequest: SearchRequest; cancelToken: any }
-    ) {
+    async fetchSearchResults({ commit }, data: { searchRequest: SearchRequest; cancelToken: any }) {
       let searchResults: any;
       let success = "true";
       await EntityService.advancedSearch(data.searchRequest, data.cancelToken)
@@ -172,9 +167,7 @@ export default createStore({
         if (res.status === 200 && res.user) {
           commit("updateIsLoggedIn", true);
           const loggedInUser = res.user;
-          const foundAvatar = avatars.find(
-            avatar => avatar.value === loggedInUser.avatar.value
-          );
+          const foundAvatar = avatars.find(avatar => avatar.value === loggedInUser.avatar.value);
           if (!foundAvatar) {
             loggedInUser.avatar = avatars[0];
           }

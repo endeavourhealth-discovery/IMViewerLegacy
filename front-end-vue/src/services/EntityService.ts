@@ -4,10 +4,7 @@ import { ConceptNode } from "@/models/ConceptNode";
 import { IM } from "@/vocabulary/IM";
 
 export default class EntityService {
-  public static async getPartialEntity(
-    iri: string,
-    predicates: string[]
-  ): Promise<AxiosResponse<any>> {
+  public static async getPartialEntity(iri: string, predicates: string[]): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/partial", {
       params: {
         iri: iri,
@@ -18,10 +15,7 @@ export default class EntityService {
 
   static api = process.env.VUE_APP_API;
 
-  public static async advancedSearch(
-    request: SearchRequest,
-    cancelToken: CancelToken
-  ): Promise<AxiosResponse<any>> {
+  public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<AxiosResponse<any>> {
     return axios.post(this.api + "api/entity/search", request, {
       cancelToken: cancelToken
     });
@@ -33,17 +27,13 @@ export default class EntityService {
     });
   }
 
-  public static async getEntityDefinitionDto(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
+  public static async getEntityDefinitionDto(iri: string): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/definition", {
       params: { iri: iri }
     });
   }
 
-  public static async getEntityImLang(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
+  public static async getEntityImLang(iri: string): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity", {
       params: { iri: iri },
       headers: {
@@ -53,29 +43,20 @@ export default class EntityService {
     });
   }
 
-  public static async getEntityParents(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
+  public static async getEntityParents(iri: string): Promise<AxiosResponse<any>> {
     return axios.get<ConceptNode[]>(this.api + "api/entity/parents", {
       params: { iri: iri }
     });
   }
 
-  public static async getEntityChildren(
-    iri: string,
-    cancelToken?: CancelToken
-  ): Promise<AxiosResponse<any>> {
+  public static async getEntityChildren(iri: string, cancelToken?: CancelToken): Promise<AxiosResponse<any>> {
     return axios.get<ConceptNode[]>(this.api + "api/entity/children", {
       params: { iri: iri },
       cancelToken: cancelToken
     });
   }
 
-  public static async getEntityUsages(
-    iri: string,
-    pageIndex: number,
-    pageSize: number
-  ): Promise<AxiosResponse<any>> {
+  public static async getEntityUsages(iri: string, pageIndex: number, pageSize: number): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/usages", {
       params: {
         iri: iri,
@@ -85,9 +66,7 @@ export default class EntityService {
     });
   }
 
-  public static async getUsagesTotalRecords(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
+  public static async getUsagesTotalRecords(iri: string): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/usagesTotalRecords", {
       params: {
         iri: iri
@@ -95,12 +74,7 @@ export default class EntityService {
     });
   }
 
-  public static async getEntityMembers(
-    iri: string,
-    expandMembers?: boolean,
-    expandSubsets?: boolean,
-    limit?: number
-  ): Promise<AxiosResponse<any>> {
+  public static async getEntityMembers(iri: string, expandMembers?: boolean, expandSubsets?: boolean, limit?: number): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/members", {
       params: {
         iri: iri,
@@ -129,17 +103,13 @@ export default class EntityService {
     });
   }
 
-  public static getSemanticProperties(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
+  public static getSemanticProperties(iri: string): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/semanticProperties", {
       params: { iri: iri }
     });
   }
 
-  public static getDataModelProperties(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
+  public static getDataModelProperties(iri: string): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/dataModelProperties", {
       params: { iri: iri }
     });

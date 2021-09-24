@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center"
-    v-if="loading"
-  >
+  <div class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center" v-if="loading">
     <ProgressSpinner />
   </div>
   <PickList
@@ -48,47 +45,26 @@ export default defineComponent({
   data() {
     return {
       members: JSON.parse(JSON.stringify(this.updatedMembers)),
-      data: [
-        JSON.parse(JSON.stringify(this.updatedMembers.included)),
-        JSON.parse(JSON.stringify(this.updatedMembers.excluded))
-      ] as any,
+      data: [JSON.parse(JSON.stringify(this.updatedMembers.included)), JSON.parse(JSON.stringify(this.updatedMembers.excluded))] as any,
       listHeight: "",
       loading: false
     };
   },
   methods: {
     setListHeight(): void {
-      const container = document.getElementById(
-        "member-editor-container"
-      ) as HTMLElement;
-      const pickListHeader = container.getElementsByClassName(
-        "p-picklist-header"
-      )[0] as HTMLElement;
+      const container = document.getElementById("member-editor-container") as HTMLElement;
+      const pickListHeader = container.getElementsByClassName("p-picklist-header")[0] as HTMLElement;
       if (container && pickListHeader) {
-        const optimumHeight =
-          container.getBoundingClientRect().height -
-          pickListHeader.getBoundingClientRect().height -
-          4;
-        this.listHeight =
-          "height: " +
-          optimumHeight +
-          "px; max-height: " +
-          optimumHeight +
-          "px;";
+        const optimumHeight = container.getBoundingClientRect().height - pickListHeader.getBoundingClientRect().height - 4;
+        this.listHeight = "height: " + optimumHeight + "px; max-height: " + optimumHeight + "px;";
       }
       this.removeOrderButtons();
     },
 
     removeOrderButtons(): void {
-      const container = document.getElementById(
-        "member-editor-container"
-      ) as HTMLElement;
-      const sourceOrderButtons = container.getElementsByClassName(
-        "p-picklist-source-controls"
-      )[0] as HTMLElement;
-      const targetOrderButtons = document.getElementsByClassName(
-        "p-picklist-target-controls"
-      )[0] as HTMLElement;
+      const container = document.getElementById("member-editor-container") as HTMLElement;
+      const sourceOrderButtons = container.getElementsByClassName("p-picklist-source-controls")[0] as HTMLElement;
+      const targetOrderButtons = document.getElementsByClassName("p-picklist-target-controls")[0] as HTMLElement;
       if (sourceOrderButtons) {
         sourceOrderButtons.remove();
       }

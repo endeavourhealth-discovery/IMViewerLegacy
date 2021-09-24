@@ -1,24 +1,8 @@
 <template>
-  <div
-    class="p-d-flex p-flex-column p-jc-start"
-    id="hierarchy-tree-bar-container"
-  >
-    <div
-      class="p-d-flex p-flex-row p-jc-start p-ai-center"
-      id="hierarchy-selected-bar"
-    >
-      <Button
-        :label="parentLabel"
-        :disabled="parentLabel === ''"
-        icon="pi pi-chevron-up"
-        @click="expandParents"
-        class="p-button-text p-button-plain"
-      />
-      <Button
-        icon="pi pi-home"
-        @click="resetConcept"
-        class="p-button-rounded p-button-text p-button-plain"
-      >
+  <div class="p-d-flex p-flex-column p-jc-start" id="hierarchy-tree-bar-container">
+    <div class="p-d-flex p-flex-row p-jc-start p-ai-center" id="hierarchy-selected-bar">
+      <Button :label="parentLabel" :disabled="parentLabel === ''" icon="pi pi-chevron-up" @click="expandParents" class="p-button-text p-button-plain" />
+      <Button icon="pi pi-home" @click="resetConcept" class="p-button-rounded p-button-text p-button-plain">
         <i class="fas fa-home" aria-hidden="true"></i>
       </Button>
       <Button
@@ -51,11 +35,7 @@
       <template #default="slotProps">
         <div class="tree-row">
           <span v-if="!slotProps.node.loading">
-            <i
-              :class="'fas fa-fw ' + slotProps.node.typeIcon"
-              :style="'color:' + slotProps.node.color"
-              aria-hidden="true"
-            />
+            <i :class="'fas fa-fw ' + slotProps.node.typeIcon" :style="'color:' + slotProps.node.color" aria-hidden="true" />
           </span>
           <ProgressSpinner v-if="slotProps.node.loading" />
           <span>{{ slotProps.node.label }}</span>
@@ -74,10 +54,7 @@ import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";
 import { IM } from "@/vocabulary/IM";
 import LoggerService from "@/services/LoggerService";
-import {
-  getColourFromType,
-  getIconFromType
-} from "@/helpers/ConceptTypeMethods";
+import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
 
@@ -86,13 +63,7 @@ export default defineComponent({
   components: {},
   props: ["active"],
   emits: ["showTree"],
-  computed: mapState([
-    "conceptIri",
-    "focusTree",
-    "treeLocked",
-    "sideNavHierarchyFocus",
-    "history"
-  ]),
+  computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus", "history"]),
   watch: {
     async conceptIri(newValue) {
       await this.getConceptAggregate(newValue);
@@ -157,11 +128,7 @@ export default defineComponent({
     },
     async getConceptAggregate(iri: string) {
       await Promise.all([
-        EntityService.getPartialEntity(iri, [
-          RDFS.LABEL,
-          RDFS.COMMENT,
-          RDF.TYPE
-        ]).then(res => {
+        EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]).then(res => {
           this.conceptAggregate.concept = res.data;
         }),
         EntityService.getEntityParents(iri).then(res => {
@@ -171,12 +138,7 @@ export default defineComponent({
           this.conceptAggregate.children = res.data;
         })
       ]).catch(err => {
-        this.$toast.add(
-          LoggerService.error(
-            "Hierarchy tree concept aggregate fetch failed",
-            err
-          )
-        );
+        this.$toast.add(LoggerService.error("Hierarchy tree concept aggregate fetch failed", err));
       });
     },
 
@@ -185,24 +147,10 @@ export default defineComponent({
       const parentHierarchy = this.conceptAggregate.parents;
       const children = this.conceptAggregate.children;
       this.expandedKeys = {};
-      const selectedConcept = this.createTreeNode(
-        concept[RDFS.LABEL],
-        concept[IM.IRI],
-        concept[RDF.TYPE],
-        concept[RDFS.LABEL],
-        concept.hasChildren
-      );
+      const selectedConcept = this.createTreeNode(concept[RDFS.LABEL], concept[IM.IRI], concept[RDF.TYPE], concept[RDFS.LABEL], concept.hasChildren);
 
       children.forEach((child: any) => {
-        selectedConcept.children.push(
-          this.createTreeNode(
-            child.name,
-            child["@id"],
-            child.type,
-            child.name,
-            child.hasChildren
-          )
-        );
+        selectedConcept.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.name, child.hasChildren));
       });
       this.root = [];
 
@@ -215,13 +163,7 @@ export default defineComponent({
       this.selectedKey[selectedConcept.key] = true;
     },
 
-    createTreeNode(
-      conceptName: any,
-      conceptIri: any,
-      conceptTypes: any,
-      level: any,
-      hasChildren: boolean
-    ): TreeNode {
+    createTreeNode(conceptName: any, conceptIri: any, conceptTypes: any, level: any, hasChildren: boolean): TreeNode {
       return {
         key: level,
         label: conceptName,
@@ -254,22 +196,12 @@ export default defineComponent({
           children = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Concept children server request failed", err)
-          );
+          this.$toast.add(LoggerService.error("Concept children server request failed", err));
         });
 
       children.forEach((child: any) => {
         if (!this.containsChild(node.children, child)) {
-          node.children.push(
-            this.createTreeNode(
-              child.name,
-              child["@id"],
-              child.type,
-              child.name,
-              child.hasChildren
-            )
-          );
+          node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.name, child.hasChildren));
         }
       });
       node.loading = false;
@@ -291,15 +223,7 @@ export default defineComponent({
         .then(async res => {
           parents = res.data;
           parents.forEach((parent: any) => {
-            parentsNodes.push(
-              this.createTreeNode(
-                parent.name,
-                parent["@id"],
-                parent.type,
-                parent.name,
-                true
-              )
-            );
+            parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, parent.name, true));
           });
 
           parentsNodes.forEach((parentNode: TreeNode) => {
@@ -318,20 +242,13 @@ export default defineComponent({
               }
             })
             .catch(err => {
-              this.$toast.add(
-                LoggerService.error(
-                  "Concept parents server request 2 failed",
-                  err
-                )
-              );
+              this.$toast.add(LoggerService.error("Concept parents server request 2 failed", err));
             });
           // this refreshes the keys so they start open if children and parents were both expanded
           this.expandedKeys = { ...this.expandedKeys };
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Concept parents server request 1 failed", err)
-          );
+          this.$toast.add(LoggerService.error("Concept parents server request 1 failed", err));
         });
     },
 

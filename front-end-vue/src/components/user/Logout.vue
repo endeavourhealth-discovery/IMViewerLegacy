@@ -13,10 +13,7 @@
             <div class="p-text-left">Current User:</div>
           </div>
           <div class="p-field">
-            <div
-              v-if="isLoggedIn"
-              class="p-d-flex p-flex-row p-ai-center p-text-capitalize"
-            >
+            <div v-if="isLoggedIn" class="p-d-flex p-flex-row p-ai-center p-text-capitalize">
               <img
                 v-if="isLoggedIn"
                 id="user-icon"
@@ -34,12 +31,7 @@
             </div>
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
-            <Button
-              class="user-submit"
-              type="submit"
-              label="Logout"
-              v-on:click.prevent="handleSubmit"
-            />
+            <Button class="user-submit" type="submit" label="Logout" v-on:click.prevent="handleSubmit" />
           </div>
         </div>
       </template>

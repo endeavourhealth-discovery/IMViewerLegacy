@@ -1,12 +1,6 @@
 <template>
-  <div
-    class="p-d-flex p-flex-column p-jc-start"
-    id="secondary-tree-bar-container"
-  >
-    <div
-      id="alternate-parents-container"
-      class="p-d-flex p-flex-column p-jc-start p-ai-start"
-    >
+  <div class="p-d-flex p-flex-column p-jc-start" id="secondary-tree-bar-container">
+    <div id="alternate-parents-container" class="p-d-flex p-flex-column p-jc-start p-ai-start">
       <Button
         v-for="altParent in alternateParents"
         :key="altParent['@id']"
@@ -36,17 +30,9 @@
       class="tree-root"
     >
       <template #default="slotProps">
-        <div
-          class="tree-row"
-          @mouseover="showPopup($event, slotProps.node)"
-          @mouseleave="hidePopup($event)"
-        >
+        <div class="tree-row" @mouseover="showPopup($event, slotProps.node)" @mouseleave="hidePopup($event)">
           <span v-if="!slotProps.node.loading">
-            <i
-              :class="'fas fa-fw' + slotProps.node.typeIcon"
-              :style="'color:' + slotProps.node.color"
-              aria-hidden="true"
-            />
+            <i :class="'fas fa-fw' + slotProps.node.typeIcon" :style="'color:' + slotProps.node.color" aria-hidden="true" />
           </span>
           <ProgressSpinner v-if="slotProps.node.loading" />
           <span>{{ slotProps.node.label }}</span>
@@ -54,17 +40,8 @@
       </template>
     </Tree>
 
-    <OverlayPanel
-      ref="altTreeOP"
-      id="secondary_tree_overlay_panel"
-      style="width: 700px"
-      :breakpoints="{ '960px': '75vw' }"
-    >
-      <div
-        v-if="hoveredResult.name"
-        class="p-d-flex p-flex-row p-jc-start result-overlay"
-        style="width: 100%; gap: 7px;"
-      >
+    <OverlayPanel ref="altTreeOP" id="secondary_tree_overlay_panel" style="width: 700px" :breakpoints="{ '960px': '75vw' }">
+      <div v-if="hoveredResult.name" class="p-d-flex p-flex-row p-jc-start result-overlay" style="width: 100%; gap: 7px;">
         <div class="left-side" style="width: 50%;">
           <p>
             <strong>Name: </strong>
@@ -99,10 +76,7 @@
 </template>
 
 <script lang="ts">
-import {
-  getIconFromType,
-  getColourFromType
-} from "@/helpers/ConceptTypeMethods";
+import { getIconFromType, getColourFromType } from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
 import EntityService from "@/services/EntityService";
 import { IM } from "@/vocabulary/IM";
@@ -121,12 +95,7 @@ export default defineComponent({
       this.alternateParents = [];
       this.expandedKeys = {};
       await this.getConceptAggregate(newValue);
-      this.createTree(
-        this.conceptAggregate.concept,
-        this.conceptAggregate.parents,
-        this.conceptAggregate.children,
-        this.parentPosition
-      );
+      this.createTree(this.conceptAggregate.concept, this.conceptAggregate.parents, this.conceptAggregate.children, this.parentPosition);
     }
   },
   data() {
@@ -152,12 +121,7 @@ export default defineComponent({
   },
   async mounted() {
     await this.getConceptAggregate(this.conceptIri);
-    this.createTree(
-      this.conceptAggregate.concept,
-      this.conceptAggregate.parents,
-      this.conceptAggregate.children,
-      0
-    );
+    this.createTree(this.conceptAggregate.concept, this.conceptAggregate.parents, this.conceptAggregate.children, 0);
   },
   beforeUnmount() {
     if (Object.keys(this.overlayLocation).length) {
@@ -167,11 +131,9 @@ export default defineComponent({
   methods: {
     async getConceptAggregate(iri: string): Promise<void> {
       await Promise.all([
-        EntityService.getPartialEntity(iri, [RDF.TYPE, RDFS.LABEL]).then(
-          res => {
-            this.conceptAggregate.concept = res.data;
-          }
-        ),
+        EntityService.getPartialEntity(iri, [RDF.TYPE, RDFS.LABEL]).then(res => {
+          this.conceptAggregate.concept = res.data;
+        }),
         EntityService.getEntityParents(iri).then(res => {
           this.conceptAggregate.parents = res.data;
         }),
@@ -179,48 +141,19 @@ export default defineComponent({
           this.conceptAggregate.children = res.data;
         })
       ]).catch(err => {
-        this.$toast.add(
-          LoggerService.error(
-            "Secondary tree selected concept aggregate server request failed",
-            err
-          )
-        );
+        this.$toast.add(LoggerService.error("Secondary tree selected concept aggregate server request failed", err));
       });
     },
 
-    async createTree(
-      concept: any,
-      parentHierarchy: any,
-      children: any,
-      parentPosition: number
-    ): Promise<void> {
-      const selectedConcept = this.createTreeNode(
-        concept[RDFS.LABEL],
-        concept[IM.IRI],
-        concept[RDF.TYPE],
-        concept[RDFS.LABEL],
-        concept.hasChildren
-      );
+    async createTree(concept: any, parentHierarchy: any, children: any, parentPosition: number): Promise<void> {
+      const selectedConcept = this.createTreeNode(concept[RDFS.LABEL], concept[IM.IRI], concept[RDF.TYPE], concept[RDFS.LABEL], concept.hasChildren);
       children.forEach((child: any) => {
-        selectedConcept.children.push(
-          this.createTreeNode(
-            child.name,
-            child["@id"],
-            child.type,
-            child.name,
-            child.hasChildren
-          )
-        );
+        selectedConcept.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.name, child.hasChildren));
       });
       this.root = [];
       this.setParents(parentHierarchy, parentPosition);
       this.root.push(selectedConcept);
-      if (
-        !Object.prototype.hasOwnProperty.call(
-          this.expandedKeys,
-          selectedConcept.key
-        )
-      ) {
+      if (!Object.prototype.hasOwnProperty.call(this.expandedKeys, selectedConcept.key)) {
         this.expandedKeys[selectedConcept.key] = true;
       }
       this.selectedKey[selectedConcept.key] = true;
@@ -258,13 +191,7 @@ export default defineComponent({
       }
     },
 
-    createTreeNode(
-      conceptName: any,
-      conceptIri: any,
-      conceptTypes: any,
-      level: any,
-      hasChildren: boolean
-    ): TreeNode {
+    createTreeNode(conceptName: any, conceptIri: any, conceptTypes: any, level: any, hasChildren: boolean): TreeNode {
       const node: TreeNode = {
         key: level,
         label: conceptName,
@@ -289,25 +216,12 @@ export default defineComponent({
           children = res.data;
           children.forEach((child: any) => {
             if (!this.containsChild(node.children, child)) {
-              node.children.push(
-                this.createTreeNode(
-                  child.name,
-                  child["@id"],
-                  child.type,
-                  child.name,
-                  child.hasChildren
-                )
-              );
+              node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.name, child.hasChildren));
             }
           });
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Concept children server request failed. Concept child failed to expand.",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Concept children server request failed. Concept child failed to expand.", err));
         });
       node.loading = false;
     },
@@ -321,12 +235,7 @@ export default defineComponent({
 
     async expandParents(parentPosition: number): Promise<void> {
       if (!this.root || !this.root.length) return;
-      if (
-        !Object.prototype.hasOwnProperty.call(
-          this.expandedKeys,
-          this.root[0].key
-        )
-      ) {
+      if (!Object.prototype.hasOwnProperty.call(this.expandedKeys, this.root[0].key)) {
         this.expandedKeys[this.root[0].key] = true;
       }
 
@@ -334,10 +243,7 @@ export default defineComponent({
       await EntityService.getEntityParents(this.root[0].data)
         .then(async res => {
           parents = res.data;
-          const parentNode = this.createExpandedParentTree(
-            parents,
-            parentPosition
-          );
+          const parentNode = this.createExpandedParentTree(parents, parentPosition);
           this.root = [];
           this.root.push(parentNode);
           await this.setExpandedParentParents();
@@ -345,12 +251,7 @@ export default defineComponent({
           this.expandedKeys = { ...this.expandedKeys };
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Concept parents server request failed during parent expand stage 1",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Concept parents server request failed during parent expand stage 1", err));
         });
     },
 
@@ -358,20 +259,9 @@ export default defineComponent({
       let parentNode = {} as TreeNode;
       for (let i = 0; i < parents.length; i++) {
         if (i === parentPosition) {
-          parentNode = this.createTreeNode(
-            parents[i].name,
-            parents[i]["@id"],
-            parents[i].type,
-            parents[i].name,
-            true
-          );
+          parentNode = this.createTreeNode(parents[i].name, parents[i]["@id"], parents[i].type, parents[i].name, true);
           parentNode.children.push(this.root[0]);
-          if (
-            !Object.prototype.hasOwnProperty.call(
-              this.expandedKeys,
-              parentNode.key
-            )
-          ) {
+          if (!Object.prototype.hasOwnProperty.call(this.expandedKeys, parentNode.key)) {
             this.expandedKeys[parentNode.key] = true;
           }
         }
@@ -414,12 +304,7 @@ export default defineComponent({
           }
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Concept parents server request failed during parent expand stage 2",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Concept parents server request failed during parent expand stage 2", err));
         });
     },
 

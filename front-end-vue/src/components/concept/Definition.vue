@@ -2,14 +2,7 @@
   <div class="content-container">
     <div class="summary-container">
       <template v-for="(config, index) in configs" :key="index">
-        <component
-          :is="config.type"
-          :label="config.label"
-          :data="concept[config.predicate]"
-          :size="config.size"
-          :id="config.type + index"
-        >
-        </component>
+        <component :is="config.type" :label="config.label" :data="concept[config.predicate]" :size="config.size" :id="config.type + index"> </component>
       </template>
     </div>
   </div>

@@ -7,42 +7,21 @@
   </div>
   <div class="p-field">
     <span class="p-float-label">
-      <MultiSelect
-        id="status"
-        v-model="selectedStatus"
-        @change="checkForSearch"
-        :options="statusOptions"
-        optionLabel="name"
-        display="chip"
-      />
+      <MultiSelect id="status" v-model="selectedStatus" @change="checkForSearch" :options="statusOptions" optionLabel="name" display="chip" />
       <label for="status">Select status:</label>
     </span>
   </div>
 
   <div class="p-field">
     <span class="p-float-label">
-      <MultiSelect
-        id="scheme"
-        v-model="selectedSchemes"
-        @change="checkForSearch"
-        :options="schemeOptions"
-        optionLabel="name"
-        display="chip"
-      />
+      <MultiSelect id="scheme" v-model="selectedSchemes" @change="checkForSearch" :options="schemeOptions" optionLabel="name" display="chip" />
       <label for="scheme">Select scheme:</label>
     </span>
   </div>
 
   <div class="p-field">
     <span class="p-float-label">
-      <MultiSelect
-        id="conceptType"
-        v-model="selectedTypes"
-        @change="checkForSearch"
-        :options="typeOptions"
-        optionLabel="name"
-        display="chip"
-      />
+      <MultiSelect id="conceptType" v-model="selectedTypes" @change="checkForSearch" :options="typeOptions" optionLabel="name" display="chip" />
       <label for="scheme">Select concept type:</label>
     </span>
   </div>
@@ -59,11 +38,7 @@ export default defineComponent({
   name: "Filters",
   components: {},
   props: ["search"],
-  computed: mapState([
-    "filterOptions",
-    "selectedFilters",
-    "quickFiltersStatus"
-  ]),
+  computed: mapState(["filterOptions", "selectedFilters", "quickFiltersStatus"]),
   watch: {
     includeLegacy(newValue) {
       this.setLegacy(newValue);
@@ -110,20 +85,10 @@ export default defineComponent({
     },
 
     setDefaults() {
-      if (
-        !this.selectedFilters.status.length &&
-        !this.selectedFilters.schemes.length &&
-        !this.selectedFilters.types.length
-      ) {
-        this.selectedStatus = this.statusOptions.filter(item =>
-          this.configs.statusOptions.includes(item.name)
-        );
-        this.selectedSchemes = this.schemeOptions.filter(item =>
-          this.configs.schemeOptions.includes(item.name)
-        );
-        this.selectedTypes = this.typeOptions.filter(item =>
-          this.configs.typeOptions.includes(item.name)
-        );
+      if (!this.selectedFilters.status.length && !this.selectedFilters.schemes.length && !this.selectedFilters.types.length) {
+        this.selectedStatus = this.statusOptions.filter(item => this.configs.statusOptions.includes(item.name));
+        this.selectedSchemes = this.schemeOptions.filter(item => this.configs.schemeOptions.includes(item.name));
+        this.selectedTypes = this.typeOptions.filter(item => this.configs.typeOptions.includes(item.name));
         this.updateStoreSelectedFilters();
       } else {
         this.selectedStatus = this.selectedFilters.status;
@@ -150,9 +115,7 @@ export default defineComponent({
           this.configs = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get filter configs from server", err)
-          );
+          this.$toast.add(LoggerService.error("Failed to get filter configs from server", err));
         });
 
       await EntityService.getNamespaces()
@@ -160,12 +123,7 @@ export default defineComponent({
           this.schemeOptions = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get scheme filter options from server",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Failed to get scheme filter options from server", err));
         });
 
       await EntityService.getEntityChildren("http://endhealth.info/im#Status")
@@ -173,41 +131,23 @@ export default defineComponent({
           this.statusOptions = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get status filter options from server",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Failed to get status filter options from server", err));
         });
 
-      await EntityService.getEntityChildren(
-        "http://endhealth.info/im#ModellingEntityType"
-      )
+      await EntityService.getEntityChildren("http://endhealth.info/im#ModellingEntityType")
         .then(res => {
           this.typeOptions = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get type filter options from server",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Failed to get type filter options from server", err));
         });
     },
 
     setLegacy(include: boolean) {
-      const emisScheme = this.selectedSchemes.findIndex(
-        scheme => scheme.iri === "http://endhealth.info/emis#"
-      );
+      const emisScheme = this.selectedSchemes.findIndex(scheme => scheme.iri === "http://endhealth.info/emis#");
       if (include) {
         if (emisScheme === -1) {
-          this.selectedSchemes.push(
-            this.schemeOptions.find(
-              scheme => scheme.iri === "http://endhealth.info/emis#"
-            )
-          );
+          this.selectedSchemes.push(this.schemeOptions.find(scheme => scheme.iri === "http://endhealth.info/emis#"));
         }
       } else {
         if (emisScheme > -1) {

@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center"
-    v-if="loading"
-  >
+  <div class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center" v-if="loading">
     <ProgressSpinner />
   </div>
   <Card v-if="!loading">
@@ -10,73 +7,43 @@
       <div class="p-fluid editor-grid">
         <div class="p-field float-label-container iri">
           <span class="p-float-label">
-            <InputText
-              class="p-inputtext-lg"
-              v-model="conceptDto.iri"
-              type="text"
-            />
+            <InputText class="p-inputtext-lg" v-model="conceptDto.iri" type="text" />
             <label for="Iri">Iri</label>
           </span>
         </div>
         <div class="p-field float-label-container name">
           <span class="p-float-label">
-            <InputText
-              class="p-inputtext-lg"
-              v-model="conceptDto.name"
-              type="text"
-            />
+            <InputText class="p-inputtext-lg" v-model="conceptDto.name" type="text" />
             <label for="Name">Name</label>
           </span>
         </div>
         <div class="p-field float-label-container code">
           <span class="p-float-label">
-            <InputText
-              class="p-inputtext-lg"
-              v-model="conceptDto.code"
-              type="text"
-            />
+            <InputText class="p-inputtext-lg" v-model="conceptDto.code" type="text" />
             <label for="Code">Code</label>
           </span>
         </div>
         <div class="p-field float-label-container description">
           <span class="p-float-label">
-            <Textarea
-              class="p-inputtext-lg"
-              v-model="conceptDto.description"
-              rows="4"
-            />
+            <Textarea class="p-inputtext-lg" v-model="conceptDto.description" rows="4" />
             <label for="address">Description</label>
           </span>
         </div>
         <div class="p-field float-label-container version">
           <span class="p-float-label">
-            <InputText
-              class="p-inputtext-lg"
-              v-model="conceptDto.version"
-              type="text"
-            />
+            <InputText class="p-inputtext-lg" v-model="conceptDto.version" type="text" />
             <label for="Version">Version</label>
           </span>
         </div>
         <div class="p-field float-label-container status">
           <span class="p-float-label">
-            <Dropdown
-              class="p-inputtext-lg"
-              v-model="conceptDto.status"
-              :options="statusOptions"
-            />
+            <Dropdown class="p-inputtext-lg" v-model="conceptDto.status" :options="statusOptions" />
             <label>Status</label>
           </span>
         </div>
         <div class="p-field float-label-container scheme">
           <span class="p-float-label">
-            <Dropdown
-              class="p-inputtext-lg"
-              v-model="conceptDto.scheme"
-              optionValue="name"
-              :options="schemeOptions"
-              optionLabel="name"
-            />
+            <Dropdown class="p-inputtext-lg" v-model="conceptDto.scheme" optionValue="name" :options="schemeOptions" optionLabel="name" />
             <label>Scheme</label>
           </span>
         </div>
@@ -120,18 +87,14 @@ export default defineComponent({
         this.schemeOptions = res.data;
       })
       .catch(err => {
-        this.$toast.add(
-          LoggerService.error("Failed to get scheme options from server", err)
-        );
+        this.$toast.add(LoggerService.error("Failed to get scheme options from server", err));
       });
     await EntityService.getEntityChildren(IM.STATUS)
       .then(res => {
         this.statusOptions = res.data;
       })
       .catch(err => {
-        this.$toast.add(
-          LoggerService.error("Failed to get status options from server", err)
-        );
+        this.$toast.add(LoggerService.error("Failed to get status options from server", err));
       });
   },
   methods: {}

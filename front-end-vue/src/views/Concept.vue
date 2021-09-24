@@ -6,11 +6,7 @@
     <Panel>
       <template #icons>
         <div class="icons-container">
-          <button
-            class="p-panel-header-icon p-link p-mr-2"
-            @click="focusTree"
-            v-tooltip.left="'Focus hierarchy tree to this concept'"
-          >
+          <button class="p-panel-header-icon p-link p-mr-2" @click="focusTree" v-tooltip.left="'Focus hierarchy tree to this concept'">
             <i class="fas fa-sitemap" aria-hidden="true"></i>
           </button>
           <div
@@ -27,18 +23,12 @@
               v-clipboard:copy="copyConceptToClipboard()"
               v-clipboard:success="onCopy"
               v-clipboard:error="onCopyError"
-              v-tooltip="
-                'Copy concept to clipboard \n (right click to copy individual properties)'
-              "
+              v-tooltip="'Copy concept to clipboard \n (right click to copy individual properties)'"
               @contextmenu="onCopyRightClick"
             />
             <ContextMenu ref="copyMenu" :model="copyMenuItems" />
           </div>
-          <button
-            class="p-panel-header-icon p-link p-mr-2"
-            @click="openDownloadDialog"
-            v-tooltip.bottom="'Download concept'"
-          >
+          <button class="p-panel-header-icon p-link p-mr-2" @click="openDownloadDialog" v-tooltip.bottom="'Download concept'">
             <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
           </button>
           <!--<button
@@ -64,75 +54,41 @@
         <div id="concept-panel-container">
           <TabView v-model:activeIndex="active" :lazy="true">
             <TabPanel header="Definition">
-              <div
-                v-if="loading"
-                class="loading-container"
-                :style="contentHeight"
-              >
+              <div v-if="loading" class="loading-container" :style="contentHeight">
                 <ProgressSpinner />
               </div>
-              <div
-                v-else
-                class="concept-panel-content"
-                id="definition-container"
-                :style="contentHeight"
-              >
+              <div v-else class="concept-panel-content" id="definition-container" :style="contentHeight">
                 <Definition :concept="concept" :configs="configs" />
               </div>
             </TabPanel>
             <TabPanel header="Maps" v-if="showMappings">
-              <div
-                class="concept-panel-content"
-                id="mappings-container"
-                :style="contentHeight"
-              >
+              <div class="concept-panel-content" id="mappings-container" :style="contentHeight">
                 <Mappings :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Used in">
-              <div
-                class="concept-panel-content"
-                id="usedin-container"
-                :style="contentHeight"
-              >
+              <div class="concept-panel-content" id="usedin-container" :style="contentHeight">
                 <UsedIn :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Graph" v-if="showGraph">
-              <div
-                class="concept-panel-content"
-                id="graph-container"
-                :style="contentHeight"
-              >
+              <div class="concept-panel-content" id="graph-container" :style="contentHeight">
                 <Graph :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Members" v-if="isSet">
-              <div
-                class="concept-panel-content"
-                id="members-container"
-                :style="contentHeight"
-              >
+              <div class="concept-panel-content" id="members-container" :style="contentHeight">
                 <Members :conceptIri="conceptIri" @memberClick="active = 0" />
               </div>
             </TabPanel>
             <TabPanel header="Hierarchy position">
-              <div
-                class="concept-panel-content"
-                id="secondary-tree-container"
-                :style="contentHeight"
-              >
+              <div class="concept-panel-content" id="secondary-tree-container" :style="contentHeight">
                 <SecondaryTree :conceptIri="conceptIri" />
               </div>
             </TabPanel>
           </TabView>
         </div>
-        <DownloadDialog
-          v-if="showDownloadDialog"
-          @closeDownloadDialog="closeDownloadDialog"
-          :showDialog="showDownloadDialog"
-          :conceptIri="conceptIri"
-        />
+        <DownloadDialog v-if="showDownloadDialog" @closeDownloadDialog="closeDownloadDialog" :showDialog="showDownloadDialog" :conceptIri="conceptIri" />
       </div>
     </Panel>
   </div>
@@ -182,10 +138,7 @@ export default defineComponent({
     },
 
     showMappings(): boolean {
-      return (
-        isOfTypes(this.types, OWL.CLASS) &&
-        !isOfTypes(this.types, SHACL.NODESHAPE)
-      );
+      return isOfTypes(this.types, OWL.CLASS) && !isOfTypes(this.types, SHACL.NODESHAPE);
     },
 
     isClass(): boolean {
@@ -208,12 +161,7 @@ export default defineComponent({
       return isOfTypes(this.types, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY);
     },
 
-    ...mapState([
-      "conceptIri",
-      "selectedEntityType",
-      "conceptActivePanel",
-      "activeModule"
-    ])
+    ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel", "activeModule"])
   },
   watch: {
     async conceptIri() {
@@ -291,12 +239,7 @@ export default defineComponent({
           }
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get concept partial entity from server.",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Failed to get concept partial entity from server.", err));
         });
 
       await EntityService.getEntityChildren(iri)
@@ -304,9 +247,7 @@ export default defineComponent({
           this.concept["subtypes"] = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get subtypes from server.", err)
-          );
+          this.$toast.add(LoggerService.error("Failed to get subtypes from server.", err));
         });
 
       await EntityService.getEntityTermCodes(iri)
@@ -314,9 +255,7 @@ export default defineComponent({
           this.concept["termCodes"] = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get terms from server", err)
-          );
+          this.$toast.add(LoggerService.error("Failed to get terms from server", err));
         });
     },
 
@@ -326,12 +265,7 @@ export default defineComponent({
           this.concept["semanticProperties"] = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get semantic properties from server",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Failed to get semantic properties from server", err));
         });
 
       await EntityService.getDataModelProperties(iri)
@@ -339,12 +273,7 @@ export default defineComponent({
           this.concept["dataModelProperties"] = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get data model properties from server",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Failed to get data model properties from server", err));
         });
     },
 
@@ -352,9 +281,7 @@ export default defineComponent({
       await EntityService.getAxioms(iri)
         .then(res => {
           this.axiomObject = res.data;
-          if (
-            Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")
-          ) {
+          if (Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")) {
             const predicateCount = Object.keys(this.axiomObject.entity)
               .filter(key => key !== RDF.TYPE)
               .filter(key => key !== RDFS.COMMENT)
@@ -367,9 +294,7 @@ export default defineComponent({
           }
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get axioms from server", err)
-          );
+          this.$toast.add(LoggerService.error("Failed to get axioms from server", err));
         });
     },
 
@@ -382,9 +307,7 @@ export default defineComponent({
           });
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get config data from server", err)
-          );
+          this.$toast.add(LoggerService.error("Failed to get config data from server", err));
         });
     },
 
@@ -394,9 +317,7 @@ export default defineComponent({
       await this.getConcept(this.conceptIri);
       await this.getProperties(this.conceptIri);
       await this.getAxioms(this.conceptIri);
-      this.types = Object.prototype.hasOwnProperty.call(this.concept, RDF.TYPE)
-        ? this.concept[RDF.TYPE]
-        : [];
+      this.types = Object.prototype.hasOwnProperty.call(this.concept, RDF.TYPE) ? this.concept[RDF.TYPE] : [];
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
       this.setStoreType();
@@ -435,37 +356,19 @@ export default defineComponent({
     },
 
     setContentHeight(): void {
-      const container = document.getElementById(
-        "concept-main-container"
-      ) as HTMLElement;
-      const header = container?.getElementsByClassName(
-        "p-panel-header"
-      )[0] as HTMLElement;
-      const nav = container?.getElementsByClassName(
-        "p-tabview-nav"
-      )[0] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
+      const container = document.getElementById("concept-main-container") as HTMLElement;
+      const header = container?.getElementsByClassName("p-panel-header")[0] as HTMLElement;
+      const nav = container?.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
+      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
       if (header && container && nav && currentFontSize) {
         const calcHeight =
-          container.getBoundingClientRect().height -
-          header.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
-          4 * currentFontSize -
-          1;
-        this.contentHeight =
-          "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
+          container.getBoundingClientRect().height - header.getBoundingClientRect().height - nav.getBoundingClientRect().height - 4 * currentFontSize - 1;
+        this.contentHeight = "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
         this.contentHeightValue = calcHeight;
       } else {
         this.contentHeight = "height: 800px; max-height: 800px;";
         this.contentHeightValue = 800;
-        LoggerService.error(
-          "Content sizing error",
-          "failed to get element(s) for concept content resizing"
-        );
+        LoggerService.error("Content sizing error", "failed to get element(s) for concept content resizing");
       }
     },
 
@@ -477,17 +380,10 @@ export default defineComponent({
       this.showDownloadDialog = false;
     },
 
-    conceptObjectToCopyString(
-      key: string,
-      value: any,
-      counter: number,
-      totalKeys: number
-    ): { label: string; value: string } | undefined {
+    conceptObjectToCopyString(key: string, value: any, counter: number, totalKeys: number): { label: string; value: string } | undefined {
       let newString = "";
       let returnString = "";
-      const label = this.configs.find(
-        (config: any) => config.predicate === key
-      );
+      const label = this.configs.find((config: any) => config.predicate === key);
       if (!label) {
         return;
       }
@@ -496,17 +392,12 @@ export default defineComponent({
         if (value.length) {
           if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
             newString = value.map(item => item.name).join(",\n\t");
-          } else if (
-            Object.prototype.hasOwnProperty.call(value[0], "property") &&
-            Object.prototype.hasOwnProperty.call(value[0].property, "name")
-          ) {
+          } else if (Object.prototype.hasOwnProperty.call(value[0], "property") && Object.prototype.hasOwnProperty.call(value[0].property, "name")) {
             newString = value.map(item => item.property.name).join(",\n\t");
           } else {
             LoggerService.warn(
               undefined,
-              "Uncovered object property or missing name found for key: " +
-                key +
-                " at conceptObjectToCopyString within Concept.vue"
+              "Uncovered object property or missing name found for key: " + key + " at conceptObjectToCopyString within Concept.vue"
             );
           }
           if (counter === totalKeys - 1) {
@@ -521,20 +412,14 @@ export default defineComponent({
             returnString = newKey + ": [\n\t\n],\n";
           }
         }
-      } else if (
-        Object.prototype.toString.call(value) === "[object Object]" &&
-        Object.prototype.hasOwnProperty.call(value, "name")
-      ) {
+      } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "name")) {
         newString = value.name;
         if (counter === totalKeys - 1) {
           returnString = newKey + ": " + newString;
         } else {
           returnString = newKey + ": " + newString + ",\n";
         }
-      } else if (
-        Object.prototype.toString.call(value) === "[object Object]" &&
-        Object.prototype.hasOwnProperty.call(value, "axiomString")
-      ) {
+      } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "axiomString")) {
         newString = value.axiomString;
         if (counter === totalKeys - 1) {
           returnString = newKey + ': "\n' + newString + '\n"';
@@ -542,9 +427,7 @@ export default defineComponent({
           returnString = newKey + ': "\n' + newString + '\n",\n';
         }
       } else if (typeof value === "string") {
-        newString = value
-          .replace(/\n/g, "\n\t")
-          .replace(/<p>/g, "\n\t") as string;
+        newString = value.replace(/\n/g, "\n\t").replace(/<p>/g, "\n\t") as string;
         if (counter === totalKeys - 1) {
           returnString = newKey + ": " + newString;
         } else {
@@ -563,12 +446,7 @@ export default defineComponent({
       let key: string;
       let value: any;
       for ([key, value] of Object.entries(this.concept)) {
-        const copyString = this.conceptObjectToCopyString(
-          key,
-          value,
-          counter,
-          totalKeys
-        );
+        const copyString = this.conceptObjectToCopyString(key, value, counter, totalKeys);
         if (copyString) returnString += copyString.value;
         counter++;
       }
@@ -603,17 +481,10 @@ export default defineComponent({
             await navigator.clipboard
               .writeText(this.copyConceptToClipboard())
               .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Concept copied to clipboard")
-                );
+                this.$toast.add(LoggerService.success("Concept copied to clipboard"));
               })
               .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy concept to clipboard",
-                    err
-                  )
-                );
+                this.$toast.add(LoggerService.error("Failed to copy concept to clipboard", err));
               });
           }
         }
@@ -632,17 +503,10 @@ export default defineComponent({
             await navigator.clipboard
               .writeText(text)
               .then(() => {
-                this.$toast.add(
-                  LoggerService.success(label + " copied to clipboard")
-                );
+                this.$toast.add(LoggerService.success(label + " copied to clipboard"));
               })
               .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy " + label + " to clipboard",
-                    err
-                  )
-                );
+                this.$toast.add(LoggerService.error("Failed to copy " + label + " to clipboard", err));
               });
           }
         });
@@ -707,14 +571,9 @@ export default defineComponent({
           if (Object.prototype.hasOwnProperty.call(child, OWL.ON_PROPERTY)) {
             childString += " on property " + child[OWL.ON_PROPERTY].name;
           }
-          if (
-            Object.prototype.hasOwnProperty.call(child, OWL.SOME_VALUES_FROM)
-          ) {
+          if (Object.prototype.hasOwnProperty.call(child, OWL.SOME_VALUES_FROM)) {
             childString += "\n" + "    ".repeat(depth + 1) + "Some values from";
-            childString += this.processAxiom(
-              child[OWL.SOME_VALUES_FROM],
-              depth + 1
-            );
+            childString += this.processAxiom(child[OWL.SOME_VALUES_FROM], depth + 1);
           }
         }
       }

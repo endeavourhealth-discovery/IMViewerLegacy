@@ -31,10 +31,7 @@ export default defineComponent({
     size: { type: String }
   },
   mounted() {
-    if (
-      Object.prototype.hasOwnProperty.call(this.data, "axiomString") &&
-      this.data.axiomString.length
-    ) {
+    if (Object.prototype.hasOwnProperty.call(this.data, "axiomString") && this.data.axiomString.length) {
       this.axiomString = this.data.axiomString;
     }
     if (Object.prototype.hasOwnProperty.call(this.data, "count")) {
@@ -50,9 +47,7 @@ export default defineComponent({
   },
   methods: {
     setButtonExpanded() {
-      this.buttonExpanded
-        ? (this.buttonExpanded = false)
-        : (this.buttonExpanded = true);
+      this.buttonExpanded ? (this.buttonExpanded = false) : (this.buttonExpanded = true);
     }
   }
 });

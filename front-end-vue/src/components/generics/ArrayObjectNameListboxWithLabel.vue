@@ -55,12 +55,8 @@ export default defineComponent({
       if (
         Array.isArray(this.data) &&
         this.data.length &&
-        this.data.every(
-          item => Object.prototype.toString.call(item) === "[object Object]"
-        ) &&
-        this.data.every(item =>
-          Object.prototype.hasOwnProperty.call(item, "name")
-        )
+        this.data.every(item => Object.prototype.toString.call(item) === "[object Object]") &&
+        this.data.every(item => Object.prototype.hasOwnProperty.call(item, "name"))
       ) {
         return true;
       } else if (Array.isArray(this.data) && this.data.length === 0) {
@@ -91,9 +87,7 @@ export default defineComponent({
     },
 
     setButtonExpanded() {
-      this.buttonExpanded
-        ? (this.buttonExpanded = false)
-        : (this.buttonExpanded = true);
+      this.buttonExpanded ? (this.buttonExpanded = false) : (this.buttonExpanded = true);
     }
   }
 });

@@ -13,11 +13,7 @@
       />
     </span>
 
-    <TabView
-      class="p-d-flex p-flex-column p-jc-start"
-      id="side-menu"
-      v-model:activeIndex="active"
-    >
+    <TabView class="p-d-flex p-flex-column p-jc-start" id="side-menu" v-model:activeIndex="active">
       <TabPanel>
         <template #header>
           <i class="fas fa-sitemap icon-header" aria-hidden="true" />
@@ -31,9 +27,7 @@
           <span>Search results</span>
         </template>
 
-        <div
-          class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container"
-        >
+        <div class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container">
           <SearchResults />
           <Filters :search="search" />
         </div>
@@ -110,9 +104,7 @@ export default defineComponent({
         searchRequest.sortBy = SortBy.Usage;
         searchRequest.page = 1;
         searchRequest.size = 100;
-        searchRequest.schemeFilter = this.selectedFilters.schemes.map(
-          (scheme: any) => scheme.iri
-        );
+        searchRequest.schemeFilter = this.selectedFilters.schemes.map((scheme: any) => scheme.iri);
 
         searchRequest.statusFilter = [];
         this.selectedFilters.status.forEach((status: any) => {
@@ -139,9 +131,7 @@ export default defineComponent({
                 key: "searchResults",
                 value: false
               });
-              this.$toast.add(
-                LoggerService.error("Search results server request failed")
-              );
+              this.$toast.add(LoggerService.error("Search results server request failed"));
             } else {
               this.$store.commit("updateLoading", {
                 key: "searchResults",
@@ -165,22 +155,16 @@ export default defineComponent({
       this.windowHeight = window.innerHeight;
       this.windowWidth = window.innerWidth;
       const html = document.documentElement;
-      const currentFontSize = parseFloat(
-        window.getComputedStyle(html, null).getPropertyValue("font-size")
-      );
+      const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
       const sidebar = document.getElementById("side-bar") as HTMLElement;
       if (sidebar) {
-        sidebar.style.maxHeight =
-          this.windowHeight - currentFontSize * 2 + "px";
+        sidebar.style.maxHeight = this.windowHeight - currentFontSize * 2 + "px";
       }
       const fixedSidebar = document.getElementById("side-bar") as HTMLElement;
       const searchBar = document.getElementById("search-bar") as HTMLElement;
       const sideMenu = document.getElementById("side-menu") as HTMLElement;
       if (searchBar && fixedSidebar && sideMenu) {
-        sideMenu.style.maxHeight =
-          fixedSidebar.getBoundingClientRect().height -
-          searchBar.getBoundingClientRect().height +
-          "px";
+        sideMenu.style.maxHeight = fixedSidebar.getBoundingClientRect().height - searchBar.getBoundingClientRect().height + "px";
       }
     }
   }

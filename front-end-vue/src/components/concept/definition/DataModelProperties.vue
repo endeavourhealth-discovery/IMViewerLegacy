@@ -16,13 +16,7 @@
         }"
       />
     </div>
-    <DataTable
-      :value="data"
-      :paginator="data.length > 5 ? true : false"
-      :rows="5"
-      id="datamodel-properties-table"
-      class="p-d-none"
-    >
+    <DataTable :value="data" :paginator="data.length > 5 ? true : false" :rows="5" id="datamodel-properties-table" class="p-d-none">
       <template #empty>
         No records found
       </template>
@@ -43,17 +37,9 @@
           </div>
         </template>
       </Column>
-      <Column
-        field="inheritedFrom.name"
-        header="Inherited From"
-        :sortable="true"
-      >
+      <Column field="inheritedFrom.name" header="Inherited From" :sortable="true">
         <template #body="slotProps">
-          <div
-            v-if="slotProps.data.inheritedFrom?.name"
-            class="link"
-            @click="navigate(slotProps.data.inheritedFrom?.['@id'])"
-          >
+          <div v-if="slotProps.data.inheritedFrom?.name" class="link" @click="navigate(slotProps.data.inheritedFrom?.['@id'])">
             {{ slotProps.data.inheritedFrom?.name }}
           </div>
           <div v-else>-</div>
@@ -63,12 +49,8 @@
         <template #body="slotProps">
           <div v-if="slotProps.data">
             {{
-              `${slotProps.data.minExclusive ||
-                slotProps.data.minInclusive ||
-                0} :
-              ${slotProps.data.maxExclusive ||
-                slotProps.data.maxInclusive ||
-                "*"}`
+              `${slotProps.data.minExclusive || slotProps.data.minInclusive || 0} :
+              ${slotProps.data.maxExclusive || slotProps.data.maxInclusive || "*"}`
             }}
           </div>
           <div v-else>-</div>
@@ -105,9 +87,7 @@ export default defineComponent({
     },
 
     setButtonExpanded() {
-      this.buttonExpanded
-        ? (this.buttonExpanded = false)
-        : (this.buttonExpanded = true);
+      this.buttonExpanded ? (this.buttonExpanded = false) : (this.buttonExpanded = true);
     }
   }
 });

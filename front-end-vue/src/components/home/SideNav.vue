@@ -1,17 +1,9 @@
 <template>
   <transition name="layout-sidebar">
     <div class="layout-sidebar layout-sidebar-dark">
-      <div
-        id="sidebar"
-        class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center"
-      >
+      <div id="sidebar" class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center">
         <div>
-          <img
-            class="im-logo"
-            src="../../assets/logos/Logo-object-empty.png"
-            alt="IM logo"
-            @click="resetToHome"
-          />
+          <img class="im-logo" src="../../assets/logos/Logo-object-empty.png" alt="IM logo" @click="resetToHome" />
         </div>
 
         <div id="center-icons" style="color: grey">
@@ -22,25 +14,13 @@
             v-bind:class="{ active: isActive(item.name) }"
             @click="handleCenterIconClick(item)"
           >
-            <font-awesome-icon
-              class="sidebutton center-icon"
-              :icon="item.icon"
-              style="padding: 5px"
-              fixed-width
-            />
+            <font-awesome-icon class="sidebutton center-icon" :icon="item.icon" style="padding: 5px" fixed-width />
             <div class="center-icon-text">{{ item.name }}</div>
           </div>
         </div>
 
         <div class="footer user-settings">
-          <span
-            v-if="!isLoggedIn"
-            id="user-icon"
-            @click="toggle"
-            aria-haspopup="true"
-            aria-controls="overlay_menu"
-            aria-hidden="true"
-          >
+          <span v-if="!isLoggedIn" id="user-icon" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" aria-hidden="true">
             <i class="fas fa-users" aria-hidden="true"></i>
           </span>
           <img
@@ -68,14 +48,7 @@ import { MODULE_IRIS } from "@/helpers/ModuleIris";
 
 export default defineComponent({
   name: "SideNav",
-  computed: mapState([
-    "currentUser",
-    "isLoggedIn",
-    "sideNavHierarchyFocus",
-    "selectedEntityType",
-    "moduleSelectedEntities",
-    "conceptIri"
-  ]),
+  computed: mapState(["currentUser", "isLoggedIn", "sideNavHierarchyFocus", "selectedEntityType", "moduleSelectedEntities", "conceptIri"]),
   emits: ["hierarchyFocusSelected"],
   watch: {
     selectedEntityType(newValue) {
@@ -254,23 +227,14 @@ export default defineComponent({
     handleCenterIconClick(item: any) {
       let route = item.route;
       let moduleIri = "";
-      if (
-        item.name === "Ontology" ||
-        item.name === "Sets" ||
-        item.name === "Queries" ||
-        item.name === "DataModel" ||
-        item.name === "Catalogue"
-      ) {
+      if (item.name === "Ontology" || item.name === "Sets" || item.name === "Queries" || item.name === "DataModel" || item.name === "Catalogue") {
         this.$store.commit("updateSideNavHierarchyFocus", {
           name: item.name,
           fullName: item.fullName,
           iri: item.iri,
           route: "Dashboard"
         });
-        this.$store.commit(
-          "updateConceptIri",
-          this.moduleSelectedEntities.get(item.name)
-        );
+        this.$store.commit("updateConceptIri", this.moduleSelectedEntities.get(item.name));
         this.$store.commit("updateActiveModule", item.name);
         if (!MODULE_IRIS.includes(this.moduleSelectedEntities.get(item.name))) {
           route = "Concept";

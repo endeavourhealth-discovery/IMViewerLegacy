@@ -6,10 +6,7 @@ export default class UprnService {
   static password = process.env.VUE_APP_UPRN_PASSWORD || "";
   static userId = process.env.VUE_APP_UPRN_USERID || "";
 
-  public static async findUprn(
-    address: string,
-    area?: string
-  ): Promise<AxiosResponse<any>> {
+  public static async findUprn(address: string, area?: string): Promise<AxiosResponse<any>> {
     const config = {
       params: { adrec: address },
       auth: {
