@@ -35,7 +35,7 @@
           class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container"
         >
           <SearchResults :searchResults="searchResults" :loading="loading" />
-          <Filters :search="search" :searchTerm="searchTerm" />
+          <Filters :search="search" />
         </div>
       </TabPanel>
       <TabPanel>
@@ -116,7 +116,7 @@ export default defineComponent({
     async search(): Promise<void> {
       if (this.searchTerm.length > 2) {
         this.loading = true;
-        this.active = 2;
+        this.active = 1;
         const searchRequest = new SearchRequest();
         searchRequest.termFilter = this.searchTerm;
         searchRequest.sortBy = SortBy.Usage;
