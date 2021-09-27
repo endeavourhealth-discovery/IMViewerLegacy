@@ -3,29 +3,13 @@
     <template #title> New predicates that will be created </template>
     <template #content>
       <div class="p-fluid p-formgrid p-grid">
-        <div class="p-field p-col-12 p-md-4">
-          <label for="graph">Graph</label>
-          <InputText id="graph" type="text" v-model="graph" />
-        </div>
-        <div class="p-field p-col-12 p-md-4">
+        <div class="p-field p-col-12 p-md-6">
           <label for="nested">Nested</label>
-          <Dropdown
-            inputId="nested"
-            v-model="nested"
-            :options="options"
-            optionLabel="name"
-            optionValue="value"
-            placeholder="Is content nested"
-          />
+          <Dropdown inputId="nested" v-model="nested" :options="options" optionLabel="name" optionValue="value" placeholder="Is content nested" />
         </div>
-        <div class="p-field p-col-12 p-md-4">
+        <div class="p-field p-col-12 p-md-6">
           <label for="nested">Map Document (Optional)</label>
-          <Dropdown
-            v-model="selectedMapDocument"
-            :options="mapDocumentOptions"
-            optionLabel="name"
-            placeholder="Choose from library"
-          />
+          <Dropdown v-model="selectedMapDocument" :options="mapDocumentOptions" optionLabel="name" placeholder="Choose from library" />
         </div>
         <div class="p-field p-col-6 p-md-6">
           <label for="contentFile">Content File</label>
@@ -87,13 +71,13 @@ export default defineComponent({
   props: {
     formObject: {
       type: Object as PropType<MappingFormObject>,
-      required: true,
-    },
+      required: true
+    }
   },
   computed: {
     isValid(): boolean {
-      return !!this.contentFile && !!this.graph && !!this.nested;
-    },
+      return !!this.contentFile && !!this.nested;
+    }
   },
   data() {
     return {
@@ -103,14 +87,13 @@ export default defineComponent({
       mapDocument: "",
       mapDocumentName: "",
       mapDocumentString: "",
-      graph: "",
       nested: "",
       selectedMapDocument: "",
       mapDocumentOptions: [] as any[],
       options: [
         { name: "Yes", value: "true" },
-        { name: "No", value: "false" },
-      ],
+        { name: "No", value: "false" }
+      ]
     };
   },
   async mounted() {
@@ -120,23 +103,18 @@ export default defineComponent({
     this.mapDocument = this.formObject.mapDocument;
     this.mapDocumentName = this.formObject.mapDocumentName;
     this.mapDocumentString = this.formObject.mapDocumentString;
-    this.graph = this.formObject.graph;
     this.nested = this.formObject.nested;
     this.selectedMapDocument = this.formObject.selectedMapDocument;
     this.mapDocumentOptions = await this.getMapDocumentOptions();
   },
   methods: {
     async getMapDocumentOptions() {
-      return (await MappingService.getMapDocuments()).map((mapDocument) => {
+      return (await MappingService.getMapDocuments()).map(mapDocument => {
         return { value: mapDocument.dbid, name: mapDocument.filename };
       });
     },
     async getSelectedMapDocumentContent() {
-      const document = (
-        await MappingService.getMapDocument(
-          (this.selectedMapDocument as any).value
-        )
-      ).document;
+      const document = (await MappingService.getMapDocument((this.selectedMapDocument as any).value)).document;
       return await new Blob([Buffer.from(document, "base64")]).text();
     },
     async convertFileToString(file: any) {
@@ -175,13 +153,12 @@ export default defineComponent({
           mapDocument: this.mapDocument,
           mapDocumentName: this.mapDocumentName,
           mapDocumentString: this.mapDocumentString,
-          graph: this.graph,
-          nested: this.nested,
+          nested: this.nested
         },
-        pageIndex: !this.mapDocument ? 0 : 1,
+        pageIndex: !this.mapDocument ? 0 : 1
       });
-    },
-  },
+    }
+  }
 });
 </script>
 

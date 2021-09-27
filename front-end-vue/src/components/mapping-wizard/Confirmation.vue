@@ -3,26 +3,16 @@
     <template #title> Confirmation </template>
     <template #content>
       <div class="p-field p-col-12">
-        <label for="class">Graph: </label>
-        <b>{{ formObject.graph ? " " + formObject.graph : " -" }} </b>
-      </div>
-      <div class="p-field p-col-12">
         <label for="Age">Nested: </label>
         <b>{{ formObject.nested ? " " + formObject.nested : " -" }}</b>
       </div>
       <div class="p-field p-col-12">
         <label for="Age">Content File: </label>
-        <b>{{
-          formObject.contentFile ? " " + formObject.contentFileName : " -"
-        }}</b>
+        <b>{{ formObject.contentFile ? " " + formObject.contentFileName : " -" }}</b>
       </div>
       <div class="p-field p-col-12">
         <label for="Age">Map Document: </label>
-        <b>{{
-          formObject.mapDocument
-            ? " " + (formObject.mapDocumentName || "newMap.ttl")
-            : " -"
-        }}</b>
+        <b>{{ formObject.mapDocument ? " " + (formObject.mapDocumentName || "newMap.ttl") : " -" }}</b>
       </div>
     </template>
     <template #footer>
@@ -34,13 +24,7 @@
 
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
     <Button label="Back" @click="prevPage" />
-    <Button
-      v-if="!complete"
-      label="Submit"
-      @click="submit"
-      :disabled="!isValid"
-      :loading="loading"
-    />
+    <Button v-if="!complete" label="Submit" @click="submit" :disabled="!isValid" :loading="loading" />
     <Button v-if="complete" label="New" @click="newMap" />
   </div>
 </template>
@@ -57,30 +41,25 @@ export default defineComponent({
   props: {
     formObject: {
       type: Object as PropType<MappingFormObject>,
-      required: true,
-    },
+      required: true
+    }
   },
   computed: {
     isValid(): boolean {
-      return (
-        !!this.formObject.contentFile &&
-        !!this.formObject.graph &&
-        !!this.formObject.nested &&
-        !!this.formObject.mapDocument
-      );
-    },
+      return !!this.formObject.contentFile && !!this.formObject.nested && !!this.formObject.mapDocument;
+    }
   },
   data() {
     return {
       loading: false,
       complete: false,
-      pageIndex: 4,
+      pageIndex: 4
     };
   },
   methods: {
     prevPage() {
       this.$emit("prev-page", {
-        pageIndex: this.pageIndex,
+        pageIndex: this.pageIndex
       });
     },
 
@@ -90,58 +69,52 @@ export default defineComponent({
           contentFile: "",
           contentFileName: "",
           contentFileType: "",
-          graph: "",
           nested: "",
           mapDocument: "",
           mapDocumentName: "",
-          mapDocumentString: "",
+          mapDocumentString: ""
         } as MappingFormObject,
-        pageIndex: -1,
+        pageIndex: -1
       });
     },
 
     async submit() {
       this.loading = true;
       MappingService.getMappedTTDocument(this.getFormData())
-        .then((response) => {
+        .then(response => {
           this.loading = false;
           this.download(response);
-          this.$toast.add(
-            LoggerService.success(
-              "Request was successful. Download should begin shortly."
-            )
-          );
+          this.$toast.add(LoggerService.success("Request was successful. Download should begin shortly."));
         })
-        .catch((error) => {
+        .catch(error => {
           this.loading = false;
-          this.$toast.add(
-            LoggerService.error("Request failed from server", error.message)
-          );
+          this.$toast.add(LoggerService.error("Request failed from server", error.message));
         });
       this.complete = true;
     },
-    download(response: any) {
-      const json = JSON.stringify(response);
-      const blob = new Blob([json], { type: "application/json" });
-      const fileURL = URL.createObjectURL(blob);
+    download(response: []) {
+      response.forEach(ttdocument => {
+        const json = JSON.stringify(ttdocument);
+        const blob = new Blob([json], { type: "application/json" });
+        const fileURL = URL.createObjectURL(blob);
 
-      const fileLink = document.createElement("a");
+        const fileLink = document.createElement("a");
 
-      fileLink.href = fileURL;
-      fileLink.setAttribute("download", this.formObject.contentFileName + "_mapped.json");
-      document.body.appendChild(fileLink);
+        fileLink.href = fileURL;
+        fileLink.setAttribute("download", `${this.formObject.contentFileName}_${ttdocument["@graph"]["@id"]}_mapped.json`);
+        document.body.appendChild(fileLink);
 
-      fileLink.click();
+        fileLink.click();
+      });
     },
     getFormData(): FormData {
       const formData = new FormData();
       formData.append("contentFile", this.formObject.contentFile);
       formData.append("mappingFile", this.formObject.mapDocument);
-      formData.append("graph", this.formObject.graph);
       formData.append("nested", this.formObject.nested);
       return formData;
-    },
-  },
+    }
+  }
 });
 </script>
 
