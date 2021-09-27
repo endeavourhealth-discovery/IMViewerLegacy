@@ -1018,7 +1018,7 @@ describe("Filters.vue ___ empty store", () => {
     });
   });
 
-  it("can setLegacy ___ false", () => {
+  it("can setLegacy ___ false ___ no emis", () => {
     wrapper.vm.setLegacy(false);
     expect(wrapper.vm.selectedSchemes).toStrictEqual([
       {
@@ -1036,7 +1036,82 @@ describe("Filters.vue ___ empty store", () => {
     expect(mockStore.commit).toHaveBeenCalledWith("updateQuickFiltersStatus", { key: "includeLegacy", value: false });
   });
 
-  it("can setLegacy ___ true", () => {
+  it("can setLegacy ___ false ___ emis", () => {
+    wrapper.vm.selectedSchemes = [
+      {
+        iri: "http://endhealth.info/im#",
+        name: "Discovery namespace",
+        prefix: "im"
+      },
+      {
+        iri: "http://snomed.info/sct#",
+        name: "Snomed-CT namespace",
+        prefix: "sn"
+      },
+      {
+        iri: "http://endhealth.info/emis#",
+        name: "EMIS (inc. Read2 like) namespace",
+        prefix: "emis"
+      }
+    ];
+    wrapper.vm.setLegacy(false);
+    expect(wrapper.vm.selectedSchemes).toStrictEqual([
+      {
+        iri: "http://endhealth.info/im#",
+        name: "Discovery namespace",
+        prefix: "im"
+      },
+      {
+        iri: "http://snomed.info/sct#",
+        name: "Snomed-CT namespace",
+        prefix: "sn"
+      }
+    ]);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateQuickFiltersStatus", { key: "includeLegacy", value: false });
+  });
+
+  it("can setLegacy ___ true ___ no emis", () => {
+    wrapper.vm.setLegacy(true);
+    expect(wrapper.vm.selectedSchemes).toStrictEqual([
+      {
+        iri: "http://endhealth.info/im#",
+        name: "Discovery namespace",
+        prefix: "im"
+      },
+      {
+        iri: "http://snomed.info/sct#",
+        name: "Snomed-CT namespace",
+        prefix: "sn"
+      },
+      {
+        iri: "http://endhealth.info/emis#",
+        name: "EMIS (inc. Read2 like) namespace",
+        prefix: "emis"
+      }
+    ]);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateQuickFiltersStatus", { key: "includeLegacy", value: true });
+  });
+
+  it("can setLegacy ___ true ___ emis", () => {
+    wrapper.vm.selectedSchemes = [
+      {
+        iri: "http://endhealth.info/im#",
+        name: "Discovery namespace",
+        prefix: "im"
+      },
+      {
+        iri: "http://snomed.info/sct#",
+        name: "Snomed-CT namespace",
+        prefix: "sn"
+      },
+      {
+        iri: "http://endhealth.info/emis#",
+        name: "EMIS (inc. Read2 like) namespace",
+        prefix: "emis"
+      }
+    ];
     wrapper.vm.setLegacy(true);
     expect(wrapper.vm.selectedSchemes).toStrictEqual([
       {
