@@ -6,10 +6,7 @@
         {{ description }}
       </template>
       <template #content>
-        <div
-          class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container"
-          v-if="$store.state.loading.get('reportPie_' + iri)"
-        >
+        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportPie_' + iri)">
           <ProgressSpinner />
         </div>
         <Chart
@@ -45,15 +42,15 @@ export default defineComponent({
       name: "" as string,
       description: "" as string,
       chartOptions: {
-        legend: {
-          position: "right",
-          onHover: function(e: any) {
-            e.target.style.cursor = "pointer";
-          }
-        },
-        hover: {
-          onHover: function(e: any) {
-            e.target.style.cursor = "default";
+        plugins: {
+          legend: {
+            position: "right",
+            onHover: function(e: any) {
+              e.native.target.style.cursor = "pointer";
+            },
+            onLeave: function(e: any) {
+              e.native.target.style.cursor = "default";
+            }
           }
         }
       } as ChartOptions,
@@ -90,11 +87,7 @@ export default defineComponent({
   },
   methods: {
     async setChartData(): Promise<void> {
-      await EntityService.getPartialEntity(this.iri, [
-        RDFS.LABEL,
-        RDFS.COMMENT,
-        IM.STATS_REPORT_ENTRY
-      ])
+      await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY])
         .then(res => {
           this.name = res.data[RDFS.LABEL];
           this.description = res.data[RDFS.COMMENT];
@@ -106,9 +99,7 @@ export default defineComponent({
           // set tooltip to use real data
           this.chartOptions["tooltips"] = setTooltips(this.realData);
           // refactor data to a minimum graph size (1%) if less than min
-          this.chartConceptTypes.datasets[0].data = rescaleData(
-            this.chartConceptTypes.datasets[0].data
-          );
+          this.chartConceptTypes.datasets[0].data = rescaleData(this.chartConceptTypes.datasets[0].data);
           this.setChartColours(res.data[IM.STATS_REPORT_ENTRY].length);
           this.$store.commit("updateLoading", {
             key: "reportPie_" + this.iri,
@@ -120,26 +111,20 @@ export default defineComponent({
             key: "reportPie_" + this.iri,
             value: false
           });
-          this.$toast.add(
-            LoggerService.error("Concept types server request failed", err)
-          );
+          this.$toast.add(LoggerService.error("Concept types server request failed", err));
         });
     },
 
     setChartColours(colourCount: number): void {
       const colours = palette("tol-rainbow", colourCount);
-      this.chartConceptTypes.datasets[0].backgroundColor = colours.map(
-        (color: string) => "#" + color + "BB"
-      );
-      this.chartConceptTypes.datasets[0].hoverBackgroundColor = colours.map(
-        (color: string) => "#" + color
-      );
+      this.chartConceptTypes.datasets[0].backgroundColor = colours.map((color: string) => "#" + color + "BB");
+      this.chartConceptTypes.datasets[0].hoverBackgroundColor = colours.map((color: string) => "#" + color);
     },
 
     setLegendOptions(): void {
       const width = window.innerWidth;
       if (width > 1750) {
-        this.chartOptions = {
+        this.chartOptions.plugins = {
           legend: {
             position: "right",
             labels: {
@@ -147,17 +132,15 @@ export default defineComponent({
               fontSize: 12
             },
             onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
+              e.native.target.style.cursor = "pointer";
+            },
+            onLeave: function(e: any) {
+              e.native.target.style.cursor = "default";
             }
           }
         };
       } else if (width > 1300) {
-        this.chartOptions = {
+        this.chartOptions.plugins = {
           legend: {
             position: "bottom",
             labels: {
@@ -165,17 +148,15 @@ export default defineComponent({
               fontSize: 10
             },
             onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
+              e.native.target.style.cursor = "pointer";
+            },
+            onLeave: function(e: any) {
+              e.native.target.style.cursor = "default";
             }
           }
         };
       } else if (width >= 1024) {
-        this.chartOptions = {
+        this.chartOptions.plugins = {
           legend: {
             position: "bottom",
             labels: {
@@ -183,17 +164,15 @@ export default defineComponent({
               fontSize: 8
             },
             onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
+              e.native.target.style.cursor = "pointer";
+            },
+            onLeave: function(e: any) {
+              e.native.target.style.cursor = "default";
             }
           }
         };
       } else if (width >= 892) {
-        this.chartOptions = {
+        this.chartOptions.plugins = {
           legend: {
             position: "right",
             labels: {
@@ -201,17 +180,15 @@ export default defineComponent({
               fontSize: 8
             },
             onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
+              e.native.target.style.cursor = "pointer";
+            },
+            onLeave: function(e: any) {
+              e.native.target.style.cursor = "default";
             }
           }
         };
       } else if (width >= 557) {
-        this.chartOptions = {
+        this.chartOptions.plugins = {
           legend: {
             position: "bottom",
             labels: {
@@ -219,17 +196,15 @@ export default defineComponent({
               fontSize: 6
             },
             onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
+              e.native.target.style.cursor = "pointer";
+            },
+            onLeave: function(e: any) {
+              e.native.target.style.cursor = "default";
             }
           }
         };
       } else if (width >= 0) {
-        this.chartOptions = {
+        this.chartOptions.plugins = {
           legend: {
             position: "bottom",
             labels: {
@@ -237,17 +212,15 @@ export default defineComponent({
               fontSize: 4
             },
             onHover: function(e: any) {
-              e.target.style.cursor = "pointer";
-            }
-          },
-          hover: {
-            onHover: function(e: any) {
-              e.target.style.cursor = "default";
+              e.native.target.style.cursor = "pointer";
+            },
+            onLeave: function(e: any) {
+              e.native.target.style.cursor = "default";
             }
           }
         };
       } else {
-        this.chartOptions = {
+        this.chartOptions.plugins = {
           legend: {
             display: false
           }

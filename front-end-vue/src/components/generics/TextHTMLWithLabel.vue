@@ -1,9 +1,8 @@
 <template>
   <div class="text-html-with-label-container" :style="{ width: size }">
     <strong class="label">{{ label }}: </strong>
-    <span v-if="!data">None</span>
-    <!-- span content injected by javascript -->
-    <div v-else class="data" :id="id"></div>
+    <span v-if="!data" class="text-html-container">None</span>
+    <div v-else class="text-html-container" v-html="convertedText" :id="id" />
   </div>
 </template>
 
@@ -42,10 +41,6 @@ export default defineComponent({
         text = text.replace(/<p>/g, "</p><p class='" + this.id + "-p'>");
         text = text.replace(/\n/g, "</p><p class='" + this.id + "-p'>");
         this.convertedText = "<p class='" + this.id + "-p'>" + text + "</p>";
-        const descContainer = document.getElementById(this.id);
-        if (descContainer) {
-          descContainer.innerHTML = this.convertedText;
-        }
       }
     }
   }
@@ -57,6 +52,7 @@ export default defineComponent({
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;
+  padding: 0.25rem 0.5rem 0 0;
 }
 
 .label {

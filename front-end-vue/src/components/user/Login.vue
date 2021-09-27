@@ -11,61 +11,28 @@
         <div class="p-fluid login-form">
           <div class="p-field">
             <label for="fieldUsername">Username</label>
-            <InputText
-              id="fieldUsername"
-              type="text"
-              v-model="username"
-              :placeholder="username"
-            />
+            <InputText id="fieldUsername" type="text" v-model="username" :placeholder="username" />
           </div>
           <div class="p-field">
             <label for="fieldPassword">Password</label>
-            <InputText
-              id="fieldPassword"
-              type="password"
-              v-model="password"
-              @keyup="checkKey"
-            />
+            <InputText id="fieldPassword" type="password" v-model="password" @keyup="checkKey" />
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
-            <Button
-              class="user-submit"
-              type="submit"
-              label="Login"
-              v-on:click.prevent="handleSubmit"
-            />
+            <Button class="user-submit" type="submit" label="Login" v-on:click.prevent="handleSubmit" />
           </div>
         </div>
       </template>
       <template #footer>
+        <small>Don't have an account yet? <a id="register-link" class="footer-link" @click="$router.push({ name: 'Register' })">Register here</a></small>
+        <br />
+        <br />
         <small
-          >Don't have an account yet?
-          <a
-            id="register-link"
-            class="footer-link"
-            @click="$router.push({ name: 'Register' })"
-            >Register here</a
-          ></small
+          >Already received a confirmation code? <a id="code-link" class="footer-link" @click="$router.push({ name: 'ConfirmCode' })">Add it here</a></small
         >
         <br />
         <br />
         <small
-          >Already received a confirmation code?
-          <a
-            id="code-link"
-            class="footer-link"
-            @click="$router.push({ name: 'ConfirmCode' })"
-            >Add it here</a
-          ></small
-        >
-        <br />
-        <br />
-        <small
-          >Forgot your password or username? <br /><a
-            id="recover-link"
-            class="footer-link"
-            @click="$router.push({ name: 'ForgotPassword' })"
-          >
+          >Forgot your password or username? <br /><a id="recover-link" class="footer-link" @click="$router.push({ name: 'ForgotPassword' })">
             Recover account</a
           ></small
         >
@@ -102,9 +69,7 @@ export default defineComponent({
           if (res.status === 200 && res.user) {
             const loggedInUser = res.user;
             // check if avatar exists and replace lagacy images with default avatar on signin
-            const result = avatars.find(
-              avatar => avatar.value === loggedInUser.avatar.value
-            );
+            const result = avatars.find(avatar => avatar.value === loggedInUser.avatar.value);
             if (!result) {
               loggedInUser.avatar = avatars[0];
             }
@@ -122,8 +87,7 @@ export default defineComponent({
             Swal.fire({
               icon: "warning",
               title: "User Unconfirmed",
-              text:
-                "Account has not been confirmed. Please confirm account to continue.",
+              text: "Account has not been confirmed. Please confirm account to continue.",
               showCloseButton: true,
               showCancelButton: true,
               confirmButtonText: "Confirm Account"

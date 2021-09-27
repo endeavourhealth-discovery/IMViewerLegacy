@@ -7,10 +7,7 @@
 
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
-import {
-  getColourFromType,
-  getIconFromType
-} from "@/helpers/ConceptTypeMethods";
+import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
 
 export default defineComponent({
   name: "PanelHeader",

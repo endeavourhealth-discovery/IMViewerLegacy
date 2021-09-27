@@ -6,23 +6,14 @@
         A brief overview of the concepts stored in the Ontology
       </template>
       <template #content>
-        <DataTable
-          v-if="!$store.state.loading.get('reportTable_' + iri)"
-          :value="tableData"
-          class="p-datatable-sm"
-          :scrollable="true"
-          scrollHeight="350px"
-        >
+        <DataTable v-if="!$store.state.loading.get('reportTable_' + iri)" :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="350px">
           <template #header>
             Ontology data
           </template>
           <Column field="label" header="Label"></Column>
           <Column field="count" header="Total"></Column>
         </DataTable>
-        <div
-          class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container"
-          v-if="$store.state.loading.get('reportTable_' + iri)"
-        >
+        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportTable_' + iri)">
           <ProgressSpinner />
         </div>
       </template>
@@ -52,11 +43,7 @@ export default defineComponent({
       key: "reportTable_" + this.iri,
       value: true
     });
-    EntityService.getPartialEntity(this.iri, [
-      RDFS.LABEL,
-      RDFS.COMMENT,
-      IM.STATS_REPORT_ENTRY
-    ])
+    EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY])
       .then(res => {
         this.tableData = [];
 
@@ -77,9 +64,7 @@ export default defineComponent({
           key: "reportTable_" + this.iri,
           value: false
         });
-        this.$toast.add(
-          LoggerService.error("Ontology Overview server request failed", err)
-        );
+        this.$toast.add(LoggerService.error("Ontology Overview server request failed", err));
       });
   } // mounted end
 });

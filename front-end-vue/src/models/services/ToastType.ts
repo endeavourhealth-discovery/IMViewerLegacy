@@ -1,1 +1,6 @@
-export interface ToastType { severity: string; summary: string, detail: string, life: number };
+export interface ToastType {
+  severity: string;
+  summary: string;
+  detail: string;
+  life: number;
+}

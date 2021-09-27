@@ -2,13 +2,7 @@
   <div id="member-search-container">
     <span class="p-input-icon-left" id="member-search-bar">
       <i class="pi pi-search" aria-hidden="true" />
-      <InputText
-        type="text"
-        v-model="searchTerm"
-        @input="debounceForSearch"
-        placeholder="Search"
-        class="p-inputtext"
-      />
+      <InputText type="text" v-model="searchTerm" @input="debounceForSearch" placeholder="Search" class="p-inputtext" />
     </span>
   </div>
   <div id="member-edit-content">
@@ -20,11 +14,7 @@
             <span>Search Results</span>
           </template>
           <div id="member-search-results-container" :style="panelLeftHeight">
-            <MemberSearchResults
-              :searchResults="searchResults"
-              :loading="loading"
-              @searchResultsSelected="updateSelectedSearchResults"
-            />
+            <MemberSearchResults :searchResults="searchResults" :loading="loading" @searchResultsSelected="updateSelectedSearchResults" />
           </div>
         </TabPanel>
         <!-- <TabPanel>
@@ -39,11 +29,7 @@
       </TabView>
     </div>
     <div class="center-buttons">
-      <Button
-        id="add-selected-to-members-panel-button"
-        icon="pi pi-angle-right"
-        @click="addToActiveMembersPanel()"
-      />
+      <Button id="add-selected-to-members-panel-button" icon="pi pi-angle-right" @click="addToActiveMembersPanel()" />
       <!-- <Button icon="pi pi-angle-double-right" />
       <Button icon="pi pi-angle-left" />
       <Button icon="pi pi-angle-double-left" /> -->
@@ -87,8 +73,6 @@ import { defineComponent } from "vue";
 import MemberSearchResults from "@/components/edit/memberEditor/MemberSearchResults.vue";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
-import { ConceptStatus } from "@/models/ConceptStatus";
-import { ConceptType } from "@/models/search/ConceptType";
 import axios from "axios";
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
@@ -97,7 +81,11 @@ import MemberPickerTable from "@/components/edit/memberEditor/MemberPickerTable.
 
 export default defineComponent({
   name: "MemberEditor",
-  props: ["iri", "contentHeight", "updatedMembers"],
+  props: {
+    iri: { type: String, required: true },
+    contentHeight: { type: String, required: true },
+    updatedMembers: { type: Object, required: true }
+  },
   components: { MemberSearchResults, MemberPickerTable },
   emits: ["members-updated"],
   watch: {
@@ -157,18 +145,9 @@ export default defineComponent({
       searchRequest.sortBy = SortBy.Usage;
       searchRequest.page = 1;
       searchRequest.size = 100;
-      searchRequest.schemeFilter = [
-        IM.DISCOVERY_CODE,
-        IM.CODE_SCHEME_SNOMED,
-        IM.CODE_SCHEME_TERMS
-      ];
-      searchRequest.markIfDescendentOf = [
-        ":DiscoveryCommonDataModel",
-        ":SemanticConcept",
-        ":VSET_ValueSet"
-      ];
-      searchRequest.statusFilter = [ConceptStatus.Active, ConceptStatus.Draft];
-      searchRequest.typeFilter = [ConceptType.Class];
+      searchRequest.schemeFilter = [IM.DISCOVERY_CODE, IM.CODE_SCHEME_SNOMED, IM.CODE_SCHEME_TERMS];
+      searchRequest.statusFilter = ["http://endhealth.info/im#Active", "http://endhealth.info/im#Draft"];
+      searchRequest.typeFilter = ["http://www.w3.org/2002/07/owl#Class"];
 
       if (this.request) {
         await this.request.cancel();
@@ -200,48 +179,18 @@ export default defineComponent({
     },
 
     setPanelHeights(): void {
-      const container = document.getElementById(
-        "member-editor-container"
-      ) as HTMLElement;
-      const nav = container.getElementsByClassName(
-        "p-tabview-nav"
-      )[0] as HTMLElement;
-      const search = document.getElementById(
-        "member-search-bar"
-      ) as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
+      const container = document.getElementById("member-editor-container") as HTMLElement;
+      const nav = container.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
+      const search = document.getElementById("member-search-bar") as HTMLElement;
+      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
       if (container && nav && currentFontSize && search) {
-        const optimumRightHeight =
-          container.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
-          currentFontSize * 2 -
-          8;
+        const optimumRightHeight = container.getBoundingClientRect().height - nav.getBoundingClientRect().height - currentFontSize * 2 - 8;
         const optimumLeftHeight =
-          container.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
-          search.getBoundingClientRect().height -
-          currentFontSize * 2 -
-          8;
-        this.panelRightHeight =
-          "height: " +
-          optimumLeftHeight +
-          "px; max-height: " +
-          optimumRightHeight +
-          "px;";
-        this.panelLeftHeight =
-          "height: " +
-          optimumLeftHeight +
-          "px; max-height: " +
-          optimumLeftHeight +
-          "px;";
+          container.getBoundingClientRect().height - nav.getBoundingClientRect().height - search.getBoundingClientRect().height - currentFontSize * 2 - 8;
+        this.panelRightHeight = "height: " + optimumLeftHeight + "px; max-height: " + optimumRightHeight + "px;";
+        this.panelLeftHeight = "height: " + optimumLeftHeight + "px; max-height: " + optimumLeftHeight + "px;";
       } else {
-        LoggerService.error(
-          "Failed to set member editor panel heights. Required element not found."
-        );
+        LoggerService.error("Failed to set member editor panel heights. Required element not found.");
       }
     },
 
@@ -274,14 +223,10 @@ export default defineComponent({
     addToActiveMembersPanel() {
       switch (this.activeIndexRight) {
         case 0:
-          this.included = this.included.concat(
-            this.generateNewMembers("MemberIncluded")
-          );
+          this.included = this.included.concat(this.generateNewMembers("MemberIncluded"));
           break;
         case 1:
-          this.excluded = this.excluded.concat(
-            this.generateNewMembers("MemberXcluded")
-          );
+          this.excluded = this.excluded.concat(this.generateNewMembers("MemberXcluded"));
           break;
         case 2:
           this.subSets = this.subSets.concat(this.generateNewMembers("Subset"));

@@ -37,25 +37,16 @@ export default {
   async signIn(username: string, password: string): Promise<CustomAlert> {
     try {
       const user = await Auth.signIn(username, password);
-      const signedInUser = new User(
-        user.username,
-        user.attributes["custom:forename"],
-        user.attributes["custom:surname"],
-        user.attributes.email,
-        "",
-        { value: user.attributes["custom:avatar"] }
-      );
+      const signedInUser = new User(user.username, user.attributes["custom:forename"], user.attributes["custom:surname"], user.attributes.email, "", {
+        value: user.attributes["custom:avatar"]
+      });
       signedInUser.setId(user.attributes.sub);
       return new CustomAlert(200, "Login successful", undefined, signedInUser);
     } catch (err) {
       if (err.code === "UserNotConfirmedException") {
         return new CustomAlert(401, err.message, err); //message: "User is not confirmed."
       }
-      return new CustomAlert(
-        403,
-        "Login failed. Check username and password are correct",
-        err
-      );
+      return new CustomAlert(403, "Login failed. Check username and password are correct", err);
     }
   },
 
@@ -103,12 +94,7 @@ export default {
           { value: updateResults.attributes["custom:avatar"] }
         );
         updatedUser.setId(updateResults.attributes.sub);
-        return new CustomAlert(
-          200,
-          "User updated successfully",
-          undefined,
-          updatedUser
-        );
+        return new CustomAlert(200, "User updated successfully", undefined, updatedUser);
       } else {
         return new CustomAlert(403, "Authentication error with server");
       }
@@ -117,10 +103,7 @@ export default {
     }
   },
 
-  async changePassword(
-    oldPassword: string,
-    newPassword: string
-  ): Promise<CustomAlert> {
+  async changePassword(oldPassword: string, newPassword: string): Promise<CustomAlert> {
     try {
       const user = await Auth.currentAuthenticatedUser();
       await Auth.changePassword(user, oldPassword, newPassword);
@@ -139,11 +122,7 @@ export default {
     }
   },
 
-  async forgotPasswordSubmit(
-    username: string,
-    code: string,
-    newPassword: string
-  ): Promise<CustomAlert> {
+  async forgotPasswordSubmit(username: string, code: string, newPassword: string): Promise<CustomAlert> {
     try {
       await Auth.forgotPasswordSubmit(username, code, newPassword);
       return new CustomAlert(200, "Password reset successfully");
@@ -151,11 +130,7 @@ export default {
       if (err.code === "ExpiredCodeException") {
         return new CustomAlert(403, "Code has expired", err);
       }
-      return new CustomAlert(
-        400,
-        "Error submitting password-reset credentials",
-        err
-      );
+      return new CustomAlert(400, "Error submitting password-reset credentials", err);
     }
   },
 
@@ -180,12 +155,7 @@ export default {
         { value: cognitoUser.attributes["custom:avatar"] }
       );
       authenticatedUser.setId(cognitoUser.attributes.sub);
-      return new CustomAlert(
-        200,
-        "User authenticated successfully",
-        undefined,
-        authenticatedUser
-      );
+      return new CustomAlert(200, "User authenticated successfully", undefined, authenticatedUser);
     } catch (err) {
       return new CustomAlert(403, "Error authenticating current user", err);
     }

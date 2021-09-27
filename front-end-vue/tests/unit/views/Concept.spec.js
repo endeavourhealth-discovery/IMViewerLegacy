@@ -10,8 +10,7 @@ import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
 import ProgressSpinner from "primevue/progressspinner";
 import Definition from "@/components/concept/Definition.vue";
-import Terms from "@/components/concept/Terms.vue";
-import ComplexMappings from "@/components/concept/ComplexMappings.vue";
+import Mappings from "@/components/concept/Mappings.vue";
 import UsedIn from "@/components/concept/UsedIn.vue";
 import Graph from "@/components/concept/Graph.vue";
 import Members from "@/components/concept/Members.vue";
@@ -50,15 +49,17 @@ describe("Concept.vue", () => {
       "http://www.w3.org/2000/01/rdf-schema#label":"Critical care encounter (record type)",
       }});
     EntityService.getEntityChildren = jest.fn().mockResolvedValue({ data: [{"name":"Adult critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#1641000252107"},{"name":"Neonatal critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#831000252103"},{"name":"Paediatric critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#2811000252102"}]});
-    ConfigService.getConfig = jest.fn().mockResolvedValue({ data: [
+    EntityService.getEntityTermCodes = jest.fn().mockResolvedValue({ data: [{"name":"Critical care encounter (record type)"}]});
+    EntityService.getAxioms = jest.fn().mockResolvedValue({ data: {"entity":{"@id":"http://endhealth.info/im#841000252107","http://www.w3.org/2000/01/rdf-schema#comment":"An entry recording information about a criticial care encounter.<p>common data model attributes for Critical care encounter","http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Critical care encounter","http://www.w3.org/2002/07/owl#equivalentClass":[{"http://www.w3.org/2002/07/owl#intersectionOf":[{"@id":"http://endhealth.info/im#1161000252102","name":"Hospital encounter"},{"http://www.w3.org/2002/07/owl#someValuesFrom":{"@id":"http://endhealth.info/im#211000252109","name":"Critical care unit function"},"http://www.w3.org/2002/07/owl#onProperty":{"@id":"http://endhealth.info/im#51000252106","name":"takes place in care setting"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":{"@id":"http://www.w3.org/2002/07/owl#Restriction","name":"Restriction"}}]}]},"predicates":[{"name":"someValuesFrom","@id":"http://www.w3.org/2002/07/owl#someValuesFrom"},{"name":"comment","@id":"http://www.w3.org/2000/01/rdf-schema#comment"},{"name":"onProperty","@id":"http://www.w3.org/2002/07/owl#onProperty"},{"name":"type","@id":"http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},{"name":"intersectionOf","@id":"http://www.w3.org/2002/07/owl#intersectionOf"},{"name":"label","@id":"http://www.w3.org/2000/01/rdf-schema#label"},{"name":"equivalentClass","@id":"http://www.w3.org/2002/07/owl#equivalentClass"}]}})
+    ConfigService.getComponentLayout = jest.fn().mockResolvedValue({ data: [
       {"label":"Name","predicate":"http://www.w3.org/2000/01/rdf-schema#label","type":"TextWithLabel","size":"50%","order":0},
       {"label":"Iri","predicate":"@id","type":"TextWithLabel","size":"50%","order":1},
       {"label":"Status","predicate":"http://endhealth.info/im#status","type":"ObjectNameWithLabel","size":"50%","order":2},
       {"label":"Types","predicate":"http://www.w3.org/1999/02/22-rdf-syntax-ns#type","type":"ArrayObjectNamesToStringWithLabel","size":"50%","order":3},
       {"label":"Description","predicate":"http://www.w3.org/2000/01/rdf-schema#comment","type":"TextHTMLWithLabel","size":"100%","order":4},
       {"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":5},
-      {"label":"Is a","predicate":"http://endhealth.info/im#isA","type":"ListboxWithLabel","size":"50%","order":6},
-      {"label":"Has sub types","predicate":"subtypes","type":"ListboxWithLabel","size":"50%","order":7},
+      {"label":"Is a","predicate":"http://endhealth.info/im#isA","type":"ArrayObjectNameListboxWithLabel","size":"50%","order":6},
+      {"label":"Has sub types","predicate":"subtypes","type":"ArrayObjectNameListboxWithLabel","size":"50%","order":7},
       {"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":8},
       {"label":"Semantic properties","predicate":"semanticProperties","type":"SemanticProperties","size":"100%","order":9},
       {"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":10},
@@ -66,7 +67,8 @@ describe("Concept.vue", () => {
     ]});
     mockStore = {
       state: {
-        conceptIri: "http://endhealth.info/im#CriticalCareEncounter"
+        conceptIri: "http://endhealth.info/im#CriticalCareEncounter",
+        selectedEntityType: "Class"
       },
       commit: jest.fn(),
       dispatch: jest.fn()
@@ -89,12 +91,11 @@ describe("Concept.vue", () => {
       global: {
         components: {
           Definition,
-          ComplexMappings,
+          Mappings,
           ContextMenu,
           Button,
           TabPanel,
           TabView,
-          Terms,
           SecondaryTree,
           UsedIn,
           Members,
@@ -119,9 +120,10 @@ describe("Concept.vue", () => {
     await flushPromises();
     expect(wrapper.vm.editDialogView).toBeTruthy();
     expect(wrapper.vm.showDownloadDialog).toBeFalsy();
-    expect(wrapper.vm.configs).toStrictEqual([{"label":"Name","predicate":"http://www.w3.org/2000/01/rdf-schema#label","type":"TextWithLabel","size":"50%","order":0},{"label":"Iri","predicate":"@id","type":"TextWithLabel","size":"50%","order":1},{"label":"Status","predicate":"http://endhealth.info/im#status","type":"ObjectNameWithLabel","size":"50%","order":2},{"label":"Types","predicate":"http://www.w3.org/1999/02/22-rdf-syntax-ns#type","type":"ArrayObjectNamesToStringWithLabel","size":"50%","order":3},{"label":"Description","predicate":"http://www.w3.org/2000/01/rdf-schema#comment","type":"TextHTMLWithLabel","size":"100%","order":4},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":5},{"label":"Is a","predicate":"http://endhealth.info/im#isA","type":"ListboxWithLabel","size":"50%","order":6},{"label":"Has sub types","predicate":"subtypes","type":"ListboxWithLabel","size":"50%","order":7},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":8},{"label":"Semantic properties","predicate":"semanticProperties","type":"SemanticProperties","size":"100%","order":9},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":10},{"label":"Data model properties","predicate":"dataModelProperties","type":"DataModelProperties","size":"100%","order":11}]);
+    expect(wrapper.vm.configs).toStrictEqual([{"label":"Name","predicate":"http://www.w3.org/2000/01/rdf-schema#label","type":"TextWithLabel","size":"50%","order":0},{"label":"Iri","predicate":"@id","type":"TextWithLabel","size":"50%","order":1},{"label":"Status","predicate":"http://endhealth.info/im#status","type":"ObjectNameWithLabel","size":"50%","order":2},{"label":"Types","predicate":"http://www.w3.org/1999/02/22-rdf-syntax-ns#type","type":"ArrayObjectNamesToStringWithLabel","size":"50%","order":3},{"label":"Description","predicate":"http://www.w3.org/2000/01/rdf-schema#comment","type":"TextHTMLWithLabel","size":"100%","order":4},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":5},{"label":"Is a","predicate":"http://endhealth.info/im#isA","type":"ArrayObjectNameListboxWithLabel","size":"50%","order":6},{"label":"Has sub types","predicate":"subtypes","type":"ArrayObjectNameListboxWithLabel","size":"50%","order":7},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":8},{"label":"Semantic properties","predicate":"semanticProperties","type":"SemanticProperties","size":"100%","order":9},{"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":10},{"label":"Data model properties","predicate":"dataModelProperties","type":"DataModelProperties","size":"100%","order":11}]);
     expect(wrapper.vm.concept).toStrictEqual({
       "@id":"http://endhealth.info/im#CriticalCareEncounter",
+      "axioms":{"axiomString":"Equivalent class\n    Intersection of\n        Hospital encounter\n        Having type Restriction on property takes place in care setting\n            Some values from\n                Critical care unit function","count": 1},
       "http://endhealth.info/im#isA":[{"@id":"http://endhealth.info/im#1161000252102","name":"Hospital encounter"}],
       "http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},
       "http://www.w3.org/2000/01/rdf-schema#comment":"An entry recording information about a criticial care encounter.<p>common data model attributes for Critical care encounter",
@@ -129,7 +131,7 @@ describe("Concept.vue", () => {
       "http://www.w3.org/2000/01/rdf-schema#label":"Critical care encounter (record type)",
       "subtypes":[{"name":"Adult critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#1641000252107"},{"name":"Neonatal critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#831000252103"},{"name":"Paediatric critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#2811000252102"}],
       "semanticProperties":[{"property":{"name":"takes place in care setting","@id":"http://endhealth.info/im#51000252106"},"type":{"name":"Critical care unit function","@id":"http://endhealth.info/im#211000252109"}}],
-      "dataModelProperties":[{"property":{"name":"has admission source","@id":"http://endhealth.info/im#hasAdmissionSource"},"type":{"name":"Critical care admission source","@id":"http://endhealth.info/im#1041000252100"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has critical care unit function","@id":"http://endhealth.info/im#hasCriticalCareUnitFunction"},"type":{"name":"Critical care unit function","@id":"http://endhealth.info/im#211000252109"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"additional Practitioners","@id":"http://endhealth.info/im#additionalPractitioners"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"inheritedFrom":{"name":"Encounter (record type)","@id":"http://endhealth.info/im#Encounter"}}]});
+      "dataModelProperties":[{"property":{"name":"has admission source","@id":"http://endhealth.info/im#hasAdmissionSource"},"type":{"name":"Critical care admission source","@id":"http://endhealth.info/im#1041000252100"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has critical care unit function","@id":"http://endhealth.info/im#hasCriticalCareUnitFunction"},"type":{"name":"Critical care unit function","@id":"http://endhealth.info/im#211000252109"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"additional Practitioners","@id":"http://endhealth.info/im#additionalPractitioners"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"inheritedFrom":{"name":"Encounter (record type)","@id":"http://endhealth.info/im#Encounter"}}],"termCodes":[{"name":"Critical care encounter (record type)"}]});
     expect(wrapper.vm.definitionText).toBe("");
     expect(wrapper.vm.display).toBeFalsy();
     expect(wrapper.vm.types).toStrictEqual([{"@id": "http://endhealth.info/im#RecordType", "name": "Record type"}, {"@id": "http://www.w3.org/ns/shacl#NodeShape", "name": "Node shape"}, {"@id": "http://www.w3.org/2002/07/owl#Class", "name": "Class"}]);
@@ -237,16 +239,17 @@ describe("Concept.vue", () => {
     jest.clearAllMocks();
     await wrapper.vm.$nextTick();
     EntityService.getPartialEntity = jest.fn().mockResolvedValue({data:{"@id":"http://snomed.info/sct#298382003","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#64217002","name":"Curvature of spine (disorder)"},{"@id":"http://snomed.info/sct#928000","name":"Disorder of musculoskeletal system (disorder)"},{"@id":"http://snomed.info/sct#699699005","name":"Disorder of vertebral column (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis deformity of spine (disorder)"}});
-    wrapper.vm.getConcept("http://snomed.info/sct#111266001");
     EntityService.getEntityChildren = jest.fn().mockResolvedValue({ data: [{"name":"Acquired scoliosis (disorder)","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#205045003"}]});
     jest.clearAllMocks();
     wrapper.vm.getConcept("http://snomed.info/sct#298382003");
     await flushPromises();
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
     expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", ["http://www.w3.org/2000/01/rdf-schema#label", "@id", "http://endhealth.info/im#status", "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "http://www.w3.org/2000/01/rdf-schema#comment", "http://endhealth.info/im#isA"]);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(2);
+    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    expect(wrapper.vm.concept).toStrictEqual({"@id":"http://snomed.info/sct#298382003","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#64217002","name":"Curvature of spine (disorder)"},{"@id":"http://snomed.info/sct#928000","name":"Disorder of musculoskeletal system (disorder)"},{"@id":"http://snomed.info/sct#699699005","name":"Disorder of vertebral column (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis deformity of spine (disorder)","subtypes":[{"name":"Acquired scoliosis (disorder)","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#205045003"}]});
+    expect(EntityService.getEntityTermCodes).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityTermCodes).toHaveBeenCalledWith("http://snomed.info/sct#298382003")
+    expect(wrapper.vm.concept).toStrictEqual({"@id":"http://snomed.info/sct#298382003","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#64217002","name":"Curvature of spine (disorder)"},{"@id":"http://snomed.info/sct#928000","name":"Disorder of musculoskeletal system (disorder)"},{"@id":"http://snomed.info/sct#699699005","name":"Disorder of vertebral column (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis deformity of spine (disorder)","subtypes":[{"name":"Acquired scoliosis (disorder)","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#205045003"}],"termCodes":[{"name":"Critical care encounter (record type)"}]});
   });
 
   it("can getConcept ___ no isa", async() => {
@@ -254,33 +257,40 @@ describe("Concept.vue", () => {
     jest.clearAllMocks();
     await wrapper.vm.$nextTick();
     EntityService.getPartialEntity = jest.fn().mockResolvedValue({data:{"@id":"http://snomed.info/sct#298382003","http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis deformity of spine (disorder)"}});
-    wrapper.vm.getConcept("http://snomed.info/sct#111266001");
+    // wrapper.vm.getConcept("http://snomed.info/sct#111266001");
     EntityService.getEntityChildren = jest.fn().mockResolvedValue({ data: [{"name":"Acquired scoliosis (disorder)","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#205045003"}]});
-    jest.clearAllMocks();
+    // jest.clearAllMocks();
     wrapper.vm.getConcept("http://snomed.info/sct#298382003");
     await flushPromises();
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
     expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", ["http://www.w3.org/2000/01/rdf-schema#label", "@id", "http://endhealth.info/im#status", "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "http://www.w3.org/2000/01/rdf-schema#comment", "http://endhealth.info/im#isA"]);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(2);
+    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    expect(wrapper.vm.concept).toStrictEqual({"@id":"http://snomed.info/sct#298382003","http://endhealth.info/im#isA":[],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis deformity of spine (disorder)","subtypes":[{"name":"Acquired scoliosis (disorder)","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#205045003"}]});
+    expect(EntityService.getEntityTermCodes).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityTermCodes).toHaveBeenCalledWith("http://snomed.info/sct#298382003")
+    expect(wrapper.vm.concept).toStrictEqual({"@id":"http://snomed.info/sct#298382003","http://endhealth.info/im#isA":[],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis deformity of spine (disorder)","subtypes":[{"name":"Acquired scoliosis (disorder)","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#205045003"}],"termCodes":[{"name":"Critical care encounter (record type)"}]});
   });
 
   it("can getConcept ___ fail", async() => {
     await flushPromises();
     await wrapper.vm.$nextTick();
+    jest.clearAllMocks();
     EntityService.getPartialEntity = jest.fn().mockRejectedValue(false);
     EntityService.getEntityChildren = jest.fn().mockRejectedValue(false);
+    EntityService.getEntityTermCodes = jest.fn().mockRejectedValue(false);
     wrapper.vm.getConcept("http://snomed.info/sct#111266001");
     await flushPromises();
     await wrapper.vm.$nextTick();
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
     expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#111266001", ["http://www.w3.org/2000/01/rdf-schema#label", "@id", "http://endhealth.info/im#status", "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "http://www.w3.org/2000/01/rdf-schema#comment", "http://endhealth.info/im#isA"]);
     expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://snomed.info/sct#111266001")
-    expect(mockToast.add).toHaveBeenCalledTimes(2);
+    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://snomed.info/sct#111266001");
+    expect(EntityService.getEntityTermCodes).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityTermCodes).toHaveBeenCalledWith("http://snomed.info/sct#111266001")
+    expect(mockToast.add).toHaveBeenCalledTimes(3);
     expect(mockToast.add).toHaveBeenNthCalledWith(1, LoggerService.error("Failed to get concept partial entity from server."));
-    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to get subtypes from server."));
+    expect(mockToast.add).toHaveBeenNthCalledWith(2, LoggerService.error("Failed to get subtypes from server."));
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to get terms from server"));
   });
 
   it("can get properties ___ pass both", async() => {
@@ -318,19 +328,19 @@ describe("Concept.vue", () => {
     await flushPromises();
     wrapper.vm.getConfig("description");
     await flushPromises();
-    expect(ConfigService.getConfig).toHaveBeenCalledTimes(1);
-    expect(ConfigService.getConfig).toHaveBeenCalledWith("description");
-    expect(wrapper.vm.configs).toStrictEqual([{"label": "Name", "order": 0, "predicate": "http://www.w3.org/2000/01/rdf-schema#label", "size": "50%", "type": "TextWithLabel"}, {"label": "Iri", "order": 1, "predicate": "@id", "size": "50%", "type": "TextWithLabel"}, {"label": "Status", "order": 2, "predicate": "http://endhealth.info/im#status", "size": "50%", "type": "ObjectNameWithLabel"}, {"label": "Types", "order": 3, "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "size": "50%", "type": "ArrayObjectNamesToStringWithLabel"}, {"label": "Description", "order": 4, "predicate": "http://www.w3.org/2000/01/rdf-schema#comment", "size": "100%", "type": "TextHTMLWithLabel"}, {"label": "Divider", "order": 5, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Is a", "order": 6, "predicate": "http://endhealth.info/im#isA", "size": "50%", "type": "ListboxWithLabel"}, {"label": "Has sub types", "order": 7, "predicate": "subtypes", "size": "50%", "type": "ListboxWithLabel"}, {"label": "Divider", "order": 8, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Semantic properties", "order": 9, "predicate": "semanticProperties", "size": "100%", "type": "SemanticProperties"}, {"label": "Divider", "order": 10, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Data model properties", "order": 11, "predicate": "dataModelProperties", "size": "100%", "type": "DataModelProperties"}]);
+    expect(ConfigService.getComponentLayout).toHaveBeenCalledTimes(1);
+    expect(ConfigService.getComponentLayout).toHaveBeenCalledWith("description");
+    expect(wrapper.vm.configs).toStrictEqual([{"label": "Name", "order": 0, "predicate": "http://www.w3.org/2000/01/rdf-schema#label", "size": "50%", "type": "TextWithLabel"}, {"label": "Iri", "order": 1, "predicate": "@id", "size": "50%", "type": "TextWithLabel"}, {"label": "Status", "order": 2, "predicate": "http://endhealth.info/im#status", "size": "50%", "type": "ObjectNameWithLabel"}, {"label": "Types", "order": 3, "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "size": "50%", "type": "ArrayObjectNamesToStringWithLabel"}, {"label": "Description", "order": 4, "predicate": "http://www.w3.org/2000/01/rdf-schema#comment", "size": "100%", "type": "TextHTMLWithLabel"}, {"label": "Divider", "order": 5, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Is a", "order": 6, "predicate": "http://endhealth.info/im#isA", "size": "50%", "type": "ArrayObjectNameListboxWithLabel"}, {"label": "Has sub types", "order": 7, "predicate": "subtypes", "size": "50%", "type": "ArrayObjectNameListboxWithLabel"}, {"label": "Divider", "order": 8, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Semantic properties", "order": 9, "predicate": "semanticProperties", "size": "100%", "type": "SemanticProperties"}, {"label": "Divider", "order": 10, "predicate": "None", "size": "100%", "type": "Divider"}, {"label": "Data model properties", "order": 11, "predicate": "dataModelProperties", "size": "100%", "type": "DataModelProperties"}]);
   });
 
   it("can getConfig ___ fail", async() => {
-    ConfigService.getConfig = jest.fn().mockRejectedValue(false);
+    ConfigService.getComponentLayout = jest.fn().mockRejectedValue(false);
     jest.clearAllMocks();
     await flushPromises();
     wrapper.vm.getConfig("description");
     await flushPromises();
-    expect(ConfigService.getConfig).toHaveBeenCalledTimes(1);
-    expect(ConfigService.getConfig).toHaveBeenCalledWith("description");
+    expect(ConfigService.getComponentLayout).toHaveBeenCalledTimes(1);
+    expect(ConfigService.getComponentLayout).toHaveBeenCalledWith("description");
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get config data from server"));
   });
@@ -353,7 +363,8 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.getConcept).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
     expect(wrapper.vm.types).toStrictEqual([{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]);
     expect(wrapper.vm.header).toBe("Scoliosis caused by radiation (disorder)");
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Class");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "Ontology");
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateModuleSelectedEntities", { module: "Ontology", iri: "http://endhealth.info/im#CriticalCareEncounter" });
     expect(wrapper.vm.loading).toBe(false);
   });
 
@@ -364,7 +375,8 @@ describe("Concept.vue", () => {
     wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"name":"Concept Set","@id":"http://endhealth.info/im#ConceptSet"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
     wrapper.vm.init();
     await flushPromises();
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Set");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "Sets");
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateModuleSelectedEntities", { module: "Sets", iri: "http://endhealth.info/im#CriticalCareEncounter" });
   });
 
   it("Inits ___ Query", async() => {
@@ -373,26 +385,8 @@ describe("Concept.vue", () => {
     wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"name":"Query template","@id":"http://endhealth.info/im#QueryTemplate"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
     wrapper.vm.init();
     await flushPromises();
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "Query");
-  });
-
-  it("Inits ___ None", async() => {
-    wrapper.vm.getProperties = jest.fn();
-    wrapper.vm.getConcept = jest.fn();
-    wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"name":"Other","@id":"http://endhealth.info/im#Other"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
-    wrapper.vm.init();
-    await flushPromises();
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "None");
-  });
-
-  it("Inits ___ missing type", async() => {
-    wrapper.vm.getProperties = jest.fn();
-    wrapper.vm.getConcept = jest.fn();
-    wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#isA":[{"@id":"http://snomed.info/sct#111266001","name":"Acquired scoliosis (disorder)"},{"@id":"http://snomed.info/sct#212904005","name":"Radiation therapy complication (disorder)"},{"@id":"http://snomed.info/sct#724614007","name":"Disorder of musculoskeletal system following procedure (disorder)"},{"@id":"http://snomed.info/sct#442544003","name":"Deformity of spine due to injury (disorder)"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]};
-    wrapper.vm.init();
-    await flushPromises();
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateSelectedEntityType", "None");
-    expect(wrapper.vm.types).toStrictEqual([]);
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "Queries");
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateModuleSelectedEntities", { module: "Queries", iri: "http://endhealth.info/im#CriticalCareEncounter" });
   });
 
   it("can openDownloadDialog", async() => {
@@ -445,7 +439,7 @@ describe("Concept.vue", () => {
 
   it("can copy concept to clipboard", async() => {
     await flushPromises();
-    expect(wrapper.vm.copyConceptToClipboard()).toBe("Iri: http://endhealth.info/im#CriticalCareEncounter,\nIs a: [\n\tHospital encounter\n],\nStatus: Active,\nDescription: An entry recording information about a criticial care encounter.\n\tcommon data model attributes for Critical care encounter,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Critical care encounter (record type),\nHas sub types: [\n\tAdult critical care encounter,\n\tNeonatal critical care encounter,\n\tPaediatric critical care encounter\n],\nSemantic properties: [\n\ttakes place in care setting\n],\nData model properties: [\n\thas admission source,\n\thas critical care unit function,\n\tadditional Practitioners\n]");
+    expect(wrapper.vm.copyConceptToClipboard()).toBe("Iri: http://endhealth.info/im#CriticalCareEncounter,\nIs a: [\n\tHospital encounter\n],\nStatus: Active,\nDescription: An entry recording information about a criticial care encounter.\n\tcommon data model attributes for Critical care encounter,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Critical care encounter (record type),\nHas sub types: [\n\tAdult critical care encounter,\n\tNeonatal critical care encounter,\n\tPaediatric critical care encounter\n],\nSemantic properties: [\n\ttakes place in care setting\n],\nData model properties: [\n\thas admission source,\n\thas critical care unit function,\n\tadditional Practitioners\n],\n");
   });
 
   it("can copy concept to clipboard ___ empty arrays", async() => {
@@ -656,16 +650,6 @@ describe("Concept.vue", () => {
     expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Data model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n]");
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy Data model properties to clipboard"));
   });
-
-  it("can show terms", async() => {
-    const warn = console.warn;
-    console.warn = jest.fn();
-    wrapper.vm.showTerms();
-    await flushPromises();
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.active).toBe(1);
-    console.warn = jest.fn();
-  })
 });
 
 

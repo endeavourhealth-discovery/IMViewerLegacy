@@ -6,18 +6,14 @@
         type="text"
         v-model="searchTerm"
         @input="debounceForSearch"
-        @keydown="checkKey($event)"
+        @keyup.enter="search"
         placeholder="Search"
         class="p-inputtext-lg search-input"
         autoWidth="false"
       />
     </span>
 
-    <TabView
-      class="p-d-flex p-flex-column p-jc-start"
-      id="side-menu"
-      v-model:activeIndex="active"
-    >
+    <TabView class="p-d-flex p-flex-column p-jc-start" id="side-menu" v-model:activeIndex="active">
       <TabPanel>
         <template #header>
           <i class="fas fa-sitemap icon-header" aria-hidden="true" />
@@ -27,23 +23,21 @@
       </TabPanel>
       <TabPanel>
         <template #header>
-          <i class="fas fa-history icon-header" aria-hidden="true" />
-          <span>History</span>
-        </template>
-        <History />
-      </TabPanel>
-      <TabPanel>
-        <template #header>
           <i class="fas fa-search icon-header" aria-hidden="true" />
           <span>Search results</span>
         </template>
 
-        <div
-          class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container"
-        >
+        <div class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container">
           <SearchResults />
-          <Filters :search="search" :searchTerm="searchTerm" />
+          <Filters :search="search" />
         </div>
+      </TabPanel>
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-history icon-header" aria-hidden="true" />
+          <span>History</span>
+        </template>
+        <History />
       </TabPanel>
     </TabView>
   </div>
@@ -57,15 +51,15 @@ import SearchResults from "@/components/sidebar/SearchResults.vue";
 import Filters from "@/components/sidebar/Filters.vue";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
-import { ConceptStatus } from "@/models/ConceptStatus";
-import { ConceptType } from "@/models/search/ConceptType";
 import LoggerService from "@/services/LoggerService";
 import axios from "axios";
+import { mapState } from "vuex";
 
 export default defineComponent({
   name: "SidebarControl",
   components: { Hierarchy, History, SearchResults, Filters },
   props: ["focusHierarchy"],
+  computed: mapState(["filterOptions", "selectedFilters"]),
   emits: ["hierarchyFocused"],
   watch: {
     focusHierarchy(newValue) {
@@ -104,63 +98,22 @@ export default defineComponent({
           key: "searchResults",
           value: true
         });
-        this.active = 2;
+        this.active = 1;
         const searchRequest = new SearchRequest();
         searchRequest.termFilter = this.searchTerm;
         searchRequest.sortBy = SortBy.Usage;
         searchRequest.page = 1;
         searchRequest.size = 100;
-        searchRequest.schemeFilter = this.$store.state.filters.selectedSchemes.map(
-          (scheme: any) => scheme.iri
-        );
-        searchRequest.markIfDescendentOf = [
-          ":DiscoveryCommonDataModel",
-          ":SemanticConcept",
-          ":VSET_ValueSet"
-        ];
+        searchRequest.schemeFilter = this.selectedFilters.schemes.map((scheme: any) => scheme.iri);
 
         searchRequest.statusFilter = [];
-        this.$store.state.filters.selectedStatus.forEach((status: any) => {
-          if (status == "Active") {
-            searchRequest.statusFilter.push(ConceptStatus.Active);
-          }
-          if (status == "Draft") {
-            searchRequest.statusFilter.push(ConceptStatus.Draft);
-          }
-          if (status == "Inactive") {
-            searchRequest.statusFilter.push(ConceptStatus.Inactive);
-          }
+        this.selectedFilters.status.forEach((status: any) => {
+          searchRequest.statusFilter.push(status["@id"]);
         });
 
         searchRequest.typeFilter = [];
-        this.$store.state.filters.selectedTypes.forEach((type: any) => {
-          if (type == "Class") {
-            searchRequest.typeFilter.push(ConceptType.Class);
-          }
-          if (type == "ObjectProperty") {
-            searchRequest.typeFilter.push(ConceptType.ObjectProperty);
-          }
-          if (type == "DataProperty") {
-            searchRequest.typeFilter.push(ConceptType.DataProperty);
-          }
-          if (type == "Annotation") {
-            searchRequest.typeFilter.push(ConceptType.Annotation);
-          }
-          if (type == "Individual") {
-            searchRequest.typeFilter.push(ConceptType.Individual);
-          }
-          if (type == "Record") {
-            searchRequest.typeFilter.push(ConceptType.Record);
-          }
-          if (type == "ValueSet") {
-            searchRequest.typeFilter.push(ConceptType.ValueSet);
-          }
-          if (type == "Folder") {
-            searchRequest.typeFilter.push(ConceptType.Folder);
-          }
-          if (type == "Legacy") {
-            searchRequest.typeFilter.push(ConceptType.Legacy);
-          }
+        this.selectedFilters.types.forEach((type: any) => {
+          searchRequest.typeFilter.push(type["@id"]);
         });
         if (this.request) {
           await this.request.cancel();
@@ -178,9 +131,7 @@ export default defineComponent({
                 key: "searchResults",
                 value: false
               });
-              this.$toast.add(
-                LoggerService.error("Search results server request failed")
-              );
+              this.$toast.add(LoggerService.error("Search results server request failed"));
             } else {
               this.$store.commit("updateLoading", {
                 key: "searchResults",
@@ -200,32 +151,20 @@ export default defineComponent({
       }, 600);
     },
 
-    checkKey(event: any) {
-      if (event.code === "Enter") {
-        this.search();
-      }
-    },
-
     setContainerHeights(): void {
       this.windowHeight = window.innerHeight;
       this.windowWidth = window.innerWidth;
       const html = document.documentElement;
-      const currentFontSize = parseFloat(
-        window.getComputedStyle(html, null).getPropertyValue("font-size")
-      );
+      const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
       const sidebar = document.getElementById("side-bar") as HTMLElement;
       if (sidebar) {
-        sidebar.style.maxHeight =
-          this.windowHeight - currentFontSize * 2 + "px";
+        sidebar.style.maxHeight = this.windowHeight - currentFontSize * 2 + "px";
       }
       const fixedSidebar = document.getElementById("side-bar") as HTMLElement;
       const searchBar = document.getElementById("search-bar") as HTMLElement;
       const sideMenu = document.getElementById("side-menu") as HTMLElement;
       if (searchBar && fixedSidebar && sideMenu) {
-        sideMenu.style.maxHeight =
-          fixedSidebar.getBoundingClientRect().height -
-          searchBar.getBoundingClientRect().height +
-          "px";
+        sideMenu.style.maxHeight = fixedSidebar.getBoundingClientRect().height - searchBar.getBoundingClientRect().height + "px";
       }
     }
   }

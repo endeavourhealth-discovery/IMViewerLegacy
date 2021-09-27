@@ -4,12 +4,14 @@ export class IM {
   public static IRI = "@id";
   public static CODE = IM.NAMESPACE + "code";
   public static SCHEME = IM.NAMESPACE + "scheme";
-  public static STATUS = IM.NAMESPACE + "status";
+  public static STATUS = IM.NAMESPACE + "Status";
   public static IS_A = IM.NAMESPACE + "isA";
   public static ROLE_GROUP = IM.NAMESPACE + "roleGroup";
   public static IS_CONTAINED_IN = IM.NAMESPACE + "isContainedIn";
   public static PROPERTY_GROUP = IM.NAMESPACE + "propertyGroup";
   public static INHERITED_FROM = IM.NAMESPACE + "inheritedFrom";
+  public static IS_CHILD_OF = IM.NAMESPACE + "isChildOf";
+  public static HAS_CHILDREN = IM.NAMESPACE + "hasChildren";
 
   // mapping
   public static HAS_MAP = IM.NAMESPACE + "hasMap";
@@ -20,6 +22,7 @@ export class IM {
   public static ASSURANCE_LEVEL = IM.NAMESPACE + "assuranceLevel";
   public static COMBINATION_OF = IM.NAMESPACE + "combinationOf";
   public static SOME_OF = IM.NAMESPACE + "someOf";
+  public static MAPPED_TO = IM.NAMESPACE + "mappedTo";
   //maps assurance levels
   public static NATIONALLY_ASSURED_UK = IM.NAMESPACE + "NationallyAssuredUK";
 
@@ -48,4 +51,11 @@ export class IM {
   public static DISCOVERY_CODE = IM.NAMESPACE + "DiscoveryCodeScheme";
 
   public static STATS_REPORT_ENTRY = IM.NAMESPACE + "hasStatsReportEntry";
+
+  public static MODULE_ONTOLOGY = IM.NAMESPACE + "DiscoveryOntology";
+  public static MODULE_SETS = IM.NAMESPACE + "Sets";
+  public static MODULE_DATA_MODEL = IM.NAMESPACE + "DiscoveryCommonDataModel";
+  public static MODULE_CATALOGUE = IM.NAMESPACE + "Catalogue";
+  public static MODULE_QUERIES = IM.NAMESPACE + "QT_QueryTemplates";
+  public static MODULE_IM = IM.NAMESPACE + "InformationModel";
 }

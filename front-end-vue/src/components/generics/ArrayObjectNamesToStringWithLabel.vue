@@ -1,10 +1,10 @@
 <template>
-  <p :style="{ width: size }">
+  <div class="container" :style="{ width: size }">
     <strong class="label">{{ label }}: </strong>
     <span class="data-string">
       {{ arrayToString ? arrayToString : "None" }}
     </span>
-  </p>
+  </div>
 </template>
 
 <script lang="ts">
@@ -23,12 +23,8 @@ export default defineComponent({
         this.data &&
         Array.isArray(this.data) &&
         this.data.length &&
-        this.data.every(
-          item => Object.prototype.toString.call(item) === "[object Object]"
-        ) &&
-        this.data.every(item =>
-          Object.prototype.hasOwnProperty.call(item, "name")
-        )
+        this.data.every(item => Object.prototype.toString.call(item) === "[object Object]") &&
+        this.data.every(item => Object.prototype.hasOwnProperty.call(item, "name"))
       ) {
         return this.data
           .map(function(item: any) {
@@ -44,8 +40,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
-p {
+.container {
   margin: 0;
+  padding: 0.25rem 0.5rem 0 0;
 }
 
 .break-text {

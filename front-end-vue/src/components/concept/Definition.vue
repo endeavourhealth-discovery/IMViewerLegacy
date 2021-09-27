@@ -2,14 +2,7 @@
   <div class="content-container">
     <div class="summary-container">
       <template v-for="(config, index) in configs" :key="index">
-        <component
-          :is="config.type"
-          :label="config.label"
-          :data="concept[config.predicate]"
-          :size="config.size"
-          :id="config.type + index"
-        >
-        </component>
+        <component :is="config.type" :label="config.label" :data="concept[config.predicate]" :size="config.size" :id="config.type + index"> </component>
       </template>
     </div>
   </div>
@@ -17,13 +10,17 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import SemanticProperties from "./SemanticProperties.vue";
-import DataModelProperties from "./DataModelProperties.vue";
+import SemanticProperties from "./definition/SemanticProperties.vue";
+import DataModelProperties from "./definition/DataModelProperties.vue";
 import ArrayObjectNamesToStringWithLabel from "@/components/generics/ArrayObjectNamesToStringWithLabel.vue";
 import TextHTMLWithLabel from "@/components/generics/TextHTMLWithLabel.vue";
 import TextWithLabel from "@/components/generics/TextWithLabel.vue";
 import ObjectNameWithLabel from "@/components/generics/ObjectNameWithLabel.vue";
 import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNameListboxWithLabel.vue";
+import TermsTable from "@/components/concept/definition/TermsTable.vue";
+import TextSectionHeader from "@/components/generics/TextSectionHeader.vue";
+import SectionDivider from "@/components/generics/SectionDivider.vue";
+import Axioms from "@/components/concept/definition/Axioms.vue";
 
 export default defineComponent({
   name: "Definition",
@@ -34,7 +31,11 @@ export default defineComponent({
     TextHTMLWithLabel,
     TextWithLabel,
     ObjectNameWithLabel,
-    ArrayObjectNameListboxWithLabel
+    ArrayObjectNameListboxWithLabel,
+    TermsTable,
+    TextSectionHeader,
+    SectionDivider,
+    Axioms
   },
   props: ["concept", "configs"]
 });
@@ -50,5 +51,13 @@ export default defineComponent({
   flex-flow: row wrap;
   justify-content: flex-start;
   width: 100%;
+  row-gap: 0.5rem;
+}
+
+.summary-container ::v-deep(.expand-button) {
+  height: 1.5rem !important;
+  width: 0.75rem !important;
+  padding: 0.4375rem 0.7rem !important;
+  margin-left: 0.5rem;
 }
 </style>

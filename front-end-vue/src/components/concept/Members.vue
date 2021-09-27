@@ -4,17 +4,17 @@
       :value="combinedMembers"
       showGridlines
       rowGroupMode="subheader"
-      groupRowsBy="type"
+      groupRowsBy="label"
       :expandableRowGroups="true"
       v-model:expandedRowGroups="expandedRowGroups"
       @rowgroupExpand="onRowGroupExpand"
       @rowgroupCollapse="onRowGroupCollapse"
       v-model:filters="filters1"
       filterDisplay="menu"
-      :globalFilterFields="['code', 'entity.name', 'scheme.name', 'type']"
+      :globalFilterFields="['code', 'entity.name', 'scheme.name', 'label']"
       :scrollable="true"
       sortMode="single"
-      sortField="type"
+      sortField="label"
       :sortOrder="1"
       class="p-datatable-sm"
       scrollHeight="flex"
@@ -27,30 +27,24 @@
         <div class="p-d-flex p-jc-between">
           <span class="p-input-icon-left">
             <i class="pi pi-search" aria-hidden="true" />
-            <InputText
-              v-model="filters1['global'].value"
-              placeholder="Keyword Search"
-            />
+            <InputText v-model="filters1['global'].value" placeholder="Keyword Search" />
           </span>
           <div class="checkboxes-container">
+            <div>
+              <Button icon="pi pi-cloud-download" label="Download definition" @click="download(false)" />
+            </div>
+            <div>
+              <Button icon="pi pi-cloud-download" label="Download expanded" @click="download(true)" />
+            </div>
             <div class="checkbox-label-container" v-if="!expandMembers">
               <label for="expandSubsets">Expand all subsets</label>
-              <Checkbox
-                :disabled="expandMembers"
-                id="expandSubsets"
-                v-model="expandSubsets"
-                :binary="true"
-              />
+              <Checkbox :disabled="expandMembers" id="expandSubsets" v-model="expandSubsets" :binary="true" />
             </div>
             <div class="checkbox-label-container">
               <label for="expandMembers">
                 Expand all members
               </label>
-              <Checkbox
-                id="expandMembers"
-                v-model="expandMembers"
-                :binary="true"
-              />
+              <Checkbox id="expandMembers" v-model="expandMembers" :binary="true" />
             </div>
           </div>
         </div>
@@ -61,35 +55,43 @@
       <template #loading>
         Loading data. Please wait...
       </template>
-      <Column
-        field="entity.name"
-        header="Name"
-        filter-field="entity.name"
-        style="flex: 0 0 60%"
-      />
+      <Column field="entity.name" header="Name" filter-field="entity.name" style="flex: 0 0 60%">
+        <template #body="slotProps">
+          <div v-if="slotProps.data.type === 'COMPLEX'">
+            <Button label="Show" @click="openComplexMembersDialog" />
+          </div>
+          <span v-else>{{ slotProps.data.entity.name }}</span>
+        </template>
+      </Column>
       <Column field="code" header="Code" filter-field="code" />
       <Column field="scheme.name" header="Scheme" filter-field="scheme.name" />
       <template #groupheader="slotProps">
         <span v-for="subSet in subsets" :key="subSet">
-          <span v-if="slotProps.data.type === subSet" class="group-header">
+          <span v-if="slotProps.data.label === subSet" class="group-header">
             {{ subSet }}
           </span>
         </span>
-        <span
-          v-if="slotProps.data.type === 'MemberIncluded'"
-          class="group-header"
-        >
+        <span v-if="slotProps.data.type === 'INCLUDED'" class="group-header">
           Included Members
         </span>
-        <span
-          v-if="slotProps.data.type === 'MemberXcluded'"
-          class="group-header"
-        >
+        <span v-if="slotProps.data.type === 'EXCLUDED'" class="group-header">
           Excluded Members
+        </span>
+        <span v-if="slotProps.data.type === 'EXPANDED'" class="group-header">
+          Expanded Members
+        </span>
+        <span v-if="slotProps.data.type === 'COMPLEX'" class="group-header">
+          Complex Members
         </span>
       </template>
     </DataTable>
   </div>
+  <ComplexMembers
+    v-if="showComplexMembersDialog"
+    @closeComplexMembersDialog="closeComplexMembersDialog"
+    :showDialog="showComplexMembersDialog"
+    :conceptIri="conceptIri"
+  />
 </template>
 
 <script lang="ts">
@@ -98,13 +100,15 @@ import EntityService from "@/services/EntityService";
 import { FilterMatchMode } from "primevue/api";
 import Swal from "sweetalert2";
 import LoggerService from "@/services/LoggerService";
+import ComplexMembers from "@/components/concept/members/ComplexMembers.vue";
 
 export default defineComponent({
   name: "Members",
-  components: {},
+  components: { ComplexMembers },
   props: {
-    conceptIri: String
+    conceptIri: { type: String, required: true }
   },
+  emits: ["memberClick"],
   watch: {
     async conceptIri() {
       this.expandMembers = false;
@@ -143,7 +147,8 @@ export default defineComponent({
       expandSubsets: false,
       selected: {} as any,
       subsets: [] as any[],
-      expandedRowGroups: ["MemberIncluded", "MemberXcluded"]
+      expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"],
+      showComplexMembersDialog: false
     };
   },
   methods: {
@@ -167,24 +172,20 @@ export default defineComponent({
 
     async getMembers() {
       this.loading = true;
-      this.expandedRowGroups = ["MemberIncluded", "MemberXcluded"];
+      if (this.expandMembers) {
+        this.expandedRowGroups = ["MemberExpanded"];
+      } else {
+        this.expandedRowGroups = ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"];
+      }
       this.selected = {};
       this.subsets = [];
-      await EntityService.getEntityMembers(
-        this.conceptIri as string,
-        this.expandMembers,
-        this.expandSubsets,
-        this.expandMembers ? 2000 : undefined,
-        undefined
-      )
+      await EntityService.getEntityMembers(this.conceptIri as string, this.expandMembers, this.expandSubsets, this.expandMembers ? 2000 : undefined)
         .then(res => {
           this.members = res.data;
           this.expandMembersSizeCheck();
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get members from server", err)
-          );
+          this.$toast.add(LoggerService.error("Failed to get members from server", err));
         });
       this.loading = false;
       this.setTableWidth();
@@ -192,14 +193,10 @@ export default defineComponent({
 
     setSubsets() {
       this.combinedMembers.forEach((member: any) => {
-        if (!this.subsets.some(e => e === member.type)) {
-          if (
-            member.type === "MemberIncluded" ||
-            member.type === "MemberXcluded"
-          ) {
-            return;
+        if (!this.subsets.some(e => e === member.label)) {
+          if (member.type === "SUBSET") {
+            this.subsets.push(member.label);
           }
-          this.subsets.push(member.type);
         }
       });
     },
@@ -210,18 +207,13 @@ export default defineComponent({
         await Swal.fire({
           icon: "warning",
           title: "Large data set",
-          text:
-            "Expanding this set results in a large amount of data.\n Would you like to download it instead?",
+          text: "Expanding this set results in a large amount of data.\n Would you like to download it instead?",
           confirmButtonText: "Download",
           showCancelButton: true
         }).then(result => {
-          if (result.isConfirmed) this.download();
+          if (result.isConfirmed) this.download(true);
           else {
-            this.$toast.add(
-              LoggerService.warn(
-                "Member expansion cancelled as results exceeded displayable limit."
-              )
-            );
+            this.$toast.add(LoggerService.warn("Member expansion cancelled as results exceeded displayable limit."));
           }
         });
       } else {
@@ -231,16 +223,9 @@ export default defineComponent({
       }
     },
 
-    download() {
-      const modIri = (this.conceptIri as string)
-        .replace(/\//gi, "%2F")
-        .replace(/#/gi, "%23");
-      const popup = window.open(
-        process.env.VUE_APP_API +
-          "api/entity/download?iri=" +
-          modIri +
-          "&members=true&expandMembers=true&format=excel"
-      );
+    download(expanded: boolean) {
+      const modIri = (this.conceptIri as string).replace(/\//gi, "%2F").replace(/#/gi, "%23");
+      const popup = window.open(process.env.VUE_APP_API + "api/entity/download?iri=" + modIri + "&members=true&expandMembers=" + expanded + "&format=excel");
       if (!popup) {
         this.$toast.add(LoggerService.error("Download failed from server"));
       } else {
@@ -250,9 +235,7 @@ export default defineComponent({
 
     sortMembers() {
       this.members.members = this.members.members.sort((a: any, b: any) =>
-        a.type.localeCompare(b.type) == 0
-          ? a.entity.name.localeCompare(b.entity.name)
-          : a.type.localeCompare(b.type)
+        a.label.localeCompare(b.label) == 0 ? a.entity.name.localeCompare(b.entity.name) : a.label.localeCompare(b.label)
       );
     },
 
@@ -261,20 +244,21 @@ export default defineComponent({
     },
 
     setTableWidth(): void {
-      const container = document.getElementById(
-        "members-table-container"
-      ) as HTMLElement;
-      const table = container?.getElementsByClassName(
-        "p-datatable-table"
-      )[0] as HTMLElement;
+      const container = document.getElementById("members-table-container") as HTMLElement;
+      const table = container?.getElementsByClassName("p-datatable-table")[0] as HTMLElement;
       if (table) {
         table.style.width = "100%";
       } else {
-        LoggerService.error(
-          undefined,
-          "Failed to set members table width. Required element(s) not found."
-        );
+        LoggerService.error(undefined, "Failed to set members table width. Required element(s) not found.");
       }
+    },
+
+    openComplexMembersDialog() {
+      this.showComplexMembersDialog = true;
+    },
+
+    closeComplexMembersDialog() {
+      this.showComplexMembersDialog = false;
     }
   }
 });
@@ -301,7 +285,8 @@ export default defineComponent({
 
 .checkboxes-container {
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
+  justify-content: flex-end;
   align-items: center;
   gap: 0.5rem;
 }

@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container"
-    v-if="loading"
-  >
+  <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container" v-if="loading">
     <ProgressSpinner />
   </div>
   <OrganizationChart v-else :value="graph" :collapsible="true">
@@ -24,7 +21,7 @@
           <tr v-for="prop in slotProps.node.leafNodes" :key="prop">
             <td @click="navigate(prop.iri)">{{ prop.name }}</td>
             <td @click="navigate(prop.valueTypeIri)">
-              {{ prop.valueTypeName }}
+              {{ prop.valueTypeName || getTypeFromIri(prop.valueTypeIri) }}
             </td>
           </tr>
         </tbody>
@@ -91,6 +88,14 @@ export default defineComponent({
     }
   },
   methods: {
+    getTypeFromIri(iri: string) {
+      switch (iri) {
+        case "http://www.w3.org/2001/XMLSchema#string":
+          return "String";
+        default:
+          return "String";
+      }
+    },
     async getGraph(iri: string) {
       this.loading = true;
       await EntityService.getEntityGraph(iri)
@@ -98,12 +103,7 @@ export default defineComponent({
           this.graph = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get entity graph data from server",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Failed to get entity graph data from server", err));
         });
       this.loading = false;
     },

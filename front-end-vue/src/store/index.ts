@@ -7,10 +7,9 @@ import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
 import LoggerService from "@/services/LoggerService";
 import { CustomAlert } from "@/models/user/CustomAlert";
-import { IM } from "@/vocabulary/IM";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
-import { ConceptReference } from "@/models/TTConcept/ConceptReference";
 import axios from "axios";
+import { IM } from "@/vocabulary/IM";
 
 export default createStore({
   // update stateType.ts when adding new state!
@@ -23,51 +22,45 @@ export default createStore({
     currentUser: {} as User,
     registeredUsername: "" as string,
     isLoggedIn: false as boolean,
-    snomedLicenseAccepted: localStorage.getItem(
-      "snomedLicenseAccepted"
-    ) as string,
+    snomedLicenseAccepted: localStorage.getItem("snomedLicenseAccepted") as string,
     historyCount: 0 as number,
     focusTree: false as boolean,
     treeLocked: true as boolean,
     sideNavHierarchyFocus: {
       name: "Ontology",
       fullName: "Ontologies",
-      iri: "http://endhealth.info/im#DiscoveryOntology"
-    } as { name: string; iri: string },
+      iri: "http://endhealth.info/im#DiscoveryOntology",
+      route: "Dashboard"
+    } as { name: string; iri: string; fullName: string; route: string },
     selectedEntityType: "",
-    filters: {
-      selectedStatus: ["Active", "Draft"],
-      selectedSchemes: [
-        {
-          iri: IM.DISCOVERY_CODE,
-          name: "Discovery code"
-        },
-        {
-          iri: IM.CODE_SCHEME_SNOMED,
-          name: "Snomed-CT code"
-        },
-        {
-          iri: IM.CODE_SCHEME_TERMS,
-          name: "Term based code"
-        }
-      ],
-      selectedTypes: [
-        "Class",
-        "ObjectProperty",
-        "DataProperty",
-        "DataType",
-        "Annotation",
-        "Individual",
-        "Record",
-        "ValueSet",
-        "Folder",
-        "Legacy"
-      ]
+    filterOptions: {
+      status: [],
+      schemes: [],
+      types: []
     } as {
-      selectedStatus: string[];
-      selectedSchemes: ConceptReference[];
-      selectedTypes: string[];
-    }
+      status: any[];
+      schemes: any[];
+      types: any[];
+    },
+    selectedFilters: {
+      status: [],
+      schemes: [],
+      types: []
+    } as {
+      status: any[];
+      schemes: any[];
+      types: any[];
+    },
+    quickFiltersStatus: new Map<string, boolean>(),
+    moduleSelectedEntities: new Map([
+      ["Ontology", IM.MODULE_ONTOLOGY],
+      ["Sets", IM.MODULE_SETS],
+      ["DataModel", IM.MODULE_DATA_MODEL],
+      ["Catalogue", IM.MODULE_CATALOGUE],
+      ["Queries", IM.MODULE_QUERIES]
+    ]),
+    activeModule: "default",
+    conceptActivePanel: 0 as number
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -85,8 +78,14 @@ export default createStore({
     updateSearchResults(state, searchResults) {
       state.searchResults = searchResults;
     },
-    updateFilters(state, filters) {
-      state.filters = filters;
+    updateFilterOptions(state, filters) {
+      state.filterOptions = filters;
+    },
+    updateSelectedFilters(state, filters) {
+      state.selectedFilters = filters;
+    },
+    updateQuickFiltersStatus(state, status) {
+      state.quickFiltersStatus.set(status.key, status.value);
     },
     updateLoading(state, loading) {
       state.loading.set(loading.key, loading.value);
@@ -118,13 +117,19 @@ export default createStore({
     },
     updateSelectedEntityType(state, type) {
       state.selectedEntityType = type;
+    },
+    updateModuleSelectedEntities(state, data) {
+      state.moduleSelectedEntities.set(data.module, data.iri);
+    },
+    updateConceptActivePanel(state, number) {
+      state.conceptActivePanel = number;
+    },
+    updateActiveModule(state, module) {
+      state.activeModule = module;
     }
   },
   actions: {
-    async fetchSearchResults(
-      { commit },
-      data: { searchRequest: SearchRequest; cancelToken: any }
-    ) {
+    async fetchSearchResults({ commit }, data: { searchRequest: SearchRequest; cancelToken: any }) {
       let searchResults: any;
       let success = "true";
       await EntityService.advancedSearch(data.searchRequest, data.cancelToken)
@@ -162,9 +167,7 @@ export default createStore({
         if (res.status === 200 && res.user) {
           commit("updateIsLoggedIn", true);
           const loggedInUser = res.user;
-          const foundAvatar = avatars.find(
-            avatar => avatar.value === loggedInUser.avatar.value
-          );
+          const foundAvatar = avatars.find(avatar => avatar.value === loggedInUser.avatar.value);
           if (!foundAvatar) {
             loggedInUser.avatar = avatars[0];
           }

@@ -89,6 +89,7 @@ describe("UsedIn.vue", () => {
 
   it("can resize", () => {
     console.error = jest.fn();
+    console.warn = jest.fn();
     wrapper.vm.setScrollHeight = jest.fn();
     wrapper.vm.onResize();
     expect(wrapper.vm.setScrollHeight).toHaveBeenCalledTimes(1);
@@ -195,6 +196,7 @@ describe("UsedIn.vue", () => {
     mockElement.scrollTop = 100;
     mockElement.getElementsByClassName = jest.fn().mockReturnValue([mockElement]);
     docSpy.mockReturnValue(mockElement);
+    console.warn = jest.fn();
     wrapper.vm.setScrollHeight();
     expect(wrapper.vm.scrollHeight).not.toBe("500px");
   });
@@ -205,12 +207,14 @@ describe("UsedIn.vue", () => {
     mockElement.scrollTop = 100;
     mockElement.getElementsByClassName = jest.fn().mockReturnValue([undefined]);
     docSpy.mockReturnValue(mockElement);
+    console.warn = jest.fn();
     wrapper.vm.setScrollHeight();
     expect(wrapper.vm.scrollHeight).not.toBe("500px");
   });
 
   it("can setScrollHeight ___ container fail", () => {
     LoggerService.error = jest.fn();
+    console.warn = jest.fn();
     wrapper.vm.setScrollHeight();
     expect(wrapper.vm.scrollHeight).toBe("500px");
     expect(LoggerService.error).toHaveBeenCalledTimes(1);
