@@ -169,21 +169,19 @@ export default defineComponent({
       const filters = container.getElementsByClassName("filters-title-container")[0] as HTMLElement;
       const paginator = container.getElementsByClassName("p-paginator")[0] as HTMLElement;
       const tableHeader = container.getElementsByClassName("p-datatable-thead")[0] as HTMLElement;
-      console.log(container);
-      console.log(table);
-      console.log(filters);
-      console.log(paginator);
-      if (container && table && filters && tableHeader) {
-        let tableHeight = container.getBoundingClientRect().height - filters.getBoundingClientRect().height - tableHeader.getBoundingClientRect().height;
+      if (container && table) {
+        let tableHeight = container.getBoundingClientRect().height;
+        if (filters) {
+          tableHeight -= filters.getBoundingClientRect().height;
+        }
+        if (tableHeader) {
+          tableHeight -= tableHeader.getBoundingClientRect().height;
+        }
         if (paginator) {
           tableHeight -= paginator.getBoundingClientRect().height
         }
         this.tableHeight = tableHeight + "px";
       } else {
-        console.log(container)
-        console.log(table)
-        console.log(filters)
-        console.log(paginator)
         LoggerService.error(undefined, "Failed to set member editor search results table height. Elements required not found");
       }
     },

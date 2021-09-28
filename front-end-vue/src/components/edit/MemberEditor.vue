@@ -112,6 +112,7 @@ export default defineComponent({
       included: [] as any[],
       excluded: [] as any[],
       subSets: [] as any[],
+      complex: [] as any[],
       panelLeftHeight: "",
       panelRightHeight: "",
       loading: false,
@@ -165,14 +166,20 @@ export default defineComponent({
     separateMembersByType() {
       this.members.forEach((member: any) => {
         switch (member.type) {
-          case "MemberIncluded":
+          case "INCLUDED":
             this.included.push(member);
             break;
-          case "MemberXcluded":
+          case "EXCLUDED":
             this.excluded.push(member);
             break;
-          default:
+          case "COMPLEX":
+            this.complex.push(member);
+            break;
+          case "SUBSET":
             this.subSets.push(member);
+            break;
+          default:
+            console.log(`Unknown member ${member.type} type encountered in memberEditor separateMembersByType`);
             break;
         }
       });
