@@ -8,7 +8,6 @@
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "cross-env VUE_APP_API=http://localhost:8080/ vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
-    "antlr4ts": "antlr4ts ./src/discovery-syntax/DiscoverySyntax.g4 -o ./src/discovery-syntax",
     "test:e2e:ci": "vue-cli-service test:e2e"
   },
   "dependencies": {
