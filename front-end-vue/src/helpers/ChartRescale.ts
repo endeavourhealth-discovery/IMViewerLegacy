@@ -1,6 +1,4 @@
-export function setTooltips(
-  counts: number[]
-): { callbacks: { label(t: any, d: any): string } } {
+export function setTooltips(counts: number[]): { callbacks: { label(t: any, d: any): string } } {
   const tooltipOptions = {
     callbacks: {
       label: function(t: any, d: any) {

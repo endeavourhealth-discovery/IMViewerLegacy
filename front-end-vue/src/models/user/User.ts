@@ -7,14 +7,7 @@ export class User {
   avatar: { value: string };
   id: string;
 
-  constructor(
-    username: string,
-    firstName: string,
-    lastName: string,
-    email: string,
-    password: string,
-    avatar: { value: string }
-  ) {
+  constructor(username: string, firstName: string, lastName: string, email: string, password: string, avatar: { value: string }) {
     this.username = username;
     this.firstName = firstName;
     this.lastName = lastName;

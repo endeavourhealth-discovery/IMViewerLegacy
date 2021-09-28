@@ -73,6 +73,7 @@ import { FilterMatchMode, FilterOperator } from "primevue/api";
 import RadioButton from "primevue/radiobutton";
 import ConfirmPopup from "primevue/confirmpopup";
 import InputSwitch from "primevue/inputswitch";
+import StyleClass from "primevue/styleclass";
 import Steps from "primevue/steps";
 import Editor from "primevue/editor";
 import AutoComplete from 'primevue/autocomplete';
@@ -96,6 +97,7 @@ const app = createApp(App)
     appendToBody: true
   })
   .directive("tooltip", Tooltip)
+  .directive("styleclass", StyleClass)
   .component("Card", Card)
   .component("ProgressSpinner", ProgressSpinner)
   .component("TabView", TabView)

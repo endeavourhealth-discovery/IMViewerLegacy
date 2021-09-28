@@ -1,9 +1,6 @@
 <template>
   <div id="search-results-container" class="p-field">
-    <div
-      class="p-d-flex p-flex-row p-jc-center"
-      v-if="$store.state.loading.get('searchResults')"
-    >
+    <div class="p-d-flex p-flex-row p-jc-center" v-if="$store.state.loading.get('searchResults')">
       <div class="p-text-center">
         <ProgressSpinner />
       </div>
@@ -32,11 +29,7 @@
       </template>
       <Column field="name" header="Results">
         <template #body="slotProps">
-          <div
-            class="result-container"
-            @mouseenter="showOverlay($event, slotProps.data)"
-            @mouseleave="hideOverlay()"
-          >
+          <div class="result-container" @mouseenter="showOverlay($event, slotProps.data)" @mouseleave="hideOverlay()">
             <div class="result-icon-container">
               <i
                 :class="getPerspectiveByConceptType(slotProps.data.entityType)"
@@ -56,9 +49,7 @@
                 v-clipboard:copy="copyConceptToClipboard(slotProps.data)"
                 v-clipboard:success="onCopy"
                 v-clipboard:error="onCopyError"
-                v-tooltip.right="
-                  'Copy concept summary to clipboard \n (right click to copy individual properties)'
-                "
+                v-tooltip.right="'Copy concept summary to clipboard \n (right click to copy individual properties)'"
                 @contextmenu="onCopyRightClick"
               />
               <ContextMenu ref="copyMenu" :model="copyMenuItems" />
@@ -68,12 +59,7 @@
       </Column>
     </DataTable>
 
-    <OverlayPanel
-      ref="op"
-      id="overlay-panel"
-      style="width: 25vw"
-      :dismissable="true"
-    >
+    <OverlayPanel ref="op" id="overlay-panel" style="width: 25vw" :dismissable="true">
       <div class="result-overlay">
         <div class="left-side" v-if="hoveredResult.iri">
           <p>
@@ -126,10 +112,7 @@ import { SearchResponse } from "@/models/search/SearchResponse";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
-import {
-  getColourFromType,
-  getIconFromType
-} from "../../helpers/ConceptTypeMethods";
+import { getColourFromType, getIconFromType } from "../../helpers/ConceptTypeMethods";
 
 export default defineComponent({
   name: "SearchResults",
@@ -165,12 +148,8 @@ export default defineComponent({
     },
 
     scrollToTop(): void {
-      const resultsContainer = document.getElementById(
-        "search-results-container"
-      ) as HTMLElement;
-      const scrollBox = resultsContainer?.getElementsByClassName(
-        "p-datatable-wrapper"
-      )[0] as HTMLElement;
+      const resultsContainer = document.getElementById("search-results-container") as HTMLElement;
+      const scrollBox = resultsContainer?.getElementsByClassName("p-datatable-wrapper")[0] as HTMLElement;
       if (scrollBox) {
         scrollBox.scrollTop = 0;
       }
@@ -196,12 +175,7 @@ export default defineComponent({
         .join(", ");
     },
 
-    conceptObjectToCopyString(
-      key: string,
-      value: any,
-      counter: number,
-      totalKeys: number
-    ): { label: string; value: string } | undefined {
+    conceptObjectToCopyString(key: string, value: any, counter: number, totalKeys: number): { label: string; value: string } | undefined {
       let newString = "";
       let returnString = "";
       let newKey = key;
@@ -209,17 +183,12 @@ export default defineComponent({
         if (value.length) {
           if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
             newString = value.map(item => item.name).join(",\n\t");
-          } else if (
-            Object.prototype.hasOwnProperty.call(value[0], "property") &&
-            Object.prototype.hasOwnProperty.call(value[0].property, "name")
-          ) {
+          } else if (Object.prototype.hasOwnProperty.call(value[0], "property") && Object.prototype.hasOwnProperty.call(value[0].property, "name")) {
             newString = value.map(item => item.property.name).join(",\n\t");
           } else {
             LoggerService.warn(
               undefined,
-              "Uncovered object property or missing name found for key: " +
-                key +
-                " at conceptObjectToCopyString within SearchResults.vue"
+              "Uncovered object property or missing name found for key: " + key + " at conceptObjectToCopyString within SearchResults.vue"
             );
           }
           if (counter === totalKeys - 1) {
@@ -234,10 +203,7 @@ export default defineComponent({
             returnString = newKey + ": [\n\t\n],\n";
           }
         }
-      } else if (
-        Object.prototype.toString.call(value) === "[object Object]" &&
-        Object.prototype.hasOwnProperty.call(value, "name")
-      ) {
+      } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "name")) {
         newString = value.name;
         if (counter === totalKeys - 1) {
           returnString = newKey + ": " + newString;
@@ -262,12 +228,7 @@ export default defineComponent({
       let key: string;
       let value: any;
       for ([key, value] of Object.entries(data)) {
-        const copyString = this.conceptObjectToCopyString(
-          key,
-          value,
-          counter,
-          totalKeys
-        );
+        const copyString = this.conceptObjectToCopyString(key, value, counter, totalKeys);
         if (copyString) returnString += copyString.value;
         counter++;
       }
@@ -302,17 +263,10 @@ export default defineComponent({
             await navigator.clipboard
               .writeText(this.copyConceptToClipboard(this.hoveredResult))
               .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Concept copied to clipboard")
-                );
+                this.$toast.add(LoggerService.success("Concept copied to clipboard"));
               })
               .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy concept to clipboard",
-                    err
-                  )
-                );
+                this.$toast.add(LoggerService.error("Failed to copy concept to clipboard", err));
               });
           }
         }
@@ -331,17 +285,10 @@ export default defineComponent({
             await navigator.clipboard
               .writeText(text)
               .then(() => {
-                this.$toast.add(
-                  LoggerService.success(label + " copied to clipboard")
-                );
+                this.$toast.add(LoggerService.success(label + " copied to clipboard"));
               })
               .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy " + label + " to clipboard",
-                    err
-                  )
-                );
+                this.$toast.add(LoggerService.error("Failed to copy " + label + " to clipboard", err));
               });
           }
         });

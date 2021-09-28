@@ -15,6 +15,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.text-with-label-container {
+  padding: 0.25rem 0.5rem 0 0;
+}
 .break-text {
   word-break: break-all;
 }

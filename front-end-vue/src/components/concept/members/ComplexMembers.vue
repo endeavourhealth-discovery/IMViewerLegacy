@@ -1,33 +1,16 @@
 <template>
-  <Dialog
-    :visible="showDialog"
-    :modal="true"
-    :closable="false"
-    :maximizable="true"
-    :style="{ width: '50vw' }"
-    id="complex-members-dialog"
-  >
+  <Dialog :visible="showDialog" :modal="true" :closable="false" :maximizable="true" :style="{ width: '50vw' }" id="complex-members-dialog">
     <template #header>
       Complex members
     </template>
     <div v-if="loading">
       <ProgressSpinner />
     </div>
-    <div
-      v-else
-      v-for="member in complexMembers"
-      :key="member"
-      id="complex-strings-container"
-    >
+    <div v-else v-for="member in complexMembers" :key="member" id="complex-strings-container">
       <p id="html-container" v-html="member"></p>
     </div>
     <template #footer>
-      <Button
-        label="Close"
-        icon="pi pi-times"
-        class="p-button-secondary"
-        @click="closeComplexMembersDialog"
-      />
+      <Button label="Close" icon="pi pi-times" class="p-button-secondary" @click="closeComplexMembersDialog" />
     </template>
   </Dialog>
 </template>
@@ -70,12 +53,7 @@ export default defineComponent({
           this.complexMembers = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get complex members from server",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Failed to get complex members from server", err));
         });
       this.loading = false;
     },

@@ -22,20 +22,17 @@
   <div class="description-container">
     <p class="p-text-bold description-header">File format description:</p>
     <p class="description-text">
-      The address file to be uploaded must contain two columns separated by a
-      single tab character with a .txt extension
+      The address file to be uploaded must contain two columns separated by a single tab character with a .txt extension
     </p>
     <p class="description-text">
       The first line must not contain any header information
     </p>
     <p class="description-text">The first column is a unique numeric row id</p>
     <p class="description-text">
-      The second column is an address string including a postcode at the end
-      with a comma separating the address from the postcode
+      The second column is an address string including a postcode at the end with a comma separating the address from the postcode
     </p>
     <p class="description-text">
-      The third column is the postal region (not mandatory, but useful when you
-      don't know the address candidates postcode)
+      The third column is the postal region (not mandatory, but useful when you don't know the address candidates postcode)
     </p>
   </div>
   <div class="examples-container">
@@ -57,33 +54,15 @@
     </p>
   </div>
   <div class="refresh-button-container">
-    <Button
-      class="refresh-button"
-      label="Refresh table"
-      icon="fa fa-fw fa-redo"
-      @click="refreshActivity"
-      style="margin: 2rem 0 1rem 0"
-    />
+    <Button class="refresh-button" label="Refresh table" icon="fa fa-fw fa-redo" @click="refreshActivity" style="margin: 2rem 0 1rem 0" />
   </div>
   <div id="address-workflow-table-container">
-    <DataTable
-      :value="activity"
-      responsiveLayout="scroll"
-      showGridlines
-      id="address-workflow-table"
-      :scrollable="true"
-      scrollHeight="flex"
-    >
+    <DataTable :value="activity" responsiveLayout="scroll" showGridlines id="address-workflow-table" :scrollable="true" scrollHeight="flex">
       <Column field="DT" header="Time" :style="'word-break: break-all'" />
       <Column field="A" header="Status" :style="'word-break: break-all;'" />
       <Column field="F" header="Action">
         <template #body="slotProps">
-          <button
-            v-if="slotProps.data.F"
-            type="button"
-            @click="download(slotProps.data.F)"
-            class="p-button button-download pi pi-download"
-          />
+          <button v-if="slotProps.data.F" type="button" @click="download(slotProps.data.F)" class="p-button button-download pi pi-download" />
         </template>
       </Column>
     </DataTable>

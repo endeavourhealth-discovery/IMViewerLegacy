@@ -22,9 +22,7 @@ export default createStore({
     currentUser: {} as User,
     registeredUsername: "" as string,
     isLoggedIn: false as boolean,
-    snomedLicenseAccepted: localStorage.getItem(
-      "snomedLicenseAccepted"
-    ) as string,
+    snomedLicenseAccepted: localStorage.getItem("snomedLicenseAccepted") as string,
     historyCount: 0 as number,
     focusTree: false as boolean,
     treeLocked: true as boolean,
@@ -54,13 +52,14 @@ export default createStore({
       types: any[];
     },
     quickFiltersStatus: new Map<string, boolean>(),
-    moduleSelectedEntities: {
-      ontology: IM.MODULE_ONTOLOGY,
-      sets: IM.MODULE_SETS,
-      dataModel: IM.MODULE_DATA_MODEL,
-      catalogue: IM.MODULE_CATALOGUE,
-      queries: IM.MODULE_QUERIES
-    },
+    moduleSelectedEntities: new Map([
+      ["Ontology", IM.MODULE_ONTOLOGY],
+      ["Sets", IM.MODULE_SETS],
+      ["DataModel", IM.MODULE_DATA_MODEL],
+      ["Catalogue", IM.MODULE_CATALOGUE],
+      ["Queries", IM.MODULE_QUERIES]
+    ]),
+    activeModule: "default",
     conceptActivePanel: 0 as number
   },
   mutations: {
@@ -120,33 +119,17 @@ export default createStore({
       state.selectedEntityType = type;
     },
     updateModuleSelectedEntities(state, data) {
-      switch (data.module) {
-        case "Set":
-          state.moduleSelectedEntities.sets = data.iri;
-          break;
-        case "RecordModel":
-          state.moduleSelectedEntities.dataModel = data.iri;
-          break;
-        case "Class":
-          state.moduleSelectedEntities.ontology = data.iri;
-          break;
-        case "Query":
-          state.moduleSelectedEntities.queries = data.iri;
-          break;
-        // add case for catalogue when type in known
-        default:
-          break;
-      }
+      state.moduleSelectedEntities.set(data.module, data.iri);
     },
     updateConceptActivePanel(state, number) {
       state.conceptActivePanel = number;
+    },
+    updateActiveModule(state, module) {
+      state.activeModule = module;
     }
   },
   actions: {
-    async fetchSearchResults(
-      { commit },
-      data: { searchRequest: SearchRequest; cancelToken: any }
-    ) {
+    async fetchSearchResults({ commit }, data: { searchRequest: SearchRequest; cancelToken: any }) {
       let searchResults: any;
       let success = "true";
       await EntityService.advancedSearch(data.searchRequest, data.cancelToken)
@@ -184,9 +167,7 @@ export default createStore({
         if (res.status === 200 && res.user) {
           commit("updateIsLoggedIn", true);
           const loggedInUser = res.user;
-          const foundAvatar = avatars.find(
-            avatar => avatar.value === loggedInUser.avatar.value
-          );
+          const foundAvatar = avatars.find(avatar => avatar.value === loggedInUser.avatar.value);
           if (!foundAvatar) {
             loggedInUser.avatar = avatars[0];
           }

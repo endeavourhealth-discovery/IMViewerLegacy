@@ -2,22 +2,10 @@
   <g-map :disableUI="false" :zoom="12" mapType="roadmap" :pin="pin" />
   <div id="address-search-container">
     <div class="search-button-container">
-      <InputText
-        type="text"
-        v-model="value"
-        placeholder='Enter address, e.g. "10 Downing St,Westminster,London,SW1A2AA"'
-        @keyup.enter="search()"
-      />
+      <InputText type="text" v-model="value" placeholder='Enter address, e.g. "10 Downing St,Westminster,London,SW1A2AA"' @keyup.enter="search()" />
       <Button class="btn-search" icon="fas fa-search" @click="search()" />
     </div>
-    <Dropdown
-      v-model="selectedArea"
-      :options="postalAreas"
-      optionLabel="display"
-      optionValue="value"
-      placeholder="Postal Area"
-      style="width: 14rem;"
-    />
+    <Dropdown v-model="selectedArea" :options="postalAreas" optionLabel="display" optionValue="value" placeholder="Postal Area" style="width: 14rem;" />
   </div>
   <div class="content" ref="uprn-info" :hidden="!match.Matched">
     <h1 id="firstHeading" class="firstHeading">UPRN : {{ match.UPRN }}</h1>
@@ -160,9 +148,7 @@ export default defineComponent({
           }
         })
         .catch(error => {
-          this.$toast.add(
-            LoggerService.error("Error searching address", error)
-          );
+          this.$toast.add(LoggerService.error("Error searching address", error));
         });
     },
     async getUprn() {

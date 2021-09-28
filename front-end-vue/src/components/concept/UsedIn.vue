@@ -81,9 +81,7 @@ export default defineComponent({
           this.usages = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get usages from server", err)
-          );
+          this.$toast.add(LoggerService.error("Failed to get usages from server", err));
         });
     },
 
@@ -93,12 +91,7 @@ export default defineComponent({
           this.recordsTotal = res.data;
         })
         .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get usages record count from server",
-              err
-            )
-          );
+          this.$toast.add(LoggerService.error("Failed to get usages record count from server", err));
         });
     },
 
@@ -112,10 +105,7 @@ export default defineComponent({
     },
 
     handleSelected() {
-      if (
-        this.selected != null &&
-        Object.prototype.hasOwnProperty.call(this.selected, "@id")
-      ) {
+      if (this.selected != null && Object.prototype.hasOwnProperty.call(this.selected, "@id")) {
         this.$router.push({
           name: "Concept",
           params: { selectedIri: this.selected["@id"] }
@@ -124,12 +114,8 @@ export default defineComponent({
     },
 
     scrollToTop(): void {
-      const resultsContainer = document.getElementById(
-        "search-results-container"
-      ) as HTMLElement;
-      const scrollBox = resultsContainer?.getElementsByClassName(
-        "p-datatable-wrapper"
-      )[0] as HTMLElement;
+      const resultsContainer = document.getElementById("search-results-container") as HTMLElement;
+      const scrollBox = resultsContainer?.getElementsByClassName("p-datatable-wrapper")[0] as HTMLElement;
       if (scrollBox) {
         scrollBox.scrollTop = 0;
       }
@@ -140,27 +126,16 @@ export default defineComponent({
     },
 
     setScrollHeight() {
-      const container = document.getElementById(
-        "usedin-table-container"
-      ) as HTMLElement;
-      const paginator = container?.getElementsByClassName(
-        "p-paginator"
-      )[0] as HTMLElement;
+      const container = document.getElementById("usedin-table-container") as HTMLElement;
+      const paginator = container?.getElementsByClassName("p-paginator")[0] as HTMLElement;
       if (container && paginator) {
-        const height =
-          container.getBoundingClientRect().height -
-          paginator.getBoundingClientRect().height -
-          1 +
-          "px";
+        const height = container.getBoundingClientRect().height - paginator.getBoundingClientRect().height - 1 + "px";
         this.scrollHeight = height;
       } else if (container && !paginator) {
         const height = container.getBoundingClientRect().height - 1 + "px";
         this.scrollHeight = height;
       } else {
-        LoggerService.error(
-          undefined,
-          "Failed to set usedIn table scroll height. Required elements not found."
-        );
+        LoggerService.error(undefined, "Failed to set usedIn table scroll height. Required elements not found.");
       }
     }
   }

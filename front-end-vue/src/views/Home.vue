@@ -2,10 +2,7 @@
   <SideNav @hierarchyFocusSelected="focusHierarchy = true" />
   <div class="layout-main">
     <div class="main-grid">
-      <SidebarControl
-        :focusHierarchy="focusHierarchy"
-        @hierarchyFocused="focusHierarchy = false"
-      />
+      <SidebarControl :focusHierarchy="focusHierarchy" @hierarchyFocused="focusHierarchy = false" />
       <router-view />
     </div>
   </div>
@@ -40,35 +37,20 @@ export default defineComponent({
       if (this.$route.name === "Home" || this.$route.name === "Dashboard") {
         switch (this.sideNavHierarchyFocus.name) {
           case "InformationModel":
-            this.$store.commit(
-              "updateConceptIri",
-              "http://endhealth.info/im#InformationModel"
-            );
+            this.$store.commit("updateConceptIri", "http://endhealth.info/im#InformationModel");
             break;
           case "Ontology":
-            this.$store.commit(
-              "updateConceptIri",
-              "http://endhealth.info/im#DiscoveryOntology"
-            );
+            this.$store.commit("updateConceptIri", "http://endhealth.info/im#DiscoveryOntology");
             break;
           case "ValueSets":
-            this.$store.commit(
-              "updateConceptIri",
-              "http://endhealth.info/im#Sets"
-            );
+            this.$store.commit("updateConceptIri", "http://endhealth.info/im#Sets");
             break;
           case "Queries":
-            this.$store.commit(
-              "updateConceptIri",
-              "http://endhealth.info/im#QT_QueryTemplates"
-            );
+            this.$store.commit("updateConceptIri", "http://endhealth.info/im#QT_QueryTemplates");
             break;
         }
       } else if (this.$route.name === "Concept") {
-        this.$store.commit(
-          "updateConceptIri",
-          this.$route.params.selectedIri as string
-        );
+        this.$store.commit("updateConceptIri", this.$route.params.selectedIri as string);
       }
     }
   }

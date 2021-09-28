@@ -1,11 +1,22 @@
 <template>
   <div id="semantic-properties-container" :style="{ width: size }">
-    <DataTable
-      :value="data"
-      :paginator="data.length > 5 ? true : false"
-      :rows="5"
-      id="semantic-properties-table"
-    >
+    <div class="head-container">
+      <strong class="label">{{ label }}: </strong>
+      <span>&nbsp;({{ data.length }})</span>
+      <Button
+        :icon="buttonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
+        class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
+        @click="setButtonExpanded"
+        v-styleclass="{
+          selector: '#semantic-properties-table',
+          enterClass: 'p-d-none',
+          enterActiveClass: 'my-fadein',
+          leaveActiveClass: 'my-fadeout',
+          leaveToClass: 'p-d-none'
+        }"
+      />
+    </div>
+    <DataTable :value="data" :paginator="data.length > 5 ? true : false" :rows="5" id="semantic-properties-table" class="p-d-none">
       <template #empty>
         No records found
       </template>
@@ -41,6 +52,11 @@ export default defineComponent({
     data: { type: Array as PropType<Array<unknown>> },
     size: { type: String }
   },
+  data() {
+    return {
+      buttonExpanded: false
+    };
+  },
   methods: {
     navigate(iri: any) {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
@@ -49,13 +65,54 @@ export default defineComponent({
           name: currentRoute,
           params: { selectedIri: iri }
         });
+    },
+
+    setButtonExpanded() {
+      this.buttonExpanded ? (this.buttonExpanded = false) : (this.buttonExpanded = true);
     }
   }
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+#semantic-properties-table {
+  margin: 0.5rem 0 0 0;
+}
+
 div.link {
   cursor: pointer;
+}
+
+.head-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+@keyframes my-fadein {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes my-fadeout {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.my-fadein {
+  animation: my-fadein 150ms linear;
+}
+
+.my-fadeout {
+  animation: my-fadeout 150ms linear;
 }
 </style>
