@@ -15,7 +15,13 @@
           </template>
           <div id="member-search-results-container" :style="panelLeftHeight">
             <MemberSearchResults :searchResults="searchResults" :loading="loading" @searchResultsSelected="updateSelectedSearchResults" />
-            <MemberFilters v-if="Object.keys(filterOptions).length === 3" :search="search" :filterOptions="filterOptions" :configs="configs" @selectedFiltersUpdated="updateSelectedFilters" />
+            <MemberFilters
+              v-if="Object.keys(filterOptions).length === 3"
+              :search="search"
+              :filterOptions="filterOptions"
+              :configs="configs"
+              @selectedFiltersUpdated="updateSelectedFilters"
+            />
           </div>
         </TabPanel>
         <!-- <TabPanel>
@@ -78,10 +84,8 @@ import axios from "axios";
 import EntityService from "@/services/EntityService";
 import ConfigService from "@/services/ConfigService";
 import LoggerService from "@/services/LoggerService";
-import { IM } from "@/vocabulary/IM";
 import MemberPickerTable from "@/components/edit/memberEditor/MemberPickerTable.vue";
 import MemberFilters from "@/components/edit/memberEditor/MemberFilters.vue";
-import { mapState } from "vuex";
 import { MemberType } from "@/models/MemberType";
 
 export default defineComponent({

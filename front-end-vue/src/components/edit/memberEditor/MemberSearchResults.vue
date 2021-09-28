@@ -25,11 +25,7 @@
     </template>
     <Column field="name" header="Results">
       <template #body="slotProps">
-        <div
-          class="result-container"
-          @mouseover="showSearchResultOverlay($event, slotProps.data)"
-          @mouseleave="hideOverlay"
-        >
+        <div class="result-container" @mouseover="showSearchResultOverlay($event, slotProps.data)" @mouseleave="hideOverlay">
           <div class="result-icon-container">
             <i
               :class="getPerspectiveByConceptType(slotProps.data.conceptType)"
@@ -95,10 +91,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import {
-  getColourFromType,
-  getIconFromType
-} from "@/helpers/ConceptTypeMethods";
+import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import LoggerService from "@/services/LoggerService";
 
@@ -124,11 +117,11 @@ export default defineComponent({
     return {
       selectedResults: [] as any[],
       hoveredResult: {} as ConceptSummary | any,
-      tableHeight: "",
+      tableHeight: ""
     };
   },
   methods: {
-    onResize():void {
+    onResize(): void {
       this.setDataTableHeight();
     },
 
@@ -163,7 +156,7 @@ export default defineComponent({
       x.hide();
     },
 
-    setDataTableHeight():void {
+    setDataTableHeight(): void {
       const container = document.getElementById("member-search-results-container") as HTMLElement;
       const table = container.getElementsByClassName("p-datatable")[0] as HTMLElement;
       const filters = container.getElementsByClassName("filters-title-container")[0] as HTMLElement;
@@ -178,13 +171,13 @@ export default defineComponent({
           tableHeight -= tableHeader.getBoundingClientRect().height;
         }
         if (paginator) {
-          tableHeight -= paginator.getBoundingClientRect().height
+          tableHeight -= paginator.getBoundingClientRect().height;
         }
         this.tableHeight = tableHeight + "px";
       } else {
         LoggerService.error(undefined, "Failed to set member editor search results table height. Elements required not found");
       }
-    },
+    }
   }
 });
 </script>

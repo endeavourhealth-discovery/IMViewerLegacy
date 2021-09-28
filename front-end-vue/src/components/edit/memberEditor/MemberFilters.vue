@@ -2,12 +2,12 @@
   <div class="filters-title-container">
     <p class="title">Search filters:</p>
     <div class="filters-container">
-      <!-- <div class="quick-filters-container">
+      <div class="quick-filters-container">
         <div class="quick-filter-container">
           <label>Include legacy:</label>
           <InputSwitch v-model="includeLegacy" />
         </div>
-      </div> -->
+      </div>
       <div class="p-field">
         <span class="p-float-label">
           <MultiSelect id="status" v-model="selectedStatus" @change="checkForSearch" :options="statusOptions" optionLabel="name" display="chip" />
@@ -33,9 +33,6 @@
 </template>
 
 <script lang="ts">
-import ConfigService from "@/services/ConfigService";
-import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -44,9 +41,9 @@ export default defineComponent({
   props: ["search", "filterOptions", "configs"],
   emits: ["selectedFiltersUpdated"],
   watch: {
-    // includeLegacy(newValue) {
-    //   this.setLegacy(newValue);
-    // },
+    includeLegacy(newValue) {
+      this.setLegacy(newValue);
+    },
     selectedStatus() {
       this.$emit("selectedFiltersUpdated", { status: this.selectedStatus, scheme: this.selectedSchemes, type: this.selectedTypes });
     },
@@ -61,8 +58,6 @@ export default defineComponent({
     this.statusOptions = this.filterOptions.status;
     this.schemeOptions = this.filterOptions.scheme;
     this.typeOptions = this.filterOptions.type;
-    // await this.getFilterOptions();
-    // this.setFilters();
     this.setDefaults();
   },
   data() {
@@ -78,57 +73,29 @@ export default defineComponent({
   },
   methods: {
     checkForSearch() {
-      // this.updateStoreSelectedFilters();
       this.search();
     },
-
-    // setFilters() {
-    //   this.$store.commit("updateFilterOptions", {
-    //     status: this.statusOptions,
-    //     scheme: this.schemeOptions,
-    //     type: this.typeOptions
-    //   });
-    // },
 
     setDefaults() {
       if (!this.selectedStatus.length && !this.selectedSchemes.length && !this.selectedTypes.length) {
         this.selectedStatus = this.statusOptions.filter(item => this.configs.statusOptions.includes(item.name));
         this.selectedSchemes = this.schemeOptions.filter(item => this.configs.schemeOptions.includes(item.name));
         this.selectedTypes = this.typeOptions.filter(item => this.configs.typeOptions.includes(item.name));
-        // this.updateStoreSelectedFilters();
       }
-
-      // if (this.quickFiltersStatus.includeLegacy) {
-      //   this.includeLegacy = this.quickFiltersStatus.includeLegacy;
-      // }
     },
 
-    // updateStoreSelectedFilters() {
-    //   this.$store.commit("updateSelectedFilters", {
-    //     status: this.selectedStatus,
-    //     schemes: this.selectedSchemes,
-    //     types: this.selectedTypes
-    //   });
-    // },
-
-
-
-    // setLegacy(include: boolean) {
-    //   const emisScheme = this.selectedSchemes.findIndex(scheme => scheme.iri === "http://endhealth.info/emis#");
-    //   if (include) {
-    //     if (emisScheme === -1) {
-    //       this.selectedSchemes.push(this.schemeOptions.find(scheme => scheme.iri === "http://endhealth.info/emis#"));
-    //     }
-    //   } else {
-    //     if (emisScheme > -1) {
-    //       this.selectedSchemes.splice(emisScheme, 1);
-    //     }
-    //   }
-    //   this.$store.commit("updateQuickFiltersStatus", {
-    //     key: "includeLegacy",
-    //     value: include
-    //   });
-    // }
+    setLegacy(include: boolean) {
+      const emisScheme = this.selectedSchemes.findIndex(scheme => scheme.iri === "http://endhealth.info/emis#");
+      if (include) {
+        if (emisScheme === -1) {
+          this.selectedSchemes.push(this.schemeOptions.find(scheme => scheme.iri === "http://endhealth.info/emis#"));
+        }
+      } else {
+        if (emisScheme > -1) {
+          this.selectedSchemes.splice(emisScheme, 1);
+        }
+      }
+    }
   }
 });
 </script>
