@@ -82,6 +82,7 @@ import { IM } from "@/vocabulary/IM";
 import MemberPickerTable from "@/components/edit/memberEditor/MemberPickerTable.vue";
 import MemberFilters from "@/components/edit/memberEditor/MemberFilters.vue";
 import { mapState } from "vuex";
+import { MemberType } from "@/models/MemberType";
 
 export default defineComponent({
   name: "MemberEditor",
@@ -166,20 +167,20 @@ export default defineComponent({
     separateMembersByType() {
       this.members.forEach((member: any) => {
         switch (member.type) {
-          case "INCLUDED":
+          case MemberType.INCLUDED:
             this.included.push(member);
             break;
-          case "EXCLUDED":
+          case MemberType.EXCLUDED:
             this.excluded.push(member);
             break;
-          case "COMPLEX":
+          case MemberType.COMPLEX:
             this.complex.push(member);
             break;
-          case "SUBSET":
+          case MemberType.SUBSET:
             this.subSets.push(member);
             break;
           default:
-            console.log(`Unknown member ${member.type} type encountered in memberEditor separateMembersByType`);
+            console.log(`Unknown member type "${member.type}" encountered in memberEditor separateMembersByType`);
             break;
         }
       });
@@ -272,13 +273,13 @@ export default defineComponent({
     addToActiveMembersPanel() {
       switch (this.activeIndexRight) {
         case 0:
-          this.included = this.included.concat(this.generateNewMembers("MemberIncluded"));
+          this.included = this.included.concat(this.generateNewMembers(MemberType.INCLUDED));
           break;
         case 1:
-          this.excluded = this.excluded.concat(this.generateNewMembers("MemberXcluded"));
+          this.excluded = this.excluded.concat(this.generateNewMembers(MemberType.EXCLUDED));
           break;
         case 2:
-          this.subSets = this.subSets.concat(this.generateNewMembers("Subset"));
+          this.subSets = this.subSets.concat(this.generateNewMembers(MemberType.SUBSET));
           break;
       }
     },

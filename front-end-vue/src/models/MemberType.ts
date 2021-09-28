@@ -1,0 +1,7 @@
+export enum MemberType {
+  INCLUDED = "INCLUDED",
+  EXCLUDED = "EXCLUDED",
+  COMPLEX = "COMPLEX",
+  SUBSET = "SUBSET",
+  EXPANDED = "EXPANDED"
+}
