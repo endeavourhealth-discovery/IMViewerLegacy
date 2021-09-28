@@ -161,7 +161,6 @@ export default defineComponent({
       const table = container.getElementsByClassName("p-datatable")[0] as HTMLElement;
       const filters = container.getElementsByClassName("filters-title-container")[0] as HTMLElement;
       const paginator = container.getElementsByClassName("p-paginator")[0] as HTMLElement;
-      const header = container.getElementsByClassName("p-datatable-thead")[0] as HTMLElement;
       if (container && table) {
         let tableHeight = container.getBoundingClientRect().height;
         if (filters) {
