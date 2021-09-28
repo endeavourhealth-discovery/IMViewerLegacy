@@ -1,14 +1,10 @@
 <template>
-  <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
-    <div class="p-text-center">
-      <ProgressSpinner />
-    </div>
-  </div>
   <DataTable
-    v-else
+    :scrollHeight="tableHeight"
     :value="searchResults"
     v-model:selection="selectedResults"
     @row-select="onSearchResultSelect"
+    @row-unselect="onSearchResultSelect"
     selectionMode="multiple"
     :metaKeySelection="false"
     dataKey="iri"
@@ -104,18 +100,38 @@ import {
   getIconFromType
 } from "@/helpers/ConceptTypeMethods";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "MemberSearchResults",
   props: ["searchResults", "loading"],
   emits: ["searchResultsSelected"],
+  watch: {
+    loading(newValue) {
+      if (newValue) {
+        this.setDataTableHeight();
+      }
+    }
+  },
+  mounted() {
+    window.addEventListener("resize", this.onResize);
+    this.onResize();
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.onResize);
+  },
   data() {
     return {
       selectedResults: [] as any[],
-      hoveredResult: {} as ConceptSummary | any
+      hoveredResult: {} as ConceptSummary | any,
+      tableHeight: "",
     };
   },
   methods: {
+    onResize():void {
+      this.setDataTableHeight();
+    },
+
     onSearchResultSelect() {
       this.$emit("searchResultsSelected", this.selectedResults);
     },
@@ -145,7 +161,32 @@ export default defineComponent({
     hideOverlay(): void {
       const x = this.$refs.memberOP as any;
       x.hide();
-    }
+    },
+
+    setDataTableHeight():void {
+      const container = document.getElementById("member-search-results-container") as HTMLElement;
+      const table = container.getElementsByClassName("p-datatable")[0] as HTMLElement;
+      const filters = container.getElementsByClassName("filters-title-container")[0] as HTMLElement;
+      const paginator = container.getElementsByClassName("p-paginator")[0] as HTMLElement;
+      const tableHeader = container.getElementsByClassName("p-datatable-thead")[0] as HTMLElement;
+      console.log(container);
+      console.log(table);
+      console.log(filters);
+      console.log(paginator);
+      if (container && table && filters && tableHeader) {
+        let tableHeight = container.getBoundingClientRect().height - filters.getBoundingClientRect().height - tableHeader.getBoundingClientRect().height;
+        if (paginator) {
+          tableHeight -= paginator.getBoundingClientRect().height
+        }
+        this.tableHeight = tableHeight + "px";
+      } else {
+        console.log(container)
+        console.log(table)
+        console.log(filters)
+        console.log(paginator)
+        LoggerService.error(undefined, "Failed to set member editor search results table height. Elements required not found");
+      }
+    },
   }
 });
 </script>

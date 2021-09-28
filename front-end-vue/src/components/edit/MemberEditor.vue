@@ -15,6 +15,7 @@
           </template>
           <div id="member-search-results-container" :style="panelLeftHeight">
             <MemberSearchResults :searchResults="searchResults" :loading="loading" @searchResultsSelected="updateSelectedSearchResults" />
+            <MemberFilters v-if="Object.keys(filterOptions).length === 3" :search="search" :filterOptions="filterOptions" :configs="configs" @selectedFiltersUpdated="updateSelectedFilters" />
           </div>
         </TabPanel>
         <!-- <TabPanel>
@@ -75,9 +76,12 @@ import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
 import axios from "axios";
 import EntityService from "@/services/EntityService";
+import ConfigService from "@/services/ConfigService";
 import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 import MemberPickerTable from "@/components/edit/memberEditor/MemberPickerTable.vue";
+import MemberFilters from "@/components/edit/memberEditor/MemberFilters.vue";
+import { mapState } from "vuex";
 
 export default defineComponent({
   name: "MemberEditor",
@@ -86,7 +90,7 @@ export default defineComponent({
     contentHeight: { type: String, required: true },
     updatedMembers: { type: Object, required: true }
   },
-  components: { MemberSearchResults, MemberPickerTable },
+  components: { MemberSearchResults, MemberPickerTable, MemberFilters },
   emits: ["members-updated"],
   watch: {
     contentHeight() {
@@ -98,6 +102,7 @@ export default defineComponent({
     }
   },
   mounted() {
+    this.getFilterOptions();
     this.separateMembersByType();
     this.setPanelHeights();
   },
@@ -116,10 +121,47 @@ export default defineComponent({
       searchResults: [] as any[],
       activeIndexLeft: 0,
       activeIndexRight: 0,
-      selectedSearchResults: [] as any[]
+      selectedSearchResults: [] as any[],
+      filterOptions: {} as any,
+      selectedFilters: {} as any,
+      configs: {} as any
     };
   },
   methods: {
+    async getFilterOptions() {
+      await ConfigService.getFilterDefaults()
+        .then(res => {
+          this.configs = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(LoggerService.error("Failed to get filter configs from server", err));
+        });
+
+      await EntityService.getNamespaces()
+        .then(res => {
+          this.filterOptions.scheme = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(LoggerService.error("Failed to get scheme filter options from server", err));
+        });
+
+      await EntityService.getEntityChildren("http://endhealth.info/im#Status")
+        .then(res => {
+          this.filterOptions.status = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(LoggerService.error("Failed to get status filter options from server", err));
+        });
+
+      await EntityService.getEntityChildren("http://endhealth.info/im#ModellingEntityType")
+        .then(res => {
+          this.filterOptions.type = res.data;
+        })
+        .catch(err => {
+          this.$toast.add(LoggerService.error("Failed to get type filter options from server", err));
+        });
+    },
+
     separateMembersByType() {
       this.members.forEach((member: any) => {
         switch (member.type) {
@@ -145,9 +187,9 @@ export default defineComponent({
       searchRequest.sortBy = SortBy.Usage;
       searchRequest.page = 1;
       searchRequest.size = 100;
-      searchRequest.schemeFilter = [IM.DISCOVERY_CODE, IM.CODE_SCHEME_SNOMED, IM.CODE_SCHEME_TERMS];
-      searchRequest.statusFilter = ["http://endhealth.info/im#Active", "http://endhealth.info/im#Draft"];
-      searchRequest.typeFilter = ["http://www.w3.org/2002/07/owl#Class"];
+      searchRequest.schemeFilter = this.selectedFilters.scheme.map((scheme: any) => scheme.iri);
+      searchRequest.statusFilter = this.selectedFilters.status.map((status: any) => status["@id"]);
+      searchRequest.typeFilter = this.selectedFilters.type.map((type: any) => type["@id"]);
 
       if (this.request) {
         await this.request.cancel();
@@ -232,6 +274,12 @@ export default defineComponent({
           this.subSets = this.subSets.concat(this.generateNewMembers("Subset"));
           break;
       }
+    },
+
+    updateSelectedFilters(data: any) {
+      this.selectedFilters.status = data.status;
+      this.selectedFilters.type = data.type;
+      this.selectedFilters.scheme = data.scheme;
     }
   }
 });
@@ -275,6 +323,8 @@ export default defineComponent({
   max-width: calc(50% - 2.357rem);
   height: 100%;
   flex-grow: 1;
+  display: flex;
+  flex-flow: column nowrap;
 }
 
 .right-side {
@@ -287,15 +337,8 @@ export default defineComponent({
   margin-right: 0.25rem;
 }
 
-#member-search-results-container ::v-deep(.p-datatable) {
+#member-search-results-container {
   height: 100%;
-  display: flex;
-  flex-flow: column;
-  justify-content: flex-start;
-}
-
-#member-search-results-container ::v-deep(.p-datatable-wrapper) {
-  flex-grow: 6;
 }
 
 #included-panel-content ::v-deep(.p-datatable) {
