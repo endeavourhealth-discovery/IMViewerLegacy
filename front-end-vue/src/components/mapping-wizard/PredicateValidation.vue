@@ -2,15 +2,12 @@
   <Card id="container">
     <template #title> New predicates that need to be created before proceeding</template>
     <template #content>
-      <Listbox
-        :options="newPredicates"
-        :emptyMessage="loading ? 'Loading' : 'No new predicates'"
-      />
+      <Listbox :options="newPredicates" :emptyMessage="loading ? 'Loading' : 'No new predicates'" />
     </template>
   </Card>
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
     <Button label="Back" @click="prevPage" />
-    <Button label="Next" @click="nextPage" :loading="loading" :disabled="newPredicates.length"/>
+    <Button label="Next" @click="nextPage" :loading="loading" :disabled="newPredicates.length" />
   </div>
 </template>
 
@@ -26,15 +23,15 @@ export default defineComponent({
   props: {
     formObject: {
       type: Object as PropType<MappingFormObject>,
-      required: true,
-    },
+      required: true
+    }
   },
   computed: {},
   data() {
     return {
       pageIndex: 3,
-      newPredicates: [],
-      loading: false,
+      newPredicates: [] as string[],
+      loading: false
     };
   },
   async mounted() {
@@ -44,9 +41,7 @@ export default defineComponent({
   },
   methods: {
     async getNewPredicates() {
-      return await MappingService.getNewPredicates(
-        this.getNewPredicateFormData()
-      );
+      return await MappingService.getNewPredicates(this.getNewPredicateFormData());
     },
     getNewPredicateFormData(): FormData {
       const formData = new FormData();
@@ -55,15 +50,15 @@ export default defineComponent({
     },
     async nextPage() {
       this.$emit("next-page", {
-        pageIndex: this.pageIndex,
+        pageIndex: this.pageIndex
       });
     },
     prevPage() {
       this.$emit("prev-page", {
-        pageIndex: this.pageIndex,
+        pageIndex: this.pageIndex
       });
-    },
-  },
+    }
+  }
 });
 </script>
 

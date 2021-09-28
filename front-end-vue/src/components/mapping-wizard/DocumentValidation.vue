@@ -8,7 +8,7 @@
   <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
     <Button label="Back" @click="prevPage" />
     <Button label="Download" @click="download" />
-    <Button label="Next" @click="nextPage" />
+    <Button label="Next" @click="nextPage" :disabled="!valid" />
   </div>
 </template>
 
@@ -16,6 +16,8 @@
 import * as monaco from "monaco-editor";
 import { defineComponent, PropType } from "vue";
 import { MappingFormObject } from "@/models/mapping/MappingFormObject";
+import MappingService from "@/services/MappingService";
+import { MapDocumentError } from "@/models/mapping/MapDocumentError";
 
 export default defineComponent({
   name: "DocumentValidation",
@@ -23,17 +25,22 @@ export default defineComponent({
   props: {
     formObject: {
       type: Object as PropType<MappingFormObject>,
-      required: true,
-    },
+      required: true
+    }
   },
-  computed: {},
+  computed: {
+    valid(): boolean {
+      return !this.error.message;
+    }
+  },
   data() {
     return {
       mapDocumentString: "",
       pageIndex: 2,
+      error: {} as MapDocumentError
     };
   },
-  mounted() {
+  async mounted() {
     this.mapDocumentString = this.formObject.mapDocumentString;
     this.initMonaco();
   },
@@ -41,17 +48,35 @@ export default defineComponent({
     monaco.editor.getModels()[0].dispose();
   },
   methods: {
-    initMonaco() {
+    async initMonaco() {
       monaco.editor.create(document.getElementById("monaco-container")!, {
         value: this.formObject.mapDocumentString,
         roundedSelection: false,
         scrollBeyondLastLine: false,
-        readOnly: false,
+        readOnly: false
       });
 
-      monaco.editor.getModels()[0].onDidChangeContent((event) => {
+      monaco.editor.getModels()[0].onDidChangeContent(async () => {
         this.mapDocumentString = monaco.editor.getModels()[0].getValue();
+        const model = monaco.editor.getModels()[0];
+        this.error = await MappingService.getMapDocumentError(this.getFormData());
+        const lineContent = this.error.lineNumber ? model.getLineContent(this.error.lineNumber) : model.getLineContent(model.getLineCount());
+        monaco.editor.setModelMarkers(model, "owner", [
+          {
+            startLineNumber: this.error.lineNumber || model.getLineCount(),
+            startColumn: 0,
+            endLineNumber: this.error.lineNumber || model.getLineCount(),
+            endColumn: lineContent.length + 1,
+            message: this.error.message,
+            severity: monaco.MarkerSeverity.Error
+          }
+        ]);
       });
+    },
+    getFormData(): FormData {
+      const formData = new FormData();
+      formData.append("mapDocument", new Blob([this.mapDocumentString]));
+      return formData;
     },
     download() {
       const blob = new Blob([this.mapDocumentString]);
@@ -69,17 +94,17 @@ export default defineComponent({
       this.$emit("next-page", {
         formData: {
           mapDocumentString: this.mapDocumentString,
-          mapDocument: new Blob([this.mapDocumentString]),
+          mapDocument: new Blob([this.mapDocumentString])
         },
-        pageIndex: this.pageIndex,
+        pageIndex: this.pageIndex
       });
     },
     prevPage() {
       this.$emit("prev-page", {
-        pageIndex: this.pageIndex,
+        pageIndex: this.pageIndex
       });
-    },
-  },
+    }
+  }
 });
 </script>
 

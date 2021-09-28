@@ -1,4 +1,5 @@
 import { MapDocument } from "@/models/mapping/MapDocument";
+import { MapDocumentError } from "@/models/mapping/MapDocumentError";
 import axios from "axios";
 
 export default class MappingService {
@@ -9,7 +10,7 @@ export default class MappingService {
     return response.data;
   }
 
-  public static async getNewPredicates(formData: FormData) {
+  public static async getNewPredicates(formData: FormData): Promise<string[]> {
     const response = await axios.post(this.api + "api/mapping/newPredicates", formData);
     return response.data;
   }
@@ -26,6 +27,11 @@ export default class MappingService {
 
   static async getMapDocument(id: number): Promise<MapDocument> {
     const response = await axios.get(this.api + "api/mapping/mapDocument/" + id);
+    return response.data;
+  }
+
+  static async getMapDocumentError(formData: FormData): Promise<MapDocumentError> {
+    const response = await axios.post(this.api + "api/mapping/mapDocument/errors", formData);
     return response.data;
   }
 }
