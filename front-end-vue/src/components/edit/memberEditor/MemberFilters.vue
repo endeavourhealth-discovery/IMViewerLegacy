@@ -138,4 +138,8 @@ label {
   justify-content: flex-start;
   align-items: flex-start;
 }
+
+.p-multiselect {
+  width: 100%;
+}
 </style>

@@ -13,7 +13,7 @@
             <i class="fas fa-search icon-header" aria-hidden="true" />
             <span>Search Results</span>
           </template>
-          <div id="member-search-results-container" :style="panelLeftHeight">
+          <div v-if="panelLeftHeight" id="member-search-results-container" :style="panelLeftHeight">
             <MemberSearchResults :searchResults="searchResults" :loading="loading" @searchResultsSelected="updateSelectedSearchResults" />
             <MemberFilters
               v-if="Object.keys(filterOptions).length === 3"
@@ -319,6 +319,7 @@ export default defineComponent({
   justify-content: flex-start;
   width: 100%;
   gap: 1rem;
+  flex-grow: 10;
 }
 
 .center-buttons {

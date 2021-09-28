@@ -1,6 +1,6 @@
 <template>
   <DataTable
-    :scrollHeight="tableHeight"
+    :scrollHeight="scrollHeight"
     :value="searchResults"
     v-model:selection="selectedResults"
     @row-select="onSearchResultSelect"
@@ -100,9 +100,9 @@ export default defineComponent({
   props: ["searchResults", "loading"],
   emits: ["searchResultsSelected"],
   watch: {
-    loading(newValue) {
+    searchResults(newValue) {
       if (newValue) {
-        this.setDataTableHeight();
+        this.setScrollHeight();
       }
     }
   },
@@ -117,12 +117,12 @@ export default defineComponent({
     return {
       selectedResults: [] as any[],
       hoveredResult: {} as ConceptSummary | any,
-      tableHeight: ""
+      scrollHeight: "500px"
     };
   },
   methods: {
     onResize(): void {
-      this.setDataTableHeight();
+      this.setScrollHeight();
     },
 
     onSearchResultSelect() {
@@ -156,24 +156,23 @@ export default defineComponent({
       x.hide();
     },
 
-    setDataTableHeight(): void {
+    setScrollHeight(): void {
       const container = document.getElementById("member-search-results-container") as HTMLElement;
       const table = container.getElementsByClassName("p-datatable")[0] as HTMLElement;
       const filters = container.getElementsByClassName("filters-title-container")[0] as HTMLElement;
       const paginator = container.getElementsByClassName("p-paginator")[0] as HTMLElement;
-      const tableHeader = container.getElementsByClassName("p-datatable-thead")[0] as HTMLElement;
+      const header = container.getElementsByClassName("p-datatable-thead")[0] as HTMLElement;
       if (container && table) {
         let tableHeight = container.getBoundingClientRect().height;
         if (filters) {
           tableHeight -= filters.getBoundingClientRect().height;
         }
-        if (tableHeader) {
-          tableHeight -= tableHeader.getBoundingClientRect().height;
-        }
         if (paginator) {
           tableHeight -= paginator.getBoundingClientRect().height;
+        } else if (this.searchResults.length > 25) {
+          tableHeight -= 53.41;
         }
-        this.tableHeight = tableHeight + "px";
+        this.scrollHeight = tableHeight + "px";
       } else {
         LoggerService.error(undefined, "Failed to set member editor search results table height. Elements required not found");
       }
