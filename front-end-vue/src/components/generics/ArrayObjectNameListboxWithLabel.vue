@@ -18,7 +18,7 @@
     </div>
     <Listbox
       :options="data"
-      listStyle="height: 12rem;"
+      listStyle="maxHeight: 12rem;overflow: auto;"
       v-model="selected"
       @change="navigate(selected['@id'])"
       emptyMessage="None"
@@ -60,7 +60,7 @@ export default defineComponent({
       ) {
         return true;
       } else if (Array.isArray(this.data) && this.data.length === 0) {
-        return true;
+        return false;
       } else {
         LoggerService.warn(
           undefined,
