@@ -176,20 +176,15 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
   });
 
   it("can resetConcept ___ InformationModel", async () => {
-    wrapper.vm.createTree = jest.fn();
+    wrapper.vm.refreshTree = jest.fn();
     wrapper.vm.getConceptAggregate = jest.fn();
-    wrapper.vm.parentLabel = "Information Model";
     wrapper.vm.selectedKey = { name: "test selected key" };
     wrapper.vm.$nextTick();
-    expect(wrapper.vm.parentLabel).toBe("Information Model");
     expect(wrapper.vm.selectedKey).toStrictEqual({ name: "test selected key" });
-    expect(wrapper.vm.sideNavHierarchyFocus.iri).toEqual("http://endhealth.info/im#DiscoveryOntology");
     wrapper.vm.resetConcept();
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.parentLabel).toBe("Information Model");
-    expect(wrapper.vm.selectedKey).toStrictEqual({
-      "Discovery ontology": true
-    });
+    await flushPromises();
+    expect(wrapper.vm.selectedKey).toStrictEqual({});
     expect(wrapper.emitted()["showTree"]).toBeTruthy();
     expect(mockStore.commit).toHaveBeenCalledTimes(1);
     expect(mockStore.commit).toHaveBeenCalledWith("updateConceptIri", "http://endhealth.info/im#DiscoveryOntology");
