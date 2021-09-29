@@ -4,7 +4,7 @@ import Listbox from "primevue/listbox";
 import Button from "primevue/button";
 import StyleClass from "primevue/styleclass";
 
-describe("ListboxWithLabel.vue", () => {
+describe("ArrayObjectNameListboxWithLabel.vue", () => {
   let wrapper;
   let mockRoute;
   let mockRouter;
@@ -52,8 +52,8 @@ describe("ListboxWithLabel.vue", () => {
     ).toBe(true);
   });
 
-  it("can check isArrayObjectWithName ___ true ___ empty array", () => {
-    expect(ArrayObjectNameListboxWithLabel.computed.isArrayObjectWithName.call({ data: [] })).toBe(true);
+  it("can check isArrayObjectWithName ___ false ___ empty array", () => {
+    expect(ArrayObjectNameListboxWithLabel.computed.isArrayObjectWithName.call({ data: [] })).toBe(false);
   });
 
   it("can check isArrayObjectWithName ___ false ___ undefined", () => {

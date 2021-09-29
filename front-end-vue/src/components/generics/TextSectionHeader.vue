@@ -1,5 +1,5 @@
 <template>
-  <div class="text-section-header-container" :style="{ width: size }">
+  <div v-if="show" class="text-section-header-container" :style="{ width: size }">
     <strong class="text-section-header">
       {{ label }}
     </strong>
@@ -14,7 +14,8 @@ export default defineComponent({
   props: {
     label: { type: String },
     size: { type: String },
-    id: { type: String }
+    id: { type: String },
+    show: { type: Boolean }
   }
 });
 </script>
