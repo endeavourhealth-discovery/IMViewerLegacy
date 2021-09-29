@@ -151,7 +151,9 @@ function getSubjectMap(formObject: MappingFormObject, mapping: RMLMapping) {
    `;
   subjectMap += getPredicateObjectMap(mapping.subjectMapType, mapping.subjectMapValue);
   subjectMap += `; 
-    rr:class ${mapping.class}
+    rr:class ${mapping.class};`;
+  subjectMap += `
+    rr:graph ${mapping.graph}
   ];
   `;
 

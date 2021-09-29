@@ -117,7 +117,7 @@ export default defineComponent({
       this.contentFileName = event.files[0].name;
       this.contentFileType = event.files[0].type;
       this.contentFile = event.files[0];
-      this.nested = await isNested(this.contentFile);
+      this.nested = this.contentFileType === "application/json" ? await isNested(this.contentFile) : "false";
     },
     async uploadMapDocument(event: any) {
       this.mapDocument = event.files[0];
