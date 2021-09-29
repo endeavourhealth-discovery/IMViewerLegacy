@@ -255,9 +255,6 @@ export default defineComponent({
     },
 
     async resetConcept(): Promise<void> {
-      if (this.parentLabel !== "Information Model") {
-        this.parentLabel = "";
-      }
       this.selectedKey = {};
       this.$emit("showTree");
       this.$store.commit("updateConceptIri", this.sideNavHierarchyFocus.iri);
