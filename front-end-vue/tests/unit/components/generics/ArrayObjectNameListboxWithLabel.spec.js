@@ -8,17 +8,23 @@ describe("ArrayObjectNameListboxWithLabel.vue", () => {
   let wrapper;
   let mockRoute;
   let mockRouter;
+  let mockStore;
 
   beforeEach(() => {
     jest.resetAllMocks();
 
     mockRoute = { name: "Concept" };
     mockRouter = { push: jest.fn() };
+    mockStore = {
+      state: {
+        selectedEntityType: "Ontology"
+      }
+    }
 
     wrapper = mount(ArrayObjectNameListboxWithLabel, {
       global: {
         components: { Listbox, Button },
-        mocks: { $route: mockRoute, $router: mockRouter },
+        mocks: { $route: mockRoute, $router: mockRouter, $store: mockStore },
         directives: { styleclass: StyleClass }
       },
       props: {
