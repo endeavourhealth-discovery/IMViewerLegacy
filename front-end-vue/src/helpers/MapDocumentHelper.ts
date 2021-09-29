@@ -2,7 +2,33 @@ import { MappingFormObject } from "@/models/mapping/MappingFormObject";
 import { ObjectMapTypeEnum } from "@/models/mapping/ObjectMapTypeEnum";
 import { RMLMapping } from "@/models/mapping/RMLMapping";
 import { SubjectMapTypeEnum } from "@/models/mapping/SubjectMapTypeEnum";
-import { JSONPath } from 'jsonpath-plus';
+import { JSONPath } from "jsonpath-plus";
+
+export async function isNested(file: any) {
+  const json = JSON.parse(await (file as Blob).text());
+  let isNested = false;
+  if (Array.isArray(json)) {
+    let index = 0;
+    let found = false;
+    while (json.length > index && !found) {
+      if (fieldContainsObject(json[index])) {
+        found = true;
+        isNested = true;
+      }
+      index++;
+    }
+    console.log(index);
+  } else {
+    isNested = fieldContainsObject(json);
+  }
+  return isNested.toString();
+}
+
+function fieldContainsObject(json: any) {
+  return Object.keys(json).some(function(key: any) {
+    return json[key] && typeof json[key] === "object";
+  });
+}
 
 export async function getTreeNodesFromJson(file: any) {
   const json = JSON.parse(await (file as Blob).text());
@@ -14,15 +40,14 @@ export async function getTreeNodesFromJson(file: any) {
     label: "$",
     data: "$",
     children: []
-  }
+  };
   addTreeNode(index, nodeSet, nodes, json, node);
-  nodes.push(node)
+  nodes.push(node);
   return nodes;
-
 }
 
 function addTreeNode(index: number, nodeSet: Set<string>, nodes: any[], json: any, parent: any) {
-  if (Object.keys(json) && (typeof json === "object")) {
+  if (Object.keys(json) && typeof json === "object") {
     for (const field in json as any) {
       const labelData = parent ? (isNaN(field as any) ? parent.label + "." + field : parent.label + "[*]") : field;
       const node = {
@@ -49,7 +74,7 @@ export function getNodeValueByKey(nodes: any[], iterator: string) {
   const key = Object.keys(iterator)[0];
   nodes.forEach(node => {
     searchForValueByKey(node, key, results);
-  })
+  });
   return results[0];
 }
 
@@ -73,7 +98,7 @@ export async function getValueSuggestions(file: any, iterator: string) {
 }
 
 function addSuggestion(suggestionSet: Set<string>, json: any, parent: any) {
-  if (Object.keys(json) && (typeof json === "object")) {
+  if (Object.keys(json) && typeof json === "object") {
     for (const field in json as any) {
       const suggestion = parent ? (isNaN(field as any) ? parent + "." + field : parent + "[*]") : isNaN(field as any) ? field : "";
       suggestionSet.add(suggestion);
@@ -104,7 +129,7 @@ function getRmlMaps(formObject: MappingFormObject, mappings: RMLMapping[]) {
   mappings.forEach(mapping => {
     returnValue += getSubjectMap(formObject, mapping);
     returnValue += getObjectMaps(mapping);
-  })
+  });
   return returnValue;
 }
 
@@ -114,20 +139,21 @@ function getSubjectMap(formObject: MappingFormObject, mapping: RMLMapping) {
   rml:logicalSource [
     rml:source "${formObject.contentFileName}";
     rml:referenceFormulation ${getReferenceFormulation(formObject.contentFileType)};`;
-  subjectMap += mapping.iterator ? `
+  subjectMap += mapping.iterator
+    ? `
     rml:iterator "${mapping.iterator}"
-  ];` : `
+  ];`
+    : `
   ];
-  `
+  `;
   subjectMap += `
   rr:subjectMap [
-   `
+   `;
   subjectMap += getPredicateObjectMap(mapping.subjectMapType, mapping.subjectMapValue);
-  subjectMap +=
-    `; 
+  subjectMap += `; 
     rr:class ${mapping.class}
   ];
-  `
+  `;
 
   return subjectMap;
 }
@@ -152,7 +178,7 @@ function getObjectMaps(mapping: RMLMapping) {
     objectMaps += getPredicateObjectMap(predicate.type, predicate.value);
     objectMaps += ` ]
   ];`;
-  })
+  });
   return objectMaps.slice(0, -1) + ".";
 }
 
@@ -164,9 +190,9 @@ function getPredicateObjectMap(type: ObjectMapTypeEnum | SubjectMapTypeEnum, val
         rr:predicate fno:executes ;
         rr:objectMap [ rr:constant im:${value} ] 
       ];
-    ];`
+    ];`;
     case ObjectMapTypeEnum.parentTriplesMap:
-      return ` ${type} <#${value}>`
+      return ` ${type} <#${value}>`;
     default:
       return ` ${type} "${value}"`;
   }

@@ -3,11 +3,7 @@
     <template #title> New predicates that will be created </template>
     <template #content>
       <div class="p-fluid p-formgrid p-grid">
-        <div class="p-field p-col-12 p-md-6">
-          <label for="nested">Nested</label>
-          <Dropdown inputId="nested" v-model="nested" :options="options" optionLabel="name" optionValue="value" placeholder="Is content nested" />
-        </div>
-        <div class="p-field p-col-12 p-md-6">
+        <div class="p-field p-col-12 p-md-12">
           <label for="nested">Map Document (Optional)</label>
           <Dropdown v-model="selectedMapDocument" :options="mapDocumentOptions" optionLabel="name" placeholder="Choose from library" />
         </div>
@@ -61,6 +57,7 @@
 </template>
 
 <script lang="ts">
+import { isNested } from "@/helpers/MapDocumentHelper";
 import { MappingFormObject } from "@/models/mapping/MappingFormObject";
 import MappingService from "@/services/MappingService";
 import { defineComponent, PropType } from "vue";
@@ -89,11 +86,7 @@ export default defineComponent({
       mapDocumentString: "",
       nested: "",
       selectedMapDocument: "",
-      mapDocumentOptions: [] as any[],
-      options: [
-        { name: "Yes", value: "true" },
-        { name: "No", value: "false" }
-      ]
+      mapDocumentOptions: [] as any[]
     };
   },
   async mounted() {
@@ -120,10 +113,11 @@ export default defineComponent({
     async convertFileToString(file: any) {
       return await (file as Blob).text();
     },
-    uploadContent(event: any) {
+    async uploadContent(event: any) {
       this.contentFileName = event.files[0].name;
       this.contentFileType = event.files[0].type;
       this.contentFile = event.files[0];
+      this.nested = await isNested(this.contentFile);
     },
     async uploadMapDocument(event: any) {
       this.mapDocument = event.files[0];
