@@ -156,6 +156,8 @@ export default defineComponent({
 
       if (parentHierarchy.length) {
         this.parentLabel = parentHierarchy[0].name;
+      } else {
+        this.parentLabel = "";
       }
 
       this.root.push(selectedConcept);
