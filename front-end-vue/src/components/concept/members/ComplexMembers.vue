@@ -1,18 +1,10 @@
 <template>
-  <Dialog :visible="showDialog" :modal="true" :closable="false" :maximizable="true" :style="{ width: '50vw' }" id="complex-members-dialog">
-    <template #header>
-      Complex members
-    </template>
-    <div v-if="loading">
-      <ProgressSpinner />
-    </div>
-    <div v-else v-for="member in complexMembers" :key="member" id="complex-strings-container">
-      <p id="html-container" v-html="member"></p>
-    </div>
-    <template #footer>
-      <Button label="Close" icon="pi pi-times" class="p-button-secondary" @click="closeComplexMembersDialog" />
-    </template>
-  </Dialog>
+  <div v-if="loading">
+    <ProgressSpinner />
+  </div>
+  <div v-else v-for="member in complexMembers" :key="member" id="complex-strings-container">
+    <p id="html-container" v-html="member"></p>
+  </div>
 </template>
 
 <script lang="ts">
@@ -23,10 +15,8 @@ import LoggerService from "@/services/LoggerService";
 export default defineComponent({
   name: "ComplexMembers",
   props: {
-    conceptIri: { type: String, required: true },
-    showDialog: { type: Boolean, required: true }
+    conceptIri: { type: String, required: true }
   },
-  emits: ["closeComplexMembersDialog"],
   watch: {
     async conceptIri() {
       await this.init();
@@ -56,10 +46,6 @@ export default defineComponent({
           this.$toast.add(LoggerService.error("Failed to get complex members from server", err));
         });
       this.loading = false;
-    },
-
-    closeComplexMembersDialog() {
-      this.$emit("closeComplexMembersDialog");
     }
   }
 });
@@ -67,8 +53,7 @@ export default defineComponent({
 
 <style scoped>
 #complex-strings-container {
-  border: 1px solid black;
-  border-radius: 3px;
+  width: 100%;
   padding: 1rem;
 }
 

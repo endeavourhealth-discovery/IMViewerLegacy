@@ -605,16 +605,4 @@ describe("Members.vue", () => {
     expect(LoggerService.error).toHaveBeenCalledTimes(1);
     expect(LoggerService.error).toHaveBeenCalledWith(undefined, "Failed to set members table width. Required element(s) not found.");
   });
-
-  it("can openComplexMembersDialog", () => {
-    expect(wrapper.vm.showComplexMembersDialog).toBe(false);
-    wrapper.vm.openComplexMembersDialog();
-    expect(wrapper.vm.showComplexMembersDialog).toBe(true);
-  });
-
-  it("can closeComplexMembersDialog", () => {
-    wrapper.vm.showComplexMembersDialog = true;
-    wrapper.vm.closeComplexMembersDialog();
-    expect(wrapper.vm.showComplexMembersDialog).toBe(false);
-  });
 });
