@@ -55,16 +55,16 @@
       <template #loading>
         Loading data. Please wait...
       </template>
-      <Column field="entity.name" header="Name" filter-field="entity.name" style="flex: 0 0 60%">
+      <Column field="entity.name" header="Name" filter-field="entity.name" >
         <template #body="slotProps">
-          <div v-if="slotProps.data.type === 'COMPLEX'">
-            <Button label="Show" @click="openComplexMembersDialog" />
+          <div v-if="slotProps.data.type === 'COMPLEX'" class="complex-member-container" >
+            <ComplexMembers :conceptIri="conceptIri" />
           </div>
           <span v-else>{{ slotProps.data.entity.name }}</span>
         </template>
       </Column>
-      <Column field="code" header="Code" filter-field="code" />
-      <Column field="scheme.name" header="Scheme" filter-field="scheme.name" />
+      <Column v-if="expandMembers" field="code" header="Code" filter-field="code" />
+      <Column v-if="expandMembers" field="scheme.name" header="Scheme" filter-field="scheme.name" />
       <template #groupheader="slotProps">
         <span v-for="subSet in subsets" :key="subSet">
           <span v-if="slotProps.data.label === subSet" class="group-header">
@@ -86,12 +86,6 @@
       </template>
     </DataTable>
   </div>
-  <ComplexMembers
-    v-if="showComplexMembersDialog"
-    @closeComplexMembersDialog="closeComplexMembersDialog"
-    :showDialog="showComplexMembersDialog"
-    :conceptIri="conceptIri"
-  />
 </template>
 
 <script lang="ts">
@@ -147,8 +141,7 @@ export default defineComponent({
       expandSubsets: false,
       selected: {} as any,
       subsets: [] as any[],
-      expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"],
-      showComplexMembersDialog: false
+      expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]
     };
   },
   methods: {
@@ -251,14 +244,6 @@ export default defineComponent({
       } else {
         LoggerService.error(undefined, "Failed to set members table width. Required element(s) not found.");
       }
-    },
-
-    openComplexMembersDialog() {
-      this.showComplexMembersDialog = true;
-    },
-
-    closeComplexMembersDialog() {
-      this.showComplexMembersDialog = false;
     }
   }
 });
@@ -296,5 +281,9 @@ export default defineComponent({
   flex-flow: row nowrap;
   align-items: center;
   gap: 0.5rem;
+}
+
+.complex-member-container {
+  width: 100%;
 }
 </style>
