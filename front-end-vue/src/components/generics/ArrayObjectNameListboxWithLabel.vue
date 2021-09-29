@@ -18,7 +18,7 @@
     </div>
     <Listbox
       :options="data"
-      listStyle="maxHeight: 12rem;overflow: auto;"
+      listStyle="max-height: 12rem;overflow: auto;"
       v-model="selected"
       @change="navigate(selected['@id'])"
       emptyMessage="None"
