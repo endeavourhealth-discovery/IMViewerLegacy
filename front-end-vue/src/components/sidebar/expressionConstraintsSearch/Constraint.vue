@@ -45,9 +45,9 @@ export default defineComponent({
   data() {
     return {
       options: [
-        { name: "Self", symbol: "" },
-        { name: "Descendant of", symbol: "<" },
         { name: "Descendant or self of", symbol: "<<" },
+        { name: "Descendant of", symbol: "<" },
+        { name: "Self", symbol: "" },
         { name: "Child of", symbol: "<!" },
         { name: "Child or self of", symbol: "<<!" },
         { name: "Ancestor of", symbol: ">" },
