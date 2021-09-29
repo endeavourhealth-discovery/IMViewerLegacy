@@ -55,9 +55,9 @@
       <template #loading>
         Loading data. Please wait...
       </template>
-      <Column field="entity.name" header="Name" filter-field="entity.name" >
+      <Column field="entity.name" header="Name" filter-field="entity.name">
         <template #body="slotProps">
-          <div v-if="slotProps.data.type === 'COMPLEX'" class="complex-member-container" >
+          <div v-if="slotProps.data.type === 'COMPLEX'" class="complex-member-container">
             <ComplexMembers :conceptIri="conceptIri" />
           </div>
           <span v-else>{{ slotProps.data.entity.name }}</span>

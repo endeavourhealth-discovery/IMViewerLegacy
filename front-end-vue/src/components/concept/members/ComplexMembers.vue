@@ -15,7 +15,7 @@ import LoggerService from "@/services/LoggerService";
 export default defineComponent({
   name: "ComplexMembers",
   props: {
-    conceptIri: { type: String, required: true },
+    conceptIri: { type: String, required: true }
   },
   watch: {
     async conceptIri() {
