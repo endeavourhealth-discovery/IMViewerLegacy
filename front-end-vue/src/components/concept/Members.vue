@@ -36,16 +36,16 @@
             <div>
               <Button icon="pi pi-cloud-download" label="Download expanded" @click="download(true)" />
             </div>
-            <div class="checkbox-label-container" v-if="!expandMembers">
+            <div class="checkbox-label-container" v-if="!expandMembers && subsets.length">
               <label for="expandSubsets">Expand all subsets</label>
               <Checkbox :disabled="expandMembers" id="expandSubsets" v-model="expandSubsets" :binary="true" />
             </div>
-            <div class="checkbox-label-container">
+            <!-- <div class="checkbox-label-container">
               <label for="expandMembers">
                 Expand all members
               </label>
               <Checkbox id="expandMembers" v-model="expandMembers" :binary="true" />
-            </div>
+            </div> -->
           </div>
         </div>
       </template>
