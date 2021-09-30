@@ -170,10 +170,17 @@ export default defineComponent({
 
     selectedEntityType(newValue, oldValue) {
       this.setActivePanel(newValue, oldValue);
+    },
+
+    active(newValue) {
+      this.$store.commit("updateConceptActivePanel", newValue);
     }
   },
   async mounted() {
     await this.init();
+    if (this.activeModule === "Sets") {
+      this.active = this.conceptActivePanel ? this.conceptActivePanel : 2;
+    }
 
     window.addEventListener("resize", this.onResize);
 
@@ -351,7 +358,7 @@ export default defineComponent({
       if (newType === oldType) {
         this.active = this.conceptActivePanel;
       } else {
-        if (this.selectedEntityType === "Sets") {
+        if (newType === "Sets") {
           this.active = 2;
         } else {
           this.active = 0;
