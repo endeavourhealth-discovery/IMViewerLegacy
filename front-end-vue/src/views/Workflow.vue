@@ -113,7 +113,9 @@ export default defineComponent({
           this.tasksData = res.data;
         })
         .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get workflows from server", err));
+          this.$toast.add(
+            LoggerService.error("Failed to get workflows from server", err));
+
         });
       this.createPanel();
     },
@@ -257,7 +259,9 @@ export default defineComponent({
         if (d.target.x - d.source.x == 0 && d.target.y - d.source.y == 0) {
           return `M${d.source.x},${d.source.y}A 15, 15 1 1, 1 ${d.target.x - 1},${d.target.y - 1}`;
         } else {
-          return `M${d.source.x},${d.source.y - 2}A${r},${r} 0 0,0 ${d.target.x},${d.target.y + 2}`;
+          return `M${d.source.x},${d.source.y - 2}A${r},${r} 0 0,0 ${
+            d.target.x
+          },${d.target.y + 2}`;
         }
       }
     }
