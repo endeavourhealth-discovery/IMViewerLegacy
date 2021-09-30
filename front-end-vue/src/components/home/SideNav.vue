@@ -283,6 +283,8 @@ export default defineComponent({
 #center-icons {
   text-align: center;
   width: 100%;
+  flex-grow: 20;
+  overflow: auto;
 }
 
 .center-icon-container {
