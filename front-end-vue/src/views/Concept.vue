@@ -186,9 +186,10 @@ export default defineComponent({
   async mounted() {
     await this.init();
     if (this.activeModule === "Sets") {
-      this.active = this.conceptActivePanel ? this.conceptActivePanel : 2;
-    } else if (this.activeModule === "DataModel") {
-      this.active = this.conceptActivePanel ? this.conceptActivePanel : 3;
+      this.active = 2;
+    }
+    if (this.activeModule === "DataModel") {
+      this.active = 3;
     }
 
     window.addEventListener("resize", this.onResize);
@@ -369,6 +370,8 @@ export default defineComponent({
       } else {
         if (newType === "Sets") {
           this.active = 2;
+        } else if (newType === "DataModel") {
+          this.active = 3;
         } else {
           this.active = 0;
         }
