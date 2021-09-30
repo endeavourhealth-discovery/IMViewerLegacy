@@ -76,6 +76,11 @@
                 <Graph :conceptIri="conceptIri" />
               </div>
             </TabPanel>
+            <TabPanel header="Properties" v-if="isRecordModel">
+              <div class="concept-panel-content" id="properties-container" :style="contentHeight">
+                <Properties :conceptIri="conceptIri" />
+              </div>
+            </TabPanel>
             <TabPanel header="Members" v-if="isSet">
               <div class="concept-panel-content" id="members-container" :style="contentHeight">
                 <Members :conceptIri="conceptIri" @memberClick="active = 0" />
@@ -115,6 +120,7 @@ import { RDFS } from "@/vocabulary/RDFS";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
 import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
+import Properties from "@/components/concept/Properties.vue";
 
 export default defineComponent({
   name: "Concept",
@@ -126,7 +132,8 @@ export default defineComponent({
     Definition,
     DownloadDialog,
     SecondaryTree,
-    Mappings
+    Mappings,
+    Properties
   },
   computed: {
     isSet(): boolean {
