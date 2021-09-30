@@ -47,7 +47,7 @@ export default defineComponent({
   props: ["concept", "configs"],
   methods: {
     showItem(config: any, index: number): boolean {
-      let hasDataResults = [];
+      let dataResults = [];
       if (config.type === "SectionDivider") {
         let i = index - 1;
         while (i > 0) {
@@ -55,7 +55,7 @@ export default defineComponent({
           if (this.configs[i].type === "SectionDivider") {
             break;
           }
-          hasDataResults.push(this.hasData(data));
+          dataResults.push(this.hasData(data));
           i--;
         }
       } else if (config.type === "TextSectionHeader") {
@@ -65,36 +65,32 @@ export default defineComponent({
           if (this.configs[i].type === "SectionDivider") {
             break;
           }
-          hasDataResults.push(this.hasData(data));
+          dataResults.push(this.hasData(data));
           i++;
         }
       } else {
         const data = this.concept[this.configs[index].predicate];
-        hasDataResults.push(this.hasData(data));
+        dataResults.push(this.hasData(data));
       }
-      const show = !hasDataResults.every(value => value === false);
+      const show = !dataResults.every(value => value === false);
       return show;
     },
 
     hasData(data: any): boolean {
-      let result = false;
       if (!data) {
-        result = false;
+        return false;
+      } else if (Array.isArray(data)) {
+        return data.length ? true : false;
+      } else if (typeof data === "string") {
+        return data ? true : false;
+      } else if (Object.prototype.toString.call(data) === "[object Object]" && Object.prototype.hasOwnProperty.call(data, "count")) {
+        return data.count ? true : false;
+      } else if (Object.prototype.toString.call(data) === "[object Object]") {
+        return Object.keys(data).length ? true : false;
+      } else {
+        console.log("Unexpected data type encountered for function hasData in definition");
+        return false;
       }
-      if (Array.isArray(data)) {
-        data.length ? (result = true) : (result = false);
-      }
-      if (typeof data === "string") {
-        data ? (result = true) : (result = false);
-      }
-      if (Object.prototype.toString.call(data) === "[object Object]") {
-        if (Object.prototype.hasOwnProperty.call(data, "count")) {
-          data.count ? (result = true) : (result = false);
-        } else {
-          Object.keys(data).length ? (result = true) : (result = false);
-        }
-      }
-      return result;
     }
   }
 });
