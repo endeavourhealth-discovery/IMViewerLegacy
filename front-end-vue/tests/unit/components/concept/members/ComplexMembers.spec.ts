@@ -1,7 +1,5 @@
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import ComplexMembers from "@/components/concept//members/ComplexMembers.vue";
-import Dialog from "primevue/dialog";
-import Button from "primevue/button";
 import ProgressSpinner from "primevue/progressspinner";
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
@@ -23,10 +21,10 @@ describe("ComplexMembers.vue", () => {
 
     wrapper = shallowMount(ComplexMembers, {
       global: {
-        components: { Dialog, Button, ProgressSpinner },
+        components: { ProgressSpinner },
         mocks: { $toast: mockToast }
       },
-      props: { conceptIri: "http://endhealth.info/im#CSET_BartsCVSSMeds", showDialog: true }
+      props: { conceptIri: "http://endhealth.info/im#CSET_BartsCVSSMeds" }
     });
 
     await flushPromises();
@@ -78,10 +76,5 @@ describe("ComplexMembers.vue", () => {
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get complex members from server"));
     expect(wrapper.vm.loading).toBe(false);
-  });
-
-  it("can closeComplexMembersDialog", () => {
-    wrapper.vm.closeComplexMembersDialog();
-    expect(wrapper.emitted().closeComplexMembersDialog).toBeTruthy();
   });
 });

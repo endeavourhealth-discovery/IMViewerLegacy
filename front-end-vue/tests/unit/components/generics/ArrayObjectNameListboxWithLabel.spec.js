@@ -4,21 +4,27 @@ import Listbox from "primevue/listbox";
 import Button from "primevue/button";
 import StyleClass from "primevue/styleclass";
 
-describe("ListboxWithLabel.vue", () => {
+describe("ArrayObjectNameListboxWithLabel.vue", () => {
   let wrapper;
   let mockRoute;
   let mockRouter;
+  let mockStore;
 
   beforeEach(() => {
     jest.resetAllMocks();
 
     mockRoute = { name: "Concept" };
     mockRouter = { push: jest.fn() };
+    mockStore = {
+      state: {
+        selectedEntityType: "Ontology"
+      }
+    }
 
     wrapper = mount(ArrayObjectNameListboxWithLabel, {
       global: {
         components: { Listbox, Button },
-        mocks: { $route: mockRoute, $router: mockRouter },
+        mocks: { $route: mockRoute, $router: mockRouter, $store: mockStore },
         directives: { styleclass: StyleClass }
       },
       props: {
@@ -52,8 +58,8 @@ describe("ListboxWithLabel.vue", () => {
     ).toBe(true);
   });
 
-  it("can check isArrayObjectWithName ___ true ___ empty array", () => {
-    expect(ArrayObjectNameListboxWithLabel.computed.isArrayObjectWithName.call({ data: [] })).toBe(true);
+  it("can check isArrayObjectWithName ___ false ___ empty array", () => {
+    expect(ArrayObjectNameListboxWithLabel.computed.isArrayObjectWithName.call({ data: [] })).toBe(false);
   });
 
   it("can check isArrayObjectWithName ___ false ___ undefined", () => {

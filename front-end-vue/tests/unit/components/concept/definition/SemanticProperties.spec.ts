@@ -9,6 +9,7 @@ describe("SemanticProperties.vue", () => {
   let wrapper: any;
   let mockRouter: any;
   let mockRoute: any;
+  let mockStore: any;
 
   beforeEach(() => {
     mockRouter = {
@@ -17,11 +18,16 @@ describe("SemanticProperties.vue", () => {
     mockRoute = {
       name: "Concept"
     };
+    mockStore = {
+      state: {
+        selectedEntityType: "Ontology"
+      }
+    }
 
     wrapper = shallowMount(SemanticProperties, {
       global: {
         components: { DataTable, Column, Button },
-        mocks: { $route: mockRoute, $router: mockRouter },
+        mocks: { $route: mockRoute, $router: mockRouter, $store: mockStore },
         directives: { styleclass: StyleClass }
       },
       props: {

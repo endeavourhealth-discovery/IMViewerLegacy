@@ -6,6 +6,7 @@
       <Button
         :icon="buttonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
         class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
+        :id="'expand-button-' + id"
         @click="setButtonExpanded"
         v-styleclass="{
           selector: '#' + id,
@@ -18,7 +19,7 @@
     </div>
     <Listbox
       :options="data"
-      listStyle="height: 12rem;"
+      listStyle="max-height: 12rem;overflow: auto;"
       v-model="selected"
       @change="navigate(selected['@id'])"
       emptyMessage="None"
@@ -38,6 +39,7 @@
 import { defineComponent, PropType } from "vue";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import LoggerService from "@/services/LoggerService";
+import { mapState } from "vuex";
 
 export default defineComponent({
   name: "ArrayObjectNameListboxWithLabel",
@@ -60,7 +62,7 @@ export default defineComponent({
       ) {
         return true;
       } else if (Array.isArray(this.data) && this.data.length === 0) {
-        return true;
+        return false;
       } else {
         LoggerService.warn(
           undefined,
@@ -68,6 +70,13 @@ export default defineComponent({
         );
         return false;
       }
+    },
+    ...mapState(["selectedEntityType"])
+  },
+  mounted() {
+    if (this.selectedEntityType === "Ontology" && this.label === "Is a") {
+      const button = document.getElementById(`expand-button-${this.id}`) as HTMLElement;
+      if (button) button.click();
     }
   },
   data() {
