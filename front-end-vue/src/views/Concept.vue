@@ -423,38 +423,40 @@ export default defineComponent({
               "Uncovered object property or missing name found for key: " + key + " at conceptObjectToCopyString within Concept.vue"
             );
           }
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ": [\n\t" + newString + "\n]";
-          } else {
-            returnString = newKey + ": [\n\t" + newString + "\n],\n";
-          }
-        } else {
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ": [\n\t\n]";
-          } else {
-            returnString = newKey + ": [\n\t\n],\n";
+          if (newString) {
+            if (counter === totalKeys - 1) {
+              returnString = newKey + ": [\n\t" + newString + "\n]";
+            } else {
+              returnString = newKey + ": [\n\t" + newString + "\n],\n";
+            }
           }
         }
       } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "name")) {
         newString = value.name;
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ": " + newString;
-        } else {
-          returnString = newKey + ": " + newString + ",\n";
+        if (newString) {
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ": " + newString;
+          } else {
+            returnString = newKey + ": " + newString + ",\n";
+          }
         }
       } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "axiomString")) {
         newString = value.axiomString;
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ': "\n' + newString + '\n"';
-        } else {
-          returnString = newKey + ': "\n' + newString + '\n",\n';
+        if (newString) {
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ': "\n' + newString + '\n"';
+          } else {
+            returnString = newKey + ': "\n' + newString + '\n",\n';
+          }
         }
       } else if (typeof value === "string") {
         newString = value.replace(/\n/g, "\n\t").replace(/<p>/g, "\n\t") as string;
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ": " + newString;
-        } else {
-          returnString = newKey + ": " + newString + ",\n";
+        if (newString) {
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ": " + newString;
+          } else {
+            returnString = newKey + ": " + newString + ",\n";
+          }
         }
       } else {
         returnString = JSON.stringify(value);
@@ -517,7 +519,9 @@ export default defineComponent({
       let value: any;
       for ([key, value] of Object.entries(this.concept)) {
         let result = this.conceptObjectToCopyString(key, value, 0, 1);
-        if (!result) return;
+        console.log(result?.label);
+        console.log(result?.value);
+        if (!result || !result.value) continue;
         const label = result.label;
         const text = result.value;
         this.copyMenuItems.push({
