@@ -1,8 +1,11 @@
 <template>
   <div id="properties-table-container">
-    <DataTable :value="dataModelPropsData" :scrollable="true" ref="dt">
+    <DataTable :value="dataModelPropsData" :scrollable="true" ref="propertiesTable" :loading="loading">
       <template #empty>
         No records found
+      </template>
+      <template #loading>
+        Loading data. Please wait...
       </template>
       <template #header>
         <div class="table-header">
@@ -76,24 +79,31 @@ export default defineComponent({
   },
   methods: {
     async getDataModelProps(iri: string) {
-      const res = (await EntityService.getDataModelProperties(iri)).data;
-
-      this.dataModelPropsData = res.map((prop: any) => {
-        return {
-          propertyId: prop.property["@id"],
-          propertyName: prop.property.name,
-          propertyDisplay: prop.property.name,
-          typeId: prop.type["@id"],
-          typeName: prop.type.name,
-          typeDisplay: prop.type?.name || prop.type?.["@id"],
-          inheritedId: prop.inheritedFrom?.["@id"],
-          inheritedName: prop.inheritedFrom?.name,
-          inheritedDisplay: prop.inheritedFrom?.name || "-",
-          cardinality: `${prop.minExclusive || prop.minInclusive || 0} :
+      this.loading = true;
+      let res;
+      try {
+        res = (await EntityService.getDataModelProperties(iri)).data;
+        this.dataModelPropsData = res.map((prop: any) => {
+          return {
+            propertyId: prop.property["@id"],
+            propertyName: prop.property.name,
+            propertyDisplay: prop.property.name,
+            typeId: prop.type["@id"],
+            typeName: prop.type.name,
+            typeDisplay: prop.type?.name || prop.type?.["@id"],
+            inheritedId: prop.inheritedFrom?.["@id"],
+            inheritedName: prop.inheritedFrom?.name,
+            inheritedDisplay: prop.inheritedFrom?.name || "-",
+            cardinality: `${prop.minExclusive || prop.minInclusive || 0} :
               ${prop.maxExclusive || prop.maxInclusive || "*"}`
-        };
-      });
+          };
+        });
+      } catch (error) {
+        this.$toast.add(LoggerService.error("Failed to get properties from server", error));
+      }
+      this.loading = false;
     },
+
     navigate(iri: any) {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
       if (iri)
@@ -113,12 +123,12 @@ export default defineComponent({
         const height = container.getBoundingClientRect().height - 1 + "px";
         this.scrollHeight = height;
       } else {
-        LoggerService.error(undefined, "Failed to set usedIn table scroll height. Required elements not found.");
+        LoggerService.error(undefined, "Failed to set Properties table scroll height. Required elements not found.");
       }
     },
 
     exportCSV() {
-      (this.$refs as any).dt.exportCSV();
+      (this.$refs as any).propertiesTable.exportCSV();
     }
   }
 });
