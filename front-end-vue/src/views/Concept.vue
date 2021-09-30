@@ -187,6 +187,8 @@ export default defineComponent({
     await this.init();
     if (this.activeModule === "Sets") {
       this.active = this.conceptActivePanel ? this.conceptActivePanel : 2;
+    } else if (this.activeModule === "DataModel") {
+      this.active = this.conceptActivePanel ? this.conceptActivePanel : 3;
     }
 
     window.addEventListener("resize", this.onResize);
