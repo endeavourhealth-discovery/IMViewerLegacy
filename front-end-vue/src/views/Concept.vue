@@ -475,6 +475,9 @@ export default defineComponent({
         if (copyString) returnString += copyString.value;
         counter++;
       }
+      if (returnString.endsWith(",\n")) {
+        return returnString.slice(0, -2);
+      }
       return returnString;
     },
 
@@ -519,8 +522,6 @@ export default defineComponent({
       let value: any;
       for ([key, value] of Object.entries(this.concept)) {
         let result = this.conceptObjectToCopyString(key, value, 0, 1);
-        console.log(result?.label);
-        console.log(result?.value);
         if (!result || !result.value) continue;
         const label = result.label;
         const text = result.value;
