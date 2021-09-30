@@ -1,5 +1,5 @@
 <template>
-  <div id="axioms-container" :style="{ width: size }">
+  <div v-if="axiomString !== 'None'" id="axioms-container" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}</strong>
       <span>&nbsp;({{ data.count }})</span>

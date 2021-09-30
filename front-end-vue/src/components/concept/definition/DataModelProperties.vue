@@ -1,5 +1,5 @@
 <template>
-  <div id="datamodel-properties-container" :style="{ width: size }">
+  <div v-if="data.length" id="datamodel-properties-container" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}: </strong>
       <span>&nbsp;({{ data.length }})</span>

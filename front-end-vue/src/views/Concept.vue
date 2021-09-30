@@ -358,7 +358,11 @@ export default defineComponent({
       if (newType === oldType) {
         this.active = this.conceptActivePanel;
       } else {
-        this.active = 0;
+        if (this.selectedEntityType === "Sets") {
+          this.active = 2;
+        } else {
+          this.active = 0;
+        }
       }
     },
 

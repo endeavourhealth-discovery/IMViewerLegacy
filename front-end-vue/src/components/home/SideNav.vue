@@ -80,10 +80,10 @@ export default defineComponent({
         // add case for catalogue when type is known
         case "Queries":
           this.$store.commit("updateSideNavHierarchyFocus", {
-            name: this.menuItems[4].name,
-            fullName: this.menuItems[4].fullName,
-            iri: this.menuItems[4].iri,
-            route: this.menuItems[4].route
+            name: this.menuItems[3].name,
+            fullName: this.menuItems[3].fullName,
+            iri: this.menuItems[3].iri,
+            route: this.menuItems[3].route
           });
           break;
         case "Folder":
@@ -161,13 +161,13 @@ export default defineComponent({
           route: "Dashboard",
           iri: IM.MODULE_DATA_MODEL
         },
-        {
-          icon: ["fas", "fax"],
-          name: "Catalogue",
-          fullName: "Catalogue",
-          route: "Dashboard",
-          iri: IM.MODULE_CATALOGUE
-        },
+        // {
+        //   icon: ["fas", "fax"],
+        //   name: "Catalogue",
+        //   fullName: "Catalogue",
+        //   route: "Dashboard",
+        //   iri: IM.MODULE_CATALOGUE
+        // },
         {
           icon: ["fas", "search"],
           name: "Queries",

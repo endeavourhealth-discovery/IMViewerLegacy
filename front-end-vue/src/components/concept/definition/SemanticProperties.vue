@@ -1,11 +1,12 @@
 <template>
-  <div id="semantic-properties-container" :style="{ width: size }">
+  <div v-if="data.length" id="semantic-properties-container" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}: </strong>
       <span>&nbsp;({{ data.length }})</span>
       <Button
         :icon="buttonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
         class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
+        :id="'expand-button-' + id"
         @click="setButtonExpanded"
         v-styleclass="{
           selector: '#semantic-properties-table',
@@ -43,6 +44,7 @@
 <script lang="ts">
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import { defineComponent, PropType } from "@vue/runtime-core";
+import { mapState } from "vuex";
 
 export default defineComponent({
   name: "SemanticProperties",
@@ -50,7 +52,17 @@ export default defineComponent({
   props: {
     label: { type: String },
     data: { type: Array as PropType<Array<unknown>> },
-    size: { type: String }
+    size: { type: String },
+    id: { type: String }
+  },
+  computed: {
+    ...mapState(["selectedEntityType"])
+  },
+  mounted() {
+    if (this.selectedEntityType === "Ontology") {
+      const button = document.getElementById(`expand-button-${this.id}`) as HTMLElement;
+      if (button) button.click();
+    }
   },
   data() {
     return {
