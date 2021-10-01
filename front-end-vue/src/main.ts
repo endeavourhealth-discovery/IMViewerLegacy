@@ -77,6 +77,7 @@ import StyleClass from "primevue/styleclass";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
+import LoggerService from "./services/LoggerService";
 
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
@@ -139,5 +140,14 @@ const app = createApp(App)
   .component("RadioButton", RadioButton)
   .component("ConfirmPopup", ConfirmPopup)
   .component("InputSwitch", InputSwitch);
+
+app.config.errorHandler = (err: any, vm, info) => {
+  // handle error
+  // `info` is a Vue-specific error info, e.g. which lifecycle hook the error was found in
+  console.log("err: " + err);
+  console.log("vm: " + vm?.$options.name);
+  console.log("info: " + info);
+  vm?.$toast.add(LoggerService.error(err.message as string));
+};
 
 app.mount("#app");

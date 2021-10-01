@@ -248,6 +248,13 @@ export default defineComponent({
         .filter((c: any) => c.predicate !== "axioms")
         .map((c: any) => c.predicate);
 
+      // ideal - try/catch inside the getPartialEntity or interceptor logic
+      this.concept = await EntityService.getPartialEntity(iri, predicates);
+      if (IM.IS_A in this.concept) {
+        this.concept[IM.IS_A] = [];
+      }
+
+      // current implementation
       await EntityService.getPartialEntity(iri, predicates)
         .then(res => {
           this.concept = res.data;
