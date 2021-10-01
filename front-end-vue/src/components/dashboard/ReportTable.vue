@@ -37,36 +37,28 @@ export default defineComponent({
       tableData: [] as any
     };
   },
-  mounted() {
+  async mounted() {
     // table data
     this.$store.commit("updateLoading", {
       key: "reportTable_" + this.iri,
       value: true
     });
-    EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY])
-      .then(res => {
-        this.tableData = [];
+    const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
+    if (result) {
+      this.tableData = [];
 
-        for (const entry of res.data[IM.STATS_REPORT_ENTRY]) {
-          this.tableData.push({
-            label: entry[RDFS.LABEL],
-            count: +entry[OWL.HAS_VALUE]
-          });
-        }
-
-        this.$store.commit("updateLoading", {
-          key: "reportTable_" + this.iri,
-          value: false
+      for (const entry of result.data[IM.STATS_REPORT_ENTRY]) {
+        this.tableData.push({
+          label: entry[RDFS.LABEL],
+          count: +entry[OWL.HAS_VALUE]
         });
-      })
-      .catch(err => {
-        this.$store.commit("updateLoading", {
-          key: "reportTable_" + this.iri,
-          value: false
-        });
-        this.$toast.add(LoggerService.error("Ontology Overview server request failed", err));
-      });
-  } // mounted end
+      }
+    }
+    this.$store.commit("updateLoading", {
+      key: "reportTable_" + this.iri,
+      value: false
+    });
+  }
 });
 </script>
 
