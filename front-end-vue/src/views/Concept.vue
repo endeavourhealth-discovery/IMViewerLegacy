@@ -257,26 +257,18 @@ export default defineComponent({
       }
 
       const childrenReturn = await EntityService.getEntityChildren(iri);
-      if (childrenReturn) {
-        this.concept["subtypes"] = childrenReturn;
-      }
+      if (childrenReturn) this.concept["subtypes"] = childrenReturn;
 
       const termCodesReturn = await EntityService.getEntityTermCodes(iri);
-      if (termCodesReturn) {
-        this.concept["termCodes"] = termCodesReturn;
-      }
+      if (termCodesReturn) this.concept["termCodes"] = termCodesReturn;
     },
 
     async getProperties(iri: string) {
       const semanticReturn = await EntityService.getSemanticProperties(iri);
-      if (semanticReturn) {
-        this.concept["semanticProperties"] = semanticReturn;
-      }
+      if (semanticReturn) this.concept["semanticProperties"] = semanticReturn;
 
       const dataModelReturn = await EntityService.getDataModelProperties(iri);
-      if (dataModelReturn) {
-        this.concept["dataModelProperties"] = dataModelReturn;
-      }
+      if (dataModelReturn) this.concept["dataModelProperties"] = dataModelReturn;
     },
 
     async getAxioms(iri: string) {

@@ -151,26 +151,28 @@ export default defineComponent({
   },
   methods: {
     async getTypesCount() {
-      await CatalogueService.getTypesCount().then(res => {
-        this.types = res.data;
-      }).catch(error => console.log(error));
+      const result = await CatalogueService.getTypesCount();
+      if (result) this.types = result;
     },
+
     async getSearchResult() {
-      await CatalogueService.getSearchResult(this.searchRequest,this.typesIris).then(res => {
-        this.searchResults = res.data;
-      });
+      const result = await CatalogueService.getSearchResult(this.searchRequest,this.typesIris);
+      if (result) this.searchResults = result;
     },
+
     setIris() {
       this.typesIris = [];
       this.selectedType.forEach((type: any) => {
         this.typesIris.push(type.iri);
       });
     },
+
     checkKey(event: any) {
       if (event.code === "Enter") {
         this.getSearchResult();
       }
     },
+
     setSelectedInstance() {
       if (this.selected == null) {
         this.selected = this.currentSelected;
@@ -196,15 +198,16 @@ export default defineComponent({
         });
       }
     },
+
     async getPartialInstance() {
       window.history.pushState("", "", "/individual/" + this.instanceIri);
       // console.log(document.location.href);
-      await CatalogueService.getPartialInstance(
+      const result = await CatalogueService.getPartialInstance(
         this.instanceIri,
         this.predicate
-      ).then(res => {
-        this.instance = res.data;
-      });
+      );
+      if (result) this.instance = result;
+
       this.instanceData = [];
       let level = 0;
       Object.keys(this.instance.entity).forEach((predicate: any) => {
@@ -250,12 +253,14 @@ export default defineComponent({
         level = level + 1;
       });
     },
+
     navigate(instance: any) {
       this.instanceIri = instance["@id"];
       this.instanceName = instance.name ? instance.name : instance["@id"];
       // console.log(this.instanceIri);
       this.displayInstance();
     },
+
     getPredicateName(iri: string) {
       let name = "";
       this.instance.predicates.forEach((pre: any) => {
@@ -265,6 +270,7 @@ export default defineComponent({
       });
       return name;
     },
+
     getChildren(predicate: string) {
       console.log("?");
     }
