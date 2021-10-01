@@ -98,32 +98,21 @@ export default defineComponent({
   methods: {
     async fetchConceptData(): Promise<void> {
       if (this.iri) {
-        await EntityService.getEntity(this.iri)
-          .then(res => {
-            this.concept = res.data;
-          })
-          .catch(err => {
-            this.$toast.add(LoggerService.error("Editor get concept request failed", err));
-          });
+        const entityReturn = await EntityService.getEntity(this.iri);
+        if (entityReturn) this.concept = entityReturn.data;
 
-        await EntityService.getEntityDefinitionDto(this.iri)
-          .then(res => {
-            this.conceptOriginal = res.data;
-            this.conceptUpdated = JSON.parse(JSON.stringify(res.data));
-          })
-          .catch(err => {
-            this.$toast.add(LoggerService.error("Editor get concept request failed", err));
-          });
+        const dtoReturn = await EntityService.getEntityDefinitionDto(this.iri);
+        if (dtoReturn) {
+          this.conceptOriginal = dtoReturn.data;
+          this.conceptUpdated = JSON.parse(JSON.stringify(dtoReturn.data));
+        }
 
         if (this.hasMembers) {
-          await EntityService.getEntityMembers(this.iri, false, false)
-            .then(res => {
-              this.membersOriginal = res.data;
-              this.membersUpdated = JSON.parse(JSON.stringify(res.data));
-            })
-            .catch(err => {
-              this.$toast.add(LoggerService.error("Editor get concept members request failed", err));
-            });
+          const membersReturn = await EntityService.getEntityMembers(this.iri, false, false);
+          if (membersReturn) {
+            this.membersOriginal = membersReturn.data;
+            this.membersUpdated = JSON.parse(JSON.stringify(membersReturn.data));
+          }
         }
       }
     },

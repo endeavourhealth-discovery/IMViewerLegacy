@@ -119,44 +119,30 @@ export default defineComponent({
   },
   methods: {
     async getMappings(): Promise<void> {
-      await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP])
-        .then(res => {
-          this.mappings = res.data[IM.HAS_MAP] || [];
+      const mapReturn = await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP]);
+      if (mapReturn) {
+          this.mappings = mapReturn.data[IM.HAS_MAP] || [];
           this.data = {};
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get concept complex maps from server", err));
-          this.mappings = [];
-          this.data = {};
-        });
+      }
 
-      await EntityService.getNamespaces()
-        .then(res => {
-          this.namespaces = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get namespaces from server", err));
-        });
+      const nameSpaceReturn = await EntityService.getNamespaces();
+      if (nameSpaceReturn) this.namespaces = nameSpaceReturn.data;
 
-      await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO])
-        .then(res => {
-          this.simpleMaps = res.data[IM.MATCHED_TO] || [];
-          if (this.simpleMaps.length && this.namespaces) {
-            this.simpleMaps.forEach((mapItem: any) => {
-              const found = this.namespaces.find((namespace: any) => namespace.iri === mapItem["@id"].split("#")[0] + "#");
-              if (found) {
-                mapItem.scheme = found.name;
-              } else {
-                mapItem.scheme = "None";
-              }
-              mapItem.code = mapItem["@id"].split("#")[1];
-            });
-          }
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get concept simple maps from server", err));
-          this.simpleMaps = [];
-        });
+      const simpleReturn = await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO]);
+      if (simpleReturn) {
+        this.simpleMaps = simpleReturn.data[IM.MATCHED_TO] || [];
+        if (this.simpleMaps.length && this.namespaces) {
+          this.simpleMaps.forEach((mapItem: any) => {
+            const found = this.namespaces.find((namespace: any) => namespace.iri === mapItem["@id"].split("#")[0] + "#");
+            if (found) {
+              mapItem.scheme = found.name;
+            } else {
+              mapItem.scheme = "None";
+            }
+            mapItem.code = mapItem["@id"].split("#")[1];
+          });
+        }
+      }
     },
 
     createChartTableNode(

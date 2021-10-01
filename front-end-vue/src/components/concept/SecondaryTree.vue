@@ -130,19 +130,14 @@ export default defineComponent({
   },
   methods: {
     async getConceptAggregate(iri: string): Promise<void> {
-      await Promise.all([
-        EntityService.getPartialEntity(iri, [RDF.TYPE, RDFS.LABEL]).then(res => {
-          this.conceptAggregate.concept = res.data;
-        }),
-        EntityService.getEntityParents(iri).then(res => {
-          this.conceptAggregate.parents = res.data;
-        }),
-        EntityService.getEntityChildren(iri).then(res => {
-          this.conceptAggregate.children = res.data;
-        })
-      ]).catch(err => {
-        this.$toast.add(LoggerService.error("Secondary tree selected concept aggregate server request failed", err));
-      });
+      const conceptReturn = await EntityService.getPartialEntity(iri, [RDF.TYPE, RDFS.LABEL]);
+      if (conceptReturn) this.conceptAggregate.concept = conceptReturn.data;
+
+      const parentsReturn = await EntityService.getEntityParents(iri);
+      if (parentsReturn) this.conceptAggregate.parents = parentsReturn.data;
+
+      const childrenReturn = await EntityService.getEntityChildren(iri);
+      if (childrenReturn) this.conceptAggregate.children = childrenReturn.data;
     },
 
     async createTree(concept: any, parentHierarchy: any, children: any, parentPosition: number): Promise<void> {
@@ -211,18 +206,15 @@ export default defineComponent({
         this.expandedKeys[node.key] = true;
       }
       let children: any[] = [];
-      await EntityService.getEntityChildren(node.data)
-        .then(res => {
-          children = res.data;
-          children.forEach((child: any) => {
-            if (!this.containsChild(node.children, child)) {
-              node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.name, child.hasChildren));
-            }
-          });
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Concept children server request failed. Concept child failed to expand.", err));
+      const result = await EntityService.getEntityChildren(node.data);
+      if (result) {
+        children = result.data;
+        children.forEach((child: any) => {
+          if (!this.containsChild(node.children, child)) {
+            node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.name, child.hasChildren));
+          }
         });
+      }
       node.loading = false;
     },
 
@@ -240,19 +232,16 @@ export default defineComponent({
       }
 
       let parents: any[] = [];
-      await EntityService.getEntityParents(this.root[0].data)
-        .then(async res => {
-          parents = res.data;
-          const parentNode = this.createExpandedParentTree(parents, parentPosition);
-          this.root = [];
-          this.root.push(parentNode);
-          await this.setExpandedParentParents();
-          // this refreshes the keys so they start open if children and parents were both expanded
-          this.expandedKeys = { ...this.expandedKeys };
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Concept parents server request failed during parent expand stage 1", err));
-        });
+      const result = await EntityService.getEntityParents(this.root[0].data);
+      if (result) {
+        parents = result.data;
+        const parentNode = this.createExpandedParentTree(parents, parentPosition);
+        this.root = [];
+        this.root.push(parentNode);
+        await this.setExpandedParentParents();
+        // this refreshes the keys so they start open if children and parents were both expanded
+        this.expandedKeys = { ...this.expandedKeys };
+      }
     },
 
     createExpandedParentTree(parents: any, parentPosition: number): TreeNode {
@@ -270,42 +259,39 @@ export default defineComponent({
     },
 
     async setExpandedParentParents() {
-      await EntityService.getEntityParents(this.root[0].data)
-        .then(res => {
-          this.currentParent = null;
-          this.alternateParents = [];
-          if (res.data.length) {
-            if (res.data.length === 1) {
-              this.parentPosition = 0;
-              this.currentParent = {
-                name: res.data[0].name,
-                iri: res.data[0]["@id"],
-                listPosition: 0
-              };
-            } else {
-              for (let i = 0; i < res.data.length; i++) {
-                if (i === 0) {
-                  this.currentParent = {
-                    name: res.data[i].name,
-                    iri: res.data[i]["@id"],
-                    listPosition: i
-                  };
-                } else {
-                  this.alternateParents.push({
-                    name: res.data[i].name,
-                    iri: res.data[i]["@id"],
-                    listPosition: i
-                  });
-                }
+      const result = await EntityService.getEntityParents(this.root[0].data);
+      if (result) {
+        this.currentParent = null;
+        this.alternateParents = [];
+        if (result.data.length) {
+          if (result.data.length === 1) {
+            this.parentPosition = 0;
+            this.currentParent = {
+              name: result.data[0].name,
+              iri: result.data[0]["@id"],
+              listPosition: 0
+            };
+          } else {
+            for (let i = 0; i < result.data.length; i++) {
+              if (i === 0) {
+                this.currentParent = {
+                  name: result.data[i].name,
+                  iri: result.data[i]["@id"],
+                  listPosition: i
+                };
+              } else {
+                this.alternateParents.push({
+                  name: result.data[i].name,
+                  iri: result.data[i]["@id"],
+                  listPosition: i
+                });
               }
             }
-          } else {
-            return;
           }
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Concept parents server request failed during parent expand stage 2", err));
-        });
+        } else {
+          return;
+        }
+      }
     },
 
     async onNodeSelect() {
@@ -318,9 +304,8 @@ export default defineComponent({
       this.overlayLocation = event;
       const x = this.$refs.altTreeOP as any;
       x.show(event);
-      await EntityService.getEntitySummary(data.data).then(res => {
-        this.hoveredResult = res.data;
-      });
+      const result = await EntityService.getEntitySummary(data.data);
+      if (result) this.hoveredResult = result.data;
     },
 
     hidePopup(event: any): void {

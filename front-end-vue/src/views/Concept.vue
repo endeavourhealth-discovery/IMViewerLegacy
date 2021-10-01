@@ -248,91 +248,55 @@ export default defineComponent({
         .filter((c: any) => c.predicate !== "axioms")
         .map((c: any) => c.predicate);
 
-      // ideal - try/catch inside the getPartialEntity or interceptor logic
-      this.concept = await EntityService.getPartialEntity(iri, predicates);
-      if (IM.IS_A in this.concept) {
-        this.concept[IM.IS_A] = [];
+      const partialReturn = await EntityService.getPartialEntity(iri, predicates);
+      if (partialReturn) {
+        this.concept = partialReturn.data;
+        if (!Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A)) {
+          this.concept[IM.IS_A] = [];
+        }
       }
 
-      // current implementation
-      await EntityService.getPartialEntity(iri, predicates)
-        .then(res => {
-          this.concept = res.data;
-          if (!Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A)) {
-            this.concept[IM.IS_A] = [];
-          }
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get concept partial entity from server.", err));
-        });
+      const childrenReturn = await EntityService.getEntityChildren(iri);
+      if (childrenReturn) this.concept["subtypes"] = childrenReturn.data;
 
-      await EntityService.getEntityChildren(iri)
-        .then(res => {
-          this.concept["subtypes"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get subtypes from server.", err));
-        });
-
-      await EntityService.getEntityTermCodes(iri)
-        .then(res => {
-          this.concept["termCodes"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get terms from server", err));
-        });
+      const termCodesReturn = await EntityService.getEntityTermCodes(iri);
+      if (termCodesReturn) this.concept["termCodes"] = termCodesReturn.data;
     },
 
     async getProperties(iri: string) {
-      await EntityService.getSemanticProperties(iri)
-        .then(res => {
-          this.concept["semanticProperties"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get semantic properties from server", err));
-        });
+      const semanticReturn = await EntityService.getSemanticProperties(iri);
+      if (semanticReturn) this.concept["semanticProperties"] = semanticReturn.data;
 
-      await EntityService.getDataModelProperties(iri)
-        .then(res => {
-          this.concept["dataModelProperties"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get data model properties from server", err));
-        });
+      const dataModelReturn = await EntityService.getDataModelProperties(iri);
+      if (dataModelReturn) this.concept["dataModelProperties"] = dataModelReturn.data;
     },
 
     async getAxioms(iri: string) {
-      await EntityService.getAxioms(iri)
-        .then(res => {
-          this.axiomObject = res.data;
-          if (Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")) {
-            const predicateCount = Object.keys(this.axiomObject.entity)
-              .filter(key => key !== RDF.TYPE)
-              .filter(key => key !== RDFS.COMMENT)
-              .filter(key => key !== RDFS.LABEL)
-              .filter(key => key !== "@id").length;
-            this.concept["axioms"] = {
-              axiomString: this.axiomToString(this.axiomObject.entity),
-              count: predicateCount
-            };
-          }
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get axioms from server", err));
-        });
+      const axiomReturn = await EntityService.getAxioms(iri);
+      if (axiomReturn) {
+        this.axiomObject = axiomReturn.data;
+        if (Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")) {
+          const predicateCount = Object.keys(this.axiomObject.entity)
+            .filter(key => key !== RDF.TYPE)
+            .filter(key => key !== RDFS.COMMENT)
+            .filter(key => key !== RDFS.LABEL)
+            .filter(key => key !== "@id").length;
+          this.concept["axioms"] = {
+            axiomString: this.axiomToString(this.axiomObject.entity),
+            count: predicateCount
+          };
+        }
+      }
     },
 
     async getConfig(name: string) {
-      await ConfigService.getComponentLayout(name)
-        .then(res => {
-          this.configs = res.data;
-          this.configs.sort((a: any, b: any) => {
-            return a.order - b.order;
-          });
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get config data from server", err));
+      const configReturn = await ConfigService.getComponentLayout(name);
+      if (configReturn) {
+        this.configs = configReturn.data;
+        this.configs.sort((a: any, b: any) => {
+          return a.order - b.order;
         });
+      }
     },
 
     async init() {
@@ -430,38 +394,40 @@ export default defineComponent({
               "Uncovered object property or missing name found for key: " + key + " at conceptObjectToCopyString within Concept.vue"
             );
           }
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ": [\n\t" + newString + "\n]";
-          } else {
-            returnString = newKey + ": [\n\t" + newString + "\n],\n";
-          }
-        } else {
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ": [\n\t\n]";
-          } else {
-            returnString = newKey + ": [\n\t\n],\n";
+          if (newString) {
+            if (counter === totalKeys - 1) {
+              returnString = newKey + ": [\n\t" + newString + "\n]";
+            } else {
+              returnString = newKey + ": [\n\t" + newString + "\n],\n";
+            }
           }
         }
       } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "name")) {
         newString = value.name;
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ": " + newString;
-        } else {
-          returnString = newKey + ": " + newString + ",\n";
+        if (newString) {
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ": " + newString;
+          } else {
+            returnString = newKey + ": " + newString + ",\n";
+          }
         }
       } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "axiomString")) {
         newString = value.axiomString;
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ': "\n' + newString + '\n"';
-        } else {
-          returnString = newKey + ': "\n' + newString + '\n",\n';
+        if (newString) {
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ': "\n' + newString + '\n"';
+          } else {
+            returnString = newKey + ': "\n' + newString + '\n",\n';
+          }
         }
       } else if (typeof value === "string") {
         newString = value.replace(/\n/g, "\n\t").replace(/<p>/g, "\n\t") as string;
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ": " + newString;
-        } else {
-          returnString = newKey + ": " + newString + ",\n";
+        if (newString) {
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ": " + newString;
+          } else {
+            returnString = newKey + ": " + newString + ",\n";
+          }
         }
       } else {
         returnString = JSON.stringify(value);
@@ -479,6 +445,9 @@ export default defineComponent({
         const copyString = this.conceptObjectToCopyString(key, value, counter, totalKeys);
         if (copyString) returnString += copyString.value;
         counter++;
+      }
+      if (returnString.endsWith(",\n")) {
+        return returnString.slice(0, -2);
       }
       return returnString;
     },
@@ -524,7 +493,7 @@ export default defineComponent({
       let value: any;
       for ([key, value] of Object.entries(this.concept)) {
         let result = this.conceptObjectToCopyString(key, value, 0, 1);
-        if (!result) return;
+        if (!result || !result.value) continue;
         const label = result.label;
         const text = result.value;
         this.copyMenuItems.push({

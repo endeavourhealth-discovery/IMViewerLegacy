@@ -1,22 +1,43 @@
 <template>
   <div class="dashcard-container">
     <Card class="dashcard dash-pie">
-      <template #title> {{ name }} </template>
+      <template #title> Catalogue instance types overview </template>
       <template #subtitle>
-        {{ description }}
+        A brief overview of the types of data stored in the Catalogue
       </template>
       <template #content>
-        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportPie_' + iri)">
-          <ProgressSpinner />
+        <div class="p-grid">
+          <div class="p-col-6">
+            <p style="margin-bottom: 1em; margin-top: 2em; text-align: center">
+              <b>Data Table</b>
+            </p>
+            <DataTable
+              :value="types"
+              class="p-datatable-sm"
+              :scrollable="true"
+              scrollHeight="350px"
+            >
+              <template #header>
+                Types data
+              </template>
+              <Column field="label" header="Label"></Column>
+              <Column field="count" header="Total"></Column>
+            </DataTable>
+          </div>
+          <div class="p-col-6">
+            <p style="margin-bottom: 1em; margin-top: 2em; text-align: center">
+              <b>Pie Chart</b>
+            </p>
+            <Chart
+              type="pie"
+              :data="chartInstanceTypes"
+              :options="chartOptions"
+              :height="graphHeight"
+              style="margin-left: 1em"
+              class="p-chart"
+            />
+          </div>
         </div>
-        <Chart
-          :key="'pie' + iri"
-          v-if="!$store.state.loading.get('reportPie_' + iri)"
-          type="pie"
-          :data="chartConceptTypes"
-          :options="chartOptions"
-          :height="graphHeight"
-        />
       </template>
     </Card>
   </div>
@@ -24,23 +45,43 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-const palette = require("../../../node_modules/google-palette");
-import LoggerService from "@/services/LoggerService";
-import { PieChartData } from "@/models/charts/PieChartData";
-import { setTooltips, rescaleData } from "@/helpers/ChartRescale";
 import { ChartOptions } from "@/models/charts/ChartOptions";
-import { IM } from "@/vocabulary/IM";
-import { RDFS } from "@/vocabulary/RDFS";
-import { OWL } from "@/vocabulary/OWL";
-import EntityService from "@/services/EntityService";
+import { PieChartData } from "@/models/charts/PieChartData";
+import { rescaleData, setTooltips } from "@/helpers/ChartRescale";
+import {PropType} from "@vue/runtime-core";
+const palette = require("../../../node_modules/google-palette");
 
 export default defineComponent({
-  name: "ReportPieChart",
-  props: ["iri"],
-  data: () => {
+  name: "TypesPieChart",
+  props: {
+    types: {
+      type: Array as PropType<Array<unknown>>,
+      required: true
+    }
+  } ,
+  // watch: {
+  //   types: {
+  //   async  handler(newValue, oldValue) {
+  //     if(newValue !== oldValue){
+  //       await this.setChartData();
+  //     }
+  //     },
+  //   deep: true
+  //   }
+  // },
+  data(){
     return {
-      name: "" as string,
-      description: "" as string,
+      chartInstanceTypes: new PieChartData(
+        [
+          {
+            data: [],
+            backgroundColor: [],
+            hoverBackgroundColor: [],
+            borderRadius: 1
+          }
+        ],
+        []
+      ) as PieChartData,
       chartOptions: {
         plugins: {
           legend: {
@@ -55,65 +96,35 @@ export default defineComponent({
         }
       } as ChartOptions,
       realData: {} as number[],
-      chartConceptTypes: new PieChartData(
-        [
-          {
-            data: [],
-            backgroundColor: [],
-            hoverBackgroundColor: [],
-            borderRadius: 1
-          }
-        ],
-        []
-      ) as PieChartData,
       graphHeight: 200
     };
   },
-  beforeCreate() {
-    this.$store.commit("updateLoading", {
-      key: "reportPie_" + this.iri,
-      value: true
-    });
-  },
-  async mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.setLegendOptions);
-    });
-    await this.setChartData();
+  mounted() {
+    this.setChartData();
     this.setLegendOptions();
   },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.setLegendOptions);
-  },
   methods: {
-    async setChartData(): Promise<void> {
-      const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
-      if (result) {
-        this.name = result.data[RDFS.LABEL];
-        this.description = result.data[RDFS.COMMENT];
-        for (const entry of result.data[IM.STATS_REPORT_ENTRY]) {
-          this.chartConceptTypes.labels.push(entry[RDFS.LABEL]);
-          this.chartConceptTypes.datasets[0].data.push(entry[OWL.HAS_VALUE]);
-        }
-        this.realData = { ...this.chartConceptTypes.datasets[0].data };
-        // set tooltip to use real data
-        this.chartOptions["tooltips"] = setTooltips(this.realData);
-        // refactor data to a minimum graph size (1%) if less than min
-        this.chartConceptTypes.datasets[0].data = rescaleData(this.chartConceptTypes.datasets[0].data);
-        this.setChartColours(result.data[IM.STATS_REPORT_ENTRY].length);
-      }
-      this.$store.commit("updateLoading", {
-        key: "reportPie_" + this.iri,
-        value: false
+    async setChartData() {
+      this.types.forEach((type: any) => {
+        this.chartInstanceTypes.labels.push(type.iri);
+        this.chartInstanceTypes.datasets[0].data.push(type.count);
       });
+      this.realData = { ...this.chartInstanceTypes.datasets[0].data };
+      this.chartOptions["tooltips"] = setTooltips(this.realData);
+      this.chartInstanceTypes.datasets[0].data = rescaleData(
+        this.chartInstanceTypes.datasets[0].data
+      );
+      this.setChartColours(this.types.length);
     },
-
     setChartColours(colourCount: number): void {
       const colours = palette("tol-rainbow", colourCount);
-      this.chartConceptTypes.datasets[0].backgroundColor = colours.map((color: string) => "#" + color + "BB");
-      this.chartConceptTypes.datasets[0].hoverBackgroundColor = colours.map((color: string) => "#" + color);
+      this.chartInstanceTypes.datasets[0].backgroundColor = colours.map(
+        (color: string) => "#" + color + "BB"
+      );
+      this.chartInstanceTypes.datasets[0].hoverBackgroundColor = colours.map(
+        (color: string) => "#" + color
+      );
     },
-
     setLegendOptions(): void {
       const width = window.innerWidth;
       if (width > 1750) {
@@ -231,19 +242,19 @@ export default defineComponent({
 }
 @media screen and (min-width: 1440px) {
   .dashcard-container {
-    max-width: calc(35vw - 57.5px - 21px);
+    max-width: calc((35vw - 57.5px - 21px) * 2 + 10em);
   }
 }
 
 @media screen and (min-width: 1024px) and (max-width: 1439px) {
   .dashcard-container {
-    max-width: calc(32vw - 21px);
+    max-width: calc((32vw - 21px) * 2 + 10em);
   }
 }
 
 @media screen and (max-width: 1023px) {
   .dashcard-container {
-    max-width: calc(62vw - 21px);
+    max-width: calc((62vw - 21px) * 2 + 10em);
   }
 }
 

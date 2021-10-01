@@ -172,14 +172,11 @@ export default defineComponent({
       }
       this.selected = {};
       this.subsets = [];
-      await EntityService.getEntityMembers(this.conceptIri as string, this.expandMembers, this.expandSubsets, this.expandMembers ? 2000 : undefined)
-        .then(res => {
-          this.members = res.data;
-          this.expandMembersSizeCheck();
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get members from server", err));
-        });
+      const result = await EntityService.getEntityMembers(this.conceptIri as string, this.expandMembers, this.expandSubsets, this.expandMembers ? 2000 : undefined);
+      if (result) {
+        this.members = result.data;
+        this.expandMembersSizeCheck();
+      }
       this.loading = false;
       this.setTableWidth();
     },
