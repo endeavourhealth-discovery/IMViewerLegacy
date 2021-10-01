@@ -82,22 +82,12 @@ export default defineComponent({
     };
   },
   async mounted() {
-    await EntityService.getNamespaces()
-      .then(res => {
-        this.schemeOptions = res.data;
-      })
-      .catch(err => {
-        this.$toast.add(LoggerService.error("Failed to get scheme options from server", err));
-      });
-    await EntityService.getEntityChildren(IM.STATUS)
-      .then(res => {
-        this.statusOptions = res.data;
-      })
-      .catch(err => {
-        this.$toast.add(LoggerService.error("Failed to get status options from server", err));
-      });
-  },
-  methods: {}
+    const namespaceReturn = await EntityService.getNamespaces();
+    if (namespaceReturn) this.schemeOptions = namespaceReturn.data;
+
+    const childrenReturn = await EntityService.getEntityChildren(IM.STATUS);
+    if (childrenReturn) this.statusOptions = childrenReturn.data;
+  }
 });
 </script>
 
