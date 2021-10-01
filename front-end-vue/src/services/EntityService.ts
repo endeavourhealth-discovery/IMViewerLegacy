@@ -4,13 +4,30 @@ import { ConceptNode } from "@/models/ConceptNode";
 import { IM } from "@/vocabulary/IM";
 
 export default class EntityService {
-  public static async getPartialEntity(iri: string, predicates: string[]): Promise<AxiosResponse<any>> {
+  // previous implementation with no error handling
+  public static async getPartialEntityOld(iri: string, predicates: string[]): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/partial", {
       params: {
         iri: iri,
         predicate: predicates.join(",")
       }
     });
+  }
+
+  // new implementation with try/catch
+  // check axios interceptors
+  public static async getPartialEntity(iri: string, predicates: string[]) {
+    try {
+      const res = await axios.get(this.api + "api/entity/partial", {
+        params: {
+          iri: iri,
+          predicate: predicates.join(",")
+        }
+      });
+      return res.data;
+    } catch (error) {
+      throw new Error("EntityService.ts error from getPartialEntity");
+    }
   }
 
   static api = process.env.VUE_APP_API;
