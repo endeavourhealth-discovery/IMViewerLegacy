@@ -30,7 +30,6 @@
 <script lang="ts">
 import ConfigService from "@/services/ConfigService";
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
 
@@ -111,16 +110,16 @@ export default defineComponent({
 
     async getFilterOptions() {
       const filterConfigReturn = await ConfigService.getFilterDefaults();
-      if (filterConfigReturn) this.configs = filterConfigReturn.data;
+      if (filterConfigReturn) this.configs = filterConfigReturn;
 
       const namespaceReturn = await EntityService.getNamespaces();
-      if (namespaceReturn) this.schemeOptions = namespaceReturn.data
+      if (namespaceReturn) this.schemeOptions = namespaceReturn;
 
       const childrenStatusReturn = await EntityService.getEntityChildren("http://endhealth.info/im#Status");
-      if (childrenStatusReturn) this.statusOptions = childrenStatusReturn.data;
+      if (childrenStatusReturn) this.statusOptions = childrenStatusReturn;
 
       const childrenTypeReturn = await EntityService.getEntityChildren("http://endhealth.info/im#ModellingEntityType");
-      if (childrenTypeReturn) this.typeOptions = childrenTypeReturn.data;
+      if (childrenTypeReturn) this.typeOptions = childrenTypeReturn;
     },
 
     setLegacy(include: boolean) {

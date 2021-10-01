@@ -57,7 +57,6 @@ import EntityService from "@/services/EntityService";
 import { defineComponent } from "@vue/runtime-core";
 import Dropdown from "primevue/dropdown";
 import Card from "primevue/card";
-import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
@@ -83,10 +82,10 @@ export default defineComponent({
   },
   async mounted() {
     const namespaceReturn = await EntityService.getNamespaces();
-    if (namespaceReturn) this.schemeOptions = namespaceReturn.data;
+    if (namespaceReturn) this.schemeOptions = namespaceReturn;
 
     const childrenReturn = await EntityService.getEntityChildren(IM.STATUS);
-    if (childrenReturn) this.statusOptions = childrenReturn.data;
+    if (childrenReturn) this.statusOptions = childrenReturn;
   }
 });
 </script>

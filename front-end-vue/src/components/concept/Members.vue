@@ -172,9 +172,14 @@ export default defineComponent({
       }
       this.selected = {};
       this.subsets = [];
-      const result = await EntityService.getEntityMembers(this.conceptIri as string, this.expandMembers, this.expandSubsets, this.expandMembers ? 2000 : undefined);
+      const result = await EntityService.getEntityMembers(
+        this.conceptIri as string,
+        this.expandMembers,
+        this.expandSubsets,
+        this.expandMembers ? 2000 : undefined
+      );
       if (result) {
-        this.members = result.data;
+        this.members = result;
         this.expandMembersSizeCheck();
       }
       this.loading = false;

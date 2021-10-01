@@ -65,8 +65,6 @@
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import WorkflowService from "@/services/WorkflowService";
-import LoggerService from "@/services/LoggerService";
-
 import { FilterMatchMode } from "primevue/api";
 import { Filters } from "@/models/workflow/Filters";
 import * as d3 from "d3";
@@ -102,7 +100,7 @@ export default defineComponent({
     async getWorkflows() {
       const result = await WorkflowService.getWorkflows();
       if (result) {
-        this.workflows = result.data;
+        this.workflows = result;
         this.workflows.forEach((workflow: any) => {
           this.workflowTypes.push(workflow.type);
         });
@@ -111,7 +109,7 @@ export default defineComponent({
 
     async getWorkflowTasks() {
       const result = await WorkflowService.getWorkflowTasks();
-      if(result) this.tasksData = result.data;
+      if (result) this.tasksData = result;
       this.createPanel();
     },
     createPanel() {
@@ -254,9 +252,7 @@ export default defineComponent({
         if (d.target.x - d.source.x == 0 && d.target.y - d.source.y == 0) {
           return `M${d.source.x},${d.source.y}A 15, 15 1 1, 1 ${d.target.x - 1},${d.target.y - 1}`;
         } else {
-          return `M${d.source.x},${d.source.y - 2}A${r},${r} 0 0,0 ${
-            d.target.x
-          },${d.target.y + 2}`;
+          return `M${d.source.x},${d.source.y - 2}A${r},${r} 0 0,0 ${d.target.x},${d.target.y + 2}`;
         }
       }
     }

@@ -77,12 +77,12 @@ export default defineComponent({
   methods: {
     async getUsages(iri: string, pageIndex: number, pageSize: number) {
       const usagesReturn = await EntityService.getEntityUsages(iri, pageIndex, pageSize);
-      if (usagesReturn) this.usages = usagesReturn.data;
+      if (usagesReturn) this.usages = usagesReturn;
     },
 
     async getRecordsSize(iri: string) {
       const usagedTotalReturn = await EntityService.getUsagesTotalRecords(iri);
-      if (usagedTotalReturn) this.recordsTotal = usagedTotalReturn.data;
+      if (usagedTotalReturn) this.recordsTotal = usagedTotalReturn;
     },
 
     async handlePage(event: any) {

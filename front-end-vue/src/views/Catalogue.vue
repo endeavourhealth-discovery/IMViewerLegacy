@@ -152,12 +152,12 @@ export default defineComponent({
   methods: {
     async getTypesCount() {
       const result = await CatalogueService.getTypesCount();
-      if (result) this.types = result.data;
+      if (result) this.types = result;
     },
 
     async getSearchResult() {
       const result = await CatalogueService.getSearchResult(this.searchRequest,this.typesIris);
-      if (result) this.searchResults = result.data;
+      if (result) this.searchResults = result;
     },
 
     setIris() {
@@ -206,7 +206,7 @@ export default defineComponent({
         this.instanceIri,
         this.predicate
       );
-      if (result) this.instance = result.data;
+      if (result) this.instance = result;
 
       this.instanceData = [];
       let level = 0;

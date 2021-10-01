@@ -82,7 +82,7 @@ export default defineComponent({
       this.loading = true;
       const result = await EntityService.getDataModelProperties(iri);
       if (result) {
-        this.dataModelPropsData = result.data.map((prop: any) => {
+        this.dataModelPropsData = result.map((prop: any) => {
           return {
             propertyId: prop.property["@id"],
             propertyName: prop.property.name,

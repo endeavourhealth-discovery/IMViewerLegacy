@@ -25,7 +25,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 const palette = require("../../../node_modules/google-palette");
-import LoggerService from "@/services/LoggerService";
 import { PieChartData } from "@/models/charts/PieChartData";
 import { setTooltips, rescaleData } from "@/helpers/ChartRescale";
 import { ChartOptions } from "@/models/charts/ChartOptions";
@@ -89,9 +88,9 @@ export default defineComponent({
     async setChartData(): Promise<void> {
       const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
       if (result) {
-        this.name = result.data[RDFS.LABEL];
-        this.description = result.data[RDFS.COMMENT];
-        for (const entry of result.data[IM.STATS_REPORT_ENTRY]) {
+        this.name = result[RDFS.LABEL];
+        this.description = result[RDFS.COMMENT];
+        for (const entry of result[IM.STATS_REPORT_ENTRY]) {
           this.chartConceptTypes.labels.push(entry[RDFS.LABEL]);
           this.chartConceptTypes.datasets[0].data.push(entry[OWL.HAS_VALUE]);
         }
@@ -100,7 +99,7 @@ export default defineComponent({
         this.chartOptions["tooltips"] = setTooltips(this.realData);
         // refactor data to a minimum graph size (1%) if less than min
         this.chartConceptTypes.datasets[0].data = rescaleData(this.chartConceptTypes.datasets[0].data);
-        this.setChartColours(result.data[IM.STATS_REPORT_ENTRY].length);
+        this.setChartColours(result[IM.STATS_REPORT_ENTRY].length);
       }
       this.$store.commit("updateLoading", {
         key: "reportPie_" + this.iri,

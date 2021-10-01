@@ -43,7 +43,6 @@ import EntityService from "@/services/EntityService";
 import ConfirmDialog from "primevue/confirmdialog";
 import MemberEditor from "@/components/edit/MemberEditor.vue";
 import { IM } from "@/vocabulary/IM";
-import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "Editor",
@@ -99,19 +98,19 @@ export default defineComponent({
     async fetchConceptData(): Promise<void> {
       if (this.iri) {
         const entityReturn = await EntityService.getEntity(this.iri);
-        if (entityReturn) this.concept = entityReturn.data;
+        if (entityReturn) this.concept = entityReturn;
 
         const dtoReturn = await EntityService.getEntityDefinitionDto(this.iri);
         if (dtoReturn) {
-          this.conceptOriginal = dtoReturn.data;
-          this.conceptUpdated = JSON.parse(JSON.stringify(dtoReturn.data));
+          this.conceptOriginal = dtoReturn;
+          this.conceptUpdated = JSON.parse(JSON.stringify(dtoReturn));
         }
 
         if (this.hasMembers) {
           const membersReturn = await EntityService.getEntityMembers(this.iri, false, false);
           if (membersReturn) {
-            this.membersOriginal = membersReturn.data;
-            this.membersUpdated = JSON.parse(JSON.stringify(membersReturn.data));
+            this.membersOriginal = membersReturn;
+            this.membersUpdated = JSON.parse(JSON.stringify(membersReturn));
           }
         }
       }

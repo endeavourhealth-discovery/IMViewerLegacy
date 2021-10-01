@@ -23,7 +23,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 import { OWL } from "@/vocabulary/OWL";
@@ -47,7 +46,7 @@ export default defineComponent({
     if (result) {
       this.tableData = [];
 
-      for (const entry of result.data[IM.STATS_REPORT_ENTRY]) {
+      for (const entry of result[IM.STATS_REPORT_ENTRY]) {
         this.tableData.push({
           label: entry[RDFS.LABEL],
           count: +entry[OWL.HAS_VALUE]

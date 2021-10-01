@@ -83,7 +83,6 @@ import { IM } from "@/vocabulary/IM";
 import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
 import { defineComponent } from "vue";
-import LoggerService from "@/services/LoggerService";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 
 export default defineComponent({
@@ -131,13 +130,13 @@ export default defineComponent({
   methods: {
     async getConceptAggregate(iri: string): Promise<void> {
       const conceptReturn = await EntityService.getPartialEntity(iri, [RDF.TYPE, RDFS.LABEL]);
-      if (conceptReturn) this.conceptAggregate.concept = conceptReturn.data;
+      if (conceptReturn) this.conceptAggregate.concept = conceptReturn;
 
       const parentsReturn = await EntityService.getEntityParents(iri);
-      if (parentsReturn) this.conceptAggregate.parents = parentsReturn.data;
+      if (parentsReturn) this.conceptAggregate.parents = parentsReturn;
 
       const childrenReturn = await EntityService.getEntityChildren(iri);
-      if (childrenReturn) this.conceptAggregate.children = childrenReturn.data;
+      if (childrenReturn) this.conceptAggregate.children = childrenReturn;
     },
 
     async createTree(concept: any, parentHierarchy: any, children: any, parentPosition: number): Promise<void> {
@@ -208,7 +207,7 @@ export default defineComponent({
       let children: any[] = [];
       const result = await EntityService.getEntityChildren(node.data);
       if (result) {
-        children = result.data;
+        children = result;
         children.forEach((child: any) => {
           if (!this.containsChild(node.children, child)) {
             node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.name, child.hasChildren));
@@ -234,7 +233,7 @@ export default defineComponent({
       let parents: any[] = [];
       const result = await EntityService.getEntityParents(this.root[0].data);
       if (result) {
-        parents = result.data;
+        parents = result;
         const parentNode = this.createExpandedParentTree(parents, parentPosition);
         this.root = [];
         this.root.push(parentNode);
@@ -263,26 +262,26 @@ export default defineComponent({
       if (result) {
         this.currentParent = null;
         this.alternateParents = [];
-        if (result.data.length) {
-          if (result.data.length === 1) {
+        if (result.length) {
+          if (result.length === 1) {
             this.parentPosition = 0;
             this.currentParent = {
-              name: result.data[0].name,
-              iri: result.data[0]["@id"],
+              name: result[0].name,
+              iri: result[0]["@id"],
               listPosition: 0
             };
           } else {
-            for (let i = 0; i < result.data.length; i++) {
+            for (let i = 0; i < result.length; i++) {
               if (i === 0) {
                 this.currentParent = {
-                  name: result.data[i].name,
-                  iri: result.data[i]["@id"],
+                  name: result[i].name,
+                  iri: result[i]["@id"],
                   listPosition: i
                 };
               } else {
                 this.alternateParents.push({
-                  name: result.data[i].name,
-                  iri: result.data[i]["@id"],
+                  name: result[i].name,
+                  iri: result[i]["@id"],
                   listPosition: i
                 });
               }
@@ -305,7 +304,7 @@ export default defineComponent({
       const x = this.$refs.altTreeOP as any;
       x.show(event);
       const result = await EntityService.getEntitySummary(data.data);
-      if (result) this.hoveredResult = result.data;
+      if (result) this.hoveredResult = result;
     },
 
     hidePopup(event: any): void {

@@ -10,7 +10,6 @@
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "ComplexMembers",
@@ -39,7 +38,7 @@ export default defineComponent({
     async getComplexMembers() {
       this.loading = true;
       const result = await EntityService.getComplexMembers(this.conceptIri);
-      if (result) this.complexMembers = result.data;
+      if (result) this.complexMembers = result;
       this.loading = false;
     }
   }

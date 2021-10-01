@@ -137,7 +137,7 @@ export default defineComponent({
       console.log("Searching [" + this.value + "]");
       const result = await UprnService.findUprn(this.value, this.selectedArea);
       if (result) {
-        this.match = result.data;
+        this.match = result;
         console.log(result);
         if (this.match.Matched) {
           console.log("Match found");

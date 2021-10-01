@@ -53,7 +53,6 @@ import EntityService from "@/services/EntityService";
 import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";
 import { IM } from "@/vocabulary/IM";
-import LoggerService from "@/services/LoggerService";
 import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
@@ -128,13 +127,13 @@ export default defineComponent({
     },
     async getConceptAggregate(iri: string) {
       const partialReturn = await EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]);
-      if (partialReturn) this.conceptAggregate.concept = partialReturn.data;
+      if (partialReturn) this.conceptAggregate.concept = partialReturn;
 
       const parentsReturn = await EntityService.getEntityParents(iri);
-      if (parentsReturn) this.conceptAggregate.parents = parentsReturn.data;
+      if (parentsReturn) this.conceptAggregate.parents = parentsReturn;
 
       const childrenReturn = await EntityService.getEntityChildren(iri);
-      if (childrenReturn) this.conceptAggregate.children = childrenReturn.data;
+      if (childrenReturn) this.conceptAggregate.children = childrenReturn;
     },
 
     refreshTree(): void {
@@ -189,7 +188,7 @@ export default defineComponent({
       this.expandedKeys[node.key] = true;
       let children: any[] = [];
       const result = await EntityService.getEntityChildren(node.data);
-      if (result) children = result.data;
+      if (result) children = result;
 
       children.forEach((child: any) => {
         if (!this.containsChild(node.children, child)) {

@@ -250,31 +250,31 @@ export default defineComponent({
 
       const partialReturn = await EntityService.getPartialEntity(iri, predicates);
       if (partialReturn) {
-        this.concept = partialReturn.data;
+        this.concept = partialReturn;
         if (!Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A)) {
           this.concept[IM.IS_A] = [];
         }
       }
 
       const childrenReturn = await EntityService.getEntityChildren(iri);
-      if (childrenReturn) this.concept["subtypes"] = childrenReturn.data;
+      if (childrenReturn) this.concept["subtypes"] = childrenReturn;
 
       const termCodesReturn = await EntityService.getEntityTermCodes(iri);
-      if (termCodesReturn) this.concept["termCodes"] = termCodesReturn.data;
+      if (termCodesReturn) this.concept["termCodes"] = termCodesReturn;
     },
 
     async getProperties(iri: string) {
       const semanticReturn = await EntityService.getSemanticProperties(iri);
-      if (semanticReturn) this.concept["semanticProperties"] = semanticReturn.data;
+      if (semanticReturn) this.concept["semanticProperties"] = semanticReturn;
 
       const dataModelReturn = await EntityService.getDataModelProperties(iri);
-      if (dataModelReturn) this.concept["dataModelProperties"] = dataModelReturn.data;
+      if (dataModelReturn) this.concept["dataModelProperties"] = dataModelReturn;
     },
 
     async getAxioms(iri: string) {
       const axiomReturn = await EntityService.getAxioms(iri);
       if (axiomReturn) {
-        this.axiomObject = axiomReturn.data;
+        this.axiomObject = axiomReturn;
         if (Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")) {
           const predicateCount = Object.keys(this.axiomObject.entity)
             .filter(key => key !== RDF.TYPE)
@@ -292,7 +292,7 @@ export default defineComponent({
     async getConfig(name: string) {
       const configReturn = await ConfigService.getComponentLayout(name);
       if (configReturn) {
-        this.configs = configReturn.data;
+        this.configs = configReturn;
         this.configs.sort((a: any, b: any) => {
           return a.order - b.order;
         });

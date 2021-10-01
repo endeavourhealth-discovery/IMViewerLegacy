@@ -71,7 +71,6 @@
 
 <script lang="ts">
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
 import SimpleMaps from "@/components/concept/mapping/SimpleMaps.vue";
@@ -121,16 +120,16 @@ export default defineComponent({
     async getMappings(): Promise<void> {
       const mapReturn = await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP]);
       if (mapReturn) {
-          this.mappings = mapReturn.data[IM.HAS_MAP] || [];
-          this.data = {};
+        this.mappings = mapReturn[IM.HAS_MAP] || [];
+        this.data = {};
       }
 
       const nameSpaceReturn = await EntityService.getNamespaces();
-      if (nameSpaceReturn) this.namespaces = nameSpaceReturn.data;
+      if (nameSpaceReturn) this.namespaces = nameSpaceReturn;
 
       const simpleReturn = await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO]);
       if (simpleReturn) {
-        this.simpleMaps = simpleReturn.data[IM.MATCHED_TO] || [];
+        this.simpleMaps = simpleReturn[IM.MATCHED_TO] || [];
         if (this.simpleMaps.length && this.namespaces) {
           this.simpleMaps.forEach((mapItem: any) => {
             const found = this.namespaces.find((namespace: any) => namespace.iri === mapItem["@id"].split("#")[0] + "#");

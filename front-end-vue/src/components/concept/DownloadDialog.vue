@@ -200,32 +200,32 @@ export default defineComponent({
       this.loading = true;
       const partialReturn = await EntityService.getPartialEntity(iri, [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN, IM.IS_A]);
       if (partialReturn) {
-        this.concept = partialReturn.data;
-        if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_CHILD_OF) && partialReturn.data[IM.IS_CHILD_OF].length) {
-          this.isChildOf = partialReturn.data[IM.IS_CHILD_OF];
+        this.concept = partialReturn;
+        if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_CHILD_OF) && partialReturn[IM.IS_CHILD_OF].length) {
+          this.isChildOf = partialReturn[IM.IS_CHILD_OF];
         }
-        if (Object.prototype.hasOwnProperty.call(this.concept, IM.HAS_CHILDREN) && partialReturn.data[IM.HAS_CHILDREN]) {
-          this.hasChildren = partialReturn.data[IM.HAS_CHILDREN];
+        if (Object.prototype.hasOwnProperty.call(this.concept, IM.HAS_CHILDREN) && partialReturn[IM.HAS_CHILDREN]) {
+          this.hasChildren = partialReturn[IM.HAS_CHILDREN];
         }
-        if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A) && partialReturn.data[IM.IS_A].length) {
-          this.isA = partialReturn.data[IM.IS_A];
+        if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A) && partialReturn[IM.IS_A].length) {
+          this.isA = partialReturn[IM.IS_A];
         }
       }
 
       const childrenReturn = await EntityService.getEntityChildren(iri);
-      if (childrenReturn) this.hasSubTypes = childrenReturn.data;
+      if (childrenReturn) this.hasSubTypes = childrenReturn;
 
       const termsReturn = await EntityService.getEntityTermCodes(iri);
-      if (termsReturn) this.terms = termsReturn.data;
+      if (termsReturn) this.terms = termsReturn;
 
       const dataModelReturn = await EntityService.getDataModelProperties(iri);
-      if (dataModelReturn) this.dataModelProperties = dataModelReturn.data;
+      if (dataModelReturn) this.dataModelProperties = dataModelReturn;
 
       const semanticReturn = await EntityService.getSemanticProperties(iri);
-      if (semanticReturn) this.semanticProperties = semanticReturn.data;
+      if (semanticReturn) this.semanticProperties = semanticReturn;
 
       const membersReturn = await EntityService.getEntityMembers(iri, this.expandMembers, false);
-      if (membersReturn) this.members = membersReturn.data;
+      if (membersReturn) this.members = membersReturn;
 
       this.setIncludeBooleans();
       this.loading = false;
