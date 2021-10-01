@@ -38,13 +38,8 @@ export default defineComponent({
 
     async getComplexMembers() {
       this.loading = true;
-      await EntityService.getComplexMembers(this.conceptIri)
-        .then(res => {
-          this.complexMembers = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get complex members from server", err));
-        });
+      const result = await EntityService.getComplexMembers(this.conceptIri);
+      if (result) this.complexMembers = result.data;
       this.loading = false;
     }
   }
