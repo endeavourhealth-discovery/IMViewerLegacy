@@ -248,91 +248,63 @@ export default defineComponent({
         .filter((c: any) => c.predicate !== "axioms")
         .map((c: any) => c.predicate);
 
-      // ideal - try/catch inside the getPartialEntity or interceptor logic
-      this.concept = await EntityService.getPartialEntity(iri, predicates);
-      if (IM.IS_A in this.concept) {
-        this.concept[IM.IS_A] = [];
+      const partialReturn = await EntityService.getPartialEntity(iri, predicates);
+      if (partialReturn) {
+        this.concept = partialReturn;
+        if (!Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A)) {
+          this.concept[IM.IS_A] = [];
+        }
       }
 
-      // current implementation
-      await EntityService.getPartialEntity(iri, predicates)
-        .then(res => {
-          this.concept = res.data;
-          if (!Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A)) {
-            this.concept[IM.IS_A] = [];
-          }
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get concept partial entity from server.", err));
-        });
+      const childrenReturn = await EntityService.getEntityChildren(iri);
+      if (childrenReturn) {
+        this.concept["subtypes"] = childrenReturn;
+      }
 
-      await EntityService.getEntityChildren(iri)
-        .then(res => {
-          this.concept["subtypes"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get subtypes from server.", err));
-        });
-
-      await EntityService.getEntityTermCodes(iri)
-        .then(res => {
-          this.concept["termCodes"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get terms from server", err));
-        });
+      const termCodesReturn = await EntityService.getEntityTermCodes(iri);
+      if (termCodesReturn) {
+        this.concept["termCodes"] = termCodesReturn;
+      }
     },
 
     async getProperties(iri: string) {
-      await EntityService.getSemanticProperties(iri)
-        .then(res => {
-          this.concept["semanticProperties"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get semantic properties from server", err));
-        });
+      const semanticReturn = await EntityService.getSemanticProperties(iri);
+      if (semanticReturn) {
+        this.concept["semanticProperties"] = semanticReturn;
+      }
 
-      await EntityService.getDataModelProperties(iri)
-        .then(res => {
-          this.concept["dataModelProperties"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get data model properties from server", err));
-        });
+      const dataModelReturn = await EntityService.getDataModelProperties(iri);
+      if (dataModelReturn) {
+        this.concept["dataModelProperties"] = dataModelReturn;
+      }
     },
 
     async getAxioms(iri: string) {
-      await EntityService.getAxioms(iri)
-        .then(res => {
-          this.axiomObject = res.data;
-          if (Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")) {
-            const predicateCount = Object.keys(this.axiomObject.entity)
-              .filter(key => key !== RDF.TYPE)
-              .filter(key => key !== RDFS.COMMENT)
-              .filter(key => key !== RDFS.LABEL)
-              .filter(key => key !== "@id").length;
-            this.concept["axioms"] = {
-              axiomString: this.axiomToString(this.axiomObject.entity),
-              count: predicateCount
-            };
-          }
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get axioms from server", err));
-        });
+      const axiomReturn = await EntityService.getAxioms(iri);
+      if (axiomReturn) {
+        this.axiomObject = axiomReturn;
+        if (Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")) {
+          const predicateCount = Object.keys(this.axiomObject.entity)
+            .filter(key => key !== RDF.TYPE)
+            .filter(key => key !== RDFS.COMMENT)
+            .filter(key => key !== RDFS.LABEL)
+            .filter(key => key !== "@id").length;
+          this.concept["axioms"] = {
+            axiomString: this.axiomToString(this.axiomObject.entity),
+            count: predicateCount
+          };
+        }
+      }
     },
 
     async getConfig(name: string) {
-      await ConfigService.getComponentLayout(name)
-        .then(res => {
-          this.configs = res.data;
-          this.configs.sort((a: any, b: any) => {
-            return a.order - b.order;
-          });
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get config data from server", err));
+      const configReturn = await ConfigService.getComponentLayout(name);
+      if (configReturn) {
+        this.configs = configReturn;
+        this.configs.sort((a: any, b: any) => {
+          return a.order - b.order;
         });
+      }
     },
 
     async init() {
