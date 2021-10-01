@@ -135,32 +135,32 @@ export default defineComponent({
     async search() {
       this.pin = null;
       console.log("Searching [" + this.value + "]");
-      await UprnService.findUprn(this.value, this.selectedArea)
-        .then(result => {
-          this.match = result.data;
-          console.log(result);
-          if (this.match.Matched) {
-            console.log("Match found");
-            this.getUprn();
-          } else {
-            console.log("No match");
-            this.$toast.add(LoggerService.warn("No match found"));
-          }
-        })
-        .catch(error => {
-          this.$toast.add(LoggerService.error("Error searching address", error));
-        });
+      const result = await UprnService.findUprn(this.value, this.selectedArea);
+      if (result) {
+        this.match = result.data;
+        console.log(result);
+        if (this.match.Matched) {
+          console.log("Match found");
+          this.getUprn();
+        } else {
+          console.log("No match");
+          this.$toast.add(LoggerService.warn("No match found"));
+        }
+      }
     },
+
     async getUprn() {
-      const uprn = (await UprnService.getUprn(this.match.UPRN)).data;
-      this.pin = {
-        lat: +uprn.Latitude,
-        lng: +uprn.Longitude,
-        xCoor: uprn.XCoordinate,
-        yCoor: uprn.YCoordinate,
-        pointCode: uprn.Pointcode,
-        info: this.$refs["uprn-info"]
-      };
+      const uprn = await UprnService.getUprn(this.match.UPRN);
+      if (uprn) {
+        this.pin = {
+          lat: +uprn.data.Latitude,
+          lng: +uprn.data.Longitude,
+          xCoor: uprn.data.XCoordinate,
+          yCoor: uprn.data.YCoordinate,
+          pointCode: uprn.data.Pointcode,
+          info: this.$refs["uprn-info"]
+        };
+      }
     },
 
     setSizes(data: { width: number; left: number }) {
