@@ -98,13 +98,8 @@ export default defineComponent({
     },
     async getGraph(iri: string) {
       this.loading = true;
-      await EntityService.getEntityGraph(iri)
-        .then(res => {
-          this.graph = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get entity graph data from server", err));
-        });
+      const result = await EntityService.getEntityGraph(iri);
+      if (result) this.graph = result.data;
       this.loading = false;
     },
     navigate(iri: string) {
