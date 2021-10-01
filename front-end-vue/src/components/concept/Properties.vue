@@ -80,10 +80,9 @@ export default defineComponent({
   methods: {
     async getDataModelProps(iri: string) {
       this.loading = true;
-      let res;
-      try {
-        res = (await EntityService.getDataModelProperties(iri)).data;
-        this.dataModelPropsData = res.map((prop: any) => {
+      const result = await EntityService.getDataModelProperties(iri);
+      if (result) {
+        this.dataModelPropsData = result.data.map((prop: any) => {
           return {
             propertyId: prop.property["@id"],
             propertyName: prop.property.name,
@@ -98,8 +97,6 @@ export default defineComponent({
               ${prop.maxExclusive || prop.maxInclusive || "*"}`
           };
         });
-      } catch (error) {
-        this.$toast.add(LoggerService.error("Failed to get properties from server", error));
       }
       this.loading = false;
     },
