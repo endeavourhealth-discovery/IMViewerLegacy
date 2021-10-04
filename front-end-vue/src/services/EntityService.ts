@@ -1,5 +1,5 @@
 import { SearchRequest } from "@/models/search/SearchRequest";
-import axios, { AxiosResponse, CancelToken } from "axios";
+import axios, { CancelToken } from "axios";
 import { ConceptNode } from "@/models/ConceptNode";
 import { IM } from "@/vocabulary/IM";
 import GraphData from "@/models/GraphData";
@@ -19,13 +19,13 @@ export default class EntityService {
     return axiosReturn ? axiosReturn : {};
   }
 
-  public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<any[]> {
+  public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<any> {
     const axiosReturn = (
       await axios.post(this.api + "api/entity/search", request, {
         cancelToken: cancelToken
       })
     ).data;
-    return axiosReturn ? axiosReturn : [];
+    return axiosReturn ? axiosReturn : {};
   }
 
   public static async getEntity(iri: string): Promise<any> {
@@ -120,7 +120,7 @@ export default class EntityService {
     return this.getEntityChildren(IM.CODE_SCHEME);
   }
 
-  public static async saveEntity(concept: any) {
+  public static async saveEntity(concept: any): Promise<any> {
     return await axios.post(this.api + "api/entity", concept);
   }
 

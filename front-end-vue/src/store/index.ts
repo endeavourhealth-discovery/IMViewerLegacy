@@ -132,9 +132,11 @@ export default createStore({
     async fetchSearchResults({ commit }, data: { searchRequest: SearchRequest; cancelToken: any }) {
       let searchResults: any;
       const result = await EntityService.advancedSearch(data.searchRequest, data.cancelToken);
-      if (result) {
+      if (result && Object.prototype.hasOwnProperty.call(result, "entities")) {
         searchResults = result.entities;
         commit("updateSearchResults", searchResults);
+      } else {
+        commit("updateSearchResults", []);
       }
     },
     async logoutCurrentUser({ commit }) {

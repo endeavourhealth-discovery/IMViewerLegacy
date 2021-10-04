@@ -81,11 +81,9 @@ export default defineComponent({
     };
   },
   async mounted() {
-    const namespaceReturn = await EntityService.getNamespaces();
-    if (namespaceReturn) this.schemeOptions = namespaceReturn;
+    this.schemeOptions = await EntityService.getNamespaces();
 
-    const childrenReturn = await EntityService.getEntityChildren(IM.STATUS);
-    if (childrenReturn) this.statusOptions = childrenReturn;
+    this.statusOptions = await EntityService.getEntityChildren(IM.STATUS);
   }
 });
 </script>

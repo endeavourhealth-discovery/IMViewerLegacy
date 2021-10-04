@@ -37,8 +37,7 @@ export default defineComponent({
 
     async getComplexMembers() {
       this.loading = true;
-      const result = await EntityService.getComplexMembers(this.conceptIri);
-      if (result) this.complexMembers = result;
+      this.complexMembers = await EntityService.getComplexMembers(this.conceptIri);
       this.loading = false;
     }
   }

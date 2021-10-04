@@ -17,41 +17,37 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
   beforeEach(async () => {
     jest.resetAllMocks();
     EntityService.getPartialEntity = jest.fn().mockResolvedValue({
-      data: {
-        "@id": "http://endhealth.info/im#DiscoveryOntology",
-        "http://www.w3.org/2000/01/rdf-schema#comment": "A folder of ontologies including information models, value sets, query sets and maps",
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://endhealth.info/im#Folder", name: "Folder" }],
-        "http://www.w3.org/2000/01/rdf-schema#label": "Discovery ontology"
+      "@id": "http://endhealth.info/im#DiscoveryOntology",
+      "http://www.w3.org/2000/01/rdf-schema#comment": "A folder of ontologies including information models, value sets, query sets and maps",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://endhealth.info/im#Folder", name: "Folder" }],
+      "http://www.w3.org/2000/01/rdf-schema#label": "Discovery ontology"
+    });
+    EntityService.getEntityParents = jest.fn().mockResolvedValue([]);
+    EntityService.getEntityChildren = jest.fn().mockResolvedValue([
+      {
+        name: "Data model bound value sets",
+        hasChildren: true,
+        type: [{ name: "Value set", "@id": "http://endhealth.info/im#ValueSet" }],
+        "@id": "http://endhealth.info/im#VSET_DataModel"
+      },
+      {
+        name: "Emis terminology",
+        hasChildren: false,
+        type: [
+          {
+            name: "Legacy concept",
+            "@id": "http://endhealth.info/im#LegacyConcept"
+          }
+        ],
+        "@id": "http://endhealth.info/EMIS#EMISNHH2"
+      },
+      {
+        name: "SNOMED CT Concept (SNOMED RT+CTV3)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#138875005"
       }
-    });
-    EntityService.getEntityParents = jest.fn().mockResolvedValue({ data: [] });
-    EntityService.getEntityChildren = jest.fn().mockResolvedValue({
-      data: [
-        {
-          name: "Data model bound value sets",
-          hasChildren: true,
-          type: [{ name: "Value set", "@id": "http://endhealth.info/im#ValueSet" }],
-          "@id": "http://endhealth.info/im#VSET_DataModel"
-        },
-        {
-          name: "Emis terminology",
-          hasChildren: false,
-          type: [
-            {
-              name: "Legacy concept",
-              "@id": "http://endhealth.info/im#LegacyConcept"
-            }
-          ],
-          "@id": "http://endhealth.info/EMIS#EMISNHH2"
-        },
-        {
-          name: "SNOMED CT Concept (SNOMED RT+CTV3)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#138875005"
-        }
-      ]
-    });
+    ]);
     mockStore = {
       state: {
         conceptIri: "http://endhealth.info/im#DiscoveryOntology",

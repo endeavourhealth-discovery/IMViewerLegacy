@@ -118,29 +118,22 @@ export default defineComponent({
   },
   methods: {
     async getMappings(): Promise<void> {
-      const mapReturn = await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP]);
-      if (mapReturn) {
-        this.mappings = mapReturn[IM.HAS_MAP] || [];
-        this.data = {};
-      }
+      this.mappings = (await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP]))[IM.HAS_MAP] || [];
+      this.data = {};
 
-      const nameSpaceReturn = await EntityService.getNamespaces();
-      if (nameSpaceReturn) this.namespaces = nameSpaceReturn;
+      this.namespaces = await EntityService.getNamespaces();
 
-      const simpleReturn = await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO]);
-      if (simpleReturn) {
-        this.simpleMaps = simpleReturn[IM.MATCHED_TO] || [];
-        if (this.simpleMaps.length && this.namespaces) {
-          this.simpleMaps.forEach((mapItem: any) => {
-            const found = this.namespaces.find((namespace: any) => namespace.iri === mapItem["@id"].split("#")[0] + "#");
-            if (found) {
-              mapItem.scheme = found.name;
-            } else {
-              mapItem.scheme = "None";
-            }
-            mapItem.code = mapItem["@id"].split("#")[1];
-          });
-        }
+      this.simpleMaps = (await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO]))[IM.MATCHED_TO] || [];
+      if (this.simpleMaps.length && this.namespaces) {
+        this.simpleMaps.forEach((mapItem: any) => {
+          const found = this.namespaces.find((namespace: any) => namespace.iri === mapItem["@id"].split("#")[0] + "#");
+          if (found) {
+            mapItem.scheme = found.name;
+          } else {
+            mapItem.scheme = "None";
+          }
+          mapItem.code = mapItem["@id"].split("#")[1];
+        });
       }
     },
 

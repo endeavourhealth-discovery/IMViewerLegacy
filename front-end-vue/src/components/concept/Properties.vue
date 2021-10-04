@@ -62,7 +62,7 @@ export default defineComponent({
   data() {
     return {
       loading: false,
-      dataModelPropsData: [],
+      dataModelPropsData: [] as any[],
       selected: {} as any,
       scrollHeight: "500px"
     };
@@ -81,23 +81,21 @@ export default defineComponent({
     async getDataModelProps(iri: string) {
       this.loading = true;
       const result = await EntityService.getDataModelProperties(iri);
-      if (result) {
-        this.dataModelPropsData = result.map((prop: any) => {
-          return {
-            propertyId: prop.property["@id"],
-            propertyName: prop.property.name,
-            propertyDisplay: prop.property.name,
-            typeId: prop.type["@id"],
-            typeName: prop.type.name,
-            typeDisplay: prop.type?.name || prop.type?.["@id"],
-            inheritedId: prop.inheritedFrom?.["@id"],
-            inheritedName: prop.inheritedFrom?.name,
-            inheritedDisplay: prop.inheritedFrom?.name || "-",
-            cardinality: `${prop.minExclusive || prop.minInclusive || 0} :
-              ${prop.maxExclusive || prop.maxInclusive || "*"}`
-          };
-        });
-      }
+      this.dataModelPropsData = result.map((prop: any) => {
+        return {
+          propertyId: prop.property["@id"],
+          propertyName: prop.property.name,
+          propertyDisplay: prop.property.name,
+          typeId: prop.type["@id"],
+          typeName: prop.type.name,
+          typeDisplay: prop.type?.name || prop.type?.["@id"],
+          inheritedId: prop.inheritedFrom?.["@id"],
+          inheritedName: prop.inheritedFrom?.name,
+          inheritedDisplay: prop.inheritedFrom?.name || "-",
+          cardinality: `${prop.minExclusive || prop.minInclusive || 0} :
+            ${prop.maxExclusive || prop.maxInclusive || "*"}`
+        };
+      });
       this.loading = false;
     },
 

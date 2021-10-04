@@ -135,29 +135,25 @@ export default defineComponent({
     async search() {
       this.pin = null;
       console.log("Searching [" + this.value + "]");
-      const result = await UprnService.findUprn(this.value, this.selectedArea);
-      if (result) {
-        this.match = result;
-        console.log(result);
-        if (this.match.Matched) {
-          console.log("Match found");
-          this.getUprn();
-        } else {
-          console.log("No match");
-          this.$toast.add(LoggerService.warn("No match found"));
-        }
+      this.match = await UprnService.findUprn(this.value, this.selectedArea);
+      if (this.match.Matched) {
+        console.log("Match found");
+        this.getUprn();
+      } else {
+        console.log("No match");
+        this.$toast.add(LoggerService.warn("No match found"));
       }
     },
 
     async getUprn() {
       const uprn = await UprnService.getUprn(this.match.UPRN);
-      if (uprn) {
+      if (Object.keys(uprn).length) {
         this.pin = {
-          lat: +uprn.data.Latitude,
-          lng: +uprn.data.Longitude,
-          xCoor: uprn.data.XCoordinate,
-          yCoor: uprn.data.YCoordinate,
-          pointCode: uprn.data.Pointcode,
+          lat: +uprn.Latitude,
+          lng: +uprn.Longitude,
+          xCoor: uprn.XCoordinate,
+          yCoor: uprn.YCoordinate,
+          pointCode: uprn.Pointcode,
           info: this.$refs["uprn-info"]
         };
       }

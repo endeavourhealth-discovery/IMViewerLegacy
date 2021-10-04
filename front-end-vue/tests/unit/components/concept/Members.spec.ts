@@ -20,55 +20,53 @@ describe("Members.vue", () => {
     jest.resetAllMocks();
 
     EntityService.getEntityMembers = jest.fn().mockResolvedValue({
-      data: {
-        valueSet: {
-          name: "CEG 16+1 Ethnic category (concept set)",
-          "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16"
+      valueSet: {
+        name: "CEG 16+1 Ethnic category (concept set)",
+        "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16"
+      },
+      members: [
+        {
+          entity: { name: "African American (ethnic group)", "@id": "http://snomed.info/sct#15086000" },
+          code: "15086000",
+          scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+          label: 'Subset - "other Black, African or Caribbean background"',
+          type: "SUBSET",
+          directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
         },
-        members: [
-          {
-            entity: { name: "African American (ethnic group)", "@id": "http://snomed.info/sct#15086000" },
-            code: "15086000",
-            scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-            label: 'Subset - "other Black, African or Caribbean background"',
-            type: "SUBSET",
-            directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
-          },
-          {
-            entity: { name: "African race (racial group)", "@id": "http://snomed.info/sct#413464008" },
-            code: "413464008",
-            scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-            label: 'Subset - "other Black, African or Caribbean background"',
-            type: "SUBSET",
-            directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
-          },
-          {
-            entity: { name: "Abyssinians (Amharas) (ethnic group)", "@id": "http://snomed.info/sct#88790004" },
-            code: "88790004",
-            scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-            label: "Subset - African",
-            type: "SUBSET",
-            directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
-          },
-          {
-            entity: { name: "African - ethnic category 2001 census (finding)", "@id": "http://snomed.info/sct#92491000000104" },
-            code: "92491000000104",
-            scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-            label: "Subset - African",
-            type: "SUBSET",
-            directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
-          },
-          {
-            entity: { name: "African origin (finding)", "@id": "http://snomed.info/sct#160514004" },
-            code: "160514004",
-            scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-            label: "Subset - African",
-            type: "SUBSET",
-            directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
-          }
-        ],
-        limited: false
-      }
+        {
+          entity: { name: "African race (racial group)", "@id": "http://snomed.info/sct#413464008" },
+          code: "413464008",
+          scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+          label: 'Subset - "other Black, African or Caribbean background"',
+          type: "SUBSET",
+          directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
+        },
+        {
+          entity: { name: "Abyssinians (Amharas) (ethnic group)", "@id": "http://snomed.info/sct#88790004" },
+          code: "88790004",
+          scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+          label: "Subset - African",
+          type: "SUBSET",
+          directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+        },
+        {
+          entity: { name: "African - ethnic category 2001 census (finding)", "@id": "http://snomed.info/sct#92491000000104" },
+          code: "92491000000104",
+          scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+          label: "Subset - African",
+          type: "SUBSET",
+          directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+        },
+        {
+          entity: { name: "African origin (finding)", "@id": "http://snomed.info/sct#160514004" },
+          code: "160514004",
+          scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+          label: "Subset - African",
+          type: "SUBSET",
+          directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+        }
+      ],
+      limited: false
     });
     mockRouter = { push: jest.fn() };
     mockToast = { add: jest.fn() };

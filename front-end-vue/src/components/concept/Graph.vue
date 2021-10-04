@@ -97,8 +97,7 @@ export default defineComponent({
     },
     async getGraph(iri: string) {
       this.loading = true;
-      const result = await EntityService.getEntityGraph(iri);
-      if (result) this.graph = result;
+      this.graph = await EntityService.getEntityGraph(iri);
       this.loading = false;
     },
     navigate(iri: string) {
