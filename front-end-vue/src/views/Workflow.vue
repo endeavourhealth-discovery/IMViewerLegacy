@@ -80,8 +80,8 @@ export default defineComponent({
       width: 500,
       height: 300,
       padding: 10,
-      tasksData: [],
-      workflows: [],
+      tasksData: [] as any,
+      workflows: [] as any,
       tasks: [] as any,
       selectedWorkflow: "Concept",
       workflowTypes: [] as any,
@@ -89,7 +89,7 @@ export default defineComponent({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       } as Filters,
       active: 0,
-      currentWorkflow: "" as any
+      currentWorkflow: ""
     };
   },
   mounted() {

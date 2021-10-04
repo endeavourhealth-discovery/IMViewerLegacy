@@ -6,7 +6,7 @@ export default class UprnService {
   static password = process.env.VUE_APP_UPRN_PASSWORD || "";
   static userId = process.env.VUE_APP_UPRN_USERID || "";
 
-  public static async findUprn(address: string, area?: string): Promise<AxiosResponse<any>> {
+  public static async findUprn(address: string, area?: string): Promise<any> {
     const config = {
       params: { adrec: address },
       auth: {
@@ -15,55 +15,63 @@ export default class UprnService {
       }
     } as any;
     if (area) config.params.qpost = area;
-    return axios.get(this.api + "/getinfo", config);
+    return (await axios.get(this.api + "/getinfo", config)).data;
   }
 
-  public static async getUprn(uprn: number): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "/getuprn", {
-      params: { uprn: uprn },
-      auth: {
-        username: this.username,
-        password: this.password
-      }
-    });
+  public static async getUprn(uprn: number): Promise<any> {
+    return (
+      await axios.get(this.api + "/getuprn", {
+        params: { uprn: uprn },
+        auth: {
+          username: this.username,
+          password: this.password
+        }
+      })
+    ).data;
   }
 
-  public static async getActivity(): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "/activity", {
-      params: { u: this.userId },
-      auth: {
-        username: this.username,
-        password: this.password
-      }
-    });
+  public static async getActivity(): Promise<any> {
+    return (
+      await axios.get(this.api + "/activity", {
+        params: { u: this.userId },
+        auth: {
+          username: this.username,
+          password: this.password
+        }
+      })
+    ).data;
   }
 
-  public static async download(filename: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "/filedownload2", {
-      params: {
-        userid: this.userId,
-        filename: filename
-      },
-      responseType: "blob",
-      auth: {
-        username: this.username,
-        password: this.password
-      }
-    });
+  public static async download(filename: string): Promise<any> {
+    return (
+      await axios.get(this.api + "/filedownload2", {
+        params: {
+          userid: this.userId,
+          filename: filename
+        },
+        responseType: "blob",
+        auth: {
+          username: this.username,
+          password: this.password
+        }
+      })
+    ).data;
   }
 
-  public static async upload(fileData: any): Promise<AxiosResponse<any>> {
+  public static async upload(fileData: any): Promise<any> {
     const formData = new FormData();
     formData.append("file", fileData, fileData.name);
     formData.append("userid", this.userId);
-    return axios.post(this.api + "/fileUpload2", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data"
-      },
-      auth: {
-        username: this.username,
-        password: this.password
-      }
-    });
+    return (
+      await axios.post(this.api + "/fileUpload2", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        },
+        auth: {
+          username: this.username,
+          password: this.password
+        }
+      })
+    ).data;
   }
 }
