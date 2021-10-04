@@ -78,7 +78,7 @@ export default defineComponent({
   name: "FileWorkflow",
   data() {
     return {
-      activity: []
+      activity: [] as any[]
     };
   },
   mounted() {

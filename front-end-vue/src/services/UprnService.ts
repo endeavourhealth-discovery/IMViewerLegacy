@@ -15,11 +15,12 @@ export default class UprnService {
       }
     } as any;
     if (area) config.params.qpost = area;
-    return (await axios.get(this.api + "/getinfo", config)).data;
+    const axiosReturn = (await axios.get(this.api + "/getinfo", config)).data;
+    return axiosReturn ? axiosReturn : {};
   }
 
   public static async getUprn(uprn: number): Promise<any> {
-    return (
+    const axiosReturn = (
       await axios.get(this.api + "/getuprn", {
         params: { uprn: uprn },
         auth: {
@@ -28,10 +29,11 @@ export default class UprnService {
         }
       })
     ).data;
+    return axiosReturn ? axiosReturn : {};
   }
 
-  public static async getActivity(): Promise<any> {
-    return (
+  public static async getActivity(): Promise<any[]> {
+    const axiosReturn = (
       await axios.get(this.api + "/activity", {
         params: { u: this.userId },
         auth: {
@@ -40,10 +42,11 @@ export default class UprnService {
         }
       })
     ).data;
+    return axiosReturn ? axiosReturn : [];
   }
 
   public static async download(filename: string): Promise<any> {
-    return (
+    const axiosReturn = (
       await axios.get(this.api + "/filedownload2", {
         params: {
           userid: this.userId,
@@ -56,13 +59,14 @@ export default class UprnService {
         }
       })
     ).data;
+    return axiosReturn ? axiosReturn : {};
   }
 
   public static async upload(fileData: any): Promise<any> {
     const formData = new FormData();
     formData.append("file", fileData, fileData.name);
     formData.append("userid", this.userId);
-    return (
+    const axiosReturn = (
       await axios.post(this.api + "/fileUpload2", formData, {
         headers: {
           "Content-Type": "multipart/form-data"
@@ -73,5 +77,6 @@ export default class UprnService {
         }
       })
     ).data;
+    return axiosReturn ? axiosReturn : {};
   }
 }
