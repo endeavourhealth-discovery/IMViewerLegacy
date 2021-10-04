@@ -177,10 +177,20 @@ export default defineComponent({
 
     selectedEntityType(newValue, oldValue) {
       this.setActivePanel(newValue, oldValue);
+    },
+
+    active(newValue) {
+      this.$store.commit("updateConceptActivePanel", newValue);
     }
   },
   async mounted() {
     await this.init();
+    if (this.activeModule === "Sets") {
+      this.active = 2;
+    }
+    if (this.activeModule === "DataModel") {
+      this.active = 3;
+    }
 
     window.addEventListener("resize", this.onResize);
 
@@ -358,8 +368,10 @@ export default defineComponent({
       if (newType === oldType) {
         this.active = this.conceptActivePanel;
       } else {
-        if (this.selectedEntityType === "Sets") {
+        if (newType === "Sets") {
           this.active = 2;
+        } else if (newType === "DataModel") {
+          this.active = 3;
         } else {
           this.active = 0;
         }
@@ -411,38 +423,40 @@ export default defineComponent({
               "Uncovered object property or missing name found for key: " + key + " at conceptObjectToCopyString within Concept.vue"
             );
           }
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ": [\n\t" + newString + "\n]";
-          } else {
-            returnString = newKey + ": [\n\t" + newString + "\n],\n";
-          }
-        } else {
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ": [\n\t\n]";
-          } else {
-            returnString = newKey + ": [\n\t\n],\n";
+          if (newString) {
+            if (counter === totalKeys - 1) {
+              returnString = newKey + ": [\n\t" + newString + "\n]";
+            } else {
+              returnString = newKey + ": [\n\t" + newString + "\n],\n";
+            }
           }
         }
       } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "name")) {
         newString = value.name;
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ": " + newString;
-        } else {
-          returnString = newKey + ": " + newString + ",\n";
+        if (newString) {
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ": " + newString;
+          } else {
+            returnString = newKey + ": " + newString + ",\n";
+          }
         }
       } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "axiomString")) {
         newString = value.axiomString;
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ': "\n' + newString + '\n"';
-        } else {
-          returnString = newKey + ': "\n' + newString + '\n",\n';
+        if (newString) {
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ': "\n' + newString + '\n"';
+          } else {
+            returnString = newKey + ': "\n' + newString + '\n",\n';
+          }
         }
       } else if (typeof value === "string") {
         newString = value.replace(/\n/g, "\n\t").replace(/<p>/g, "\n\t") as string;
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ": " + newString;
-        } else {
-          returnString = newKey + ": " + newString + ",\n";
+        if (newString) {
+          if (counter === totalKeys - 1) {
+            returnString = newKey + ": " + newString;
+          } else {
+            returnString = newKey + ": " + newString + ",\n";
+          }
         }
       } else {
         returnString = JSON.stringify(value);
@@ -460,6 +474,9 @@ export default defineComponent({
         const copyString = this.conceptObjectToCopyString(key, value, counter, totalKeys);
         if (copyString) returnString += copyString.value;
         counter++;
+      }
+      if (returnString.endsWith(",\n")) {
+        return returnString.slice(0, -2);
       }
       return returnString;
     },
@@ -505,7 +522,7 @@ export default defineComponent({
       let value: any;
       for ([key, value] of Object.entries(this.concept)) {
         let result = this.conceptObjectToCopyString(key, value, 0, 1);
-        if (!result) return;
+        if (!result || !result.value) continue;
         const label = result.label;
         const text = result.value;
         this.copyMenuItems.push({

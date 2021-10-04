@@ -416,17 +416,17 @@ describe("Concept.vue", () => {
   it("can convert conceptObjectToCopyString ___ array object error", () => {
     const err = console.warn;
     console.warn = jest.fn();
-    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [{"@id":"http://snomed.info/sct#64217002","property": {"firstName":"Curvature of spine (disorder)"}},{"@id":"http://snomed.info/sct#928000","property": {"firstName":"Disorder of musculoskeletal system (disorder)"}},{"@id":"http://snomed.info/sct#699699005","property": {"firstName":"Disorder of vertebral column (disorder)"}}], 1, 4)).toStrictEqual({"label": "Is a", "value": "Is a: [\n\t\n],\n"});
+    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [{"@id":"http://snomed.info/sct#64217002","property": {"firstName":"Curvature of spine (disorder)"}},{"@id":"http://snomed.info/sct#928000","property": {"firstName":"Disorder of musculoskeletal system (disorder)"}},{"@id":"http://snomed.info/sct#699699005","property": {"firstName":"Disorder of vertebral column (disorder)"}}], 1, 4)).toStrictEqual({"label": "Is a", "value": ""});
     expect(console.warn).toHaveBeenLastCalledWith("Uncovered object property or missing name found for key: http://endhealth.info/im#isA at conceptObjectToCopyString within Concept.vue");
     console.warn = err;
   });
 
   it("can convert conceptObjectToCopyString ___ empty array 0 1", () => {
-    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [], 0, 1)).toStrictEqual({"label": "Is a", "value": "Is a: [\n\t\n]"});
+    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [], 0, 1)).toStrictEqual({"label": "Is a", "value": ""});
   });
 
   it("can convert conceptObjectToCopyString ___ empty array 1 4", () => {
-    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [], 1, 4)).toStrictEqual({"label": "Is a", "value": "Is a: [\n\t\n],\n"});
+    expect(wrapper.vm.conceptObjectToCopyString("http://endhealth.info/im#isA", [], 1, 4)).toStrictEqual({"label": "Is a", "value": ""});
   });
 
   it("can convert conceptObjectToCopyString ___ object 0 1", () => {
@@ -439,7 +439,7 @@ describe("Concept.vue", () => {
 
   it("can copy concept to clipboard", async() => {
     await flushPromises();
-    expect(wrapper.vm.copyConceptToClipboard()).toBe("Iri: http://endhealth.info/im#CriticalCareEncounter,\nIs a: [\n\tHospital encounter\n],\nStatus: Active,\nDescription: An entry recording information about a criticial care encounter.\n\tcommon data model attributes for Critical care encounter,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Critical care encounter (record type),\nHas sub types: [\n\tAdult critical care encounter,\n\tNeonatal critical care encounter,\n\tPaediatric critical care encounter\n],\nSemantic properties: [\n\ttakes place in care setting\n],\nData model properties: [\n\thas admission source,\n\thas critical care unit function,\n\tadditional Practitioners\n],\n");
+    expect(wrapper.vm.copyConceptToClipboard()).toBe("Iri: http://endhealth.info/im#CriticalCareEncounter,\nIs a: [\n\tHospital encounter\n],\nStatus: Active,\nDescription: An entry recording information about a criticial care encounter.\n\tcommon data model attributes for Critical care encounter,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Critical care encounter (record type),\nHas sub types: [\n\tAdult critical care encounter,\n\tNeonatal critical care encounter,\n\tPaediatric critical care encounter\n],\nSemantic properties: [\n\ttakes place in care setting\n],\nData model properties: [\n\thas admission source,\n\thas critical care unit function,\n\tadditional Practitioners\n]");
   });
 
   it("can copy concept to clipboard ___ empty arrays", async() => {
@@ -448,7 +448,7 @@ describe("Concept.vue", () => {
     wrapper.vm.semanticProperties = [];
     wrapper.vm.dataModelProperties = [];
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.copyConceptToClipboard()).toBe("Iri: http://snomed.info/sct#47518006,\nIs a: [\n\t\n],\nStatus: Active,\nTypes: [\n\t\n],\nName: Scoliosis caused by radiation (disorder),\nHas sub types: [\n\t\n],\nSemantic properties: [\n\t\n],\nData model properties: [\n\t\n]");
+    expect(wrapper.vm.copyConceptToClipboard()).toBe("Iri: http://snomed.info/sct#47518006,\nStatus: Active,\nName: Scoliosis caused by radiation (disorder)");
   });
 
   it("toasts onCopy", () => {
@@ -469,7 +469,7 @@ describe("Concept.vue", () => {
     wrapper.vm.concept = {"@id":"http://endhealth.info/im#Encounter","http://endhealth.info/im#isA":[{"@id":"http://endhealth.info/im#PatientHealthEvent","name":"Patient health event (record type)"},{"@id":"http://snomed.info/sct#325841000000109","name":"Encounter type (record artifact)"},{"@id":"http://endhealth.info/im#903031000252104","name":"Encounter related value concept"},{"@id":"http://endhealth.info/im#DiscoveryCommonDataModel","name":"Discovery common data  model"}],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/2000/01/rdf-schema#comment":"An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.","http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://endhealth.info/im#RecordType","name":"Record type"},{"@id":"http://www.w3.org/ns/shacl#NodeShape","name":"Node shape"},{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Encounter (record type)","subtypes":[{"name":"Administrative entry","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#1731000252106"},{"name":"Consultation","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#31000252100"},{"name":"Hospital encounter","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#1161000252102"}],"semanticProperties":[],"dataModelProperties":[{"property":{"name":"additional Practitioners","@id":"http://endhealth.info/im#additionalPractitioners"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"inheritedFrom":{}},{"property":{"name":"completion Status","@id":"http://endhealth.info/im#completionStatus"},"type":{"name":"Concept class","@id":"http://endhealth.info/im#894281000252100"},"inheritedFrom":{}},{"property":{"name":"duration","@id":"http://endhealth.info/im#duration"},"type":{"name":"Concept class","@id":"http://endhealth.info/im#894281000252100"},"minExclusive":"1","inheritedFrom":{}},{"property":{"name":"has section","@id":"http://endhealth.info/im#hasSection"},"type":{"name":"Section (structural)","@id":"http://endhealth.info/im#Section"},"inheritedFrom":{}},{"property":{"name":"linked appointment","@id":"http://endhealth.info/im#linkedAppointment"},"type":{"name":"Appointment (slot)  (record type)","@id":"http://endhealth.info/im#Appointment"},"inheritedFrom":{}},{"property":{"name":"linked care episode","@id":"http://endhealth.info/im#linkedCareEpisode"},"type":{"name":"Episode of care  (record type)","@id":"http://endhealth.info/im#EpisodeOfCare"},"inheritedFrom":{}},{"property":{"name":"location","@id":"http://endhealth.info/im#location"},"type":{"name":"Location  (record type)","@id":"http://endhealth.info/im#Location"},"inheritedFrom":{}},{"property":{"name":"providing Organisation/ services or departments","@id":"http://endhealth.info/im#providingOrganisation_ServicesOrDepartments"},"type":{"name":"Organisation  (record type)","@id":"http://endhealth.info/im#Organisation"},"inheritedFrom":{}},{"property":{"name":"is subencounter of","@id":"http://endhealth.info/im#isSubEnctounterOf"},"type":{"name":"Encounter (record type)","@id":"http://endhealth.info/im#Encounter"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has subject","@id":"http://endhealth.info/im#hasSubject"},"type":{"name":"Patient (person)","@id":"http://snomed.info/sct#116154003"},"inheritedFrom":{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"}},{"property":{"name":"practitioner","@id":"http://endhealth.info/im#hasPractitioner"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"}},{"property":{"name":"date","@id":"http://endhealth.info/im#date"},"type":{"@id":"http://www.w3.org/2001/XMLSchema#string"},"inheritedFrom":{"name":"Health event (record type)","@id":"http://endhealth.info/im#HealthEvent"}},{"property":{"name":"end date","@id":"http://endhealth.info/im#endDate"},"type":{"@id":"http://www.w3.org/2001/XMLSchema#string"},"inheritedFrom":{"name":"Health event (record type)","@id":"http://endhealth.info/im#HealthEvent"}}]};
     wrapper.vm.setCopyMenuItems();
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.copyMenuItems).toHaveLength(12);
+    expect(wrapper.vm.copyMenuItems).toHaveLength(11);
     expect(wrapper.vm.copyMenuItems[0]).toStrictEqual({
       label: "Copy",
       disabled: true
@@ -494,9 +494,7 @@ describe("Concept.vue", () => {
     expect(Object.keys(wrapper.vm.copyMenuItems[9])).toStrictEqual(["label", "command"]);
     expect(wrapper.vm.copyMenuItems[9].label).toBe("Has sub types");
     expect(Object.keys(wrapper.vm.copyMenuItems[10])).toStrictEqual(["label", "command"]);
-    expect(wrapper.vm.copyMenuItems[10].label).toBe("Semantic properties");
-    expect(Object.keys(wrapper.vm.copyMenuItems[11])).toStrictEqual(["label", "command"]);
-    expect(wrapper.vm.copyMenuItems[11].label).toBe("Data model properties");
+    expect(wrapper.vm.copyMenuItems[10].label).toBe("Data model properties");
   });
 
   it("can set copy menu items ___ empty arrays", async() => {
@@ -505,7 +503,7 @@ describe("Concept.vue", () => {
     wrapper.vm.concept = {"@id":"http://endhealth.info/im#Encounter","http://endhealth.info/im#isA":[],"http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/2000/01/rdf-schema#comment":"An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.","http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[],"http://www.w3.org/2000/01/rdf-schema#label":"Encounter (record type)","subtypes":[],"semanticProperties":[],"dataModelProperties":[]}
     wrapper.vm.setCopyMenuItems();
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.copyMenuItems).toHaveLength(12);
+    expect(wrapper.vm.copyMenuItems).toHaveLength(7);
     expect(wrapper.vm.copyMenuItems[0]).toStrictEqual({
       label: "Copy",
       disabled: true
@@ -518,21 +516,11 @@ describe("Concept.vue", () => {
     expect(Object.keys(wrapper.vm.copyMenuItems[3])).toStrictEqual(["label", "command"]);
     expect(wrapper.vm.copyMenuItems[3].label).toBe("Iri");
     expect(Object.keys(wrapper.vm.copyMenuItems[4])).toStrictEqual(["label", "command"]);
-    expect(wrapper.vm.copyMenuItems[4].label).toBe("Is a");
+    expect(wrapper.vm.copyMenuItems[4].label).toBe("Status");
     expect(Object.keys(wrapper.vm.copyMenuItems[5])).toStrictEqual(["label", "command"]);
-    expect(wrapper.vm.copyMenuItems[5].label).toBe("Status");
+    expect(wrapper.vm.copyMenuItems[5].label).toBe("Description");
     expect(Object.keys(wrapper.vm.copyMenuItems[6])).toStrictEqual(["label", "command"]);
-    expect(wrapper.vm.copyMenuItems[6].label).toBe("Description");
-    expect(Object.keys(wrapper.vm.copyMenuItems[7])).toStrictEqual(["label", "command"]);
-    expect(wrapper.vm.copyMenuItems[7].label).toBe("Types");
-    expect(Object.keys(wrapper.vm.copyMenuItems[8])).toStrictEqual(["label", "command"]);
-    expect(wrapper.vm.copyMenuItems[8].label).toBe("Name");
-    expect(Object.keys(wrapper.vm.copyMenuItems[9])).toStrictEqual(["label", "command"]);
-    expect(wrapper.vm.copyMenuItems[9].label).toBe("Has sub types");
-    expect(Object.keys(wrapper.vm.copyMenuItems[10])).toStrictEqual(["label", "command"]);
-    expect(wrapper.vm.copyMenuItems[10].label).toBe("Semantic properties");
-    expect(Object.keys(wrapper.vm.copyMenuItems[11])).toStrictEqual(["label", "command"]);
-    expect(wrapper.vm.copyMenuItems[11].label).toBe("Data model properties");
+    expect(wrapper.vm.copyMenuItems[6].label).toBe("Name");
   });
 
   it("can run commands from copymenuItems ___ pass", async() => {
@@ -544,7 +532,7 @@ describe("Concept.vue", () => {
 
     wrapper.vm.copyMenuItems[2].command();
     await flushPromises();
-    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Iri: http://endhealth.info/im#Encounter,\nIs a: [\n\tPatient health event (record type),\n\tEncounter type (record artifact),\n\tEncounter related value concept,\n\tDiscovery common data  model\n],\nStatus: Active,\nDescription: An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \n\tIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Encounter (record type),\nHas sub types: [\n\tAdministrative entry,\n\tConsultation,\n\tHospital encounter\n],\nSemantic properties: [\n\t\n],\nData model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n]");
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Iri: http://endhealth.info/im#Encounter,\nIs a: [\n\tPatient health event (record type),\n\tEncounter type (record artifact),\n\tEncounter related value concept,\n\tDiscovery common data  model\n],\nStatus: Active,\nDescription: An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \n\tIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Encounter (record type),\nHas sub types: [\n\tAdministrative entry,\n\tConsultation,\n\tHospital encounter\n],\nData model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n]");
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Concept copied to clipboard"));
 
     wrapper.vm.copyMenuItems[3].command();
@@ -584,11 +572,6 @@ describe("Concept.vue", () => {
 
     wrapper.vm.copyMenuItems[10].command();
     await flushPromises();
-    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Semantic properties: [\n\t\n]");
-    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Semantic properties copied to clipboard"));
-
-    wrapper.vm.copyMenuItems[11].command();
-    await flushPromises();
     expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Data model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n]");
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Data model properties copied to clipboard"));
   });
@@ -602,7 +585,7 @@ describe("Concept.vue", () => {
 
     wrapper.vm.copyMenuItems[2].command();
     await flushPromises();
-    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Iri: http://endhealth.info/im#Encounter,\nIs a: [\n\tPatient health event (record type),\n\tEncounter type (record artifact),\n\tEncounter related value concept,\n\tDiscovery common data  model\n],\nStatus: Active,\nDescription: An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \n\tIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Encounter (record type),\nHas sub types: [\n\tAdministrative entry,\n\tConsultation,\n\tHospital encounter\n],\nSemantic properties: [\n\t\n],\nData model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n]");
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Iri: http://endhealth.info/im#Encounter,\nIs a: [\n\tPatient health event (record type),\n\tEncounter type (record artifact),\n\tEncounter related value concept,\n\tDiscovery common data  model\n],\nStatus: Active,\nDescription: An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \n\tIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Encounter (record type),\nHas sub types: [\n\tAdministrative entry,\n\tConsultation,\n\tHospital encounter\n],\nData model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n]");
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy concept to clipboard"));
 
     wrapper.vm.copyMenuItems[3].command();
@@ -641,11 +624,6 @@ describe("Concept.vue", () => {
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy Has sub types to clipboard"));
 
     wrapper.vm.copyMenuItems[10].command();
-    await flushPromises();
-    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Semantic properties: [\n\t\n]");
-    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy Semantic properties to clipboard"));
-
-    wrapper.vm.copyMenuItems[11].command();
     await flushPromises();
     expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Data model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n]");
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy Data model properties to clipboard"));

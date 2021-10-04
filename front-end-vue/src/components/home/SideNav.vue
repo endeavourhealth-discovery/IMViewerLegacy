@@ -77,7 +77,14 @@ export default defineComponent({
             route: this.menuItems[2].route
           });
           break;
-        // add case for catalogue when type is known
+        case "Catalogue":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[3].name,
+            fullName: this.menuItems[3].fullName,
+            iri: this.menuItems[3].iri,
+            route: this.menuItems[3].route
+          });
+          break;
         case "Queries":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[3].name,
@@ -165,7 +172,7 @@ export default defineComponent({
         //   icon: ["fas", "fax"],
         //   name: "Catalogue",
         //   fullName: "Catalogue",
-        //   route: "Dashboard",
+        //   route: "Catalogue",
         //   iri: IM.MODULE_CATALOGUE
         // },
         {
@@ -227,7 +234,7 @@ export default defineComponent({
     handleCenterIconClick(item: any) {
       let route = item.route;
       let moduleIri = "";
-      if (item.name === "Ontology" || item.name === "Sets" || item.name === "Queries" || item.name === "DataModel" || item.name === "Catalogue") {
+      if (item.name === "Ontology" || item.name === "Sets" || item.name === "Queries" || item.name === "DataModel") {
         this.$store.commit("updateSideNavHierarchyFocus", {
           name: item.name,
           fullName: item.fullName,
@@ -241,6 +248,14 @@ export default defineComponent({
           moduleIri = this.moduleSelectedEntities.get(item.name);
         }
         this.$emit("hierarchyFocusSelected");
+      }
+      if (item.name === "Catalogue") {
+        this.$store.commit("updateSideNavHierarchyFocus", {
+          name: item.name,
+          fullName: item.fullName,
+          iri: item.iri,
+          route: item.route
+        });
       }
       if (moduleIri !== "") {
         this.$router.push({
@@ -268,6 +283,8 @@ export default defineComponent({
 #center-icons {
   text-align: center;
   width: 100%;
+  flex-grow: 20;
+  overflow: auto;
 }
 
 .center-icon-container {
