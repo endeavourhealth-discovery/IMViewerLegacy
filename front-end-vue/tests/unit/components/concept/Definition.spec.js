@@ -6,7 +6,6 @@ import TextHTMLWithLabel from "@/components/generics/TextHTMLWithLabel.vue";
 import TextWithLabel from "@/components/generics/TextWithLabel.vue";
 import ObjectNameWithLabel from "@/components/generics/ObjectNameWithLabel.vue";
 import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNameListboxWithLabel.vue";
-import SemanticProperties from "@/components/concept/definition/SemanticProperties.vue";
 import DataModelProperties from "@/components/concept/definition/DataModelProperties.vue";
 
 describe("Definition.vue", () => {
@@ -28,7 +27,7 @@ describe("Definition.vue", () => {
 
     wrapper = shallowMount(Definition, {
       global: {
-        components: { Divider, ArrayObjectNamesToStringWithLabel, TextHTMLWithLabel, TextWithLabel, ObjectNameWithLabel, ArrayObjectNameListboxWithLabel, DataModelProperties, SemanticProperties },
+        components: { Divider, ArrayObjectNamesToStringWithLabel, TextHTMLWithLabel, TextWithLabel, ObjectNameWithLabel, ArrayObjectNameListboxWithLabel, DataModelProperties },
         mocks: { $route: mockRoute, $router: mockRouter }
       },
       props: {

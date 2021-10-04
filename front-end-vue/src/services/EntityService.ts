@@ -4,6 +4,8 @@ import { ConceptNode } from "@/models/ConceptNode";
 import { IM } from "@/vocabulary/IM";
 
 export default class EntityService {
+  static api = process.env.VUE_APP_API;
+
   public static async getPartialEntity(iri: string, predicates: string[]): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/partial", {
       params: {
@@ -13,7 +15,14 @@ export default class EntityService {
     });
   }
 
-  static api = process.env.VUE_APP_API;
+  public static async getPartialEntityBundle(iri: string, predicates: string[]): Promise<AxiosResponse<any>> {
+    return axios.get(this.api + "api/entity/partialBundle", {
+      params: {
+        iri: iri,
+        predicate: predicates.join(",")
+      }
+    });
+  }
 
   public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<AxiosResponse<any>> {
     return axios.post(this.api + "api/entity/search", request, {
@@ -103,12 +112,6 @@ export default class EntityService {
     });
   }
 
-  public static getSemanticProperties(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/semanticProperties", {
-      params: { iri: iri }
-    });
-  }
-
   public static getDataModelProperties(iri: string): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/dataModelProperties", {
       params: { iri: iri }
@@ -133,12 +136,6 @@ export default class EntityService {
 
   public static getComplexMembers(iri: string): Promise<AxiosResponse<any>> {
     return axios.get(this.api + "api/entity/complexMembers", {
-      params: { iri: iri }
-    });
-  }
-
-  public static getAxioms(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/axioms", {
       params: { iri: iri }
     });
   }
