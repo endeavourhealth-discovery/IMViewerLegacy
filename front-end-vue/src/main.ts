@@ -78,6 +78,8 @@ import StyleClass from "primevue/styleclass";
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
 import LoggerService from "./services/LoggerService";
+import axios from "axios";
+import APIError from "./models/errors/APIError";
 
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
@@ -141,13 +143,23 @@ const app = createApp(App)
   .component("ConfirmPopup", ConfirmPopup)
   .component("InputSwitch", InputSwitch);
 
-app.config.errorHandler = (err: any, vm, info) => {
-  // handle error
-  // `info` is a Vue-specific error info, e.g. which lifecycle hook the error was found in
-  console.log("err: " + err);
-  console.log("vm: " + vm?.$options.name);
-  console.log("info: " + info);
-  vm?.$toast.add(LoggerService.error(err.message as string));
+app.config.errorHandler = (error: any, vm, info) => {
+  LoggerService.error(error.fullMessage || (error.message as string));
+  vm?.$toast.add({
+    severity: "error",
+    summary: error.summaryMessage || "Error",
+    detail: error.message,
+    life: 4000
+  });
 };
+
+axios.interceptors.response.use(
+  response => {
+    return response;
+  },
+  error => {
+    throw new APIError(error.response.data.status, error.response.data.error, `Call to ${error.response.data.path} failed.`);
+  }
+);
 
 app.mount("#app");
