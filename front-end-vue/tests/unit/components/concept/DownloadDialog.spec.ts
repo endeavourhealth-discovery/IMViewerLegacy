@@ -31,6 +31,9 @@ describe("DownloadDialog.vue", () => {
     EntityService.getPartialEntity = jest.fn()
       .mockResolvedValueOnce({ data: CONCEPT })
       .mockResolvedValueOnce({ data: INFERRED })
+      .mockResolvedValueOnce({ data: AXIOMS })
+      .mockResolvedValueOnce({ data: CONCEPT })
+      .mockResolvedValueOnce({ data: INFERRED })
       .mockResolvedValueOnce({ data: AXIOMS });
     EntityService.getEntityChildren = jest.fn().mockResolvedValue({ data: CHILDREN });
     EntityService.getDataModelProperties = jest.fn().mockResolvedValue({data: DATA_MODEL });
@@ -87,33 +90,33 @@ describe("DownloadDialog.vue", () => {
 
   it("Inits ___ success", async() => {
     await flushPromises();
-    // jest.clearAllMocks();
+    jest.clearAllMocks();
     wrapper.vm.setIncludeBooleans = jest.fn();
-    // wrapper.vm.init("http://snomed.info/sct#298382003");
-    // expect(wrapper.vm.loading).toBe(true);
-    // await flushPromises();
-    // await wrapper.vm.$nextTick();
-    // expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
-    // // expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
-    // // expect(EntityService.getPartialEntity).toHaveBeenNthCalledWith("http://snomed.info/sct#298382003", [IM.IS_A, IM.ROLE_GROUP]);
-    // expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
-    // expect(wrapper.vm.concept).toStrictEqual(CONCEPT);
-    // expect(EntityService.getEntityTermCodes).toHaveBeenCalledTimes(1);
-    // expect(EntityService.getEntityTermCodes).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    // expect(wrapper.vm.terms).toStrictEqual(TERMS);
-    // expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
-    // expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    // expect(wrapper.vm.hasSubTypes).toStrictEqual(CHILDREN);
-    // expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
-    // expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    // expect(wrapper.vm.dataModelProperties).toStrictEqual(DATA_MODEL);
-    // expect(wrapper.vm.inferred).toStrictEqual(INFERRED);
-    // expect(wrapper.vm.axioms).toStrictEqual(AXIOMS);
-    // expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
-    // expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://snomed.info/sct#298382003", false, false);
-    // expect(wrapper.vm.members).toStrictEqual(MEMBERS);
-    // expect(wrapper.vm.setIncludeBooleans).toHaveBeenCalledTimes(1);
-    // expect(wrapper.vm.loading).toBe(false);
+    wrapper.vm.init("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.loading).toBe(true);
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(3);
+    expect(EntityService.getPartialEntity).toHaveBeenNthCalledWith(1,"http://snomed.info/sct#298382003", [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
+    expect(EntityService.getPartialEntity).toHaveBeenNthCalledWith(2,"http://snomed.info/sct#298382003", [IM.IS_A, IM.ROLE_GROUP]);
+    expect(EntityService.getPartialEntity).toHaveBeenNthCalledWith(3,"http://snomed.info/sct#298382003", [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
+    expect(wrapper.vm.concept).toStrictEqual(CONCEPT);
+    expect(EntityService.getEntityTermCodes).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityTermCodes).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.terms).toStrictEqual(TERMS);
+    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.hasSubTypes).toStrictEqual(CHILDREN);
+    expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
+    expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.dataModelProperties).toStrictEqual(DATA_MODEL);
+    expect(wrapper.vm.inferred).toStrictEqual(INFERRED);
+    expect(wrapper.vm.axioms).toStrictEqual(AXIOMS);
+    expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://snomed.info/sct#298382003", false, false);
+    expect(wrapper.vm.members).toStrictEqual(MEMBERS);
+    expect(wrapper.vm.setIncludeBooleans).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.loading).toBe(false);
   });
 
   it("Inits ___ fail", async() => {

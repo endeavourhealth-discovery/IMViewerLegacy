@@ -3,8 +3,6 @@ import { OWL } from "@/vocabulary/OWL";
 import { TTBundle, TTIriRef } from '@/models/TripleTree';
 
 export function bundleToText(bundle: TTBundle): string {
-  console.log(bundle);
-
   const iriMap: any = {};
 
   // Add predicate id -> name map from results
