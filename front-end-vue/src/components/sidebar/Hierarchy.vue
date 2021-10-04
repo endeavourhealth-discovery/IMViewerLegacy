@@ -212,7 +212,7 @@ export default defineComponent({
       const parentsNodes: any[] = [];
       const parentsReturn1 = await EntityService.getEntityParents(this.root[0].data);
       if (parentsReturn1) {
-        parents = parentsReturn1.data;
+        parents = parentsReturn1;
         parents.forEach((parent: any) => {
           parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, parent.name, true));
         });
@@ -226,8 +226,8 @@ export default defineComponent({
 
         const parentsReturn2 = await EntityService.getEntityParents(this.root[0].data);
         if (parentsReturn2) {
-          if (parentsReturn2.data[0]) {
-            this.parentLabel = parentsReturn2.data[0].name;
+          if (parentsReturn2[0]) {
+            this.parentLabel = parentsReturn2[0].name;
           } else {
             this.parentLabel = "";
           }
