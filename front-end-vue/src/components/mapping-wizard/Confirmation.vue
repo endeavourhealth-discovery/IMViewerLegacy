@@ -80,16 +80,12 @@ export default defineComponent({
 
     async submit() {
       this.loading = true;
-      MappingService.getMappedTTDocument(this.getFormData())
-        .then(response => {
-          this.loading = false;
-          this.download(response);
-          this.$toast.add(LoggerService.success("Request was successful. Download should begin shortly."));
-        })
-        .catch(error => {
-          this.loading = false;
-          this.$toast.add(LoggerService.error("Request failed from server", error.message));
-        });
+      const response = await MappingService.getMappedTTDocument(this.getFormData());
+      this.loading = false;
+      if (response) {
+        this.download(response);
+        this.$toast.add(LoggerService.success("Request was successful. Download should begin shortly."));
+      }
       this.complete = true;
     },
     download(response: []) {
