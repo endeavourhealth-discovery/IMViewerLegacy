@@ -19,10 +19,10 @@ import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import Panel from "primevue/panel";
 import EntityService from "@/services/EntityService";
 import ConfigService from "@/services/ConfigService";
-import {IM} from "@/vocabulary/IM";
-import {RDFS} from "@/vocabulary/RDFS";
-import {OWL} from "@/vocabulary/OWL";
-import {RDF} from "@/vocabulary/RDF";
+import { IM } from "@/vocabulary/IM";
+import { RDFS } from "@/vocabulary/RDFS";
+import { OWL } from "@/vocabulary/OWL";
+import { RDF } from "@/vocabulary/RDF";
 
 Object.assign(navigator, {
   clipboard: {
@@ -32,33 +32,88 @@ Object.assign(navigator, {
 
 describe("Concept.vue", () => {
   const CONFIG = [
-      {"label":"Name","predicate":"http://www.w3.org/2000/01/rdf-schema#label","type":"TextWithLabel","size":"50%","order":0},
-      {"label":"Iri","predicate":"@id","type":"TextWithLabel","size":"50%","order":1},
-      {"label":"Status","predicate":"http://endhealth.info/im#status","type":"ObjectNameWithLabel","size":"50%","order":2},
-      {"label":"Types","predicate":"http://www.w3.org/1999/02/22-rdf-syntax-ns#type","type":"ArrayObjectNamesToStringWithLabel","size":"50%","order":3},
-      {"label":"Description","predicate":"http://www.w3.org/2000/01/rdf-schema#comment","type":"TextHTMLWithLabel","size":"100%","order":4},
-      {"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":5},
-      {"label":"Inferred","predicate":"inferred","type":"TextDefinition","size":"50%","order":6},
-      {"label":"Has sub types","predicate":"subtypes","type":"ArrayObjectNameListboxWithLabel","size":"50%","order":7},
-      {"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":8},
-      {"label":"Axioms","predicate":"axioms","type":"TextDefinition","size":"100%","order":9},
-      {"label":"Divider","predicate":"None","type":"Divider","size":"100%","order":10},
-      {"label":"Data model properties","predicate":"dataModelProperties","type":"DataModelProperties","size":"100%","order":11}
+    { label: "Name", predicate: "http://www.w3.org/2000/01/rdf-schema#label", type: "TextWithLabel", size: "50%", order: 0 },
+    { label: "Iri", predicate: "@id", type: "TextWithLabel", size: "50%", order: 1 },
+    { label: "Status", predicate: "http://endhealth.info/im#status", type: "ObjectNameWithLabel", size: "50%", order: 2 },
+    { label: "Types", predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", type: "ArrayObjectNamesToStringWithLabel", size: "50%", order: 3 },
+    { label: "Description", predicate: "http://www.w3.org/2000/01/rdf-schema#comment", type: "TextHTMLWithLabel", size: "100%", order: 4 },
+    { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 5 },
+    { label: "Inferred", predicate: "inferred", type: "TextDefinition", size: "50%", order: 6 },
+    { label: "Has sub types", predicate: "subtypes", type: "ArrayObjectNameListboxWithLabel", size: "50%", order: 7 },
+    { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 8 },
+    { label: "Axioms", predicate: "axioms", type: "TextDefinition", size: "100%", order: 9 },
+    { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 10 },
+    { label: "Data model properties", predicate: "dataModelProperties", type: "DataModelProperties", size: "100%", order: 11 }
   ];
-  const TYPES = [{"@id":"http://endhealth.info/im#RecordType","name":"Record type"},{"@id":"http://www.w3.org/ns/shacl#NodeShape","name":"Node shape"},{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}];
+  const TYPES = [
+    { "@id": "http://endhealth.info/im#RecordType", name: "Record type" },
+    { "@id": "http://www.w3.org/ns/shacl#NodeShape", name: "Node shape" },
+    { "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }
+  ];
   const CONCEPT = {
-      "@id":"http://endhealth.info/im#CriticalCareEncounter",
-      "http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},
-      "http://www.w3.org/2000/01/rdf-schema#comment":"An entry recording information about a criticial care encounter.<p>common data model attributes for Critical care encounter",
-      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":TYPES,
-      "http://www.w3.org/2000/01/rdf-schema#label":"Critical care encounter (record type)",
+    "@id": "http://endhealth.info/im#CriticalCareEncounter",
+    "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+    "http://www.w3.org/2000/01/rdf-schema#comment":
+      "An entry recording information about a criticial care encounter.<p>common data model attributes for Critical care encounter",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": TYPES,
+    "http://www.w3.org/2000/01/rdf-schema#label": "Critical care encounter (record type)"
   };
-  const DATA_MODEL = [{"property":{"name":"has admission source","@id":"http://endhealth.info/im#hasAdmissionSource"},"type":{"name":"Critical care admission source","@id":"http://endhealth.info/im#1041000252100"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has critical care unit function","@id":"http://endhealth.info/im#hasCriticalCareUnitFunction"},"type":{"name":"Critical care unit function","@id":"http://endhealth.info/im#211000252109"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"additional Practitioners","@id":"http://endhealth.info/im#additionalPractitioners"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"inheritedFrom":{"name":"Encounter (record type)","@id":"http://endhealth.info/im#Encounter"}}];
-  const CHILDREN = [{"name":"Adult critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#1641000252107"},{"name":"Neonatal critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#831000252103"},{"name":"Paediatric critical care encounter","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#2811000252102"}];
-  const TERMS = [{"name":"Critical care encounter (record type)"}];
-  const INFERRED = {"entity":{"@id":"http://endhealth.info/im#211000252109","http://endhealth.info/im#isA":[{"@id":"http://endhealth.info/im#221000252102","name":"Hospital setting"}]},"predicates":[{"name":"is a","@id":"http://endhealth.info/im#isA"}]};
-  const AXIOMS   = {"entity":{"@id":"http://endhealth.info/im#211000252109","http://www.w3.org/2000/01/rdf-schema#subClassOf":[{"@id":"http://endhealth.info/im#221000252102","name":"Hospital setting"}]},"predicates":[{"name":"subClassOf","@id":"http://www.w3.org/2000/01/rdf-schema#subClassOf"}]};
-
+  const DATA_MODEL = [
+    {
+      property: { name: "has admission source", "@id": "http://endhealth.info/im#hasAdmissionSource" },
+      type: { name: "Critical care admission source", "@id": "http://endhealth.info/im#1041000252100" },
+      minExclusive: "1",
+      maxExclusive: "1",
+      inheritedFrom: {}
+    },
+    {
+      property: { name: "has critical care unit function", "@id": "http://endhealth.info/im#hasCriticalCareUnitFunction" },
+      type: { name: "Critical care unit function", "@id": "http://endhealth.info/im#211000252109" },
+      minExclusive: "1",
+      maxExclusive: "1",
+      inheritedFrom: {}
+    },
+    {
+      property: { name: "additional Practitioners", "@id": "http://endhealth.info/im#additionalPractitioners" },
+      type: { name: "Practitioner in role  (record type)", "@id": "http://endhealth.info/im#ThePractitionerInRole" },
+      inheritedFrom: { name: "Encounter (record type)", "@id": "http://endhealth.info/im#Encounter" }
+    }
+  ];
+  const CHILDREN = [
+    {
+      name: "Adult critical care encounter",
+      hasChildren: false,
+      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      "@id": "http://endhealth.info/im#1641000252107"
+    },
+    {
+      name: "Neonatal critical care encounter",
+      hasChildren: false,
+      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      "@id": "http://endhealth.info/im#831000252103"
+    },
+    {
+      name: "Paediatric critical care encounter",
+      hasChildren: false,
+      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      "@id": "http://endhealth.info/im#2811000252102"
+    }
+  ];
+  const TERMS = [{ name: "Critical care encounter (record type)" }];
+  const INFERRED = {
+    entity: {
+      "@id": "http://endhealth.info/im#211000252109",
+      "http://endhealth.info/im#isA": [{ "@id": "http://endhealth.info/im#221000252102", name: "Hospital setting" }]
+    },
+    predicates: [{ name: "is a", "@id": "http://endhealth.info/im#isA" }]
+  };
+  const AXIOMS = {
+    entity: {
+      "@id": "http://endhealth.info/im#211000252109",
+      "http://www.w3.org/2000/01/rdf-schema#subClassOf": [{ "@id": "http://endhealth.info/im#221000252102", name: "Hospital setting" }]
+    },
+    predicates: [{ name: "subClassOf", "@id": "http://www.w3.org/2000/01/rdf-schema#subClassOf" }]
+  };
 
   let wrapper;
   let mockStore;
@@ -71,7 +126,8 @@ describe("Concept.vue", () => {
   beforeEach(() => {
     jest.resetAllMocks();
     clipboardSpy = jest.spyOn(navigator.clipboard, "writeText");
-    EntityService.getPartialEntityBundle = jest.fn()
+    EntityService.getPartialEntityBundle = jest
+      .fn()
       .mockResolvedValueOnce(INFERRED)
       .mockResolvedValueOnce(AXIOMS)
       .mockResolvedValueOnce(INFERRED)
@@ -138,16 +194,18 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.showDownloadDialog).toBeFalsy();
     expect(wrapper.vm.configs).toStrictEqual(CONFIG);
     expect(wrapper.vm.concept).toStrictEqual({
-      "@id":"http://endhealth.info/im#CriticalCareEncounter",
-      "inferred":INFERRED,
-      "axioms":AXIOMS,
-      "http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},
-      "http://www.w3.org/2000/01/rdf-schema#comment":"An entry recording information about a criticial care encounter.<p>common data model attributes for Critical care encounter",
-      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":TYPES,
-      "http://www.w3.org/2000/01/rdf-schema#label":"Critical care encounter (record type)",
-      "termCodes": TERMS,
-      "subtypes":CHILDREN,
-      "dataModelProperties":DATA_MODEL});
+      "@id": "http://endhealth.info/im#CriticalCareEncounter",
+      inferred: INFERRED,
+      axioms: AXIOMS,
+      "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+      "http://www.w3.org/2000/01/rdf-schema#comment":
+        "An entry recording information about a criticial care encounter.<p>common data model attributes for Critical care encounter",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": TYPES,
+      "http://www.w3.org/2000/01/rdf-schema#label": "Critical care encounter (record type)",
+      termCodes: TERMS,
+      subtypes: CHILDREN,
+      dataModelProperties: DATA_MODEL
+    });
     expect(wrapper.vm.definitionText).toBe("");
     expect(wrapper.vm.display).toBeFalsy();
     expect(wrapper.vm.types).toStrictEqual(TYPES);
@@ -162,10 +220,20 @@ describe("Concept.vue", () => {
     await flushPromises();
     expect(wrapper.vm.contentHeightValue).not.toBe(0);
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
-    expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter", [RDFS.LABEL, IM.IRI, IM.STATUS, RDF.TYPE, RDFS.COMMENT]);
+    expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter", [
+      RDFS.LABEL,
+      IM.IRI,
+      IM.STATUS,
+      RDF.TYPE,
+      RDFS.COMMENT
+    ]);
     expect(EntityService.getPartialEntityBundle).toHaveBeenCalledTimes(2);
-    expect(EntityService.getPartialEntityBundle).toHaveBeenNthCalledWith(1,"http://endhealth.info/im#CriticalCareEncounter", [IM.IS_A, IM.ROLE_GROUP]);
-    expect(EntityService.getPartialEntityBundle).toHaveBeenNthCalledWith(2,"http://endhealth.info/im#CriticalCareEncounter", [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
+    expect(EntityService.getPartialEntityBundle).toHaveBeenNthCalledWith(1, "http://endhealth.info/im#CriticalCareEncounter", [IM.IS_A, IM.ROLE_GROUP]);
+    expect(EntityService.getPartialEntityBundle).toHaveBeenNthCalledWith(2, "http://endhealth.info/im#CriticalCareEncounter", [
+      RDFS.SUBCLASS_OF,
+      RDFS.SUB_PROPERTY_OF,
+      OWL.EQUIVALENT_CLASS
+    ]);
     expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
     expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
     expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
@@ -255,18 +323,74 @@ describe("Concept.vue", () => {
     await flushPromises();
     jest.clearAllMocks();
     await wrapper.vm.$nextTick();
-    EntityService.getPartialEntity = jest.fn().mockResolvedValue({data:{"@id":"http://snomed.info/sct#298382003","http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis deformity of spine (disorder)"}});
-    EntityService.getEntityChildren = jest.fn().mockResolvedValue({ data: [{"name":"Acquired scoliosis (disorder)","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#205045003"}]});
+    EntityService.getPartialEntity = jest.fn().mockResolvedValue({
+      "@id": "http://snomed.info/sct#298382003",
+      "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
+      "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)"
+    });
+    EntityService.getEntityChildren = jest.fn().mockResolvedValue([
+      {
+        name: "Acquired scoliosis (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#111266001"
+      },
+      {
+        name: "Acrodysplasia scoliosis (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#773773006"
+      },
+      {
+        name: "Congenital scoliosis due to bony malformation (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#205045003"
+      }
+    ]);
     jest.clearAllMocks();
     wrapper.vm.getConcept("http://snomed.info/sct#298382003");
     await flushPromises();
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
-    expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", ["http://www.w3.org/2000/01/rdf-schema#label", "@id", "http://endhealth.info/im#status", "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "http://www.w3.org/2000/01/rdf-schema#comment"]);
+    expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", [
+      "http://www.w3.org/2000/01/rdf-schema#label",
+      "@id",
+      "http://endhealth.info/im#status",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+      "http://www.w3.org/2000/01/rdf-schema#comment"
+    ]);
     expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(EntityService.getEntityTermCodes).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityTermCodes).toHaveBeenCalledWith("http://snomed.info/sct#298382003")
-    expect(wrapper.vm.concept).toStrictEqual({"@id":"http://snomed.info/sct#298382003","http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis deformity of spine (disorder)","subtypes":[{"name":"Acquired scoliosis (disorder)","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#205045003"}],"termCodes":[{"name":"Critical care encounter (record type)"}]});
+    expect(EntityService.getEntityTermCodes).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.concept).toStrictEqual({
+      "@id": "http://snomed.info/sct#298382003",
+      "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
+      "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)",
+      subtypes: [
+        {
+          name: "Acquired scoliosis (disorder)",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://snomed.info/sct#111266001"
+        },
+        {
+          name: "Acrodysplasia scoliosis (disorder)",
+          hasChildren: false,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://snomed.info/sct#773773006"
+        },
+        {
+          name: "Congenital scoliosis due to bony malformation (disorder)",
+          hasChildren: false,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://snomed.info/sct#205045003"
+        }
+      ],
+      termCodes: [{ name: "Critical care encounter (record type)" }]
+    });
   });
 
   it("can getConcept ___ no isa", async () => {
@@ -280,30 +404,111 @@ describe("Concept.vue", () => {
       "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)"
     });
     // wrapper.vm.getConcept("http://snomed.info/sct#111266001");
-    EntityService.getEntityChildren = jest.fn().mockResolvedValue({ data: [{"name":"Acquired scoliosis (disorder)","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#205045003"}]});
+    EntityService.getEntityChildren = jest.fn().mockResolvedValue([
+      {
+        name: "Acquired scoliosis (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#111266001"
+      },
+      {
+        name: "Acrodysplasia scoliosis (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#773773006"
+      },
+      {
+        name: "Congenital scoliosis due to bony malformation (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#205045003"
+      }
+    ]);
     wrapper.vm.getConcept("http://snomed.info/sct#298382003");
     await flushPromises();
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
-    expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", ["http://www.w3.org/2000/01/rdf-schema#label", "@id", "http://endhealth.info/im#status", "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "http://www.w3.org/2000/01/rdf-schema#comment"]);
+    expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", [
+      "http://www.w3.org/2000/01/rdf-schema#label",
+      "@id",
+      "http://endhealth.info/im#status",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+      "http://www.w3.org/2000/01/rdf-schema#comment"
+    ]);
     expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(EntityService.getEntityTermCodes).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityTermCodes).toHaveBeenCalledWith("http://snomed.info/sct#298382003")
-    expect(wrapper.vm.concept).toStrictEqual({"@id":"http://snomed.info/sct#298382003","http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis deformity of spine (disorder)","subtypes":[{"name":"Acquired scoliosis (disorder)","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#111266001"},{"name":"Acrodysplasia scoliosis (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#773773006"},{"name":"Congenital scoliosis due to bony malformation (disorder)","hasChildren":false,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://snomed.info/sct#205045003"}],"termCodes":[{"name":"Critical care encounter (record type)"}]});
+    expect(EntityService.getEntityTermCodes).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.concept).toStrictEqual({
+      "@id": "http://snomed.info/sct#298382003",
+      "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
+      "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)",
+      subtypes: [
+        {
+          name: "Acquired scoliosis (disorder)",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://snomed.info/sct#111266001"
+        },
+        {
+          name: "Acrodysplasia scoliosis (disorder)",
+          hasChildren: false,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://snomed.info/sct#773773006"
+        },
+        {
+          name: "Congenital scoliosis due to bony malformation (disorder)",
+          hasChildren: false,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://snomed.info/sct#205045003"
+        }
+      ],
+      termCodes: [{ name: "Critical care encounter (record type)" }]
+    });
   });
 
-  it("can get properties ___ pass", async() => {
+  it("can get properties ___ pass", async () => {
     await flushPromises();
     await wrapper.vm.$nextTick();
-    EntityService.getDataModelProperties = jest.fn().mockResolvedValue({data:[{"property":{"name":"has admission source","@id":"http://endhealth.info/im#hasAdmissionSource"},"type":{"name":"Critical care admission source","@id":"http://endhealth.info/im#1041000252100"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has critical care unit function","@id":"http://endhealth.info/im#hasCriticalCareUnitFunction"},"type":{"name":"Critical care unit function","@id":"http://endhealth.info/im#211000252109"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}}]});
+    EntityService.getDataModelProperties = jest.fn().mockResolvedValue([
+      {
+        property: { name: "has admission source", "@id": "http://endhealth.info/im#hasAdmissionSource" },
+        type: { name: "Critical care admission source", "@id": "http://endhealth.info/im#1041000252100" },
+        minExclusive: "1",
+        maxExclusive: "1",
+        inheritedFrom: {}
+      },
+      {
+        property: { name: "has critical care unit function", "@id": "http://endhealth.info/im#hasCriticalCareUnitFunction" },
+        type: { name: "Critical care unit function", "@id": "http://endhealth.info/im#211000252109" },
+        minExclusive: "1",
+        maxExclusive: "1",
+        inheritedFrom: {}
+      }
+    ]);
     wrapper.vm.getProperties("http://endhealth.info/im#CriticalCareEncounter");
     await flushPromises();
     expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
     expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
-    expect(wrapper.vm.concept.dataModelProperties).toStrictEqual([{"property":{"name":"has admission source","@id":"http://endhealth.info/im#hasAdmissionSource"},"type":{"name":"Critical care admission source","@id":"http://endhealth.info/im#1041000252100"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has critical care unit function","@id":"http://endhealth.info/im#hasCriticalCareUnitFunction"},"type":{"name":"Critical care unit function","@id":"http://endhealth.info/im#211000252109"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}}]);
+    expect(wrapper.vm.concept.dataModelProperties).toStrictEqual([
+      {
+        property: { name: "has admission source", "@id": "http://endhealth.info/im#hasAdmissionSource" },
+        type: { name: "Critical care admission source", "@id": "http://endhealth.info/im#1041000252100" },
+        minExclusive: "1",
+        maxExclusive: "1",
+        inheritedFrom: {}
+      },
+      {
+        property: { name: "has critical care unit function", "@id": "http://endhealth.info/im#hasCriticalCareUnitFunction" },
+        type: { name: "Critical care unit function", "@id": "http://endhealth.info/im#211000252109" },
+        minExclusive: "1",
+        maxExclusive: "1",
+        inheritedFrom: {}
+      }
+    ]);
   });
 
-  it("can getConfig ___ pass", async() => {
+  it("can getConfig ___ pass", async () => {
     jest.clearAllMocks();
     await flushPromises();
     wrapper.vm.getConfig("description");
@@ -321,7 +526,14 @@ describe("Concept.vue", () => {
     wrapper.vm.getConfig = jest.fn();
     wrapper.vm.getStated = jest.fn();
     wrapper.vm.getInferred = jest.fn();
-    wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"dataModelProperties":[]};
+    wrapper.vm.concept = {
+      "@id": "http://snomed.info/sct#47518006",
+      "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
+      "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis caused by radiation (disorder)",
+      subtypes: [],
+      dataModelProperties: []
+    };
     wrapper.vm.init();
     expect(wrapper.vm.loading).toBe(true);
     await flushPromises();
@@ -348,7 +560,14 @@ describe("Concept.vue", () => {
     wrapper.vm.getConcept = jest.fn();
     wrapper.vm.getStated = jest.fn();
     wrapper.vm.getInferred = jest.fn();
-    wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"name":"Concept Set","@id":"http://endhealth.info/im#ConceptSet"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"dataModelProperties":[]};
+    wrapper.vm.concept = {
+      "@id": "http://snomed.info/sct#47518006",
+      "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ name: "Concept Set", "@id": "http://endhealth.info/im#ConceptSet" }],
+      "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis caused by radiation (disorder)",
+      subtypes: [],
+      dataModelProperties: []
+    };
     wrapper.vm.init();
     await flushPromises();
     expect(wrapper.vm.types).toStrictEqual([{ name: "Concept Set", "@id": "http://endhealth.info/im#ConceptSet" }]);
@@ -361,7 +580,14 @@ describe("Concept.vue", () => {
     wrapper.vm.getConcept = jest.fn();
     wrapper.vm.getStated = jest.fn();
     wrapper.vm.getInferred = jest.fn();
-    wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"name":"Query template","@id":"http://endhealth.info/im#QueryTemplate"}],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"dataModelProperties":[]};
+    wrapper.vm.concept = {
+      "@id": "http://snomed.info/sct#47518006",
+      "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ name: "Query template", "@id": "http://endhealth.info/im#QueryTemplate" }],
+      "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis caused by radiation (disorder)",
+      subtypes: [],
+      dataModelProperties: []
+    };
     wrapper.vm.init();
     await flushPromises();
     expect(wrapper.vm.types).toStrictEqual([{ name: "Query template", "@id": "http://endhealth.info/im#QueryTemplate" }]);
@@ -394,14 +620,25 @@ describe("Concept.vue", () => {
 
   it("can copy concept to clipboard", async () => {
     await flushPromises();
-    expect(wrapper.vm.copyConceptToClipboard()).toBe("Iri: http://endhealth.info/im#CriticalCareEncounter,\nStatus: Active,\nDescription: An entry recording information about a criticial care encounter.\n\tcommon data model attributes for Critical care encounter,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Critical care encounter (record type),\nHas sub types: [\n\tAdult critical care encounter,\n\tNeonatal critical care encounter,\n\tPaediatric critical care encounter\n],\n" +
-        "Inferred: \"\nIs a\n  Hospital setting\n\n\n\",\nAxioms: \"\nsubClassOf\n  Hospital setting\n\n\n\",\n" +
-        "Data model properties: [\n\thas admission source,\n\thas critical care unit function,\n\tadditional Practitioners\n]");
+    wrapper.vm.concept = {
+      "@id": "http://snomed.info/sct#47518006",
+      "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+      "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis caused by radiation (disorder)"
+    };
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.copyConceptToClipboard()).toBe("Iri: http://snomed.info/sct#47518006,\nStatus: Active,\nName: Scoliosis caused by radiation (disorder)");
   });
 
   it("can copy concept to clipboard ___ empty arrays", async () => {
     await flushPromises();
-    wrapper.vm.concept = {"@id":"http://snomed.info/sct#47518006","http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[],"http://www.w3.org/2000/01/rdf-schema#label":"Scoliosis caused by radiation (disorder)","subtypes":[],"dataModelProperties":[]};
+    wrapper.vm.concept = {
+      "@id": "http://snomed.info/sct#47518006",
+      "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [],
+      "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis caused by radiation (disorder)",
+      subtypes: [],
+      dataModelProperties: []
+    };
     wrapper.vm.dataModelProperties = [];
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.copyConceptToClipboard()).toBe("Iri: http://snomed.info/sct#47518006,\nStatus: Active,\nName: Scoliosis caused by radiation (disorder)");
@@ -422,7 +659,110 @@ describe("Concept.vue", () => {
   it("can set copy menu items", async () => {
     await flushPromises();
     wrapper.vm.copyMenuItems = [];
-    wrapper.vm.concept = {"@id":"http://endhealth.info/im#Encounter","http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/2000/01/rdf-schema#comment":"An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.","http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://endhealth.info/im#RecordType","name":"Record type"},{"@id":"http://www.w3.org/ns/shacl#NodeShape","name":"Node shape"},{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Encounter (record type)","subtypes":[{"name":"Administrative entry","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#1731000252106"},{"name":"Consultation","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#31000252100"},{"name":"Hospital encounter","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#1161000252102"}],"dataModelProperties":[{"property":{"name":"additional Practitioners","@id":"http://endhealth.info/im#additionalPractitioners"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"inheritedFrom":{}},{"property":{"name":"completion Status","@id":"http://endhealth.info/im#completionStatus"},"type":{"name":"Concept class","@id":"http://endhealth.info/im#894281000252100"},"inheritedFrom":{}},{"property":{"name":"duration","@id":"http://endhealth.info/im#duration"},"type":{"name":"Concept class","@id":"http://endhealth.info/im#894281000252100"},"minExclusive":"1","inheritedFrom":{}},{"property":{"name":"has section","@id":"http://endhealth.info/im#hasSection"},"type":{"name":"Section (structural)","@id":"http://endhealth.info/im#Section"},"inheritedFrom":{}},{"property":{"name":"linked appointment","@id":"http://endhealth.info/im#linkedAppointment"},"type":{"name":"Appointment (slot)  (record type)","@id":"http://endhealth.info/im#Appointment"},"inheritedFrom":{}},{"property":{"name":"linked care episode","@id":"http://endhealth.info/im#linkedCareEpisode"},"type":{"name":"Episode of care  (record type)","@id":"http://endhealth.info/im#EpisodeOfCare"},"inheritedFrom":{}},{"property":{"name":"location","@id":"http://endhealth.info/im#location"},"type":{"name":"Location  (record type)","@id":"http://endhealth.info/im#Location"},"inheritedFrom":{}},{"property":{"name":"providing Organisation/ services or departments","@id":"http://endhealth.info/im#providingOrganisation_ServicesOrDepartments"},"type":{"name":"Organisation  (record type)","@id":"http://endhealth.info/im#Organisation"},"inheritedFrom":{}},{"property":{"name":"is subencounter of","@id":"http://endhealth.info/im#isSubEnctounterOf"},"type":{"name":"Encounter (record type)","@id":"http://endhealth.info/im#Encounter"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has subject","@id":"http://endhealth.info/im#hasSubject"},"type":{"name":"Patient (person)","@id":"http://snomed.info/sct#116154003"},"inheritedFrom":{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"}},{"property":{"name":"practitioner","@id":"http://endhealth.info/im#hasPractitioner"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"}},{"property":{"name":"date","@id":"http://endhealth.info/im#date"},"type":{"@id":"http://www.w3.org/2001/XMLSchema#string"},"inheritedFrom":{"name":"Health event (record type)","@id":"http://endhealth.info/im#HealthEvent"}},{"property":{"name":"end date","@id":"http://endhealth.info/im#endDate"},"type":{"@id":"http://www.w3.org/2001/XMLSchema#string"},"inheritedFrom":{"name":"Health event (record type)","@id":"http://endhealth.info/im#HealthEvent"}}]};
+    wrapper.vm.concept = {
+      "@id": "http://endhealth.info/im#Encounter",
+      "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+      "http://www.w3.org/2000/01/rdf-schema#comment":
+        "An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+        { "@id": "http://endhealth.info/im#RecordType", name: "Record type" },
+        { "@id": "http://www.w3.org/ns/shacl#NodeShape", name: "Node shape" },
+        { "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }
+      ],
+      "http://www.w3.org/2000/01/rdf-schema#label": "Encounter (record type)",
+      subtypes: [
+        {
+          name: "Administrative entry",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#1731000252106"
+        },
+        {
+          name: "Consultation",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#31000252100"
+        },
+        {
+          name: "Hospital encounter",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#1161000252102"
+        }
+      ],
+      dataModelProperties: [
+        {
+          property: { name: "additional Practitioners", "@id": "http://endhealth.info/im#additionalPractitioners" },
+          type: { name: "Practitioner in role  (record type)", "@id": "http://endhealth.info/im#ThePractitionerInRole" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "completion Status", "@id": "http://endhealth.info/im#completionStatus" },
+          type: { name: "Concept class", "@id": "http://endhealth.info/im#894281000252100" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "duration", "@id": "http://endhealth.info/im#duration" },
+          type: { name: "Concept class", "@id": "http://endhealth.info/im#894281000252100" },
+          minExclusive: "1",
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "has section", "@id": "http://endhealth.info/im#hasSection" },
+          type: { name: "Section (structural)", "@id": "http://endhealth.info/im#Section" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "linked appointment", "@id": "http://endhealth.info/im#linkedAppointment" },
+          type: { name: "Appointment (slot)  (record type)", "@id": "http://endhealth.info/im#Appointment" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "linked care episode", "@id": "http://endhealth.info/im#linkedCareEpisode" },
+          type: { name: "Episode of care  (record type)", "@id": "http://endhealth.info/im#EpisodeOfCare" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "location", "@id": "http://endhealth.info/im#location" },
+          type: { name: "Location  (record type)", "@id": "http://endhealth.info/im#Location" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "providing Organisation/ services or departments", "@id": "http://endhealth.info/im#providingOrganisation_ServicesOrDepartments" },
+          type: { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "is subencounter of", "@id": "http://endhealth.info/im#isSubEnctounterOf" },
+          type: { name: "Encounter (record type)", "@id": "http://endhealth.info/im#Encounter" },
+          minExclusive: "1",
+          maxExclusive: "1",
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "has subject", "@id": "http://endhealth.info/im#hasSubject" },
+          type: { name: "Patient (person)", "@id": "http://snomed.info/sct#116154003" },
+          inheritedFrom: { name: "Patient health event (record type)", "@id": "http://endhealth.info/im#PatientHealthEvent" }
+        },
+        {
+          property: { name: "practitioner", "@id": "http://endhealth.info/im#hasPractitioner" },
+          type: { name: "Practitioner in role  (record type)", "@id": "http://endhealth.info/im#ThePractitionerInRole" },
+          minExclusive: "1",
+          maxExclusive: "1",
+          inheritedFrom: { name: "Patient health event (record type)", "@id": "http://endhealth.info/im#PatientHealthEvent" }
+        },
+        {
+          property: { name: "date", "@id": "http://endhealth.info/im#date" },
+          type: { "@id": "http://www.w3.org/2001/XMLSchema#string" },
+          inheritedFrom: { name: "Health event (record type)", "@id": "http://endhealth.info/im#HealthEvent" }
+        },
+        {
+          property: { name: "end date", "@id": "http://endhealth.info/im#endDate" },
+          type: { "@id": "http://www.w3.org/2001/XMLSchema#string" },
+          inheritedFrom: { name: "Health event (record type)", "@id": "http://endhealth.info/im#HealthEvent" }
+        }
+      ]
+    };
     wrapper.vm.setCopyMenuItems();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.copyMenuItems).toHaveLength(10);
@@ -454,7 +794,16 @@ describe("Concept.vue", () => {
   it("can set copy menu items ___ empty arrays", async () => {
     await flushPromises();
     wrapper.vm.copyMenuItems = [];
-    wrapper.vm.concept = {"@id":"http://endhealth.info/im#Encounter","http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/2000/01/rdf-schema#comment":"An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.","http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[],"http://www.w3.org/2000/01/rdf-schema#label":"Encounter (record type)","subtypes":[],"dataModelProperties":[]}
+    wrapper.vm.concept = {
+      "@id": "http://endhealth.info/im#Encounter",
+      "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+      "http://www.w3.org/2000/01/rdf-schema#comment":
+        "An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [],
+      "http://www.w3.org/2000/01/rdf-schema#label": "Encounter (record type)",
+      subtypes: [],
+      dataModelProperties: []
+    };
     wrapper.vm.setCopyMenuItems();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.copyMenuItems).toHaveLength(7);
@@ -480,13 +829,118 @@ describe("Concept.vue", () => {
   it("can run commands from copymenuItems ___ pass", async () => {
     clipboardSpy.mockResolvedValue(true);
     await flushPromises();
-    wrapper.vm.concept = {"@id":"http://endhealth.info/im#Encounter","http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/2000/01/rdf-schema#comment":"An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.","http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://endhealth.info/im#RecordType","name":"Record type"},{"@id":"http://www.w3.org/ns/shacl#NodeShape","name":"Node shape"},{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Encounter (record type)","subtypes":[{"name":"Administrative entry","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#1731000252106"},{"name":"Consultation","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#31000252100"},{"name":"Hospital encounter","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#1161000252102"}],"dataModelProperties":[{"property":{"name":"additional Practitioners","@id":"http://endhealth.info/im#additionalPractitioners"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"inheritedFrom":{}},{"property":{"name":"completion Status","@id":"http://endhealth.info/im#completionStatus"},"type":{"name":"Concept class","@id":"http://endhealth.info/im#894281000252100"},"inheritedFrom":{}},{"property":{"name":"duration","@id":"http://endhealth.info/im#duration"},"type":{"name":"Concept class","@id":"http://endhealth.info/im#894281000252100"},"minExclusive":"1","inheritedFrom":{}},{"property":{"name":"has section","@id":"http://endhealth.info/im#hasSection"},"type":{"name":"Section (structural)","@id":"http://endhealth.info/im#Section"},"inheritedFrom":{}},{"property":{"name":"linked appointment","@id":"http://endhealth.info/im#linkedAppointment"},"type":{"name":"Appointment (slot)  (record type)","@id":"http://endhealth.info/im#Appointment"},"inheritedFrom":{}},{"property":{"name":"linked care episode","@id":"http://endhealth.info/im#linkedCareEpisode"},"type":{"name":"Episode of care  (record type)","@id":"http://endhealth.info/im#EpisodeOfCare"},"inheritedFrom":{}},{"property":{"name":"location","@id":"http://endhealth.info/im#location"},"type":{"name":"Location  (record type)","@id":"http://endhealth.info/im#Location"},"inheritedFrom":{}},{"property":{"name":"providing Organisation/ services or departments","@id":"http://endhealth.info/im#providingOrganisation_ServicesOrDepartments"},"type":{"name":"Organisation  (record type)","@id":"http://endhealth.info/im#Organisation"},"inheritedFrom":{}},{"property":{"name":"is subencounter of","@id":"http://endhealth.info/im#isSubEnctounterOf"},"type":{"name":"Encounter (record type)","@id":"http://endhealth.info/im#Encounter"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has subject","@id":"http://endhealth.info/im#hasSubject"},"type":{"name":"Patient (person)","@id":"http://snomed.info/sct#116154003"},"inheritedFrom":{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"}},{"property":{"name":"practitioner","@id":"http://endhealth.info/im#hasPractitioner"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"}},{"property":{"name":"date","@id":"http://endhealth.info/im#date"},"type":{"@id":"http://www.w3.org/2001/XMLSchema#string"},"inheritedFrom":{"name":"Health event (record type)","@id":"http://endhealth.info/im#HealthEvent"}},{"property":{"name":"end date","@id":"http://endhealth.info/im#endDate"},"type":{"@id":"http://www.w3.org/2001/XMLSchema#string"},"inheritedFrom":{"name":"Health event (record type)","@id":"http://endhealth.info/im#HealthEvent"}}]};
+    wrapper.vm.concept = {
+      "@id": "http://endhealth.info/im#Encounter",
+      "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+      "http://www.w3.org/2000/01/rdf-schema#comment":
+        "An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+        { "@id": "http://endhealth.info/im#RecordType", name: "Record type" },
+        { "@id": "http://www.w3.org/ns/shacl#NodeShape", name: "Node shape" },
+        { "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }
+      ],
+      "http://www.w3.org/2000/01/rdf-schema#label": "Encounter (record type)",
+      subtypes: [
+        {
+          name: "Administrative entry",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#1731000252106"
+        },
+        {
+          name: "Consultation",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#31000252100"
+        },
+        {
+          name: "Hospital encounter",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#1161000252102"
+        }
+      ],
+      dataModelProperties: [
+        {
+          property: { name: "additional Practitioners", "@id": "http://endhealth.info/im#additionalPractitioners" },
+          type: { name: "Practitioner in role  (record type)", "@id": "http://endhealth.info/im#ThePractitionerInRole" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "completion Status", "@id": "http://endhealth.info/im#completionStatus" },
+          type: { name: "Concept class", "@id": "http://endhealth.info/im#894281000252100" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "duration", "@id": "http://endhealth.info/im#duration" },
+          type: { name: "Concept class", "@id": "http://endhealth.info/im#894281000252100" },
+          minExclusive: "1",
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "has section", "@id": "http://endhealth.info/im#hasSection" },
+          type: { name: "Section (structural)", "@id": "http://endhealth.info/im#Section" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "linked appointment", "@id": "http://endhealth.info/im#linkedAppointment" },
+          type: { name: "Appointment (slot)  (record type)", "@id": "http://endhealth.info/im#Appointment" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "linked care episode", "@id": "http://endhealth.info/im#linkedCareEpisode" },
+          type: { name: "Episode of care  (record type)", "@id": "http://endhealth.info/im#EpisodeOfCare" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "location", "@id": "http://endhealth.info/im#location" },
+          type: { name: "Location  (record type)", "@id": "http://endhealth.info/im#Location" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "providing Organisation/ services or departments", "@id": "http://endhealth.info/im#providingOrganisation_ServicesOrDepartments" },
+          type: { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "is subencounter of", "@id": "http://endhealth.info/im#isSubEnctounterOf" },
+          type: { name: "Encounter (record type)", "@id": "http://endhealth.info/im#Encounter" },
+          minExclusive: "1",
+          maxExclusive: "1",
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "has subject", "@id": "http://endhealth.info/im#hasSubject" },
+          type: { name: "Patient (person)", "@id": "http://snomed.info/sct#116154003" },
+          inheritedFrom: { name: "Patient health event (record type)", "@id": "http://endhealth.info/im#PatientHealthEvent" }
+        },
+        {
+          property: { name: "practitioner", "@id": "http://endhealth.info/im#hasPractitioner" },
+          type: { name: "Practitioner in role  (record type)", "@id": "http://endhealth.info/im#ThePractitionerInRole" },
+          minExclusive: "1",
+          maxExclusive: "1",
+          inheritedFrom: { name: "Patient health event (record type)", "@id": "http://endhealth.info/im#PatientHealthEvent" }
+        },
+        {
+          property: { name: "date", "@id": "http://endhealth.info/im#date" },
+          type: { "@id": "http://www.w3.org/2001/XMLSchema#string" },
+          inheritedFrom: { name: "Health event (record type)", "@id": "http://endhealth.info/im#HealthEvent" }
+        },
+        {
+          property: { name: "end date", "@id": "http://endhealth.info/im#endDate" },
+          type: { "@id": "http://www.w3.org/2001/XMLSchema#string" },
+          inheritedFrom: { name: "Health event (record type)", "@id": "http://endhealth.info/im#HealthEvent" }
+        }
+      ]
+    };
     wrapper.vm.setCopyMenuItems();
     await wrapper.vm.$nextTick();
 
     wrapper.vm.copyMenuItems[2].command();
     await flushPromises();
-    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Iri: http://endhealth.info/im#Encounter,\nStatus: Active,\nDescription: An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \n\tIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Encounter (record type),\nHas sub types: [\n\tAdministrative entry,\n\tConsultation,\n\tHospital encounter\n],\nData model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n]");
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith(
+      "Iri: http://endhealth.info/im#Encounter,\nStatus: Active,\nDescription: An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \n\tIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Encounter (record type),\nHas sub types: [\n\tAdministrative entry,\n\tConsultation,\n\tHospital encounter\n],\nData model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n]"
+    );
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.success("Concept copied to clipboard"));
 
     wrapper.vm.copyMenuItems[3].command();
@@ -532,13 +986,118 @@ describe("Concept.vue", () => {
   it("can run commands from copymenuItems ___ fail", async () => {
     clipboardSpy.mockRejectedValue(false);
     await flushPromises();
-    wrapper.vm.concept = {"@id":"http://endhealth.info/im#Encounter","http://endhealth.info/im#status":{"@id":"http://endhealth.info/im#Active","name":"Active"},"http://www.w3.org/2000/01/rdf-schema#comment":"An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.","http://www.w3.org/1999/02/22-rdf-syntax-ns#type":[{"@id":"http://endhealth.info/im#RecordType","name":"Record type"},{"@id":"http://www.w3.org/ns/shacl#NodeShape","name":"Node shape"},{"@id":"http://www.w3.org/2002/07/owl#Class","name":"Class"}],"http://www.w3.org/2000/01/rdf-schema#label":"Encounter (record type)","subtypes":[{"name":"Administrative entry","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#1731000252106"},{"name":"Consultation","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#31000252100"},{"name":"Hospital encounter","hasChildren":true,"type":[{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}],"@id":"http://endhealth.info/im#1161000252102"}],"dataModelProperties":[{"property":{"name":"additional Practitioners","@id":"http://endhealth.info/im#additionalPractitioners"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"inheritedFrom":{}},{"property":{"name":"completion Status","@id":"http://endhealth.info/im#completionStatus"},"type":{"name":"Concept class","@id":"http://endhealth.info/im#894281000252100"},"inheritedFrom":{}},{"property":{"name":"duration","@id":"http://endhealth.info/im#duration"},"type":{"name":"Concept class","@id":"http://endhealth.info/im#894281000252100"},"minExclusive":"1","inheritedFrom":{}},{"property":{"name":"has section","@id":"http://endhealth.info/im#hasSection"},"type":{"name":"Section (structural)","@id":"http://endhealth.info/im#Section"},"inheritedFrom":{}},{"property":{"name":"linked appointment","@id":"http://endhealth.info/im#linkedAppointment"},"type":{"name":"Appointment (slot)  (record type)","@id":"http://endhealth.info/im#Appointment"},"inheritedFrom":{}},{"property":{"name":"linked care episode","@id":"http://endhealth.info/im#linkedCareEpisode"},"type":{"name":"Episode of care  (record type)","@id":"http://endhealth.info/im#EpisodeOfCare"},"inheritedFrom":{}},{"property":{"name":"location","@id":"http://endhealth.info/im#location"},"type":{"name":"Location  (record type)","@id":"http://endhealth.info/im#Location"},"inheritedFrom":{}},{"property":{"name":"providing Organisation/ services or departments","@id":"http://endhealth.info/im#providingOrganisation_ServicesOrDepartments"},"type":{"name":"Organisation  (record type)","@id":"http://endhealth.info/im#Organisation"},"inheritedFrom":{}},{"property":{"name":"is subencounter of","@id":"http://endhealth.info/im#isSubEnctounterOf"},"type":{"name":"Encounter (record type)","@id":"http://endhealth.info/im#Encounter"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{}},{"property":{"name":"has subject","@id":"http://endhealth.info/im#hasSubject"},"type":{"name":"Patient (person)","@id":"http://snomed.info/sct#116154003"},"inheritedFrom":{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"}},{"property":{"name":"practitioner","@id":"http://endhealth.info/im#hasPractitioner"},"type":{"name":"Practitioner in role  (record type)","@id":"http://endhealth.info/im#ThePractitionerInRole"},"minExclusive":"1","maxExclusive":"1","inheritedFrom":{"name":"Patient health event (record type)","@id":"http://endhealth.info/im#PatientHealthEvent"}},{"property":{"name":"date","@id":"http://endhealth.info/im#date"},"type":{"@id":"http://www.w3.org/2001/XMLSchema#string"},"inheritedFrom":{"name":"Health event (record type)","@id":"http://endhealth.info/im#HealthEvent"}},{"property":{"name":"end date","@id":"http://endhealth.info/im#endDate"},"type":{"@id":"http://www.w3.org/2001/XMLSchema#string"},"inheritedFrom":{"name":"Health event (record type)","@id":"http://endhealth.info/im#HealthEvent"}}]};
+    wrapper.vm.concept = {
+      "@id": "http://endhealth.info/im#Encounter",
+      "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+      "http://www.w3.org/2000/01/rdf-schema#comment":
+        "An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \nIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [
+        { "@id": "http://endhealth.info/im#RecordType", name: "Record type" },
+        { "@id": "http://www.w3.org/ns/shacl#NodeShape", name: "Node shape" },
+        { "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }
+      ],
+      "http://www.w3.org/2000/01/rdf-schema#label": "Encounter (record type)",
+      subtypes: [
+        {
+          name: "Administrative entry",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#1731000252106"
+        },
+        {
+          name: "Consultation",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#31000252100"
+        },
+        {
+          name: "Hospital encounter",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#1161000252102"
+        }
+      ],
+      dataModelProperties: [
+        {
+          property: { name: "additional Practitioners", "@id": "http://endhealth.info/im#additionalPractitioners" },
+          type: { name: "Practitioner in role  (record type)", "@id": "http://endhealth.info/im#ThePractitionerInRole" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "completion Status", "@id": "http://endhealth.info/im#completionStatus" },
+          type: { name: "Concept class", "@id": "http://endhealth.info/im#894281000252100" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "duration", "@id": "http://endhealth.info/im#duration" },
+          type: { name: "Concept class", "@id": "http://endhealth.info/im#894281000252100" },
+          minExclusive: "1",
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "has section", "@id": "http://endhealth.info/im#hasSection" },
+          type: { name: "Section (structural)", "@id": "http://endhealth.info/im#Section" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "linked appointment", "@id": "http://endhealth.info/im#linkedAppointment" },
+          type: { name: "Appointment (slot)  (record type)", "@id": "http://endhealth.info/im#Appointment" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "linked care episode", "@id": "http://endhealth.info/im#linkedCareEpisode" },
+          type: { name: "Episode of care  (record type)", "@id": "http://endhealth.info/im#EpisodeOfCare" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "location", "@id": "http://endhealth.info/im#location" },
+          type: { name: "Location  (record type)", "@id": "http://endhealth.info/im#Location" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "providing Organisation/ services or departments", "@id": "http://endhealth.info/im#providingOrganisation_ServicesOrDepartments" },
+          type: { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "is subencounter of", "@id": "http://endhealth.info/im#isSubEnctounterOf" },
+          type: { name: "Encounter (record type)", "@id": "http://endhealth.info/im#Encounter" },
+          minExclusive: "1",
+          maxExclusive: "1",
+          inheritedFrom: {}
+        },
+        {
+          property: { name: "has subject", "@id": "http://endhealth.info/im#hasSubject" },
+          type: { name: "Patient (person)", "@id": "http://snomed.info/sct#116154003" },
+          inheritedFrom: { name: "Patient health event (record type)", "@id": "http://endhealth.info/im#PatientHealthEvent" }
+        },
+        {
+          property: { name: "practitioner", "@id": "http://endhealth.info/im#hasPractitioner" },
+          type: { name: "Practitioner in role  (record type)", "@id": "http://endhealth.info/im#ThePractitionerInRole" },
+          minExclusive: "1",
+          maxExclusive: "1",
+          inheritedFrom: { name: "Patient health event (record type)", "@id": "http://endhealth.info/im#PatientHealthEvent" }
+        },
+        {
+          property: { name: "date", "@id": "http://endhealth.info/im#date" },
+          type: { "@id": "http://www.w3.org/2001/XMLSchema#string" },
+          inheritedFrom: { name: "Health event (record type)", "@id": "http://endhealth.info/im#HealthEvent" }
+        },
+        {
+          property: { name: "end date", "@id": "http://endhealth.info/im#endDate" },
+          type: { "@id": "http://www.w3.org/2001/XMLSchema#string" },
+          inheritedFrom: { name: "Health event (record type)", "@id": "http://endhealth.info/im#HealthEvent" }
+        }
+      ]
+    };
     wrapper.vm.setCopyMenuItems();
     await wrapper.vm.$nextTick();
 
     wrapper.vm.copyMenuItems[2].command();
     await flushPromises();
-    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Iri: http://endhealth.info/im#Encounter,\nStatus: Active,\nDescription: An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \n\tIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Encounter (record type),\nHas sub types: [\n\tAdministrative entry,\n\tConsultation,\n\tHospital encounter\n],\nData model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n]");
+    expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith(
+      "Iri: http://endhealth.info/im#Encounter,\nStatus: Active,\nDescription: An interaction between a patient (or on behalf of the patient) and a health professional or health provider. \n\tIt includes consultations as well as care processes such as admission, discharges. It also includes the noting of a filing of a document or report.,\nTypes: [\n\tRecord type,\n\tNode shape,\n\tClass\n],\nName: Encounter (record type),\nHas sub types: [\n\tAdministrative entry,\n\tConsultation,\n\tHospital encounter\n],\nData model properties: [\n\tadditional Practitioners,\n\tcompletion Status,\n\tduration,\n\thas section,\n\tlinked appointment,\n\tlinked care episode,\n\tlocation,\n\tproviding Organisation/ services or departments,\n\tis subencounter of,\n\thas subject,\n\tpractitioner,\n\tdate,\n\tend date\n]"
+    );
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy concept to clipboard"));
 
     wrapper.vm.copyMenuItems[3].command();

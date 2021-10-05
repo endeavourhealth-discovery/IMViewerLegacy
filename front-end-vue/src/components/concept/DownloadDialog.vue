@@ -178,7 +178,7 @@ export default defineComponent({
         this.expandMembers +
         "&inferred=" +
         this.includeInferred +
-        "&axioms="+
+        "&axioms=" +
         this.includeAxioms +
         "&terms=" +
         this.includeTerms +
@@ -208,10 +208,8 @@ export default defineComponent({
       }
 
       this.inferred = await EntityService.getPartialEntity(iri, [IM.IS_A, IM.ROLE_GROUP]);
-      
+
       this.axioms = await EntityService.getPartialEntity(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
-      
-      this.concept = await
 
       this.hasSubTypes = await EntityService.getEntityChildren(iri);
 

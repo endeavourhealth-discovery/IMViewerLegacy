@@ -9,13 +9,7 @@
           <button class="p-panel-header-icon p-link p-mr-2" @click="focusTree" v-tooltip.left="'Focus hierarchy tree to this concept'">
             <i class="fas fa-sitemap" aria-hidden="true"></i>
           </button>
-          <div
-            v-if="
-                Object.keys(concept).includes('subtypes') &&
-                Object.keys(concept).includes('dataModelProperties')
-            "
-            class="copy-container"
-          >
+          <div v-if="Object.keys(concept).includes('subtypes') && Object.keys(concept).includes('dataModelProperties')" class="copy-container">
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
@@ -120,7 +114,7 @@ import { MODULE_IRIS } from "@/helpers/ModuleIris";
 import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
 import Properties from "@/components/concept/Properties.vue";
-import {bundleToText} from '@/helpers/Transforms';
+import { bundleToText } from "@/helpers/Transforms";
 
 export default defineComponent({
   name: "Concept",
@@ -259,32 +253,14 @@ export default defineComponent({
 
     async getProperties(iri: string) {
       this.concept["dataModelProperties"] = await EntityService.getDataModelProperties(iri);
-    }
-     
-    async getInferred(iri: string) {
-      this.concept["inferred"] = await EntityService.getPartialEntityBundle(iri, [IM.IS_A, IM.ROLE_GROUP]);
-    }
-     
-    async getStated(iri: string) {
-      this.concept["axioms"] = await EntityService.getPartialEntityBundle(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
     },
 
-    async getAxioms(iri: string) {
-      const axiomReturn = await EntityService.getAxioms(iri);
-      if (axiomReturn) {
-        this.axiomObject = axiomReturn;
-        if (Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")) {
-          const predicateCount = Object.keys(this.axiomObject.entity)
-            .filter(key => key !== RDF.TYPE)
-            .filter(key => key !== RDFS.COMMENT)
-            .filter(key => key !== RDFS.LABEL)
-            .filter(key => key !== "@id").length;
-          this.concept["axioms"] = {
-            axiomString: this.axiomToString(this.axiomObject.entity),
-            count: predicateCount
-          };
-        }
-      }
+    async getInferred(iri: string) {
+      this.concept["inferred"] = await EntityService.getPartialEntityBundle(iri, [IM.IS_A, IM.ROLE_GROUP]);
+    },
+
+    async getStated(iri: string) {
+      this.concept["axioms"] = await EntityService.getPartialEntityBundle(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
     },
 
     async getConfig(name: string) {
@@ -410,16 +386,11 @@ export default defineComponent({
             returnString = newKey + ": " + newString + ",\n";
           }
         }
-      } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "axiomString")) {
-        newString = value.axiomString;
-        if (newString) {
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ': "\n' + newString + '\n"';
-          } else {
-            returnString = newKey + ': "\n' + newString + '\n",\n';
-          }
-        }
-      } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "entity") && Object.prototype.hasOwnProperty.call(value, "predicates")) {
+      } else if (
+        Object.prototype.toString.call(value) === "[object Object]" &&
+        Object.prototype.hasOwnProperty.call(value, "entity") &&
+        Object.prototype.hasOwnProperty.call(value, "predicates")
+      ) {
         if (counter === totalKeys - 1) {
           returnString = newKey + ': "\n' + bundleToText(value) + '\n"';
         } else {

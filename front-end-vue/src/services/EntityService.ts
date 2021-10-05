@@ -17,7 +17,7 @@ export default class EntityService {
     ).data;
     return axiosReturn ? axiosReturn : {};
   }
-  
+
   public static async getPartialEntityBundle(iri: string, predicates: string[]): Promise<any> {
     const axiosReturn = (
       await axios.get(this.api + "api/entity/partialBundle", {
@@ -27,7 +27,8 @@ export default class EntityService {
         }
       })
     ).data;
-  return axiosReturn ? axiosReturn : {};
+    return axiosReturn ? axiosReturn : {};
+  }
 
   public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<any> {
     const axiosReturn = (
