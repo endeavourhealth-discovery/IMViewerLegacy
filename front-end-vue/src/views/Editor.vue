@@ -43,7 +43,6 @@ import EntityService from "@/services/EntityService";
 import ConfirmDialog from "primevue/confirmdialog";
 import MemberEditor from "@/components/edit/MemberEditor.vue";
 import { IM } from "@/vocabulary/IM";
-import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "Editor",
@@ -98,32 +97,21 @@ export default defineComponent({
   methods: {
     async fetchConceptData(): Promise<void> {
       if (this.iri) {
-        await EntityService.getEntity(this.iri)
-          .then(res => {
-            this.concept = res.data;
-          })
-          .catch(err => {
-            this.$toast.add(LoggerService.error("Editor get concept request failed", err));
-          });
+        const entityReturn = await EntityService.getEntity(this.iri);
+        if (entityReturn) this.concept = entityReturn;
 
-        await EntityService.getEntityDefinitionDto(this.iri)
-          .then(res => {
-            this.conceptOriginal = res.data;
-            this.conceptUpdated = JSON.parse(JSON.stringify(res.data));
-          })
-          .catch(err => {
-            this.$toast.add(LoggerService.error("Editor get concept request failed", err));
-          });
+        const dtoReturn = await EntityService.getEntityDefinitionDto(this.iri);
+        if (dtoReturn) {
+          this.conceptOriginal = dtoReturn;
+          this.conceptUpdated = JSON.parse(JSON.stringify(dtoReturn));
+        }
 
         if (this.hasMembers) {
-          await EntityService.getEntityMembers(this.iri, false, false)
-            .then(res => {
-              this.membersOriginal = res.data;
-              this.membersUpdated = JSON.parse(JSON.stringify(res.data));
-            })
-            .catch(err => {
-              this.$toast.add(LoggerService.error("Editor get concept members request failed", err));
-            });
+          const membersReturn = await EntityService.getEntityMembers(this.iri, false, false);
+          if (membersReturn) {
+            this.membersOriginal = membersReturn;
+            this.membersUpdated = JSON.parse(JSON.stringify(membersReturn));
+          }
         }
       }
     },
