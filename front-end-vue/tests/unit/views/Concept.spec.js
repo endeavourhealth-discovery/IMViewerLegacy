@@ -123,7 +123,7 @@ describe("Concept.vue", () => {
   let docSpy;
   let windowSpy;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
     clipboardSpy = jest.spyOn(navigator.clipboard, "writeText");
     EntityService.getPartialEntityBundle = jest
@@ -181,6 +181,9 @@ describe("Concept.vue", () => {
         directives: { tooltip: Tooltip, clipboard: VueClipboard }
       }
     });
+
+    await flushPromises();
+    jest.clearAllMocks();
   });
 
   afterAll(() => {
@@ -189,7 +192,6 @@ describe("Concept.vue", () => {
   });
 
   it("starts with data from mounted", async () => {
-    await flushPromises();
     expect(wrapper.vm.editDialogView).toBeTruthy();
     expect(wrapper.vm.showDownloadDialog).toBeFalsy();
     expect(wrapper.vm.configs).toStrictEqual(CONFIG);
@@ -216,32 +218,7 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.contentHeightValue).not.toBe(0);
   });
 
-  it("inits and setsHeights on mounted", async () => {
-    await flushPromises();
-    expect(wrapper.vm.contentHeightValue).not.toBe(0);
-    expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
-    expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter", [
-      RDFS.LABEL,
-      IM.IRI,
-      IM.STATUS,
-      RDF.TYPE,
-      RDFS.COMMENT
-    ]);
-    expect(EntityService.getPartialEntityBundle).toHaveBeenCalledTimes(2);
-    expect(EntityService.getPartialEntityBundle).toHaveBeenNthCalledWith(1, "http://endhealth.info/im#CriticalCareEncounter", [IM.IS_A, IM.ROLE_GROUP]);
-    expect(EntityService.getPartialEntityBundle).toHaveBeenNthCalledWith(2, "http://endhealth.info/im#CriticalCareEncounter", [
-      RDFS.SUBCLASS_OF,
-      RDFS.SUB_PROPERTY_OF,
-      OWL.EQUIVALENT_CLASS
-    ]);
-    expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
-    expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
-    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
-  });
-
   it("adds event listener to setContentHeights on resize", async () => {
-    await flushPromises();
     const spy = jest.spyOn(wrapper.vm, "setContentHeight");
     window.dispatchEvent(new Event("resize"));
     await wrapper.vm.$nextTick();
@@ -304,7 +281,6 @@ describe("Concept.vue", () => {
   });
 
   it("can routeToEdit", async () => {
-    await flushPromises();
     wrapper.vm.directToEditRoute();
     expect(mockRouter.push).toHaveBeenCalledTimes(1);
     expect(mockRouter.push).toHaveBeenCalledWith({
@@ -320,9 +296,6 @@ describe("Concept.vue", () => {
   });
 
   it("can getConcept ___ pass", async () => {
-    await flushPromises();
-    jest.clearAllMocks();
-    await wrapper.vm.$nextTick();
     EntityService.getPartialEntity = jest.fn().mockResolvedValue({
       "@id": "http://snomed.info/sct#298382003",
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
@@ -349,7 +322,6 @@ describe("Concept.vue", () => {
         "@id": "http://snomed.info/sct#205045003"
       }
     ]);
-    jest.clearAllMocks();
     wrapper.vm.getConcept("http://snomed.info/sct#298382003");
     await flushPromises();
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
@@ -394,16 +366,12 @@ describe("Concept.vue", () => {
   });
 
   it("can getConcept ___ no isa", async () => {
-    await flushPromises();
-    jest.clearAllMocks();
-    await wrapper.vm.$nextTick();
     EntityService.getPartialEntity = jest.fn().mockResolvedValue({
       "@id": "http://snomed.info/sct#298382003",
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
       "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
       "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)"
     });
-    // wrapper.vm.getConcept("http://snomed.info/sct#111266001");
     EntityService.getEntityChildren = jest.fn().mockResolvedValue([
       {
         name: "Acquired scoliosis (disorder)",
@@ -468,8 +436,6 @@ describe("Concept.vue", () => {
   });
 
   it("can get properties ___ pass", async () => {
-    await flushPromises();
-    await wrapper.vm.$nextTick();
     EntityService.getDataModelProperties = jest.fn().mockResolvedValue([
       {
         property: { name: "has admission source", "@id": "http://endhealth.info/im#hasAdmissionSource" },
@@ -509,8 +475,6 @@ describe("Concept.vue", () => {
   });
 
   it("can getConfig ___ pass", async () => {
-    jest.clearAllMocks();
-    await flushPromises();
     wrapper.vm.getConfig("description");
     await flushPromises();
     expect(ConfigService.getComponentLayout).toHaveBeenCalledTimes(1);
@@ -519,8 +483,6 @@ describe("Concept.vue", () => {
   });
 
   it("Inits ___ Class", async () => {
-    await flushPromises();
-    jest.clearAllMocks();
     wrapper.vm.getProperties = jest.fn();
     wrapper.vm.getConcept = jest.fn();
     wrapper.vm.getConfig = jest.fn();
@@ -555,7 +517,6 @@ describe("Concept.vue", () => {
   });
 
   it("Inits ___ Set", async () => {
-    await flushPromises();
     wrapper.vm.getProperties = jest.fn();
     wrapper.vm.getConcept = jest.fn();
     wrapper.vm.getStated = jest.fn();
@@ -575,7 +536,6 @@ describe("Concept.vue", () => {
   });
 
   it("Inits ___ Query", async () => {
-    await flushPromises();
     wrapper.vm.getProperties = jest.fn();
     wrapper.vm.getConcept = jest.fn();
     wrapper.vm.getStated = jest.fn();
@@ -619,7 +579,6 @@ describe("Concept.vue", () => {
   });
 
   it("can copy concept to clipboard", async () => {
-    await flushPromises();
     wrapper.vm.concept = {
       "@id": "http://snomed.info/sct#47518006",
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
@@ -630,7 +589,6 @@ describe("Concept.vue", () => {
   });
 
   it("can copy concept to clipboard ___ empty arrays", async () => {
-    await flushPromises();
     wrapper.vm.concept = {
       "@id": "http://snomed.info/sct#47518006",
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
@@ -657,7 +615,6 @@ describe("Concept.vue", () => {
   });
 
   it("can set copy menu items", async () => {
-    await flushPromises();
     wrapper.vm.copyMenuItems = [];
     wrapper.vm.concept = {
       "@id": "http://endhealth.info/im#Encounter",
@@ -792,7 +749,6 @@ describe("Concept.vue", () => {
   });
 
   it("can set copy menu items ___ empty arrays", async () => {
-    await flushPromises();
     wrapper.vm.copyMenuItems = [];
     wrapper.vm.concept = {
       "@id": "http://endhealth.info/im#Encounter",
@@ -828,7 +784,6 @@ describe("Concept.vue", () => {
 
   it("can run commands from copymenuItems ___ pass", async () => {
     clipboardSpy.mockResolvedValue(true);
-    await flushPromises();
     wrapper.vm.concept = {
       "@id": "http://endhealth.info/im#Encounter",
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
@@ -985,7 +940,6 @@ describe("Concept.vue", () => {
 
   it("can run commands from copymenuItems ___ fail", async () => {
     clipboardSpy.mockRejectedValue(false);
-    await flushPromises();
     wrapper.vm.concept = {
       "@id": "http://endhealth.info/im#Encounter",
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
