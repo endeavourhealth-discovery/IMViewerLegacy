@@ -117,14 +117,14 @@ export default defineComponent({
 
   data() {
     return {
-      concept: {},
-      isA: [] as any,
-      hasSubTypes: [] as any,
-      isChildOf: [] as any,
-      hasChildren: [] as any,
+      concept: {} as any,
+      isA: [] as any[],
+      hasSubTypes: [] as any[],
+      isChildOf: [] as any[],
+      hasChildren: [] as any[],
       terms: [] as any,
-      dataModelProperties: [],
-      semanticProperties: [],
+      dataModelProperties: [] as any[],
+      semanticProperties: [] as any[],
       members: {} as any,
       includeHasSubTypes: true,
       includeDataModelProperties: true,
@@ -198,57 +198,27 @@ export default defineComponent({
 
     async init(iri: string) {
       this.loading = true;
-      await EntityService.getPartialEntity(iri, [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN, IM.IS_A])
-        .then(res => {
-          this.concept = res.data;
-          if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_CHILD_OF) && res.data[IM.IS_CHILD_OF].length) {
-            this.isChildOf = res.data[IM.IS_CHILD_OF];
-          }
-          if (Object.prototype.hasOwnProperty.call(this.concept, IM.HAS_CHILDREN) && res.data[IM.HAS_CHILDREN]) {
-            this.hasChildren = res.data[IM.HAS_CHILDREN];
-          }
-          if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A) && res.data[IM.IS_A].length) {
-            this.isA = res.data[IM.IS_A];
-          }
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get concept data from server", err));
-        });
-      await EntityService.getEntityChildren(iri)
-        .then(res => {
-          this.hasSubTypes = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get children data from server", err));
-        });
-      await EntityService.getEntityTermCodes(iri)
-        .then(res => {
-          this.terms = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get terms from server", err));
-        });
-      await EntityService.getDataModelProperties(iri)
-        .then(res => {
-          this.dataModelProperties = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get data model properties from server", err));
-        });
-      await EntityService.getSemanticProperties(iri)
-        .then(res => {
-          this.semanticProperties = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get semantic properties from server", err));
-        });
-      await EntityService.getEntityMembers(iri, this.expandMembers, false)
-        .then(res => {
-          this.members = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get members from server", err));
-        });
+      this.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN, IM.IS_A]);
+      if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_CHILD_OF) && this.concept[IM.IS_CHILD_OF].length) {
+        this.isChildOf = this.concept[IM.IS_CHILD_OF];
+      }
+      if (Object.prototype.hasOwnProperty.call(this.concept, IM.HAS_CHILDREN) && this.concept[IM.HAS_CHILDREN]) {
+        this.hasChildren = this.concept[IM.HAS_CHILDREN];
+      }
+      if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A) && this.concept[IM.IS_A].length) {
+        this.isA = this.concept[IM.IS_A];
+      }
+
+      this.hasSubTypes = await EntityService.getEntityChildren(iri);
+
+      this.terms = await EntityService.getEntityTermCodes(iri);
+
+      this.dataModelProperties = await EntityService.getDataModelProperties(iri);
+
+      this.semanticProperties = await EntityService.getSemanticProperties(iri);
+
+      this.members = await EntityService.getEntityMembers(iri, this.expandMembers, false);
+
       this.setIncludeBooleans();
       this.loading = false;
     },

@@ -77,6 +77,9 @@ import StyleClass from "primevue/styleclass";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
+import LoggerService from "./services/LoggerService";
+import axios from "axios";
+import APIError from "./models/errors/APIError";
 
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
@@ -139,5 +142,24 @@ const app = createApp(App)
   .component("RadioButton", RadioButton)
   .component("ConfirmPopup", ConfirmPopup)
   .component("InputSwitch", InputSwitch);
+
+app.config.errorHandler = (error: any, vm, info) => {
+  LoggerService.error(error.fullMessage || (error.message as string));
+  vm?.$toast.add({
+    severity: "error",
+    summary: error.summaryMessage || "Error",
+    detail: error.message,
+    life: 4000
+  });
+};
+
+axios.interceptors.response.use(
+  response => {
+    return response;
+  },
+  error => {
+    throw new APIError(error.response.data.status, error.response.data.error, `Call to ${error.response.data.path} failed.`);
+  }
+);
 
 app.mount("#app");

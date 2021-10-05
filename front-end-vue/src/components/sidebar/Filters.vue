@@ -30,7 +30,6 @@
 <script lang="ts">
 import ConfigService from "@/services/ConfigService";
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
 
@@ -110,37 +109,13 @@ export default defineComponent({
     },
 
     async getFilterOptions() {
-      await ConfigService.getFilterDefaults()
-        .then(res => {
-          this.configs = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get filter configs from server", err));
-        });
+      this.configs = await ConfigService.getFilterDefaults();
 
-      await EntityService.getNamespaces()
-        .then(res => {
-          this.schemeOptions = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get scheme filter options from server", err));
-        });
+      this.schemeOptions = await EntityService.getNamespaces();
 
-      await EntityService.getEntityChildren("http://endhealth.info/im#Status")
-        .then(res => {
-          this.statusOptions = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get status filter options from server", err));
-        });
+      this.statusOptions = await EntityService.getEntityChildren("http://endhealth.info/im#Status");
 
-      await EntityService.getEntityChildren("http://endhealth.info/im#ModellingEntityType")
-        .then(res => {
-          this.typeOptions = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get type filter options from server", err));
-        });
+      this.typeOptions = await EntityService.getEntityChildren("http://endhealth.info/im#ModellingEntityType");
     },
 
     setLegacy(include: boolean) {

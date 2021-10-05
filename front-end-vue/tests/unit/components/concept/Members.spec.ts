@@ -20,55 +20,53 @@ describe("Members.vue", () => {
     jest.resetAllMocks();
 
     EntityService.getEntityMembers = jest.fn().mockResolvedValue({
-      data: {
-        valueSet: {
-          name: "CEG 16+1 Ethnic category (concept set)",
-          "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16"
+      valueSet: {
+        name: "CEG 16+1 Ethnic category (concept set)",
+        "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16"
+      },
+      members: [
+        {
+          entity: { name: "African American (ethnic group)", "@id": "http://snomed.info/sct#15086000" },
+          code: "15086000",
+          scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+          label: 'Subset - "other Black, African or Caribbean background"',
+          type: "SUBSET",
+          directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
         },
-        members: [
-          {
-            entity: { name: "African American (ethnic group)", "@id": "http://snomed.info/sct#15086000" },
-            code: "15086000",
-            scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-            label: 'Subset - "other Black, African or Caribbean background"',
-            type: "SUBSET",
-            directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
-          },
-          {
-            entity: { name: "African race (racial group)", "@id": "http://snomed.info/sct#413464008" },
-            code: "413464008",
-            scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-            label: 'Subset - "other Black, African or Caribbean background"',
-            type: "SUBSET",
-            directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
-          },
-          {
-            entity: { name: "Abyssinians (Amharas) (ethnic group)", "@id": "http://snomed.info/sct#88790004" },
-            code: "88790004",
-            scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-            label: "Subset - African",
-            type: "SUBSET",
-            directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
-          },
-          {
-            entity: { name: "African - ethnic category 2001 census (finding)", "@id": "http://snomed.info/sct#92491000000104" },
-            code: "92491000000104",
-            scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-            label: "Subset - African",
-            type: "SUBSET",
-            directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
-          },
-          {
-            entity: { name: "African origin (finding)", "@id": "http://snomed.info/sct#160514004" },
-            code: "160514004",
-            scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-            label: "Subset - African",
-            type: "SUBSET",
-            directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
-          }
-        ],
-        limited: false
-      }
+        {
+          entity: { name: "African race (racial group)", "@id": "http://snomed.info/sct#413464008" },
+          code: "413464008",
+          scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+          label: 'Subset - "other Black, African or Caribbean background"',
+          type: "SUBSET",
+          directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
+        },
+        {
+          entity: { name: "Abyssinians (Amharas) (ethnic group)", "@id": "http://snomed.info/sct#88790004" },
+          code: "88790004",
+          scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+          label: "Subset - African",
+          type: "SUBSET",
+          directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+        },
+        {
+          entity: { name: "African - ethnic category 2001 census (finding)", "@id": "http://snomed.info/sct#92491000000104" },
+          code: "92491000000104",
+          scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+          label: "Subset - African",
+          type: "SUBSET",
+          directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+        },
+        {
+          entity: { name: "African origin (finding)", "@id": "http://snomed.info/sct#160514004" },
+          code: "160514004",
+          scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+          label: "Subset - African",
+          type: "SUBSET",
+          directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+        }
+      ],
+      limited: false
     });
     mockRouter = { push: jest.fn() };
     mockToast = { add: jest.fn() };
@@ -340,29 +338,7 @@ describe("Members.vue", () => {
     expect(wrapper.vm.setTableWidth).toHaveBeenCalledTimes(1);
   });
 
-  it("can getMembers ___ fail", async () => {
-    EntityService.getEntityMembers = jest.fn().mockRejectedValue(false);
-    wrapper.vm.members = {};
-    wrapper.vm.expandMembersSizeCheck = jest.fn();
-    wrapper.vm.setTableWidth = jest.fn();
-    wrapper.vm.getMembers();
-    expect(wrapper.vm.loading).toBe(true);
-    expect(wrapper.vm.expandedRowGroups).toStrictEqual(["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]);
-    expect(wrapper.vm.selected).toStrictEqual({});
-    expect(wrapper.vm.subsets).toStrictEqual([]);
-    expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16", false, false, undefined);
-    await flushPromises();
-    expect(wrapper.vm.members).toStrictEqual({});
-    expect(wrapper.vm.expandMembersSizeCheck).not.toHaveBeenCalled();
-    expect(wrapper.vm.loading).toBe(false);
-    expect(wrapper.vm.setTableWidth).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get members from server"));
-  });
-
   it("can getMembers ___ expandMembers", async () => {
-    EntityService.getEntityMembers = jest.fn().mockRejectedValue(false);
     wrapper.vm.members = {};
     wrapper.vm.expandMembers = true;
     wrapper.vm.expandMembersSizeCheck = jest.fn();
