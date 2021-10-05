@@ -5,11 +5,56 @@ import Tree from "primevue/tree";
 import ProgressSpinner from "primevue/progressspinner";
 import OverlayPanel from "primevue/overlaypanel";
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 
 describe("SecondaryTree.vue", () => {
   let wrapper: any;
   let mockToast: any;
+
+  const CONCEPT = {
+    "@id": "http://snomed.info/sct#298382003",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
+    "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)"
+  };
+  const PARENTS = [
+    {
+      name: "Curvature of spine (disorder)",
+      hasChildren: false,
+      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      "@id": "http://snomed.info/sct#64217002"
+    },
+    {
+      name: "Disorder of musculoskeletal system (disorder)",
+      hasChildren: false,
+      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      "@id": "http://snomed.info/sct#928000"
+    },
+    {
+      name: "Disorder of vertebral column (disorder)",
+      hasChildren: false,
+      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      "@id": "http://snomed.info/sct#699699005"
+    }
+  ];
+  const CHILDREN = [
+    {
+      name: "Acquired scoliosis (disorder)",
+      hasChildren: true,
+      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      "@id": "http://snomed.info/sct#111266001"
+    },
+    {
+      name: "Acrodysplasia scoliosis (disorder)",
+      hasChildren: false,
+      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      "@id": "http://snomed.info/sct#773773006"
+    },
+    {
+      name: "Congenital scoliosis due to bony malformation (disorder)",
+      hasChildren: false,
+      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      "@id": "http://snomed.info/sct#205045003"
+    }
+  ];
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -17,51 +62,9 @@ describe("SecondaryTree.vue", () => {
       add: jest.fn()
     };
 
-    EntityService.getPartialEntity = jest.fn().mockResolvedValue({
-      "@id": "http://snomed.info/sct#298382003",
-      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
-      "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)"
-    });
-    EntityService.getEntityParents = jest.fn().mockResolvedValue([
-      {
-        name: "Curvature of spine (disorder)",
-        hasChildren: false,
-        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-        "@id": "http://snomed.info/sct#64217002"
-      },
-      {
-        name: "Disorder of musculoskeletal system (disorder)",
-        hasChildren: false,
-        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-        "@id": "http://snomed.info/sct#928000"
-      },
-      {
-        name: "Disorder of vertebral column (disorder)",
-        hasChildren: false,
-        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-        "@id": "http://snomed.info/sct#699699005"
-      }
-    ]);
-    EntityService.getEntityChildren = jest.fn().mockResolvedValue([
-      {
-        name: "Acquired scoliosis (disorder)",
-        hasChildren: true,
-        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-        "@id": "http://snomed.info/sct#111266001"
-      },
-      {
-        name: "Acrodysplasia scoliosis (disorder)",
-        hasChildren: false,
-        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-        "@id": "http://snomed.info/sct#773773006"
-      },
-      {
-        name: "Congenital scoliosis due to bony malformation (disorder)",
-        hasChildren: false,
-        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-        "@id": "http://snomed.info/sct#205045003"
-      }
-    ]);
+    EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
+    EntityService.getEntityParents = jest.fn().mockResolvedValue(PARENTS);
+    EntityService.getEntityChildren = jest.fn().mockResolvedValue(CHILDREN);
 
     wrapper = shallowMount(SecondaryTree, {
       global: {
@@ -79,51 +82,9 @@ describe("SecondaryTree.vue", () => {
 
   it("mounts", () => {
     expect(wrapper.vm.conceptAggregate).toStrictEqual({
-      concept: {
-        "@id": "http://snomed.info/sct#298382003",
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
-        "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)"
-      },
-      parents: [
-        {
-          name: "Curvature of spine (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#64217002"
-        },
-        {
-          name: "Disorder of musculoskeletal system (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#928000"
-        },
-        {
-          name: "Disorder of vertebral column (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#699699005"
-        }
-      ],
-      children: [
-        {
-          name: "Acquired scoliosis (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#111266001"
-        },
-        {
-          name: "Acrodysplasia scoliosis (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#773773006"
-        },
-        {
-          name: "Congenital scoliosis due to bony malformation (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#205045003"
-        }
-      ]
+      concept: CONCEPT,
+      parents: PARENTS,
+      children: CHILDREN
     });
     expect(wrapper.vm.root).toStrictEqual([
       {
@@ -222,51 +183,9 @@ describe("SecondaryTree.vue", () => {
     expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.conceptAggregate).toStrictEqual({
-      concept: {
-        "@id": "http://snomed.info/sct#298382003",
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
-        "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)"
-      },
-      parents: [
-        {
-          name: "Curvature of spine (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#64217002"
-        },
-        {
-          name: "Disorder of musculoskeletal system (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#928000"
-        },
-        {
-          name: "Disorder of vertebral column (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#699699005"
-        }
-      ],
-      children: [
-        {
-          name: "Acquired scoliosis (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#111266001"
-        },
-        {
-          name: "Acrodysplasia scoliosis (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#773773006"
-        },
-        {
-          name: "Congenital scoliosis due to bony malformation (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#205045003"
-        }
-      ]
+      concept: CONCEPT,
+      parents: PARENTS,
+      children: CHILDREN
     });
   });
 
@@ -275,54 +194,7 @@ describe("SecondaryTree.vue", () => {
     wrapper.vm.root = [];
     wrapper.vm.expandedKeys = {};
     wrapper.vm.selectedKey = {};
-    wrapper.vm.createTree(
-      {
-        "@id": "http://snomed.info/sct#298382003",
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
-        "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)"
-      },
-      [
-        {
-          name: "Curvature of spine (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#64217002"
-        },
-        {
-          name: "Disorder of musculoskeletal system (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#928000"
-        },
-        {
-          name: "Disorder of vertebral column (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#699699005"
-        }
-      ],
-      [
-        {
-          name: "Acquired scoliosis (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#111266001"
-        },
-        {
-          name: "Acrodysplasia scoliosis (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#773773006"
-        },
-        {
-          name: "Congenital scoliosis due to bony malformation (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#205045003"
-        }
-      ],
-      0
-    );
+    wrapper.vm.createTree(CONCEPT, PARENTS, CHILDREN, 0);
     expect(wrapper.vm.root).toStrictEqual([
       {
         children: [
@@ -376,54 +248,7 @@ describe("SecondaryTree.vue", () => {
     wrapper.vm.root = [];
     wrapper.vm.expandedKeys = { "Scoliosis deformity of spine (disorder)": true };
     wrapper.vm.selectedKey = {};
-    wrapper.vm.createTree(
-      {
-        "@id": "http://snomed.info/sct#298382003",
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
-        "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)"
-      },
-      [
-        {
-          name: "Curvature of spine (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#64217002"
-        },
-        {
-          name: "Disorder of musculoskeletal system (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#928000"
-        },
-        {
-          name: "Disorder of vertebral column (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#699699005"
-        }
-      ],
-      [
-        {
-          name: "Acquired scoliosis (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#111266001"
-        },
-        {
-          name: "Acrodysplasia scoliosis (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#773773006"
-        },
-        {
-          name: "Congenital scoliosis due to bony malformation (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#205045003"
-        }
-      ],
-      0
-    );
+    wrapper.vm.createTree(CONCEPT, PARENTS, CHILDREN, 0);
     expect(wrapper.vm.root).toStrictEqual([
       {
         children: [

@@ -5,12 +5,72 @@ import ProgressSpinner from "primevue/progressspinner";
 import OrganizationChart from "primevue/organizationchart";
 import OverlayPanel from "primevue/overlaypanel";
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
+import { IM } from "@/vocabulary/IM";
 
 describe("Mappings.vue", () => {
   let wrapper: any;
   let mockStore: any;
   let mockToast: any;
+
+  const HAS_MAPS = {
+    "http://endhealth.info/im#hasMap": [
+      {
+        "http://endhealth.info/im#combinationOf": [
+          {
+            "http://endhealth.info/im#oneOf": [
+              {
+                "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#X109", name: "Unspecified amputation of foot" },
+                "http://endhealth.info/im#mapAdvice": "ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE",
+                "http://endhealth.info/im#mapPriority": 1,
+                "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
+              }
+            ]
+          },
+          {
+            "http://endhealth.info/im#oneOf": [
+              {
+                "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#Z942", name: "Right sided operation" },
+                "http://endhealth.info/im#mapAdvice": "ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE",
+                "http://endhealth.info/im#mapPriority": 1,
+                "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  } as any;
+  const MATCHED_TOS = {
+    "@id": "http://snomed.info/sct#298382003",
+    "http://endhealth.info/im#matchedTo": [
+      { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" },
+      { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" }
+    ]
+  } as any;
+  const NAMESPACES = [
+    { iri: "http://endhealth.info/bc#", prefix: "bc", name: "Barts Cerner namespace" },
+    { iri: "http://endhealth.info/ceg16#", prefix: "ceg13", name: "CEG ethnicity 16+ category" },
+    { iri: "http://endhealth.info/im#", prefix: "im", name: "Discovery namespace" },
+    { iri: "http://endhealth.info/emis#", prefix: "emis", name: "EMIS (inc. Read2 like) namespace" },
+    { iri: "http://endhealth.info/icd10#", prefix: "icd10", name: "ICD10 namespace" },
+    { iri: "http://endhealth.info/reports#", prefix: "reports", name: "IM internal reports" },
+    { iri: "http://endhealth.info/kchapex#", prefix: "kchapex", name: "KCH Apex codes" },
+    { iri: "http://endhealth.info/kchwinpath#", prefix: "kchwinpath", name: "KCH Winpath codes" },
+    { iri: "http://endhealth.info/nhsethnic2001#", prefix: "nhse2001", name: "NHS Ethnicitity categories 2001 census" },
+    { iri: "http://endhealth.info/ods#", prefix: "ods", name: "ODS code scheme" },
+    { iri: "http://endhealth.info/opcs4#", prefix: "opcs4", name: "OPCS4 namespace" },
+    { iri: "https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1#", prefix: "orole", name: "OPS roles namespace" },
+    { iri: "http://www.w3.org/2002/07/owl#", prefix: "owl", name: "OWL2 namespace" },
+    { iri: "http://www.w3.org/ns/prov#", prefix: "prov", name: "PROV namespace" },
+    { iri: "http://endhealth.info/prsb#", prefix: "prsb", name: "PRSB namespace" },
+    { iri: "http://www.w3.org/1999/02/22-rdf-syntax-ns#", prefix: "rdf", name: "RDF namespace" },
+    { iri: "http://www.w3.org/2000/01/rdf-schema#", prefix: "rdfs", name: "RDFS namespace" },
+    { iri: "http://www.w3.org/ns/shacl#", prefix: "sh", name: "SHACL namespace" },
+    { iri: "http://snomed.info/sct#", prefix: "sn", name: "Snomed-CT namespace" },
+    { iri: "http://endhealth.info/tpp#", prefix: "tpp", name: "TPP (inc.CTV3) namespace" },
+    { iri: "http://endhealth.info/vision#", prefix: "vis", name: "Vision (incl. Read2) namespace" },
+    { iri: "http://www.w3.org/2001/XMLSchema#", prefix: "xsd", name: "xsd namespace" }
+  ];
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -23,91 +83,10 @@ describe("Mappings.vue", () => {
 
     EntityService.getPartialEntity = jest
       .fn()
-      .mockResolvedValueOnce({
-        "http://endhealth.info/im#hasMap": [
-          {
-            "http://endhealth.info/im#combinationOf": [
-              {
-                "http://endhealth.info/im#oneOf": [
-                  {
-                    "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#X109", name: "Unspecified amputation of foot" },
-                    "http://endhealth.info/im#mapAdvice": "ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE",
-                    "http://endhealth.info/im#mapPriority": 1,
-                    "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-                  }
-                ]
-              },
-              {
-                "http://endhealth.info/im#oneOf": [
-                  {
-                    "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#Z942", name: "Right sided operation" },
-                    "http://endhealth.info/im#mapAdvice": "ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE",
-                    "http://endhealth.info/im#mapPriority": 1,
-                    "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      })
-      .mockResolvedValueOnce({
-        "@id": "http://snomed.info/sct#298382003",
-        "http://endhealth.info/im#matchedTo": [
-          { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" },
-          { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" }
-        ]
-      });
+      .mockResolvedValueOnce(HAS_MAPS)
+      .mockResolvedValueOnce(MATCHED_TOS);
 
-    EntityService.getNamespaces = jest.fn().mockResolvedValue([
-      { iri: "http://endhealth.info/bc#", prefix: "bc", name: "Barts Cerner namespace" },
-      { iri: "http://endhealth.info/ceg16#", prefix: "ceg13", name: "CEG ethnicity 16+ category" },
-      { iri: "http://endhealth.info/im#", prefix: "im", name: "Discovery namespace" },
-      { iri: "http://endhealth.info/emis#", prefix: "emis", name: "EMIS (inc. Read2 like) namespace" },
-      { iri: "http://endhealth.info/icd10#", prefix: "icd10", name: "ICD10 namespace" },
-      { iri: "http://endhealth.info/reports#", prefix: "reports", name: "IM internal reports" },
-      { iri: "http://endhealth.info/kchapex#", prefix: "kchapex", name: "KCH Apex codes" },
-      { iri: "http://endhealth.info/kchwinpath#", prefix: "kchwinpath", name: "KCH Winpath codes" },
-      { iri: "http://endhealth.info/nhsethnic2001#", prefix: "nhse2001", name: "NHS Ethnicitity categories 2001 census" },
-      { iri: "http://endhealth.info/ods#", prefix: "ods", name: "ODS code scheme" },
-      { iri: "http://endhealth.info/opcs4#", prefix: "opcs4", name: "OPCS4 namespace" },
-      { iri: "https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1#", prefix: "orole", name: "OPS roles namespace" },
-      { iri: "http://www.w3.org/2002/07/owl#", prefix: "owl", name: "OWL2 namespace" },
-      { iri: "http://www.w3.org/ns/prov#", prefix: "prov", name: "PROV namespace" },
-      { iri: "http://endhealth.info/prsb#", prefix: "prsb", name: "PRSB namespace" },
-      { iri: "http://www.w3.org/1999/02/22-rdf-syntax-ns#", prefix: "rdf", name: "RDF namespace" },
-      { iri: "http://www.w3.org/2000/01/rdf-schema#", prefix: "rdfs", name: "RDFS namespace" },
-      { iri: "http://www.w3.org/ns/shacl#", prefix: "sh", name: "SHACL namespace" },
-      { iri: "http://snomed.info/sct#", prefix: "sn", name: "Snomed-CT namespace" },
-      { iri: "http://endhealth.info/tpp#", prefix: "tpp", name: "TPP (inc.CTV3) namespace" },
-      { iri: "http://endhealth.info/vision#", prefix: "vis", name: "Vision (incl. Read2) namespace" },
-      { iri: "http://www.w3.org/2001/XMLSchema#", prefix: "xsd", name: "xsd namespace" }
-    ]);
-
-    EntityService.getNamespaces = jest.fn().mockResolvedValue([
-      { iri: "http://endhealth.info/bc#", prefix: "bc", name: "Barts Cerner namespace" },
-      { iri: "http://endhealth.info/ceg16#", prefix: "ceg13", name: "CEG ethnicity 16+ category" },
-      { iri: "http://endhealth.info/im#", prefix: "im", name: "Discovery namespace" },
-      { iri: "http://endhealth.info/emis#", prefix: "emis", name: "EMIS (inc. Read2 like) namespace" },
-      { iri: "http://endhealth.info/icd10#", prefix: "icd10", name: "ICD10 namespace" },
-      { iri: "http://endhealth.info/reports#", prefix: "reports", name: "IM internal reports" },
-      { iri: "http://endhealth.info/kchapex#", prefix: "kchapex", name: "KCH Apex codes" },
-      { iri: "http://endhealth.info/kchwinpath#", prefix: "kchwinpath", name: "KCH Winpath codes" },
-      { iri: "http://endhealth.info/nhsethnic2001#", prefix: "nhse2001", name: "NHS Ethnicitity categories 2001 census" },
-      { iri: "http://endhealth.info/ods#", prefix: "ods", name: "ODS code scheme" },
-      { iri: "http://endhealth.info/opcs4#", prefix: "opcs4", name: "OPCS4 namespace" },
-      { iri: "https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1#", prefix: "orole", name: "OPS roles namespace" },
-      { iri: "http://www.w3.org/2002/07/owl#", prefix: "owl", name: "OWL2 namespace" },
-      { iri: "http://www.w3.org/ns/prov#", prefix: "prov", name: "PROV namespace" },
-      { iri: "http://endhealth.info/prsb#", prefix: "prsb", name: "PRSB namespace" },
-      { iri: "http://www.w3.org/1999/02/22-rdf-syntax-ns#", prefix: "rdf", name: "RDF namespace" },
-      { iri: "http://www.w3.org/2000/01/rdf-schema#", prefix: "rdfs", name: "RDFS namespace" },
-      { iri: "http://www.w3.org/ns/shacl#", prefix: "sh", name: "SHACL namespace" },
-      { iri: "http://snomed.info/sct#", prefix: "sn", name: "Snomed-CT namespace" },
-      { iri: "http://endhealth.info/tpp#", prefix: "tpp", name: "TPP (inc.CTV3) namespace" },
-      { iri: "http://endhealth.info/vision#", prefix: "vis", name: "Vision (incl. Read2) namespace" },
-      { iri: "http://www.w3.org/2001/XMLSchema#", prefix: "xsd", name: "xsd namespace" }
-    ]);
+    EntityService.getNamespaces = jest.fn().mockResolvedValue(NAMESPACES);
 
     wrapper = shallowMount(Mappings, {
       global: {
@@ -141,81 +120,15 @@ describe("Mappings.vue", () => {
   it("can get mappings ___ success", async () => {
     EntityService.getPartialEntity = jest
       .fn()
-      .mockResolvedValueOnce({
-        "http://endhealth.info/im#hasMap": [
-          {
-            "http://endhealth.info/im#combinationOf": [
-              {
-                "http://endhealth.info/im#oneOf": [
-                  {
-                    "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#X109", name: "Unspecified amputation of foot" },
-                    "http://endhealth.info/im#mapAdvice": "ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE",
-                    "http://endhealth.info/im#mapPriority": 1,
-                    "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-                  }
-                ]
-              },
-              {
-                "http://endhealth.info/im#oneOf": [
-                  {
-                    "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#Z942", name: "Right sided operation" },
-                    "http://endhealth.info/im#mapAdvice": "ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE",
-                    "http://endhealth.info/im#mapPriority": 1,
-                    "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      })
-      .mockResolvedValueOnce({
-        "@id": "http://snomed.info/sct#298382003",
-        "http://endhealth.info/im#matchedTo": [
-          { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" },
-          { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" }
-        ]
-      });
+      .mockResolvedValueOnce(HAS_MAPS)
+      .mockResolvedValueOnce(MATCHED_TOS);
     wrapper.vm.getMappings();
     await flushPromises();
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(2);
     expect(EntityService.getPartialEntity).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#723312009", ["http://endhealth.info/im#hasMap"]);
     expect(EntityService.getPartialEntity).toHaveBeenLastCalledWith("http://snomed.info/sct#723312009", ["http://endhealth.info/im#matchedTo"]);
-    expect(wrapper.vm.mappings).toStrictEqual([
-      {
-        "http://endhealth.info/im#combinationOf": [
-          {
-            "http://endhealth.info/im#oneOf": [
-              {
-                "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#X109", name: "Unspecified amputation of foot" },
-                "http://endhealth.info/im#mapAdvice": "ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE",
-                "http://endhealth.info/im#mapPriority": 1,
-                "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-              }
-            ]
-          },
-          {
-            "http://endhealth.info/im#oneOf": [
-              {
-                "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#Z942", name: "Right sided operation" },
-                "http://endhealth.info/im#mapAdvice": "ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE",
-                "http://endhealth.info/im#mapPriority": 1,
-                "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-              }
-            ]
-          }
-        ]
-      }
-    ]);
-    expect(wrapper.vm.simpleMaps).toStrictEqual([
-      {
-        "@id": "http://endhealth.info/emis#^ESCTAM784250",
-        name: "Amputation of right foot",
-        scheme: "EMIS (inc. Read2 like) namespace",
-        code: "^ESCTAM784250"
-      },
-      { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace", code: "^ESCTAM784250" }
-    ]);
+    expect(wrapper.vm.mappings).toStrictEqual(HAS_MAPS[IM.HAS_MAP]);
+    expect(wrapper.vm.simpleMaps).toStrictEqual(MATCHED_TOS[IM.MATCHED_TO]);
   });
 
   it("can get mappings ___ fail no hasMap", async () => {
@@ -268,38 +181,7 @@ describe("Mappings.vue", () => {
   });
 
   it("can generateChildNodes", () => {
-    expect(
-      wrapper.vm.generateChildNodes(
-        [
-          {
-            "http://endhealth.info/im#combinationOf": [
-              {
-                "http://endhealth.info/im#oneOf": [
-                  {
-                    "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#X109", name: "Unspecified amputation of foot" },
-                    "http://endhealth.info/im#mapAdvice": "ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE",
-                    "http://endhealth.info/im#mapPriority": 1,
-                    "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-                  }
-                ]
-              },
-              {
-                "http://endhealth.info/im#oneOf": [
-                  {
-                    "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#Z942", name: "Right sided operation" },
-                    "http://endhealth.info/im#mapAdvice": "ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE",
-                    "http://endhealth.info/im#mapPriority": 1,
-                    "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "0",
-        0
-      )
-    ).toStrictEqual([
+    expect(wrapper.vm.generateChildNodes(HAS_MAPS[IM.HAS_MAP], "0", 0)).toStrictEqual([
       {
         children: [
           {
@@ -349,65 +231,11 @@ describe("Mappings.vue", () => {
 
   it("can generateChildNodes ___ mapNode fail", () => {
     wrapper.vm.createChartMapNode = jest.fn().mockReturnValue(undefined);
-    expect(
-      wrapper.vm.generateChildNodes([
-        {
-          "http://endhealth.info/im#combinationOf": [
-            {
-              "http://endhealth.info/im#oneOf": [
-                {
-                  "http://endhealth.info/im#matchedTo": { "@id": "http://endhealth.info/OPCS4#X109", name: "Unspecified amputation of foot" },
-                  "http://endhealth.info/im#mapAdvice": "ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE",
-                  "http://endhealth.info/im#mapPriority": 1,
-                  "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-                }
-              ]
-            },
-            {
-              "http://endhealth.info/im#oneOf": [
-                {
-                  "http://endhealth.info/im#matchedTo": { "@id": "http://endhealth.info/OPCS4#Z942", name: "Right sided operation" },
-                  "http://endhealth.info/im#mapAdvice": "ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE",
-                  "http://endhealth.info/im#mapPriority": 1,
-                  "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-                }
-              ]
-            }
-          ]
-        }
-      ])
-    ).toStrictEqual([undefined]);
+    expect(wrapper.vm.generateChildNodes(HAS_MAPS[IM.HAS_MAP])).toStrictEqual([undefined]);
   });
 
   it("can createChartStructure", () => {
-    expect(
-      wrapper.vm.createChartStructure([
-        {
-          "http://endhealth.info/im#combinationOf": [
-            {
-              "http://endhealth.info/im#oneOf": [
-                {
-                  "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#X109", name: "Unspecified amputation of foot" },
-                  "http://endhealth.info/im#mapAdvice": "ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE",
-                  "http://endhealth.info/im#mapPriority": 1,
-                  "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-                }
-              ]
-            },
-            {
-              "http://endhealth.info/im#oneOf": [
-                {
-                  "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#Z942", name: "Right sided operation" },
-                  "http://endhealth.info/im#mapAdvice": "ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE",
-                  "http://endhealth.info/im#mapPriority": 1,
-                  "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-                }
-              ]
-            }
-          ]
-        }
-      ])
-    ).toStrictEqual({
+    expect(wrapper.vm.createChartStructure(HAS_MAPS[IM.HAS_MAP])).toStrictEqual({
       key: "0",
       type: "hasMap",
       data: { label: "Has map" },
@@ -489,34 +317,7 @@ describe("Mappings.vue", () => {
 
   it("can createChartStructure ___ complex only", () => {
     wrapper.vm.simpleMaps = [];
-    expect(
-      wrapper.vm.createChartStructure([
-        {
-          "http://endhealth.info/im#combinationOf": [
-            {
-              "http://endhealth.info/im#oneOf": [
-                {
-                  "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#X109", name: "Unspecified amputation of foot" },
-                  "http://endhealth.info/im#mapAdvice": "ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE",
-                  "http://endhealth.info/im#mapPriority": 1,
-                  "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-                }
-              ]
-            },
-            {
-              "http://endhealth.info/im#oneOf": [
-                {
-                  "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#Z942", name: "Right sided operation" },
-                  "http://endhealth.info/im#mapAdvice": "ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE",
-                  "http://endhealth.info/im#mapPriority": 1,
-                  "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-                }
-              ]
-            }
-          ]
-        }
-      ])
-    ).toStrictEqual({
+    expect(wrapper.vm.createChartStructure(HAS_MAPS[IM.HAS_MAP])).toStrictEqual({
       key: "0",
       type: "hasMap",
       data: { label: "Has map" },

@@ -192,8 +192,6 @@ describe("Members.vue", () => {
     expect(wrapper.vm.filters1).toStrictEqual({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS }
     });
-    expect(wrapper.vm.expandMembers).toBe(false);
-    expect(wrapper.vm.expandSubsets).toBe(false);
     expect(wrapper.vm.selected).toStrictEqual({});
     expect(wrapper.vm.subsets).toStrictEqual(['Subset - "other Black, African or Caribbean background"', "Subset - African"]);
     expect(wrapper.vm.expandedRowGroups).toStrictEqual(["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]);
@@ -227,21 +225,6 @@ describe("Members.vue", () => {
   it("can watch conceptIri", async () => {
     wrapper.vm.getMembers = jest.fn();
     wrapper.vm.$options.watch.conceptIri.call(wrapper.vm, "http://snomed.info/sct#92491000000104");
-    expect(wrapper.vm.expandMembers).toBe(false);
-    expect(wrapper.vm.expandSubsets).toBe(false);
-    expect(wrapper.vm.getMembers).toHaveBeenCalledTimes(1);
-  });
-
-  it("can watch expandMembers", async () => {
-    wrapper.vm.getMembers = jest.fn();
-    wrapper.vm.$options.watch.expandMembers.call(wrapper.vm, true);
-    expect(wrapper.vm.getMembers).toHaveBeenCalledTimes(1);
-  });
-
-  it("can watch expandSubsets", async () => {
-    wrapper.vm.getMembers = jest.fn();
-    wrapper.vm.$options.watch.expandSubsets.call(wrapper.vm, true);
-    expect(wrapper.vm.subsets).toStrictEqual([]);
     expect(wrapper.vm.getMembers).toHaveBeenCalledTimes(1);
   });
 
@@ -274,15 +257,16 @@ describe("Members.vue", () => {
 
   it("can getMembers ___ success", async () => {
     wrapper.vm.members = {};
-    wrapper.vm.expandMembersSizeCheck = jest.fn();
     wrapper.vm.setTableWidth = jest.fn();
+    wrapper.vm.sortMembers = jest.fn();
+    wrapper.vm.setSubsets = jest.fn();
     wrapper.vm.getMembers();
     expect(wrapper.vm.loading).toBe(true);
     expect(wrapper.vm.expandedRowGroups).toStrictEqual(["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]);
     expect(wrapper.vm.selected).toStrictEqual({});
     expect(wrapper.vm.subsets).toStrictEqual([]);
     expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16", false, false, undefined);
+    expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16", false, false, 2000);
     await flushPromises();
     expect(wrapper.vm.members).toStrictEqual({
       valueSet: {
@@ -333,61 +317,10 @@ describe("Members.vue", () => {
       ],
       limited: false
     });
-    expect(wrapper.vm.expandMembersSizeCheck).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.loading).toBe(false);
     expect(wrapper.vm.setTableWidth).toHaveBeenCalledTimes(1);
-  });
-
-  it("can getMembers ___ expandMembers", async () => {
-    wrapper.vm.members = {};
-    wrapper.vm.expandMembers = true;
-    wrapper.vm.expandMembersSizeCheck = jest.fn();
-    wrapper.vm.setTableWidth = jest.fn();
-    wrapper.vm.getMembers();
-    expect(wrapper.vm.loading).toBe(true);
-    expect(wrapper.vm.expandedRowGroups).toStrictEqual(["MemberExpanded"]);
-    expect(wrapper.vm.selected).toStrictEqual({});
-    expect(wrapper.vm.subsets).toStrictEqual([]);
-    expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16", true, false, 2000);
-  });
-
-  it("can setSubsets", () => {
-    wrapper.vm.combinedMembers.push({
-      entity: { name: "Gambians (ethnic group)", "@id": "http://snomed.info/sct#90822005" },
-      code: "90822005",
-      scheme: { name: "Snomed-CT code", "@id": "http://endhealth.info/im#SnomedCodeScheme" },
-      type: "MemberIncluded"
-    });
-    wrapper.vm.subsets = [];
-    wrapper.vm.setSubsets();
-    expect(wrapper.vm.subsets).toStrictEqual(['Subset - "other Black, African or Caribbean background"', "Subset - African"]);
-  });
-
-  it("can setSubsets ___ none", () => {
-    wrapper.vm.combinedMembers = [
-      {
-        entity: { name: "Gambians (ethnic group)", "@id": "http://snomed.info/sct#90822005" },
-        code: "90822005",
-        scheme: { name: "Snomed-CT code", "@id": "http://endhealth.info/im#SnomedCodeScheme" },
-        label: "MemberIncluded",
-        type: "INCLUDED"
-      }
-    ];
-    wrapper.vm.subsets = [];
-    wrapper.vm.setSubsets();
-    expect(wrapper.vm.subsets).toStrictEqual([]);
-  });
-
-  it("can expandMembersSizeCheck ___ unlimited", async () => {
-    wrapper.vm.combinedMembers = [];
-    wrapper.vm.sortMembers = jest.fn();
-    wrapper.vm.setSubsets = jest.fn();
-    wrapper.vm.download = jest.fn();
-    wrapper.vm.expandMembersSizeCheck();
-    expect(wrapper.vm.sortMembers).toHaveBeenCalled();
-    expect(wrapper.vm.setSubsets).toHaveBeenCalled();
-    expect(wrapper.vm.download).not.toHaveBeenCalled();
+    expect(wrapper.vm.sortMembers).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.setSubsets).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.combinedMembers).toStrictEqual([
       {
         entity: { name: "African American (ethnic group)", "@id": "http://snomed.info/sct#15086000" },
@@ -432,48 +365,16 @@ describe("Members.vue", () => {
     ]);
   });
 
-  it("can expandMembersSizeCheck ___ swal confirm", async () => {
-    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
-    wrapper.vm.members.limited = true;
-    wrapper.vm.sortMembers = jest.fn();
-    wrapper.vm.setSubsets = jest.fn();
-    wrapper.vm.download = jest.fn();
-    wrapper.vm.expandMembersSizeCheck();
-    expect(wrapper.vm.sortMembers).not.toHaveBeenCalled();
-    expect(wrapper.vm.setSubsets).not.toHaveBeenCalled();
-    expect(Swal.fire).toHaveBeenCalledTimes(1);
-    expect(Swal.fire).toHaveBeenCalledWith({
-      icon: "warning",
-      title: "Large data set",
-      text: "Expanding this set results in a large amount of data.\n Would you like to download it instead?",
-      confirmButtonText: "Download",
-      showCancelButton: true
+  it("can setSubsets", () => {
+    wrapper.vm.combinedMembers.push({
+      entity: { name: "Gambians (ethnic group)", "@id": "http://snomed.info/sct#90822005" },
+      code: "90822005",
+      scheme: { name: "Snomed-CT code", "@id": "http://endhealth.info/im#SnomedCodeScheme" },
+      type: "MemberIncluded"
     });
-    await flushPromises();
-    expect(wrapper.vm.download).toHaveBeenCalledTimes(1);
-  });
-
-  it("can expandMembersSizeCheck ___ swal cancel", async () => {
-    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: false }));
-    wrapper.vm.members.limited = true;
-    wrapper.vm.sortMembers = jest.fn();
-    wrapper.vm.setSubsets = jest.fn();
-    wrapper.vm.download = jest.fn();
-    wrapper.vm.expandMembersSizeCheck();
-    expect(wrapper.vm.sortMembers).not.toHaveBeenCalled();
-    expect(wrapper.vm.setSubsets).not.toHaveBeenCalled();
-    expect(Swal.fire).toHaveBeenCalledTimes(1);
-    expect(Swal.fire).toHaveBeenCalledWith({
-      icon: "warning",
-      title: "Large data set",
-      text: "Expanding this set results in a large amount of data.\n Would you like to download it instead?",
-      confirmButtonText: "Download",
-      showCancelButton: true
-    });
-    await flushPromises();
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.warn("Member expansion cancelled as results exceeded displayable limit."));
-    expect(wrapper.vm.download).not.toHaveBeenCalled();
+    wrapper.vm.subsets = [];
+    wrapper.vm.setSubsets();
+    expect(wrapper.vm.subsets).toStrictEqual(['Subset - "other Black, African or Caribbean background"', "Subset - African"]);
   });
 
   it("can download ___ success", () => {
