@@ -51,7 +51,6 @@ import SearchResults from "@/components/sidebar/SearchResults.vue";
 import Filters from "@/components/sidebar/Filters.vue";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
-import LoggerService from "@/services/LoggerService";
 import axios from "axios";
 import { mapState } from "vuex";
 

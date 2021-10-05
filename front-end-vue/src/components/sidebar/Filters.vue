@@ -109,17 +109,13 @@ export default defineComponent({
     },
 
     async getFilterOptions() {
-      const filterConfigReturn = await ConfigService.getFilterDefaults();
-      if (filterConfigReturn) this.configs = filterConfigReturn;
+      this.configs = await ConfigService.getFilterDefaults();
 
-      const namespaceReturn = await EntityService.getNamespaces();
-      if (namespaceReturn) this.schemeOptions = namespaceReturn;
+      this.schemeOptions = await EntityService.getNamespaces();
 
-      const childrenStatusReturn = await EntityService.getEntityChildren("http://endhealth.info/im#Status");
-      if (childrenStatusReturn) this.statusOptions = childrenStatusReturn;
+      this.statusOptions = await EntityService.getEntityChildren("http://endhealth.info/im#Status");
 
-      const childrenTypeReturn = await EntityService.getEntityChildren("http://endhealth.info/im#ModellingEntityType");
-      if (childrenTypeReturn) this.typeOptions = childrenTypeReturn;
+      this.typeOptions = await EntityService.getEntityChildren("http://endhealth.info/im#ModellingEntityType");
     },
 
     setLegacy(include: boolean) {

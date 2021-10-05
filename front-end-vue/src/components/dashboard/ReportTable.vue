@@ -43,7 +43,7 @@ export default defineComponent({
       value: true
     });
     const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
-    if (result) {
+    if (Object.keys(result).includes(IM.STATS_REPORT_ENTRY)) {
       this.tableData = [];
 
       for (const entry of result[IM.STATS_REPORT_ENTRY]) {

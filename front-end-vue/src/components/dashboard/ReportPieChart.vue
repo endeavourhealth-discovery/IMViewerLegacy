@@ -87,7 +87,7 @@ export default defineComponent({
   methods: {
     async setChartData(): Promise<void> {
       const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
-      if (result) {
+      if (Object.keys(result).length) {
         this.name = result[RDFS.LABEL];
         this.description = result[RDFS.COMMENT];
         for (const entry of result[IM.STATS_REPORT_ENTRY]) {

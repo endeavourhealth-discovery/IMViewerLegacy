@@ -126,14 +126,11 @@ export default defineComponent({
       }
     },
     async getConceptAggregate(iri: string) {
-      const partialReturn = await EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]);
-      if (partialReturn) this.conceptAggregate.concept = partialReturn;
+      this.conceptAggregate.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]);
 
-      const parentsReturn = await EntityService.getEntityParents(iri);
-      if (parentsReturn) this.conceptAggregate.parents = parentsReturn;
+      this.conceptAggregate.parents = await EntityService.getEntityParents(iri);
 
-      const childrenReturn = await EntityService.getEntityChildren(iri);
-      if (childrenReturn) this.conceptAggregate.children = childrenReturn;
+      this.conceptAggregate.children = await EntityService.getEntityChildren(iri);
     },
 
     refreshTree(): void {
@@ -186,9 +183,7 @@ export default defineComponent({
     async expandChildren(node: TreeNode): Promise<void> {
       node.loading = true;
       this.expandedKeys[node.key] = true;
-      let children: any[] = [];
-      const result = await EntityService.getEntityChildren(node.data);
-      if (result) children = result;
+      const children = await EntityService.getEntityChildren(node.data);
 
       children.forEach((child: any) => {
         if (!this.containsChild(node.children, child)) {
@@ -208,33 +203,28 @@ export default defineComponent({
     async expandParents(): Promise<void> {
       this.expandedKeys[this.root[0].key] = true;
 
-      let parents: any[] = [];
       const parentsNodes: any[] = [];
-      const parentsReturn1 = await EntityService.getEntityParents(this.root[0].data);
-      if (parentsReturn1) {
-        parents = parentsReturn1;
-        parents.forEach((parent: any) => {
-          parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, parent.name, true));
-        });
+      const parents = await EntityService.getEntityParents(this.root[0].data);
+      parents.forEach((parent: any) => {
+        parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, parent.name, true));
+      });
 
-        parentsNodes.forEach((parentNode: TreeNode) => {
-          parentNode.children.push(this.root[0]);
-          this.expandedKeys[parentNode.key] = true;
-        });
+      parentsNodes.forEach((parentNode: TreeNode) => {
+        parentNode.children.push(this.root[0]);
+        this.expandedKeys[parentNode.key] = true;
+      });
 
-        this.root = parentsNodes;
+      this.root = parentsNodes;
 
-        const parentsReturn2 = await EntityService.getEntityParents(this.root[0].data);
-        if (parentsReturn2) {
-          if (parentsReturn2[0]) {
-            this.parentLabel = parentsReturn2[0].name;
-          } else {
-            this.parentLabel = "";
-          }
-        }
-        // this refreshes the keys so they start open if children and parents were both expanded
-        this.expandedKeys = { ...this.expandedKeys };
+      const parentsReturn2 = await EntityService.getEntityParents(this.root[0].data);
+
+      if (parentsReturn2[0]) {
+        this.parentLabel = parentsReturn2[0].name;
+      } else {
+        this.parentLabel = "";
       }
+      // this refreshes the keys so they start open if children and parents were both expanded
+      this.expandedKeys = { ...this.expandedKeys };
     },
 
     async resetConcept(): Promise<void> {

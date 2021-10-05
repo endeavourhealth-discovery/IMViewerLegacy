@@ -78,7 +78,7 @@ export default defineComponent({
   name: "FileWorkflow",
   data() {
     return {
-      activity: []
+      activity: [] as any[]
     };
   },
   mounted() {
@@ -86,32 +86,25 @@ export default defineComponent({
   },
   methods: {
     async refreshActivity() {
-      const result = await UprnService.getActivity();
-      if (result) this.activity = result;
+      this.activity = await UprnService.getActivity();
     },
 
     async download(filename: string) {
       const result = await UprnService.download(filename);
-      if (result) {
-        const url = window.URL.createObjectURL(new Blob([result]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", filename);
-        document.body.appendChild(link);
-        link.click();
-      }
+      const url = window.URL.createObjectURL(new Blob([result]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
     },
 
     async onUpload(event: any) {
       console.log(event.files[0]);
-      await UprnService.upload(event.files[0])
-        .then(() => {
-          this.$toast.add(LoggerService.success("fileUploaded"));
-          this.refreshActivity();
-        })
-        .catch(error => {
-          this.$toast.add(LoggerService.error("errorUploading", error));
-        });
+      await UprnService.upload(event.files[0]).then(() => {
+        this.$toast.add(LoggerService.success("fileUploaded"));
+        this.refreshActivity();
+      });
       console.log("upload" + event.files[0].name);
     },
 

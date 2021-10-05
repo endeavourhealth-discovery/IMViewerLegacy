@@ -117,14 +117,14 @@ export default defineComponent({
 
   data() {
     return {
-      concept: {},
-      isA: [] as any,
-      hasSubTypes: [] as any,
-      isChildOf: [] as any,
-      hasChildren: [] as any,
+      concept: {} as any,
+      isA: [] as any[],
+      hasSubTypes: [] as any[],
+      isChildOf: [] as any[],
+      hasChildren: [] as any[],
       terms: [] as any,
-      dataModelProperties: [],
-      semanticProperties: [],
+      dataModelProperties: [] as any[],
+      semanticProperties: [] as any[],
       members: {} as any,
       includeHasSubTypes: true,
       includeDataModelProperties: true,
@@ -198,34 +198,26 @@ export default defineComponent({
 
     async init(iri: string) {
       this.loading = true;
-      const partialReturn = await EntityService.getPartialEntity(iri, [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN, IM.IS_A]);
-      if (partialReturn) {
-        this.concept = partialReturn;
-        if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_CHILD_OF) && partialReturn[IM.IS_CHILD_OF].length) {
-          this.isChildOf = partialReturn[IM.IS_CHILD_OF];
-        }
-        if (Object.prototype.hasOwnProperty.call(this.concept, IM.HAS_CHILDREN) && partialReturn[IM.HAS_CHILDREN]) {
-          this.hasChildren = partialReturn[IM.HAS_CHILDREN];
-        }
-        if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A) && partialReturn[IM.IS_A].length) {
-          this.isA = partialReturn[IM.IS_A];
-        }
+      this.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN, IM.IS_A]);
+      if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_CHILD_OF) && this.concept[IM.IS_CHILD_OF].length) {
+        this.isChildOf = this.concept[IM.IS_CHILD_OF];
+      }
+      if (Object.prototype.hasOwnProperty.call(this.concept, IM.HAS_CHILDREN) && this.concept[IM.HAS_CHILDREN]) {
+        this.hasChildren = this.concept[IM.HAS_CHILDREN];
+      }
+      if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A) && this.concept[IM.IS_A].length) {
+        this.isA = this.concept[IM.IS_A];
       }
 
-      const childrenReturn = await EntityService.getEntityChildren(iri);
-      if (childrenReturn) this.hasSubTypes = childrenReturn;
+      this.hasSubTypes = await EntityService.getEntityChildren(iri);
 
-      const termsReturn = await EntityService.getEntityTermCodes(iri);
-      if (termsReturn) this.terms = termsReturn;
+      this.terms = await EntityService.getEntityTermCodes(iri);
 
-      const dataModelReturn = await EntityService.getDataModelProperties(iri);
-      if (dataModelReturn) this.dataModelProperties = dataModelReturn;
+      this.dataModelProperties = await EntityService.getDataModelProperties(iri);
 
-      const semanticReturn = await EntityService.getSemanticProperties(iri);
-      if (semanticReturn) this.semanticProperties = semanticReturn;
+      this.semanticProperties = await EntityService.getSemanticProperties(iri);
 
-      const membersReturn = await EntityService.getEntityMembers(iri, this.expandMembers, false);
-      if (membersReturn) this.members = membersReturn;
+      this.members = await EntityService.getEntityMembers(iri, this.expandMembers, false);
 
       this.setIncludeBooleans();
       this.loading = false;

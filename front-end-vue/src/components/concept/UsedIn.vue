@@ -65,7 +65,7 @@ export default defineComponent({
   },
   data() {
     return {
-      usages: [],
+      usages: [] as any[],
       loading: false,
       selected: {} as any,
       recordsTotal: 0,
@@ -76,13 +76,11 @@ export default defineComponent({
   },
   methods: {
     async getUsages(iri: string, pageIndex: number, pageSize: number) {
-      const usagesReturn = await EntityService.getEntityUsages(iri, pageIndex, pageSize);
-      if (usagesReturn) this.usages = usagesReturn;
+      this.usages = await EntityService.getEntityUsages(iri, pageIndex, pageSize);
     },
 
     async getRecordsSize(iri: string) {
-      const usagedTotalReturn = await EntityService.getUsagesTotalRecords(iri);
-      if (usagedTotalReturn) this.recordsTotal = usagedTotalReturn;
+      this.recordsTotal = await EntityService.getUsagesTotalRecords(iri);
     },
 
     async handlePage(event: any) {

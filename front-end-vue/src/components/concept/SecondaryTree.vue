@@ -129,14 +129,11 @@ export default defineComponent({
   },
   methods: {
     async getConceptAggregate(iri: string): Promise<void> {
-      const conceptReturn = await EntityService.getPartialEntity(iri, [RDF.TYPE, RDFS.LABEL]);
-      if (conceptReturn) this.conceptAggregate.concept = conceptReturn;
+      this.conceptAggregate.concept = await EntityService.getPartialEntity(iri, [RDF.TYPE, RDFS.LABEL]);
 
-      const parentsReturn = await EntityService.getEntityParents(iri);
-      if (parentsReturn) this.conceptAggregate.parents = parentsReturn;
+      this.conceptAggregate.parents = await EntityService.getEntityParents(iri);
 
-      const childrenReturn = await EntityService.getEntityChildren(iri);
-      if (childrenReturn) this.conceptAggregate.children = childrenReturn;
+      this.conceptAggregate.children = await EntityService.getEntityChildren(iri);
     },
 
     async createTree(concept: any, parentHierarchy: any, children: any, parentPosition: number): Promise<void> {
@@ -204,16 +201,12 @@ export default defineComponent({
       if (!Object.prototype.hasOwnProperty.call(this.expandedKeys, node.key)) {
         this.expandedKeys[node.key] = true;
       }
-      let children: any[] = [];
-      const result = await EntityService.getEntityChildren(node.data);
-      if (result) {
-        children = result;
-        children.forEach((child: any) => {
-          if (!this.containsChild(node.children, child)) {
-            node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.name, child.hasChildren));
-          }
-        });
-      }
+      const children = await EntityService.getEntityChildren(node.data);
+      children.forEach((child: any) => {
+        if (!this.containsChild(node.children, child)) {
+          node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.name, child.hasChildren));
+        }
+      });
       node.loading = false;
     },
 
@@ -230,17 +223,13 @@ export default defineComponent({
         this.expandedKeys[this.root[0].key] = true;
       }
 
-      let parents: any[] = [];
-      const result = await EntityService.getEntityParents(this.root[0].data);
-      if (result) {
-        parents = result;
-        const parentNode = this.createExpandedParentTree(parents, parentPosition);
-        this.root = [];
-        this.root.push(parentNode);
-        await this.setExpandedParentParents();
-        // this refreshes the keys so they start open if children and parents were both expanded
-        this.expandedKeys = { ...this.expandedKeys };
-      }
+      const parents = await EntityService.getEntityParents(this.root[0].data);
+      const parentNode = this.createExpandedParentTree(parents, parentPosition);
+      this.root = [];
+      this.root.push(parentNode);
+      await this.setExpandedParentParents();
+      // this refreshes the keys so they start open if children and parents were both expanded
+      this.expandedKeys = { ...this.expandedKeys };
     },
 
     createExpandedParentTree(parents: any, parentPosition: number): TreeNode {
@@ -259,36 +248,31 @@ export default defineComponent({
 
     async setExpandedParentParents() {
       const result = await EntityService.getEntityParents(this.root[0].data);
-      if (result) {
-        this.currentParent = null;
-        this.alternateParents = [];
-        if (result.length) {
-          if (result.length === 1) {
-            this.parentPosition = 0;
+      this.currentParent = null;
+      this.alternateParents = [];
+      if (!result.length) return;
+      if (result.length === 1) {
+        this.parentPosition = 0;
+        this.currentParent = {
+          name: result[0].name,
+          iri: result[0]["@id"],
+          listPosition: 0
+        };
+      } else {
+        for (let i = 0; i < result.length; i++) {
+          if (i === 0) {
             this.currentParent = {
-              name: result[0].name,
-              iri: result[0]["@id"],
-              listPosition: 0
+              name: result[i].name,
+              iri: result[i]["@id"],
+              listPosition: i
             };
           } else {
-            for (let i = 0; i < result.length; i++) {
-              if (i === 0) {
-                this.currentParent = {
-                  name: result[i].name,
-                  iri: result[i]["@id"],
-                  listPosition: i
-                };
-              } else {
-                this.alternateParents.push({
-                  name: result[i].name,
-                  iri: result[i]["@id"],
-                  listPosition: i
-                });
-              }
-            }
+            this.alternateParents.push({
+              name: result[i].name,
+              iri: result[i]["@id"],
+              listPosition: i
+            });
           }
-        } else {
-          return;
         }
       }
     },
@@ -303,8 +287,7 @@ export default defineComponent({
       this.overlayLocation = event;
       const x = this.$refs.altTreeOP as any;
       x.show(event);
-      const result = await EntityService.getEntitySummary(data.data);
-      if (result) this.hoveredResult = result;
+      this.hoveredResult = await EntityService.getEntitySummary(data.data);
     },
 
     hidePopup(event: any): void {

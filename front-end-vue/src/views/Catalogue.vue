@@ -34,11 +34,7 @@
           <TabView v-model:activeIndex="active">
             <TabPanel>
               <template #header>
-                <i
-                  style="padding: 1px"
-                  class="fas fa-search icon-header"
-                  aria-hidden="true"
-                />
+                <i style="padding: 1px" class="fas fa-search icon-header" aria-hidden="true" />
                 <span>Search Results</span>
               </template>
               <Listbox
@@ -85,10 +81,7 @@
             </TabPanel>
           </TabView>
         </div>
-        <div
-          class="p-col-9"
-          style="height: 100%"
-        >
+        <div class="p-col-9" style="height: 100%">
           <div v-if="this.dash">
             <CatalogueDashboard v-if="types.length" :types="types" />
           </div>
@@ -97,12 +90,10 @@
               <template #header v-if="instanceName"> {{ instanceName }}</template>
               <template #header v-else> {{ instanceIri }}</template>
               <Tree :value="instanceData">
-                <template #default="slotProps">
-                  {{slotProps.node.label }} {{ slotProps.node.data}}
-                </template>
+                <template #default="slotProps"> {{ slotProps.node.label }} {{ slotProps.node.data }} </template>
                 <template #address="slotProps">
-                  {{slotProps.node.label}}
-                  <a href="#/catalogue" @click="navigate(slotProps.node.data)">{{slotProps.node.data["@id"]}}</a>
+                  {{ slotProps.node.label }}
+                  <a href="#/catalogue" @click="navigate(slotProps.node.data)">{{ slotProps.node.data["@id"] }}</a>
                 </template>
               </Tree>
             </Panel>
@@ -128,20 +119,20 @@ export default defineComponent({
   data() {
     return {
       searchRequest: "",
-      searchResults: [] as any,
-      instanceIri: "" ,
+      searchResults: [] as any[],
+      instanceIri: "",
       instanceName: "",
-      instance: [] as any,
+      instance: {} as any,
       predicate: [] as string[],
       active: 0,
       currentSelected: "",
-      history: [] as any,
+      history: [] as any[],
       selectedHistory: "",
-      instanceData: [] as any,
+      instanceData: [] as any[],
       selected: {} as any,
       location: "",
-      types: [] as any,
-      selectedType: [] as any,
+      types: [] as any[],
+      selectedType: [] as any[],
       typesIris: ["http://endhealth.info/im#Organisation"] as string[],
       dash: true
     };
@@ -156,7 +147,7 @@ export default defineComponent({
     },
 
     async getSearchResult() {
-      const result = await CatalogueService.getSearchResult(this.searchRequest,this.typesIris);
+      const result = await CatalogueService.getSearchResult(this.searchRequest, this.typesIris);
       if (result) this.searchResults = result;
     },
 
@@ -179,7 +170,7 @@ export default defineComponent({
       }
       this.instanceIri = this.selected["@id"];
       this.instanceName = this.selected.name;
-      if(this.instanceIri){
+      if (this.instanceIri) {
         this.displayInstance();
       }
       this.currentSelected = this.selected;
@@ -187,11 +178,7 @@ export default defineComponent({
     displayInstance() {
       this.dash = false;
       this.getPartialInstance();
-      if (
-        !this.history.some(
-          (instance: any) => instance["@id"] === this.instanceIri
-        )
-      ) {
+      if (!this.history.some((instance: any) => instance["@id"] === this.instanceIri)) {
         this.history.push({
           "@id": this.instanceIri,
           name: this.instanceName
@@ -202,10 +189,7 @@ export default defineComponent({
     async getPartialInstance() {
       window.history.pushState("", "", "/individual/" + this.instanceIri);
       // console.log(document.location.href);
-      const result = await CatalogueService.getPartialInstance(
-        this.instanceIri,
-        this.predicate
-      );
+      const result = await CatalogueService.getPartialInstance(this.instanceIri, this.predicate);
       if (result) this.instance = result;
 
       this.instanceData = [];
@@ -236,9 +220,7 @@ export default defineComponent({
             this.instanceData.push({
               key: level,
               label: this.getPredicateName(predicate) + " : ",
-              data: this.instance.entity[predicate].name
-                ? this.instance.entity[predicate].name
-                : this.instance.entity[predicate]["@id"],
+              data: this.instance.entity[predicate].name ? this.instance.entity[predicate].name : this.instance.entity[predicate]["@id"],
               children: []
             });
           } else {
