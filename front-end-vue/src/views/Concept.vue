@@ -248,72 +248,53 @@ export default defineComponent({
         .filter((c: any) => c.predicate !== "axioms")
         .map((c: any) => c.predicate);
 
-      await EntityService.getPartialEntity(iri, predicates)
-        .then(res => {
-          this.concept = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get concept partial entity from server.", err));
-        });
+      this.concept = await EntityService.getPartialEntity(iri, predicates);
 
-      await EntityService.getEntityChildren(iri)
-        .then(res => {
-          this.concept["subtypes"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get subtypes from server.", err));
-        });
+      const childrenReturn = await EntityService.getEntityChildren(iri);
+      if (childrenReturn) this.concept["subtypes"] = childrenReturn;
 
-      await EntityService.getEntityTermCodes(iri)
-        .then(res => {
-          this.concept["termCodes"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get terms from server", err));
-        });
+      const termCodesReturn = await EntityService.getEntityTermCodes(iri);
+      if (termCodesReturn) this.concept["termCodes"] = termCodesReturn;
     },
 
     async getProperties(iri: string) {
-      await EntityService.getDataModelProperties(iri)
-        .then(res => {
-          this.concept["dataModelProperties"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get data model properties from server", err));
-        });
-    },
-
+      this.concept["dataModelProperties"] = await EntityService.getDataModelProperties(iri);
+    }
+     
     async getInferred(iri: string) {
-      await EntityService.getPartialEntityBundle(iri, [IM.IS_A, IM.ROLE_GROUP])
-        .then(res => {
-          this.concept["inferred"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get inferred from server", err));
-        });
+      this.concept["inferred"] = await EntityService.getPartialEntityBundle(iri, [IM.IS_A, IM.ROLE_GROUP]);
+    }
+     
+    async getStated(iri: string) {
+      this.concept["axioms"] = await EntityService.getPartialEntityBundle(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
     },
 
-    async getStated(iri: string) {
-      await EntityService.getPartialEntityBundle(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS])
-        .then(res => {
-          this.concept["axioms"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get axioms from server", err));
-        });
+    async getAxioms(iri: string) {
+      const axiomReturn = await EntityService.getAxioms(iri);
+      if (axiomReturn) {
+        this.axiomObject = axiomReturn;
+        if (Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")) {
+          const predicateCount = Object.keys(this.axiomObject.entity)
+            .filter(key => key !== RDF.TYPE)
+            .filter(key => key !== RDFS.COMMENT)
+            .filter(key => key !== RDFS.LABEL)
+            .filter(key => key !== "@id").length;
+          this.concept["axioms"] = {
+            axiomString: this.axiomToString(this.axiomObject.entity),
+            count: predicateCount
+          };
+        }
+      }
     },
 
     async getConfig(name: string) {
-      await ConfigService.getComponentLayout(name)
-        .then(res => {
-          this.configs = res.data;
-          this.configs.sort((a: any, b: any) => {
-            return a.order - b.order;
-          });
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get config data from server", err));
+      const configReturn = await ConfigService.getComponentLayout(name);
+      if (configReturn) {
+        this.configs = configReturn;
+        this.configs.sort((a: any, b: any) => {
+          return a.order - b.order;
         });
+      }
     },
 
     async init() {

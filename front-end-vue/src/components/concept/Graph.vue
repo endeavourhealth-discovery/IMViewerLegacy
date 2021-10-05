@@ -63,7 +63,6 @@ import GraphData from "../../models/GraphData";
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
 import { RouteRecordName } from "vue-router";
-import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "Graph",
@@ -98,13 +97,7 @@ export default defineComponent({
     },
     async getGraph(iri: string) {
       this.loading = true;
-      await EntityService.getEntityGraph(iri)
-        .then(res => {
-          this.graph = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get entity graph data from server", err));
-        });
+      this.graph = await EntityService.getEntityGraph(iri);
       this.loading = false;
     },
     navigate(iri: string) {

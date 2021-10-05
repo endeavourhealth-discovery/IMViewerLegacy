@@ -118,14 +118,14 @@ export default defineComponent({
 
   data() {
     return {
-      concept: {},
+      concept: {} as any,
       inferred: {} as any,
       axioms: {} as any,
-      hasSubTypes: [] as any,
-      isChildOf: [] as any,
-      hasChildren: [] as any,
-      terms: [] as any,
-      dataModelProperties: [],
+      hasSubTypes: [] as any[],
+      isChildOf: [] as any[],
+      hasChildren: [] as any[],
+      terms: [] as any[],
+      dataModelProperties: [] as any[],
       members: {} as any,
       includeHasSubTypes: true,
       includeDataModelProperties: true,
@@ -199,61 +199,28 @@ export default defineComponent({
 
     async init(iri: string) {
       this.loading = true;
-      await EntityService.getPartialEntity(iri, [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN])
-        .then(res => {
-          this.concept = res.data;
-          if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_CHILD_OF) && res.data[IM.IS_CHILD_OF].length) {
-            this.isChildOf = res.data[IM.IS_CHILD_OF];
-          }
-          if (Object.prototype.hasOwnProperty.call(this.concept, IM.HAS_CHILDREN) && res.data[IM.HAS_CHILDREN]) {
-            this.hasChildren = res.data[IM.HAS_CHILDREN];
-          }
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get concept data from server", err));
-        });
-      await EntityService.getPartialEntity(iri, [IM.IS_A, IM.ROLE_GROUP])
-        .then(res => {
-          this.inferred = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get inferred data from server", err));
-        });
-      await EntityService.getPartialEntity(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS])
-          .then(res => {
-            this.axioms = res.data;
-          })
-          .catch(err => {
-            this.$toast.add(LoggerService.error("Failed to get axiom data from server", err));
-          });
-      await EntityService.getEntityChildren(iri)
-        .then(res => {
-          this.hasSubTypes = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get children data from server", err));
-        });
-      await EntityService.getEntityTermCodes(iri)
-        .then(res => {
-          this.terms = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get terms from server", err));
-        });
-      await EntityService.getDataModelProperties(iri)
-        .then(res => {
-          this.dataModelProperties = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get data model properties from server", err));
-        });
-      await EntityService.getEntityMembers(iri, this.expandMembers, false)
-        .then(res => {
-          this.members = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get members from server", err));
-        });
+      this.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
+      if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_CHILD_OF) && this.concept[IM.IS_CHILD_OF].length) {
+        this.isChildOf = this.concept[IM.IS_CHILD_OF];
+      }
+      if (Object.prototype.hasOwnProperty.call(this.concept, IM.HAS_CHILDREN) && this.concept[IM.HAS_CHILDREN]) {
+        this.hasChildren = this.concept[IM.HAS_CHILDREN];
+      }
+
+      this.inferred = await EntityService.getPartialEntity(iri, [IM.IS_A, IM.ROLE_GROUP]);
+      
+      this.axioms = await EntityService.getPartialEntity(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
+      
+      this.concept = await
+
+      this.hasSubTypes = await EntityService.getEntityChildren(iri);
+
+      this.terms = await EntityService.getEntityTermCodes(iri);
+
+      this.dataModelProperties = await EntityService.getDataModelProperties(iri);
+
+      this.members = await EntityService.getEntityMembers(iri, this.expandMembers, false);
+
       this.setIncludeBooleans();
       this.loading = false;
     },

@@ -11,11 +11,11 @@ describe("ComplexMembers.vue", () => {
   beforeEach(async () => {
     jest.resetAllMocks();
 
-    EntityService.getComplexMembers = jest.fn().mockResolvedValue({
-      data: [
+    EntityService.getComplexMembers = jest
+      .fn()
+      .mockResolvedValue([
         '<p class="intersection">Intersection of</p><p class="name" style="margin-left: 40px;">UK product (product)</p><p class="having" style="margin-left: 40px;">having</p> <p class="role-group" style="margin-left: 80px">Has VMP (attribute)->COVID-19 vaccine (product)</p>'
-      ]
-    });
+      ]);
 
     mockToast = { add: jest.fn() };
 
@@ -61,20 +61,6 @@ describe("ComplexMembers.vue", () => {
       '<p class="intersection">Intersection of</p><p class="name" style="margin-left: 40px;">UK product (product)</p><p class="having" style="margin-left: 40px;">having</p> <p class="role-group" style="margin-left: 80px">Has VMP (attribute)->COVID-19 vaccine (product)</p>'
     ]);
     expect(mockToast.add).not.toHaveBeenCalled();
-    expect(wrapper.vm.loading).toBe(false);
-  });
-
-  it("can get complex members ___ fail", async () => {
-    EntityService.getComplexMembers = jest.fn().mockRejectedValue(false);
-    wrapper.vm.complexMembers = [];
-    wrapper.vm.getComplexMembers();
-    expect(wrapper.vm.loading).toBe(true);
-    expect(EntityService.getComplexMembers).toHaveBeenCalledTimes(1);
-    expect(EntityService.getComplexMembers).toHaveBeenCalledWith("http://endhealth.info/im#CSET_BartsCVSSMeds");
-    await flushPromises();
-    expect(wrapper.vm.complexMembers).toStrictEqual([]);
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get complex members from server"));
     expect(wrapper.vm.loading).toBe(false);
   });
 });

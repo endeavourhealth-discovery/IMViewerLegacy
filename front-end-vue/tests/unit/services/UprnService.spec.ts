@@ -9,53 +9,63 @@ describe("UprnService.ts", () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    axios.get = jest.fn().mockResolvedValue("axios get return");
-    axios.post = jest.fn().mockResolvedValue("axios post return");
+    axios.get = jest.fn().mockResolvedValue({ data: "axios get return" });
+    axios.post = jest.fn().mockResolvedValue({ data: "axios post return" });
   });
 
-  it("can find uprn", async() => {
+  it("can find uprn", async () => {
     const result = await UprnService.findUprn("test address", "test area");
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "/getinfo", { params: { adrec: "test address", qpost: "test area" }, auth: { username: username, password: password } });
+    expect(axios.get).toHaveBeenCalledWith(api + "/getinfo", {
+      params: { adrec: "test address", qpost: "test area" },
+      auth: { username: username, password: password }
+    });
     expect(result).toBe("axios get return");
   });
 
-  it("can find uprn ___ no area", async() => {
+  it("can find uprn ___ no area", async () => {
     const result = await UprnService.findUprn("test address");
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "/getinfo", { params: { adrec: "test address" }, auth: { username: username, password: password } });
     expect(result).toBe("axios get return");
   });
 
-  it("can get uprn", async() => {
+  it("can get uprn", async () => {
     const result = await UprnService.getUprn(123456);
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "/getuprn", { params: { uprn: 123456 }, auth: { username: username, password: password } });
     expect(result).toBe("axios get return");
   });
 
-  it("can get activity", async() => {
+  it("can get activity", async () => {
     const result = await UprnService.getActivity();
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "/activity", { params: { u: userId }, auth: { username: username, password: password } });
     expect(result).toBe("axios get return");
   });
 
-  it("can download", async() => {
+  it("can download", async () => {
     const result = await UprnService.download("test filename");
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "/filedownload2", { params: { userid: userId, filename: "test filename" }, responseType: "blob", auth: { username: username, password: password } });
+    expect(axios.get).toHaveBeenCalledWith(api + "/filedownload2", {
+      params: { userid: userId, filename: "test filename" },
+      responseType: "blob",
+      auth: { username: username, password: password }
+    });
     expect(result).toBe("axios get return");
   });
 
-  it("can upload", async() => {
+  it("can upload", async () => {
     const formData = new FormData();
-    const blob = new Blob(["test data"], );
+    const blob = new Blob(["test data"]);
     formData.append("file", blob, undefined);
     formData.append("userid", userId);
     const result = await UprnService.upload(blob);
     expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(axios.post).toHaveBeenCalledWith(api + "/fileUpload2", formData, { headers: { "Content-Type": "multipart/form-data" }, auth: { username: username, password: password } });
+    expect(axios.post).toHaveBeenCalledWith(api + "/fileUpload2", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+      auth: { username: username, password: password }
+    });
     expect(result).toBe("axios post return");
   });
 });

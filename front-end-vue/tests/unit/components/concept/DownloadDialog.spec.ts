@@ -29,16 +29,16 @@ describe("DownloadDialog.vue", () => {
       add: jest.fn()
     };
     EntityService.getPartialEntity = jest.fn()
-      .mockResolvedValueOnce({ data: CONCEPT })
-      .mockResolvedValueOnce({ data: INFERRED })
-      .mockResolvedValueOnce({ data: AXIOMS })
-      .mockResolvedValueOnce({ data: CONCEPT })
-      .mockResolvedValueOnce({ data: INFERRED })
-      .mockResolvedValueOnce({ data: AXIOMS });
-    EntityService.getEntityChildren = jest.fn().mockResolvedValue({ data: CHILDREN });
-    EntityService.getDataModelProperties = jest.fn().mockResolvedValue({data: DATA_MODEL });
-    EntityService.getEntityMembers = jest.fn().mockResolvedValue({data: MEMBERS });
-    EntityService.getEntityTermCodes = jest.fn().mockResolvedValue({data: TERMS });
+      .mockResolvedValueOnce(CONCEPT)
+      .mockResolvedValueOnce(INFERRED)
+      .mockResolvedValueOnce(AXIOMS)
+      .mockResolvedValueOnce(CONCEPT)
+      .mockResolvedValueOnce(INFERRED)
+      .mockResolvedValueOnce(AXIOMS)
+    EntityService.getEntityChildren = jest.fn().mockResolvedValue(CHILDREN );
+    EntityService.getDataModelProperties = jest.fn().mockResolvedValue(DATA_MODEL);
+    EntityService.getEntityMembers = jest.fn().mockResolvedValue(MEMBERS);
+    EntityService.getEntityTermCodes = jest.fn().mockResolvedValue(TERMS);
 
     wrapper = shallowMount(DownloadDialog, {
       global: {
@@ -49,7 +49,7 @@ describe("DownloadDialog.vue", () => {
     });
   });
 
-  it("inits on mounted", async() => {
+  it("inits on mounted", async () => {
     await flushPromises();
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(3);
   });
@@ -88,7 +88,7 @@ describe("DownloadDialog.vue", () => {
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Download failed from server"));
   });
 
-  it("Inits ___ success", async() => {
+  it("Inits ___ success", async () => {
     await flushPromises();
     jest.clearAllMocks();
     wrapper.vm.setIncludeBooleans = jest.fn();
@@ -119,47 +119,7 @@ describe("DownloadDialog.vue", () => {
     expect(wrapper.vm.loading).toBe(false);
   });
 
-  it("Inits ___ fail", async() => {
-    console.error = jest.fn();
-    EntityService.getPartialEntity = jest.fn().mockRejectedValue({ code: 403, message: "Test error" });
-    EntityService.getEntityParents = jest.fn().mockRejectedValue({ code: 403, message: "Test error" });
-    EntityService.getEntityChildren = jest.fn().mockRejectedValue({ code: 403, message: "Test error" });
-    EntityService.getDataModelProperties = jest.fn().mockRejectedValue({ code: 403, message: "Test error" });
-    EntityService.getEntityMembers = jest.fn().mockRejectedValue({ code: 403, message: "Test error" });
-    EntityService.getEntityTermCodes = jest.fn().mockRejectedValue({code: 403, message: "Test error"});
-    await flushPromises();
-    jest.clearAllMocks();
-    wrapper.vm.setIncludeBooleans = jest.fn();
-    wrapper.vm.init("http://snomed.info/sct#298382003");
-    expect(wrapper.vm.loading).toBe(true);
-    await flushPromises();
-    await wrapper.vm.$nextTick();
-    expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(3);
-    expect(EntityService.getPartialEntity).toHaveBeenNthCalledWith(1,"http://snomed.info/sct#298382003", [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
-    expect(EntityService.getPartialEntity).toHaveBeenNthCalledWith(2,"http://snomed.info/sct#298382003", [IM.IS_A, IM.ROLE_GROUP]);
-    expect(EntityService.getPartialEntity).toHaveBeenNthCalledWith(3,"http://snomed.info/sct#298382003", [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
-    expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-
-    expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://snomed.info/sct#298382003", false, false);
-    expect(EntityService.getEntityTermCodes).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityTermCodes).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    expect(mockToast.add).toHaveBeenCalledTimes(7);
-    expect(mockToast.add).toHaveBeenNthCalledWith(1, LoggerService.error("Failed to get concept data from server"));
-    expect(mockToast.add).toHaveBeenNthCalledWith(2, LoggerService.error("Failed to get inferred data from server"));
-    expect(mockToast.add).toHaveBeenNthCalledWith(3, LoggerService.error("Failed to get axiom data from server"));
-    expect(mockToast.add).toHaveBeenNthCalledWith(4, LoggerService.error("Failed to get children data from server"));
-    expect(mockToast.add).toHaveBeenNthCalledWith(5, LoggerService.error("Failed to get terms from server"));
-    expect(mockToast.add).toHaveBeenNthCalledWith(6, LoggerService.error("Failed to get data model properties from server"));
-    expect(mockToast.add).toHaveBeenNthCalledWith(7, LoggerService.error("Failed to get members from server"));
-    expect(wrapper.vm.setIncludeBooleans).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.loading).toBe(false);
-  });
-
-  it("Can setIncludeBooleans ___ members", async() => {
+  it("Can setIncludeBooleans ___ members", async () => {
     await flushPromises();
     await wrapper.vm.$nextTick();
     wrapper.vm.setIncludeBooleans();
@@ -170,7 +130,7 @@ describe("DownloadDialog.vue", () => {
     expect(wrapper.vm.includeMembers).toBe(true);
   });
 
-  it("Can setIncludeBooleans ___ no members", async() => {
+  it("Can setIncludeBooleans ___ no members", async () => {
     await flushPromises();
     await wrapper.vm.$nextTick();
     wrapper.vm.members = {};

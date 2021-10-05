@@ -53,7 +53,6 @@ import EntityService from "@/services/EntityService";
 import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";
 import { IM } from "@/vocabulary/IM";
-import LoggerService from "@/services/LoggerService";
 import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
@@ -127,19 +126,11 @@ export default defineComponent({
       }
     },
     async getConceptAggregate(iri: string) {
-      await Promise.all([
-        EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]).then(res => {
-          this.conceptAggregate.concept = res.data;
-        }),
-        EntityService.getEntityParents(iri).then(res => {
-          this.conceptAggregate.parents = res.data;
-        }),
-        EntityService.getEntityChildren(iri).then(res => {
-          this.conceptAggregate.children = res.data;
-        })
-      ]).catch(err => {
-        this.$toast.add(LoggerService.error("Hierarchy tree concept aggregate fetch failed", err));
-      });
+      this.conceptAggregate.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]);
+
+      this.conceptAggregate.parents = await EntityService.getEntityParents(iri);
+
+      this.conceptAggregate.children = await EntityService.getEntityChildren(iri);
     },
 
     refreshTree(): void {
@@ -192,14 +183,7 @@ export default defineComponent({
     async expandChildren(node: TreeNode): Promise<void> {
       node.loading = true;
       this.expandedKeys[node.key] = true;
-      let children: any[] = [];
-      await EntityService.getEntityChildren(node.data)
-        .then(res => {
-          children = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Concept children server request failed", err));
-        });
+      const children = await EntityService.getEntityChildren(node.data);
 
       children.forEach((child: any) => {
         if (!this.containsChild(node.children, child)) {
@@ -219,39 +203,28 @@ export default defineComponent({
     async expandParents(): Promise<void> {
       this.expandedKeys[this.root[0].key] = true;
 
-      let parents: any[] = [];
       const parentsNodes: any[] = [];
-      await EntityService.getEntityParents(this.root[0].data)
-        .then(async res => {
-          parents = res.data;
-          parents.forEach((parent: any) => {
-            parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, parent.name, true));
-          });
+      const parents = await EntityService.getEntityParents(this.root[0].data);
+      parents.forEach((parent: any) => {
+        parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, parent.name, true));
+      });
 
-          parentsNodes.forEach((parentNode: TreeNode) => {
-            parentNode.children.push(this.root[0]);
-            this.expandedKeys[parentNode.key] = true;
-          });
+      parentsNodes.forEach((parentNode: TreeNode) => {
+        parentNode.children.push(this.root[0]);
+        this.expandedKeys[parentNode.key] = true;
+      });
 
-          this.root = parentsNodes;
+      this.root = parentsNodes;
 
-          await EntityService.getEntityParents(this.root[0].data)
-            .then(res => {
-              if (res.data[0]) {
-                this.parentLabel = res.data[0].name;
-              } else {
-                this.parentLabel = "";
-              }
-            })
-            .catch(err => {
-              this.$toast.add(LoggerService.error("Concept parents server request 2 failed", err));
-            });
-          // this refreshes the keys so they start open if children and parents were both expanded
-          this.expandedKeys = { ...this.expandedKeys };
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Concept parents server request 1 failed", err));
-        });
+      const parentsReturn2 = await EntityService.getEntityParents(this.root[0].data);
+
+      if (parentsReturn2[0]) {
+        this.parentLabel = parentsReturn2[0].name;
+      } else {
+        this.parentLabel = "";
+      }
+      // this refreshes the keys so they start open if children and parents were both expanded
+      this.expandedKeys = { ...this.expandedKeys };
     },
 
     async resetConcept(): Promise<void> {

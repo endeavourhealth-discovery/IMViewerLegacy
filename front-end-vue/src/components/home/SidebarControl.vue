@@ -51,7 +51,6 @@ import SearchResults from "@/components/sidebar/SearchResults.vue";
 import Filters from "@/components/sidebar/Filters.vue";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
-import LoggerService from "@/services/LoggerService";
 import axios from "axios";
 import { mapState } from "vuex";
 
@@ -116,29 +115,18 @@ export default defineComponent({
           searchRequest.typeFilter.push(type["@id"]);
         });
         if (this.request) {
-          await this.request.cancel();
+          await this.request.cancel("Search cancelled by user");
         }
         const axiosSource = axios.CancelToken.source();
         this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
-        this.$store
-          .dispatch("fetchSearchResults", {
-            searchRequest: searchRequest,
-            cancelToken: axiosSource.token
-          })
-          .then((res: string) => {
-            if (res === "false") {
-              this.$store.commit("updateLoading", {
-                key: "searchResults",
-                value: false
-              });
-              this.$toast.add(LoggerService.error("Search results server request failed"));
-            } else {
-              this.$store.commit("updateLoading", {
-                key: "searchResults",
-                value: false
-              });
-            }
-          });
+        await this.$store.dispatch("fetchSearchResults", {
+          searchRequest: searchRequest,
+          cancelToken: axiosSource.token
+        });
+        this.$store.commit("updateLoading", {
+          key: "searchResults",
+          value: false
+        });
       } else {
         this.active = 0;
       }
