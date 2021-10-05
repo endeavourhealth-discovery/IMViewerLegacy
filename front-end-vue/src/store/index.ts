@@ -131,22 +131,13 @@ export default createStore({
   actions: {
     async fetchSearchResults({ commit }, data: { searchRequest: SearchRequest; cancelToken: any }) {
       let searchResults: any;
-      let success = "true";
-      await EntityService.advancedSearch(data.searchRequest, data.cancelToken)
-        .then(res => {
-          searchResults = res.data.entities;
-          commit("updateSearchResults", searchResults);
-        })
-        .catch(err => {
-          if (!err.message) {
-            success = "cancelled";
-            LoggerService.info(undefined, "axios request cancelled");
-          } else {
-            success = "false";
-            LoggerService.error(undefined, err);
-          }
-        });
-      return success;
+      const result = await EntityService.advancedSearch(data.searchRequest, data.cancelToken);
+      if (result && Object.prototype.hasOwnProperty.call(result, "entities")) {
+        searchResults = result.entities;
+        commit("updateSearchResults", searchResults);
+      } else {
+        commit("updateSearchResults", []);
+      }
     },
     async logoutCurrentUser({ commit }) {
       let result = new CustomAlert(500, "Logout (store) failed");

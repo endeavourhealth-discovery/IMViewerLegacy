@@ -62,7 +62,7 @@ export default defineComponent({
   data() {
     return {
       loading: false,
-      dataModelPropsData: [],
+      dataModelPropsData: [] as any[],
       selected: {} as any,
       scrollHeight: "500px"
     };
@@ -80,27 +80,22 @@ export default defineComponent({
   methods: {
     async getDataModelProps(iri: string) {
       this.loading = true;
-      let res;
-      try {
-        res = (await EntityService.getDataModelProperties(iri)).data;
-        this.dataModelPropsData = res.map((prop: any) => {
-          return {
-            propertyId: prop.property["@id"],
-            propertyName: prop.property.name,
-            propertyDisplay: prop.property.name,
-            typeId: prop.type["@id"],
-            typeName: prop.type.name,
-            typeDisplay: prop.type?.name || prop.type?.["@id"],
-            inheritedId: prop.inheritedFrom?.["@id"],
-            inheritedName: prop.inheritedFrom?.name,
-            inheritedDisplay: prop.inheritedFrom?.name || "-",
-            cardinality: `${prop.minExclusive || prop.minInclusive || 0} :
-              ${prop.maxExclusive || prop.maxInclusive || "*"}`
-          };
-        });
-      } catch (error) {
-        this.$toast.add(LoggerService.error("Failed to get properties from server", error));
-      }
+      const result = await EntityService.getDataModelProperties(iri);
+      this.dataModelPropsData = result.map((prop: any) => {
+        return {
+          propertyId: prop.property["@id"],
+          propertyName: prop.property.name,
+          propertyDisplay: prop.property.name,
+          typeId: prop.type["@id"],
+          typeName: prop.type.name,
+          typeDisplay: prop.type?.name || prop.type?.["@id"],
+          inheritedId: prop.inheritedFrom?.["@id"],
+          inheritedName: prop.inheritedFrom?.name,
+          inheritedDisplay: prop.inheritedFrom?.name || "-",
+          cardinality: `${prop.minExclusive || prop.minInclusive || 0} :
+            ${prop.maxExclusive || prop.maxInclusive || "*"}`
+        };
+      });
       this.loading = false;
     },
 

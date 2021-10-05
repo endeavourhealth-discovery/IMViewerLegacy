@@ -13,38 +13,38 @@
       <SelectButton class="format-container" v-model="format" :options="formatOptions" datakey="value" optionLabel="name" />
       <div class="options-container p-d-flex p-flex-row p-flex-wrap p-jc-around">
         <div class="checkbox-label">
-          <Checkbox :disabled="!includeIsA" id="is-a" :binary="true" value="Include is a" v-model="includeIsA" />
-          <label class="label" :class="includeIsA ? null : 'inactive-text'" for="is-a">
-            Include is a's
+          <Checkbox :disabled="!inferred" id="inferred" :binary="true" value="Include is a" v-model="includeInferred" />
+          <label class="label" :class="includeInferred ? null : 'inactive-text'" for="inferred">
+            Include inferred
           </label>
         </div>
         <div class="checkbox-label">
-          <Checkbox :disabled="!includeHasSubTypes" id="has-sub-types" :binary="true" value="Include has sub types" v-model="includeHasSubTypes" />
+          <Checkbox :disabled="!hasSubTypes" id="has-sub-types" :binary="true" value="Include has sub types" v-model="includeHasSubTypes" />
           <label class="label" :class="includeHasSubTypes ? null : 'inactive-text'" for="has-sub-types">
             Include has sub types
           </label>
         </div>
         <div class="checkbox-label">
-          <Checkbox :disabled="!includeIsChildOf" id="is-child-of" :binary="true" value="Include is child of" v-model="includeIsChildOf" />
+          <Checkbox :disabled="!isChildOf" id="is-child-of" :binary="true" value="Include is child of" v-model="includeIsChildOf" />
           <label class="label" :class="includeIsChildOf ? null : 'inactive-text'" for="is-child-of">
             Include is child of
           </label>
         </div>
         <div class="checkbox-label">
-          <Checkbox :disabled="!includeHasChildren" id="has-children" :binary="true" value="Include has children" v-model="includeHasChildren" />
+          <Checkbox :disabled="!hasChildren" id="has-children" :binary="true" value="Include has children" v-model="includeHasChildren" />
           <label class="label" :class="includeHasChildren ? null : 'inactive-text'" for="has-children">
             Include has children
           </label>
         </div>
         <div class="checkbox-label">
-          <Checkbox :disabled="!includeTerms" id="terms" :binary="true" value="Include terms" v-model="includeTerms" />
+          <Checkbox :disabled="!terms" id="terms" :binary="true" value="Include terms" v-model="includeTerms" />
           <label class="label" :class="includeTerms ? null : 'inactive-text'" for="terms">
             Include terms
           </label>
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!includeDataModelProperties"
+            :disabled="!dataModelProperties"
             id="data-model-properties"
             :binary="true"
             value="Include data model properties"
@@ -56,18 +56,18 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!includeSemanticProperties"
-            id="semantic-properties"
+            :disabled="!axioms"
+            id="axioms"
             :binary="true"
-            value="Include semantic properties"
-            v-model="includeSemanticProperties"
+            value="Include axioms"
+            v-model="includeAxioms"
           />
-          <label class="label" :class="includeSemanticProperties ? null : 'inactive-text'" for="semantic-properties">
+          <label class="label" :class="includeAxioms ? null : 'inactive-text'" for="axioms">
             Include semantic properties
           </label>
         </div>
         <div class="checkbox-label">
-          <Checkbox :disabled="!includeMembers" id="members" :binary="true" value="Include members" v-model="includeMembers" />
+          <Checkbox :disabled="!members" id="members" :binary="true" value="Include members" v-model="includeMembers" />
           <label class="label" :class="includeMembers ? null : 'inactive-text'" for="members">
             Include members
           </label>
@@ -101,6 +101,7 @@ import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 import { RDFS } from "@/vocabulary/RDFS";
 import { IM } from "@/vocabulary/IM";
+import { OWL } from "@/vocabulary/OWL";
 
 export default defineComponent({
   name: "DownloadDialog",
@@ -117,24 +118,24 @@ export default defineComponent({
 
   data() {
     return {
-      concept: {},
-      isA: [] as any,
-      hasSubTypes: [] as any,
-      isChildOf: [] as any,
-      hasChildren: [] as any,
-      terms: [] as any,
-      dataModelProperties: [],
-      semanticProperties: [],
+      concept: {} as any,
+      inferred: {} as any,
+      axioms: {} as any,
+      hasSubTypes: [] as any[],
+      isChildOf: [] as any[],
+      hasChildren: [] as any[],
+      terms: [] as any[],
+      dataModelProperties: [] as any[],
       members: {} as any,
       includeHasSubTypes: true,
       includeDataModelProperties: true,
       includeMembers: true,
       expandMembers: false,
-      includeIsA: true,
+      includeInferred: true,
+      includeAxioms: false,
       includeIsChildOf: false,
       includeHasChildren: false,
       includeInactive: false,
-      includeSemanticProperties: false,
       includeTerms: false,
       loading: false,
       RDFS_LABEL: RDFS.LABEL,
@@ -175,10 +176,10 @@ export default defineComponent({
         this.includeMembers +
         "&expandMembers=" +
         this.expandMembers +
-        "&isA=" +
-        this.includeIsA +
-        "&semanticProperties=" +
-        this.includeSemanticProperties +
+        "&inferred=" +
+        this.includeInferred +
+        "&axioms=" +
+        this.includeAxioms +
         "&terms=" +
         this.includeTerms +
         "&isChildOf=" +
@@ -198,70 +199,39 @@ export default defineComponent({
 
     async init(iri: string) {
       this.loading = true;
-      await EntityService.getPartialEntity(iri, [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN, IM.IS_A])
-        .then(res => {
-          this.concept = res.data;
-          if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_CHILD_OF) && res.data[IM.IS_CHILD_OF].length) {
-            this.isChildOf = res.data[IM.IS_CHILD_OF];
-          }
-          if (Object.prototype.hasOwnProperty.call(this.concept, IM.HAS_CHILDREN) && res.data[IM.HAS_CHILDREN]) {
-            this.hasChildren = res.data[IM.HAS_CHILDREN];
-          }
-          if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A) && res.data[IM.IS_A].length) {
-            this.isA = res.data[IM.IS_A];
-          }
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get concept data from server", err));
-        });
-      await EntityService.getEntityChildren(iri)
-        .then(res => {
-          this.hasSubTypes = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get children data from server", err));
-        });
-      await EntityService.getEntityTermCodes(iri)
-        .then(res => {
-          this.terms = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get terms from server", err));
-        });
-      await EntityService.getDataModelProperties(iri)
-        .then(res => {
-          this.dataModelProperties = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get data model properties from server", err));
-        });
-      await EntityService.getSemanticProperties(iri)
-        .then(res => {
-          this.semanticProperties = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get semantic properties from server", err));
-        });
-      await EntityService.getEntityMembers(iri, this.expandMembers, false)
-        .then(res => {
-          this.members = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get members from server", err));
-        });
+      this.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
+      if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_CHILD_OF) && this.concept[IM.IS_CHILD_OF].length) {
+        this.isChildOf = this.concept[IM.IS_CHILD_OF];
+      }
+      if (Object.prototype.hasOwnProperty.call(this.concept, IM.HAS_CHILDREN) && this.concept[IM.HAS_CHILDREN]) {
+        this.hasChildren = this.concept[IM.HAS_CHILDREN];
+      }
+
+      this.inferred = await EntityService.getPartialEntity(iri, [IM.IS_A, IM.ROLE_GROUP]);
+
+      this.axioms = await EntityService.getPartialEntity(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
+
+      this.hasSubTypes = await EntityService.getEntityChildren(iri);
+
+      this.terms = await EntityService.getEntityTermCodes(iri);
+
+      this.dataModelProperties = await EntityService.getDataModelProperties(iri);
+
+      this.members = await EntityService.getEntityMembers(iri, this.expandMembers, false);
+
       this.setIncludeBooleans();
       this.loading = false;
     },
 
     setIncludeBooleans() {
-      this.includeIsA = !!this.isA.length;
+      this.includeInferred = !!this.inferred;
+      this.includeAxioms = !!this.axioms;
       this.includeHasSubTypes = !!this.hasSubTypes.length;
       this.includeIsChildOf = !!this.isChildOf.length;
       this.includeHasChildren = !!this.hasChildren.length;
       this.includeTerms = !!this.terms.length;
       this.includeDataModelProperties = !!this.dataModelProperties.length;
-      this.includeSemanticProperties = !!this.semanticProperties.length;
-      this.includeMembers = Object.prototype.hasOwnProperty.call(this.members, "members") && this.members.members.length ? true : false;
+      this.includeMembers = !!(Object.prototype.hasOwnProperty.call(this.members, "members") && this.members.members.length);
     }
   }
 });

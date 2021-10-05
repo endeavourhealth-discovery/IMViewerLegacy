@@ -206,47 +206,27 @@ describe("mutations", () => {
   });
 
   it("can fetchSearchResults ___ pass", async () => {
-    EntityService.advancedSearch = jest.fn().mockResolvedValue({ status: 200, data: { entities: [{ iri: "testResult" }] } });
+    EntityService.advancedSearch = jest.fn().mockResolvedValue({ entities: [{ iri: "testResult" }] });
     LoggerService.info = jest.fn();
     const testInput = { searchRequest: new SearchRequest(), cancelToken: "testCancelToken" };
-    let result = false;
-    await store.dispatch("fetchSearchResults", testInput).then(res => (result = res));
+    await store.dispatch("fetchSearchResults", testInput);
     await flushPromises();
     expect(EntityService.advancedSearch).toBeCalledTimes(1);
     expect(EntityService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
     await flushPromises();
     expect(store.state.searchResults).toEqual([{ iri: "testResult" }]);
-    expect(result).toBe("true");
-  });
-
-  it("can fetchSearchResults ___ cancelled", async () => {
-    EntityService.advancedSearch = jest.fn().mockRejectedValue({ status: 400 });
-    LoggerService.info = jest.fn();
-    const testInput = { searchRequest: new SearchRequest(), cancelToken: "testCancelToken" };
-    let result = false;
-    await store.dispatch("fetchSearchResults", testInput).then(res => (result = res));
-    await flushPromises();
-    expect(EntityService.advancedSearch).toBeCalledTimes(1);
-    expect(EntityService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
-    await flushPromises();
-    expect(LoggerService.info).toBeCalledTimes(1);
-    expect(LoggerService.info).toBeCalledWith(undefined, "axios request cancelled");
-    expect(result).toBe("cancelled");
   });
 
   it("can fetchSearchResults ___ failed", async () => {
-    EntityService.advancedSearch = jest.fn().mockRejectedValue({ status: 400, message: "test fail" });
+    EntityService.advancedSearch = jest.fn().mockResolvedValue({ status: 400, message: "test fail" });
     LoggerService.error = jest.fn();
     const testInput = { searchRequest: new SearchRequest(), cancelToken: "testCancelToken" };
-    let result = false;
-    await store.dispatch("fetchSearchResults", testInput).then(res => (result = res));
+    await store.dispatch("fetchSearchResults", testInput);
     await flushPromises();
     expect(EntityService.advancedSearch).toBeCalledTimes(1);
     expect(EntityService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
     await flushPromises();
-    expect(LoggerService.error).toBeCalledTimes(1);
-    expect(LoggerService.error).toBeCalledWith(undefined, { status: 400, message: "test fail" });
-    expect(result).toBe("false");
+    expect(store.state.searchResults).toStrictEqual([]);
   });
 
   it("can logoutCurrentUser ___ 200", async () => {

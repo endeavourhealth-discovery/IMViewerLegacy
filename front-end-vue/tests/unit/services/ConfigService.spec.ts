@@ -5,17 +5,17 @@ describe("ConfigService.ts", () => {
   const api = process.env.VUE_APP_API;
 
   beforeEach(() => {
-    axios.get = jest.fn().mockResolvedValue(["test config"]);
+    axios.get = jest.fn().mockResolvedValue({ data: ["test config"] });
   });
 
-  it("can get component layout", async() => {
+  it("can get component layout", async () => {
     const result = await ConfigService.getComponentLayout("definition");
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "api/config/componentLayout", { params: { name: "definition" }});
+    expect(axios.get).toHaveBeenCalledWith(api + "api/config/componentLayout", { params: { name: "definition" } });
     expect(result).toStrictEqual(["test config"]);
   });
 
-  it("can get filter defaults", async() => {
+  it("can get filter defaults", async () => {
     const result = await ConfigService.getFilterDefaults();
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "api/config/filterDefaults");

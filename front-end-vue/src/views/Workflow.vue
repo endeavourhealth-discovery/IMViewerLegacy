@@ -65,8 +65,6 @@
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import WorkflowService from "@/services/WorkflowService";
-import LoggerService from "@/services/LoggerService";
-
 import { FilterMatchMode } from "primevue/api";
 import { Filters } from "@/models/workflow/Filters";
 import * as d3 from "d3";
@@ -82,8 +80,8 @@ export default defineComponent({
       width: 500,
       height: 300,
       padding: 10,
-      tasksData: [],
-      workflows: [],
+      tasksData: [] as any,
+      workflows: [] as any,
       tasks: [] as any,
       selectedWorkflow: "Concept",
       workflowTypes: [] as any,
@@ -91,7 +89,7 @@ export default defineComponent({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       } as Filters,
       active: 0,
-      currentWorkflow: "" as any
+      currentWorkflow: ""
     };
   },
   mounted() {
@@ -100,23 +98,18 @@ export default defineComponent({
   },
   methods: {
     async getWorkflows() {
-      await WorkflowService.getWorkflows().then(res => {
-        this.workflows = res.data;
-      });
-      this.workflows.forEach((workflow: any) => {
-        this.workflowTypes.push(workflow.type);
-      });
-    },
-    async getWorkflowTasks() {
-      await WorkflowService.getWorkflowTasks()
-        .then(res => {
-          this.tasksData = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get workflows from server", err));
-
+      const result = await WorkflowService.getWorkflows();
+      if (result) {
+        this.workflows = result;
+        this.workflows.forEach((workflow: any) => {
+          this.workflowTypes.push(workflow.type);
         });
+      }
+    },
+
+    async getWorkflowTasks() {
+      const result = await WorkflowService.getWorkflowTasks();
+      if (result) this.tasksData = result;
       this.createPanel();
     },
     createPanel() {
@@ -259,9 +252,7 @@ export default defineComponent({
         if (d.target.x - d.source.x == 0 && d.target.y - d.source.y == 0) {
           return `M${d.source.x},${d.source.y}A 15, 15 1 1, 1 ${d.target.x - 1},${d.target.y - 1}`;
         } else {
-          return `M${d.source.x},${d.source.y - 2}A${r},${r} 0 0,0 ${
-            d.target.x
-          },${d.target.y + 2}`;
+          return `M${d.source.x},${d.source.y - 2}A${r},${r} 0 0,0 ${d.target.x},${d.target.y + 2}`;
         }
       }
     }

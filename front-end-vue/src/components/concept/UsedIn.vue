@@ -65,7 +65,7 @@ export default defineComponent({
   },
   data() {
     return {
-      usages: [],
+      usages: [] as any[],
       loading: false,
       selected: {} as any,
       recordsTotal: 0,
@@ -76,23 +76,11 @@ export default defineComponent({
   },
   methods: {
     async getUsages(iri: string, pageIndex: number, pageSize: number) {
-      await EntityService.getEntityUsages(iri, pageIndex, pageSize)
-        .then(res => {
-          this.usages = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get usages from server", err));
-        });
+      this.usages = await EntityService.getEntityUsages(iri, pageIndex, pageSize);
     },
 
     async getRecordsSize(iri: string) {
-      await EntityService.getUsagesTotalRecords(iri)
-        .then(res => {
-          this.recordsTotal = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get usages record count from server", err));
-        });
+      this.recordsTotal = await EntityService.getUsagesTotalRecords(iri);
     },
 
     async handlePage(event: any) {

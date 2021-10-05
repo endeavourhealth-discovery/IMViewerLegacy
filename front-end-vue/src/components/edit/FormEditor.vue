@@ -57,7 +57,6 @@ import EntityService from "@/services/EntityService";
 import { defineComponent } from "@vue/runtime-core";
 import Dropdown from "primevue/dropdown";
 import Card from "primevue/card";
-import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
@@ -82,22 +81,10 @@ export default defineComponent({
     };
   },
   async mounted() {
-    await EntityService.getNamespaces()
-      .then(res => {
-        this.schemeOptions = res.data;
-      })
-      .catch(err => {
-        this.$toast.add(LoggerService.error("Failed to get scheme options from server", err));
-      });
-    await EntityService.getEntityChildren(IM.STATUS)
-      .then(res => {
-        this.statusOptions = res.data;
-      })
-      .catch(err => {
-        this.$toast.add(LoggerService.error("Failed to get status options from server", err));
-      });
-  },
-  methods: {}
+    this.schemeOptions = await EntityService.getNamespaces();
+
+    this.statusOptions = await EntityService.getEntityChildren(IM.STATUS);
+  }
 });
 </script>
 

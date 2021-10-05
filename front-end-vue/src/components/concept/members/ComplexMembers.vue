@@ -10,7 +10,6 @@
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "ComplexMembers",
@@ -38,13 +37,7 @@ export default defineComponent({
 
     async getComplexMembers() {
       this.loading = true;
-      await EntityService.getComplexMembers(this.conceptIri)
-        .then(res => {
-          this.complexMembers = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(LoggerService.error("Failed to get complex members from server", err));
-        });
+      this.complexMembers = await EntityService.getComplexMembers(this.conceptIri);
       this.loading = false;
     }
   }
