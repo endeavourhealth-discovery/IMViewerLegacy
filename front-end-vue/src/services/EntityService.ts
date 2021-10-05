@@ -1,6 +1,5 @@
 import { SearchRequest } from "@/models/search/SearchRequest";
 import axios, { CancelToken } from "axios";
-import { ConceptNode } from "@/models/ConceptNode";
 import { IM } from "@/vocabulary/IM";
 import GraphData from "@/models/GraphData";
 
