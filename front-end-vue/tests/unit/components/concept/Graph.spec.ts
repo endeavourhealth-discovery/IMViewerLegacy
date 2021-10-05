@@ -497,15 +497,6 @@ describe("Graph.vue", () => {
     });
   });
 
-  it("can get graph ___ request fail", async () => {
-    console.error = jest.fn();
-    EntityService.getEntityGraph = jest.fn().mockRejectedValue({ code: 403, message: "Test error" });
-    wrapper.vm.getGraph();
-    await flushPromises();
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get entity graph data from server", "Test error"));
-  });
-
   it("can navigate", () => {
     wrapper.vm.navigate("http://endhealth.info/im#12345678");
     expect(mockRouter.push).toHaveBeenCalledTimes(1);

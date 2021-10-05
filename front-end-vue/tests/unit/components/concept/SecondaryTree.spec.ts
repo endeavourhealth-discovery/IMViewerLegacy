@@ -17,13 +17,11 @@ describe("SecondaryTree.vue", () => {
       add: jest.fn()
     };
 
-    EntityService.getPartialEntity = jest
-      .fn()
-      .mockResolvedValue({
-        "@id": "http://snomed.info/sct#298382003",
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
-        "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)"
-      });
+    EntityService.getPartialEntity = jest.fn().mockResolvedValue({
+      "@id": "http://snomed.info/sct#298382003",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
+      "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)"
+    });
     EntityService.getEntityParents = jest.fn().mockResolvedValue([
       {
         name: "Curvature of spine (disorder)",
@@ -270,27 +268,6 @@ describe("SecondaryTree.vue", () => {
         }
       ]
     });
-  });
-
-  it("can getConceptAggregate ___ fail", async () => {
-    wrapper.vm.conceptAggregate = {};
-    expect(wrapper.vm.conceptAggregate).toStrictEqual({});
-    EntityService.getPartialEntity = jest.fn().mockRejectedValue(false);
-    EntityService.getEntityParents = jest.fn().mockRejectedValue(false);
-    EntityService.getEntityChildren = jest.fn().mockRejectedValue(false);
-    wrapper.vm.getConceptAggregate("http://snomed.info/sct#298382003");
-    await flushPromises();
-    expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
-    expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", [
-      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-      "http://www.w3.org/2000/01/rdf-schema#label"
-    ]);
-    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityParents).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Secondary tree selected concept aggregate server request failed"));
   });
 
   it("can createTree ___  !selected in expanded", async () => {
@@ -588,46 +565,44 @@ describe("SecondaryTree.vue", () => {
   });
 
   it("can expandChildren ___ !key ___ resolved service", async () => {
-    EntityService.getEntityChildren = jest.fn().mockResolvedValue({
-      data: [
-        {
-          name: "Acquired kyphoscoliosis (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#405771009"
-        },
-        {
-          name: "Adolescent idiopathic scoliosis (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#203646004"
-        },
-        {
-          name: "Infantile idiopathic scoliosis of cervical spine (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#310421000119106"
-        },
-        {
-          name: "Post-surgical scoliosis (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#203647008"
-        },
-        {
-          name: "Scoliosis caused by radiation (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#47518006"
-        },
-        {
-          name: "Thoracogenic scoliosis (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#72992003"
-        }
-      ]
-    });
+    EntityService.getEntityChildren = jest.fn().mockResolvedValue([
+      {
+        name: "Acquired kyphoscoliosis (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#405771009"
+      },
+      {
+        name: "Adolescent idiopathic scoliosis (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#203646004"
+      },
+      {
+        name: "Infantile idiopathic scoliosis of cervical spine (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#310421000119106"
+      },
+      {
+        name: "Post-surgical scoliosis (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#203647008"
+      },
+      {
+        name: "Scoliosis caused by radiation (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#47518006"
+      },
+      {
+        name: "Thoracogenic scoliosis (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#72992003"
+      }
+    ]);
     wrapper.vm.expandedKeys = {};
     const testNode = {
       key: "Acquired scoliosis (disorder)",
@@ -719,46 +694,44 @@ describe("SecondaryTree.vue", () => {
   });
 
   it("can expandChildren ___ key ___ resolved service ___ dup children", async () => {
-    EntityService.getEntityChildren = jest.fn().mockResolvedValue({
-      data: [
-        {
-          name: "Acquired kyphoscoliosis (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#405771009"
-        },
-        {
-          name: "Adolescent idiopathic scoliosis (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#203646004"
-        },
-        {
-          name: "Infantile idiopathic scoliosis of cervical spine (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#310421000119106"
-        },
-        {
-          name: "Post-surgical scoliosis (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#203647008"
-        },
-        {
-          name: "Scoliosis caused by radiation (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#47518006"
-        },
-        {
-          name: "Thoracogenic scoliosis (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#72992003"
-        }
-      ]
-    });
+    EntityService.getEntityChildren = jest.fn().mockResolvedValue([
+      {
+        name: "Acquired kyphoscoliosis (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#405771009"
+      },
+      {
+        name: "Adolescent idiopathic scoliosis (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#203646004"
+      },
+      {
+        name: "Infantile idiopathic scoliosis of cervical spine (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#310421000119106"
+      },
+      {
+        name: "Post-surgical scoliosis (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#203647008"
+      },
+      {
+        name: "Scoliosis caused by radiation (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#47518006"
+      },
+      {
+        name: "Thoracogenic scoliosis (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#72992003"
+      }
+    ]);
     wrapper.vm.expandedKeys = { "Acquired scoliosis (disorder)": true };
     const testNode = {
       key: "Acquired scoliosis (disorder)",
@@ -857,29 +830,6 @@ describe("SecondaryTree.vue", () => {
       loading: false,
       typeIcon: "far fa-fw fa-lightbulb"
     });
-    expect(testNode.loading).toBe(false);
-  });
-
-  it("can expandChildren ___ failed service", async () => {
-    EntityService.getEntityChildren = jest.fn().mockRejectedValue(false);
-    wrapper.vm.expandedKeys = {};
-    const testNode = {
-      key: "Acquired scoliosis (disorder)",
-      label: "Acquired scoliosis (disorder)",
-      typeIcon: "far fa-fw fa-lightbulb",
-      color: "#e39a3688",
-      data: "http://snomed.info/sct#111266001",
-      leaf: false,
-      loading: false,
-      children: []
-    };
-    wrapper.vm.expandChildren(testNode);
-    expect(testNode.loading).toBe(true);
-    await flushPromises();
-    expect(wrapper.vm.expandedKeys).toStrictEqual({ "Acquired scoliosis (disorder)": true });
-    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Concept children server request failed. Concept child failed to expand."));
     expect(testNode.loading).toBe(false);
   });
 
@@ -1121,22 +1071,6 @@ describe("SecondaryTree.vue", () => {
     ]);
   });
 
-  it("can expandParents ___ service fail", async () => {
-    wrapper.vm.expandedKeys = {};
-    wrapper.vm.createExpandedParentTree = jest.fn();
-    wrapper.vm.setExpandedParentParents = jest.fn();
-    EntityService.getEntityParents = jest.fn().mockRejectedValue(false);
-    wrapper.vm.expandParents(0);
-    await flushPromises();
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.expandedKeys).toStrictEqual({ "Scoliosis deformity of spine (disorder)": true });
-    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.createExpandedParentTree).not.toHaveBeenCalled();
-    expect(wrapper.vm.setExpandedParentParents).not.toHaveBeenCalled();
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Concept parents server request failed during parent expand stage 1"));
-  });
-
   it("can expandParents ___ no root", async () => {
     wrapper.vm.root = undefined;
     EntityService.getEntityParents = jest.fn().mockRejectedValue(false);
@@ -1295,23 +1229,13 @@ describe("SecondaryTree.vue", () => {
     expect(wrapper.vm.expandedKeys).toStrictEqual({ "Acquired curvature of spine (disorder)": true, "Scoliosis deformity of spine (disorder)": true });
   });
 
-  it("can setExpandedParentParents ___ api fail", async () => {
-    EntityService.getEntityParents = jest.fn().mockRejectedValue(false);
-    wrapper.vm.setExpandedParentParents(0);
-    await flushPromises();
-    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityParents).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Concept parents server request failed during parent expand stage 2"));
-  });
-
   it("can setExpandedParentParents ___ length === 0", async () => {
     expect(wrapper.vm.currentParent).toStrictEqual({ iri: "http://snomed.info/sct#64217002", listPosition: 0, name: "Curvature of spine (disorder)" });
     expect(wrapper.vm.alternateParents).toStrictEqual([
       { iri: "http://snomed.info/sct#928000", listPosition: 1, name: "Disorder of musculoskeletal system (disorder)" },
       { iri: "http://snomed.info/sct#699699005", listPosition: 2, name: "Disorder of vertebral column (disorder)" }
     ]);
-    EntityService.getEntityParents = jest.fn().mockResolvedValue({ data: [] });
+    EntityService.getEntityParents = jest.fn().mockResolvedValue([]);
     wrapper.vm.setExpandedParentParents();
     await flushPromises();
     expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
@@ -1326,16 +1250,14 @@ describe("SecondaryTree.vue", () => {
       { iri: "http://snomed.info/sct#928000", listPosition: 1, name: "Disorder of musculoskeletal system (disorder)" },
       { iri: "http://snomed.info/sct#699699005", listPosition: 2, name: "Disorder of vertebral column (disorder)" }
     ]);
-    EntityService.getEntityParents = jest.fn().mockResolvedValue({
-      data: [
-        {
-          "@id": "http://endhealth.info/im#InformationModel",
-          hasChildren: false,
-          name: "Information Model",
-          type: [{ name: "Folder", "@id": "http://endhealth.info/im#Folder" }]
-        }
-      ]
-    });
+    EntityService.getEntityParents = jest.fn().mockResolvedValue([
+      {
+        "@id": "http://endhealth.info/im#InformationModel",
+        hasChildren: false,
+        name: "Information Model",
+        type: [{ name: "Folder", "@id": "http://endhealth.info/im#Folder" }]
+      }
+    ]);
     wrapper.vm.setExpandedParentParents();
     await flushPromises();
     expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
@@ -1350,43 +1272,41 @@ describe("SecondaryTree.vue", () => {
       { iri: "http://snomed.info/sct#928000", listPosition: 1, name: "Disorder of musculoskeletal system (disorder)" },
       { iri: "http://snomed.info/sct#699699005", listPosition: 2, name: "Disorder of vertebral column (disorder)" }
     ]);
-    EntityService.getEntityParents = jest.fn().mockResolvedValue({
-      data: [
-        {
-          name: "Curvature of spine (disorder)",
-          hasChildren: false,
-          type: [
-            {
-              name: "Class",
-              "@id": "http://www.w3.org/2002/07/owl#Class"
-            }
-          ],
-          "@id": "http://snomed.info/sct#64217002"
-        },
-        {
-          name: "Disorder of musculoskeletal system (disorder)",
-          hasChildren: false,
-          type: [
-            {
-              name: "Class",
-              "@id": "http://www.w3.org/2002/07/owl#Class"
-            }
-          ],
-          "@id": "http://snomed.info/sct#928000"
-        },
-        {
-          name: "Disorder of vertebral column (disorder)",
-          hasChildren: false,
-          type: [
-            {
-              name: "Class",
-              "@id": "http://www.w3.org/2002/07/owl#Class"
-            }
-          ],
-          "@id": "http://snomed.info/sct#699699005"
-        }
-      ]
-    });
+    EntityService.getEntityParents = jest.fn().mockResolvedValue([
+      {
+        name: "Curvature of spine (disorder)",
+        hasChildren: false,
+        type: [
+          {
+            name: "Class",
+            "@id": "http://www.w3.org/2002/07/owl#Class"
+          }
+        ],
+        "@id": "http://snomed.info/sct#64217002"
+      },
+      {
+        name: "Disorder of musculoskeletal system (disorder)",
+        hasChildren: false,
+        type: [
+          {
+            name: "Class",
+            "@id": "http://www.w3.org/2002/07/owl#Class"
+          }
+        ],
+        "@id": "http://snomed.info/sct#928000"
+      },
+      {
+        name: "Disorder of vertebral column (disorder)",
+        hasChildren: false,
+        type: [
+          {
+            name: "Class",
+            "@id": "http://www.w3.org/2002/07/owl#Class"
+          }
+        ],
+        "@id": "http://snomed.info/sct#699699005"
+      }
+    ]);
     wrapper.vm.setExpandedParentParents();
     await flushPromises();
     expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);

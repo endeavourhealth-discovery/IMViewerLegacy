@@ -90,18 +90,6 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
     jest.clearAllMocks();
   });
 
-  it("fires a toast on conceptAggregate fetch error", async () => {
-    EntityService.getEntityChildren = jest.fn().mockRejectedValue({ code: 400, error: "Test error" });
-    console.error = jest.fn();
-    wrapper.vm.getConceptAggregate();
-    await wrapper.vm.$nextTick();
-    await flushPromises();
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Hierarchy tree concept aggregate fetch failed", "Test error"));
-    expect(console.error).toHaveBeenCalledTimes(2);
-    jest.clearAllMocks();
-  });
-
   it("handles conceptIri changes ___ tree locked ___ false", async () => {
     expect(wrapper.vm.treeLocked).toBe(false);
     wrapper.vm.getConceptAggregate = jest.fn();
@@ -205,304 +193,298 @@ describe("Hierarchy.vue ___ Concept", () => {
   beforeEach(async () => {
     jest.resetAllMocks();
     EntityService.getPartialEntity = jest.fn().mockResolvedValue({
-      data: {
-        "@id": "http://snomed.info/sct#298382003",
-        "http://endhealth.info/im#isA": [
-          {
-            "@id": "http://snomed.info/sct#64217002",
-            name: "Curvature of spine (disorder)"
-          },
-          {
-            "@id": "http://snomed.info/sct#928000",
-            name: "Disorder of musculoskeletal system (disorder)"
-          },
-          {
-            "@id": "http://snomed.info/sct#699699005",
-            name: "Disorder of vertebral column (disorder)"
-          }
-        ],
-        "http://endhealth.info/im#status": {
-          "@id": "http://endhealth.info/im#Active",
-          name: "Active"
+      "@id": "http://snomed.info/sct#298382003",
+      "http://endhealth.info/im#isA": [
+        {
+          "@id": "http://snomed.info/sct#64217002",
+          name: "Curvature of spine (disorder)"
         },
-        "http://endhealth.info/im#code": "298382003",
-        "http://endhealth.info/im#roleGroup": [
-          {
-            "http://endhealth.info/im#groupNumber": {
-              "@value": 1,
-              "@type": "http://www.w3.org/2001/XMLSchema#integer"
+        {
+          "@id": "http://snomed.info/sct#928000",
+          name: "Disorder of musculoskeletal system (disorder)"
+        },
+        {
+          "@id": "http://snomed.info/sct#699699005",
+          name: "Disorder of vertebral column (disorder)"
+        }
+      ],
+      "http://endhealth.info/im#status": {
+        "@id": "http://endhealth.info/im#Active",
+        name: "Active"
+      },
+      "http://endhealth.info/im#code": "298382003",
+      "http://endhealth.info/im#roleGroup": [
+        {
+          "http://endhealth.info/im#groupNumber": {
+            "@value": 1,
+            "@type": "http://www.w3.org/2001/XMLSchema#integer"
+          },
+          "http://www.w3.org/2002/07/owl#someValuesFrom": {
+            "@id": "http://snomed.info/sct#31739005",
+            name: "Lateral abnormal curvature (morphologic abnormality)"
+          },
+          "http://www.w3.org/2002/07/owl#onProperty": {
+            "@id": "http://snomed.info/sct#116676008",
+            name: "Associated morphology (attribute)"
+          },
+          "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
+            "@id": "http://www.w3.org/2002/07/owl#Restriction",
+            name: "Restriction"
+          }
+        }
+      ],
+      "http://endhealth.info/im#hasMap": [
+        {
+          "http://endhealth.info/im#oneOf": [
+            {
+              "http://endhealth.info/im#matchedTo": {
+                "@id": "http://endhealth.info/ICD10#M419",
+                name: "Scoliosis, unspecified"
+              },
+              "http://endhealth.info/im#mapAdvice": "ALWAYS M41.9 | FIFTH CHARACTER POSSIBLE",
+              "http://endhealth.info/im#mapPriority": {
+                "@value": 3,
+                "@type": "http://www.w3.org/2001/XMLSchema#integer"
+              },
+              "http://endhealth.info/im#assuranceLevel": {
+                "@id": "http://endhealth.info/im#NationallyAssuredUK",
+                name: "Nationally assured UK level"
+              }
             },
-            "http://www.w3.org/2002/07/owl#someValuesFrom": {
-              "@id": "http://snomed.info/sct#31739005",
-              name: "Lateral abnormal curvature (morphologic abnormality)"
+            {
+              "http://endhealth.info/im#matchedTo": {
+                "@id": "http://endhealth.info/ICD10#M418",
+                name: "Other forms of scoliosis"
+              },
+              "http://endhealth.info/im#mapAdvice": "ALWAYS M41.8 | FIFTH CHARACTER POSSIBLE",
+              "http://endhealth.info/im#mapPriority": {
+                "@value": 2,
+                "@type": "http://www.w3.org/2001/XMLSchema#integer"
+              },
+              "http://endhealth.info/im#assuranceLevel": {
+                "@id": "http://endhealth.info/im#NationallyAssuredUK",
+                name: "Nationally assured UK level"
+              }
             },
-            "http://www.w3.org/2002/07/owl#onProperty": {
-              "@id": "http://snomed.info/sct#116676008",
-              name: "Associated morphology (attribute)"
-            },
-            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
-              "@id": "http://www.w3.org/2002/07/owl#Restriction",
-              name: "Restriction"
+            {
+              "http://endhealth.info/im#matchedTo": {
+                "@id": "http://endhealth.info/ICD10#Q675",
+                name: "Congenital deformity of spine"
+              },
+              "http://endhealth.info/im#mapAdvice": "ALWAYS Q67.5",
+              "http://endhealth.info/im#mapPriority": {
+                "@value": 1,
+                "@type": "http://www.w3.org/2001/XMLSchema#integer"
+              },
+              "http://endhealth.info/im#assuranceLevel": {
+                "@id": "http://endhealth.info/im#NationallyAssuredUK",
+                name: "Nationally assured UK level"
+              }
             }
-          }
-        ],
-        "http://endhealth.info/im#hasMap": [
-          {
-            "http://endhealth.info/im#oneOf": [
-              {
-                "http://endhealth.info/im#matchedTo": {
-                  "@id": "http://endhealth.info/ICD10#M419",
-                  name: "Scoliosis, unspecified"
-                },
-                "http://endhealth.info/im#mapAdvice": "ALWAYS M41.9 | FIFTH CHARACTER POSSIBLE",
-                "http://endhealth.info/im#mapPriority": {
-                  "@value": 3,
-                  "@type": "http://www.w3.org/2001/XMLSchema#integer"
-                },
-                "http://endhealth.info/im#assuranceLevel": {
-                  "@id": "http://endhealth.info/im#NationallyAssuredUK",
-                  name: "Nationally assured UK level"
-                }
-              },
-              {
-                "http://endhealth.info/im#matchedTo": {
-                  "@id": "http://endhealth.info/ICD10#M418",
-                  name: "Other forms of scoliosis"
-                },
-                "http://endhealth.info/im#mapAdvice": "ALWAYS M41.8 | FIFTH CHARACTER POSSIBLE",
-                "http://endhealth.info/im#mapPriority": {
-                  "@value": 2,
-                  "@type": "http://www.w3.org/2001/XMLSchema#integer"
-                },
-                "http://endhealth.info/im#assuranceLevel": {
-                  "@id": "http://endhealth.info/im#NationallyAssuredUK",
-                  name: "Nationally assured UK level"
-                }
-              },
-              {
-                "http://endhealth.info/im#matchedTo": {
-                  "@id": "http://endhealth.info/ICD10#Q675",
-                  name: "Congenital deformity of spine"
-                },
-                "http://endhealth.info/im#mapAdvice": "ALWAYS Q67.5",
-                "http://endhealth.info/im#mapPriority": {
-                  "@value": 1,
-                  "@type": "http://www.w3.org/2001/XMLSchema#integer"
-                },
-                "http://endhealth.info/im#assuranceLevel": {
-                  "@id": "http://endhealth.info/im#NationallyAssuredUK",
-                  name: "Nationally assured UK level"
-                }
-              }
-            ]
-          }
-        ],
-        "http://endhealth.info/im#scheme": {
-          "@id": "http://endhealth.info/im#SnomedCodeScheme",
-          name: "Snomed-CT code"
-        },
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
-        "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)",
-        "http://www.w3.org/2002/07/owl#equivalentClass": [
-          {
-            "http://www.w3.org/2002/07/owl#intersectionOf": [
-              {
-                "@id": "http://snomed.info/sct#64572001",
-                name: "Disease (disorder)"
-              },
-              {
-                "http://www.w3.org/2002/07/owl#someValuesFrom": {
-                  "http://www.w3.org/2002/07/owl#intersectionOf": [
-                    {
-                      "http://www.w3.org/2002/07/owl#someValuesFrom": {
-                        "@id": "http://snomed.info/sct#31739005",
-                        name: "Lateral abnormal curvature (morphologic abnormality)"
-                      },
-                      "http://www.w3.org/2002/07/owl#onProperty": {
-                        "@id": "http://snomed.info/sct#116676008",
-                        name: "Associated morphology (attribute)"
-                      },
-                      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
-                        "@id": "http://www.w3.org/2002/07/owl#Restriction",
-                        name: "Restriction"
-                      }
+          ]
+        }
+      ],
+      "http://endhealth.info/im#scheme": {
+        "@id": "http://endhealth.info/im#SnomedCodeScheme",
+        name: "Snomed-CT code"
+      },
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
+      "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)",
+      "http://www.w3.org/2002/07/owl#equivalentClass": [
+        {
+          "http://www.w3.org/2002/07/owl#intersectionOf": [
+            {
+              "@id": "http://snomed.info/sct#64572001",
+              name: "Disease (disorder)"
+            },
+            {
+              "http://www.w3.org/2002/07/owl#someValuesFrom": {
+                "http://www.w3.org/2002/07/owl#intersectionOf": [
+                  {
+                    "http://www.w3.org/2002/07/owl#someValuesFrom": {
+                      "@id": "http://snomed.info/sct#31739005",
+                      name: "Lateral abnormal curvature (morphologic abnormality)"
                     },
-                    {
-                      "http://www.w3.org/2002/07/owl#someValuesFrom": {
-                        "@id": "http://snomed.info/sct#289959001",
-                        name: "Musculoskeletal structure of spine (body structure)"
-                      },
-                      "http://www.w3.org/2002/07/owl#onProperty": {
-                        "@id": "http://snomed.info/sct#363698007",
-                        name: "Finding site (attribute)"
-                      },
-                      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
-                        "@id": "http://www.w3.org/2002/07/owl#Restriction",
-                        name: "Restriction"
-                      }
+                    "http://www.w3.org/2002/07/owl#onProperty": {
+                      "@id": "http://snomed.info/sct#116676008",
+                      name: "Associated morphology (attribute)"
+                    },
+                    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
+                      "@id": "http://www.w3.org/2002/07/owl#Restriction",
+                      name: "Restriction"
                     }
-                  ]
-                },
-                "http://www.w3.org/2002/07/owl#onProperty": {
-                  "@id": "http://endhealth.info/im#roleGroup",
-                  name: "role group"
-                },
-                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
-                  "@id": "http://www.w3.org/2002/07/owl#Restriction",
-                  name: "Restriction"
-                }
+                  },
+                  {
+                    "http://www.w3.org/2002/07/owl#someValuesFrom": {
+                      "@id": "http://snomed.info/sct#289959001",
+                      name: "Musculoskeletal structure of spine (body structure)"
+                    },
+                    "http://www.w3.org/2002/07/owl#onProperty": {
+                      "@id": "http://snomed.info/sct#363698007",
+                      name: "Finding site (attribute)"
+                    },
+                    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
+                      "@id": "http://www.w3.org/2002/07/owl#Restriction",
+                      name: "Restriction"
+                    }
+                  }
+                ]
+              },
+              "http://www.w3.org/2002/07/owl#onProperty": {
+                "@id": "http://endhealth.info/im#roleGroup",
+                name: "role group"
+              },
+              "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
+                "@id": "http://www.w3.org/2002/07/owl#Restriction",
+                name: "Restriction"
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
+      ]
+    });
+    EntityService.getEntityParents = jest.fn().mockResolvedValue([
+      {
+        name: "Curvature of spine (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#64217002"
+      },
+      {
+        name: "Disorder of musculoskeletal system (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#928000"
+      },
+      {
+        name: "Disorder of vertebral column (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#699699005"
       }
-    });
-    EntityService.getEntityParents = jest.fn().mockResolvedValue({
-      data: [
-        {
-          name: "Curvature of spine (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#64217002"
-        },
-        {
-          name: "Disorder of musculoskeletal system (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#928000"
-        },
-        {
-          name: "Disorder of vertebral column (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#699699005"
-        }
-      ]
-    });
-    EntityService.getEntityChildren = jest.fn().mockResolvedValue({
-      data: [
-        {
-          name: "Acquired scoliosis (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#111266001"
-        },
-        {
-          name: "Acrodysplasia scoliosis (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#773773006"
-        },
-        {
-          name: "Congenital scoliosis due to bony malformation (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#205045003"
-        },
-        {
-          name: "Distal arthrogryposis type 4 (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#715575001"
-        },
-        {
-          name: "Duane anomaly, myopathy, scoliosis syndrome (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#722432000"
-        },
-        {
-          name: "Horizontal gaze palsy with progressive scoliosis (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#702381007"
-        },
-        {
-          name: "Idiopathic scoliosis (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#203639008"
-        },
-        {
-          name: "Idiopathic scoliosis AND/OR kyphoscoliosis (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#30611007"
-        },
-        {
-          name: "Kyphoscoliosis and scoliosis (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#203638000"
-        },
-        {
-          name: "Kyphoscoliosis deformity of spine (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#405773007"
-        },
-        {
-          name: "Lordoscoliosis (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#111268000"
-        },
-        {
-          name: "Neuromuscular scoliosis (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#203662005"
-        },
-        {
-          name: "Postural scoliosis (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#203645000"
-        },
-        {
-          name: "Radioulnar synostosis with microcephaly and scoliosis syndrome (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#719162001"
-        },
-        {
-          name: "Scoliosis in connective tissue anomalies (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#203664006"
-        },
-        {
-          name: "Scoliosis in neurofibromatosis (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#203663000"
-        },
-        {
-          name: "Scoliosis in skeletal dysplasia (disorder)",
-          hasChildren: false,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#203661003"
-        },
-        {
-          name: "Scoliosis of cervical spine (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#298392006"
-        },
-        {
-          name: "Scoliosis of lumbar spine (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#298591003"
-        },
-        {
-          name: "Scoliosis of thoracic spine (disorder)",
-          hasChildren: true,
-          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-          "@id": "http://snomed.info/sct#298494008"
-        }
-      ]
-    });
+    ]);
+    EntityService.getEntityChildren = jest.fn().mockResolvedValue([
+      {
+        name: "Acquired scoliosis (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#111266001"
+      },
+      {
+        name: "Acrodysplasia scoliosis (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#773773006"
+      },
+      {
+        name: "Congenital scoliosis due to bony malformation (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#205045003"
+      },
+      {
+        name: "Distal arthrogryposis type 4 (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#715575001"
+      },
+      {
+        name: "Duane anomaly, myopathy, scoliosis syndrome (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#722432000"
+      },
+      {
+        name: "Horizontal gaze palsy with progressive scoliosis (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#702381007"
+      },
+      {
+        name: "Idiopathic scoliosis (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#203639008"
+      },
+      {
+        name: "Idiopathic scoliosis AND/OR kyphoscoliosis (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#30611007"
+      },
+      {
+        name: "Kyphoscoliosis and scoliosis (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#203638000"
+      },
+      {
+        name: "Kyphoscoliosis deformity of spine (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#405773007"
+      },
+      {
+        name: "Lordoscoliosis (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#111268000"
+      },
+      {
+        name: "Neuromuscular scoliosis (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#203662005"
+      },
+      {
+        name: "Postural scoliosis (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#203645000"
+      },
+      {
+        name: "Radioulnar synostosis with microcephaly and scoliosis syndrome (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#719162001"
+      },
+      {
+        name: "Scoliosis in connective tissue anomalies (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#203664006"
+      },
+      {
+        name: "Scoliosis in neurofibromatosis (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#203663000"
+      },
+      {
+        name: "Scoliosis in skeletal dysplasia (disorder)",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#203661003"
+      },
+      {
+        name: "Scoliosis of cervical spine (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#298392006"
+      },
+      {
+        name: "Scoliosis of lumbar spine (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#298591003"
+      },
+      {
+        name: "Scoliosis of thoracic spine (disorder)",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+        "@id": "http://snomed.info/sct#298494008"
+      }
+    ]);
     mockStore = {
       state: {
         conceptIri: "http://snomed.info/sct#298382003",
@@ -1293,24 +1275,6 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(testNode.children).toHaveLength(21);
   });
 
-  it("can expand children ___ api fail", async () => {
-    wrapper.vm.containsChild = jest.fn().mockReturnValue(false);
-    EntityService.getEntityChildren = jest.fn().mockRejectedValue({ code: 404, message: "testError" });
-    const testNode = {
-      data: "http://endhealth.info/im#TestConcept",
-      key: "testKey",
-      loading: false,
-      children: [1]
-    };
-    await wrapper.vm.expandChildren(testNode);
-    await wrapper.vm.$nextTick();
-    await flushPromises();
-    await wrapper.vm.$nextTick();
-    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept");
-    expect(mockToast.add).toHaveBeenCalled();
-  });
-
   it("can expand children ___ containsChildTrue", async () => {
     wrapper.vm.containsChild = jest.fn().mockReturnValue(true);
     const testNode = {
@@ -1350,66 +1314,6 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#64217002");
   });
 
-  it("can expand parents __ api 1 fail", async () => {
-    EntityService.getEntityParents = jest.fn().mockRejectedValue({ code: 404, message: "Test error" });
-    wrapper.vm.root = [
-      {
-        data: "http://snomed.info/sct#298382003",
-        key: "Scoliosis deformity of spine (disorder)"
-      }
-    ];
-    await wrapper.vm.expandParents();
-    await wrapper.vm.$nextTick();
-    await flushPromises();
-    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003");
-    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#298382003");
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Concept parents server request 1 failed"));
-  });
-
-  it("can expand parents __ api 2 fail", async () => {
-    wrapper.vm.root = [
-      {
-        data: "http://snomed.info/sct#298382003",
-        key: "Scoliosis deformity of spine (disorder)"
-      }
-    ];
-    EntityService.getEntityParents = jest
-      .fn()
-      .mockResolvedValueOnce({
-        data: [
-          {
-            name: "Curvature of spine (disorder)",
-            hasChildren: false,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://snomed.info/sct#64217002"
-          },
-          {
-            name: "Disorder of musculoskeletal system (disorder)",
-            hasChildren: false,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://snomed.info/sct#928000"
-          },
-          {
-            name: "Disorder of vertebral column (disorder)",
-            hasChildren: false,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://snomed.info/sct#699699005"
-          }
-        ]
-      })
-      .mockRejectedValue({ code: 404, message: "Test error" });
-    await wrapper.vm.expandParents();
-    await wrapper.vm.$nextTick();
-    await flushPromises();
-    expect(EntityService.getEntityParents).toHaveBeenCalledTimes(2);
-    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003");
-    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#64217002");
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Concept parents server request 2 failed"));
-  });
-
   it("can expand parents __ api 2 no data", async () => {
     wrapper.vm.root = [
       {
@@ -1419,29 +1323,27 @@ describe("Hierarchy.vue ___ Concept", () => {
     ];
     EntityService.getEntityParents = jest
       .fn()
-      .mockResolvedValueOnce({
-        data: [
-          {
-            name: "Curvature of spine (disorder)",
-            hasChildren: false,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://snomed.info/sct#64217002"
-          },
-          {
-            name: "Disorder of musculoskeletal system (disorder)",
-            hasChildren: false,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://snomed.info/sct#928000"
-          },
-          {
-            name: "Disorder of vertebral column (disorder)",
-            hasChildren: false,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://snomed.info/sct#699699005"
-          }
-        ]
-      })
-      .mockResolvedValueOnce({ data: [] });
+      .mockResolvedValueOnce([
+        {
+          name: "Curvature of spine (disorder)",
+          hasChildren: false,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://snomed.info/sct#64217002"
+        },
+        {
+          name: "Disorder of musculoskeletal system (disorder)",
+          hasChildren: false,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://snomed.info/sct#928000"
+        },
+        {
+          name: "Disorder of vertebral column (disorder)",
+          hasChildren: false,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://snomed.info/sct#699699005"
+        }
+      ])
+      .mockResolvedValueOnce([]);
     await wrapper.vm.expandParents();
     await wrapper.vm.$nextTick();
     await flushPromises();

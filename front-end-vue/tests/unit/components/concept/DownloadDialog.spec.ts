@@ -60,14 +60,12 @@ describe("DownloadDialog.vue", () => {
         inheritedFrom: {}
       }
     ]);
-    EntityService.getSemanticProperties = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          property: { name: "Associated morphology (attribute)", "@id": "http://snomed.info/sct#116676008" },
-          type: { name: "Lateral abnormal curvature (morphologic abnormality)", "@id": "http://snomed.info/sct#31739005" }
-        }
-      ]);
+    EntityService.getSemanticProperties = jest.fn().mockResolvedValue([
+      {
+        property: { name: "Associated morphology (attribute)", "@id": "http://snomed.info/sct#116676008" },
+        type: { name: "Lateral abnormal curvature (morphologic abnormality)", "@id": "http://snomed.info/sct#31739005" }
+      }
+    ]);
     EntityService.getEntityMembers = jest.fn().mockResolvedValue({
       valueSet: { name: "Family history", "@id": "http://endhealth.info/im#VSET_RecordType_FamilyHistory" },
       members: [
@@ -239,45 +237,6 @@ describe("DownloadDialog.vue", () => {
       ],
       limited: false
     });
-    expect(wrapper.vm.setIncludeBooleans).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.loading).toBe(false);
-  });
-
-  it("Inits ___ fail", async () => {
-    console.error = jest.fn();
-    EntityService.getPartialEntity = jest.fn().mockRejectedValue({ code: 403, message: "Test error" });
-    EntityService.getEntityParents = jest.fn().mockRejectedValue({ code: 403, message: "Test error" });
-    EntityService.getEntityChildren = jest.fn().mockRejectedValue({ code: 403, message: "Test error" });
-    EntityService.getDataModelProperties = jest.fn().mockRejectedValue({ code: 403, message: "Test error" });
-    EntityService.getSemanticProperties = jest.fn().mockRejectedValue({ code: 403, message: "Test error" });
-    EntityService.getEntityMembers = jest.fn().mockRejectedValue({ code: 403, message: "Test error" });
-    EntityService.getEntityTermCodes = jest.fn().mockRejectedValue({ code: 403, message: "Test error" });
-    await flushPromises();
-    jest.clearAllMocks();
-    wrapper.vm.setIncludeBooleans = jest.fn();
-    wrapper.vm.init("http://snomed.info/sct#298382003");
-    expect(wrapper.vm.loading).toBe(true);
-    await flushPromises();
-    await wrapper.vm.$nextTick();
-    expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
-    expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN, IM.IS_A]);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
-    expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    expect(EntityService.getSemanticProperties).toHaveBeenCalledTimes(1);
-    expect(EntityService.getSemanticProperties).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://snomed.info/sct#298382003", false, false);
-    expect(EntityService.getEntityTermCodes).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityTermCodes).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    expect(mockToast.add).toHaveBeenCalledTimes(6);
-    expect(mockToast.add).toHaveBeenNthCalledWith(1, LoggerService.error("Failed to get concept data from server"));
-    expect(mockToast.add).toHaveBeenNthCalledWith(2, LoggerService.error("Failed to get children data from server"));
-    expect(mockToast.add).toHaveBeenNthCalledWith(3, LoggerService.error("Failed to get terms from server"));
-    expect(mockToast.add).toHaveBeenNthCalledWith(4, LoggerService.error("Failed to get data model properties from server"));
-    expect(mockToast.add).toHaveBeenNthCalledWith(5, LoggerService.error("Failed to get semantic properties from server"));
-    expect(mockToast.add).toHaveBeenNthCalledWith(6, LoggerService.error("Failed to get members from server"));
     expect(wrapper.vm.setIncludeBooleans).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.loading).toBe(false);
   });

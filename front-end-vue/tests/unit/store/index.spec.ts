@@ -209,8 +209,7 @@ describe("mutations", () => {
     EntityService.advancedSearch = jest.fn().mockResolvedValue({ entities: [{ iri: "testResult" }] });
     LoggerService.info = jest.fn();
     const testInput = { searchRequest: new SearchRequest(), cancelToken: "testCancelToken" };
-    let result = false;
-    await store.dispatch("fetchSearchResults", testInput).then(res => (result = res));
+    await store.dispatch("fetchSearchResults", testInput);
     await flushPromises();
     expect(EntityService.advancedSearch).toBeCalledTimes(1);
     expect(EntityService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
@@ -222,13 +221,12 @@ describe("mutations", () => {
     EntityService.advancedSearch = jest.fn().mockResolvedValue({ status: 400, message: "test fail" });
     LoggerService.error = jest.fn();
     const testInput = { searchRequest: new SearchRequest(), cancelToken: "testCancelToken" };
-    let result = false;
-    await store.dispatch("fetchSearchResults", testInput).then(res => (result = res));
+    await store.dispatch("fetchSearchResults", testInput);
     await flushPromises();
     expect(EntityService.advancedSearch).toBeCalledTimes(1);
     expect(EntityService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
     await flushPromises();
-    expect(store.state.searchResults).toBe([]);
+    expect(store.state.searchResults).toStrictEqual([]);
   });
 
   it("can logoutCurrentUser ___ 200", async () => {

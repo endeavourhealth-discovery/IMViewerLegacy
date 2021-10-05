@@ -338,29 +338,7 @@ describe("Members.vue", () => {
     expect(wrapper.vm.setTableWidth).toHaveBeenCalledTimes(1);
   });
 
-  it("can getMembers ___ fail", async () => {
-    EntityService.getEntityMembers = jest.fn().mockRejectedValue(false);
-    wrapper.vm.members = {};
-    wrapper.vm.expandMembersSizeCheck = jest.fn();
-    wrapper.vm.setTableWidth = jest.fn();
-    wrapper.vm.getMembers();
-    expect(wrapper.vm.loading).toBe(true);
-    expect(wrapper.vm.expandedRowGroups).toStrictEqual(["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]);
-    expect(wrapper.vm.selected).toStrictEqual({});
-    expect(wrapper.vm.subsets).toStrictEqual([]);
-    expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16", false, false, undefined);
-    await flushPromises();
-    expect(wrapper.vm.members).toStrictEqual({});
-    expect(wrapper.vm.expandMembersSizeCheck).not.toHaveBeenCalled();
-    expect(wrapper.vm.loading).toBe(false);
-    expect(wrapper.vm.setTableWidth).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get members from server"));
-  });
-
   it("can getMembers ___ expandMembers", async () => {
-    EntityService.getEntityMembers = jest.fn().mockRejectedValue(false);
     wrapper.vm.members = {};
     wrapper.vm.expandMembers = true;
     wrapper.vm.expandMembersSizeCheck = jest.fn();

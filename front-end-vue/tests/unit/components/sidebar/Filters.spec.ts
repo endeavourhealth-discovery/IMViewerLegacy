@@ -250,86 +250,82 @@ describe("Filters.vue ___ empty store", () => {
   it("getsFilterOptions ___ pass", async () => {
     EntityService.getEntityChildren = jest
       .fn()
-      .mockResolvedValueOnce({
-        data: [
-          {
-            name: "Active",
-            hasChildren: false,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://endhealth.info/im#Active"
-          },
-          {
-            name: "Draft",
-            hasChildren: false,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://endhealth.info/im#Draft"
-          },
-          {
-            name: "Inactive",
-            hasChildren: false,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://endhealth.info/im#Inactive"
-          }
-        ]
-      })
-      .mockResolvedValueOnce({
-        data: [
-          {
-            name: "Class",
-            hasChildren: true,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://www.w3.org/2002/07/owl#Class"
-          },
-          {
-            name: "Concept Set",
-            hasChildren: false,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://endhealth.info/im#ConceptSet"
-          },
-          {
-            name: "Folder",
-            hasChildren: false,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://endhealth.info/im#Folder"
-          },
-          {
-            name: "Node shape",
-            hasChildren: true,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://www.w3.org/ns/shacl#NodeShape"
-          },
-          {
-            name: "ObjectProperty",
-            hasChildren: true,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://www.w3.org/2002/07/owl#ObjectProperty"
-          },
-          {
-            name: "Property",
-            hasChildren: true,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }],
-            "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
-          },
-          {
-            name: "Query template",
-            hasChildren: false,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://endhealth.info/im#QueryTemplate"
-          },
-          {
-            name: "Record type",
-            hasChildren: false,
-            type: [{ name: "Node shape", "@id": "http://www.w3.org/ns/shacl#NodeShape" }],
-            "@id": "http://endhealth.info/im#RecordType"
-          },
-          {
-            name: "Value set",
-            hasChildren: false,
-            type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            "@id": "http://endhealth.info/im#ValueSet"
-          }
-        ]
-      });
+      .mockResolvedValueOnce([
+        {
+          name: "Active",
+          hasChildren: false,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#Active"
+        },
+        {
+          name: "Draft",
+          hasChildren: false,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#Draft"
+        },
+        {
+          name: "Inactive",
+          hasChildren: false,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#Inactive"
+        }
+      ])
+      .mockResolvedValueOnce([
+        {
+          name: "Class",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://www.w3.org/2002/07/owl#Class"
+        },
+        {
+          name: "Concept Set",
+          hasChildren: false,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#ConceptSet"
+        },
+        {
+          name: "Folder",
+          hasChildren: false,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#Folder"
+        },
+        {
+          name: "Node shape",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://www.w3.org/ns/shacl#NodeShape"
+        },
+        {
+          name: "ObjectProperty",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://www.w3.org/2002/07/owl#ObjectProperty"
+        },
+        {
+          name: "Property",
+          hasChildren: true,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }],
+          "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
+        },
+        {
+          name: "Query template",
+          hasChildren: false,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#QueryTemplate"
+        },
+        {
+          name: "Record type",
+          hasChildren: false,
+          type: [{ name: "Node shape", "@id": "http://www.w3.org/ns/shacl#NodeShape" }],
+          "@id": "http://endhealth.info/im#RecordType"
+        },
+        {
+          name: "Value set",
+          hasChildren: false,
+          type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+          "@id": "http://endhealth.info/im#ValueSet"
+        }
+      ]);
     wrapper.vm.configs = {};
     wrapper.vm.statusOptions = [];
     wrapper.vm.schemeOptions = [];
@@ -427,19 +423,6 @@ describe("Filters.vue ___ empty store", () => {
       statusOptions: ["Active", "Draft"],
       typeOptions: ["Class", "Concept Set", "Folder", "Node shape", "ObjectProperty", "Property", "Query template", "Record type", "Value set"]
     });
-  });
-
-  it("getsFilterOptions ___ fail", async () => {
-    ConfigService.getFilterDefaults = jest.fn().mockRejectedValue(false);
-    EntityService.getNamespaces = jest.fn().mockRejectedValue(false);
-    EntityService.getEntityChildren = jest.fn().mockRejectedValue(false);
-    wrapper.vm.getFilterOptions();
-    await flushPromises();
-    expect(mockToast.add).toHaveBeenCalledTimes(4);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get filter configs from server"));
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get scheme filter options from server"));
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get status filter options from server"));
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get type filter options from server"));
   });
 
   it("can check for search", () => {
