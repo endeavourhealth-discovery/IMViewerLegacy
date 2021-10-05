@@ -36,16 +36,6 @@
             <div>
               <Button icon="pi pi-cloud-download" label="Download expanded" @click="download(true)" />
             </div>
-            <!-- <div class="checkbox-label-container" v-if="!expandMembers && subsets.length">
-              <label for="expandSubsets">Expand all subsets</label>
-              <Checkbox :disabled="expandMembers" id="expandSubsets" v-model="expandSubsets" :binary="true" />
-            </div> -->
-            <!-- <div class="checkbox-label-container">
-              <label for="expandMembers">
-                Expand all members
-              </label>
-              <Checkbox id="expandMembers" v-model="expandMembers" :binary="true" />
-            </div> -->
           </div>
         </div>
       </template>
@@ -90,7 +80,6 @@
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
 import { FilterMatchMode } from "primevue/api";
-import Swal from "sweetalert2";
 import LoggerService from "@/services/LoggerService";
 import ComplexMembers from "@/components/concept/members/ComplexMembers.vue";
 
@@ -103,24 +92,11 @@ export default defineComponent({
   emits: ["memberClick"],
   watch: {
     async conceptIri() {
-      // this.expandMembers = false;
-      // this.expandSubsets = false;
       await this.getMembers();
     }
-
-    // async expandMembers() {
-    //   await this.getMembers();
-    // },
-
-    // async expandSubsets() {
-    //   this.subsets = [];
-    //   await this.getMembers();
-    // }
   },
   async mounted() {
     window.addEventListener("resize", this.onResize);
-    // this.expandMembers = false;
-    // this.expandSubsets = false;
     await this.getMembers();
     this.onResize();
   },
@@ -135,8 +111,6 @@ export default defineComponent({
       filters1: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       },
-      // expandMembers: false,
-      // expandSubsets: false,
       selected: {} as any,
       subsets: [] as any[],
       expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]

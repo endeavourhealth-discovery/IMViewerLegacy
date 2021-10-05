@@ -55,13 +55,7 @@
           </label>
         </div>
         <div class="checkbox-label">
-          <Checkbox
-            :disabled="!axioms"
-            id="axioms"
-            :binary="true"
-            value="Include axioms"
-            v-model="includeAxioms"
-          />
+          <Checkbox :disabled="!axioms" id="axioms" :binary="true" value="Include axioms" v-model="includeAxioms" />
           <label class="label" :class="includeAxioms ? null : 'inactive-text'" for="axioms">
             Include semantic properties
           </label>
