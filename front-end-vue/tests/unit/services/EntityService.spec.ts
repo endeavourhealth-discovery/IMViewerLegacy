@@ -114,10 +114,10 @@ describe("EntityService.ts", () => {
     expect(result).toBe("axios get return");
   });
 
-  it("can get semantic properties", async () => {
-    const result = await EntityService.getSemanticProperties("testIri");
+  it("can get partial bundle", async() => {
+    const result = await EntityService.getPartialEntityBundle("testIri", [ "testPredicate1", "testPredicate2" ]);
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "api/entity/semanticProperties", { params: { iri: "testIri" } });
+    expect(axios.get).toHaveBeenCalledWith(api + "api/entity/partialBundle", { params: { iri: "testIri", predicate: "testPredicate1,testPredicate2" } });
     expect(result).toBe("axios get return");
   });
 

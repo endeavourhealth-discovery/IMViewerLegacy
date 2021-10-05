@@ -17,6 +17,17 @@ export default class EntityService {
     ).data;
     return axiosReturn ? axiosReturn : {};
   }
+  
+  public static async getPartialEntityBundle(iri: string, predicates: string[]): Promise<any> {
+    const axiosReturn = (
+      await axios.get(this.api + "api/entity/partialBundle", {
+        params: {
+          iri: iri,
+          predicate: predicates.join(",")
+        }
+      })
+    ).data;
+  return axiosReturn ? axiosReturn : {};
 
   public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<any> {
     const axiosReturn = (
@@ -131,15 +142,6 @@ export default class EntityService {
   public static async getEntityTermCodes(iri: string): Promise<any[]> {
     const axiosReturn = (
       await axios.get(this.api + "api/entity/termCode", {
-        params: { iri: iri }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : [];
-  }
-
-  public static async getSemanticProperties(iri: string): Promise<any[]> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/semanticProperties", {
         params: { iri: iri }
       })
     ).data;

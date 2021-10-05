@@ -1,14 +1,14 @@
 <template>
-  <div v-if="axiomString !== 'None'" id="axioms-container" :style="{ width: size }">
+  <div v-if="data" id="axioms-container" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}</strong>
-      <span>&nbsp;({{ data.count }})</span>
       <Button
         :icon="buttonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
         class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
+        :id="'expand-button-' + label"
         @click="setButtonExpanded()"
         v-styleclass="{
-          selector: '.axiom-string',
+          selector: '.tgl-' + label,
           enterClass: 'p-d-none',
           enterActiveClass: 'my-fadein',
           leaveActiveClass: 'my-fadeout',
@@ -16,45 +16,51 @@
         }"
       />
     </div>
-    <pre class="p-d-none axiom-string">{{ data.axiomString }}</pre>
+    <pre :class="'p-d-none tgl-' + label">{{ getDefinition() }}</pre>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
+import { bundleToText } from "@/helpers/Transforms";
+import { TTBundle } from "@/models/TripleTree";
+import {mapState} from 'vuex';
 
 export default defineComponent({
-  name: "Axioms",
+  name: "TextDefinition",
   props: {
     label: { type: String },
     data: { type: Object, required: true },
     size: { type: String }
   },
+  computed: {
+    ...mapState(["selectedEntityType"])
+  },
   mounted() {
-    if (Object.prototype.hasOwnProperty.call(this.data, "axiomString") && this.data.axiomString.length) {
-      this.axiomString = this.data.axiomString;
-    }
-    if (Object.prototype.hasOwnProperty.call(this.data, "count")) {
-      this.count = this.data.count;
+    if (this.selectedEntityType === "Ontology" && this.label === "Inferred") {
+      const button = document.getElementById(`expand-button-${this.label}`) as HTMLElement;
+      if (button) button.click();
     }
   },
   data() {
     return {
       buttonExpanded: false,
-      axiomString: "None",
       count: 0
     };
   },
   methods: {
     setButtonExpanded() {
       this.buttonExpanded ? (this.buttonExpanded = false) : (this.buttonExpanded = true);
+    },
+    getDefinition(): string {
+      return bundleToText(this.data as TTBundle);
     }
   }
 });
 </script>
 
 <style scoped>
-.axiom-string {
+pre {
   border: 1px solid #dee2e6;
   border-radius: 3px;
   padding: 0.5rem;

@@ -101,6 +101,7 @@ import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 import { RDFS } from "@/vocabulary/RDFS";
 import { IM } from "@/vocabulary/IM";
+import { OWL } from "@/vocabulary/OWL";
 
 export default defineComponent({
   name: "DownloadDialog",
@@ -118,23 +119,23 @@ export default defineComponent({
   data() {
     return {
       concept: {} as any,
-      isA: [] as any[],
+      inferred: {} as any,
+      axioms: {} as any,
       hasSubTypes: [] as any[],
       isChildOf: [] as any[],
       hasChildren: [] as any[],
-      terms: [] as any,
+      terms: [] as any[],
       dataModelProperties: [] as any[],
-      semanticProperties: [] as any[],
       members: {} as any,
       includeHasSubTypes: true,
       includeDataModelProperties: true,
       includeMembers: true,
       expandMembers: false,
-      includeIsA: true,
+      includeInferred: true,
+      includeAxioms: false,
       includeIsChildOf: false,
       includeHasChildren: false,
       includeInactive: false,
-      includeSemanticProperties: false,
       includeTerms: false,
       loading: false,
       RDFS_LABEL: RDFS.LABEL,
@@ -175,10 +176,10 @@ export default defineComponent({
         this.includeMembers +
         "&expandMembers=" +
         this.expandMembers +
-        "&isA=" +
-        this.includeIsA +
-        "&semanticProperties=" +
-        this.includeSemanticProperties +
+        "&inferred=" +
+        this.includeInferred +
+        "&axioms="+
+        this.includeAxioms +
         "&terms=" +
         this.includeTerms +
         "&isChildOf=" +
@@ -198,24 +199,25 @@ export default defineComponent({
 
     async init(iri: string) {
       this.loading = true;
-      this.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN, IM.IS_A]);
+      this.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
       if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_CHILD_OF) && this.concept[IM.IS_CHILD_OF].length) {
         this.isChildOf = this.concept[IM.IS_CHILD_OF];
       }
       if (Object.prototype.hasOwnProperty.call(this.concept, IM.HAS_CHILDREN) && this.concept[IM.HAS_CHILDREN]) {
         this.hasChildren = this.concept[IM.HAS_CHILDREN];
       }
-      if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A) && this.concept[IM.IS_A].length) {
-        this.isA = this.concept[IM.IS_A];
-      }
+
+      this.inferred = await EntityService.getPartialEntity(iri, [IM.IS_A, IM.ROLE_GROUP]);
+      
+      this.axioms = await EntityService.getPartialEntity(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
+      
+      this.concept = await
 
       this.hasSubTypes = await EntityService.getEntityChildren(iri);
 
       this.terms = await EntityService.getEntityTermCodes(iri);
 
       this.dataModelProperties = await EntityService.getDataModelProperties(iri);
-
-      this.semanticProperties = await EntityService.getSemanticProperties(iri);
 
       this.members = await EntityService.getEntityMembers(iri, this.expandMembers, false);
 
@@ -224,14 +226,14 @@ export default defineComponent({
     },
 
     setIncludeBooleans() {
-      this.includeIsA = !!this.isA.length;
+      this.includeInferred = !!this.inferred;
+      this.includeAxioms = !!this.axioms;
       this.includeHasSubTypes = !!this.hasSubTypes.length;
       this.includeIsChildOf = !!this.isChildOf.length;
       this.includeHasChildren = !!this.hasChildren.length;
       this.includeTerms = !!this.terms.length;
       this.includeDataModelProperties = !!this.dataModelProperties.length;
-      this.includeSemanticProperties = !!this.semanticProperties.length;
-      this.includeMembers = Object.prototype.hasOwnProperty.call(this.members, "members") && this.members.members.length ? true : false;
+      this.includeMembers = !!(Object.prototype.hasOwnProperty.call(this.members, "members") && this.members.members.length);
     }
   }
 });

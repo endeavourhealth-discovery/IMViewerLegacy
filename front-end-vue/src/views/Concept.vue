@@ -11,7 +11,6 @@
           </button>
           <div
             v-if="
-              Object.keys(concept).includes('http://endhealth.info/im#isA') &&
                 Object.keys(concept).includes('subtypes') &&
                 Object.keys(concept).includes('dataModelProperties')
             "
@@ -121,6 +120,7 @@ import { MODULE_IRIS } from "@/helpers/ModuleIris";
 import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
 import Properties from "@/components/concept/Properties.vue";
+import {bundleToText} from '@/helpers/Transforms';
 
 export default defineComponent({
   name: "Concept",
@@ -242,19 +242,13 @@ export default defineComponent({
       const predicates = this.configs
         .filter((c: any) => c.type !== "Divider")
         .filter((c: any) => c.predicate !== "subtypes")
-        .filter((c: any) => c.predicate !== "semanticProperties")
+        .filter((c: any) => c.predicate !== "inferred")
         .filter((c: any) => c.predicate !== "dataModelProperties")
         .filter((c: any) => c.predicate !== "termCodes")
         .filter((c: any) => c.predicate !== "axioms")
         .map((c: any) => c.predicate);
 
-      const partialReturn = await EntityService.getPartialEntity(iri, predicates);
-      if (partialReturn) {
-        this.concept = partialReturn;
-        if (!Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A)) {
-          this.concept[IM.IS_A] = [];
-        }
-      }
+      this.concept = await EntityService.getPartialEntity(iri, predicates);
 
       const childrenReturn = await EntityService.getEntityChildren(iri);
       if (childrenReturn) this.concept["subtypes"] = childrenReturn;
@@ -264,11 +258,15 @@ export default defineComponent({
     },
 
     async getProperties(iri: string) {
-      const semanticReturn = await EntityService.getSemanticProperties(iri);
-      if (semanticReturn) this.concept["semanticProperties"] = semanticReturn;
-
-      const dataModelReturn = await EntityService.getDataModelProperties(iri);
-      if (dataModelReturn) this.concept["dataModelProperties"] = dataModelReturn;
+      this.concept["dataModelProperties"] = await EntityService.getDataModelProperties(iri);
+    }
+     
+    async getInferred(iri: string) {
+      this.concept["inferred"] = await EntityService.getPartialEntityBundle(iri, [IM.IS_A, IM.ROLE_GROUP]);
+    }
+     
+    async getStated(iri: string) {
+      this.concept["axioms"] = await EntityService.getPartialEntityBundle(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
     },
 
     async getAxioms(iri: string) {
@@ -303,8 +301,9 @@ export default defineComponent({
       this.loading = true;
       await this.getConfig("definition");
       await this.getConcept(this.conceptIri);
+      await this.getInferred(this.conceptIri);
+      await this.getStated(this.conceptIri);
       await this.getProperties(this.conceptIri);
-      await this.getAxioms(this.conceptIri);
       this.types = Object.prototype.hasOwnProperty.call(this.concept, RDF.TYPE) ? this.concept[RDF.TYPE] : [];
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
@@ -420,6 +419,12 @@ export default defineComponent({
             returnString = newKey + ': "\n' + newString + '\n",\n';
           }
         }
+      } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "entity") && Object.prototype.hasOwnProperty.call(value, "predicates")) {
+        if (counter === totalKeys - 1) {
+          returnString = newKey + ': "\n' + bundleToText(value) + '\n"';
+        } else {
+          returnString = newKey + ': "\n' + bundleToText(value) + '\n",\n';
+        }
       } else if (typeof value === "string") {
         newString = value.replace(/\n/g, "\n\t").replace(/<p>/g, "\n\t") as string;
         if (newString) {
@@ -510,73 +515,6 @@ export default defineComponent({
           }
         });
       }
-    },
-
-    axiomToString(entity: any): string {
-      let axiomString = "";
-      let depth = 0;
-      if (Object.prototype.hasOwnProperty.call(entity, OWL.EQUIVALENT_CLASS)) {
-        axiomString += "Equivalent class";
-        let axiom = entity[OWL.EQUIVALENT_CLASS];
-        axiom.forEach((element: any) => {
-          axiomString += this.processAxiom(element, depth);
-        });
-      }
-      if (Object.prototype.hasOwnProperty.call(entity, RDFS.SUB_PROPERTY_OF)) {
-        axiomString += "Sub property of";
-        let axiom = entity[RDFS.SUB_PROPERTY_OF];
-        axiom.forEach((element: any) => {
-          axiomString += this.processAxiom(element, depth);
-        });
-      }
-      if (Object.prototype.hasOwnProperty.call(entity, RDFS.SUBCLASS_OF)) {
-        axiomString += "Subclass of";
-        let axiom = entity[RDFS.SUBCLASS_OF];
-        axiom.forEach((element: any) => {
-          axiomString += this.processAxiom(element, depth);
-        });
-      }
-      return axiomString;
-    },
-
-    processAxiom(axiom: any, depth: number) {
-      let axiomString = "";
-      if (Array.isArray(axiom)) {
-        axiom.forEach((element: any) => {
-          axiomString += this.childToString(element, depth + 1);
-        });
-      }
-      if (Object.prototype.toString.call(axiom) === "[object Object]") {
-        axiomString += this.childToString(axiom, depth + 1);
-      }
-      return axiomString;
-    },
-
-    childToString(child: any, depth: number) {
-      let childString = "";
-      if (Object.prototype.toString.call(child) === "[object Object]") {
-        if (Object.prototype.hasOwnProperty.call(child, "name")) {
-          childString += "\n" + "    ".repeat(depth) + child.name;
-        }
-        if (Object.prototype.hasOwnProperty.call(child, OWL.INTERSECTION_OF)) {
-          childString += "\n" + "    ".repeat(depth) + "Intersection of";
-          childString += this.processAxiom(child[OWL.INTERSECTION_OF], depth);
-        }
-        if (Object.prototype.hasOwnProperty.call(child, RDF.TYPE)) {
-          childString += "\n" + "    ".repeat(depth) + "Having";
-          if (Object.prototype.hasOwnProperty.call(child, RDF.TYPE)) {
-            childString += " type " + child[RDF.TYPE].name;
-          }
-          if (Object.prototype.hasOwnProperty.call(child, OWL.ON_PROPERTY)) {
-            childString += " on property " + child[OWL.ON_PROPERTY].name;
-          }
-          if (Object.prototype.hasOwnProperty.call(child, OWL.SOME_VALUES_FROM)) {
-            childString += "\n" + "    ".repeat(depth + 1) + "Some values from";
-            childString += this.processAxiom(child[OWL.SOME_VALUES_FROM], depth + 1);
-          }
-        }
-      }
-      return childString;
     }
   }
 });
