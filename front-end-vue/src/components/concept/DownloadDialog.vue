@@ -13,38 +13,38 @@
       <SelectButton class="format-container" v-model="format" :options="formatOptions" datakey="value" optionLabel="name" />
       <div class="options-container p-d-flex p-flex-row p-flex-wrap p-jc-around">
         <div class="checkbox-label">
-          <Checkbox :disabled="!includeIsA" id="is-a" :binary="true" value="Include is a" v-model="includeIsA" />
-          <label class="label" :class="includeIsA ? null : 'inactive-text'" for="is-a">
-            Include is a's
+          <Checkbox :disabled="!inferred" id="inferred" :binary="true" value="Include is a" v-model="includeInferred" />
+          <label class="label" :class="includeInferred ? null : 'inactive-text'" for="inferred">
+            Include inferred
           </label>
         </div>
         <div class="checkbox-label">
-          <Checkbox :disabled="!includeHasSubTypes" id="has-sub-types" :binary="true" value="Include has sub types" v-model="includeHasSubTypes" />
+          <Checkbox :disabled="!hasSubTypes" id="has-sub-types" :binary="true" value="Include has sub types" v-model="includeHasSubTypes" />
           <label class="label" :class="includeHasSubTypes ? null : 'inactive-text'" for="has-sub-types">
             Include has sub types
           </label>
         </div>
         <div class="checkbox-label">
-          <Checkbox :disabled="!includeIsChildOf" id="is-child-of" :binary="true" value="Include is child of" v-model="includeIsChildOf" />
+          <Checkbox :disabled="!isChildOf" id="is-child-of" :binary="true" value="Include is child of" v-model="includeIsChildOf" />
           <label class="label" :class="includeIsChildOf ? null : 'inactive-text'" for="is-child-of">
             Include is child of
           </label>
         </div>
         <div class="checkbox-label">
-          <Checkbox :disabled="!includeHasChildren" id="has-children" :binary="true" value="Include has children" v-model="includeHasChildren" />
+          <Checkbox :disabled="!hasChildren" id="has-children" :binary="true" value="Include has children" v-model="includeHasChildren" />
           <label class="label" :class="includeHasChildren ? null : 'inactive-text'" for="has-children">
             Include has children
           </label>
         </div>
         <div class="checkbox-label">
-          <Checkbox :disabled="!includeTerms" id="terms" :binary="true" value="Include terms" v-model="includeTerms" />
+          <Checkbox :disabled="!terms" id="terms" :binary="true" value="Include terms" v-model="includeTerms" />
           <label class="label" :class="includeTerms ? null : 'inactive-text'" for="terms">
             Include terms
           </label>
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!includeDataModelProperties"
+            :disabled="!dataModelProperties"
             id="data-model-properties"
             :binary="true"
             value="Include data model properties"
@@ -56,18 +56,18 @@
         </div>
         <div class="checkbox-label">
           <Checkbox
-            :disabled="!includeSemanticProperties"
-            id="semantic-properties"
+            :disabled="!axioms"
+            id="axioms"
             :binary="true"
-            value="Include semantic properties"
-            v-model="includeSemanticProperties"
+            value="Include axioms"
+            v-model="includeAxioms"
           />
-          <label class="label" :class="includeSemanticProperties ? null : 'inactive-text'" for="semantic-properties">
+          <label class="label" :class="includeAxioms ? null : 'inactive-text'" for="axioms">
             Include semantic properties
           </label>
         </div>
         <div class="checkbox-label">
-          <Checkbox :disabled="!includeMembers" id="members" :binary="true" value="Include members" v-model="includeMembers" />
+          <Checkbox :disabled="!members" id="members" :binary="true" value="Include members" v-model="includeMembers" />
           <label class="label" :class="includeMembers ? null : 'inactive-text'" for="members">
             Include members
           </label>
