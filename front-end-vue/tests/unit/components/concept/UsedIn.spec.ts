@@ -12,22 +12,23 @@ describe("UsedIn.vue", () => {
   let mockRouter: any;
   let mockToast: any;
   let docSpy: any;
+  const USAGES = [
+    { name: "Acrodysplasia scoliosis (disorder)", "@id": "http://snomed.info/sct#773773006" },
+    { name: "Anterior vertebral body tethering (procedure)", "@id": "http://snomed.info/sct#788325009" },
+    { name: "Congenital scoliosis due to bony malformation (disorder)", "@id": "http://snomed.info/sct#205045003" },
+    { name: "Distal arthrogryposis type 4 (disorder)", "@id": "http://snomed.info/sct#715575001" },
+    { name: "Duane anomaly, myopathy, scoliosis syndrome (disorder)", "@id": "http://snomed.info/sct#722432000" },
+    { name: "Family history of scoliosis deformity of spine (situation)", "@id": "http://snomed.info/sct#430544007" },
+    { name: "Horizontal gaze palsy with progressive scoliosis (disorder)", "@id": "http://snomed.info/sct#702381007" },
+    { name: "Lordoscoliosis (disorder)", "@id": "http://snomed.info/sct#111268000" },
+    { name: "Post-surgical scoliosis (disorder)", "@id": "http://snomed.info/sct#203647008" },
+    { name: "Scoliosis in neurofibromatosis (disorder)", "@id": "http://snomed.info/sct#203663000" },
+    { name: "Scoliosis in skeletal dysplasia (disorder)", "@id": "http://snomed.info/sct#203661003" }
+  ];
 
   beforeEach(async () => {
     jest.resetAllMocks();
-    EntityService.getEntityUsages = jest.fn().mockResolvedValue([
-      { name: "Acrodysplasia scoliosis (disorder)", "@id": "http://snomed.info/sct#773773006" },
-      { name: "Anterior vertebral body tethering (procedure)", "@id": "http://snomed.info/sct#788325009" },
-      { name: "Congenital scoliosis due to bony malformation (disorder)", "@id": "http://snomed.info/sct#205045003" },
-      { name: "Distal arthrogryposis type 4 (disorder)", "@id": "http://snomed.info/sct#715575001" },
-      { name: "Duane anomaly, myopathy, scoliosis syndrome (disorder)", "@id": "http://snomed.info/sct#722432000" },
-      { name: "Family history of scoliosis deformity of spine (situation)", "@id": "http://snomed.info/sct#430544007" },
-      { name: "Horizontal gaze palsy with progressive scoliosis (disorder)", "@id": "http://snomed.info/sct#702381007" },
-      { name: "Lordoscoliosis (disorder)", "@id": "http://snomed.info/sct#111268000" },
-      { name: "Post-surgical scoliosis (disorder)", "@id": "http://snomed.info/sct#203647008" },
-      { name: "Scoliosis in neurofibromatosis (disorder)", "@id": "http://snomed.info/sct#203663000" },
-      { name: "Scoliosis in skeletal dysplasia (disorder)", "@id": "http://snomed.info/sct#203661003" }
-    ]);
+    EntityService.getEntityUsages = jest.fn().mockResolvedValue(USAGES);
     EntityService.getUsagesTotalRecords = jest.fn().mockResolvedValue(50);
     mockRouter = {
       push: jest.fn()
@@ -61,19 +62,7 @@ describe("UsedIn.vue", () => {
 
   it("starts with empty values", () => {
     expect(wrapper.vm.selected).toStrictEqual({});
-    expect(wrapper.vm.usages).toStrictEqual([
-      { name: "Acrodysplasia scoliosis (disorder)", "@id": "http://snomed.info/sct#773773006" },
-      { name: "Anterior vertebral body tethering (procedure)", "@id": "http://snomed.info/sct#788325009" },
-      { name: "Congenital scoliosis due to bony malformation (disorder)", "@id": "http://snomed.info/sct#205045003" },
-      { name: "Distal arthrogryposis type 4 (disorder)", "@id": "http://snomed.info/sct#715575001" },
-      { name: "Duane anomaly, myopathy, scoliosis syndrome (disorder)", "@id": "http://snomed.info/sct#722432000" },
-      { name: "Family history of scoliosis deformity of spine (situation)", "@id": "http://snomed.info/sct#430544007" },
-      { name: "Horizontal gaze palsy with progressive scoliosis (disorder)", "@id": "http://snomed.info/sct#702381007" },
-      { name: "Lordoscoliosis (disorder)", "@id": "http://snomed.info/sct#111268000" },
-      { name: "Post-surgical scoliosis (disorder)", "@id": "http://snomed.info/sct#203647008" },
-      { name: "Scoliosis in neurofibromatosis (disorder)", "@id": "http://snomed.info/sct#203663000" },
-      { name: "Scoliosis in skeletal dysplasia (disorder)", "@id": "http://snomed.info/sct#203661003" }
-    ]);
+    expect(wrapper.vm.usages).toStrictEqual(USAGES);
     expect(wrapper.vm.loading).toBe(false);
     expect(wrapper.vm.recordsTotal).toBe(50);
     expect(wrapper.vm.currentPage).toBe(1);
@@ -124,19 +113,7 @@ describe("UsedIn.vue", () => {
     await flushPromises();
     expect(EntityService.getEntityUsages).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityUsages).toHaveBeenCalledWith("http://snomed.info/sct#298382003", 0, 25);
-    expect(wrapper.vm.usages).toStrictEqual([
-      { name: "Acrodysplasia scoliosis (disorder)", "@id": "http://snomed.info/sct#773773006" },
-      { name: "Anterior vertebral body tethering (procedure)", "@id": "http://snomed.info/sct#788325009" },
-      { name: "Congenital scoliosis due to bony malformation (disorder)", "@id": "http://snomed.info/sct#205045003" },
-      { name: "Distal arthrogryposis type 4 (disorder)", "@id": "http://snomed.info/sct#715575001" },
-      { name: "Duane anomaly, myopathy, scoliosis syndrome (disorder)", "@id": "http://snomed.info/sct#722432000" },
-      { name: "Family history of scoliosis deformity of spine (situation)", "@id": "http://snomed.info/sct#430544007" },
-      { name: "Horizontal gaze palsy with progressive scoliosis (disorder)", "@id": "http://snomed.info/sct#702381007" },
-      { name: "Lordoscoliosis (disorder)", "@id": "http://snomed.info/sct#111268000" },
-      { name: "Post-surgical scoliosis (disorder)", "@id": "http://snomed.info/sct#203647008" },
-      { name: "Scoliosis in neurofibromatosis (disorder)", "@id": "http://snomed.info/sct#203663000" },
-      { name: "Scoliosis in skeletal dysplasia (disorder)", "@id": "http://snomed.info/sct#203661003" }
-    ]);
+    expect(wrapper.vm.usages).toStrictEqual(USAGES);
   });
 
   it("gets recordsSize ___ success", async () => {

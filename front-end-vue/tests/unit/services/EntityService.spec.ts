@@ -114,8 +114,8 @@ describe("EntityService.ts", () => {
     expect(result).toBe("axios get return");
   });
 
-  it("can get partial bundle", async() => {
-    const result = await EntityService.getPartialEntityBundle("testIri", [ "testPredicate1", "testPredicate2" ]);
+  it("can get partial bundle", async () => {
+    const result = await EntityService.getPartialEntityBundle("testIri", ["testPredicate1", "testPredicate2"]);
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "api/entity/partialBundle", { params: { iri: "testIri", predicate: "testPredicate1,testPredicate2" } });
     expect(result).toBe("axios get return");
@@ -153,13 +153,6 @@ describe("EntityService.ts", () => {
     const result = await EntityService.getComplexMembers("testIri");
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "api/entity/complexMembers", { params: { iri: "testIri" } });
-    expect(result).toBe("axios get return");
-  });
-
-  it("can get axioms", async () => {
-    const result = await EntityService.getAxioms("testIri");
-    expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "api/entity/axioms", { params: { iri: "testIri" } });
     expect(result).toBe("axios get return");
   });
 });

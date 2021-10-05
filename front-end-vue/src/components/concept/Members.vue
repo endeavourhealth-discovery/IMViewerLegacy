@@ -36,10 +36,10 @@
             <div>
               <Button icon="pi pi-cloud-download" label="Download expanded" @click="download(true)" />
             </div>
-            <div class="checkbox-label-container" v-if="!expandMembers && subsets.length">
+            <!-- <div class="checkbox-label-container" v-if="!expandMembers && subsets.length">
               <label for="expandSubsets">Expand all subsets</label>
               <Checkbox :disabled="expandMembers" id="expandSubsets" v-model="expandSubsets" :binary="true" />
-            </div>
+            </div> -->
             <!-- <div class="checkbox-label-container">
               <label for="expandMembers">
                 Expand all members
@@ -63,8 +63,6 @@
           <span v-else>{{ slotProps.data.entity.name }}</span>
         </template>
       </Column>
-      <Column v-if="expandMembers" field="code" header="Code" filter-field="code" />
-      <Column v-if="expandMembers" field="scheme.name" header="Scheme" filter-field="scheme.name" />
       <template #groupheader="slotProps">
         <span v-for="subSet in subsets" :key="subSet">
           <span v-if="slotProps.data.label === subSet" class="group-header">
@@ -105,24 +103,24 @@ export default defineComponent({
   emits: ["memberClick"],
   watch: {
     async conceptIri() {
-      this.expandMembers = false;
-      this.expandSubsets = false;
-      await this.getMembers();
-    },
-
-    async expandMembers() {
-      await this.getMembers();
-    },
-
-    async expandSubsets() {
-      this.subsets = [];
+      // this.expandMembers = false;
+      // this.expandSubsets = false;
       await this.getMembers();
     }
+
+    // async expandMembers() {
+    //   await this.getMembers();
+    // },
+
+    // async expandSubsets() {
+    //   this.subsets = [];
+    //   await this.getMembers();
+    // }
   },
   async mounted() {
     window.addEventListener("resize", this.onResize);
-    this.expandMembers = false;
-    this.expandSubsets = false;
+    // this.expandMembers = false;
+    // this.expandSubsets = false;
     await this.getMembers();
     this.onResize();
   },
@@ -137,8 +135,8 @@ export default defineComponent({
       filters1: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       },
-      expandMembers: false,
-      expandSubsets: false,
+      // expandMembers: false,
+      // expandSubsets: false,
       selected: {} as any,
       subsets: [] as any[],
       expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]
@@ -165,22 +163,15 @@ export default defineComponent({
 
     async getMembers() {
       this.loading = true;
-      if (this.expandMembers) {
-        this.expandedRowGroups = ["MemberExpanded"];
-      } else {
-        this.expandedRowGroups = ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"];
-      }
+      this.expandedRowGroups = ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"];
       this.selected = {};
       this.subsets = [];
-      this.members = await EntityService.getEntityMembers(
-        this.conceptIri as string,
-        this.expandMembers,
-        this.expandSubsets,
-        this.expandMembers ? 2000 : undefined
-      );
-      this.expandMembersSizeCheck();
-      this.loading = false;
+      this.members = await EntityService.getEntityMembers(this.conceptIri as string, false, false, 2000);
+      this.sortMembers();
+      this.combinedMembers = this.members.members;
+      this.setSubsets();
       this.setTableWidth();
+      this.loading = false;
     },
 
     setSubsets() {
@@ -191,28 +182,6 @@ export default defineComponent({
           }
         }
       });
-    },
-
-    async expandMembersSizeCheck() {
-      if (this.members.limited) {
-        this.expandMembers = false;
-        await Swal.fire({
-          icon: "warning",
-          title: "Large data set",
-          text: "Expanding this set results in a large amount of data.\n Would you like to download it instead?",
-          confirmButtonText: "Download",
-          showCancelButton: true
-        }).then(result => {
-          if (result.isConfirmed) this.download(true);
-          else {
-            this.$toast.add(LoggerService.warn("Member expansion cancelled as results exceeded displayable limit."));
-          }
-        });
-      } else {
-        this.sortMembers();
-        this.combinedMembers = this.members.members;
-        this.setSubsets();
-      }
     },
 
     download(expanded: boolean) {
@@ -226,9 +195,11 @@ export default defineComponent({
     },
 
     sortMembers() {
-      this.members.members = this.members.members.sort((a: any, b: any) =>
-        a.label.localeCompare(b.label) == 0 ? a.entity.name.localeCompare(b.entity.name) : a.label.localeCompare(b.label)
-      );
+      if (this.members && Object.prototype.hasOwnProperty.call(this.members, "members") && Array.isArray(this.members.members)) {
+        this.members.members = this.members.members.sort((a: any, b: any) =>
+          a.label.localeCompare(b.label) == 0 ? a.entity.name.localeCompare(b.entity.name) : a.label.localeCompare(b.label)
+        );
+      }
     },
 
     onResize() {

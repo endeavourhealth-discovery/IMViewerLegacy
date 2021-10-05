@@ -4,7 +4,6 @@ import Card from "primevue/card";
 import DataTable from "primevue/datatable";
 import ProgressSpinner from "primevue/progressspinner";
 import Column from "primevue/column";
-import LoggerService from "@/services/LoggerService";
 import EntityService from "@/services/EntityService";
 
 describe("ReportTable.vue", () => {
