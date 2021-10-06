@@ -9,14 +9,9 @@
         <div class="p-grid">
           <div class="p-col-6">
             <p style="margin-bottom: 1em; margin-top: 2em; text-align: center">
-              <b>Data Table</b>
+              <strong>Data Table</strong>
             </p>
-            <DataTable
-              :value="types"
-              class="p-datatable-sm"
-              :scrollable="true"
-              scrollHeight="350px"
-            >
+            <DataTable :value="types" class="p-datatable-sm" :scrollable="true" scrollHeight="350px">
               <template #header>
                 Types data
               </template>
@@ -26,16 +21,9 @@
           </div>
           <div class="p-col-6">
             <p style="margin-bottom: 1em; margin-top: 2em; text-align: center">
-              <b>Pie Chart</b>
+              <strong>Pie Chart</strong>
             </p>
-            <Chart
-              type="pie"
-              :data="chartInstanceTypes"
-              :options="chartOptions"
-              :height="graphHeight"
-              style="margin-left: 1em"
-              class="p-chart"
-            />
+            <Chart type="pie" :data="chartInstanceTypes" :options="chartOptions" :height="graphHeight" style="margin-left: 1em" class="p-chart" />
           </div>
         </div>
       </template>
@@ -48,7 +36,7 @@ import { defineComponent } from "vue";
 import { ChartOptions } from "@/models/charts/ChartOptions";
 import { PieChartData } from "@/models/charts/PieChartData";
 import { rescaleData, setTooltips } from "@/helpers/ChartRescale";
-import {PropType} from "@vue/runtime-core";
+import { PropType } from "@vue/runtime-core";
 const palette = require("../../../node_modules/google-palette");
 
 export default defineComponent({
@@ -58,7 +46,7 @@ export default defineComponent({
       type: Array as PropType<Array<unknown>>,
       required: true
     }
-  } ,
+  },
   // watch: {
   //   types: {
   //   async  handler(newValue, oldValue) {
@@ -69,7 +57,7 @@ export default defineComponent({
   //   deep: true
   //   }
   // },
-  data(){
+  data() {
     return {
       chartInstanceTypes: new PieChartData(
         [
@@ -111,19 +99,13 @@ export default defineComponent({
       });
       this.realData = { ...this.chartInstanceTypes.datasets[0].data };
       this.chartOptions["tooltips"] = setTooltips(this.realData);
-      this.chartInstanceTypes.datasets[0].data = rescaleData(
-        this.chartInstanceTypes.datasets[0].data
-      );
+      this.chartInstanceTypes.datasets[0].data = rescaleData(this.chartInstanceTypes.datasets[0].data);
       this.setChartColours(this.types.length);
     },
     setChartColours(colourCount: number): void {
       const colours = palette("tol-rainbow", colourCount);
-      this.chartInstanceTypes.datasets[0].backgroundColor = colours.map(
-        (color: string) => "#" + color + "BB"
-      );
-      this.chartInstanceTypes.datasets[0].hoverBackgroundColor = colours.map(
-        (color: string) => "#" + color
-      );
+      this.chartInstanceTypes.datasets[0].backgroundColor = colours.map((color: string) => "#" + color + "BB");
+      this.chartInstanceTypes.datasets[0].hoverBackgroundColor = colours.map((color: string) => "#" + color);
     },
     setLegendOptions(): void {
       const width = window.innerWidth;
