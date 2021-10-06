@@ -26,7 +26,7 @@ export default defineComponent({
   },
   data() {
     return {
-      complexMembers: {} as any,
+      complexMembers: [] as string[],
       loading: false
     };
   },
