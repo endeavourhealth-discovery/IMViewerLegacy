@@ -53,6 +53,9 @@ import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
 import axios from "axios";
 import { mapState } from "vuex";
+import { TTIriRef } from "@/models/TripleTree";
+import { EntityReferenceNode } from "@/models/entityService/EntityServiceTypes";
+import { Namespace } from "@/models/Namespace";
 
 export default defineComponent({
   name: "SidebarControl",
@@ -103,15 +106,15 @@ export default defineComponent({
         searchRequest.sortBy = SortBy.Usage;
         searchRequest.page = 1;
         searchRequest.size = 100;
-        searchRequest.schemeFilter = this.selectedFilters.schemes.map((scheme: any) => scheme.iri);
+        searchRequest.schemeFilter = this.selectedFilters.schemes.map((scheme: Namespace) => scheme.iri);
 
         searchRequest.statusFilter = [];
-        this.selectedFilters.status.forEach((status: any) => {
+        this.selectedFilters.status.forEach((status: EntityReferenceNode) => {
           searchRequest.statusFilter.push(status["@id"]);
         });
 
         searchRequest.typeFilter = [];
-        this.selectedFilters.types.forEach((type: any) => {
+        this.selectedFilters.types.forEach((type: TTIriRef) => {
           searchRequest.typeFilter.push(type["@id"]);
         });
         if (Object.keys(this.request).length) {
