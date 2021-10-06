@@ -189,13 +189,4 @@ export default class EntityService {
     ).data;
     return axiosReturn ? axiosReturn : {};
   }
-
-  public static async getAxioms(iri: string): Promise<any> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/axioms", {
-        params: { iri: iri }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : {};
-  }
 }

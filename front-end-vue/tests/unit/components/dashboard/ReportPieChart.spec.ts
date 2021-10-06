@@ -3,7 +3,7 @@ import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
 import Card from "primevue/card";
 import Chart from "primevue/chart";
 import ProgressSpinner from "primevue/progressspinner";
-import LoggerService from "@/services/LoggerService";
+
 import { PieChartData } from "@/models/charts/PieChartData";
 import EntityService from "@/services/EntityService";
 
@@ -239,88 +239,6 @@ describe("ReportPieChart.vue", () => {
   });
 
   it("can setChartColours", async () => {
-    const testData = [
-      {
-        iri: "http://www.w3.org/2002/07/owl#Class",
-        label: "Class",
-        count: 1030270
-      },
-      {
-        iri: "http://endhealth.info/im#LegacyConcept",
-        label: "Legacy Concept",
-        count: 93282
-      },
-      {
-        iri: "http://www.w3.org/2002/07/owl#ObjectProperty",
-        label: "Object Property",
-        count: 1813
-      },
-      {
-        iri: "http://endhealth.info/im#Set",
-        label: "Set",
-        count: 1122
-      },
-      {
-        iri: "http://endhealth.info/im#RecordType",
-        label: "Record Type",
-        count: 94
-      },
-      {
-        iri: "http://www.w3.org/2002/07/owl#DataProperty",
-        label: "Data Property",
-        count: 68
-      },
-      {
-        iri: "http://endhealth.info/im#QuerySet",
-        label: "Query set",
-        count: 45
-      },
-      {
-        iri: "http://www.w3.org/2002/07/owl#FunctionalProperty",
-        label: "Functional Property",
-        count: 26
-      },
-      {
-        iri: "http://www.w3.org/2002/07/owl#AnnotationProperty",
-        label: "Annotation Property",
-        count: 23
-      },
-      {
-        iri: "http://www.w3.org/2002/07/owl#TransitiveProperty",
-        label: "Transitive Property",
-        count: 11
-      },
-      {
-        iri: "http://www.w3.org/2002/07/owl#SymmetricProperty",
-        label: "Symmetric Property",
-        count: 11
-      },
-      {
-        iri: "http://endhealth.info/im#ValueSet",
-        label: "Value Set",
-        count: 8
-      },
-      {
-        iri: "http://endhealth.info/im#Folder",
-        label: "Folder",
-        count: 8
-      },
-      {
-        iri: "http://www.w3.org/2002/07/owl#ReflexiveProperty",
-        label: "Reflexive Property",
-        count: 2
-      },
-      {
-        iri: "http://endhealth.info/im#QueryTemplate",
-        label: "Query Template",
-        count: 1
-      },
-      {
-        iri: "http://www.w3.org/ns/shacl#NodeShape",
-        label: "Node Shape",
-        count: 1
-      }
-    ];
     wrapper.vm.chartConceptTypes = new PieChartData(
       [
         {

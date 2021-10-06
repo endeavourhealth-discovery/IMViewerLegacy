@@ -2,7 +2,6 @@ import { flushPromises, shallowMount } from "@vue/test-utils";
 import ComplexMembers from "@/components/concept//members/ComplexMembers.vue";
 import ProgressSpinner from "primevue/progressspinner";
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 
 describe("ComplexMembers.vue", () => {
   let wrapper: any;

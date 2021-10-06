@@ -7,13 +7,11 @@ import Hierarchy from "@/components/sidebar/Hierarchy.vue";
 import History from "@/components/sidebar/History.vue";
 import SearchResults from "@/components/sidebar/SearchResults.vue";
 import Filters from "@/components/sidebar/Filters.vue";
-import LoggerService from "@/services/LoggerService";
 
 describe("SidebarControl.vue", () => {
   let wrapper: any;
   let mockStore: any;
   let mockToast: any;
-  let testError: Error;
   jest.useFakeTimers();
 
   beforeEach(() => {
