@@ -65,9 +65,9 @@
             <strong>Scheme: </strong>
             <span>{{ hoveredResult.scheme.name }}</span>
           </p>
-          <p v-if="hoveredResult.conceptType">
+          <p v-if="hoveredResult.entityType">
             <strong>Type: </strong>
-            <span>{{ getConceptTypes(hoveredResult.conceptType) }}</span>
+            <span>{{ getConceptTypes(hoveredResult.entityType) }}</span>
           </p>
         </div>
       </div>
@@ -84,10 +84,13 @@ import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
 import { defineComponent } from "vue";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
+import { TreeParent } from "@/models/secondaryTree/TreeParent";
+import { EntityReferenceNode } from "@/models/entityService/EntityServiceTypes";
+import { TTIriRef } from "@/models/TripleTree";
 
 export default defineComponent({
   name: "SecondaryTree",
-  props: ["conceptIri"],
+  props: { conceptIri: { type: String, required: true } },
   watch: {
     async conceptIri(newValue) {
       this.selectedKey = {};
@@ -100,19 +103,11 @@ export default defineComponent({
   data() {
     return {
       conceptAggregate: {} as any,
-      root: [] as any,
+      root: [] as any[],
       expandedKeys: {} as any,
       selectedKey: {} as any,
-      currentParent: {} as {
-        name: string;
-        iri: string;
-        listPosition: number;
-      } | null,
-      alternateParents: [] as {
-        name: string;
-        iri: string;
-        listPosition: number;
-      }[],
+      currentParent: {} as TreeParent | null,
+      alternateParents: [] as TreeParent[],
       parentPosition: 0,
       hoveredResult: {} as ConceptSummary | any,
       overlayLocation: {} as any
@@ -136,10 +131,10 @@ export default defineComponent({
       this.conceptAggregate.children = await EntityService.getEntityChildren(iri);
     },
 
-    async createTree(concept: any, parentHierarchy: any, children: any, parentPosition: number): Promise<void> {
-      const selectedConcept = this.createTreeNode(concept[RDFS.LABEL], concept[IM.IRI], concept[RDF.TYPE], concept[RDFS.LABEL], concept.hasChildren);
+    async createTree(concept: any, parentHierarchy: EntityReferenceNode[], children: EntityReferenceNode[], parentPosition: number): Promise<void> {
+      const selectedConcept = this.createTreeNode(concept[RDFS.LABEL], concept[IM.IRI], concept[RDF.TYPE], concept.hasChildren);
       children.forEach((child: any) => {
-        selectedConcept.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.name, child.hasChildren));
+        selectedConcept.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
       });
       this.root = [];
       this.setParents(parentHierarchy, parentPosition);
@@ -150,7 +145,7 @@ export default defineComponent({
       this.selectedKey[selectedConcept.key] = true;
     },
 
-    setParents(parentHierarchy: any, parentPosition: number): void {
+    setParents(parentHierarchy: EntityReferenceNode[], parentPosition: number): void {
       if (parentHierarchy.length) {
         if (parentHierarchy.length === 1) {
           this.currentParent = {
@@ -182,9 +177,9 @@ export default defineComponent({
       }
     },
 
-    createTreeNode(conceptName: any, conceptIri: any, conceptTypes: any, level: any, hasChildren: boolean): TreeNode {
+    createTreeNode(conceptName: string, conceptIri: string, conceptTypes: TTIriRef[], hasChildren: boolean): TreeNode {
       const node: TreeNode = {
-        key: level,
+        key: conceptName,
         label: conceptName,
         typeIcon: getIconFromType(conceptTypes),
         color: getColourFromType(conceptTypes),
@@ -202,15 +197,15 @@ export default defineComponent({
         this.expandedKeys[node.key] = true;
       }
       const children = await EntityService.getEntityChildren(node.data);
-      children.forEach((child: any) => {
+      children.forEach((child: EntityReferenceNode) => {
         if (!this.containsChild(node.children, child)) {
-          node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.name, child.hasChildren));
+          node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
         }
       });
       node.loading = false;
     },
 
-    containsChild(nodeChildren: any[], child: any) {
+    containsChild(nodeChildren: TreeNode[], child: EntityReferenceNode): boolean {
       if (nodeChildren.some(nodeChild => nodeChild.data === child["@id"])) {
         return true;
       }
@@ -236,7 +231,7 @@ export default defineComponent({
       let parentNode = {} as TreeNode;
       for (let i = 0; i < parents.length; i++) {
         if (i === parentPosition) {
-          parentNode = this.createTreeNode(parents[i].name, parents[i]["@id"], parents[i].type, parents[i].name, true);
+          parentNode = this.createTreeNode(parents[i].name, parents[i]["@id"], parents[i].type, true);
           parentNode.children.push(this.root[0]);
           if (!Object.prototype.hasOwnProperty.call(this.expandedKeys, parentNode.key)) {
             this.expandedKeys[parentNode.key] = true;
@@ -246,7 +241,7 @@ export default defineComponent({
       return parentNode;
     },
 
-    async setExpandedParentParents() {
+    async setExpandedParentParents(): Promise<void> {
       const result = await EntityService.getEntityParents(this.root[0].data);
       this.currentParent = null;
       this.alternateParents = [];
@@ -277,13 +272,13 @@ export default defineComponent({
       }
     },
 
-    async onNodeSelect() {
+    async onNodeSelect(): Promise<void> {
       await this.$nextTick();
       this.selectedKey = {};
       this.selectedKey[this.conceptAggregate.concept[RDFS.LABEL]] = true;
     },
 
-    async showPopup(event: any, data: any): Promise<void> {
+    async showPopup(event: any, data: TreeNode): Promise<void> {
       this.overlayLocation = event;
       const x = this.$refs.altTreeOP as any;
       x.show(event);
@@ -296,9 +291,9 @@ export default defineComponent({
       this.overlayLocation = {};
     },
 
-    getConceptTypes(types: any): any {
+    getConceptTypes(types: TTIriRef[]): any {
       return types
-        .map((type: any) => {
+        .map((type: TTIriRef) => {
           return type.name;
         })
         .join(", ");

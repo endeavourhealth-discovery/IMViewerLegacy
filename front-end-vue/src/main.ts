@@ -158,7 +158,11 @@ axios.interceptors.response.use(
     return response;
   },
   error => {
-    throw new APIError(error.response.data.status, error.response.data.error, `Call to ${error.response.data.path} failed.`);
+    if (Object.prototype.hasOwnProperty.call(error, "response") && Object.prototype.hasOwnProperty.call(error.response, "data")) {
+      throw new APIError(error.response.data.status, error.response.data.error, `Call to ${error.response.data.path} failed.`);
+    } else {
+      throw new Error(error);
+    }
   }
 );
 

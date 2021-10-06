@@ -16,8 +16,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import DataModelProperties from "./definition/DataModelProperties.vue";
+import { defineComponent, PropType } from "vue";
 import ArrayObjectNamesToStringWithLabel from "@/components/generics/ArrayObjectNamesToStringWithLabel.vue";
 import TextHTMLWithLabel from "@/components/generics/TextHTMLWithLabel.vue";
 import TextWithLabel from "@/components/generics/TextWithLabel.vue";
@@ -26,12 +25,12 @@ import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNa
 import TermsTable from "@/components/concept/definition/TermsTable.vue";
 import TextSectionHeader from "@/components/generics/TextSectionHeader.vue";
 import SectionDivider from "@/components/generics/SectionDivider.vue";
-import TextDefinition from '@/components/concept/definition/TextDefinition.vue';
+import TextDefinition from "@/components/concept/definition/TextDefinition.vue";
+import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
 
 export default defineComponent({
   name: "Definition",
   components: {
-    DataModelProperties,
     ArrayObjectNamesToStringWithLabel,
     TextHTMLWithLabel,
     TextWithLabel,
@@ -42,9 +41,12 @@ export default defineComponent({
     SectionDivider,
     TextDefinition
   },
-  props: ["concept", "configs"],
+  props: {
+    concept: { type: Object, required: true },
+    configs: { type: Array as PropType<Array<DefinitionConfig>>, required: true }
+  },
   methods: {
-    showItem(config: any, index: number): boolean {
+    showItem(config: DefinitionConfig, index: number): boolean {
       let dataResults = [];
       if (config.type === "SectionDivider") {
         let i = index - 1;

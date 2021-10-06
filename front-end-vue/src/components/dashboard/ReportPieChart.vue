@@ -36,10 +36,10 @@ import EntityService from "@/services/EntityService";
 export default defineComponent({
   name: "ReportPieChart",
   props: ["iri"],
-  data: () => {
+  data() {
     return {
-      name: "" as string,
-      description: "" as string,
+      name: "",
+      description: "",
       chartOptions: {
         plugins: {
           legend: {
@@ -53,7 +53,7 @@ export default defineComponent({
           }
         }
       } as ChartOptions,
-      realData: {} as number[],
+      realData: [] as number[],
       chartConceptTypes: new PieChartData(
         [
           {

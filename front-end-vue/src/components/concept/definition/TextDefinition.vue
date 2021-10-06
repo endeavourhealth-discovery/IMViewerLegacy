@@ -24,13 +24,14 @@
 import { defineComponent } from "@vue/runtime-core";
 import { bundleToText } from "@/helpers/Transforms";
 import { TTBundle } from "@/models/TripleTree";
-import {mapState} from 'vuex';
+import { mapState } from "vuex";
+import { PartialEntity } from "@/models/PartialEntity";
 
 export default defineComponent({
   name: "TextDefinition",
   props: {
     label: { type: String },
-    data: { type: Object, required: true },
+    data: { type: Object as () => PartialEntity, required: true },
     size: { type: String }
   },
   computed: {
@@ -49,7 +50,7 @@ export default defineComponent({
     };
   },
   methods: {
-    setButtonExpanded() {
+    setButtonExpanded(): void {
       this.buttonExpanded ? (this.buttonExpanded = false) : (this.buttonExpanded = true);
     },
     getDefinition(): string {

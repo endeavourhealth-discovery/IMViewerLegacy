@@ -6,7 +6,6 @@ import TextHTMLWithLabel from "@/components/generics/TextHTMLWithLabel.vue";
 import TextWithLabel from "@/components/generics/TextWithLabel.vue";
 import ObjectNameWithLabel from "@/components/generics/ObjectNameWithLabel.vue";
 import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNameListboxWithLabel.vue";
-import DataModelProperties from "@/components/concept/definition/DataModelProperties.vue";
 
 describe("Definition.vue", () => {
   let wrapper;
@@ -187,8 +186,7 @@ describe("Definition.vue", () => {
           TextHTMLWithLabel,
           TextWithLabel,
           ObjectNameWithLabel,
-          ArrayObjectNameListboxWithLabel,
-          DataModelProperties
+          ArrayObjectNameListboxWithLabel
         },
         mocks: { $route: mockRoute, $router: mockRouter }
       },

@@ -82,6 +82,8 @@ import EntityService from "@/services/EntityService";
 import { FilterMatchMode } from "primevue/api";
 import LoggerService from "@/services/LoggerService";
 import ComplexMembers from "@/components/concept/members/ComplexMembers.vue";
+import { ValueSetMember } from "@/models/members/ValueSetMember";
+import { ExportValueSet } from "@/models/members/ExportValueSet";
 
 export default defineComponent({
   name: "Members",
@@ -106,26 +108,26 @@ export default defineComponent({
   data() {
     return {
       loading: false,
-      members: {} as any,
-      combinedMembers: [] as any,
+      members: {} as ExportValueSet,
+      combinedMembers: [] as ValueSetMember[],
       filters1: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       },
-      selected: {} as any,
-      subsets: [] as any[],
+      selected: {} as ValueSetMember,
+      subsets: [] as string[],
       expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]
     };
   },
   methods: {
-    async onRowGroupExpand() {
+    onRowGroupExpand(): void {
       this.setTableWidth();
     },
 
-    onRowGroupCollapse() {
+    onRowGroupCollapse(): void {
       this.setTableWidth();
     },
 
-    onRowSelect() {
+    onRowSelect(): void {
       if (this.selected != null && this.selected.entity != null) {
         this.$router.push({
           name: "Concept",
@@ -135,10 +137,10 @@ export default defineComponent({
       }
     },
 
-    async getMembers() {
+    async getMembers(): Promise<void> {
       this.loading = true;
       this.expandedRowGroups = ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"];
-      this.selected = {};
+      this.selected = {} as ValueSetMember;
       this.subsets = [];
       this.members = await EntityService.getEntityMembers(this.conceptIri as string, false, false, 2000);
       this.sortMembers();
@@ -148,7 +150,7 @@ export default defineComponent({
       this.loading = false;
     },
 
-    setSubsets() {
+    setSubsets(): void {
       this.combinedMembers.forEach((member: any) => {
         if (!this.subsets.some(e => e === member.label)) {
           if (member.type === "SUBSET") {
@@ -158,7 +160,7 @@ export default defineComponent({
       });
     },
 
-    download(expanded: boolean) {
+    download(expanded: boolean): void {
       const modIri = (this.conceptIri as string).replace(/\//gi, "%2F").replace(/#/gi, "%23");
       const popup = window.open(process.env.VUE_APP_API + "api/entity/download?iri=" + modIri + "&members=true&expandMembers=" + expanded + "&format=excel");
       if (!popup) {
@@ -168,7 +170,7 @@ export default defineComponent({
       }
     },
 
-    sortMembers() {
+    sortMembers(): void {
       if (this.members && Object.prototype.hasOwnProperty.call(this.members, "members") && Array.isArray(this.members.members)) {
         this.members.members = this.members.members.sort((a: any, b: any) =>
           a.label.localeCompare(b.label) == 0 ? a.entity.name.localeCompare(b.entity.name) : a.label.localeCompare(b.label)
@@ -176,7 +178,7 @@ export default defineComponent({
       }
     },
 
-    onResize() {
+    onResize(): void {
       this.setTableWidth();
     },
 
