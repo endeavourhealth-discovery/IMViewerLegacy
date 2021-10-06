@@ -99,7 +99,10 @@ import { OWL } from "@/vocabulary/OWL";
 
 export default defineComponent({
   name: "DownloadDialog",
-  props: ["conceptIri", "showDialog"],
+  props: {
+    conceptIri: { type: String, required: true },
+    showDialog: { type: Boolean, required: true }
+  },
   emits: ["closeDownloadDialog"],
   watch: {
     async conceptIri(newValue) {
