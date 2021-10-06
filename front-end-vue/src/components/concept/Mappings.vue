@@ -74,11 +74,15 @@ import EntityService from "@/services/EntityService";
 import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
 import SimpleMaps from "@/components/concept/mapping/SimpleMaps.vue";
+import { Namespace } from "@/models/Namespace";
+import { SimpleMap } from "@/models/mappings/SimpleMap";
+import { MapItem } from "@/models/mappings/MapItem";
+import { ChartTableNode, ChartMapNode } from "@/models/mappings/MapChartTypes";
 
 export default defineComponent({
   name: "Mappings",
   components: { SimpleMaps },
-  props: ["conceptIri"],
+  props: { conceptIri: { type: String, required: true } },
   watch: {
     async conceptIri() {
       this.$store.commit("updateLoading", {
@@ -96,11 +100,11 @@ export default defineComponent({
   },
   data() {
     return {
-      mappings: [] as any,
+      mappings: [] as any[],
       data: {} as any,
-      hoveredResult: {} as any,
-      simpleMaps: [] as any,
-      namespaces: [] as any
+      hoveredResult: {} as MapItem,
+      simpleMaps: [] as SimpleMap[],
+      namespaces: [] as Namespace[]
     };
   },
   async mounted() {
@@ -125,8 +129,8 @@ export default defineComponent({
 
       this.simpleMaps = (await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO]))[IM.MATCHED_TO] || [];
       if (this.simpleMaps.length && this.namespaces) {
-        this.simpleMaps.forEach((mapItem: any) => {
-          const found = this.namespaces.find((namespace: any) => namespace.iri === mapItem["@id"].split("#")[0] + "#");
+        this.simpleMaps.forEach((mapItem: SimpleMap) => {
+          const found = this.namespaces.find((namespace: Namespace) => namespace.iri === mapItem["@id"].split("#")[0] + "#");
           if (found) {
             mapItem.scheme = found.name;
           } else {
@@ -147,11 +151,7 @@ export default defineComponent({
       location: string,
       position: number,
       type: string
-    ): {
-      key: string;
-      type: string;
-      data: any;
-    } {
+    ): ChartTableNode {
       return {
         key: location + "_" + position,
         type: type,
@@ -159,18 +159,7 @@ export default defineComponent({
       };
     },
 
-    createChartMapNode(
-      item: string,
-      location: string,
-      positionInLevel: number
-    ):
-      | {
-          key: string;
-          type: string;
-          data: { label: string };
-          children: any[];
-        }
-      | undefined {
+    createChartMapNode(item: string, location: string, positionInLevel: number): ChartMapNode | undefined {
       switch (item) {
         case IM.ONE_OF:
           return {
@@ -198,7 +187,7 @@ export default defineComponent({
       }
     },
 
-    generateChildNodes(mapObject: any, location: string, positionInLevel: number) {
+    generateChildNodes(mapObject: any, location: string, positionInLevel: number): (ChartMapNode | undefined)[] | ChartTableNode[] {
       if (Object.keys(mapObject[0]).includes(IM.MAPPED_TO)) {
         const mappedList = [] as any;
         mapObject.forEach((item: any) => {
@@ -225,7 +214,7 @@ export default defineComponent({
       }
     },
 
-    createChartStructure(mappingObject: any): any {
+    createChartStructure(mappingObject: any): ChartMapNode | [] {
       const parentNode = {
         key: "0",
         type: "hasMap",
@@ -250,7 +239,7 @@ export default defineComponent({
       return parentNode;
     },
 
-    generateSimpleMapsNodes(simpleMaps: any, location: string, positionInLevel: number) {
+    generateSimpleMapsNodes(simpleMaps: any, location: string, positionInLevel: number): ChartTableNode[] {
       if (!Array.isArray(simpleMaps) || !simpleMaps.length) {
         return [this.createChartTableNode([], location, positionInLevel, "simpleMapsList")];
       }
@@ -266,10 +255,10 @@ export default defineComponent({
       return [this.createChartTableNode(simpleMapsList.sort(this.byScheme), location, positionInLevel, "simpleMapsList")];
     },
 
-    getSimpleMapsNamespaces() {
+    getSimpleMapsNamespaces(): void {
       if (this.simpleMaps && this.simpleMaps.length && this.namespaces && this.namespaces.length) {
-        this.simpleMaps.forEach((mapItem: any) => {
-          const found = this.namespaces.find((namespace: any) => namespace.iri.toLowerCase() === (mapItem["@id"].split("#")[0] + "#").toLowerCase());
+        this.simpleMaps.forEach((mapItem: SimpleMap) => {
+          const found = this.namespaces.find((namespace: Namespace) => namespace.iri.toLowerCase() === (mapItem["@id"].split("#")[0] + "#").toLowerCase());
           if (found && Object.prototype.hasOwnProperty.call(found, "name")) {
             mapItem.scheme = found.name;
           } else {
@@ -300,7 +289,7 @@ export default defineComponent({
       }
     },
 
-    toggle(event: any, data: any, refId: string): void {
+    toggle(event: any, data: MapItem, refId: string): void {
       this.hoveredResult = data;
       const x = this.$refs[refId] as any;
       x.toggle(event);
