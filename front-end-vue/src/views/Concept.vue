@@ -1,8 +1,5 @@
 <template>
   <div id="concept-main-container">
-    <!-- <div v-if="loading" class="loading-container">
-      <ProgressSpinner />
-    </div> -->
     <Panel>
       <template #icons>
         <div class="icons-container">
