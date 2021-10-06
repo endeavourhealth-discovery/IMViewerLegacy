@@ -57,7 +57,7 @@ import { mapState } from "vuex";
 export default defineComponent({
   name: "SidebarControl",
   components: { Hierarchy, History, SearchResults, Filters },
-  props: ["focusHierarchy"],
+  props: { focusHierarchy: Boolean },
   computed: mapState(["filterOptions", "selectedFilters"]),
   emits: ["hierarchyFocused"],
   watch: {
@@ -73,7 +73,7 @@ export default defineComponent({
       searchTerm: "",
       active: 0,
       debounce: 0,
-      request: null as any,
+      request: {} as { cancel: any; msg: string },
       windowHeight: 0,
       windowWidth: 0
     };
@@ -114,7 +114,7 @@ export default defineComponent({
         this.selectedFilters.types.forEach((type: any) => {
           searchRequest.typeFilter.push(type["@id"]);
         });
-        if (this.request) {
+        if (Object.keys(this.request).length) {
           await this.request.cancel("Search cancelled by user");
         }
         const axiosSource = axios.CancelToken.source();
