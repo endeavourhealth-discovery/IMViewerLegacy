@@ -17,7 +17,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import DataModelProperties from "./definition/DataModelProperties.vue";
 import ArrayObjectNamesToStringWithLabel from "@/components/generics/ArrayObjectNamesToStringWithLabel.vue";
 import TextHTMLWithLabel from "@/components/generics/TextHTMLWithLabel.vue";
 import TextWithLabel from "@/components/generics/TextWithLabel.vue";
@@ -26,12 +25,11 @@ import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNa
 import TermsTable from "@/components/concept/definition/TermsTable.vue";
 import TextSectionHeader from "@/components/generics/TextSectionHeader.vue";
 import SectionDivider from "@/components/generics/SectionDivider.vue";
-import TextDefinition from '@/components/concept/definition/TextDefinition.vue';
+import TextDefinition from "@/components/concept/definition/TextDefinition.vue";
 
 export default defineComponent({
   name: "Definition",
   components: {
-    DataModelProperties,
     ArrayObjectNamesToStringWithLabel,
     TextHTMLWithLabel,
     TextWithLabel,
