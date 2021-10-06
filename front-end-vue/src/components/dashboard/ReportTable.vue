@@ -29,11 +29,11 @@ import { OWL } from "@/vocabulary/OWL";
 import EntityService from "@/services/EntityService";
 
 export default defineComponent({
-  name: "OntologyOverview",
-  props: ["iri"],
+  name: "ReportTable",
+  props: { iri: { type: String, required: true } },
   data() {
     return {
-      tableData: [] as any
+      tableData: [] as { count: number; label: string }[]
     };
   },
   async mounted() {
