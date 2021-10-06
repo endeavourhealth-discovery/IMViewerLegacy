@@ -79,7 +79,6 @@
           </InlineMessage>
         </div>
         <div class="p-d-flex p-flex-row p-jc-center">
-          <!-- <ConfirmDialogue></ConfirmDialogue> -->
           <Button v-if="!allVerified()" class="user-submit" type="submit" label="Register" disabled v-on:click.prevent="handleSubmit" />
           <Button v-else class="user-submit" type="submit" label="Register" v-on:click.prevent="handleSubmit" />
         </div>
@@ -225,19 +224,6 @@ export default defineComponent({
           .catch(err => {
             console.error(err);
           });
-        // this.$confirm.require({
-        //   message: "User created successfully!",
-        //   header: "Success",
-        //   icon: "pi pi-check",
-        //   acceptLabel: "Login",
-        //   rejectLabel: "Close",
-        //   accept: () => {
-        //     this.$router.push({name: "Login"});
-        //   },
-        //   reject: () => {
-        //     this.$confirm.close();
-        //   } // prime vue version -- ugly...
-        // })
       } else {
         Swal.fire({
           icon: "error",
