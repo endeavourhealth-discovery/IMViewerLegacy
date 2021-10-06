@@ -53,7 +53,7 @@ export default defineComponent({
   name: "Properties",
   components: {},
   props: {
-    conceptIri: String
+    conceptIri: { type: String, required: true }
   },
   watch: {
     async conceptIri(newValue) {

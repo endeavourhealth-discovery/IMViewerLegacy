@@ -2,6 +2,7 @@ import { SearchRequest } from "@/models/search/SearchRequest";
 import axios, { CancelToken } from "axios";
 import { IM } from "@/vocabulary/IM";
 import GraphData from "@/models/GraphData";
+import { EntityReferenceNode } from "@/models/entityService/EntityServiceTypes";
 
 export default class EntityService {
   static api = process.env.VUE_APP_API;
@@ -70,7 +71,7 @@ export default class EntityService {
     return axiosReturn ? axiosReturn : {};
   }
 
-  public static async getEntityParents(iri: string): Promise<any[]> {
+  public static async getEntityParents(iri: string): Promise<EntityReferenceNode[]> {
     const axiosReturn = (
       await axios.get(this.api + "api/entity/parents", {
         params: { iri: iri }
@@ -79,7 +80,7 @@ export default class EntityService {
     return axiosReturn ? axiosReturn : [];
   }
 
-  public static async getEntityChildren(iri: string, cancelToken?: CancelToken): Promise<any[]> {
+  public static async getEntityChildren(iri: string, cancelToken?: CancelToken): Promise<EntityReferenceNode[]> {
     const axiosReturn = (
       await axios.get(this.api + "api/entity/children", {
         params: { iri: iri },

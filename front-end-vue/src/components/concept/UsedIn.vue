@@ -37,12 +37,12 @@
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
+import { TTIriRef } from "@/models/TripleTree";
 
 export default defineComponent({
   name: "UsedIn",
-  components: {},
   props: {
-    conceptIri: String as any
+    conceptIri: { type: String, required: true }
   },
   watch: {
     async conceptIri(newValue) {
@@ -65,9 +65,9 @@ export default defineComponent({
   },
   data() {
     return {
-      usages: [] as any[],
+      usages: [] as TTIriRef[],
       loading: false,
-      selected: {} as any,
+      selected: {} as TTIriRef,
       recordsTotal: 0,
       currentPage: 1,
       pageSize: 25,
@@ -75,15 +75,15 @@ export default defineComponent({
     };
   },
   methods: {
-    async getUsages(iri: string, pageIndex: number, pageSize: number) {
+    async getUsages(iri: string, pageIndex: number, pageSize: number): Promise<void> {
       this.usages = await EntityService.getEntityUsages(iri, pageIndex, pageSize);
     },
 
-    async getRecordsSize(iri: string) {
+    async getRecordsSize(iri: string): Promise<void> {
       this.recordsTotal = await EntityService.getUsagesTotalRecords(iri);
     },
 
-    async handlePage(event: any) {
+    async handlePage(event: any): Promise<void> {
       this.loading = true;
       this.pageSize = event.rows;
       this.currentPage = event.page;
@@ -92,7 +92,7 @@ export default defineComponent({
       this.loading = false;
     },
 
-    handleSelected() {
+    handleSelected(): void {
       if (this.selected != null && Object.prototype.hasOwnProperty.call(this.selected, "@id")) {
         this.$router.push({
           name: "Concept",
@@ -109,11 +109,11 @@ export default defineComponent({
       }
     },
 
-    onResize() {
+    onResize(): void {
       this.setScrollHeight();
     },
 
-    setScrollHeight() {
+    setScrollHeight(): void {
       const container = document.getElementById("usedin-table-container") as HTMLElement;
       const paginator = container?.getElementsByClassName("p-paginator")[0] as HTMLElement;
       if (container && paginator) {
