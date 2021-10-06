@@ -40,12 +40,13 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
+import { TermCode } from "@/models/terms/TermCode";
 
 export default defineComponent({
   name: "TermsTable",
   props: {
     label: { type: String },
-    data: { type: Array as PropType<Array<unknown>> },
+    data: { type: Array as PropType<Array<TermCode>> },
     size: { type: String },
     id: { type: String }
   },
