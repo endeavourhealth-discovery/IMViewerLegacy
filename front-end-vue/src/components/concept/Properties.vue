@@ -47,6 +47,7 @@ import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 import { RouteRecordName } from "vue-router";
+import { DataModelProperty, ProcessedDataModelProperty } from "@/models/properties/DataModelProperty";
 
 export default defineComponent({
   name: "Properties",
@@ -62,8 +63,7 @@ export default defineComponent({
   data() {
     return {
       loading: false,
-      dataModelPropsData: [] as any[],
-      selected: {} as any,
+      dataModelPropsData: [] as ProcessedDataModelProperty[],
       scrollHeight: "500px"
     };
   },
@@ -78,10 +78,10 @@ export default defineComponent({
     window.removeEventListener("resize", this.setScrollHeight);
   },
   methods: {
-    async getDataModelProps(iri: string) {
+    async getDataModelProps(iri: string): Promise<void> {
       this.loading = true;
       const result = await EntityService.getDataModelProperties(iri);
-      this.dataModelPropsData = result.map((prop: any) => {
+      this.dataModelPropsData = result.map((prop: DataModelProperty) => {
         return {
           propertyId: prop.property["@id"],
           propertyName: prop.property.name,
@@ -99,7 +99,7 @@ export default defineComponent({
       this.loading = false;
     },
 
-    navigate(iri: any) {
+    navigate(iri: any): void {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
       if (iri)
         this.$router.push({
@@ -108,7 +108,7 @@ export default defineComponent({
         });
     },
 
-    setScrollHeight() {
+    setScrollHeight(): void {
       const container = document.getElementById("properties-table-container") as HTMLElement;
       const paginator = container?.getElementsByClassName("p-paginator")[0] as HTMLElement;
       if (container && paginator) {
@@ -122,7 +122,7 @@ export default defineComponent({
       }
     },
 
-    exportCSV() {
+    exportCSV(): void {
       (this.$refs as any).propertiesTable.exportCSV();
     }
   }
