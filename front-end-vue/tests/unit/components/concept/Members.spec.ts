@@ -8,7 +8,6 @@ import Button from "primevue/button";
 import EntityService from "@/services/EntityService";
 import { FilterMatchMode } from "primevue/api";
 import LoggerService from "@/services/LoggerService";
-import Swal from "sweetalert2";
 
 describe("Members.vue", () => {
   let wrapper: any;
