@@ -293,32 +293,3 @@ describe("Graph.vue", () => {
     expect(mockRouter.push).not.toHaveBeenCalled();
   });
 });
-
-describe("Graph.vue ___ no iri", () => {
-  let wrapper: any;
-  let mockRoute: any;
-  let mockRouter: any;
-
-  beforeEach(() => {
-    jest.resetAllMocks();
-    EntityService.getEntityGraph = jest.fn();
-    mockRoute = {
-      name: "Concept"
-    };
-    mockRouter = {
-      push: jest.fn()
-    };
-
-    wrapper = shallowMount(Graph, {
-      global: {
-        components: { ProgressSpinner, OrganizationChart },
-        mocks: { $route: mockRoute, $router: mockRouter }
-      },
-      props: { conceptIri: undefined }
-    });
-  });
-
-  it("doesnt call getGraph on mounted", () => {
-    expect(EntityService.getEntityGraph).toHaveBeenCalledTimes(0);
-  });
-});

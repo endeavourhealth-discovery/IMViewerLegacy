@@ -36,7 +36,6 @@ describe("SimpleMapsTable.vue", () => {
   });
 
   it("mounts", async () => {
-    expect(wrapper.vm.selected).toStrictEqual({});
     expect(wrapper.vm.loading).toBe(false);
     expect(wrapper.vm.data).toStrictEqual(SIMPLE_MAP);
     expect(wrapper.vm.scrollHeight).toBe("500px");

@@ -366,7 +366,6 @@ describe("SecondaryTree.vue", () => {
         "Scoliosis deformity of spine (disorder)",
         "http://snomed.info/sct#298382003",
         [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
-        "Scoliosis deformity of spine (disorder)",
         false
       )
     ).toStrictEqual({

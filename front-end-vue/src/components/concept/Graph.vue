@@ -82,9 +82,7 @@ export default defineComponent({
     };
   },
   async mounted() {
-    if (this.conceptIri) {
-      await this.getGraph(this.conceptIri);
-    }
+    await this.getGraph(this.conceptIri);
   },
   methods: {
     getTypeFromIri(iri: string): string {
