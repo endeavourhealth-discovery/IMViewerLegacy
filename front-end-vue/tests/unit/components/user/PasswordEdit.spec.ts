@@ -11,18 +11,11 @@ import AuthService from "@/services/AuthService";
 import Swal from "sweetalert2";
 import { CustomAlert } from "@/models/user/CustomAlert";
 
-describe("ForgotPasswordSubmit.vue with registeredUser", () => {
+describe("PasswordEdit.vue with registeredUser", () => {
   let wrapper: any;
   let mockStore: any;
   let mockRouter: any;
-  const user = new User(
-    "testUser",
-    "John",
-    "Doe",
-    "john.doe@ergosoft.co.uk",
-    "",
-    avatars[0]
-  );
+  const user = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", avatars[0]);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -30,14 +23,14 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
 
     Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
     mockStore = {
-      state: {currentUser: user, isLoggedIn: true},
+      state: { currentUser: user, isLoggedIn: true },
       commit: jest.fn(),
-      dispatch: jest.fn().mockResolvedValue( new CustomAlert(200, "logout success"))
-    }
+      dispatch: jest.fn().mockResolvedValue(new CustomAlert(200, "logout success"))
+    };
     mockRouter = {
       push: jest.fn(),
       go: jest.fn()
-    }
+    };
     wrapper = mount(PasswordEdit, {
       global: {
         components: { Card, Button, InputText, InlineMessage },
@@ -125,7 +118,7 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
     expect(wrapper.vm.showPassword2Message).toBeFalsy();
   });
 
-  it("hits authservice if all verified", async() => {
+  it("hits authservice if all verified", async () => {
     wrapper.vm.passwordOld = "12345678";
     wrapper.vm.passwordNew1 = "87654321";
     wrapper.vm.passwordNew2 = "87654321";
@@ -136,7 +129,7 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
     expect(AuthService.changePassword).toBeCalledWith("12345678", "87654321");
   });
 
-  it("opens swal if auth success", async() => {
+  it("opens swal if auth success", async () => {
     wrapper.vm.passwordOld = "12345678";
     wrapper.vm.passwordNew1 = "87654321";
     wrapper.vm.passwordNew2 = "87654321";
@@ -151,7 +144,7 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
     });
   });
 
-  it("redirects after auth success ___ 200", async() => {
+  it("redirects after auth success ___ 200", async () => {
     wrapper.vm.passwordOld = "12345678";
     wrapper.vm.passwordNew1 = "87654321";
     wrapper.vm.passwordNew2 = "87654321";
@@ -163,7 +156,7 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
     expect(mockRouter.push).toBeCalledWith({ name: "Home" });
   });
 
-  it("opens swal if auth fail ___ not 200", async() => {
+  it("opens swal if auth fail ___ not 200", async () => {
     AuthService.changePassword = jest.fn().mockResolvedValue({ status: 403, message: "Password change error" });
     wrapper.vm.passwordOld = "12345678";
     wrapper.vm.passwordNew1 = "87654321";
@@ -179,7 +172,7 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
     });
   });
 
-  it("opens swal if password same as original", async() => {
+  it("opens swal if password same as original", async () => {
     wrapper.vm.passwordOld = "87654321";
     wrapper.vm.passwordNew1 = "87654321";
     wrapper.vm.passwordNew2 = "87654321";
@@ -194,7 +187,7 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
     });
   });
 
-  it("opens swal on all authenticated error", async() => {
+  it("opens swal on all authenticated error", async () => {
     wrapper.vm.passwordOld = "12345678";
     wrapper.vm.passwordNew1 = "87654321";
     wrapper.vm.passwordNew2 = "87654320";
@@ -209,13 +202,13 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
     });
   });
 
-  it("checks if new password differs from old password ___ true", async() => {
+  it("checks if new password differs from old password ___ true", async () => {
     wrapper.vm.passwordOld = "12345678";
     wrapper.vm.passwordNew1 = "87654321";
     expect(wrapper.vm.passwordDifferentFromOriginal()).toBeTruthy();
   });
 
-  it("checks if new password differs from old password ___ false", async() => {
+  it("checks if new password differs from old password ___ false", async () => {
     wrapper.vm.passwordOld = "87654321";
     wrapper.vm.passwordNew1 = "87654321";
     expect(wrapper.vm.passwordDifferentFromOriginal()).toBeFalsy();
@@ -223,13 +216,13 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
 
   it("returns the correct image url", async () => {
     jest.mock("@/assets/avatars/colour/013-woman.png", () => {
-      return "/img/013-woman.7f32b854.png"
-    })
+      return "/img/013-woman.7f32b854.png";
+    });
     const url = wrapper.vm.getUrl("colour/013-woman.png");
     expect(url).toBe("/img/013-woman.7f32b854.png");
   });
 
-  it("can check a keycode ___ correct", async() => {
+  it("can check a keycode ___ correct", async () => {
     wrapper.vm.passwordOld = "12345678";
     wrapper.vm.passwordNew1 = "87654321";
     wrapper.vm.passwordNew2 = "87654321";
@@ -239,7 +232,7 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
     expect(AuthService.changePassword).toBeCalledTimes(1);
   });
 
-  it("can check a keycode ___ incorrect", async() => {
+  it("can check a keycode ___ incorrect", async () => {
     wrapper.vm.passwordOld = "12345678";
     wrapper.vm.passwordNew1 = "87654321";
     wrapper.vm.passwordNew2 = "87654321";
@@ -249,7 +242,7 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
     expect(AuthService.changePassword).toBeCalledTimes(0);
   });
 
-  it("can setButtonDisabled ___ true", async() => {
+  it("can setButtonDisabled ___ true", async () => {
     wrapper.vm.passwordOld = "12345678";
     wrapper.vm.passwordNew1 = "87654321";
     wrapper.vm.passwordNew2 = "87654320";
@@ -257,7 +250,7 @@ describe("ForgotPasswordSubmit.vue with registeredUser", () => {
     expect(wrapper.vm.setButtonDisabled()).toBeTruthy();
   });
 
-  it("can setButtonDisabled ___ false", async() => {
+  it("can setButtonDisabled ___ false", async () => {
     wrapper.vm.passwordOld = "12345678";
     wrapper.vm.passwordNew1 = "87654321";
     wrapper.vm.passwordNew2 = "87654321";

@@ -69,7 +69,7 @@ export default defineComponent({
           if (res.status === 200 && res.user) {
             const loggedInUser = res.user;
             // check if avatar exists and replace lagacy images with default avatar on signin
-            const result = avatars.find(avatar => avatar.value === loggedInUser.avatar.value);
+            const result = avatars.find(avatar => avatar === loggedInUser.avatar);
             if (!result) {
               loggedInUser.avatar = avatars[0];
             }

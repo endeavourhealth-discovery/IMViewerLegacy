@@ -8,7 +8,7 @@ describe("AvatarWithSelector.vue", () => {
   let wrapper: any;
   beforeEach(() => {
     wrapper = shallowMount(AvatarWithSelector, {
-      props: { selectedAvatar: { value: "colour/002-man.png" } },
+      props: { selectedAvatar: "colour/002-man.png" },
       global: {
         components: { Button, SelectButton, OverlayPanel }
       }
@@ -16,7 +16,7 @@ describe("AvatarWithSelector.vue", () => {
   });
 
   it("starts with prop value selected", async () => {
-    expect(wrapper.vm.newAvatar).toStrictEqual({ value: "colour/002-man.png" });
+    expect(wrapper.vm.newAvatar).toStrictEqual("colour/002-man.png");
   });
 
   it("starts with a list of avatars", async () => {
@@ -25,9 +25,9 @@ describe("AvatarWithSelector.vue", () => {
 
   it("returns the correct image url", async () => {
     jest.mock("@/assets/avatars/colour/013-woman.png", () => {
-      return "/img/013-woman.7f32b854.png"
-    })
+      return "/img/013-woman.7f32b854.png";
+    });
     const url = wrapper.vm.getUrl("colour/013-woman.png");
     expect(url).toBe("/img/013-woman.7f32b854.png");
   });
-})
+});

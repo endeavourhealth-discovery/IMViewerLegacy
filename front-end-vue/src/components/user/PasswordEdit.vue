@@ -5,7 +5,7 @@
         <img
           id="user-icon"
           class="avatar-icon"
-          :src="getUrl(currentUser.avatar.value)"
+          :src="getUrl(currentUser.avatar)"
           alt="avatar icon"
           @click="toggle"
           aria-haspopup="true"

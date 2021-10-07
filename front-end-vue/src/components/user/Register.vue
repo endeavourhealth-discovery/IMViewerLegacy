@@ -155,7 +155,7 @@ export default defineComponent({
       showUsernameNotice: false,
       showFirstNameNotice: false,
       showLastNameNotice: false,
-      selectedAvatar: avatars[0] as { value: string }
+      selectedAvatar: avatars[0] as string
     };
   },
 
@@ -265,7 +265,7 @@ export default defineComponent({
         this.passwordStrength !== PasswordStrength.fail &&
         verifyIsName(this.firstName) &&
         verifyIsName(this.lastName) &&
-        "value" in this.selectedAvatar
+        this.selectedAvatar
       ) {
         return true;
       } else {
@@ -273,7 +273,7 @@ export default defineComponent({
       }
     },
 
-    updateAvatar(newValue: { value: string }): void {
+    updateAvatar(newValue: string): void {
       this.selectedAvatar = newValue;
     },
 

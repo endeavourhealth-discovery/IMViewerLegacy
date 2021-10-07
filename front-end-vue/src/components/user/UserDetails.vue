@@ -2,7 +2,7 @@
   <div class="p-d-flex p-flex-row p-ai-center">
     <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-details-card">
       <template #header>
-        <img id="selected-avatar" :src="getUrl(currentUser.avatar.value)" alt="avatar icon" />
+        <img id="selected-avatar" :src="getUrl(currentUser.avatar)" alt="avatar icon" />
       </template>
       <template #title>
         My account details

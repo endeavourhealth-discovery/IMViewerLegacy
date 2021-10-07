@@ -97,7 +97,7 @@ describe("mutations", () => {
   });
 
   it("can updateCurrentUser", () => {
-    const testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "colour/003-man.png" });
+    const testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", "colour/003-man.png");
     store.commit("updateCurrentUser", testUser);
     expect(store.state.currentUser).toEqual(testUser);
   });
@@ -254,7 +254,7 @@ describe("mutations", () => {
   });
 
   it("can authenticateCurrentUser___ 200 ___ avatar", async () => {
-    let testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "colour/003-man.png" });
+    let testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", "colour/003-man.png");
     testUser.setId("8901-test");
     AuthService.getCurrentAuthenticatedUser = jest.fn().mockResolvedValue(new CustomAlert(200, "user authenticated", undefined, testUser));
     let result = { authenticated: false };
@@ -268,7 +268,7 @@ describe("mutations", () => {
   });
 
   it("can authenticateCurrentUser___ 200 ___ no avatar", async () => {
-    let testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "http://testimage.jpg" });
+    let testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", "http://testimage.jpg");
     testUser.setId("8901-test");
     AuthService.getCurrentAuthenticatedUser = jest.fn().mockResolvedValue(new CustomAlert(200, "user authenticated", undefined, testUser));
     let result = { authenticated: false };
@@ -277,7 +277,7 @@ describe("mutations", () => {
     expect(AuthService.getCurrentAuthenticatedUser).toBeCalledTimes(1);
     await flushPromises();
     expect(store.state.isLoggedIn).toBe(true);
-    testUser.avatar.value = "colour/001-man.png";
+    testUser.avatar = "colour/001-man.png";
     expect(store.state.currentUser).toEqual(testUser);
     expect(result.authenticated).toBe(true);
   });
