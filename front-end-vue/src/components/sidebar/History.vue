@@ -22,7 +22,7 @@ export default defineComponent({
     };
   },
   methods: {
-    getHistory(): any {
+    getHistory(): HistoryItem[] {
       const viewHistory = this.history.filter((obj: any) => {
         return !!obj.conceptName;
       });
