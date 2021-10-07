@@ -169,7 +169,7 @@ export default defineComponent({
     download(expanded: boolean, v1 = false): void {
       const modIri = (this.conceptIri as string).replace(/\//gi, "%2F").replace(/#/gi, "%23");
       const popup = window.open(
-        process.env.VUE_APP_API + "api/set/download?iri=" + modIri + "&members=true&expandMembers=" + expanded + "&v1=" + (expanded && v1) + "&format=excel"
+        process.env.VUE_APP_API + "api/set/download?iri=" + modIri + "&expandMembers=" + expanded + "&v1=" + (expanded && v1) + "&format=excel"
       );
       if (!popup) {
         this.$toast.add(LoggerService.error("Download failed from server"));
