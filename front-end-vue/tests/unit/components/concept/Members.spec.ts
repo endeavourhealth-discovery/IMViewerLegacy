@@ -8,6 +8,7 @@ import Button from "primevue/button";
 import EntityService from "@/services/EntityService";
 import { FilterMatchMode } from "primevue/api";
 import LoggerService from "@/services/LoggerService";
+import Menu from "primevue/menu";
 
 describe("Members.vue", () => {
   let wrapper: any;
@@ -81,7 +82,7 @@ describe("Members.vue", () => {
 
     wrapper = shallowMount(Members, {
       global: {
-        components: { DataTable, InputText, Checkbox, Column, Button },
+        components: { DataTable, InputText, Checkbox, Column, Button, Menu },
         mocks: { $router: mockRouter, $toast: mockToast }
       },
       props: { conceptIri: "http://endhealth.info/im#VSET_EthnicCategoryCEG16" }
@@ -382,7 +383,7 @@ describe("Members.vue", () => {
     wrapper.vm.download(true);
     expect(window.open).toHaveBeenCalledTimes(1);
     expect(window.open).toHaveBeenCalledWith(
-      "/test/api/entity/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&members=true&expandMembers=true&format=excel"
+      "/test/api/set/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&members=true&expandMembers=true&v1=false&format=excel"
     );
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Download will begin shortly"));
@@ -395,7 +396,7 @@ describe("Members.vue", () => {
     wrapper.vm.download(true);
     expect(window.open).toHaveBeenCalledTimes(1);
     expect(window.open).toHaveBeenCalledWith(
-      "/test/api/entity/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&members=true&expandMembers=true&format=excel"
+      "/test/api/set/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&members=true&expandMembers=true&v1=false&format=excel"
     );
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Download failed from server"));
