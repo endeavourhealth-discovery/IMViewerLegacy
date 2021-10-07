@@ -12,7 +12,7 @@ export default {
           email: userToRegister.email,
           "custom:forename": userToRegister.firstName,
           "custom:surname": userToRegister.lastName,
-          "custom:avatar": userToRegister.avatar.value
+          "custom:avatar": userToRegister.avatar
         }
       });
       return new CustomAlert(201, "User registered successfully");
@@ -37,9 +37,14 @@ export default {
   async signIn(username: string, password: string): Promise<CustomAlert> {
     try {
       const user = await Auth.signIn(username, password);
-      const signedInUser = new User(user.username, user.attributes["custom:forename"], user.attributes["custom:surname"], user.attributes.email, "", {
-        value: user.attributes["custom:avatar"]
-      });
+      const signedInUser = new User(
+        user.username,
+        user.attributes["custom:forename"],
+        user.attributes["custom:surname"],
+        user.attributes.email,
+        "",
+        user.attributes["custom:avatar"]
+      );
       signedInUser.setId(user.attributes.sub);
       return new CustomAlert(200, "Login successful", undefined, signedInUser);
     } catch (err) {
@@ -81,7 +86,7 @@ export default {
           email: userToUpdate.email,
           "custom:forename": userToUpdate.firstName,
           "custom:surname": userToUpdate.lastName,
-          "custom:avatar": userToUpdate.avatar.value
+          "custom:avatar": userToUpdate.avatar
         };
         await Auth.updateUserAttributes(user, atts);
         const updateResults = await Auth.currentAuthenticatedUser();
@@ -91,7 +96,7 @@ export default {
           updateResults.attributes["custom:surname"],
           updateResults.attributes.email,
           "",
-          { value: updateResults.attributes["custom:avatar"] }
+          updateResults.attributes["custom:avatar"]
         );
         updatedUser.setId(updateResults.attributes.sub);
         return new CustomAlert(200, "User updated successfully", undefined, updatedUser);
@@ -152,7 +157,7 @@ export default {
         cognitoUser.attributes["custom:surname"],
         cognitoUser.attributes.email,
         "",
-        { value: cognitoUser.attributes["custom:avatar"] }
+        cognitoUser.attributes["custom:avatar"]
       );
       authenticatedUser.setId(cognitoUser.attributes.sub);
       return new CustomAlert(200, "User authenticated successfully", undefined, authenticatedUser);

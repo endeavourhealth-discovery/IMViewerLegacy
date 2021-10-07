@@ -54,7 +54,7 @@ import { SortBy } from "@/models/search/SortBy";
 import axios from "axios";
 import { mapState } from "vuex";
 import { TTIriRef } from "@/models/TripleTree";
-import { EntityReferenceNode } from "@/models/entityService/EntityServiceTypes";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { Namespace } from "@/models/Namespace";
 
 export default defineComponent({

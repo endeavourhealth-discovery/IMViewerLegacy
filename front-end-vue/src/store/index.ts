@@ -158,7 +158,7 @@ export default createStore({
         if (res.status === 200 && res.user) {
           commit("updateIsLoggedIn", true);
           const loggedInUser = res.user;
-          const foundAvatar = avatars.find(avatar => avatar.value === loggedInUser.avatar.value);
+          const foundAvatar = avatars.find(avatar => avatar === loggedInUser.avatar);
           if (!foundAvatar) {
             loggedInUser.avatar = avatars[0];
           }

@@ -56,11 +56,13 @@ import { IM } from "@/vocabulary/IM";
 import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
+import { ConceptAggregate } from "@/models/ConceptAggregate";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
+import { TTIriRef } from "@/models/TripleTree";
 
 export default defineComponent({
   name: "Hierarchy",
-  components: {},
-  props: ["active"],
+  props: { active: { type: Number, required: true } },
   emits: ["showTree"],
   computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus", "history"]),
   watch: {
@@ -103,7 +105,7 @@ export default defineComponent({
   data() {
     return {
       searchResult: "",
-      conceptAggregate: {} as any,
+      conceptAggregate: {} as ConceptAggregate,
       root: [] as TreeNode[],
       expandedKeys: {} as any,
       selectedKey: {} as any,
@@ -116,7 +118,7 @@ export default defineComponent({
     this.updateHistory();
   },
   methods: {
-    updateHistory() {
+    updateHistory(): void {
       if (!MODULE_IRIS.includes(this.conceptIri)) {
         this.$store.commit("updateHistory", {
           url: this.$route.fullPath,
@@ -125,7 +127,7 @@ export default defineComponent({
         } as HistoryItem);
       }
     },
-    async getConceptAggregate(iri: string) {
+    async getConceptAggregate(iri: string): Promise<void> {
       this.conceptAggregate.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]);
 
       this.conceptAggregate.parents = await EntityService.getEntityParents(iri);
@@ -138,12 +140,12 @@ export default defineComponent({
       const parentHierarchy = this.conceptAggregate.parents;
       const children = this.conceptAggregate.children;
       this.expandedKeys = {};
-      const selectedConcept = this.createTreeNode(concept[RDFS.LABEL], concept[IM.IRI], concept[RDF.TYPE], concept[RDFS.LABEL], concept.hasChildren);
+      const selectedConcept = this.createTreeNode(concept[RDFS.LABEL], concept[IM.IRI], concept[RDF.TYPE], concept.hasChildren);
 
-      children.forEach((child: any) => {
-        selectedConcept.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.name, child.hasChildren));
+      children.forEach((child: EntityReferenceNode) => {
+        selectedConcept.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
       });
-      this.root = [];
+      this.root = [] as TreeNode[];
 
       if (parentHierarchy.length) {
         this.parentLabel = parentHierarchy[0].name;
@@ -156,20 +158,20 @@ export default defineComponent({
       this.selectedKey[selectedConcept.key] = true;
     },
 
-    createTreeNode(conceptName: any, conceptIri: any, conceptTypes: any, level: any, hasChildren: boolean): TreeNode {
+    createTreeNode(conceptName: string, conceptIri: string, conceptTypes: TTIriRef[], hasChildren: boolean): TreeNode {
       return {
-        key: level,
+        key: conceptName,
         label: conceptName,
         typeIcon: getIconFromType(conceptTypes),
         color: getColourFromType(conceptTypes),
         data: conceptIri,
         leaf: !hasChildren,
         loading: false,
-        children: []
+        children: [] as TreeNode[]
       };
     },
 
-    onNodeSelect(node: any): void {
+    onNodeSelect(node: TreeNode): void {
       if (MODULE_IRIS.includes(node.data)) {
         this.$router.push({ name: "Dashboard" });
       } else {
@@ -185,15 +187,15 @@ export default defineComponent({
       this.expandedKeys[node.key] = true;
       const children = await EntityService.getEntityChildren(node.data);
 
-      children.forEach((child: any) => {
+      children.forEach((child: EntityReferenceNode) => {
         if (!this.containsChild(node.children, child)) {
-          node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.name, child.hasChildren));
+          node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
         }
       });
       node.loading = false;
     },
 
-    containsChild(children: any[], child: any) {
+    containsChild(children: TreeNode[], child: EntityReferenceNode): boolean {
       if (children.some(e => e.data === child["@id"])) {
         return true;
       }
@@ -203,10 +205,10 @@ export default defineComponent({
     async expandParents(): Promise<void> {
       this.expandedKeys[this.root[0].key] = true;
 
-      const parentsNodes: any[] = [];
+      const parentsNodes = [] as TreeNode[];
       const parents = await EntityService.getEntityParents(this.root[0].data);
-      parents.forEach((parent: any) => {
-        parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, parent.name, true));
+      parents.forEach((parent: EntityReferenceNode) => {
+        parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, true));
       });
 
       parentsNodes.forEach((parentNode: TreeNode) => {

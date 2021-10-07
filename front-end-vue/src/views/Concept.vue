@@ -112,6 +112,8 @@ import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
 import Properties from "@/components/concept/Properties.vue";
 import { bundleToText } from "@/helpers/Transforms";
+import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
+import { TTIriRef } from "@/models/TripleTree";
 
 export default defineComponent({
   name: "Concept",
@@ -198,15 +200,14 @@ export default defineComponent({
       concept: {} as any,
       definitionText: "",
       display: false,
-      types: [],
+      types: [] as TTIriRef[],
       header: "",
       dialogHeader: "",
       active: 0,
       contentHeight: "",
       contentHeightValue: 0,
       copyMenuItems: [] as any,
-      configs: [] as any,
-      axiomObject: {} as any
+      configs: [] as DefinitionConfig[]
     };
   },
   methods: {
@@ -229,62 +230,60 @@ export default defineComponent({
       this.$router.push({ name: "Create" });
     },
 
-    async getConcept(iri: string) {
+    async getConcept(iri: string): Promise<void> {
       const predicates = this.configs
-        .filter((c: any) => c.type !== "Divider")
-        .filter((c: any) => c.predicate !== "subtypes")
-        .filter((c: any) => c.predicate !== "inferred")
-        .filter((c: any) => c.predicate !== "dataModelProperties")
-        .filter((c: any) => c.predicate !== "termCodes")
-        .filter((c: any) => c.predicate !== "axioms")
-        .map((c: any) => c.predicate);
+        .filter((c: DefinitionConfig) => c.type !== "Divider")
+        .filter((c: DefinitionConfig) => c.predicate !== "subtypes")
+        .filter((c: DefinitionConfig) => c.predicate !== "inferred")
+        .filter((c: DefinitionConfig) => c.predicate !== "dataModelProperties")
+        .filter((c: DefinitionConfig) => c.predicate !== "termCodes")
+        .filter((c: DefinitionConfig) => c.predicate !== "axioms")
+        .map((c: DefinitionConfig) => c.predicate);
 
       this.concept = await EntityService.getPartialEntity(iri, predicates);
 
-      const childrenReturn = await EntityService.getEntityChildren(iri);
-      if (childrenReturn) this.concept["subtypes"] = childrenReturn;
+      this.concept["subtypes"] = await EntityService.getEntityChildren(iri);
 
-      const termCodesReturn = await EntityService.getEntityTermCodes(iri);
-      if (termCodesReturn) this.concept["termCodes"] = termCodesReturn;
+      this.concept["termCodes"] = await EntityService.getEntityTermCodes(iri);
     },
 
-    async getProperties(iri: string) {
+    async getProperties(iri: string): Promise<void> {
       this.concept["dataModelProperties"] = await EntityService.getDataModelProperties(iri);
     },
 
-    async getInferred(iri: string) {
+    async getInferred(iri: string): Promise<void> {
       this.concept["inferred"] = await EntityService.getPartialEntityBundle(iri, [IM.IS_A, IM.ROLE_GROUP]);
     },
 
-    async getStated(iri: string) {
+    async getStated(iri: string): Promise<void> {
       this.concept["axioms"] = await EntityService.getPartialEntityBundle(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
     },
 
-    async getConfig(name: string) {
+    async getConfig(name: string): Promise<void> {
       const configReturn = await ConfigService.getComponentLayout(name);
       if (configReturn) {
         this.configs = configReturn;
-        this.configs.sort((a: any, b: any) => {
+        this.configs.sort((a: DefinitionConfig, b: DefinitionConfig) => {
           return a.order - b.order;
         });
       }
     },
 
-    async init() {
+    async init(): Promise<void> {
       this.loading = true;
       await this.getConfig("definition");
       await this.getConcept(this.conceptIri);
       await this.getInferred(this.conceptIri);
       await this.getStated(this.conceptIri);
       await this.getProperties(this.conceptIri);
-      this.types = Object.prototype.hasOwnProperty.call(this.concept, RDF.TYPE) ? this.concept[RDF.TYPE] : [];
+      this.types = Object.prototype.hasOwnProperty.call(this.concept, RDF.TYPE) ? this.concept[RDF.TYPE] : ([] as TTIriRef[]);
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
       this.setStoreType();
       this.loading = false;
     },
 
-    setStoreType() {
+    setStoreType(): void {
       let type;
       if (this.isSet) {
         type = "Sets";
@@ -297,7 +296,6 @@ export default defineComponent({
       } else {
         type = this.activeModule;
       }
-
       this.$store.commit("updateSelectedEntityType", type);
       if (!MODULE_IRIS.includes(this.conceptIri)) {
         this.$store.commit("updateModuleSelectedEntities", {
@@ -307,7 +305,7 @@ export default defineComponent({
       }
     },
 
-    setActivePanel(newType: string, oldType: string) {
+    setActivePanel(newType: string, oldType: string): void {
       if (newType === oldType) {
         this.active = this.conceptActivePanel;
       } else {
@@ -349,7 +347,7 @@ export default defineComponent({
     conceptObjectToCopyString(key: string, value: any, counter: number, totalKeys: number): { label: string; value: string } | undefined {
       let newString = "";
       let returnString = "";
-      const label = this.configs.find((config: any) => config.predicate === key);
+      const label = this.configs.find((config: DefinitionConfig) => config.predicate === key);
       if (!label) {
         return;
       }
@@ -438,7 +436,7 @@ export default defineComponent({
       x.show(event);
     },
 
-    setCopyMenuItems() {
+    setCopyMenuItems(): void {
       this.copyMenuItems = [
         {
           label: "Copy",

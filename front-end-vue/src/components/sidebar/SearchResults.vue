@@ -109,6 +109,7 @@
 <script lang="ts">
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { SearchResponse } from "@/models/search/SearchResponse";
+import { TTIriRef } from "@/models/TripleTree";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
@@ -127,17 +128,17 @@ export default defineComponent({
     return {
       results: new SearchResponse() as SearchResponse,
       selectedResult: {} as ConceptSummary,
-      hoveredResult: {} as ConceptSummary | any,
-      copyMenuItems: [] as any
+      hoveredResult: {} as ConceptSummary,
+      copyMenuItems: [] as any[]
     };
   },
   methods: {
-    getPerspectiveByConceptType(conceptType: any): any {
-      return getIconFromType(conceptType);
+    getPerspectiveByConceptType(conceptTypes: TTIriRef[]): string {
+      return getIconFromType(conceptTypes);
     },
 
-    getColorByConceptType(conceptType: any): any {
-      return "color:" + getColourFromType(conceptType);
+    getColorByConceptType(conceptTypes: TTIriRef[]): string {
+      return "color:" + getColourFromType(conceptTypes);
     },
 
     onNodeSelect(): void {
@@ -160,14 +161,14 @@ export default defineComponent({
       x.hide();
     },
 
-    async showOverlay(event: any, data: any): Promise<void> {
+    showOverlay(event: any, data: ConceptSummary): void {
       this.hoveredResult = data;
       this.setCopyMenuItems();
       const x = this.$refs.op as any;
       x.show(event, event.target);
     },
 
-    getConceptTypes(concept: any): any {
+    getConceptTypes(concept: ConceptSummary): string {
       return concept.entityType
         .map(function(type: any) {
           return type.name;
@@ -248,7 +249,7 @@ export default defineComponent({
       x.show(event);
     },
 
-    setCopyMenuItems() {
+    setCopyMenuItems(): void {
       this.copyMenuItems = [
         {
           label: "Copy",

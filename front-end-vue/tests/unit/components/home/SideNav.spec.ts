@@ -202,9 +202,7 @@ describe("SideNav.spec ___ logged in", () => {
   beforeEach(() => {
     mockStore = {
       state: {
-        currentUser: new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "12345678", {
-          value: "colour/001-man.png"
-        }),
+        currentUser: new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "12345678", "colour/001-man.png"),
         isLoggedIn: true,
         sideNavHierarchyFocus: { name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" }
       },

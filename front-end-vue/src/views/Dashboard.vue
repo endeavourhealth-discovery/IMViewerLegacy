@@ -37,7 +37,7 @@ export default defineComponent({
           key: "conceptStatus",
           iri: "http://endhealth.info/im#ontologyConceptStatus"
         }
-      ]
+      ] as { key: string; iri: string }[]
     };
   }
 });

@@ -162,8 +162,8 @@ export default defineComponent({
       showPassword2Notice: false,
       showFirstNameNotice: false,
       showLastNameNotice: false,
-      selectedAvatar: avatars[0],
-      avatarOptions: avatars
+      selectedAvatar: avatars[0] as string,
+      avatarOptions: avatars as string[]
     };
   },
   mounted() {
@@ -295,7 +295,7 @@ export default defineComponent({
         verifyEmailsMatch(this.email1, this.email2) &&
         verifyIsName(this.firstName) &&
         verifyIsName(this.lastName) &&
-        "value" in this.selectedAvatar
+        this.selectedAvatar
       ) {
         return true;
       } else {
@@ -346,7 +346,7 @@ export default defineComponent({
       });
     },
 
-    updateAvatar(newValue: { value: string }): void {
+    updateAvatar(newValue: string): void {
       this.selectedAvatar = newValue;
     },
 
@@ -365,7 +365,7 @@ export default defineComponent({
         this.currentUser.firstName === this.firstName &&
         this.currentUser.lastName === this.lastName &&
         this.currentUser.email === this.email1 &&
-        this.currentUser.avatar.value === this.selectedAvatar.value
+        this.currentUser.avatar === this.selectedAvatar
       ) {
         return false;
       } else {

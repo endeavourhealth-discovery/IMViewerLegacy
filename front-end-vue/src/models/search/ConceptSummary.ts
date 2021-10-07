@@ -5,8 +5,8 @@ export class ConceptSummary {
   iri = "";
   scheme = {} as TTIriRef;
   code = "";
-  entityType = {} as { elements: TTIriRef[] };
-  isDescendentOf: TTIriRef[] = [];
+  entityType = [] as TTIriRef[];
+  isDescendentOf = [] as TTIriRef[];
   weighting = 0;
   match = "";
   status = {} as TTIriRef;
