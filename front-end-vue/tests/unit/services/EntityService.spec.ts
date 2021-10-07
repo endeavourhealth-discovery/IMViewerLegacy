@@ -28,24 +28,10 @@ describe("EntityService.ts", () => {
     expect(result).toBe("axios post return");
   });
 
-  it("can get entity", async () => {
-    const result = await EntityService.getEntity("testIri");
-    expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "api/entity", { params: { iri: "testIri" } });
-    expect(result).toBe("axios get return");
-  });
-
   it("can get entity definition dto", async () => {
     const result = await EntityService.getEntityDefinitionDto("testIri");
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "api/entity/definition", { params: { iri: "testIri" } });
-    expect(result).toBe("axios get return");
-  });
-
-  it("can get entity im lang", async () => {
-    const result = await EntityService.getEntityImLang("testIri");
-    expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "api/entity", { params: { iri: "testIri" }, headers: { accept: "application/imlang" }, responseType: "text" });
     expect(result).toBe("axios get return");
   });
 
@@ -125,13 +111,6 @@ describe("EntityService.ts", () => {
     const result = await EntityService.getDataModelProperties("testIri");
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "api/entity/dataModelProperties", { params: { iri: "testIri" } });
-    expect(result).toBe("axios get return");
-  });
-
-  it("can get complex mappings", async () => {
-    const result = await EntityService.getComplexMappings("testIri");
-    expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "api/entity/complexMappings", { params: { iri: "testIri" } });
     expect(result).toBe("axios get return");
   });
 
