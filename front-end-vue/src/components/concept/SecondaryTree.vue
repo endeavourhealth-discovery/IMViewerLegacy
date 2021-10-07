@@ -85,7 +85,7 @@ import { RDFS } from "@/vocabulary/RDFS";
 import { defineComponent } from "vue";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { TreeParent } from "@/models/secondaryTree/TreeParent";
-import { EntityReferenceNode } from "@/models/entityService/EntityServiceTypes";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { TTIriRef } from "@/models/TripleTree";
 
 export default defineComponent({

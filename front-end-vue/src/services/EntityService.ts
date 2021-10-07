@@ -2,7 +2,7 @@ import { SearchRequest } from "@/models/search/SearchRequest";
 import axios, { CancelToken } from "axios";
 import { IM } from "@/vocabulary/IM";
 import GraphData from "@/models/GraphData";
-import { EntityReferenceNode } from "@/models/entityService/EntityServiceTypes";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 
 export default class EntityService {
   static api = process.env.VUE_APP_API;

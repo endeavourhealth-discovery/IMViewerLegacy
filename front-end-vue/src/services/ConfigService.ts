@@ -1,4 +1,5 @@
 import axios from "axios";
+import { FilterDefaultsConfig } from "@/models/configs/FilterDefaultsConfig";
 
 export default class ConfigService {
   static api = process.env.VUE_APP_API;
@@ -14,8 +15,8 @@ export default class ConfigService {
     return axiosReturn ? axiosReturn : [];
   }
 
-  public static async getFilterDefaults(): Promise<any[]> {
+  public static async getFilterDefaults(): Promise<FilterDefaultsConfig> {
     const axiosReturn = (await axios.get(this.api + "api/config/filterDefaults")).data;
-    return axiosReturn ? axiosReturn : [];
+    return axiosReturn ? axiosReturn : ({} as FilterDefaultsConfig);
   }
 }
