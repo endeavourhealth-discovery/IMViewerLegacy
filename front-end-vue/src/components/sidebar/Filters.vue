@@ -38,7 +38,6 @@ import { FilterDefaultsConfig } from "@/models/configs/FilterDefaultsConfig";
 
 export default defineComponent({
   name: "Filters",
-  components: {},
   props: { search: { type: Function, required: true } },
   computed: mapState(["filterOptions", "selectedFilters", "quickFiltersStatus"]),
   watch: {

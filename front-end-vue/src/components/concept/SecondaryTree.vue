@@ -87,6 +87,7 @@ import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { TreeParent } from "@/models/secondaryTree/TreeParent";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { TTIriRef } from "@/models/TripleTree";
+import { ConceptAggregate } from "@/models/ConceptAggregate";
 
 export default defineComponent({
   name: "SecondaryTree",
@@ -102,8 +103,8 @@ export default defineComponent({
   },
   data() {
     return {
-      conceptAggregate: {} as any,
-      root: [] as any[],
+      conceptAggregate: {} as ConceptAggregate,
+      root: [] as TreeNode[],
       expandedKeys: {} as any,
       selectedKey: {} as any,
       currentParent: {} as TreeParent | null,
@@ -220,7 +221,7 @@ export default defineComponent({
 
       const parents = await EntityService.getEntityParents(this.root[0].data);
       const parentNode = this.createExpandedParentTree(parents, parentPosition);
-      this.root = [];
+      this.root = [] as TreeNode[];
       this.root.push(parentNode);
       await this.setExpandedParentParents();
       // this refreshes the keys so they start open if children and parents were both expanded
