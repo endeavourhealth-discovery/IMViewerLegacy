@@ -95,7 +95,6 @@ import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 import { RDFS } from "@/vocabulary/RDFS";
 import { IM } from "@/vocabulary/IM";
-import { OWL } from "@/vocabulary/OWL";
 
 export default defineComponent({
   name: "DownloadDialog",

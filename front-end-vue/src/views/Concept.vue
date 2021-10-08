@@ -386,7 +386,7 @@ export default defineComponent({
           returnString = newKey + ': "\n' + bundleToText(value) + '\n",\n';
         }
       } else if (typeof value === "string") {
-        newString = value.replace(/\n/g, "\n\t").replace(/<p>/g, "\n\t") as string;
+        newString = value.replace(/\n/g, "\n\t").replace(/<p>/g, "\n\t");
         if (newString) {
           if (counter === totalKeys - 1) {
             returnString = newKey + ": " + newString;

@@ -151,7 +151,7 @@ export default class EntityService {
   }
 
   public static async saveEntity(concept: any): Promise<any> {
-    return await axios.post(this.api + "api/entity", concept);
+    return axios.post(this.api + "api/entity", concept);
   }
 
   public static async getEntityGraph(iri: string): Promise<GraphData> {

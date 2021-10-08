@@ -189,7 +189,6 @@ export default defineComponent({
 
     async getPartialInstance() {
       window.history.pushState("", "", "/individual/" + this.instanceIri);
-      // console.log(document.location.href);
       const result = await CatalogueService.getPartialInstance(this.instanceIri, this.predicate);
       if (result) this.instance = result;
 
@@ -240,7 +239,6 @@ export default defineComponent({
     navigate(instance: any) {
       this.instanceIri = instance["@id"];
       this.instanceName = instance.name ? instance.name : instance["@id"];
-      // console.log(this.instanceIri);
       this.displayInstance();
     },
 
