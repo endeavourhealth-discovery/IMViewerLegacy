@@ -10,7 +10,7 @@
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
-              v-clipboard:copy="copyConceptToClipboard()"
+              v-clipboard:copy="copyConceptToClipboardVueWrapper(concept, configs)"
               v-clipboard:success="onCopy"
               v-clipboard:error="onCopyError"
               v-tooltip="'Copy concept to clipboard \n (right click to copy individual properties)'"
@@ -111,9 +111,9 @@ import { MODULE_IRIS } from "@/helpers/ModuleIris";
 import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
 import Properties from "@/components/concept/Properties.vue";
-import { bundleToText } from "@/helpers/Transforms";
 import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
 import { TTIriRef } from "@/models/TripleTree";
+import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
 
 export default defineComponent({
   name: "Concept",
@@ -344,83 +344,8 @@ export default defineComponent({
       this.showDownloadDialog = false;
     },
 
-    conceptObjectToCopyString(key: string, value: any, counter: number, totalKeys: number): { label: string; value: string } | undefined {
-      let newString = "";
-      let returnString = "";
-      const label = this.configs.find((config: DefinitionConfig) => config.predicate === key);
-      if (!label) {
-        return;
-      }
-      let newKey = label.label;
-      if (Array.isArray(value)) {
-        if (value.length) {
-          if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
-            newString = value.map(item => item.name).join(",\n\t");
-          } else if (Object.prototype.hasOwnProperty.call(value[0], "property") && Object.prototype.hasOwnProperty.call(value[0].property, "name")) {
-            newString = value.map(item => item.property.name).join(",\n\t");
-          } else {
-            LoggerService.warn(
-              undefined,
-              "Uncovered object property or missing name found for key: " + key + " at conceptObjectToCopyString within Concept.vue"
-            );
-          }
-          if (newString) {
-            if (counter === totalKeys - 1) {
-              returnString = newKey + ": [\n\t" + newString + "\n]";
-            } else {
-              returnString = newKey + ": [\n\t" + newString + "\n],\n";
-            }
-          }
-        }
-      } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "name")) {
-        newString = value.name;
-        if (newString) {
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ": " + newString;
-          } else {
-            returnString = newKey + ": " + newString + ",\n";
-          }
-        }
-      } else if (
-        Object.prototype.toString.call(value) === "[object Object]" &&
-        Object.prototype.hasOwnProperty.call(value, "entity") &&
-        Object.prototype.hasOwnProperty.call(value, "predicates")
-      ) {
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ': "\n' + bundleToText(value) + '\n"';
-        } else {
-          returnString = newKey + ': "\n' + bundleToText(value) + '\n",\n';
-        }
-      } else if (typeof value === "string") {
-        newString = value.replace(/\n/g, "\n\t").replace(/<p>/g, "\n\t") as string;
-        if (newString) {
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ": " + newString;
-          } else {
-            returnString = newKey + ": " + newString + ",\n";
-          }
-        }
-      } else {
-        returnString = JSON.stringify(value);
-      }
-      return { label: newKey, value: returnString };
-    },
-
-    copyConceptToClipboard(): string {
-      const totalKeys = Object.keys(this.concept).length;
-      let counter = 0;
-      let returnString = "";
-      let key: string;
-      let value: any;
-      for ([key, value] of Object.entries(this.concept)) {
-        const copyString = this.conceptObjectToCopyString(key, value, counter, totalKeys);
-        if (copyString) returnString += copyString.value;
-        counter++;
-      }
-      if (returnString.endsWith(",\n")) {
-        return returnString.slice(0, -2);
-      }
-      return returnString;
+    copyConceptToClipboardVueWrapper(concept: any, configs: DefinitionConfig[]) {
+      return copyConceptToClipboard(concept, configs);
     },
 
     onCopy(): void {
@@ -449,7 +374,7 @@ export default defineComponent({
           label: "All",
           command: async () => {
             await navigator.clipboard
-              .writeText(this.copyConceptToClipboard())
+              .writeText(copyConceptToClipboard(this.concept, this.configs))
               .then(() => {
                 this.$toast.add(LoggerService.success("Concept copied to clipboard"));
               })
@@ -463,7 +388,7 @@ export default defineComponent({
       let key: string;
       let value: any;
       for ([key, value] of Object.entries(this.concept)) {
-        let result = this.conceptObjectToCopyString(key, value, 0, 1);
+        let result = conceptObjectToCopyString(key, value, 0, 1, this.configs);
         if (!result || !result.value) continue;
         const label = result.label;
         const text = result.value;
