@@ -293,7 +293,7 @@ export default defineComponent({
       this.$store.commit("updateSelectedEntityType", type);
       if (!MODULE_IRIS.includes(this.conceptIri)) {
         this.$store.commit("updateModuleSelectedEntities", {
-          module: type,
+          module: this.isProperty ? "DataModel" : type,
           iri: this.conceptIri
         });
       }
