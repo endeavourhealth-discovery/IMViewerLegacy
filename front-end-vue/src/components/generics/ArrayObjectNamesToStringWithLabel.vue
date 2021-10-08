@@ -8,24 +8,22 @@
 </template>
 
 <script lang="ts">
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   name: "ArrayObjectNamesToStringWithLabel",
   props: {
     label: { type: String },
-    data: { type: Array as PropType<Array<string>> },
+    data: { type: Array as PropType<Array<string>>, required: true },
     size: { type: String }
   },
   computed: {
     arrayToString(): string | undefined {
       if (
-        this.data &&
-        Array.isArray(this.data) &&
-        this.data.length &&
-        this.data.every(item => Object.prototype.toString.call(item) === "[object Object]") &&
-        this.data.every(item => Object.prototype.hasOwnProperty.call(item, "name"))
-      ) {
+        isArrayHasLength(this.data) &&
+        this.data.every(item => isObjectHasKeys(item, ["name"])
+      )) {
         return this.data
           .map(function(item: any) {
             return item.name;

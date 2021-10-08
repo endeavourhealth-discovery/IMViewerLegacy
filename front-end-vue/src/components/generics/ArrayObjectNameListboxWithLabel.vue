@@ -40,29 +40,23 @@ import { defineComponent, PropType } from "vue";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import LoggerService from "@/services/LoggerService";
 import { mapState } from "vuex";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "ArrayObjectNameListboxWithLabel",
   props: {
     label: { type: String },
-    data: { type: Array as PropType<Array<unknown>> },
+    data: { type: Array as PropType<Array<unknown>>, required: true },
     size: { type: String },
     id: { type: String }
   },
   computed: {
     isArrayObjectWithName(): boolean {
-      if (!this.data) {
-        return false;
-      }
       if (
-        Array.isArray(this.data) &&
-        this.data.length &&
-        this.data.every(item => Object.prototype.toString.call(item) === "[object Object]") &&
-        this.data.every(item => Object.prototype.hasOwnProperty.call(item, "name"))
+        isArrayHasLength(this.data) &&
+        this.data.every(item => isObjectHasKeys(item, ["name"]))
       ) {
         return true;
-      } else if (Array.isArray(this.data) && this.data.length === 0) {
-        return false;
       } else {
         LoggerService.warn(
           undefined,
@@ -86,7 +80,7 @@ export default defineComponent({
     };
   },
   methods: {
-    navigate(iri: any) {
+    navigate(iri: string) {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
       if (iri)
         this.$router.push({

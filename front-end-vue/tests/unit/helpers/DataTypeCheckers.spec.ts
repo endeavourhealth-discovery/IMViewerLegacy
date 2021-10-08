@@ -21,6 +21,14 @@ describe("DataTypeCheckers.ts ___", () => {
       const testArray = ["one", 2, { value: "three"}, ["four"]];
       expect(isArrayHasLength(testArray)).toBe(true);
     });
+
+    it("is can handle undefined", () => {
+      expect(isArrayHasLength(undefined)).toBe(false);
+    });
+
+    it("can handle null", () => {
+      expect(isArrayHasLength(null)).toBe(false);
+    });
   });
 
   describe("isObject", () => {
@@ -42,6 +50,14 @@ describe("DataTypeCheckers.ts ___", () => {
     it("checks is an object ___ false ___ fn", () => {
       const testObject = function() { return true };
       expect(isObject(testObject)).toBe(false);
+    });
+
+    it("checks is an object ___ false ___ undefined", () => {
+      expect(isObject(undefined)).toBe(false);
+    });
+
+    it("checks is an object ___ false ___ null", () => {
+      expect(isObject(null)).toBe(false);
     });
   });
 
@@ -69,6 +85,14 @@ describe("DataTypeCheckers.ts ___", () => {
     it("checks is an object ___ false ___ fn", () => {
       const testObject = function() { return true };
       expect(isObjectHasKeys(testObject, ["value"])).toBe(false);
+    });
+
+    it("checks is an object ___ false ___ undefined", () => {
+      expect(isObjectHasKeys(undefined, ["value"])).toBe(false);
+    });
+
+    it("checks is an object ___ false ___ null", () => {
+      expect(isObjectHasKeys(null, ["value"])).toBe(false);
     });
   });
 });
