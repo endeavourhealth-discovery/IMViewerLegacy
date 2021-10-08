@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 
 export default class UprnService {
   static api = process.env.VUE_APP_UPRN_API;
