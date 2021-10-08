@@ -109,6 +109,7 @@ import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import CatalogueService from "@/services/CatalogueService";
 import CatalogueDashboard from "@/components/catalogue/CatalogueDashboard.vue";
+import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
   name: "Catalogue",
@@ -133,7 +134,7 @@ export default defineComponent({
       location: "",
       types: [] as any[],
       selectedType: [] as any[],
-      typesIris: ["http://endhealth.info/im#Organisation"] as string[],
+      typesIris: [IM.ORGANISATION] as string[],
       dash: true
     };
   },
@@ -201,7 +202,7 @@ export default defineComponent({
             label: this.instance.entity[predicate],
             children: []
           });
-        } else if (predicate === "http://endhealth.info/im#address") {
+        } else if (predicate === IM.ADDRESS) {
           this.instanceData.push({
             key: level,
             label: this.getPredicateName(predicate) + " : ",

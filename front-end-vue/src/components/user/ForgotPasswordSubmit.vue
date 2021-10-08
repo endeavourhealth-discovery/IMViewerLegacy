@@ -15,8 +15,8 @@
             <label for="fieldCode">Confirmation code</label>
             <div class="p-d-flex p-flex-row p-ai-center">
               <InputText id="fieldCode" type="password" v-model="code" />
-              <i v-if="codeVerified" class="pi pi-check-circle" style="color: #439446; fontSize: 2em" aria-hidden="true" />
-              <i v-if="!codeVerified && code !== ''" class="pi pi-times-circle" style="color: #e60017; fontSize: 2em" aria-hidden="true" />
+              <i v-if="codeVerified" class="pi pi-check-circle" style="color: #439446; font-size: 2em" aria-hidden="true" />
+              <i v-if="!codeVerified && code !== ''" class="pi pi-times-circle" style="color: #e60017; font-size: 2em" aria-hidden="true" />
             </div>
             <small id="code-help">Your 6-digit code should arrive by email from<br />no-reply@verificationemail.com</small>
           </div>

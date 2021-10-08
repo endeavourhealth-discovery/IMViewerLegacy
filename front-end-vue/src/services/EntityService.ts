@@ -39,6 +39,28 @@ export default class EntityService {
     return axiosReturn ? axiosReturn : ({} as PartialBundle);
   }
 
+  public static async getInferredBundle(iri: string): Promise<PartialBundle> {
+    const axiosReturn = (
+      await axios.get(this.api + "api/entity/inferredBundle", {
+        params: {
+          iri: iri,
+        }
+      })
+    ).data;
+    return axiosReturn ? axiosReturn : ({} as PartialBundle);
+  }
+
+  public static async getAxiomBundle(iri: string): Promise<PartialBundle> {
+    const axiosReturn = (
+      await axios.get(this.api + "api/entity/axiomBundle", {
+        params: {
+          iri: iri,
+        }
+      })
+    ).data;
+    return axiosReturn ? axiosReturn : ({} as PartialBundle);
+  }
+
   public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<SearchResponse> {
     const axiosReturn = (
       await axios.post(this.api + "api/entity/search", request, {

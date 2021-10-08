@@ -244,11 +244,11 @@ export default defineComponent({
     },
 
     async getInferred(iri: string): Promise<void> {
-      this.concept["inferred"] = await EntityService.getPartialEntityBundle(iri, [IM.IS_A, IM.ROLE_GROUP]);
+      this.concept["inferred"] = await EntityService.getInferredBundle(iri);
     },
 
     async getStated(iri: string): Promise<void> {
-      this.concept["axioms"] = await EntityService.getPartialEntityBundle(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
+      this.concept["axioms"] = await EntityService.getAxiomBundle(iri);
     },
 
     async getConfig(name: string): Promise<void> {

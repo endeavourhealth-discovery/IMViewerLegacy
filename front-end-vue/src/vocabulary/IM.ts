@@ -35,6 +35,9 @@ export class IM {
   public static RECORD_TYPE = IM.NAMESPACE + "RecordType";
   public static FOLDER = IM.NAMESPACE + "Folder";
   public static DATA_PROPERTY = IM.NAMESPACE + "DataProperty";
+  public static ORGANISATION = IM.NAMESPACE + "Organisation";
+  public static ADDRESS = IM.NAMESPACE + "address";
+  public static MODELLING_ENTITY_TYPE = IM.NAMESPACE + "ModellingEntityType";
 
   // code schemes
   public static CODE_SCHEME = IM.NAMESPACE + "CodeScheme";
@@ -58,4 +61,11 @@ export class IM {
   public static MODULE_CATALOGUE = IM.NAMESPACE + "Catalogue";
   public static MODULE_QUERIES = IM.NAMESPACE + "QT_QueryTemplates";
   public static MODULE_IM = IM.NAMESPACE + "InformationModel";
+
+  // Stats reports
+  public static CONCEPT_CATEGORY = IM.NAMESPACE + "ontologyOverview";
+  public static CONCEPT_TYPES = IM.NAMESPACE + "ontologyConceptTypes";
+  public static CONCEPT_SCHEMES = IM.NAMESPACE + "ontologyConceptSchemes";
+  public static CONCEPT_STATUS = IM.NAMESPACE + "ontologyConceptStatus";
+
 }

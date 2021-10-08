@@ -35,6 +35,8 @@ import { mapState } from "vuex";
 import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { FilterDefaultsConfig } from "@/models/configs/FilterDefaultsConfig";
+import { IM } from "@/vocabulary/IM";
+import { NAMESPACES } from "@/vocabulary/NAMESPACES";
 
 export default defineComponent({
   name: "Filters",
@@ -115,16 +117,16 @@ export default defineComponent({
 
       this.schemeOptions = await EntityService.getNamespaces();
 
-      this.statusOptions = await EntityService.getEntityChildren("http://endhealth.info/im#Status");
+      this.statusOptions = await EntityService.getEntityChildren(IM.STATUS);
 
-      this.typeOptions = await EntityService.getEntityChildren("http://endhealth.info/im#ModellingEntityType");
+      this.typeOptions = await EntityService.getEntityChildren(IM.MODELLING_ENTITY_TYPE);
     },
 
     setLegacy(include: boolean): void {
-      const emisScheme = this.selectedSchemes.findIndex(scheme => scheme.iri === "http://endhealth.info/emis#");
+      const emisScheme = this.selectedSchemes.findIndex(scheme => scheme.iri === NAMESPACES.EMIS);
       if (include) {
         if (emisScheme === -1) {
-          const found = this.schemeOptions.find(scheme => scheme.iri === "http://endhealth.info/emis#");
+          const found = this.schemeOptions.find(scheme => scheme.iri === NAMESPACES.EMIS);
           if (found) this.selectedSchemes.push(found);
         }
       } else {

@@ -204,9 +204,9 @@ export default defineComponent({
         this.hasChildren = this.concept[IM.HAS_CHILDREN];
       }
 
-      this.inferred = await EntityService.getPartialEntity(iri, [IM.IS_A, IM.ROLE_GROUP]);
+      this.inferred = await EntityService.getInferredBundle(iri);
 
-      this.axioms = await EntityService.getPartialEntity(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
+      this.axioms = await EntityService.getAxiomBundle(iri);
 
       this.hasSubTypes = await EntityService.getEntityChildren(iri);
 

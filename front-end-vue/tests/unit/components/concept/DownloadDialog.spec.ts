@@ -28,13 +28,9 @@ describe("DownloadDialog.vue", () => {
     mockToast = {
       add: jest.fn()
     };
-    EntityService.getPartialEntity = jest.fn()
-      .mockResolvedValueOnce(CONCEPT)
-      .mockResolvedValueOnce(INFERRED)
-      .mockResolvedValueOnce(AXIOMS)
-      .mockResolvedValueOnce(CONCEPT)
-      .mockResolvedValueOnce(INFERRED)
-      .mockResolvedValueOnce(AXIOMS)
+    EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
+    EntityService.getInferredBundle = jest.fn().mockResolvedValue(INFERRED);
+    EntityService.getAxiomBundle = jest.fn().mockResolvedValue(AXIOMS);
     EntityService.getEntityChildren = jest.fn().mockResolvedValue(CHILDREN );
     EntityService.getDataModelProperties = jest.fn().mockResolvedValue(DATA_MODEL);
     EntityService.getEntityMembers = jest.fn().mockResolvedValue(MEMBERS);
@@ -51,7 +47,13 @@ describe("DownloadDialog.vue", () => {
 
   it("inits on mounted", async () => {
     await flushPromises();
-    expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(3);
+    expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
+    expect(EntityService.getInferredBundle).toHaveBeenCalledTimes(1);
+    expect(EntityService.getAxiomBundle).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityTermCodes).toHaveBeenCalledTimes(1);
+    expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
   });
 
   it("inits on conceptIri change", () => {
@@ -96,10 +98,12 @@ describe("DownloadDialog.vue", () => {
     expect(wrapper.vm.loading).toBe(true);
     await flushPromises();
     await wrapper.vm.$nextTick();
-    expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(3);
-    expect(EntityService.getPartialEntity).toHaveBeenNthCalledWith(1,"http://snomed.info/sct#298382003", [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
-    expect(EntityService.getPartialEntity).toHaveBeenNthCalledWith(2,"http://snomed.info/sct#298382003", [IM.IS_A, IM.ROLE_GROUP]);
-    expect(EntityService.getPartialEntity).toHaveBeenNthCalledWith(3,"http://snomed.info/sct#298382003", [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
+    expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
+    expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
+    expect(EntityService.getInferredBundle).toHaveBeenCalledTimes(1);
+    expect(EntityService.getInferredBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(EntityService.getAxiomBundle).toHaveBeenCalledTimes(1);
+    expect(EntityService.getAxiomBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.concept).toStrictEqual(CONCEPT);
     expect(EntityService.getEntityTermCodes).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityTermCodes).toHaveBeenCalledWith("http://snomed.info/sct#298382003");

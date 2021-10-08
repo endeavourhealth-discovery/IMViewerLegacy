@@ -89,6 +89,10 @@ export default defineComponent({
       switch (iri) {
         case "http://www.w3.org/2001/XMLSchema#string":
           return "String";
+        case "http://www.w3.org/2001/XMLSchema#int":
+          return "Integer";
+        case "http://www.w3.org/2001/XMLSchema#dateTime":
+          return "Date/Time";
         default:
           return "String";
       }
