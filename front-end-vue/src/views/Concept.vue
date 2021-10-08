@@ -158,7 +158,7 @@ export default defineComponent({
     },
 
     isProperty(): boolean {
-      return isOfTypes(this.types, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY);
+      return isOfTypes(this.types, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY, OWL.DATATYPE_PROPERTY);
     },
 
     ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel", "activeModule"])
@@ -178,15 +178,7 @@ export default defineComponent({
   },
   async mounted() {
     await this.init();
-    if (this.activeModule === "Sets") {
-      this.active = 2;
-    }
-    if (this.activeModule === "DataModel") {
-      this.active = 3;
-    }
-
     window.addEventListener("resize", this.onResize);
-
     this.setContentHeight();
   },
   beforeUnmount() {
@@ -293,6 +285,8 @@ export default defineComponent({
         type = "Queries";
       } else if (this.isRecordModel) {
         type = "DataModel";
+      } else if (this.isProperty) {
+        type = "Property";
       } else {
         type = this.activeModule;
       }
@@ -309,9 +303,9 @@ export default defineComponent({
       if (newType === oldType) {
         this.active = this.conceptActivePanel;
       } else {
-        if (newType === "Sets") {
+        if (this.isSet) {
           this.active = 2;
-        } else if (newType === "DataModel") {
+        } else if (this.isRecordModel) {
           this.active = 3;
         } else {
           this.active = 0;
