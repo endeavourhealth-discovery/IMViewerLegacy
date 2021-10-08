@@ -80,6 +80,7 @@ import LoggerService from "@/services/LoggerService";
 import ComplexMembers from "@/components/concept/members/ComplexMembers.vue";
 import { ValueSetMember } from "@/models/members/ValueSetMember";
 import { ExportValueSet } from "@/models/members/ExportValueSet";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Members",
@@ -134,7 +135,7 @@ export default defineComponent({
     },
 
     onRowSelect(): void {
-      if (this.selected != null && this.selected.entity != null) {
+      if (isObjectHasKeys(this.selected, ["entity"]) && isObjectHasKeys(this.selected.entity, ["@id"])) {
         this.$router.push({
           name: "Concept",
           params: { selectedIri: this.selected.entity["@id"] }
@@ -157,7 +158,7 @@ export default defineComponent({
     },
 
     setSubsets(): void {
-      this.combinedMembers.forEach((member: any) => {
+      this.combinedMembers.forEach((member: ValueSetMember) => {
         if (!this.subsets.some(e => e === member.label)) {
           if (member.type === "SUBSET") {
             this.subsets.push(member.label);
@@ -179,8 +180,8 @@ export default defineComponent({
     },
 
     sortMembers(): void {
-      if (this.members && Object.prototype.hasOwnProperty.call(this.members, "members") && Array.isArray(this.members.members)) {
-        this.members.members = this.members.members.sort((a: any, b: any) =>
+      if (isObjectHasKeys(this.members, ["members"]) && isArrayHasLength(this.members.members)) {
+        this.members.members = this.members.members.sort((a: ValueSetMember, b: ValueSetMember) =>
           a.label.localeCompare(b.label) == 0 ? a.entity.name.localeCompare(b.entity.name) : a.label.localeCompare(b.label)
         );
       }
