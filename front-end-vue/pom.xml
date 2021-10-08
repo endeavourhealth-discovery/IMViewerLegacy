@@ -15,7 +15,7 @@
   <properties>
     <sonar.projectKey>endeavourhealth-discovery_IMViewer::frontend</sonar.projectKey>
     <sonar.sources>src</sonar.sources>
-    <sonar.nodejs.executable>node/node</sonar.nodejs.executable>
+    <sonar.nodejs.executable>front-end-vue/node/node</sonar.nodejs.executable>
     <sonar.typescript.tsconfigPath>tsconfig.json</sonar.typescript.tsconfigPath>
     <sonar.ts.tslint.configPath>tslint.json</sonar.ts.tslint.configPath>
     <sonar.tests>.</sonar.tests>
