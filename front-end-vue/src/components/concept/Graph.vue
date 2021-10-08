@@ -66,7 +66,6 @@ import { RouteRecordName } from "vue-router";
 
 export default defineComponent({
   name: "Graph",
-  components: {},
   props: {
     conceptIri: { type: String, required: true }
   },

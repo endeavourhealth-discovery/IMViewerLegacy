@@ -31,8 +31,8 @@ export default defineComponent({
     };
   },
   methods: {
-    init() {
-      this.getComplexMembers();
+    async init() {
+      await this.getComplexMembers();
     },
 
     async getComplexMembers() {

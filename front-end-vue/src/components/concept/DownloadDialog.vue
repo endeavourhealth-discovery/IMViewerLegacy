@@ -96,6 +96,7 @@ import { defineComponent } from "@vue/runtime-core";
 import { RDFS } from "@/vocabulary/RDFS";
 import { IM } from "@/vocabulary/IM";
 import { OWL } from "@/vocabulary/OWL";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "DownloadDialog",
@@ -197,10 +198,10 @@ export default defineComponent({
     async init(iri: string) {
       this.loading = true;
       this.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
-      if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_CHILD_OF) && this.concept[IM.IS_CHILD_OF].length) {
+      if (isObjectHasKeys(this.concept, [IM.IS_CHILD_OF]) && isArrayHasLength(this.concept[IM.IS_CHILD_OF])) {
         this.isChildOf = this.concept[IM.IS_CHILD_OF];
       }
-      if (Object.prototype.hasOwnProperty.call(this.concept, IM.HAS_CHILDREN) && this.concept[IM.HAS_CHILDREN]) {
+      if (isObjectHasKeys(this.concept, [IM.HAS_CHILDREN]) && this.concept[IM.HAS_CHILDREN]) {
         this.hasChildren = this.concept[IM.HAS_CHILDREN];
       }
 
@@ -228,7 +229,7 @@ export default defineComponent({
       this.includeHasChildren = !!this.hasChildren.length;
       this.includeTerms = !!this.terms.length;
       this.includeDataModelProperties = !!this.dataModelProperties.length;
-      this.includeMembers = !!(Object.prototype.hasOwnProperty.call(this.members, "members") && this.members.members.length);
+      this.includeMembers = !!(isObjectHasKeys(this.members, ["members"]) && isArrayHasLength(this.members.members));
     }
   }
 });
