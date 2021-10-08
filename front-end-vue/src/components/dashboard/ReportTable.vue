@@ -27,6 +27,7 @@ import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 import { OWL } from "@/vocabulary/OWL";
 import EntityService from "@/services/EntityService";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "ReportTable",
@@ -43,9 +44,8 @@ export default defineComponent({
       value: true
     });
     const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
-    if (Object.keys(result).includes(IM.STATS_REPORT_ENTRY)) {
-      this.tableData = [];
-
+    if (isObjectHasKeys(result, [IM.STATS_REPORT_ENTRY])) {
+      this.tableData = [] as { count: number; label: string }[];
       for (const entry of result[IM.STATS_REPORT_ENTRY]) {
         this.tableData.push({
           label: entry[RDFS.LABEL],
