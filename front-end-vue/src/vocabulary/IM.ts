@@ -4,7 +4,7 @@ export class IM {
   public static IRI = "@id";
   public static CODE = IM.NAMESPACE + "code";
   public static SCHEME = IM.NAMESPACE + "scheme";
-  public static STATUS = IM.NAMESPACE + "status";
+  public static STATUS = IM.NAMESPACE + "Status";
   public static IS_A = IM.NAMESPACE + "isA";
   public static ROLE_GROUP = IM.NAMESPACE + "roleGroup";
   public static IS_CONTAINED_IN = IM.NAMESPACE + "isContainedIn";
@@ -67,5 +67,4 @@ export class IM {
   public static CONCEPT_TYPES = IM.NAMESPACE + "ontologyConceptTypes";
   public static CONCEPT_SCHEMES = IM.NAMESPACE + "ontologyConceptSchemes";
   public static CONCEPT_STATUS = IM.NAMESPACE + "ontologyConceptStatus";
-
 }
