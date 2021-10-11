@@ -19,7 +19,7 @@ describe("ArrayObjectNameListboxWithLabel.vue", () => {
       state: {
         selectedEntityType: "Ontology"
       }
-    }
+    };
 
     wrapper = mount(ArrayObjectNameListboxWithLabel, {
       global: {
@@ -66,9 +66,7 @@ describe("ArrayObjectNameListboxWithLabel.vue", () => {
     const warn = console.warn;
     console.warn = jest.fn();
     expect(ArrayObjectNameListboxWithLabel.computed.isArrayObjectWithName.call({ data: undefined })).toBe(false);
-    expect(console.warn).toHaveBeenCalledWith(
-      "Data error. Data is not array, array does not contain Object or Object has no property 'name' for use within component ArrayObjectNameListboxWithLabel.vue"
-    );
+    expect(console.warn).not.toHaveBeenCalled();
     console.warn = warn;
   });
 

@@ -107,7 +107,6 @@
 </template>
 
 <script lang="ts">
-import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { SearchResponse } from "@/models/search/SearchResponse";
 import { TTIriRef } from "@/models/TripleTree";
@@ -191,7 +190,7 @@ export default defineComponent({
     },
 
     copyConceptToClipboardVueWrapper(data: any) {
-      let filteredData = {...data};
+      let filteredData = { ...data };
       delete filteredData.match;
       delete filteredData.weighting;
       delete filteredData.isDescendantOf;
@@ -226,7 +225,7 @@ export default defineComponent({
       let value: any;
       for ([key, value] of Object.entries(this.hoveredResult)) {
         let result = conceptObjectToCopyString(key, value, 0, 1);
-        if (!result) return;
+        if (!result) continue;
         const label = result.label;
         const text = result.value;
         this.copyMenuItems.push({
