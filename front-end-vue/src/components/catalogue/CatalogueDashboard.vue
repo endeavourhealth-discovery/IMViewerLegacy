@@ -69,7 +69,7 @@ export default defineComponent({
           }
         ],
         []
-      ) as PieChartData,
+      ),
       chartOptions: {
         plugins: {
           legend: {

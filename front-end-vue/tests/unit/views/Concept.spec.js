@@ -122,12 +122,8 @@ describe("Concept.vue", () => {
   beforeEach(async () => {
     jest.resetAllMocks();
     clipboardSpy = jest.spyOn(navigator.clipboard, "writeText");
-    EntityService.getPartialEntityBundle = jest
-      .fn()
-      .mockResolvedValueOnce(INFERRED)
-      .mockResolvedValueOnce(AXIOMS)
-      .mockResolvedValueOnce(INFERRED)
-      .mockResolvedValueOnce(AXIOMS);
+    EntityService.getInferredBundle = jest.fn().mockResolvedValue(INFERRED);
+    EntityService.getAxiomBundle = jest.fn().mockResolvedValue(AXIOMS);
     EntityService.getDataModelProperties = jest.fn().mockResolvedValue(DATA_MODEL);
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
     EntityService.getEntityChildren = jest.fn().mockResolvedValue(CHILDREN);

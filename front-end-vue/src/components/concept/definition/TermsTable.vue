@@ -63,7 +63,7 @@ export default defineComponent({
   },
   methods: {
     setButtonExpanded(): void {
-      this.buttonExpanded ? (this.buttonExpanded = false) : (this.buttonExpanded = true);
+      this.buttonExpanded = !this.buttonExpanded;
     }
   }
 });

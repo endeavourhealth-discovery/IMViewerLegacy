@@ -13,6 +13,7 @@ import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import SidebarControl from "@/components/home/SidebarControl.vue";
 import { mapState } from "vuex";
+import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
   name: "Home",
@@ -37,16 +38,16 @@ export default defineComponent({
       if (this.$route.name === "Home" || this.$route.name === "Dashboard") {
         switch (this.sideNavHierarchyFocus.name) {
           case "InformationModel":
-            this.$store.commit("updateConceptIri", "http://endhealth.info/im#InformationModel");
+            this.$store.commit("updateConceptIri", IM.MODULE_IM);
             break;
           case "Ontology":
-            this.$store.commit("updateConceptIri", "http://endhealth.info/im#DiscoveryOntology");
+            this.$store.commit("updateConceptIri", IM.MODULE_ONTOLOGY);
             break;
           case "ValueSets":
-            this.$store.commit("updateConceptIri", "http://endhealth.info/im#Sets");
+            this.$store.commit("updateConceptIri", IM.MODULE_SETS);
             break;
           case "Queries":
-            this.$store.commit("updateConceptIri", "http://endhealth.info/im#QT_QueryTemplates");
+            this.$store.commit("updateConceptIri", IM.MODULE_QUERIES);
             break;
         }
       } else if (this.$route.name === "Concept") {

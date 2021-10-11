@@ -18,11 +18,11 @@ export default defineComponent({
   },
   watch: {
     async conceptIri() {
-      await this.init();
+      this.init();
     }
   },
   async mounted() {
-    await this.init();
+    this.init();
   },
   data() {
     return {

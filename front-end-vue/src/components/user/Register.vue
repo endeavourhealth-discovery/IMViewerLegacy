@@ -155,7 +155,7 @@ export default defineComponent({
       showUsernameNotice: false,
       showFirstNameNotice: false,
       showLastNameNotice: false,
-      selectedAvatar: avatars[0] as string
+      selectedAvatar: avatars[0]
     };
   },
 
