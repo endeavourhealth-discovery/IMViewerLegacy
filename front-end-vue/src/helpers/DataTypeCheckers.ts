@@ -6,21 +6,22 @@ export function isArrayHasLength(array: unknown): boolean {
   }
 }
 
-export function isObjectHasKeys(object: any, keys: string[]): boolean {
-  if (!object) return false;
-  if (!(Object.prototype.toString.call(object) === "[object Object]")) return false;
-  const objectKeys = Object.keys(object);
-  let result = true;
-  keys.forEach(key => {
-    if (!objectKeys.includes(key)) result = false;
-  });
-  return result;
+export function isObjectHasKeys(object: any, keys?: string[]): boolean {
+  if (!isObject(object)) return false;
+  if (!Object.keys(object).length) return false;
+  if (keys) {
+    const objectKeys = Object.keys(object);
+    let result = true;
+    keys.forEach(key => {
+      if (!objectKeys.includes(key)) result = false;
+    });
+    return result;
+  }
+  return true;
 }
 
 export function isObject(object: any): boolean {
   if (!object) return false;
-  if (!(Object.prototype.toString.call(object) === "[object Object]")) return false;
-  let result = true;
-  if (!Object.keys(object).length) result = false;
-  return result;
+  if (Object.prototype.toString.call(object) === "[object Object]") return true;
+  return false;
 }

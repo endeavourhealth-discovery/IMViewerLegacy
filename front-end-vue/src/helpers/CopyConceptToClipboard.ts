@@ -1,7 +1,7 @@
 import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
 import LoggerService from "@/services/LoggerService";
 import { bundleToText } from "@/helpers/Transforms";
-import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
+import { isArrayHasLength, isObject, isObjectHasKeys } from "./DataTypeCheckers";
 
 export function copyConceptToClipboard(concept: any, configs?: DefinitionConfig[]): string {
   const totalKeys = Object.keys(concept).length;
@@ -20,10 +20,16 @@ export function copyConceptToClipboard(concept: any, configs?: DefinitionConfig[
   return returnString;
 }
 
-export function conceptObjectToCopyString(key: string, value: any, counter: number, totalKeys: number, configs?: DefinitionConfig[]): { label: string; value: string } | undefined {
+export function conceptObjectToCopyString(
+  key: string,
+  value: any,
+  counter: number,
+  totalKeys: number,
+  configs?: DefinitionConfig[]
+): { label: string; value: string } | undefined {
   let newString = "";
   let returnString = "";
-  let newKey = key
+  let newKey = key;
   if (configs && isArrayHasLength(configs)) {
     const label = configs.find((config: DefinitionConfig) => config.predicate === key);
     if (label) {
@@ -32,16 +38,13 @@ export function conceptObjectToCopyString(key: string, value: any, counter: numb
   }
   if (isArrayHasLength(value)) {
     if (isObjectHasKeys(value[0], ["name"])) {
-      newString = value.map((item:any) => item.name).join(",\n\t");
+      newString = value.map((item: any) => item.name).join(",\n\t");
     } else if (isObjectHasKeys(value[0], ["property", "name"])) {
       newString = value.map((item: any) => item.property.name).join(",\n\t");
-    } else if (value.every((item: any) => typeof(item) === "string")) {
+    } else if (value.every((item: any) => typeof item === "string")) {
       newString = value.join(",\n\t ");
     } else {
-      LoggerService.warn(
-        undefined,
-        "Uncovered object property or missing name found for key: " + key + " at conceptObjectToCopyString within helpers"
-      );
+      LoggerService.warn(undefined, "Uncovered object property or missing name found for key: " + key + " at conceptObjectToCopyString within helpers");
     }
     if (newString) {
       if (counter === totalKeys - 1) {
@@ -51,6 +54,8 @@ export function conceptObjectToCopyString(key: string, value: any, counter: numb
       }
     }
   } else if (Array.isArray(value) && !value.length) {
+    return;
+  } else if (isObject(value) && !isObjectHasKeys(value)) {
     return;
   } else if (isObjectHasKeys(value, ["name"])) {
     newString = value.name;
@@ -92,4 +97,3 @@ export function conceptObjectToCopyString(key: string, value: any, counter: numb
   }
   return { label: newKey, value: returnString };
 }
-

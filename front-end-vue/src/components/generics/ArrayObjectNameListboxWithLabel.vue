@@ -53,7 +53,8 @@ export default defineComponent({
   computed: {
     isArrayObjectWithName(): boolean {
       if (!this.data) return false;
-      if (isArrayHasLength(this.data) && this.data.every(item => isObjectHasKeys(item, ["name"]))) {
+      if (!isArrayHasLength(this.data)) return false;
+      if (this.data.every(item => isObjectHasKeys(item, ["name"]))) {
         return true;
       } else {
         LoggerService.warn(

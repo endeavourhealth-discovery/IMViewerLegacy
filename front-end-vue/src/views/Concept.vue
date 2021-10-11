@@ -6,7 +6,7 @@
           <button class="p-panel-header-icon p-link p-mr-2" @click="focusTree" v-tooltip.left="'Focus hierarchy tree to this concept'">
             <i class="fas fa-sitemap" aria-hidden="true"></i>
           </button>
-          <div v-if="isObjectHasKeysWrapper(concept, ['subtypes', 'dataModelProperties'])" class="copy-container">
+          <div v-if="isObjectHasKeysWrapper(concept, ['axioms'])" class="copy-container">
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"

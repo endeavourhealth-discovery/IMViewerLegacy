@@ -25,7 +25,7 @@ import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNa
 import TermsTable from "@/components/concept/definition/TermsTable.vue";
 import TextSectionHeader from "@/components/generics/TextSectionHeader.vue";
 import SectionDivider from "@/components/generics/SectionDivider.vue";
-import TextDefinition from "@/components/concept/definition/TextDefinition.vue";
+import TextDefinition from "@/components/generics/TextDefinition.vue";
 import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
 import { isArrayHasLength, isObject, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
@@ -79,16 +79,16 @@ export default defineComponent({
     hasData(data: any): boolean {
       if (!data) {
         return false;
-      } else if (isArrayHasLength(data)) {
-        return isArrayHasLength(data);
+      } else if (Array.isArray(data)) {
+        return isArrayHasLength(data) ? true : false;
       } else if (typeof data === "string") {
         return data ? true : false;
       } else if (isObjectHasKeys(data, ["count"])) {
         return data.count ? true : false;
       } else if (isObject(data)) {
-        return Object.keys(data).length ? true : false;
+        return isObjectHasKeys(data) ? true : false;
       } else {
-        console.log("Unexpected data type encountered for function hasData in definition");
+        console.log(`Unexpected data type encountered for function hasData in definition. Data: ${JSON.stringify(data)}`);
         return false;
       }
     }
