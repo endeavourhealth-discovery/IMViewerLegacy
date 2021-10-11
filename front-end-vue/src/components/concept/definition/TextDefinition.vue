@@ -2,6 +2,7 @@
   <div v-if="data" id="axioms-container" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}</strong>
+      <span v-if="getCount()">&nbsp;({{ getCount() }})</span>
       <Button
         :icon="buttonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
         class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
@@ -55,6 +56,13 @@ export default defineComponent({
     },
     getDefinition(): string {
       return bundleToText(this.data as TTBundle);
+    },
+    getCount(): number {
+      let count = 0;
+      Object.keys(this.data.entity).forEach(key => {
+        count += (this.data.entity as any)[key].length;
+      });
+      return count;
     }
   }
 });
