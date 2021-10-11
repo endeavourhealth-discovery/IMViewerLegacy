@@ -1,5 +1,5 @@
 <template>
-  <div v-if="data" id="axioms-container" :style="{ width: size }">
+  <div v-if="hasData" id="axioms-container" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}</strong>
       <span v-if="getCount()">&nbsp;({{ getCount() }})</span>
@@ -27,15 +27,24 @@ import { bundleToText } from "@/helpers/Transforms";
 import { TTBundle } from "@/models/TripleTree";
 import { mapState } from "vuex";
 import { PartialEntity } from "@/models/PartialEntity";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "TextDefinition",
   props: {
     label: { type: String },
     data: { type: Object as () => PartialEntity, required: true },
-    size: { type: String }
+    size: { type: String },
+    show: { type: Boolean }
   },
   computed: {
+    hasData(): boolean {
+      if (isObjectHasKeys(this.data, ["entity", "predicates"]) && Object.keys(this.data.predicates).length && Object.keys(this.data.entity).length) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     ...mapState(["selectedEntityType"])
   },
   mounted() {

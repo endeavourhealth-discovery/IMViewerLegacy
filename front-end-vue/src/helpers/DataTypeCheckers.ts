@@ -7,8 +7,7 @@ export function isArrayHasLength(array: unknown): boolean {
 }
 
 export function isObjectHasKeys(object: any, keys: string[]): boolean {
-  if (!object) return false;
-  if (!(Object.prototype.toString.call(object) === "[object Object]")) return false;
+  if (!isObject(object)) return false;
   const objectKeys = Object.keys(object);
   let result = true;
   keys.forEach(key => {

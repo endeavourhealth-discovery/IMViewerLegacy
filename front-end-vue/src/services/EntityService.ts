@@ -11,6 +11,7 @@ import { TermCode } from "@/models/terms/TermCode";
 import { DataModelProperty } from "@/models/properties/DataModelProperty";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { Namespace } from "@/models/Namespace";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default class EntityService {
   static api = process.env.VUE_APP_API;
@@ -43,22 +44,30 @@ export default class EntityService {
     const axiosReturn = (
       await axios.get(this.api + "api/entity/inferredBundle", {
         params: {
-          iri: iri,
+          iri: iri
         }
       })
     ).data;
-    return axiosReturn ? axiosReturn : ({} as PartialBundle);
+    if (isObjectHasKeys(axiosReturn, ["entity", "predicates"]) && Object.keys(axiosReturn.entity).length > 1) {
+      return axiosReturn;
+    } else {
+      return {} as PartialBundle;
+    }
   }
 
   public static async getAxiomBundle(iri: string): Promise<PartialBundle> {
     const axiosReturn = (
       await axios.get(this.api + "api/entity/axiomBundle", {
         params: {
-          iri: iri,
+          iri: iri
         }
       })
     ).data;
-    return axiosReturn ? axiosReturn : ({} as PartialBundle);
+    if (isObjectHasKeys(axiosReturn, ["entity", "predicates"]) && Object.keys(axiosReturn.entity).length > 1) {
+      return axiosReturn;
+    } else {
+      return {} as PartialBundle;
+    }
   }
 
   public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<SearchResponse> {

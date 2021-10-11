@@ -25,7 +25,7 @@ import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNa
 import TermsTable from "@/components/concept/definition/TermsTable.vue";
 import TextSectionHeader from "@/components/generics/TextSectionHeader.vue";
 import SectionDivider from "@/components/generics/SectionDivider.vue";
-import TextDefinition from "@/components/concept/definition/TextDefinition.vue";
+import TextDefinition from "@/components/generics/TextDefinition.vue";
 import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
 import { isArrayHasLength, isObject, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
