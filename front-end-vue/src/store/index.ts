@@ -16,7 +16,7 @@ export default createStore({
   state: {
     loading: new Map<string, boolean>(),
     cancelSource: axios.CancelToken.source(),
-    conceptIri: "http://endhealth.info/im#DiscoveryOntology",
+    conceptIri: IM.MODULE_ONTOLOGY,
     history: [] as HistoryItem[],
     searchResults: [] as ConceptSummary[],
     currentUser: {} as User,
@@ -29,7 +29,7 @@ export default createStore({
     sideNavHierarchyFocus: {
       name: "Ontology",
       fullName: "Ontologies",
-      iri: "http://endhealth.info/im#DiscoveryOntology",
+      iri: IM.MODULE_ONTOLOGY,
       route: "Dashboard"
     } as { name: string; iri: string; fullName: string; route: string },
     selectedEntityType: "",
@@ -165,8 +165,8 @@ export default createStore({
           commit("updateCurrentUser", loggedInUser);
           result.authenticated = true;
         } else {
-          dispatch("logoutCurrentUser").then(res => {
-            if (res.status === 200) {
+          dispatch("logoutCurrentUser").then(resLogout => {
+            if (resLogout.status === 200) {
               LoggerService.info(undefined, "Force logout successful");
             } else {
               LoggerService.error(undefined, "Force logout failed");

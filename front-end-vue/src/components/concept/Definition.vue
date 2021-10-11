@@ -72,8 +72,7 @@ export default defineComponent({
         const data = this.concept[this.configs[index].predicate];
         dataResults.push(this.hasData(data));
       }
-      const show = !dataResults.every(value => value === false);
-      return show;
+      return !dataResults.every(value => value === false);
     },
 
     hasData(data: any): boolean {

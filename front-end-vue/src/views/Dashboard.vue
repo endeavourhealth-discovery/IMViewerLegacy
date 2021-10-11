@@ -11,6 +11,7 @@
 import { defineComponent } from "vue";
 import ReportTable from "@/components/dashboard/ReportTable.vue";
 import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
+import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
   name: "Dashboard",
@@ -23,19 +24,19 @@ export default defineComponent({
       cardsData: [
         {
           key: "conceptCategory",
-          iri: "http://endhealth.info/im#ontologyOverview"
+          iri: IM.CONCEPT_CATEGORY
         },
         {
           key: "conceptTypes",
-          iri: "http://endhealth.info/im#ontologyConceptTypes"
+          iri: IM.CONCEPT_TYPES
         },
         {
           key: "conceptSchemes",
-          iri: "http://endhealth.info/im#ontologyConceptSchemes"
+          iri: IM.CONCEPT_SCHEMES
         },
         {
           key: "conceptStatus",
-          iri: "http://endhealth.info/im#ontologyConceptStatus"
+          iri: IM.CONCEPT_STATUS
         }
       ] as { key: string; iri: string }[]
     };
