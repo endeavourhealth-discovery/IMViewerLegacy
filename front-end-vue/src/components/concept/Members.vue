@@ -149,7 +149,7 @@ export default defineComponent({
       this.expandedRowGroups = ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"];
       this.selected = {} as ValueSetMember;
       this.subsets = [];
-      this.members = await EntityService.getEntityMembers(this.conceptIri as string, false, false, 2000);
+      this.members = await EntityService.getEntityMembers(this.conceptIri, false, false, 2000);
       this.sortMembers();
       this.combinedMembers = this.members.members;
       this.setSubsets();
@@ -168,7 +168,7 @@ export default defineComponent({
     },
 
     download(expanded: boolean, v1 = false): void {
-      const modIri = (this.conceptIri as string).replace(/\//gi, "%2F").replace(/#/gi, "%23");
+      const modIri = (this.conceptIri).replace(/\//gi, "%2F").replace(/#/gi, "%23");
       const popup = window.open(
         process.env.VUE_APP_API + "api/set/download?iri=" + modIri + "&expandMembers=" + expanded + "&v1=" + (expanded && v1) + "&format=excel"
       );
@@ -181,7 +181,7 @@ export default defineComponent({
 
     sortMembers(): void {
       if (isObjectHasKeys(this.members, ["members"]) && isArrayHasLength(this.members.members)) {
-        this.members.members = this.members.members.sort((a: ValueSetMember, b: ValueSetMember) =>
+        this.members.members.sort((a: ValueSetMember, b: ValueSetMember) =>
           a.label.localeCompare(b.label) == 0 ? a.entity.name.localeCompare(b.entity.name) : a.label.localeCompare(b.label)
         );
       }

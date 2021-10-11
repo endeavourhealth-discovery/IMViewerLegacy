@@ -162,8 +162,8 @@ export default defineComponent({
       showPassword2Notice: false,
       showFirstNameNotice: false,
       showLastNameNotice: false,
-      selectedAvatar: avatars[0] as string,
-      avatarOptions: avatars as string[]
+      selectedAvatar: avatars[0],
+      avatarOptions: avatars
     };
   },
   mounted() {

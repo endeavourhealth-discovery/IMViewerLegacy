@@ -65,7 +65,7 @@ export default defineComponent({
           }
         ],
         []
-      ) as PieChartData,
+      ),
       graphHeight: 200
     };
   },

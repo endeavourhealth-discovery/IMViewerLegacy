@@ -159,7 +159,7 @@ export default defineComponent({
     },
 
     isProperty(): boolean {
-      return isOfTypes(this.types, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY);
+      return isOfTypes(this.types, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY, OWL.DATATYPE_PROPERTY);
     },
 
     ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel", "activeModule"])
@@ -179,15 +179,7 @@ export default defineComponent({
   },
   async mounted() {
     await this.init();
-    if (this.activeModule === "Sets") {
-      this.active = 2;
-    }
-    if (this.activeModule === "DataModel") {
-      this.active = 3;
-    }
-
     window.addEventListener("resize", this.onResize);
-
     this.setContentHeight();
   },
   beforeUnmount() {
@@ -253,11 +245,11 @@ export default defineComponent({
     },
 
     async getInferred(iri: string): Promise<void> {
-      this.concept["inferred"] = await EntityService.getPartialEntityBundle(iri, [IM.IS_A, IM.ROLE_GROUP]);
+      this.concept["inferred"] = await EntityService.getInferredBundle(iri);
     },
 
     async getStated(iri: string): Promise<void> {
-      this.concept["axioms"] = await EntityService.getPartialEntityBundle(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
+      this.concept["axioms"] = await EntityService.getAxiomBundle(iri);
     },
 
     async getConfig(name: string): Promise<void> {
@@ -294,13 +286,15 @@ export default defineComponent({
         type = "Queries";
       } else if (this.isRecordModel) {
         type = "DataModel";
+      } else if (this.isProperty) {
+        type = "Property";
       } else {
         type = this.activeModule;
       }
       this.$store.commit("updateSelectedEntityType", type);
       if (!MODULE_IRIS.includes(this.conceptIri)) {
         this.$store.commit("updateModuleSelectedEntities", {
-          module: type,
+          module: this.isProperty ? "DataModel" : type,
           iri: this.conceptIri
         });
       }
@@ -310,9 +304,9 @@ export default defineComponent({
       if (newType === oldType) {
         this.active = this.conceptActivePanel;
       } else {
-        if (newType === "Sets") {
+        if (this.isSet) {
           this.active = 2;
-        } else if (newType === "DataModel") {
+        } else if (this.isRecordModel) {
           this.active = 3;
         } else {
           this.active = 0;

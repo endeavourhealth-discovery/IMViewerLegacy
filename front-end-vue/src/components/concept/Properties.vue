@@ -10,7 +10,7 @@
       <template #header>
         <div class="table-header">
           Data model properties
-          <Button icon="pi pi-external-link" label="Export" @click="exportCSV()" />
+          <Button label="Download" @click="exportCSV()" />
         </div>
       </template>
       <Column field="propertyDisplay" header="Name" :sortable="true">

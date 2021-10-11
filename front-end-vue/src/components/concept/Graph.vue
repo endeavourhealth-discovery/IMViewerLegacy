@@ -85,12 +85,12 @@ export default defineComponent({
   },
   methods: {
     getTypeFromIri(iri: string): string {
-      switch (iri) {
-        case "http://www.w3.org/2001/XMLSchema#string":
-          return "String";
-        default:
-          return "String";
+      if (!iri.includes("#")) {
+        return iri;
       }
+      let part = iri.split("#")[1];
+      part = part.includes(":") ? part.split(":")[1] : part;
+      return part.charAt(0).toUpperCase() + part.slice(1);
     },
 
     async getGraph(iri: string): Promise<void> {

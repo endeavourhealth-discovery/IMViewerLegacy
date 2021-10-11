@@ -87,17 +87,7 @@ export default defineComponent({
   props: { conceptIri: { type: String, required: true } },
   watch: {
     async conceptIri() {
-      this.$store.commit("updateLoading", {
-        key: "mappings",
-        value: true
-      });
-      await this.getMappings();
-      this.getSimpleMapsNamespaces();
-      this.data = this.createChartStructure(this.mappings);
-      this.$store.commit("updateLoading", {
-        key: "mappings",
-        value: false
-      });
+      await this.updateMappings();
     }
   },
   data() {
@@ -110,19 +100,22 @@ export default defineComponent({
     };
   },
   async mounted() {
-    this.$store.commit("updateLoading", {
-      key: "mappings",
-      value: true
-    });
-    await this.getMappings();
-    this.getSimpleMapsNamespaces();
-    this.data = this.createChartStructure(this.mappings);
-    this.$store.commit("updateLoading", {
-      key: "mappings",
-      value: false
-    });
+    await this.updateMappings();
   },
   methods: {
+    async updateMappings() {
+      this.$store.commit("updateLoading", {
+        key: "mappings",
+        value: true
+      });
+      await this.getMappings();
+      this.getSimpleMapsNamespaces();
+      this.data = this.createChartStructure(this.mappings);
+      this.$store.commit("updateLoading", {
+        key: "mappings",
+        value: false
+      });
+    },
     async getMappings(): Promise<void> {
       this.mappings = (await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP]))[IM.HAS_MAP] || [];
       this.data = {};
@@ -306,11 +299,8 @@ td,
 th {
   border: 1px solid lightgray;
   padding: 0.5rem;
-}
-
-td,
-th {
   text-align: left;
+  overflow-wrap: break-word;
 }
 
 tr:nth-child(even) {
@@ -325,11 +315,6 @@ th[scope="col"] {
 table {
   border-collapse: collapse;
   border: 2px solid rgb(200, 200, 200);
-}
-
-td,
-th {
-  overflow-wrap: break-word;
 }
 
 .p-organizationchart {

@@ -23,10 +23,9 @@ export default defineComponent({
   },
   methods: {
     getHistory(): HistoryItem[] {
-      const viewHistory = this.history.filter((obj: any) => {
+      return this.history.filter((obj: any) => {
         return !!obj.conceptName;
       });
-      return viewHistory;
     },
 
     navigate(): void {

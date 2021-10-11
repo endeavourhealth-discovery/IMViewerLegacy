@@ -114,7 +114,6 @@ export default defineComponent({
       console.log("Clear upload");
     },
     async onPaste(event: any) {
-      // console.log(event.clipboardData.items[0]);
       const x = this.$refs.fileUpload as any;
       x.files.push(event.clipboardData.files[0]);
       console.log(event.clipboardData.files[0]);

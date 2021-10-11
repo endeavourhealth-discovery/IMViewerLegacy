@@ -127,7 +127,7 @@ export default defineComponent({
   },
   data() {
     return {
-      results: new SearchResponse() as SearchResponse,
+      results: new SearchResponse(),
       selectedResult: {} as ConceptSummary,
       hoveredResult: {} as ConceptSummary,
       copyMenuItems: [] as any[]
