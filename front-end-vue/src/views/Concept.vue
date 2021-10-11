@@ -6,7 +6,7 @@
           <button class="p-panel-header-icon p-link p-mr-2" @click="focusTree" v-tooltip.left="'Focus hierarchy tree to this concept'">
             <i class="fas fa-sitemap" aria-hidden="true"></i>
           </button>
-          <div v-if="Object.keys(concept).includes('subtypes') && Object.keys(concept).includes('dataModelProperties')" class="copy-container">
+          <div v-if="isObjectHasKeysWrapper(concept, ['subtypes', 'dataModelProperties'])" class="copy-container">
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
@@ -114,6 +114,7 @@ import Properties from "@/components/concept/Properties.vue";
 import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
 import { TTIriRef } from "@/models/TripleTree";
 import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Concept",
@@ -276,7 +277,7 @@ export default defineComponent({
       await this.getInferred(this.conceptIri);
       await this.getStated(this.conceptIri);
       await this.getProperties(this.conceptIri);
-      this.types = Object.prototype.hasOwnProperty.call(this.concept, RDF.TYPE) ? this.concept[RDF.TYPE] : ([] as TTIriRef[]);
+      this.types = isObjectHasKeys(this.concept, [RDF.TYPE]) ? this.concept[RDF.TYPE] : ([] as TTIriRef[]);
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
       this.setStoreType();
@@ -356,7 +357,7 @@ export default defineComponent({
       this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
     },
 
-    onCopyRightClick(event: any) {
+    onCopyRightClick(event: any): void {
       const x = this.$refs.copyMenu as any;
       x.show(event);
     },
@@ -406,6 +407,10 @@ export default defineComponent({
           }
         });
       }
+    },
+
+    isObjectHasKeysWrapper(object: any, keys: string[]) {
+      return isObjectHasKeys(object, keys);
     }
   }
 });

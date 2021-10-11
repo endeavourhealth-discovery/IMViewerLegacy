@@ -46,16 +46,14 @@ export default defineComponent({
   name: "ArrayObjectNameListboxWithLabel",
   props: {
     label: { type: String },
-    data: { type: Array as PropType<Array<unknown>>, required: true },
+    data: { type: Array as PropType<Array<unknown>> },
     size: { type: String },
     id: { type: String }
   },
   computed: {
     isArrayObjectWithName(): boolean {
-      if (
-        isArrayHasLength(this.data) &&
-        this.data.every(item => isObjectHasKeys(item, ["name"]))
-      ) {
+      if (!this.data) return false;
+      if (isArrayHasLength(this.data) && this.data.every(item => isObjectHasKeys(item, ["name"]))) {
         return true;
       } else {
         LoggerService.warn(
