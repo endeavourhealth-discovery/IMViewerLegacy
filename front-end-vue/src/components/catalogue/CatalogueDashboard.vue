@@ -40,23 +40,13 @@ import { PropType } from "@vue/runtime-core";
 const palette = require("../../../node_modules/google-palette");
 
 export default defineComponent({
-  name: "TypesPieChart",
+  name: "CatalogueDashboard",
   props: {
     types: {
       type: Array as PropType<Array<unknown>>,
       required: true
     }
   },
-  // watch: {
-  //   types: {
-  //   async  handler(newValue, oldValue) {
-  //     if(newValue !== oldValue){
-  //       await this.setChartData();
-  //     }
-  //     },
-  //   deep: true
-  //   }
-  // },
   data() {
     return {
       chartInstanceTypes: new PieChartData(

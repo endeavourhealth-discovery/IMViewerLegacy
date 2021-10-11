@@ -25,7 +25,7 @@
             <InputText
               type="text"
               v-model="searchRequest"
-              @keydown="checkKey($event)"
+              @keydown="checkKey($event.code)"
               placeholder="Search"
               class="p-inputtext-lg search-input"
               autoWidth="false"
@@ -134,7 +134,7 @@ export default defineComponent({
       location: "",
       types: [] as any[],
       selectedType: [] as any[],
-      typesIris: [IM.ORGANISATION] as string[],
+      typesIris: [] as string[],
       dash: true
     };
   },
@@ -160,7 +160,7 @@ export default defineComponent({
     },
 
     checkKey(event: any) {
-      if (event.code === "Enter") {
+      if (this.searchRequest.length > 2 && event === "Enter") {
         this.getSearchResult();
       }
     },
