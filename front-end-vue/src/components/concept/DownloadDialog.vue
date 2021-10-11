@@ -97,7 +97,12 @@ import { RDFS } from "@/vocabulary/RDFS";
 import { IM } from "@/vocabulary/IM";
 import { OWL } from "@/vocabulary/OWL";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
-
+import { DataModelProperty } from "@/models/properties/DataModelProperty";
+import { ExportValueSet } from "@/models/members/ExportValueSet";
+import { TermCode } from "@/models/terms/TermCode";
+import { PartialBundle } from "@/models/entityServiceTypes/EntityServiceTypes";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
+import { TTIriRef } from "@/models/TripleTree";
 
 export default defineComponent({
   name: "DownloadDialog",
@@ -118,14 +123,14 @@ export default defineComponent({
   data() {
     return {
       concept: {} as any,
-      inferred: {} as any,
-      axioms: {} as any,
-      hasSubTypes: [] as any[],
-      isChildOf: [] as any[],
+      inferred: {} as PartialBundle,
+      axioms: {} as PartialBundle,
+      hasSubTypes: [] as EntityReferenceNode[],
+      isChildOf: [] as TTIriRef[],
       hasChildren: [] as any[],
-      terms: [] as any[],
-      dataModelProperties: [] as any[],
-      members: {} as any,
+      terms: [] as TermCode[],
+      dataModelProperties: [] as DataModelProperty[],
+      members: {} as ExportValueSet,
       includeHasSubTypes: true,
       includeDataModelProperties: true,
       includeMembers: true,
@@ -154,11 +159,11 @@ export default defineComponent({
     };
   },
   methods: {
-    closeDownloadDialog() {
+    closeDownloadDialog(): void {
       this.$emit("closeDownloadDialog");
     },
 
-    downloadConcept() {
+    downloadConcept(): void {
       const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
 
       const url =
@@ -196,7 +201,7 @@ export default defineComponent({
       this.closeDownloadDialog();
     },
 
-    async init(iri: string) {
+    async init(iri: string): Promise<void> {
       this.loading = true;
       this.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
       if (isObjectHasKeys(this.concept, [IM.IS_CHILD_OF]) && isArrayHasLength(this.concept[IM.IS_CHILD_OF])) {
@@ -222,7 +227,7 @@ export default defineComponent({
       this.loading = false;
     },
 
-    setIncludeBooleans() {
+    setIncludeBooleans(): void {
       this.includeInferred = !!this.inferred;
       this.includeAxioms = !!this.axioms;
       this.includeHasSubTypes = !!this.hasSubTypes.length;
