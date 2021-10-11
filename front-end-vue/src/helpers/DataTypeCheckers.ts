@@ -6,14 +6,18 @@ export function isArrayHasLength(array: unknown): boolean {
   }
 }
 
-export function isObjectHasKeys(object: any, keys: string[]): boolean {
+export function isObjectHasKeys(object: any, keys?: string[]): boolean {
   if (!isObject(object)) return false;
-  const objectKeys = Object.keys(object);
-  let result = true;
-  keys.forEach(key => {
-    if (!objectKeys.includes(key)) result = false;
-  });
-  return result;
+  if (!Object.keys(object).length) return false;
+  if (keys) {
+    const objectKeys = Object.keys(object);
+    let result = true;
+    keys.forEach(key => {
+      if (!objectKeys.includes(key)) result = false;
+    });
+    return result;
+  }
+  return true;
 }
 
 export function isObject(object: any): boolean {

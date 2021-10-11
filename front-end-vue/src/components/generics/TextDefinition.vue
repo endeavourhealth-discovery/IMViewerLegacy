@@ -39,7 +39,7 @@ export default defineComponent({
   },
   computed: {
     hasData(): boolean {
-      if (isObjectHasKeys(this.data, ["entity", "predicates"]) && Object.keys(this.data.predicates).length && Object.keys(this.data.entity).length) {
+      if (isObjectHasKeys(this.data, ["entity", "predicates"]) && isObjectHasKeys(this.data.predicates) && isObjectHasKeys(this.data.entity)) {
         return true;
       } else {
         return false;

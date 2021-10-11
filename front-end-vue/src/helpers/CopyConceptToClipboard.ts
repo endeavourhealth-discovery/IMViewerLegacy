@@ -55,7 +55,7 @@ export function conceptObjectToCopyString(
     }
   } else if (Array.isArray(value) && !value.length) {
     return;
-  } else if (isObject(value) && !Object.keys(value).length) {
+  } else if (isObjectHasKeys(value)) {
     return;
   } else if (isObjectHasKeys(value, ["name"])) {
     newString = value.name;

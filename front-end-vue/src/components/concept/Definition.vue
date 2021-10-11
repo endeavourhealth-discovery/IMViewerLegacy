@@ -86,7 +86,7 @@ export default defineComponent({
       } else if (isObjectHasKeys(data, ["count"])) {
         return data.count ? true : false;
       } else if (isObject(data)) {
-        return Object.keys(data).length ? true : false;
+        return isObjectHasKeys(data) ? true : false;
       } else {
         console.log(`Unexpected data type encountered for function hasData in definition. Data: ${JSON.stringify(data)}`);
         return false;
