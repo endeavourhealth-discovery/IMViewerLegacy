@@ -19,8 +19,6 @@ export function isObjectHasKeys(object: any, keys: string[]): boolean {
 
 export function isObject(object: any): boolean {
   if (!object) return false;
-  if (!(Object.prototype.toString.call(object) === "[object Object]")) return false;
-  let result = true;
-  if (!Object.keys(object).length) result = false;
-  return result;
+  if (Object.prototype.toString.call(object) === "[object Object]") return true;
+  return false;
 }

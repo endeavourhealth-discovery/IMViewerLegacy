@@ -79,8 +79,8 @@ export default defineComponent({
     hasData(data: any): boolean {
       if (!data) {
         return false;
-      } else if (isArrayHasLength(data)) {
-        return isArrayHasLength(data);
+      } else if (Array.isArray(data)) {
+        return isArrayHasLength(data) ? true : false;
       } else if (typeof data === "string") {
         return data ? true : false;
       } else if (isObjectHasKeys(data, ["count"])) {
@@ -88,7 +88,7 @@ export default defineComponent({
       } else if (isObject(data)) {
         return Object.keys(data).length ? true : false;
       } else {
-        console.log("Unexpected data type encountered for function hasData in definition");
+        console.log(`Unexpected data type encountered for function hasData in definition. Data: ${JSON.stringify(data)}`);
         return false;
       }
     }

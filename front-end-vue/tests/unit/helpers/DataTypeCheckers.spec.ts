@@ -18,7 +18,7 @@ describe("DataTypeCheckers.ts ___", () => {
     });
 
     it("can handle multiple types within array", () => {
-      const testArray = ["one", 2, { value: "three"}, ["four"]];
+      const testArray = ["one", 2, { value: "three" }, ["four"]];
       expect(isArrayHasLength(testArray)).toBe(true);
     });
 
@@ -48,7 +48,9 @@ describe("DataTypeCheckers.ts ___", () => {
     });
 
     it("checks is an object ___ false ___ fn", () => {
-      const testObject = function() { return true };
+      const testObject = function() {
+        return true;
+      };
       expect(isObject(testObject)).toBe(false);
     });
 
@@ -58,6 +60,10 @@ describe("DataTypeCheckers.ts ___", () => {
 
     it("checks is an object ___ false ___ null", () => {
       expect(isObject(null)).toBe(false);
+    });
+
+    it("checks is an object ___ true ___ empty object", () => {
+      expect(isObject({})).toBe(true);
     });
   });
 
@@ -83,7 +89,9 @@ describe("DataTypeCheckers.ts ___", () => {
     });
 
     it("checks is an object ___ false ___ fn", () => {
-      const testObject = function() { return true };
+      const testObject = function() {
+        return true;
+      };
       expect(isObjectHasKeys(testObject, ["value"])).toBe(false);
     });
 
