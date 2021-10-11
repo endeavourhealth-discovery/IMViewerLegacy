@@ -17,8 +17,7 @@ export function bundleToText(bundle: TTBundle): string {
   for (const p of Object.keys(bundle.entity)) {
     result += ttValueToString(bundle.predicates[p], bundle.entity[p], bundle.predicates, 0);
   }
-
-  return result;
+  return result.replace(/ *\([^)]*\) */g, "");
 }
 
 export function ttValueToString(pred: string, node: any, iriMap: any, indent: number): string {
