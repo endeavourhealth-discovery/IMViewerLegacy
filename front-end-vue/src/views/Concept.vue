@@ -228,7 +228,6 @@ export default defineComponent({
         .filter((c: DefinitionConfig) => c.type !== "Divider")
         .filter((c: DefinitionConfig) => c.predicate !== "subtypes")
         .filter((c: DefinitionConfig) => c.predicate !== "inferred")
-        .filter((c: DefinitionConfig) => c.predicate !== "dataModelProperties")
         .filter((c: DefinitionConfig) => c.predicate !== "termCodes")
         .filter((c: DefinitionConfig) => c.predicate !== "axioms")
         .map((c: DefinitionConfig) => c.predicate);
@@ -238,10 +237,6 @@ export default defineComponent({
       this.concept["subtypes"] = await EntityService.getEntityChildren(iri);
 
       this.concept["termCodes"] = await EntityService.getEntityTermCodes(iri);
-    },
-
-    async getProperties(iri: string): Promise<void> {
-      this.concept["dataModelProperties"] = await EntityService.getDataModelProperties(iri);
     },
 
     async getInferred(iri: string): Promise<void> {
@@ -268,7 +263,6 @@ export default defineComponent({
       await this.getConcept(this.conceptIri);
       await this.getInferred(this.conceptIri);
       await this.getStated(this.conceptIri);
-      await this.getProperties(this.conceptIri);
       this.types = isObjectHasKeys(this.concept, [RDF.TYPE]) ? this.concept[RDF.TYPE] : ([] as TTIriRef[]);
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();

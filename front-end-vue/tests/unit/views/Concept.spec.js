@@ -38,8 +38,7 @@ describe("Concept.vue", () => {
     { label: "Has sub types", predicate: "subtypes", type: "ArrayObjectNameListboxWithLabel", size: "50%", order: 7 },
     { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 8 },
     { label: "Axioms", predicate: "axioms", type: "TextDefinition", size: "100%", order: 9 },
-    { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 10 },
-    { label: "Data model properties", predicate: "dataModelProperties", type: "DataModelProperties", size: "100%", order: 11 }
+    { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 10 }
   ];
   const TYPES = [
     { "@id": "http://endhealth.info/im#RecordType", name: "Record type" },
@@ -54,27 +53,6 @@ describe("Concept.vue", () => {
     "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": TYPES,
     "http://www.w3.org/2000/01/rdf-schema#label": "Critical care encounter (record type)"
   };
-  const DATA_MODEL = [
-    {
-      property: { name: "has admission source", "@id": "http://endhealth.info/im#hasAdmissionSource" },
-      type: { name: "Critical care admission source", "@id": "http://endhealth.info/im#1041000252100" },
-      minExclusive: "1",
-      maxExclusive: "1",
-      inheritedFrom: {}
-    },
-    {
-      property: { name: "has critical care unit function", "@id": "http://endhealth.info/im#hasCriticalCareUnitFunction" },
-      type: { name: "Critical care unit function", "@id": "http://endhealth.info/im#211000252109" },
-      minExclusive: "1",
-      maxExclusive: "1",
-      inheritedFrom: {}
-    },
-    {
-      property: { name: "additional Practitioners", "@id": "http://endhealth.info/im#additionalPractitioners" },
-      type: { name: "Practitioner in role  (record type)", "@id": "http://endhealth.info/im#ThePractitionerInRole" },
-      inheritedFrom: { name: "Encounter (record type)", "@id": "http://endhealth.info/im#Encounter" }
-    }
-  ];
   const CHILDREN = [
     {
       name: "Adult critical care encounter",
@@ -124,7 +102,6 @@ describe("Concept.vue", () => {
     clipboardSpy = jest.spyOn(navigator.clipboard, "writeText");
     EntityService.getInferredBundle = jest.fn().mockResolvedValue(INFERRED);
     EntityService.getAxiomBundle = jest.fn().mockResolvedValue(AXIOMS);
-    EntityService.getDataModelProperties = jest.fn().mockResolvedValue(DATA_MODEL);
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
     EntityService.getEntityChildren = jest.fn().mockResolvedValue(CHILDREN);
     EntityService.getEntityTermCodes = jest.fn().mockResolvedValue(TERMS);
@@ -197,8 +174,7 @@ describe("Concept.vue", () => {
       "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": TYPES,
       "http://www.w3.org/2000/01/rdf-schema#label": "Critical care encounter (record type)",
       termCodes: TERMS,
-      subtypes: CHILDREN,
-      dataModelProperties: DATA_MODEL
+      subtypes: CHILDREN
     });
     expect(wrapper.vm.definitionText).toBe("");
     expect(wrapper.vm.display).toBeFalsy();
@@ -427,45 +403,6 @@ describe("Concept.vue", () => {
     });
   });
 
-  it("can get properties ___ pass", async () => {
-    EntityService.getDataModelProperties = jest.fn().mockResolvedValue([
-      {
-        property: { name: "has admission source", "@id": "http://endhealth.info/im#hasAdmissionSource" },
-        type: { name: "Critical care admission source", "@id": "http://endhealth.info/im#1041000252100" },
-        minExclusive: "1",
-        maxExclusive: "1",
-        inheritedFrom: {}
-      },
-      {
-        property: { name: "has critical care unit function", "@id": "http://endhealth.info/im#hasCriticalCareUnitFunction" },
-        type: { name: "Critical care unit function", "@id": "http://endhealth.info/im#211000252109" },
-        minExclusive: "1",
-        maxExclusive: "1",
-        inheritedFrom: {}
-      }
-    ]);
-    wrapper.vm.getProperties("http://endhealth.info/im#CriticalCareEncounter");
-    await flushPromises();
-    expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
-    expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
-    expect(wrapper.vm.concept.dataModelProperties).toStrictEqual([
-      {
-        property: { name: "has admission source", "@id": "http://endhealth.info/im#hasAdmissionSource" },
-        type: { name: "Critical care admission source", "@id": "http://endhealth.info/im#1041000252100" },
-        minExclusive: "1",
-        maxExclusive: "1",
-        inheritedFrom: {}
-      },
-      {
-        property: { name: "has critical care unit function", "@id": "http://endhealth.info/im#hasCriticalCareUnitFunction" },
-        type: { name: "Critical care unit function", "@id": "http://endhealth.info/im#211000252109" },
-        minExclusive: "1",
-        maxExclusive: "1",
-        inheritedFrom: {}
-      }
-    ]);
-  });
-
   it("can getConfig ___ pass", async () => {
     wrapper.vm.getConfig("description");
     await flushPromises();
@@ -475,7 +412,6 @@ describe("Concept.vue", () => {
   });
 
   it("Inits ___ Class", async () => {
-    wrapper.vm.getProperties = jest.fn();
     wrapper.vm.getConcept = jest.fn();
     wrapper.vm.getConfig = jest.fn();
     wrapper.vm.getStated = jest.fn();
@@ -485,8 +421,7 @@ describe("Concept.vue", () => {
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
       "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }],
       "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis caused by radiation (disorder)",
-      subtypes: [],
-      dataModelProperties: []
+      subtypes: []
     };
     wrapper.vm.init();
     expect(wrapper.vm.loading).toBe(true);
@@ -497,8 +432,6 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.getStated).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
     expect(wrapper.vm.getInferred).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.getInferred).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
-    expect(wrapper.vm.getProperties).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.getProperties).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
     expect(wrapper.vm.getConcept).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.getConcept).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
     expect(wrapper.vm.types).toStrictEqual([{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }]);
@@ -509,7 +442,6 @@ describe("Concept.vue", () => {
   });
 
   it("Inits ___ Set", async () => {
-    wrapper.vm.getProperties = jest.fn();
     wrapper.vm.getConcept = jest.fn();
     wrapper.vm.getStated = jest.fn();
     wrapper.vm.getInferred = jest.fn();
@@ -518,8 +450,7 @@ describe("Concept.vue", () => {
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
       "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ name: "Concept Set", "@id": "http://endhealth.info/im#ConceptSet" }],
       "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis caused by radiation (disorder)",
-      subtypes: [],
-      dataModelProperties: []
+      subtypes: []
     };
     wrapper.vm.init();
     await flushPromises();
@@ -528,7 +459,6 @@ describe("Concept.vue", () => {
   });
 
   it("Inits ___ Query", async () => {
-    wrapper.vm.getProperties = jest.fn();
     wrapper.vm.getConcept = jest.fn();
     wrapper.vm.getStated = jest.fn();
     wrapper.vm.getInferred = jest.fn();
@@ -537,8 +467,7 @@ describe("Concept.vue", () => {
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
       "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ name: "Query template", "@id": "http://endhealth.info/im#QueryTemplate" }],
       "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis caused by radiation (disorder)",
-      subtypes: [],
-      dataModelProperties: []
+      subtypes: []
     };
     wrapper.vm.init();
     await flushPromises();
