@@ -26,7 +26,7 @@ import TermsTable from "@/components/concept/definition/TermsTable.vue";
 import TextSectionHeader from "@/components/generics/TextSectionHeader.vue";
 import SectionDivider from "@/components/generics/SectionDivider.vue";
 import TextDefinition from "@/components/generics/TextDefinition.vue";
-import TagWithLabel from "@/components/generics/TagWithLabel.vue";
+import ObjectNameTagWithLabel from "@/components/generics/ObjectNameTagWithLabel.vue";
 import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
 import { isArrayHasLength, isObject, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
@@ -42,7 +42,7 @@ export default defineComponent({
     TextSectionHeader,
     SectionDivider,
     TextDefinition,
-    TagWithLabel
+    ObjectNameTagWithLabel
   },
   props: {
     concept: { type: Object, required: true },
