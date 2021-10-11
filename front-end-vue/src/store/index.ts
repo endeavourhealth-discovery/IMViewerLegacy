@@ -10,6 +10,8 @@ import { CustomAlert } from "@/models/user/CustomAlert";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import axios from "axios";
 import { IM } from "@/vocabulary/IM";
+import { Namespace } from "@/models/Namespace";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 
 export default createStore({
   // update stateType.ts when adding new state!
@@ -34,22 +36,14 @@ export default createStore({
     } as { name: string; iri: string; fullName: string; route: string },
     selectedEntityType: "",
     filterOptions: {
-      status: [],
-      schemes: [],
-      types: []
-    } as {
-      status: any[];
-      schemes: any[];
-      types: any[];
+      status: [] as EntityReferenceNode[],
+      schemes: [] as Namespace[],
+      types: [] as EntityReferenceNode[]
     },
     selectedFilters: {
-      status: [],
-      schemes: [],
-      types: []
-    } as {
-      status: any[];
-      schemes: any[];
-      types: any[];
+      status: [] as EntityReferenceNode[],
+      schemes: [] as Namespace[],
+      types: [] as EntityReferenceNode[]
     },
     quickFiltersStatus: new Map<string, boolean>(),
     moduleSelectedEntities: new Map([
@@ -60,7 +54,7 @@ export default createStore({
       ["Queries", IM.MODULE_QUERIES]
     ]),
     activeModule: "default",
-    conceptActivePanel: 0 as number
+    conceptActivePanel: 0
   },
   mutations: {
     updateConceptIri(state, conceptIri) {

@@ -38,6 +38,7 @@ import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 import { TTIriRef } from "@/models/TripleTree";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "UsedIn",
@@ -93,7 +94,7 @@ export default defineComponent({
     },
 
     handleSelected(): void {
-      if (this.selected != null && Object.prototype.hasOwnProperty.call(this.selected, "@id")) {
+      if (isObjectHasKeys(this.selected, ["@id"])) {
         this.$router.push({
           name: "Concept",
           params: { selectedIri: this.selected["@id"] }

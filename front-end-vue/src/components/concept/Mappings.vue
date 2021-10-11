@@ -76,8 +76,10 @@ import { defineComponent } from "vue";
 import SimpleMaps from "@/components/concept/mapping/SimpleMaps.vue";
 import { Namespace } from "@/models/Namespace";
 import { SimpleMap } from "@/models/mappings/SimpleMap";
+import { SimpleMapIri } from "@/models/mappings/SimpleMapIri";
 import { MapItem } from "@/models/mappings/MapItem";
 import { ChartTableNode, ChartMapNode } from "@/models/mappings/MapChartTypes";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Mappings",
@@ -140,7 +142,7 @@ export default defineComponent({
         iri: string;
         name: string;
         priority: number;
-      }[],
+      }[] | SimpleMapIri[],
       location: string,
       position: number,
       type: string
@@ -159,30 +161,30 @@ export default defineComponent({
             key: location + "_" + positionInLevel,
             type: "oneOf",
             data: { label: "One of" },
-            children: [] as any
+            children: [] as ChartMapNode[]
           };
         case IM.COMBINATION_OF:
           return {
             key: location + "_" + positionInLevel,
             type: "comboOf",
             data: { label: "Combination of" },
-            children: [] as any
+            children: [] as ChartMapNode[]
           };
         case IM.SOME_OF:
           return {
             key: location + "_" + positionInLevel,
             type: "someOf",
             data: { label: "Some of" },
-            children: [] as any
+            children: [] as ChartMapNode[]
           };
         default:
           return undefined;
       }
     },
 
-    generateChildNodes(mapObject: any, location: string, positionInLevel: number): (ChartMapNode | undefined)[] | ChartTableNode[] {
-      if (Object.keys(mapObject[0]).includes(IM.MAPPED_TO)) {
-        const mappedList = [] as any;
+    generateChildNodes(mapObject: any, location: string, positionInLevel: number): ChartMapNode[] | ChartTableNode[] {
+      if (isObjectHasKeys(mapObject[0], [IM.MAPPED_TO])) {
+        const mappedList = [] as MapItem[];
         mapObject.forEach((item: any) => {
           mappedList.push({
             name: item[IM.MAPPED_TO].name,
@@ -193,14 +195,15 @@ export default defineComponent({
         });
         return [this.createChartTableNode(mappedList.sort(this.byPriority), location, positionInLevel, "childList")];
       } else {
-        const results = [];
+        // is array
+        const results = [] as ChartMapNode[];
         let count = 0;
         for (const item of mapObject) {
           let mapNode = this.createChartMapNode(Object.keys(item)[0], location, count);
           if (mapNode) {
             mapNode.children = this.generateChildNodes(item[Object.keys(item)[0]], location + "_" + count, 0);
+            results.push(mapNode);
           }
-          results.push(mapNode);
           count++;
         }
         return results;
@@ -212,15 +215,15 @@ export default defineComponent({
         key: "0",
         type: "hasMap",
         data: { label: "Has map" },
-        children: [] as any
+        children: [] as ChartMapNode[] | ChartTableNode[]
       };
-      if ((!mappingObject.length || !Object.keys(mappingObject).length) && !this.simpleMaps.length) {
+      if ((!isArrayHasLength(mappingObject) || !isArrayHasLength(Object.keys(mappingObject))) && !isArrayHasLength(this.simpleMaps)) {
         return [];
       }
-      if (mappingObject.length && Object.keys(mappingObject).length) {
+      if (isArrayHasLength(mappingObject) || isArrayHasLength(Object.keys(mappingObject))) {
         parentNode.children = this.generateChildNodes(mappingObject, "0", 0);
       }
-      if (this.simpleMaps.length) {
+      if (isArrayHasLength(this.simpleMaps)) {
         const simpleMapsChildren = this.generateSimpleMapsNodes(this.simpleMaps, "0_" + parentNode.children.length, 0);
         parentNode.children.push({
           key: "0_" + parentNode.children.length,
@@ -232,12 +235,12 @@ export default defineComponent({
       return parentNode;
     },
 
-    generateSimpleMapsNodes(simpleMaps: any, location: string, positionInLevel: number): ChartTableNode[] {
-      if (!Array.isArray(simpleMaps) || !simpleMaps.length) {
+    generateSimpleMapsNodes(simpleMaps: SimpleMap[], location: string, positionInLevel: number): ChartTableNode[] {
+      if (!isArrayHasLength(simpleMaps)) {
         return [this.createChartTableNode([], location, positionInLevel, "simpleMapsList")];
       }
-      const simpleMapsList = [] as any;
-      simpleMaps.forEach((mapItem: any) => {
+      const simpleMapsList = [] as SimpleMapIri[];
+      simpleMaps.forEach((mapItem: SimpleMap) => {
         simpleMapsList.push({
           name: mapItem.name,
           iri: mapItem["@id"],
@@ -249,10 +252,10 @@ export default defineComponent({
     },
 
     getSimpleMapsNamespaces(): void {
-      if (this.simpleMaps && this.simpleMaps.length && this.namespaces && this.namespaces.length) {
+      if (isArrayHasLength(this.simpleMaps) && isArrayHasLength(this.namespaces)) {
         this.simpleMaps.forEach((mapItem: SimpleMap) => {
           const found = this.namespaces.find((namespace: Namespace) => namespace.iri.toLowerCase() === (mapItem["@id"].split("#")[0] + "#").toLowerCase());
-          if (found && Object.prototype.hasOwnProperty.call(found, "name")) {
+          if (found && isObjectHasKeys(found, ["name"])) {
             mapItem.scheme = found.name;
           } else {
             mapItem.scheme = "None";
@@ -262,7 +265,7 @@ export default defineComponent({
       }
     },
 
-    byPriority(a: any, b: any): number {
+    byPriority(a: MapItem, b: MapItem): number {
       if (a.priority < b.priority) {
         return -1;
       } else if (a.priority > b.priority) {
@@ -272,7 +275,7 @@ export default defineComponent({
       }
     },
 
-    byScheme(a: any, b: any): number {
+    byScheme(a: SimpleMapIri, b: SimpleMapIri): number {
       if (a.scheme < b.scheme) {
         return -1;
       } else if (a.scheme > b.scheme) {

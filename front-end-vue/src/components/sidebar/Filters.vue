@@ -35,6 +35,7 @@ import { mapState } from "vuex";
 import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { FilterDefaultsConfig } from "@/models/configs/FilterDefaultsConfig";
+import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
 import { IM } from "@/vocabulary/IM";
 import { NAMESPACES } from "@/vocabulary/NAMESPACES";
 
@@ -88,7 +89,7 @@ export default defineComponent({
     },
 
     setDefaults(): void {
-      if (!this.selectedFilters.status.length && !this.selectedFilters.schemes.length && !this.selectedFilters.types.length) {
+      if (!isArrayHasLength(this.selectedFilters.status) && !isArrayHasLength(this.selectedFilters.schemes) && !isArrayHasLength(this.selectedFilters.types)) {
         this.selectedStatus = this.statusOptions.filter(item => this.configs.statusOptions.includes(item.name));
         this.selectedSchemes = this.schemeOptions.filter(item => this.configs.schemeOptions.includes(item.name));
         this.selectedTypes = this.typeOptions.filter(item => this.configs.typeOptions.includes(item.name));

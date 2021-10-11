@@ -32,6 +32,7 @@ import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 import { OWL } from "@/vocabulary/OWL";
 import EntityService from "@/services/EntityService";
+import { isArrayHasLength, isObject } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "ReportPieChart",
@@ -87,7 +88,7 @@ export default defineComponent({
   methods: {
     async setChartData(): Promise<void> {
       const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
-      if (Object.keys(result).length) {
+      if (isObject(result) && isArrayHasLength(Object.keys(result))) {
         this.name = result[RDFS.LABEL];
         this.description = result[RDFS.COMMENT];
         for (const entry of result[IM.STATS_REPORT_ENTRY]) {

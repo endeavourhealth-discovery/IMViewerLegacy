@@ -56,6 +56,7 @@ import { mapState } from "vuex";
 import { TTIriRef } from "@/models/TripleTree";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { Namespace } from "@/models/Namespace";
+import { isArrayHasLength, isObject } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "SidebarControl",
@@ -117,7 +118,7 @@ export default defineComponent({
         this.selectedFilters.types.forEach((type: TTIriRef) => {
           searchRequest.typeFilter.push(type["@id"]);
         });
-        if (Object.keys(this.request).length) {
+        if (isObject(this.request) && isArrayHasLength(Object.keys(this.request))) {
           await this.request.cancel("Search cancelled by user");
         }
         const axiosSource = axios.CancelToken.source();

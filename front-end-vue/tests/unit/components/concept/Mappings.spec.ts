@@ -231,7 +231,7 @@ describe("Mappings.vue", () => {
 
   it("can generateChildNodes ___ mapNode fail", () => {
     wrapper.vm.createChartMapNode = jest.fn().mockReturnValue(undefined);
-    expect(wrapper.vm.generateChildNodes(HAS_MAPS[IM.HAS_MAP])).toStrictEqual([undefined]);
+    expect(wrapper.vm.generateChildNodes(HAS_MAPS[IM.HAS_MAP])).toStrictEqual([]);
   });
 
   it("can createChartStructure", () => {

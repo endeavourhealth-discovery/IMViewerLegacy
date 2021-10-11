@@ -59,6 +59,7 @@ import { MODULE_IRIS } from "@/helpers/ModuleIris";
 import { ConceptAggregate } from "@/models/ConceptAggregate";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { TTIriRef } from "@/models/TripleTree";
+import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Hierarchy",
@@ -147,7 +148,7 @@ export default defineComponent({
       });
       this.root = [] as TreeNode[];
 
-      if (parentHierarchy.length) {
+      if (isArrayHasLength(parentHierarchy)) {
         this.parentLabel = parentHierarchy[0].name;
       } else {
         this.parentLabel = "";

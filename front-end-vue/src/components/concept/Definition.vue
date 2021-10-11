@@ -27,6 +27,7 @@ import TextSectionHeader from "@/components/generics/TextSectionHeader.vue";
 import SectionDivider from "@/components/generics/SectionDivider.vue";
 import TextDefinition from "@/components/concept/definition/TextDefinition.vue";
 import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
+import { isArrayHasLength, isObject, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Definition",
@@ -78,13 +79,13 @@ export default defineComponent({
     hasData(data: any): boolean {
       if (!data) {
         return false;
-      } else if (Array.isArray(data)) {
-        return data.length ? true : false;
+      } else if (isArrayHasLength(data)) {
+        return isArrayHasLength(data);
       } else if (typeof data === "string") {
         return data ? true : false;
-      } else if (Object.prototype.toString.call(data) === "[object Object]" && Object.prototype.hasOwnProperty.call(data, "count")) {
+      } else if (isObjectHasKeys(data, ["count"])) {
         return data.count ? true : false;
-      } else if (Object.prototype.toString.call(data) === "[object Object]") {
+      } else if (isObject(data)) {
         return Object.keys(data).length ? true : false;
       } else {
         console.log("Unexpected data type encountered for function hasData in definition");

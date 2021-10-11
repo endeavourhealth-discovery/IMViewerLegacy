@@ -46,7 +46,7 @@
               <Button
                 icon="pi pi-copy"
                 class="p-button-rounded p-button-text p-button-secondary"
-                v-clipboard:copy="copyConceptToClipboard(slotProps.data)"
+                v-clipboard:copy="copyConceptToClipboardVueWrapper(slotProps.data)"
                 v-clipboard:success="onCopy"
                 v-clipboard:error="onCopyError"
                 v-tooltip.right="'Copy concept summary to clipboard \n (right click to copy individual properties)'"
@@ -114,10 +114,10 @@ import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
 import { getColourFromType, getIconFromType } from "../../helpers/ConceptTypeMethods";
+import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
 
 export default defineComponent({
   name: "SearchResults",
-  components: {},
   computed: mapState(["searchResults"]),
   watch: {
     searchResults(newValue) {
@@ -176,66 +176,6 @@ export default defineComponent({
         .join(", ");
     },
 
-    conceptObjectToCopyString(key: string, value: any, counter: number, totalKeys: number): { label: string; value: string } | undefined {
-      let newString = "";
-      let returnString = "";
-      let newKey = key;
-      if (Array.isArray(value)) {
-        if (value.length) {
-          if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
-            newString = value.map(item => item.name).join(",\n\t");
-          } else if (Object.prototype.hasOwnProperty.call(value[0], "property") && Object.prototype.hasOwnProperty.call(value[0].property, "name")) {
-            newString = value.map(item => item.property.name).join(",\n\t");
-          } else {
-            LoggerService.warn(
-              undefined,
-              "Uncovered object property or missing name found for key: " + key + " at conceptObjectToCopyString within SearchResults.vue"
-            );
-          }
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ": [\n\t" + newString + "\n]";
-          } else {
-            returnString = newKey + ": [\n\t" + newString + "\n],\n";
-          }
-        } else {
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ": [\n\t\n]";
-          } else {
-            returnString = newKey + ": [\n\t\n],\n";
-          }
-        }
-      } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "name")) {
-        newString = value.name;
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ": " + newString;
-        } else {
-          returnString = newKey + ": " + newString + ",\n";
-        }
-      } else {
-        newString = value;
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ": " + newString;
-        } else {
-          returnString = newKey + ": " + newString + ",\n";
-        }
-      }
-      return { label: newKey, value: returnString };
-    },
-
-    copyConceptToClipboard(data: any): string {
-      const totalKeys = Object.keys(data).length;
-      let counter = 0;
-      let returnString = "";
-      let key: string;
-      let value: any;
-      for ([key, value] of Object.entries(data)) {
-        const copyString = this.conceptObjectToCopyString(key, value, counter, totalKeys);
-        if (copyString) returnString += copyString.value;
-        counter++;
-      }
-      return returnString;
-    },
-
     onCopy(): void {
       this.$toast.add(LoggerService.success("Value copied to clipboard"));
     },
@@ -247,6 +187,14 @@ export default defineComponent({
     onCopyRightClick(event: any) {
       const x = this.$refs.copyMenu as any;
       x.show(event);
+    },
+
+    copyConceptToClipboardVueWrapper(data: any) {
+      let filteredData = { ...data };
+      delete filteredData.match;
+      delete filteredData.weighting;
+      delete filteredData.isDescendantOf;
+      return copyConceptToClipboard(filteredData);
     },
 
     setCopyMenuItems(): void {
@@ -262,7 +210,7 @@ export default defineComponent({
           label: "All",
           command: async () => {
             await navigator.clipboard
-              .writeText(this.copyConceptToClipboard(this.hoveredResult))
+              .writeText(copyConceptToClipboard(this.hoveredResult))
               .then(() => {
                 this.$toast.add(LoggerService.success("Concept copied to clipboard"));
               })
@@ -276,8 +224,8 @@ export default defineComponent({
       let key: string;
       let value: any;
       for ([key, value] of Object.entries(this.hoveredResult)) {
-        let result = this.conceptObjectToCopyString(key, value, 0, 1);
-        if (!result) return;
+        let result = conceptObjectToCopyString(key, value, 0, 1);
+        if (!result) continue;
         const label = result.label;
         const text = result.value;
         this.copyMenuItems.push({

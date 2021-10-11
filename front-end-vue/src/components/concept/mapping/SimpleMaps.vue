@@ -43,7 +43,6 @@ import { SimpleMap } from "@/models/mappings/SimpleMap";
 
 export default defineComponent({
   name: "SimpleMaps",
-  components: {},
   props: {
     data: {
       type: Object as () => SimpleMap,
