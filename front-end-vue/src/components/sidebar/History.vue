@@ -1,11 +1,5 @@
 <template>
-  <Listbox
-    v-model="selectedHistoryItem"
-    :options="getHistory()"
-    optionLabel="conceptName"
-    @click="navigate"
-    class="history-listbox"
-  >
+  <Listbox v-model="selectedHistoryItem" :options="getHistory()" optionLabel="conceptName" @click="navigate" class="history-listbox">
     <template #option="slotProps">
       <div>
         <span>{{ slotProps.option.conceptName }}</span>
@@ -28,11 +22,10 @@ export default defineComponent({
     };
   },
   methods: {
-    getHistory(): any {
-      const viewHistory = this.history.filter((obj: any) => {
+    getHistory(): HistoryItem[] {
+      return this.history.filter((obj: any) => {
         return !!obj.conceptName;
       });
-      return viewHistory;
     },
 
     navigate(): void {

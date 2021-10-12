@@ -1,8 +1,6 @@
 <template>
   <div class="p-d-flex p-flex-row p-ai-center">
-    <Card
-      class="p-d-flex p-flex-column p-jc-sm-around p-ai-center recovery-card"
-    >
+    <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center recovery-card">
       <template #header>
         <i class="pi pi-fw pi-user icon-header" aria-hidden="true" />
       </template>
@@ -14,24 +12,14 @@
             <InputText id="fieldUsername" type="text" v-model="username" />
           </div>
           <div class="p-d-flex p-flex-row p-jc-center">
-            <Button
-              class="user-submit"
-              type="submit"
-              label="Request Reset Code"
-              v-on:click.prevent="handleSubmit"
-            />
+            <Button class="user-submit" type="submit" label="Request Reset Code" v-on:click.prevent="handleSubmit" />
           </div>
         </div>
       </template>
       <template #footer>
         <small
           >Already have a recovery code?
-          <a
-            id="password-submit-link"
-            class="footer-link"
-            @click="$router.push({ name: 'ForgotPasswordSubmit' })"
-            >Submit Code</a
-          ></small
+          <a id="password-submit-link" class="footer-link" @click="$router.push({ name: 'ForgotPasswordSubmit' })">Submit Code</a></small
         >
         <br />
         <br />
@@ -72,10 +60,7 @@ export default defineComponent({
               Swal.fire({
                 icon: "success",
                 title: "Success",
-                text:
-                  "Password has been reset for account: " +
-                  this.username +
-                  ". An email has been sent with a recovery code."
+                text: "Password has been reset for account: " + this.username + ". An email has been sent with a recovery code."
               }).then(() => {
                 this.$store.commit("updateRegisteredUsername", this.username);
                 this.$router.push({ name: "ForgotPasswordSubmit" });

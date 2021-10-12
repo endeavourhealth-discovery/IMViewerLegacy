@@ -6,23 +6,14 @@
         A brief overview of the concepts stored in the Ontology
       </template>
       <template #content>
-        <DataTable
-          v-if="!$store.state.loading.get('reportTable_' + iri)"
-          :value="tableData"
-          class="p-datatable-sm"
-          :scrollable="true"
-          scrollHeight="350px"
-        >
+        <DataTable v-if="!$store.state.loading.get('reportTable_' + iri)" :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="350px">
           <template #header>
             Ontology data
           </template>
           <Column field="label" header="Label"></Column>
           <Column field="count" header="Total"></Column>
         </DataTable>
-        <div
-          class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container"
-          v-if="$store.state.loading.get('reportTable_' + iri)"
-        >
+        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportTable_' + iri)">
           <ProgressSpinner />
         </div>
       </template>
@@ -32,56 +23,41 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 import { OWL } from "@/vocabulary/OWL";
 import EntityService from "@/services/EntityService";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
-  name: "OntologyOverview",
-  props: ["iri"],
+  name: "ReportTable",
+  props: { iri: { type: String, required: true } },
   data() {
     return {
-      tableData: [] as any
+      tableData: [] as { count: number; label: string }[]
     };
   },
-  mounted() {
+  async mounted() {
     // table data
     this.$store.commit("updateLoading", {
       key: "reportTable_" + this.iri,
       value: true
     });
-    EntityService.getPartialEntity(this.iri, [
-      RDFS.LABEL,
-      RDFS.COMMENT,
-      IM.STATS_REPORT_ENTRY
-    ])
-      .then(res => {
-        this.tableData = [];
-
-        for (const entry of res.data[IM.STATS_REPORT_ENTRY]) {
-          this.tableData.push({
-            label: entry[RDFS.LABEL],
-            count: +entry[OWL.HAS_VALUE]
-          });
-        }
-
-        this.$store.commit("updateLoading", {
-          key: "reportTable_" + this.iri,
-          value: false
+    const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
+    if (isObjectHasKeys(result, [IM.STATS_REPORT_ENTRY])) {
+      this.tableData = [] as { count: number; label: string }[];
+      for (const entry of result[IM.STATS_REPORT_ENTRY]) {
+        this.tableData.push({
+          label: entry[RDFS.LABEL],
+          count: +entry[OWL.HAS_VALUE]
         });
-      })
-      .catch(err => {
-        this.$store.commit("updateLoading", {
-          key: "reportTable_" + this.iri,
-          value: false
-        });
-        this.$toast.add(
-          LoggerService.error("Ontology Overview server request failed", err)
-        );
-      });
-  } // mounted end
+      }
+    }
+    this.$store.commit("updateLoading", {
+      key: "reportTable_" + this.iri,
+      value: false
+    });
+  }
 });
 </script>
 

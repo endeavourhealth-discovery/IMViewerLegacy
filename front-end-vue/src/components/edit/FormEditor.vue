@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center"
-    v-if="loading"
-  >
+  <div class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center" v-if="loading">
     <ProgressSpinner />
   </div>
   <Card v-if="!loading">
@@ -10,73 +7,43 @@
       <div class="p-fluid editor-grid">
         <div class="p-field float-label-container iri">
           <span class="p-float-label">
-            <InputText
-              class="p-inputtext-lg"
-              v-model="conceptDto.iri"
-              type="text"
-            />
+            <InputText class="p-inputtext-lg" v-model="conceptDto.iri" type="text" />
             <label for="Iri">Iri</label>
           </span>
         </div>
         <div class="p-field float-label-container name">
           <span class="p-float-label">
-            <InputText
-              class="p-inputtext-lg"
-              v-model="conceptDto.name"
-              type="text"
-            />
+            <InputText class="p-inputtext-lg" v-model="conceptDto.name" type="text" />
             <label for="Name">Name</label>
           </span>
         </div>
         <div class="p-field float-label-container code">
           <span class="p-float-label">
-            <InputText
-              class="p-inputtext-lg"
-              v-model="conceptDto.code"
-              type="text"
-            />
+            <InputText class="p-inputtext-lg" v-model="conceptDto.code" type="text" />
             <label for="Code">Code</label>
           </span>
         </div>
         <div class="p-field float-label-container description">
           <span class="p-float-label">
-            <Textarea
-              class="p-inputtext-lg"
-              v-model="conceptDto.description"
-              rows="4"
-            />
+            <Textarea class="p-inputtext-lg" v-model="conceptDto.description" rows="4" />
             <label for="address">Description</label>
           </span>
         </div>
         <div class="p-field float-label-container version">
           <span class="p-float-label">
-            <InputText
-              class="p-inputtext-lg"
-              v-model="conceptDto.version"
-              type="text"
-            />
+            <InputText class="p-inputtext-lg" v-model="conceptDto.version" type="text" />
             <label for="Version">Version</label>
           </span>
         </div>
         <div class="p-field float-label-container status">
           <span class="p-float-label">
-            <Dropdown
-              class="p-inputtext-lg"
-              v-model="conceptDto.status"
-              :options="statusOptions"
-            />
+            <Dropdown class="p-inputtext-lg" v-model="conceptDto.status" :options="statusOptions" />
             <label>Status</label>
           </span>
         </div>
         <div class="p-field float-label-container scheme">
           <span class="p-float-label">
-            <Dropdown
-              class="p-inputtext-lg"
-              v-model="conceptDto.scheme"
-              optionValue="name"
-              :options="schemeOptions"
-              optionLabel="name"
-            />
+            <Dropdown class="p-inputtext-lg" v-model="conceptDto.scheme" optionValue="name" :options="schemeOptions" optionLabel="name" />
             <label>Scheme</label>
           </span>
         </div>
@@ -86,12 +53,11 @@
 </template>
 
 <script lang="ts">
-import { ConceptReference } from "@/models/ConceptReference";
-import { ConceptStatus } from "@/models/ConceptStatus";
 import EntityService from "@/services/EntityService";
 import { defineComponent } from "@vue/runtime-core";
 import Dropdown from "primevue/dropdown";
 import Card from "primevue/card";
+import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
   name: "FormEditor",
@@ -109,17 +75,16 @@ export default defineComponent({
   data() {
     return {
       conceptDto: JSON.parse(JSON.stringify(this.updatedConcept)),
-      schemeOptions: [] as ConceptReference[],
-      statusOptions: Object.keys(ConceptStatus).filter(f =>
-        isNaN(Number(f))
-      ) as any,
+      schemeOptions: [] as any[],
+      statusOptions: [] as any[],
       loading: false
     };
   },
   async mounted() {
-    this.schemeOptions = (await EntityService.getSchemeOptions()).data;
-  },
-  methods: {}
+    this.schemeOptions = await EntityService.getNamespaces();
+
+    this.statusOptions = await EntityService.getEntityChildren(IM.STATUS);
+  }
 });
 </script>
 

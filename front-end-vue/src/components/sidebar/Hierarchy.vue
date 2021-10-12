@@ -1,24 +1,8 @@
 <template>
-  <div
-    class="p-d-flex p-flex-column p-jc-start"
-    id="hierarchy-tree-bar-container"
-  >
-    <div
-      class="p-d-flex p-flex-row p-jc-start p-ai-center"
-      id="hierarchy-selected-bar"
-    >
-      <Button
-        :label="parentLabel"
-        :disabled="parentLabel === ''"
-        icon="pi pi-chevron-up"
-        @click="expandParents"
-        class="p-button-text p-button-plain"
-      />
-      <Button
-        icon="pi pi-home"
-        @click="resetConcept"
-        class="p-button-rounded p-button-text p-button-plain"
-      >
+  <div class="p-d-flex p-flex-column p-jc-start" id="hierarchy-tree-bar-container">
+    <div class="p-d-flex p-flex-row p-jc-start p-ai-center" id="hierarchy-selected-bar">
+      <Button :label="parentLabel" :disabled="parentLabel === ''" icon="pi pi-chevron-up" @click="expandParents" class="p-button-text p-button-plain" />
+      <Button icon="pi pi-home" @click="resetConcept" class="p-button-rounded p-button-text p-button-plain">
         <i class="fas fa-home" aria-hidden="true"></i>
       </Button>
       <Button
@@ -49,15 +33,13 @@
       class="tree-root"
     >
       <template #default="slotProps">
-        <span v-if="!slotProps.node.loading">
-          <i
-            :class="'fas fa-fw ' + slotProps.node.typeIcon"
-            :style="'color:' + slotProps.node.color"
-            aria-hidden="true"
-          />
-        </span>
-        <ProgressSpinner v-if="slotProps.node.loading" />
-        {{ slotProps.node.label }}
+        <div class="tree-row">
+          <span v-if="!slotProps.node.loading">
+            <i :class="'fas fa-fw ' + slotProps.node.typeIcon" :style="'color:' + slotProps.node.color" aria-hidden="true" />
+          </span>
+          <ProgressSpinner v-if="slotProps.node.loading" />
+          <span>{{ slotProps.node.label }}</span>
+        </div>
       </template>
     </Tree>
   </div>
@@ -71,41 +53,74 @@ import EntityService from "@/services/EntityService";
 import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";
 import { IM } from "@/vocabulary/IM";
-import LoggerService from "@/services/LoggerService";
-import {
-  getColourFromType,
-  getIconFromType
-} from "@/helpers/ConceptTypeMethods";
+import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
+import { MODULE_IRIS } from "@/helpers/ModuleIris";
+import { ConceptAggregate } from "@/models/ConceptAggregate";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
+import { TTIriRef } from "@/models/TripleTree";
+import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Hierarchy",
-  components: {},
-  props: ["active"],
+  props: { active: { type: Number, required: true } },
   emits: ["showTree"],
-  computed: mapState([
-    "conceptIri",
-    "focusTree",
-    "treeLocked",
-    "sideNavHierarchyFocus"
-  ]),
+  computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus", "history"]),
   watch: {
     async conceptIri(newValue) {
-      if (this.homeIris.includes(newValue)) {
+      await this.getConceptAggregate(newValue);
+      if (!this.treeLocked) {
         this.selectedKey = {};
-        await this.getConceptAggregate(newValue);
-        this.createTree(
-          this.conceptAggregate.concept,
-          this.conceptAggregate.parents,
-          this.conceptAggregate.children
-        );
-      } else {
-        await this.getConceptAggregate(newValue);
-        this.createTree(
-          this.conceptAggregate.concept,
-          this.conceptAggregate.parents,
-          this.conceptAggregate.children
-        );
+        this.refreshTree();
+      }
+      this.updateHistory();
+    },
+    async sideNavHierarchyFocus(newValue, oldValue) {
+      if (newValue.iri !== oldValue.iri) {
+        this.selectedKey = {};
+        await this.getConceptAggregate(this.conceptIri);
+        this.refreshTree();
+        this.updateHistory();
+      }
+    },
+    async focusTree(newValue) {
+      if (newValue === true) {
+        await this.getConceptAggregate(this.conceptIri);
+        this.refreshTree();
+        this.$store.commit("updateFocusTree", false);
+        this.$emit("showTree");
+      }
+    },
+    active(newValue, oldValue) {
+      if (!this.treeLocked && newValue === 0 && oldValue !== 0) {
+        this.refreshTree();
+      }
+    },
+    async treeLocked(newValue) {
+      if (!newValue) {
+        await this.getConceptAggregate(this.conceptIri);
+        this.refreshTree();
+      }
+    }
+  },
+  data() {
+    return {
+      searchResult: "",
+      conceptAggregate: {} as ConceptAggregate,
+      root: [] as TreeNode[],
+      expandedKeys: {} as any,
+      selectedKey: {} as any,
+      parentLabel: ""
+    };
+  },
+  async mounted() {
+    await this.getConceptAggregate(this.conceptIri);
+    this.refreshTree();
+    this.updateHistory();
+  },
+  methods: {
+    updateHistory(): void {
+      if (!MODULE_IRIS.includes(this.conceptIri)) {
         this.$store.commit("updateHistory", {
           url: this.$route.fullPath,
           conceptName: this.conceptAggregate.concept[RDFS.LABEL],
@@ -113,130 +128,30 @@ export default defineComponent({
         } as HistoryItem);
       }
     },
-    focusTree(newValue) {
-      if (newValue === true) {
-        this.refreshTree(
-          this.conceptAggregate.concept,
-          this.conceptAggregate.parents,
-          this.conceptAggregate.children
-        );
-        this.$store.commit("updateFocusTree", false);
-        this.$emit("showTree");
-      }
-    },
-    active(newValue, oldValue) {
-      if (!this.treeLocked && newValue === 0 && oldValue !== 0) {
-        this.refreshTree(
-          this.conceptAggregate.concept,
-          this.conceptAggregate.parents,
-          this.conceptAggregate.children
-        );
-      }
-    },
-    treeLocked(newValue) {
-      if (!newValue) {
-        this.refreshTree(
-          this.conceptAggregate.concept,
-          this.conceptAggregate.parents,
-          this.conceptAggregate.children
-        );
-      }
-    }
-  },
-  data() {
-    return {
-      searchResult: "",
-      conceptAggregate: {} as any,
-      root: [] as TreeNode[],
-      expandedKeys: {} as any,
-      selectedKey: {} as any,
-      parentLabel: "",
-      homeIris: [
-        IM.NAMESPACE + "Sets",
-        IM.NAMESPACE + "DiscoveryOntology",
-        IM.NAMESPACE + "QT_QueryTemplates",
-        IM.NAMESPACE + "InformationModel"
-      ]
-    };
-  },
-  async mounted() {
-    await this.getConceptAggregate(this.conceptIri);
-    this.createTree(
-      this.conceptAggregate.concept,
-      this.conceptAggregate.parents,
-      this.conceptAggregate.children
-    );
-    if (!this.homeIris.includes(this.conceptAggregate.concept[IM.IRI])) {
-      this.$store.commit("updateHistory", {
-        url: this.$route.fullPath,
-        conceptName: this.conceptAggregate.concept[RDFS.LABEL],
-        view: this.$route.name
-      } as HistoryItem);
-    }
-  },
-  methods: {
-    async getConceptAggregate(iri: string) {
-      await Promise.all([
-        EntityService.getPartialEntity(iri, [
-          RDFS.LABEL,
-          RDFS.COMMENT,
-          RDF.TYPE
-        ]).then(res => {
-          this.conceptAggregate.concept = res.data;
-        }),
-        EntityService.getEntityParents(iri).then(res => {
-          this.conceptAggregate.parents = res.data;
-        }),
-        EntityService.getEntityChildren(iri).then(res => {
-          this.conceptAggregate.children = res.data;
-        })
-      ]).catch(err => {
-        this.$toast.add(
-          LoggerService.error(
-            "Hierarchy tree concept aggregate fetch failed",
-            err
-          )
-        );
-      });
-    },
-    createTree(concept: any, parentHierarchy: any, children: any): void {
-      if (this.root.length == 0) {
-        this.refreshTree(concept, parentHierarchy, children);
-      } else if (
-        concept[IM.IRI] === IM.NAMESPACE + "InformationModel" ||
-        concept[IM.IRI] === IM.NAMESPACE + "DiscoveryOntology" ||
-        concept[IM.IRI] === IM.NAMESPACE + "Sets" ||
-        concept[IM.IRI] === IM.NAMESPACE + "QT_QueryTemplates"
-      ) {
-        this.refreshTree(concept, parentHierarchy, children);
-      }
+    async getConceptAggregate(iri: string): Promise<void> {
+      this.conceptAggregate.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]);
+
+      this.conceptAggregate.parents = await EntityService.getEntityParents(iri);
+
+      this.conceptAggregate.children = await EntityService.getEntityChildren(iri);
     },
 
-    refreshTree(concept: any, parentHierarchy: any, children: any): void {
+    refreshTree(): void {
+      const concept = this.conceptAggregate.concept;
+      const parentHierarchy = this.conceptAggregate.parents;
+      const children = this.conceptAggregate.children;
       this.expandedKeys = {};
-      const selectedConcept = this.createTreeNode(
-        concept[RDFS.LABEL],
-        concept[IM.IRI],
-        concept[RDF.TYPE],
-        concept[RDFS.LABEL],
-        concept.hasChildren
-      );
+      const selectedConcept = this.createTreeNode(concept[RDFS.LABEL], concept[IM.IRI], concept[RDF.TYPE], concept.hasChildren);
 
-      children.forEach((child: any) => {
-        selectedConcept.children.push(
-          this.createTreeNode(
-            child.name,
-            child["@id"],
-            child.type,
-            child.name,
-            child.hasChildren
-          )
-        );
+      children.forEach((child: EntityReferenceNode) => {
+        selectedConcept.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
       });
-      this.root = [];
+      this.root = [] as TreeNode[];
 
-      if (parentHierarchy.length) {
+      if (isArrayHasLength(parentHierarchy)) {
         this.parentLabel = parentHierarchy[0].name;
+      } else {
+        this.parentLabel = "";
       }
 
       this.root.push(selectedConcept);
@@ -244,32 +159,21 @@ export default defineComponent({
       this.selectedKey[selectedConcept.key] = true;
     },
 
-    createTreeNode(
-      conceptName: any,
-      conceptIri: any,
-      conceptTypes: any,
-      level: any,
-      hasChildren: boolean
-    ): TreeNode {
+    createTreeNode(conceptName: string, conceptIri: string, conceptTypes: TTIriRef[], hasChildren: boolean): TreeNode {
       return {
-        key: level,
+        key: conceptName,
         label: conceptName,
         typeIcon: getIconFromType(conceptTypes),
         color: getColourFromType(conceptTypes),
         data: conceptIri,
         leaf: !hasChildren,
         loading: false,
-        children: []
+        children: [] as TreeNode[]
       };
     },
 
-    onNodeSelect(node: any): void {
-      if (
-        node.data === IM.NAMESPACE + "InformationModel" ||
-        node.data === IM.NAMESPACE + "DiscoveryOntology" ||
-        node.data === IM.NAMESPACE + "Sets" ||
-        node.data === IM.NAMESPACE + "QT_QueryTemplates"
-      ) {
+    onNodeSelect(node: TreeNode): void {
+      if (MODULE_IRIS.includes(node.data)) {
         this.$router.push({ name: "Dashboard" });
       } else {
         this.$router.push({
@@ -282,34 +186,17 @@ export default defineComponent({
     async expandChildren(node: TreeNode): Promise<void> {
       node.loading = true;
       this.expandedKeys[node.key] = true;
-      let children: any[] = [];
-      await EntityService.getEntityChildren(node.data)
-        .then(res => {
-          children = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Concept children server request failed", err)
-          );
-        });
+      const children = await EntityService.getEntityChildren(node.data);
 
-      children.forEach((child: any) => {
+      children.forEach((child: EntityReferenceNode) => {
         if (!this.containsChild(node.children, child)) {
-          node.children.push(
-            this.createTreeNode(
-              child.name,
-              child["@id"],
-              child.type,
-              child.name,
-              child.hasChildren
-            )
-          );
+          node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
         }
       });
       node.loading = false;
     },
 
-    containsChild(children: any[], child: any) {
+    containsChild(children: TreeNode[], child: EntityReferenceNode): boolean {
       if (children.some(e => e.data === child["@id"])) {
         return true;
       }
@@ -319,63 +206,36 @@ export default defineComponent({
     async expandParents(): Promise<void> {
       this.expandedKeys[this.root[0].key] = true;
 
-      let parents: any[] = [];
-      const parentsNodes: any[] = [];
-      await EntityService.getEntityParents(this.root[0].data)
-        .then(async res => {
-          parents = res.data;
-          parents.forEach((parent: any) => {
-            parentsNodes.push(
-              this.createTreeNode(
-                parent.name,
-                parent["@id"],
-                parent.type,
-                parent.name,
-                true
-              )
-            );
-          });
+      const parentsNodes = [] as TreeNode[];
+      const parents = await EntityService.getEntityParents(this.root[0].data);
+      parents.forEach((parent: EntityReferenceNode) => {
+        parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, true));
+      });
 
-          parentsNodes.forEach((parentNode: TreeNode) => {
-            parentNode.children.push(this.root[0]);
-            this.expandedKeys[parentNode.key] = true;
-          });
+      parentsNodes.forEach((parentNode: TreeNode) => {
+        parentNode.children.push(this.root[0]);
+        this.expandedKeys[parentNode.key] = true;
+      });
 
-          this.root = parentsNodes;
+      this.root = parentsNodes;
 
-          await EntityService.getEntityParents(this.root[0].data)
-            .then(res => {
-              if (res.data[0]) {
-                this.parentLabel = res.data[0].name;
-              } else {
-                this.parentLabel = "";
-              }
-            })
-            .catch(err => {
-              this.$toast.add(
-                LoggerService.error(
-                  "Concept parents server request 2 failed",
-                  err
-                )
-              );
-            });
-          // this refreshes the keys so they start open if children and parents were both expanded
-          this.expandedKeys = { ...this.expandedKeys };
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Concept parents server request 1 failed", err)
-          );
-        });
-    },
+      const parentsReturn2 = await EntityService.getEntityParents(this.root[0].data);
 
-    resetConcept(): void {
-      if (this.parentLabel !== "Information Model") {
+      if (parentsReturn2[0]) {
+        this.parentLabel = parentsReturn2[0].name;
+      } else {
         this.parentLabel = "";
       }
+      // this refreshes the keys so they start open if children and parents were both expanded
+      this.expandedKeys = { ...this.expandedKeys };
+    },
+
+    async resetConcept(): Promise<void> {
       this.selectedKey = {};
       this.$emit("showTree");
       this.$store.commit("updateConceptIri", this.sideNavHierarchyFocus.iri);
+      await this.getConceptAggregate(this.conceptIri);
+      this.refreshTree();
       this.$router.push({ name: "Dashboard" });
     },
 
@@ -404,13 +264,20 @@ export default defineComponent({
   height: 100%;
   overflow: auto;
 }
-.p-tree-toggler,
-.p-tree-toggler-icon {
+.tree-root ::v-deep(.p-tree-toggler) {
   min-width: 2rem;
 }
 
 .p-progress-spinner {
   width: 1.25em !important;
   height: 1.25em !important;
+}
+
+.tree-row {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0.25rem;
 }
 </style>

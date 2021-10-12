@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container"
-    v-if="loading"
-  >
+  <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container" v-if="loading">
     <ProgressSpinner />
   </div>
   <OrganizationChart v-else :value="graph" :collapsible="true">
@@ -24,14 +21,14 @@
           <tr v-for="prop in slotProps.node.leafNodes" :key="prop">
             <td @click="navigate(prop.iri)">{{ prop.name }}</td>
             <td @click="navigate(prop.valueTypeIri)">
-              {{ prop.valueTypeName }}
+              {{ prop.valueTypeName || getTypeFromIri(prop.valueTypeIri) }}
             </td>
           </tr>
         </tbody>
       </table>
     </template>
     <template #ISA="slotProps">
-      <table>
+      <table aria-label="graph isa's table">
         <thead>
           <tr>
             <th scope="col">Name</th>
@@ -45,7 +42,7 @@
       </table>
     </template>
     <template #SUBTYPE="slotProps">
-      <table>
+      <table aria-label="graph subtypes table">
         <thead>
           <tr>
             <th scope="col">Name</th>
@@ -66,13 +63,11 @@ import GraphData from "../../models/GraphData";
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
 import { RouteRecordName } from "vue-router";
-import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "Graph",
-  components: {},
   props: {
-    conceptIri: String
+    conceptIri: { type: String, required: true }
   },
   watch: {
     async conceptIri(newValue) {
@@ -86,28 +81,25 @@ export default defineComponent({
     };
   },
   async mounted() {
-    if (this.conceptIri) {
-      await this.getGraph(this.conceptIri);
-    }
+    await this.getGraph(this.conceptIri);
   },
   methods: {
-    async getGraph(iri: string) {
+    getTypeFromIri(iri: string): string {
+      if (!iri.includes("#")) {
+        return iri;
+      }
+      let part = iri.split("#")[1];
+      part = part.includes(":") ? part.split(":")[1] : part;
+      return part.charAt(0).toUpperCase() + part.slice(1);
+    },
+
+    async getGraph(iri: string): Promise<void> {
       this.loading = true;
-      await EntityService.getEntityGraph(iri)
-        .then(res => {
-          this.graph = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get entity graph data from server",
-              err
-            )
-          );
-        });
+      this.graph = await EntityService.getEntityGraph(iri);
       this.loading = false;
     },
-    navigate(iri: string) {
+
+    navigate(iri: string): void {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
       if (iri)
         this.$router.push({

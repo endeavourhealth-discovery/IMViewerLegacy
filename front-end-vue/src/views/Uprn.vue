@@ -4,20 +4,12 @@
     <div id="uprn-home">
       <TabView v-model:activeIndex="active" :lazy="true">
         <TabPanel header="Single address lookup">
-          <div
-            class="uprn-panel-content"
-            id="address-lookup-container"
-            :style="contentHeight"
-          >
+          <div class="uprn-panel-content" id="address-lookup-container" :style="contentHeight">
             <AddressLookup />
           </div>
         </TabPanel>
         <TabPanel header="Address file workflow">
-          <div
-            class="uprn-panel-content"
-            id="file-workflow-container"
-            :style="contentHeight"
-          >
+          <div class="uprn-panel-content" id="file-workflow-container" :style="contentHeight">
             <FileWorkflow />
           </div>
         </TabPanel>
@@ -60,29 +52,14 @@ export default defineComponent({
 
     setContentHeight(): void {
       const container = document.getElementById("uprn-home") as HTMLElement;
-      const nav = container?.getElementsByClassName(
-        "p-tabview-nav"
-      )[0] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
+      const nav = container?.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
+      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
       if (container && nav && currentFontSize) {
-        const calcHeight =
-          container.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
-          2 * currentFontSize -
-          1;
-        this.contentHeight =
-          "height: " + calcHeight + "px; max-height: " + calcHeight + "px;";
+        const calcHeight = container.getBoundingClientRect().height - nav.getBoundingClientRect().height - 2 * currentFontSize - 1;
+        this.contentHeight = "height: " + calcHeight + "px; max-height: " + calcHeight + "px;";
       } else {
-        this.contentHeight =
-          "height: calc(100vh - 7rem);max-height: calc(100vh - 7rem);";
-        LoggerService.error(
-          "UPRN content sizing error",
-          "Failed to get element(s) for UPRN content resizing"
-        );
+        this.contentHeight = "height: calc(100vh - 7rem);max-height: calc(100vh - 7rem);";
+        LoggerService.error("UPRN content sizing error", "Failed to get element(s) for UPRN content resizing");
       }
     }
   }

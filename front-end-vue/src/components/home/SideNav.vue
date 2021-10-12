@@ -1,17 +1,9 @@
 <template>
   <transition name="layout-sidebar">
     <div class="layout-sidebar layout-sidebar-dark">
-      <div
-        id="sidebar"
-        class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center"
-      >
+      <div id="sidebar" class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center">
         <div>
-          <img
-            class="im-logo"
-            src="../../assets/logos/Logo-object-empty.png"
-            alt="IM logo"
-            @click="resetToHome"
-          />
+          <img class="im-logo" src="../../assets/logos/Logo-object-empty.png" alt="IM logo" @click="resetToHome" />
         </div>
 
         <div id="center-icons" style="color: grey">
@@ -22,38 +14,25 @@
             v-bind:class="{ active: isActive(item.name) }"
             @click="handleCenterIconClick(item)"
           >
-            <font-awesome-icon
-              class="sidebutton center-icon"
-              :icon="item.icon"
-              style="padding: 5px"
-              fixed-width
-            />
+            <font-awesome-icon class="sidebutton center-icon" :icon="item.icon" style="padding: 5px" fixed-width />
             <div class="center-icon-text">{{ item.name }}</div>
           </div>
         </div>
 
         <div class="footer user-settings">
-          <span
-            v-if="!isLoggedIn"
-            id="user-icon"
-            @click="toggle"
-            aria-haspopup="true"
-            aria-controls="overlay_menu"
-            aria-hidden="true"
-          >
+          <span v-if="!isLoggedIn" id="user-icon" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" aria-hidden="true">
             <i class="fas fa-users" aria-hidden="true"></i>
           </span>
           <img
             v-if="isLoggedIn"
             class="avatar-icon"
-            :src="getUrl(currentUser.avatar.value)"
+            :src="getUrl(currentUser.avatar)"
             alt="avatar icon"
             @click="toggle"
             aria-haspopup="true"
             aria-controls="overlay_menu"
           />
           <Menu ref="menu" :model="getItems()" :popup="true" id="popup-user" />
-          <!-- <i class="pi pi-cog settings-icon" aria-hidden="true"></i> -->
         </div>
       </div>
     </div>
@@ -61,42 +40,70 @@
 </template>
 
 <script lang="ts">
+import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
+import { MODULE_IRIS } from "@/helpers/ModuleIris";
+import { LoginItem, AccountItem, ModuleItem } from "@/models/sideNav/MenuItems";
 
 export default defineComponent({
   name: "SideNav",
-  computed: mapState([
-    "currentUser",
-    "isLoggedIn",
-    "sideNavHierarchyFocus",
-    "selectedEntityType"
-  ]),
+  computed: mapState(["currentUser", "isLoggedIn", "sideNavHierarchyFocus", "selectedEntityType", "moduleSelectedEntities", "conceptIri"]),
   emits: ["hierarchyFocusSelected"],
   watch: {
     selectedEntityType(newValue) {
       switch (newValue) {
-        case "Class":
+        case "Ontology":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[0].name,
             fullName: this.menuItems[0].fullName,
-            iri: this.menuItems[0].iri
+            iri: this.menuItems[0].iri,
+            route: this.menuItems[0].route
           });
           break;
-        case "Set":
+        case "Sets":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[1].name,
             fullName: this.menuItems[1].fullName,
-            iri: this.menuItems[1].iri
+            iri: this.menuItems[1].iri,
+            route: this.menuItems[1].route
           });
           break;
-        case "Query":
+        case "DataModel":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[2].name,
             fullName: this.menuItems[2].fullName,
-            iri: this.menuItems[2].iri
+            iri: this.menuItems[2].iri,
+            route: this.menuItems[2].route
           });
           break;
+        case "Catalogue":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[3].name,
+            fullName: this.menuItems[3].fullName,
+            iri: this.menuItems[3].iri,
+            route: this.menuItems[3].route
+          });
+          break;
+        case "Queries":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[3].name,
+            fullName: this.menuItems[3].fullName,
+            iri: this.menuItems[3].iri,
+            route: this.menuItems[3].route
+          });
+          break;
+        case "Folder":
+          this.handleCenterIconClick(this.sideNavHierarchyFocus);
+          break;
+        default:
+          console.log("unknown selectedEntityType detected in sidenav watcher");
+          break;
+      }
+    },
+    sideNavHierarchyFocus(newValue, oldValue) {
+      if (newValue.name !== oldValue.name) {
+        this.handleCenterIconClick(newValue);
       }
     }
   },
@@ -114,7 +121,7 @@ export default defineComponent({
           icon: "fa fa-fw fa-user-plus",
           to: "/user/register"
         }
-      ] as { label: string; icon: string; to: string }[],
+      ] as LoginItem[],
 
       accountItems: [
         {
@@ -137,7 +144,7 @@ export default defineComponent({
           icon: "fa fa-fw fa-sign-out-alt",
           to: "/user/logout" //+ this.user.id
         }
-      ] as { label: string; icon: string; to: string }[],
+      ] as AccountItem[],
 
       menuItems: [
         {
@@ -145,21 +152,35 @@ export default defineComponent({
           name: "Ontology",
           fullName: "Ontologies",
           route: "Dashboard",
-          iri: "http://endhealth.info/im#DiscoveryOntology"
+          iri: IM.MODULE_ONTOLOGY
         },
         {
           icon: ["fas", "layer-group"],
           name: "Sets",
           fullName: "Concept sets and value sets",
           route: "Dashboard",
-          iri: "http://endhealth.info/im#Sets"
+          iri: IM.MODULE_SETS
         },
+        {
+          icon: ["fas", "archive"],
+          name: "DataModel",
+          fullName: "Data model",
+          route: "Dashboard",
+          iri: IM.MODULE_DATA_MODEL
+        },
+        // {
+        //   icon: ["fas", "fax"],
+        //   name: "Catalogue",
+        //   fullName: "Catalogue",
+        //   route: "Catalogue",
+        //   iri: IM.MODULE_CATALOGUE
+        // },
         {
           icon: ["fas", "search"],
           name: "Queries",
           fullName: "Query templates",
           route: "Dashboard",
-          iri: "http://endhealth.info/im#QT_QueryTemplates"
+          iri: IM.MODULE_QUERIES
         }
         // {
         //   icon: ["fas", "tasks"],
@@ -174,7 +195,7 @@ export default defineComponent({
         //   name: "Assign",
         //   route: "UPRN"
         // }
-      ]
+      ] as ModuleItem[]
     };
   },
   methods: {
@@ -182,7 +203,7 @@ export default defineComponent({
       return item === this.sideNavHierarchyFocus.name ? true : false;
     },
 
-    getItems(): { label: string; icon: string; to: string }[] {
+    getItems(): LoginItem[] | AccountItem[] {
       if (this.isLoggedIn) {
         return this.accountItems;
       } else {
@@ -203,31 +224,47 @@ export default defineComponent({
       this.$store.commit("updateSideNavHierarchyFocus", {
         name: "InformationModel",
         fullName: "Information Model",
-        iri: "http://endhealth.info/im#InformationModel"
+        iri: IM.MODULE_IM
       });
-      this.$store.commit(
-        "updateConceptIri",
-        "http://endhealth.info/im#InformationModel"
-      );
+      this.$store.commit("updateConceptIri", IM.MODULE_IM);
       this.$emit("hierarchyFocusSelected");
       this.$router.push({ name: "Dashboard" });
     },
 
-    handleCenterIconClick(item: any) {
-      if (
-        item.name === "Ontology" ||
-        item.name === "Sets" ||
-        item.name === "Queries"
-      ) {
+    handleCenterIconClick(item: ModuleItem): void {
+      let route = item.route;
+      let moduleIri = "";
+      if (item.name === "Ontology" || item.name === "Sets" || item.name === "Queries" || item.name === "DataModel") {
         this.$store.commit("updateSideNavHierarchyFocus", {
           name: item.name,
           fullName: item.fullName,
-          iri: item.iri
+          iri: item.iri,
+          route: "Dashboard"
         });
-        this.$store.commit("updateConceptIri", item.iri);
+        this.$store.commit("updateConceptIri", this.moduleSelectedEntities.get(item.name));
+        this.$store.commit("updateActiveModule", item.name);
+        if (!MODULE_IRIS.includes(this.moduleSelectedEntities.get(item.name))) {
+          route = "Concept";
+          moduleIri = this.moduleSelectedEntities.get(item.name);
+        }
         this.$emit("hierarchyFocusSelected");
       }
-      this.$router.push({ name: item.route });
+      if (item.name === "Catalogue") {
+        this.$store.commit("updateSideNavHierarchyFocus", {
+          name: item.name,
+          fullName: item.fullName,
+          iri: item.iri,
+          route: item.route
+        });
+      }
+      if (moduleIri !== "") {
+        this.$router.push({
+          name: route,
+          params: { selectedIri: moduleIri }
+        });
+      } else {
+        this.$router.push({ name: route });
+      }
     }
   }
 });
@@ -246,6 +283,8 @@ export default defineComponent({
 #center-icons {
   text-align: center;
   width: 100%;
+  flex-grow: 20;
+  overflow: auto;
 }
 
 .center-icon-container {

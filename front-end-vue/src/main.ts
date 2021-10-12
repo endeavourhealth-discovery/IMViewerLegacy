@@ -10,11 +10,10 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library, dom } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
-import { fab } from "@fortawesome/free-brands-svg-icons";
 
 dom.watch();
 
-library.add(fas, far, fab);
+library.add(fas, far);
 
 import "primevue/resources/themes/saga-blue/theme.css"; //theme
 
@@ -73,9 +72,15 @@ import ContextMenu from "primevue/contextmenu";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 import RadioButton from "primevue/radiobutton";
 import ConfirmPopup from "primevue/confirmpopup";
+import InputSwitch from "primevue/inputswitch";
+import StyleClass from "primevue/styleclass";
+import Tag from "primevue/tag";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
+import LoggerService from "./services/LoggerService";
+import axios from "axios";
+import APIError from "./models/errors/APIError";
 
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
@@ -91,6 +96,7 @@ const app = createApp(App)
     appendToBody: true
   })
   .directive("tooltip", Tooltip)
+  .directive("styleclass", StyleClass)
   .component("Card", Card)
   .component("ProgressSpinner", ProgressSpinner)
   .component("TabView", TabView)
@@ -135,6 +141,31 @@ const app = createApp(App)
   .component("FilterMatchMode", FilterMatchMode)
   .component("FilterOperator", FilterOperator)
   .component("RadioButton", RadioButton)
-  .component("ConfirmPopup", ConfirmPopup);
+  .component("ConfirmPopup", ConfirmPopup)
+  .component("InputSwitch", InputSwitch)
+  .component("Tag", Tag);
+
+app.config.errorHandler = (error: any, vm, info) => {
+  LoggerService.error(error.fullMessage || (error.message as string));
+  vm?.$toast.add({
+    severity: "error",
+    summary: error.summaryMessage || "Error",
+    detail: error.message,
+    life: 4000
+  });
+};
+
+axios.interceptors.response.use(
+  response => {
+    return response;
+  },
+  error => {
+    if (Object.prototype.hasOwnProperty.call(error, "response") && Object.prototype.hasOwnProperty.call(error.response, "data")) {
+      throw new APIError(error.response.data.status, error.response.data.error, `Call to ${error.response.data.path} failed.`);
+    } else {
+      throw new Error(error);
+    }
+  }
+);
 
 app.mount("#app");

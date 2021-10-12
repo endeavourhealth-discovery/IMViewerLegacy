@@ -1,13 +1,13 @@
-import { ConceptReference } from "@/models/ConceptReference";
+import { TTIriRef } from "../TripleTree";
 
 export class ConceptSummary {
   name = "";
   iri = "";
-  scheme = {} as ConceptReference;
+  scheme = {} as TTIriRef;
   code = "";
-  entityType = {} as { elements: ConceptReference[]};
-  isDescendentOf: ConceptReference[] = [];
+  entityType = [] as TTIriRef[];
+  isDescendentOf = [] as TTIriRef[];
   weighting = 0;
   match = "";
-  status = {} as ConceptReference
+  status = {} as TTIriRef;
 }

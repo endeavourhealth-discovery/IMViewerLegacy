@@ -37,12 +37,13 @@
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
+import { TTIriRef } from "@/models/TripleTree";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "UsedIn",
-  components: {},
   props: {
-    conceptIri: String as any
+    conceptIri: { type: String, required: true }
   },
   watch: {
     async conceptIri(newValue) {
@@ -65,9 +66,9 @@ export default defineComponent({
   },
   data() {
     return {
-      usages: [],
+      usages: [] as TTIriRef[],
       loading: false,
-      selected: {} as any,
+      selected: {} as TTIriRef,
       recordsTotal: 0,
       currentPage: 1,
       pageSize: 25,
@@ -75,34 +76,15 @@ export default defineComponent({
     };
   },
   methods: {
-    async getUsages(iri: string, pageIndex: number, pageSize: number) {
-      await EntityService.getEntityUsages(iri, pageIndex, pageSize)
-        .then(res => {
-          this.usages = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get usages from server", err)
-          );
-        });
+    async getUsages(iri: string, pageIndex: number, pageSize: number): Promise<void> {
+      this.usages = await EntityService.getEntityUsages(iri, pageIndex, pageSize);
     },
 
-    async getRecordsSize(iri: string) {
-      await EntityService.getUsagesTotalRecords(iri)
-        .then(res => {
-          this.recordsTotal = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get usages record count from server",
-              err
-            )
-          );
-        });
+    async getRecordsSize(iri: string): Promise<void> {
+      this.recordsTotal = await EntityService.getUsagesTotalRecords(iri);
     },
 
-    async handlePage(event: any) {
+    async handlePage(event: any): Promise<void> {
       this.loading = true;
       this.pageSize = event.rows;
       this.currentPage = event.page;
@@ -111,11 +93,8 @@ export default defineComponent({
       this.loading = false;
     },
 
-    handleSelected() {
-      if (
-        this.selected != null &&
-        Object.prototype.hasOwnProperty.call(this.selected, "@id")
-      ) {
+    handleSelected(): void {
+      if (isObjectHasKeys(this.selected, ["@id"])) {
         this.$router.push({
           name: "Concept",
           params: { selectedIri: this.selected["@id"] }
@@ -124,43 +103,28 @@ export default defineComponent({
     },
 
     scrollToTop(): void {
-      const resultsContainer = document.getElementById(
-        "search-results-container"
-      ) as HTMLElement;
-      const scrollBox = resultsContainer?.getElementsByClassName(
-        "p-datatable-wrapper"
-      )[0] as HTMLElement;
+      const resultsContainer = document.getElementById("search-results-container") as HTMLElement;
+      const scrollBox = resultsContainer?.getElementsByClassName("p-datatable-wrapper")[0] as HTMLElement;
       if (scrollBox) {
         scrollBox.scrollTop = 0;
       }
     },
 
-    onResize() {
+    onResize(): void {
       this.setScrollHeight();
     },
 
-    setScrollHeight() {
-      const container = document.getElementById(
-        "usedin-table-container"
-      ) as HTMLElement;
-      const paginator = container?.getElementsByClassName(
-        "p-paginator"
-      )[0] as HTMLElement;
+    setScrollHeight(): void {
+      const container = document.getElementById("usedin-table-container") as HTMLElement;
+      const paginator = container?.getElementsByClassName("p-paginator")[0] as HTMLElement;
       if (container && paginator) {
-        const height =
-          container.getBoundingClientRect().height -
-          paginator.getBoundingClientRect().height -
-          1 +
-          "px";
+        const height = container.getBoundingClientRect().height - paginator.getBoundingClientRect().height - 1 + "px";
         this.scrollHeight = height;
       } else if (container && !paginator) {
         const height = container.getBoundingClientRect().height - 1 + "px";
         this.scrollHeight = height;
       } else {
-        LoggerService.error(
-          undefined,
-          "Failed to set usedIn table scroll height. Required elements not found."
-        );
+        LoggerService.error(undefined, "Failed to set usedIn table scroll height. Required elements not found.");
       }
     }
   }
@@ -172,7 +136,7 @@ export default defineComponent({
   height: 100%;
 }
 
-#usedin-table-container ::v-deep(.p-datatable) {
+/* #usedin-table-container ::v-deep(.p-datatable) {
   height: 100%;
   display: flex;
   flex-flow: column;
@@ -181,5 +145,5 @@ export default defineComponent({
 
 #usedin-table-container ::v-deep(.p-datatable-wrapper) {
   flex-grow: 6;
-}
+} */
 </style>
