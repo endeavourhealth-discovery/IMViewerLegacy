@@ -622,6 +622,38 @@ describe("Filters.vue ___ empty store", () => {
     expect(mockStore.commit).toHaveBeenCalledTimes(1);
     expect(mockStore.commit).toHaveBeenCalledWith("updateQuickFiltersStatus", { key: "includeLegacy", value: true });
   });
+
+  it("can setLegacy ___ true ___ no emis ___ not found", () => {
+    // remove emis from namespaces
+    wrapper.vm.schemeOptions.splice(3, 1);
+    wrapper.vm.selectedSchemes = [
+      {
+        iri: "http://endhealth.info/im#",
+        name: "Discovery namespace",
+        prefix: "im"
+      },
+      {
+        iri: "http://snomed.info/sct#",
+        name: "Snomed-CT namespace",
+        prefix: "sn"
+      }
+    ];
+    wrapper.vm.setLegacy(true);
+    expect(wrapper.vm.selectedSchemes).toStrictEqual([
+      {
+        iri: "http://endhealth.info/im#",
+        name: "Discovery namespace",
+        prefix: "im"
+      },
+      {
+        iri: "http://snomed.info/sct#",
+        name: "Snomed-CT namespace",
+        prefix: "sn"
+      }
+    ]);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateQuickFiltersStatus", { key: "includeLegacy", value: true });
+  });
 });
 
 describe("Filters.vue ___ full store", () => {
