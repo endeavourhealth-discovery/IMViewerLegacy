@@ -67,10 +67,7 @@ export default defineComponent({
     ...mapState(["selectedEntityType"])
   },
   mounted() {
-    if (this.selectedEntityType === "Ontology" && this.label === "Is a") {
-      const button = document.getElementById(`expand-button-${this.id}`) as HTMLElement;
-      if (button) button.click();
-    }
+    this.expandAtStartup();
   },
   data() {
     return {
@@ -90,6 +87,13 @@ export default defineComponent({
 
     setButtonExpanded() {
       this.buttonExpanded = !this.buttonExpanded;
+    },
+
+    expandAtStartup() {
+      if (this.selectedEntityType === "Ontology" && this.label === "Is a") {
+        const button = document.getElementById(`expand-button-${this.id}`) as HTMLElement;
+        if (button) button.click();
+      }
     }
   }
 });

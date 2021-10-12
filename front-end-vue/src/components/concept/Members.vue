@@ -168,7 +168,7 @@ export default defineComponent({
     },
 
     download(expanded: boolean, v1 = false): void {
-      const modIri = (this.conceptIri).replace(/\//gi, "%2F").replace(/#/gi, "%23");
+      const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
       const popup = window.open(
         process.env.VUE_APP_API + "api/set/download?iri=" + modIri + "&expandMembers=" + expanded + "&v1=" + (expanded && v1) + "&format=excel"
       );
