@@ -27,10 +27,10 @@ function getReturnString(value: string, counterEqTotalKeysMO: boolean) {
 function handleIsArrayHasLength(newString: string, value: any, key: string) {
   if (isObjectHasKeys(value[0], ["name"])) {
     newString = value.map((item: any) => item.name).join(",\n\t");
-  } else if (isObjectHasKeys(value[0], ["property", "name"])) {
+  } else if (value.every((item: any) => isObjectHasKeys(item, ["property"])) && value.every((item: any) => isObjectHasKeys(item.property, ["name"]))) {
     newString = value.map((item: any) => item.property.name).join(",\n\t");
   } else if (value.every((item: any) => typeof item === "string")) {
-    newString = value.join(",\n\t ");
+    newString = value.join(",\n\t");
   } else {
     LoggerService.warn(undefined, "Uncovered object property or missing name found for key: " + key + " at conceptObjectToCopyString within helpers");
   }
@@ -65,21 +65,16 @@ export function conceptObjectToCopyString(
       returnString = newKey + ": [\n\t" + newString + "\n]";
     }
   } else if (isObjectHasKeys(value, ["name"])) {
-    newString = value.name;
-    if (newString) {
-      returnString = newKey + ": " + newString;
-    }
+    returnString = newKey + ": " + value.name;
   } else if (isObjectHasKeys(value, ["entity", "predicates"])) {
     returnString = newKey + ': "\n' + bundleToText(value) + '\n"';
   } else if (typeof value === "string") {
     newString = value.replace(/\n/g, "\n\t").replace(/<p>/g, "\n\t");
-    if (newString) {
-      returnString = newKey + ": " + newString;
-    }
+    returnString = newKey + ": " + newString;
   } else if (typeof value === "number") {
     returnString = newKey + ": " + value.toString();
   } else {
-    console.log(`CopyConceptToClipboard encountered unexpected object type. Object ${value} converted to json string`);
+    console.log(`CopyConceptToClipboard encountered unexpected object type. Object ${JSON.stringify(value)} converted to json string`);
     returnString = newKey + ": " + JSON.stringify(value);
   }
 
