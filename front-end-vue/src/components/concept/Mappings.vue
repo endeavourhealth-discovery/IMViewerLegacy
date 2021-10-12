@@ -184,7 +184,8 @@ export default defineComponent({
             assuranceLevel: item[IM.ASSURANCE_LEVEL].name
           });
         });
-        return [this.createChartTableNode(mappedList.sort(this.byPriority), location, positionInLevel, "childList")];
+        const sorted = mappedList.sort(this.byPriority);
+        return [this.createChartTableNode(sorted, location, positionInLevel, "childList")];
       } else {
         // is array
         const results = [] as ChartMapNode[];
@@ -239,7 +240,8 @@ export default defineComponent({
           code: mapItem.code
         });
       });
-      return [this.createChartTableNode(simpleMapsList.sort(this.byScheme), location, positionInLevel, "simpleMapsList")];
+      const sorted = simpleMapsList.sort(this.byScheme);
+      return [this.createChartTableNode(sorted, location, positionInLevel, "simpleMapsList")];
     },
 
     getSimpleMapsNamespaces(): void {

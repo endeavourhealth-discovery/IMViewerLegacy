@@ -20,6 +20,23 @@ export function copyConceptToClipboard(concept: any, configs?: DefinitionConfig[
   return returnString;
 }
 
+function getReturnString(value: string, counterEqTotalKeysMO: boolean) {
+  return counterEqTotalKeysMO ? value : value + ",\n";
+}
+
+function handleIsArrayHasLength(newString: string, value: any, key: string) {
+  if (isObjectHasKeys(value[0], ["name"])) {
+    newString = value.map((item: any) => item.name).join(",\n\t");
+  } else if (isObjectHasKeys(value[0], ["property", "name"])) {
+    newString = value.map((item: any) => item.property.name).join(",\n\t");
+  } else if (value.every((item: any) => typeof item === "string")) {
+    newString = value.join(",\n\t ");
+  } else {
+    LoggerService.warn(undefined, "Uncovered object property or missing name found for key: " + key + " at conceptObjectToCopyString within helpers");
+  }
+  return newString;
+}
+
 export function conceptObjectToCopyString(
   key: string,
   value: any,
@@ -27,73 +44,46 @@ export function conceptObjectToCopyString(
   totalKeys: number,
   configs?: DefinitionConfig[]
 ): { label: string; value: string } | undefined {
+  if ((Array.isArray(value) && !value.length) || (isObject(value) && !isObjectHasKeys(value))) {
+    return;
+  }
   let newString = "";
   let returnString = "";
   let newKey = key;
+  const counterEqTotalKeysMO = counter === totalKeys - 1;
+
   if (configs && isArrayHasLength(configs)) {
     const label = configs.find((config: DefinitionConfig) => config.predicate === key);
     if (label) {
       newKey = label.label;
     }
   }
+
   if (isArrayHasLength(value)) {
-    if (isObjectHasKeys(value[0], ["name"])) {
-      newString = value.map((item: any) => item.name).join(",\n\t");
-    } else if (isObjectHasKeys(value[0], ["property", "name"])) {
-      newString = value.map((item: any) => item.property.name).join(",\n\t");
-    } else if (value.every((item: any) => typeof item === "string")) {
-      newString = value.join(",\n\t ");
-    } else {
-      LoggerService.warn(undefined, "Uncovered object property or missing name found for key: " + key + " at conceptObjectToCopyString within helpers");
-    }
+    newString = handleIsArrayHasLength(newString, value, key);
     if (newString) {
-      if (counter === totalKeys - 1) {
-        returnString = newKey + ": [\n\t" + newString + "\n]";
-      } else {
-        returnString = newKey + ": [\n\t" + newString + "\n],\n";
-      }
+      returnString = newKey + ": [\n\t" + newString + "\n]";
     }
-  } else if (Array.isArray(value) && !value.length) {
-    return;
-  } else if (isObject(value) && !isObjectHasKeys(value)) {
-    return;
   } else if (isObjectHasKeys(value, ["name"])) {
     newString = value.name;
     if (newString) {
-      if (counter === totalKeys - 1) {
-        returnString = newKey + ": " + newString;
-      } else {
-        returnString = newKey + ": " + newString + ",\n";
-      }
+      returnString = newKey + ": " + newString;
     }
   } else if (isObjectHasKeys(value, ["entity", "predicates"])) {
-    if (counter === totalKeys - 1) {
-      returnString = newKey + ': "\n' + bundleToText(value) + '\n"';
-    } else {
-      returnString = newKey + ': "\n' + bundleToText(value) + '\n",\n';
-    }
+    returnString = newKey + ': "\n' + bundleToText(value) + '\n"';
   } else if (typeof value === "string") {
-    newString = value.replace(/\n/g, "\n\t").replace(/<p>/g, "\n\t") as string;
+    newString = value.replace(/\n/g, "\n\t").replace(/<p>/g, "\n\t");
     if (newString) {
-      if (counter === totalKeys - 1) {
-        returnString = newKey + ": " + newString;
-      } else {
-        returnString = newKey + ": " + newString + ",\n";
-      }
+      returnString = newKey + ": " + newString;
     }
   } else if (typeof value === "number") {
-    if (counter === totalKeys - 1) {
-      returnString = newKey + ": " + value.toString();
-    } else {
-      returnString = newKey + ": " + value.toString() + ",\n";
-    }
+    returnString = newKey + ": " + value.toString();
   } else {
     console.log(`CopyConceptToClipboard encountered unexpected object type. Object ${value} converted to json string`);
-    if (counter === totalKeys - 1) {
-      returnString = newKey + ": " + JSON.stringify(value);
-    } else {
-      returnString = newKey + ": " + JSON.stringify(value) + ",\n";
-    }
+    returnString = newKey + ": " + JSON.stringify(value);
   }
+
+  returnString = getReturnString(returnString, counterEqTotalKeysMO);
+
   return { label: newKey, value: returnString };
 }

@@ -287,7 +287,7 @@ describe("userEdit.vue ___ user", () => {
     expect(Swal.fire).toBeCalledWith({
       icon: "success",
       title: "Success",
-      text: "Account details updated successfully"
+      text: "Account details updated successfully."
     });
   });
 
@@ -376,7 +376,7 @@ describe("userEdit.vue ___ user", () => {
     expect(Swal.fire).toBeCalledWith({
       icon: "success",
       title: "Success",
-      text: "User details and password successfully updated"
+      text: "User details and password successfully updated."
     });
   });
 
