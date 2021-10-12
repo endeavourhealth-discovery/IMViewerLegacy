@@ -88,7 +88,7 @@ export default defineComponent({
         this.chartInstanceTypes.datasets[0].data.push(type.count);
       });
       this.realData = { ...this.chartInstanceTypes.datasets[0].data };
-      this.chartOptions["tooltips"] = setTooltips(this.realData);
+      this.chartOptions.plugins.tooltip = setTooltips(this.realData);
       this.chartInstanceTypes.datasets[0].data = rescaleData(this.chartInstanceTypes.datasets[0].data);
       this.setChartColours(this.types.length);
     },
@@ -100,106 +100,92 @@ export default defineComponent({
     setLegendOptions(): void {
       const width = window.innerWidth;
       if (width > 1750) {
-        this.chartOptions.plugins = {
-          legend: {
-            position: "right",
-            labels: {
-              boxWidth: 40,
-              fontSize: 12
-            },
-            onHover: function(e: any) {
-              e.native.target.style.cursor = "pointer";
-            },
-            onLeave: function(e: any) {
-              e.native.target.style.cursor = "default";
-            }
+        this.chartOptions.plugins.legend = {
+          position: "right",
+          labels: {
+            boxWidth: 40,
+            fontSize: 12
+          },
+          onHover: function(e: any) {
+            e.native.target.style.cursor = "pointer";
+          },
+          onLeave: function(e: any) {
+            e.native.target.style.cursor = "default";
           }
         };
       } else if (width > 1300) {
-        this.chartOptions.plugins = {
-          legend: {
-            position: "bottom",
-            labels: {
-              boxWidth: 20,
-              fontSize: 10
-            },
-            onHover: function(e: any) {
-              e.native.target.style.cursor = "pointer";
-            },
-            onLeave: function(e: any) {
-              e.native.target.style.cursor = "default";
-            }
+        this.chartOptions.plugins.legend = {
+          position: "bottom",
+          labels: {
+            boxWidth: 20,
+            fontSize: 10
+          },
+          onHover: function(e: any) {
+            e.native.target.style.cursor = "pointer";
+          },
+          onLeave: function(e: any) {
+            e.native.target.style.cursor = "default";
           }
         };
       } else if (width >= 1024) {
-        this.chartOptions.plugins = {
-          legend: {
-            position: "bottom",
-            labels: {
-              boxWidth: 10,
-              fontSize: 8
-            },
-            onHover: function(e: any) {
-              e.native.target.style.cursor = "pointer";
-            },
-            onLeave: function(e: any) {
-              e.native.target.style.cursor = "default";
-            }
+        this.chartOptions.plugins.legend = {
+          position: "bottom",
+          labels: {
+            boxWidth: 10,
+            fontSize: 8
+          },
+          onHover: function(e: any) {
+            e.native.target.style.cursor = "pointer";
+          },
+          onLeave: function(e: any) {
+            e.native.target.style.cursor = "default";
           }
         };
       } else if (width >= 892) {
-        this.chartOptions.plugins = {
-          legend: {
-            position: "right",
-            labels: {
-              boxWidth: 40,
-              fontSize: 8
-            },
-            onHover: function(e: any) {
-              e.native.target.style.cursor = "pointer";
-            },
-            onLeave: function(e: any) {
-              e.native.target.style.cursor = "default";
-            }
+        this.chartOptions.plugins.legend = {
+          position: "right",
+          labels: {
+            boxWidth: 40,
+            fontSize: 8
+          },
+          onHover: function(e: any) {
+            e.native.target.style.cursor = "pointer";
+          },
+          onLeave: function(e: any) {
+            e.native.target.style.cursor = "default";
           }
         };
       } else if (width >= 557) {
-        this.chartOptions.plugins = {
-          legend: {
-            position: "bottom",
-            labels: {
-              boxWidth: 20,
-              fontSize: 6
-            },
-            onHover: function(e: any) {
-              e.native.target.style.cursor = "pointer";
-            },
-            onLeave: function(e: any) {
-              e.native.target.style.cursor = "default";
-            }
+        this.chartOptions.plugins.legend = {
+          position: "bottom",
+          labels: {
+            boxWidth: 20,
+            fontSize: 6
+          },
+          onHover: function(e: any) {
+            e.native.target.style.cursor = "pointer";
+          },
+          onLeave: function(e: any) {
+            e.native.target.style.cursor = "default";
           }
         };
       } else if (width >= 0) {
-        this.chartOptions.plugins = {
-          legend: {
-            position: "bottom",
-            labels: {
-              boxWidth: 10,
-              fontSize: 4
-            },
-            onHover: function(e: any) {
-              e.native.target.style.cursor = "pointer";
-            },
-            onLeave: function(e: any) {
-              e.native.target.style.cursor = "default";
-            }
+        this.chartOptions.plugins.legend = {
+          position: "bottom",
+          labels: {
+            boxWidth: 10,
+            fontSize: 4
+          },
+          onHover: function(e: any) {
+            e.native.target.style.cursor = "pointer";
+          },
+          onLeave: function(e: any) {
+            e.native.target.style.cursor = "default";
           }
         };
       } else {
-        this.chartOptions.plugins = {
-          legend: {
-            display: false
-          }
+        this.chartOptions.plugins.legend = {
+          display: false
         };
       }
     }

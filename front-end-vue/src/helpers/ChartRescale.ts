@@ -1,10 +1,10 @@
 export function setTooltips(counts: number[]): { callbacks: { label(t: any, d: any): string } } {
   return {
     callbacks: {
-      label: function(t: any, d: any) {
+      label: function(d: any) {
         const realData = counts;
-        const label = d.labels[t.index];
-        const value = realData[t.index];
+        const label = d.label;
+        const value = realData[d.dataIndex];
         return label + ":" + value;
       }
     }
