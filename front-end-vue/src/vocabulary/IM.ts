@@ -5,6 +5,7 @@ export class IM {
   public static CODE = IM.NAMESPACE + "code";
   public static SCHEME = IM.NAMESPACE + "scheme";
   public static STATUS = IM.NAMESPACE + "Status";
+  public static HAS_STATUS = IM.NAMESPACE + "status";
   public static IS_A = IM.NAMESPACE + "isA";
   public static ROLE_GROUP = IM.NAMESPACE + "roleGroup";
   public static IS_CONTAINED_IN = IM.NAMESPACE + "isContainedIn";
