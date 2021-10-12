@@ -1,47 +1,23 @@
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 
 export function verifyIsEmail(email: string): boolean {
-  if (
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-      email
-    )
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+  return /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
 }
 
 export function verifyPasswordsMatch(password1: string, password2: string): boolean {
-  if (password1 !== "" && password2 !== "" && password1 === password2) {
-    return true;
-  } else {
-    return false;
-  }
+  return password1 !== "" && password2 !== "" && password1 === password2;
 }
 
 export function verifyEmailsMatch(email1: string, email2: string): boolean {
-  if (email1 !== "" && email2 !== "" && email1.toLowerCase() === email2.toLowerCase()) {
-    return true;
-  } else {
-    return false;
-  }
+  return email1 !== "" && email2 !== "" && email1.toLowerCase() === email2.toLowerCase();
 }
 
 export function verifyIsName(name: string): boolean {
-  if (name !== "" && /^[a-zA-Z]'?[a-zA-Z]+-?[a-zA-Z]+$/.test(name)) {
-    return true;
-  } else {
-    return false;
-  }
+  return name !== "" && /^[\p{L}'][ \p{L}'-]*[\p{L}]$/u.test(name);
 }
 
 export function verifyIsUsername(name: string): boolean {
-  if (name !== "" && /^[-_a-zA-Z0-9]+$/.test(name)) {
-    return true;
-  } else {
-    return false;
-  }
+  return name !== "" && /^[-_a-zA-Z0-9]+$/.test(name);
 }
 
 export function checkPasswordStrength(password: string): PasswordStrength {
@@ -54,7 +30,6 @@ export function checkPasswordStrength(password: string): PasswordStrength {
     return PasswordStrength.medium;
   } else if (weakCheck.test(password)) {
     return PasswordStrength.weak;
-  } else {
-    return PasswordStrength.fail;
   }
+  return PasswordStrength.fail;
 }
