@@ -257,6 +257,17 @@ describe("Members.vue", () => {
         "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"
       }
     });
+    wrapper.vm.combinedMembers.push({
+      entity: {
+        name: "Advice given about severe acute respiratory syndrome coronavirus 2 infection (situation)",
+        "@id": "http://snomed.info/sct#1240721000000105"
+      },
+      code: "1240721000000105",
+      scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+      label: "a_MemberIncluded",
+      type: "INCLUDED",
+      directParent: { name: "Advice or consultation about Covid value set", "@id": "http://endhealth.info/im#CSET_Covid5" }
+    });
     wrapper.vm.subsets = [];
     await wrapper.vm.$nextTick();
     wrapper.vm.setSubsets();
