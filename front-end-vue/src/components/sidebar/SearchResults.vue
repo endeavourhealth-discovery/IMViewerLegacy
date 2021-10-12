@@ -1,6 +1,6 @@
 <template>
   <div id="search-results-container" class="p-field">
-    <div class="p-d-flex p-flex-row p-jc-center" v-if="$store.state.loading.get('searchResults')">
+    <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
       <div class="p-text-center">
         <ProgressSpinner />
       </div>
@@ -119,6 +119,7 @@ import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/Cop
 export default defineComponent({
   name: "SearchResults",
   computed: mapState(["searchResults"]),
+  props: ["loading"],
   watch: {
     searchResults(newValue) {
       this.results = newValue;

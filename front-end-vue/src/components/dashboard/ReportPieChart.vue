@@ -6,17 +6,10 @@
         {{ description }}
       </template>
       <template #content>
-        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportPie_' + iri)">
+        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="loading">
           <ProgressSpinner />
         </div>
-        <Chart
-          :key="'pie' + iri"
-          v-if="!$store.state.loading.get('reportPie_' + iri)"
-          type="pie"
-          :data="chartConceptTypes"
-          :options="chartOptions"
-          :height="graphHeight"
-        />
+        <Chart v-if="!loading" :key="'pie' + iri" type="pie" :data="chartConceptTypes" :options="chartOptions" :height="graphHeight" />
       </template>
     </Card>
   </div>
@@ -40,6 +33,7 @@ export default defineComponent({
   data() {
     return {
       name: "",
+      loading: true,
       description: "",
       chartOptions: {
         plugins: {
@@ -69,12 +63,6 @@ export default defineComponent({
       graphHeight: 200
     };
   },
-  beforeCreate() {
-    this.$store.commit("updateLoading", {
-      key: "reportPie_" + this.iri,
-      value: true
-    });
-  },
   async mounted() {
     this.$nextTick(() => {
       window.addEventListener("resize", this.setLegendOptions);
@@ -87,6 +75,7 @@ export default defineComponent({
   },
   methods: {
     async setChartData(): Promise<void> {
+      this.loading = true;
       const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
       if (isObject(result) && isArrayHasLength(Object.keys(result))) {
         this.name = result[RDFS.LABEL];
@@ -102,10 +91,7 @@ export default defineComponent({
         this.chartConceptTypes.datasets[0].data = rescaleData(this.chartConceptTypes.datasets[0].data);
         this.setChartColours(result[IM.STATS_REPORT_ENTRY].length);
       }
-      this.$store.commit("updateLoading", {
-        key: "reportPie_" + this.iri,
-        value: false
-      });
+      this.loading = false;
     },
 
     setChartColours(colourCount: number): void {

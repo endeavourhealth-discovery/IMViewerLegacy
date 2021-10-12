@@ -165,7 +165,6 @@ describe("SidebarControl.vue", () => {
     wrapper.vm.search();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.active).toBe(1);
-    expect(mockStore.commit).toHaveBeenCalled();
   });
 
   it("cancels existing requests on new search", async () => {
@@ -186,11 +185,6 @@ describe("SidebarControl.vue", () => {
     await wrapper.vm.$nextTick();
     await flushPromises();
     expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", {
-      key: "searchResults",
-      value: false
-    });
     expect(mockToast.add).not.toHaveBeenCalled();
   });
 

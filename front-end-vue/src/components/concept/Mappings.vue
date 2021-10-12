@@ -1,5 +1,5 @@
 <template>
-  <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container" v-if="$store.state.loading.get('mappings')">
+  <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container" v-if="loading">
     <ProgressSpinner />
   </div>
   <OrganizationChart v-else :value="data">
@@ -96,7 +96,8 @@ export default defineComponent({
       data: {} as any,
       hoveredResult: {} as MapItem,
       simpleMaps: [] as SimpleMap[],
-      namespaces: [] as Namespace[]
+      namespaces: [] as Namespace[],
+      loading: false
     };
   },
   async mounted() {
@@ -104,17 +105,11 @@ export default defineComponent({
   },
   methods: {
     async updateMappings() {
-      this.$store.commit("updateLoading", {
-        key: "mappings",
-        value: true
-      });
+      this.loading = true;
       await this.getMappings();
       this.getSimpleMapsNamespaces();
       this.data = this.createChartStructure(this.mappings);
-      this.$store.commit("updateLoading", {
-        key: "mappings",
-        value: false
-      });
+      this.loading = false;
     },
     async getMappings(): Promise<void> {
       this.mappings = (await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP]))[IM.HAS_MAP] || [];

@@ -104,12 +104,6 @@ describe("ReportPieChart.vue", () => {
     });
   });
 
-  it("sets the store loading over mount", async () => {
-    expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateLoading", { key: "reportPie_im:Test", value: true });
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", { key: "reportPie_im:Test", value: false });
-  });
-
   it("calls the report service on mount", () => {
     expect(EntityService.getPartialEntity).toBeCalledTimes(1);
   });

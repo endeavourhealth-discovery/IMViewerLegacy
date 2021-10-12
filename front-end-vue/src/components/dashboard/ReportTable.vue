@@ -6,16 +6,16 @@
         A brief overview of the concepts stored in the Ontology
       </template>
       <template #content>
-        <DataTable v-if="!$store.state.loading.get('reportTable_' + iri)" :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="350px">
+        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="loading">
+          <ProgressSpinner />
+        </div>
+        <DataTable v-else :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="350px">
           <template #header>
             Ontology data
           </template>
           <Column field="label" header="Label"></Column>
           <Column field="count" header="Total"></Column>
         </DataTable>
-        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportTable_' + iri)">
-          <ProgressSpinner />
-        </div>
       </template>
     </Card>
   </div>
@@ -34,7 +34,8 @@ export default defineComponent({
   props: { iri: { type: String, required: true } },
   data() {
     return {
-      tableData: [] as { count: number; label: string }[]
+      tableData: [] as { count: number; label: string }[],
+      loading: false
     };
   },
   async mounted() {
@@ -42,10 +43,7 @@ export default defineComponent({
   },
   methods: {
     async getReportTableData(): Promise<void> {
-      this.$store.commit("updateLoading", {
-        key: "reportTable_" + this.iri,
-        value: true
-      });
+      this.loading = true;
       const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
       if (isObjectHasKeys(result, [IM.STATS_REPORT_ENTRY])) {
         this.tableData = [] as { count: number; label: string }[];
@@ -56,10 +54,7 @@ export default defineComponent({
           });
         }
       }
-      this.$store.commit("updateLoading", {
-        key: "reportTable_" + this.iri,
-        value: false
-      });
+      this.loading = false;
     }
   }
 });

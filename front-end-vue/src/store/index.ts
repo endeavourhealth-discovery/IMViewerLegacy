@@ -16,7 +16,6 @@ import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 export default createStore({
   // update stateType.ts when adding new state!
   state: {
-    loading: new Map<string, boolean>(),
     cancelSource: axios.CancelToken.source(),
     conceptIri: IM.MODULE_ONTOLOGY,
     history: [] as HistoryItem[],
@@ -80,9 +79,6 @@ export default createStore({
     },
     updateQuickFiltersStatus(state, status) {
       state.quickFiltersStatus.set(status.key, status.value);
-    },
-    updateLoading(state, loading) {
-      state.loading.set(loading.key, loading.value);
     },
     updateCurrentUser(state, user) {
       state.currentUser = user;

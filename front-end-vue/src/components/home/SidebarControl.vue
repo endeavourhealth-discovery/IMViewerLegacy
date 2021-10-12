@@ -28,7 +28,7 @@
         </template>
 
         <div class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container">
-          <SearchResults />
+          <SearchResults :loading="loading" />
           <Filters :search="search" />
         </div>
       </TabPanel>
@@ -74,6 +74,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false,
       searchTerm: "",
       active: 0,
       debounce: 0,
@@ -97,10 +98,7 @@ export default defineComponent({
 
     async search(): Promise<void> {
       if (this.searchTerm.length > 2) {
-        this.$store.commit("updateLoading", {
-          key: "searchResults",
-          value: true
-        });
+        this.loading = true;
         this.active = 1;
         const searchRequest = new SearchRequest();
         searchRequest.termFilter = this.searchTerm;
@@ -127,10 +125,7 @@ export default defineComponent({
           searchRequest: searchRequest,
           cancelToken: axiosSource.token
         });
-        this.$store.commit("updateLoading", {
-          key: "searchResults",
-          value: false
-        });
+        this.loading = false;
       } else {
         this.active = 0;
       }

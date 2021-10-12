@@ -64,10 +64,6 @@ describe("ReportTable.vue", () => {
   it("can getReportTableData ___ correct object", async () => {
     wrapper.vm.tableData = [] as { count: number; label: string }[];
     wrapper.vm.getReportTableData();
-    expect(mockStore.commit).toHaveBeenCalledWith("updateLoading", {
-      key: "reportTable_" + "im:Test",
-      value: true
-    });
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
     expect(EntityService.getPartialEntity).toHaveBeenCalledWith("im:Test", [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
     await flushPromises();
@@ -76,11 +72,6 @@ describe("ReportTable.vue", () => {
       { count: 1973, label: "Data models" },
       { count: 1124984, label: "Ontology" }
     ]);
-    expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", {
-      key: "reportTable_" + "im:Test",
-      value: false
-    });
   });
 
   it("can getReportTableData ___ object missing key", async () => {
@@ -91,18 +82,9 @@ describe("ReportTable.vue", () => {
     });
     wrapper.vm.tableData = [] as { count: number; label: string }[];
     wrapper.vm.getReportTableData();
-    expect(mockStore.commit).toHaveBeenCalledWith("updateLoading", {
-      key: "reportTable_" + "im:Test",
-      value: true
-    });
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
     expect(EntityService.getPartialEntity).toHaveBeenCalledWith("im:Test", [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
     await flushPromises();
     expect(wrapper.vm.tableData).toStrictEqual([]);
-    expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", {
-      key: "reportTable_" + "im:Test",
-      value: false
-    });
   });
 });

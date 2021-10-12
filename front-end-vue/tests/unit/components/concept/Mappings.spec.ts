@@ -107,15 +107,6 @@ describe("Mappings.vue", () => {
     expect(wrapper.vm.getMappings).toHaveBeenCalledTimes(1);
     await flushPromises();
     expect(wrapper.vm.createChartStructure).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateLoading", {
-      key: "mappings",
-      value: true
-    });
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", {
-      key: "mappings",
-      value: false
-    });
   });
 
   it("can get mappings ___ success", async () => {
