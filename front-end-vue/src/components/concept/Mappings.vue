@@ -123,26 +123,17 @@ export default defineComponent({
       this.namespaces = await EntityService.getNamespaces();
 
       this.simpleMaps = (await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO]))[IM.MATCHED_TO] || [];
-      if (this.simpleMaps.length && this.namespaces) {
-        this.simpleMaps.forEach((mapItem: SimpleMap) => {
-          const found = this.namespaces.find((namespace: Namespace) => namespace.iri === mapItem["@id"].split("#")[0] + "#");
-          if (found) {
-            mapItem.scheme = found.name;
-          } else {
-            mapItem.scheme = "None";
-          }
-          mapItem.code = mapItem["@id"].split("#")[1];
-        });
-      }
     },
 
     createChartTableNode(
-      items: {
-        assuranceLevel: string;
-        iri: string;
-        name: string;
-        priority: number;
-      }[] | SimpleMapIri[],
+      items:
+        | {
+            assuranceLevel: string;
+            iri: string;
+            name: string;
+            priority: number;
+          }[]
+        | SimpleMapIri[],
       location: string,
       position: number,
       type: string
