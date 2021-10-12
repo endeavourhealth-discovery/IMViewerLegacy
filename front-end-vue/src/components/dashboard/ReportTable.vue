@@ -38,25 +38,29 @@ export default defineComponent({
     };
   },
   async mounted() {
-    // table data
-    this.$store.commit("updateLoading", {
-      key: "reportTable_" + this.iri,
-      value: true
-    });
-    const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
-    if (isObjectHasKeys(result, [IM.STATS_REPORT_ENTRY])) {
-      this.tableData = [] as { count: number; label: string }[];
-      for (const entry of result[IM.STATS_REPORT_ENTRY]) {
-        this.tableData.push({
-          label: entry[RDFS.LABEL],
-          count: +entry[OWL.HAS_VALUE]
-        });
+    await this.getReportTableData();
+  },
+  methods: {
+    async getReportTableData(): Promise<void> {
+      this.$store.commit("updateLoading", {
+        key: "reportTable_" + this.iri,
+        value: true
+      });
+      const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
+      if (isObjectHasKeys(result, [IM.STATS_REPORT_ENTRY])) {
+        this.tableData = [] as { count: number; label: string }[];
+        for (const entry of result[IM.STATS_REPORT_ENTRY]) {
+          this.tableData.push({
+            label: entry[RDFS.LABEL],
+            count: +entry[OWL.HAS_VALUE]
+          });
+        }
       }
+      this.$store.commit("updateLoading", {
+        key: "reportTable_" + this.iri,
+        value: false
+      });
     }
-    this.$store.commit("updateLoading", {
-      key: "reportTable_" + this.iri,
-      value: false
-    });
   }
 });
 </script>
