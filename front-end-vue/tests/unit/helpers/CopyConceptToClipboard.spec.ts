@@ -1,4 +1,5 @@
 import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
+import LoggerService from "@/services/LoggerService";
 
 describe("CopyConceptToClipboard", () => {
   const CONFIG = [
@@ -15,6 +16,7 @@ describe("CopyConceptToClipboard", () => {
     { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 10 },
     { label: "Data model properties", predicate: "dataModelProperties", type: "DataModelProperties", size: "100%", order: 11 }
   ];
+
   describe("copyConceptToClipboard", () => {
     it("can copy concept to clipboard", async () => {
       const concept = {
@@ -96,5 +98,114 @@ describe("CopyConceptToClipboard", () => {
         value: "Status: Active,\n"
       });
     });
+
+    it("can convert conceptObjectToCopyString ___ arrayObjectName", () => {
+      expect(
+        conceptObjectToCopyString(
+          "subtypes",
+          [
+            {
+              name: "Acquired scoliosis (disorder)",
+              hasChildren: true,
+              type: [
+                { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+                { name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }
+              ],
+              "@id": "http://snomed.info/sct#111266001"
+            },
+            {
+              name: "Acrodysplasia scoliosis (disorder)",
+              hasChildren: false,
+              type: [
+                { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+                { name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }
+              ],
+              "@id": "http://snomed.info/sct#773773006"
+            }
+          ],
+          0,
+          1,
+          CONFIG
+        )
+      ).toStrictEqual({
+        label: "Has sub types",
+        value: "Has sub types: [\n\tAcquired scoliosis (disorder),\n\tAcrodysplasia scoliosis (disorder)\n]"
+      });
+    });
+  });
+
+  it("can convert conceptObjectToCopyString ___ arrayObjectPropertyName", () => {
+    expect(
+      conceptObjectToCopyString(
+        "subtypes",
+        [
+          {
+            property: { name: "Acquired scoliosis (disorder)" },
+            hasChildren: true,
+            type: [
+              { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+              { name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }
+            ],
+            "@id": "http://snomed.info/sct#111266001"
+          },
+          {
+            property: { name: "Acrodysplasia scoliosis (disorder)" },
+            hasChildren: false,
+            type: [
+              { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+              { name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }
+            ],
+            "@id": "http://snomed.info/sct#773773006"
+          }
+        ],
+        0,
+        1,
+        CONFIG
+      )
+    ).toStrictEqual({
+      label: "Has sub types",
+      value: "Has sub types: [\n\tAcquired scoliosis (disorder),\n\tAcrodysplasia scoliosis (disorder)\n]"
+    });
+  });
+
+  it("can convert conceptObjectToCopyString ___ arrayString", () => {
+    expect(conceptObjectToCopyString("subtypes", ["Acquired scoliosis (disorder)", "Acrodysplasia scoliosis (disorder)"], 0, 1, CONFIG)).toStrictEqual({
+      label: "Has sub types",
+      value: "Has sub types: [\n\tAcquired scoliosis (disorder),\n\tAcrodysplasia scoliosis (disorder)\n]"
+    });
+  });
+
+  it("can convert conceptObjectToCopyString ___ ArrayunexpectedObject", () => {
+    LoggerService.warn = jest.fn();
+    expect(
+      conceptObjectToCopyString("subtypes", [{ label: "Acquired scoliosis (disorder)" }, { label: "Acrodysplasia scoliosis (disorder)" }], 0, 1, CONFIG)
+    ).toStrictEqual({
+      label: "Has sub types",
+      value: ""
+    });
+    expect(LoggerService.warn).toHaveBeenCalledWith(
+      undefined,
+      "Uncovered object property or missing name found for key: " + "subtypes" + " at conceptObjectToCopyString within helpers"
+    );
+  });
+
+  it("can convert conceptObjectToCopyString ___ number", () => {
+    expect(conceptObjectToCopyString("subtypes", 9, 0, 1, CONFIG)).toStrictEqual({
+      label: "Has sub types",
+      value: "Has sub types: 9"
+    });
+  });
+
+  it("can convert conceptObjectToCopyString ___ unexpected object", () => {
+    const log = console.log;
+    console.log = jest.fn();
+    expect(conceptObjectToCopyString("subtypes", { label: "Acrodysplasia scoliosis (disorder)" }, 0, 1, CONFIG)).toStrictEqual({
+      label: "Has sub types",
+      value: 'Has sub types: {"label":"Acrodysplasia scoliosis (disorder)"}'
+    });
+    expect(console.log).toHaveBeenCalledWith(
+      `CopyConceptToClipboard encountered unexpected object type. Object {\"label\":\"Acrodysplasia scoliosis (disorder)\"} converted to json string`
+    );
+    console.log = log;
   });
 });
