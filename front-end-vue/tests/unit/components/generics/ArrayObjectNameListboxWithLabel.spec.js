@@ -173,4 +173,10 @@ describe("ArrayObjectNameListboxWithLabel.vue ___ ontology", () => {
     wrapper.vm.expandAtStartup();
     expect(mockButton.click).not.toHaveBeenCalled();
   });
+
+  it("expandAtStartup ___ no button", () => {
+    docSpy.mockReturnValue(false);
+    wrapper.vm.expandAtStartup();
+    expect(mockButton.click).not.toHaveBeenCalled();
+  });
 });
