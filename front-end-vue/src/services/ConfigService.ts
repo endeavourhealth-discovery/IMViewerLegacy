@@ -6,18 +6,24 @@ export default class ConfigService {
   static api = process.env.VUE_APP_API;
 
   public static async getComponentLayout(name: string): Promise<DefinitionConfig[]> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/config/componentLayout", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/config/componentLayout", {
         params: {
           name: name
         }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : ([] as DefinitionConfig[]);
+      })) as DefinitionConfig[];
+      return axiosReturn ? axiosReturn : ([] as DefinitionConfig[]);
+    } catch (error) {
+      return [] as DefinitionConfig[];
+    }
   }
 
   public static async getFilterDefaults(): Promise<FilterDefaultsConfig> {
-    const axiosReturn = (await axios.get(this.api + "api/config/filterDefaults")).data;
-    return axiosReturn ? axiosReturn : ({} as FilterDefaultsConfig);
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/config/filterDefaults")) as FilterDefaultsConfig;
+      return axiosReturn ? axiosReturn : ({} as FilterDefaultsConfig);
+    } catch (error) {
+      return {} as FilterDefaultsConfig;
+    }
   }
 }

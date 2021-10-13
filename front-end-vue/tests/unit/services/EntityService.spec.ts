@@ -71,21 +71,6 @@ describe("EntityService.ts", () => {
     expect(result).toBe("axios get return");
   });
 
-  it("can get scheme options", async () => {
-    EntityService.getEntityChildren = jest.fn().mockReturnValue("axios get return");
-    const result = await EntityService.getSchemeOptions();
-    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledWith(IM.CODE_SCHEME);
-    expect(result).toBe("axios get return");
-  });
-
-  it("can save entity", async () => {
-    const result = await EntityService.saveEntity({ iri: "testIri", name: "testName" });
-    expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(axios.post).toHaveBeenCalledWith(api + "api/entity", { iri: "testIri", name: "testName" });
-    expect(result).toStrictEqual({ data: "axios post return" });
-  });
-
   it("can get entity graph", async () => {
     const result = await EntityService.getEntityGraph("testIri");
     expect(axios.get).toHaveBeenCalledTimes(1);
