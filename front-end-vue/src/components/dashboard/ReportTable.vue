@@ -8,7 +8,10 @@
         <span v-if="description">{{ description }}</span>
       </template>
       <template #content>
-        <DataTable :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="350px">
+        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="loading">
+          <ProgressSpinner />
+        </div>
+        <DataTable v-else :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="350px">
           <template #header>
             Ontology data
           </template>
@@ -83,5 +86,10 @@ export default defineComponent({
 .dashcard {
   height: 100%;
   width: 100%;
+}
+
+.loading-container {
+  width: 100%;
+  height: 100%;
 }
 </style>

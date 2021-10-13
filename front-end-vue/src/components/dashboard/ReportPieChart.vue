@@ -8,10 +8,10 @@
         <span v-if="description">{{ description }}</span>
       </template>
       <template #content>
-        <!-- <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="loading">
+        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="loading">
           <ProgressSpinner />
-        </div> -->
-        <Chart type="pie" :data="chartConceptTypes" :options="chartOptions" :height="graphHeight" />
+        </div>
+        <Chart v-else type="pie" :data="chartConceptTypes" :options="chartOptions" :height="graphHeight" />
       </template>
     </Card>
   </div>
@@ -64,18 +64,18 @@ export default defineComponent({
       graphHeight: 200
     };
   },
-  async mounted() {
+  mounted() {
     this.$nextTick(() => {
       window.addEventListener("resize", this.setLegendOptions);
     });
-    await this.setChartData();
+    this.setChartData();
     this.setLegendOptions();
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.setLegendOptions);
   },
   methods: {
-    async setChartData(): Promise<void> {
+    setChartData(): void {
       this.loading = true;
       for (const entry of this.inputData) {
         this.chartConceptTypes.labels.push(entry[RDFS.LABEL]);
