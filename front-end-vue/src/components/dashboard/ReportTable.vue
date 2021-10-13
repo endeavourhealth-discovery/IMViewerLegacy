@@ -1,15 +1,14 @@
 <template>
   <div class="dashcard-container">
     <Card class="dashcard dash-table">
-      <template #title> Ontology overview </template>
+      <template #title>
+        <span v-if="name">{{ name }}</span>
+      </template>
       <template #subtitle>
-        A brief overview of the concepts stored in the Ontology
+        <span v-if="description">{{ description }}</span>
       </template>
       <template #content>
-        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="loading">
-          <ProgressSpinner />
-        </div>
-        <DataTable v-else :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="350px">
+        <DataTable :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="350px">
           <template #header>
             Ontology data
           </template>
@@ -22,16 +21,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { IM } from "@/vocabulary/IM";
+import { defineComponent, PropType } from "vue";
 import { RDFS } from "@/vocabulary/RDFS";
 import { OWL } from "@/vocabulary/OWL";
-import EntityService from "@/services/EntityService";
-import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "ReportTable",
-  props: { iri: { type: String, required: true } },
+  props: {
+    name: { type: String, required: false },
+    description: { type: String, required: false },
+    inputData: { type: Array as PropType<Array<any>>, required: true }
+  },
   data() {
     return {
       tableData: [] as { count: number; label: string }[],
@@ -44,15 +44,11 @@ export default defineComponent({
   methods: {
     async getReportTableData(): Promise<void> {
       this.loading = true;
-      const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
-      if (isObjectHasKeys(result, [IM.STATS_REPORT_ENTRY])) {
-        this.tableData = [] as { count: number; label: string }[];
-        for (const entry of result[IM.STATS_REPORT_ENTRY]) {
-          this.tableData.push({
-            label: entry[RDFS.LABEL],
-            count: +entry[OWL.HAS_VALUE]
-          });
-        }
+      for (const entry of this.inputData) {
+        this.tableData.push({
+          label: entry[RDFS.LABEL],
+          count: +entry[OWL.HAS_VALUE]
+        });
       }
       this.loading = false;
     }

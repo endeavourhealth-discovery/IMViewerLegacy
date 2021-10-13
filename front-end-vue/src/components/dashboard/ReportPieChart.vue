@@ -1,40 +1,41 @@
 <template>
   <div class="dashcard-container">
     <Card class="dashcard dash-pie">
-      <template #title> {{ name }} </template>
+      <template #title>
+        <span v-if="name">{{ name }}</span>
+      </template>
       <template #subtitle>
-        {{ description }}
+        <span v-if="description">{{ description }}</span>
       </template>
       <template #content>
-        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="loading">
+        <!-- <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="loading">
           <ProgressSpinner />
-        </div>
-        <Chart v-if="!loading" :key="'pie' + iri" type="pie" :data="chartConceptTypes" :options="chartOptions" :height="graphHeight" />
+        </div> -->
+        <Chart type="pie" :data="chartConceptTypes" :options="chartOptions" :height="graphHeight" />
       </template>
     </Card>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
 const palette = require("../../../node_modules/google-palette");
 import { PieChartData } from "@/models/charts/PieChartData";
 import { setTooltips, rescaleData } from "@/helpers/ChartRescale";
 import { ChartOptions } from "@/models/charts/ChartOptions";
-import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 import { OWL } from "@/vocabulary/OWL";
-import EntityService from "@/services/EntityService";
-import { isArrayHasLength, isObject } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "ReportPieChart",
-  props: ["iri"],
+  props: {
+    name: { type: String, required: false },
+    description: { type: String, required: false },
+    inputData: { type: Array as PropType<Array<any>>, required: true }
+  },
   data() {
     return {
-      name: "",
       loading: true,
-      description: "",
       chartOptions: {
         plugins: {
           legend: {
@@ -76,21 +77,17 @@ export default defineComponent({
   methods: {
     async setChartData(): Promise<void> {
       this.loading = true;
-      const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
-      if (isObject(result) && isArrayHasLength(Object.keys(result))) {
-        this.name = result[RDFS.LABEL];
-        this.description = result[RDFS.COMMENT];
-        for (const entry of result[IM.STATS_REPORT_ENTRY]) {
-          this.chartConceptTypes.labels.push(entry[RDFS.LABEL]);
-          this.chartConceptTypes.datasets[0].data.push(entry[OWL.HAS_VALUE]);
-        }
-        this.realData = { ...this.chartConceptTypes.datasets[0].data };
-        // set tooltip to use real data
-        this.chartOptions.plugins.tooltip = setTooltips(this.realData);
-        // refactor data to a minimum graph size (1%) if less than min
-        this.chartConceptTypes.datasets[0].data = rescaleData(this.chartConceptTypes.datasets[0].data);
-        this.setChartColours(result[IM.STATS_REPORT_ENTRY].length);
+      for (const entry of this.inputData) {
+        this.chartConceptTypes.labels.push(entry[RDFS.LABEL]);
+        this.chartConceptTypes.datasets[0].data.push(entry[OWL.HAS_VALUE]);
       }
+      this.realData = { ...this.chartConceptTypes.datasets[0].data };
+      // set tooltip to use real data
+      this.chartOptions.plugins.tooltip = setTooltips(this.realData);
+      // refactor data to a minimum graph size (1%) if less than min
+      this.chartConceptTypes.datasets[0].data = rescaleData(this.chartConceptTypes.datasets[0].data);
+      this.setChartColours(this.inputData.length);
+      // }
       this.loading = false;
     },
 

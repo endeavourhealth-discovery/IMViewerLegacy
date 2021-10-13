@@ -1,6 +1,7 @@
 import axios from "axios";
 import { FilterDefaultsConfig } from "@/models/configs/FilterDefaultsConfig";
 import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
+import { DashboardLayout } from "@/models/configs/DashboardLayout";
 
 export default class ConfigService {
   static api = process.env.VUE_APP_API;
@@ -19,5 +20,16 @@ export default class ConfigService {
   public static async getFilterDefaults(): Promise<FilterDefaultsConfig> {
     const axiosReturn = (await axios.get(this.api + "api/config/filterDefaults")).data;
     return axiosReturn ? axiosReturn : ({} as FilterDefaultsConfig);
+  }
+
+  public static async getDashboardLayout(name: string): Promise<any> {
+    const axiosReturn = (
+      await axios.get(this.api + "api/config/dashboardLayout", {
+        params: {
+          name: name
+        }
+      })
+    ).data;
+    return axiosReturn ? axiosReturn : ([] as DashboardLayout[]);
   }
 }
