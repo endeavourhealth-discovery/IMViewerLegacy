@@ -75,7 +75,7 @@ export default class EntityService {
       await axios.post(this.api + "api/entity/search", request, {
         cancelToken: cancelToken
       })
-    ).data;
+    )?.data;
     return axiosReturn ? axiosReturn : ({} as SearchResponse);
   }
 

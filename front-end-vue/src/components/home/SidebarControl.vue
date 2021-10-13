@@ -117,7 +117,8 @@ export default defineComponent({
           searchRequest.typeFilter.push(type["@id"]);
         });
         if (isObject(this.request) && isArrayHasLength(Object.keys(this.request))) {
-          await this.request.cancel("Search cancelled by user");
+          await this.request.cancel({ status: 499, message: "Search cancelled by user" });
+          this.loading = true;
         }
         const axiosSource = axios.CancelToken.source();
         this.request = { cancel: axiosSource.cancel, msg: "Loading..." };

@@ -162,7 +162,9 @@ axios.interceptors.response.use(
   error => {
     if (Object.prototype.hasOwnProperty.call(error, "response") && Object.prototype.hasOwnProperty.call(error.response, "data")) {
       throw new APIError(error.response.data.status, error.response.data.error, `Call to ${error.response.data.path} failed.`);
-    } else {
+    }
+    // 499 -> error code for request cancelled by user
+    if (error.message?.status !== 499) {
       throw new Error(error);
     }
   }
