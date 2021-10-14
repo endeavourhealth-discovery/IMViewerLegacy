@@ -1,7 +1,7 @@
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 
 export function verifyIsEmail(email: string): boolean {
-  return /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
+  return /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(email);
 }
 
 export function verifyPasswordsMatch(password1: string, password2: string): boolean {
@@ -22,11 +22,13 @@ export function verifyIsUsername(name: string): boolean {
 
 export function checkPasswordStrength(password: string): PasswordStrength {
   const strongCheck = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])(?=.{8,})/;
-  const mediumCheck = /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*\d))|((?=.*[A-Z])(?=.*\d)))(?=.{8,})/;
+  const mediumCheckA = /^(((?=.*[a-z])(?=.*[A-Z]))(?=.*\d))(?=.{8,})/;
+  const mediumCheckB = /^(((?=.*[a-z])(?=.*\d))(?=.*\d))(?=.{8,})/;
+  const mediumCheckC = /^(((?=.*[A-Z])(?=.*\d)))(?=.{8,})/;
   const weakCheck = /^(?=.{8,})/;
   if (strongCheck.test(password)) {
     return PasswordStrength.strong;
-  } else if (mediumCheck.test(password)) {
+  } else if (mediumCheckA.test(password) || mediumCheckB.test(password) || mediumCheckC.test(password)) {
     return PasswordStrength.medium;
   } else if (weakCheck.test(password)) {
     return PasswordStrength.weak;
