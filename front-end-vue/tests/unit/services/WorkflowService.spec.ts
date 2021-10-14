@@ -4,7 +4,7 @@ import axios from "axios";
 describe("WorkflowService.ts", () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    axios.get = jest.fn().mockResolvedValue({ data: "axios get return" });
+    axios.get = jest.fn().mockResolvedValue("axios get return");
   });
 
   it("can getWorkflows", async () => {

@@ -1,3 +1,4 @@
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import EntityService from "@/services/EntityService";
 import { IM } from "@/vocabulary/IM";
@@ -8,8 +9,8 @@ describe("EntityService.ts", () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    axios.get = jest.fn().mockResolvedValue({ data: "axios get return" });
-    axios.post = jest.fn().mockResolvedValue({ data: "axios post return" });
+    axios.get = jest.fn().mockResolvedValue("axios get return");
+    axios.post = jest.fn().mockResolvedValue("axios post return");
   });
 
   it("can get partial entity", async () => {

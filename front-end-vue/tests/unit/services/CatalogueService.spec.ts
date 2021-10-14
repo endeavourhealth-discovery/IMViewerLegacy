@@ -6,11 +6,11 @@ describe("CatalogueService.ts", () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    axios.get = jest.fn().mockResolvedValue({ data: "axios get return" });
+    axios.get = jest.fn().mockResolvedValue("axios get return");
   });
 
   it("can get search results", async () => {
-    const result = await CatalogueService.getSearchResult("testTerm",["testType"]);
+    const result = await CatalogueService.getSearchResult("testTerm", ["testType"]);
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "instance/search", {
       params: { request: "testTerm", typesIris: ["testType"].join(",") }
@@ -19,7 +19,7 @@ describe("CatalogueService.ts", () => {
   });
 
   it("can get partial instance", async () => {
-    const result = await CatalogueService.getPartialInstance("testIri",["testPredicate"]);
+    const result = await CatalogueService.getPartialInstance("testIri", ["testPredicate"]);
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "instance/partial", {
       params: { iri: "testIri", predicate: ["testPredicate"] }
