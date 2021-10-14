@@ -108,28 +108,27 @@ export default defineComponent({
 
     setChartSize(): void {
       const container = document.getElementById(this.id) as HTMLElement;
+      if (!container) {
+        LoggerService.error(undefined, `Failed to set chart size for element id: ${this.id}`);
+        return;
+      }
       const html = document.documentElement;
       const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
-      const title = container?.getElementsByClassName("p-card-title")[0] as HTMLElement;
-      const subTitle = container?.getElementsByClassName("p-card-subtitle")[0] as HTMLElement;
+      const title = container.getElementsByClassName("p-card-title")[0] as HTMLElement;
+      const subTitle = container.getElementsByClassName("p-card-subtitle")[0] as HTMLElement;
       const content = container.getElementsByClassName("p-card-content")[0] as HTMLElement;
-      let height;
-      if (container) {
-        height = container.getBoundingClientRect().height;
-        if (currentFontSize) {
-          height -= currentFontSize * 2;
-        }
-        if (title) {
-          height -= title.getBoundingClientRect().height;
-        }
-        if (subTitle) {
-          height -= subTitle.getBoundingClientRect().height;
-        }
-        content.style.height = height + "px";
-        content.style.maxHeight = height + "px";
-      } else {
-        LoggerService.error(undefined, `Failed to set chart size for element id: ${this.id}`);
+      let height = container.getBoundingClientRect().height;
+      if (currentFontSize) {
+        height -= currentFontSize * 2;
       }
+      if (title) {
+        height -= title.getBoundingClientRect().height;
+      }
+      if (subTitle) {
+        height -= subTitle.getBoundingClientRect().height;
+      }
+      content.style.height = height + "px";
+      content.style.maxHeight = height + "px";
     },
 
     setLegendOptions(): void {

@@ -8,6 +8,9 @@ import { PieChartData } from "@/models/charts/PieChartData";
 
 describe("ReportPieChart.vue", () => {
   let wrapper: any;
+  let docSpyId: any;
+  let docSpyClass: any;
+  let windowSpy: any;
   let inputData = [
     { "http://www.w3.org/2002/07/owl#hasValue": 1030354, "http://www.w3.org/2000/01/rdf-schema#label": "Class" },
     { "http://www.w3.org/2002/07/owl#hasValue": 93282, "http://www.w3.org/2000/01/rdf-schema#label": "Legacy concept" },
@@ -30,12 +33,31 @@ describe("ReportPieChart.vue", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
+    docSpyId = jest.spyOn(document, "getElementById");
+    docSpyId.mockReturnValue(undefined);
+
+    docSpyClass = jest.spyOn(document, "getElementsByClassName");
+    docSpyClass.mockReturnValue([undefined]);
+
+    windowSpy = jest.spyOn(window, "getComputedStyle");
+    windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue("16px") });
+
+    const err = console.error;
+    console.error = jest.fn();
+
     wrapper = shallowMount(ReportPieChart, {
-      props: { name: "Ontology concept types", inputData: inputData, description: "A brief overview of the types of data stored in the Ontology" },
+      props: {
+        name: "Ontology concept types",
+        inputData: inputData,
+        description: "A brief overview of the types of data stored in the Ontology",
+        id: "Chart1"
+      },
       global: {
         components: { Card, Chart, ProgressSpinner }
       }
     });
+
+    console.error = err;
 
     await wrapper.vm.$nextTick();
   });

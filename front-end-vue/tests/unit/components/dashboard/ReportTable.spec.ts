@@ -16,7 +16,7 @@ describe("ReportTable.vue", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     wrapper = shallowMount(ReportTable, {
-      props: { inputData: reportData, description: "A brief overview of the concepts stored in the Ontology", name: "Ontology overview" },
+      props: { inputData: reportData, description: "A brief overview of the concepts stored in the Ontology", name: "Ontology overview", id: "reportTable1" },
       global: {
         components: { Card, DataTable, Column, ProgressSpinner }
       }
