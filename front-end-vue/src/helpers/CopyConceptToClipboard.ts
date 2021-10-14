@@ -24,7 +24,7 @@ function getReturnString(value: string, counterEqTotalKeysMO: boolean) {
   return counterEqTotalKeysMO ? value : value + ",\n";
 }
 
-function handleIsArrayHasLength(newString: string, value: any, key: string) {
+function handleIsArrayHasLength(newString: string, value: any, key: string, newKey: string) {
   if (isObjectHasKeys(value[0], ["name"])) {
     newString = value.map((item: any) => item.name).join(",\n\t");
   } else if (value.every((item: any) => isObjectHasKeys(item, ["property"])) && value.every((item: any) => isObjectHasKeys(item.property, ["name"]))) {
@@ -34,7 +34,11 @@ function handleIsArrayHasLength(newString: string, value: any, key: string) {
   } else {
     LoggerService.warn(undefined, "Uncovered object property or missing name found for key: " + key + " at conceptObjectToCopyString within helpers");
   }
-  return newString;
+  return newString ? newKey + ": [\n\t" + newString + "\n]" : "";
+}
+
+function isArrayWithoutLengthAndIsObjectWithoutKeys(value: any) {
+  return (Array.isArray(value) && !value.length) || (isObject(value) && !isObjectHasKeys(value));
 }
 
 export function conceptObjectToCopyString(
@@ -44,7 +48,7 @@ export function conceptObjectToCopyString(
   totalKeys: number,
   configs?: DefinitionConfig[]
 ): { label: string; value: string } | undefined {
-  if ((Array.isArray(value) && !value.length) || (isObject(value) && !isObjectHasKeys(value))) {
+  if (isArrayWithoutLengthAndIsObjectWithoutKeys(value)) {
     return;
   }
   let newString = "";
@@ -60,10 +64,7 @@ export function conceptObjectToCopyString(
   }
 
   if (isArrayHasLength(value)) {
-    newString = handleIsArrayHasLength(newString, value, key);
-    if (newString) {
-      returnString = newKey + ": [\n\t" + newString + "\n]";
-    }
+    returnString = handleIsArrayHasLength(newString, value, key, newKey);
   } else if (isObjectHasKeys(value, ["name"])) {
     returnString = newKey + ": " + value.name;
   } else if (isObjectHasKeys(value, ["entity", "predicates"])) {
