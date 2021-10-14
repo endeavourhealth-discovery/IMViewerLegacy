@@ -4,7 +4,7 @@
   </div>
   <div v-if="!loading" class="dashboard-container">
     <template v-for="(cardData, index) in cardsData" :key="index">
-      <component :is="cardData.component" :inputData="cardData.inputData" :name="cardData.name" :description="cardData.description" />
+      <component :is="cardData.component" :inputData="cardData.inputData" :name="cardData.name" :description="cardData.description" :id="'dashCard-' + index" />
     </template>
   </div>
 </template>
@@ -18,7 +18,7 @@ import { IM } from "@/vocabulary/IM";
 import { DashboardLayout } from "@/models/configs/DashboardLayout";
 import EntityService from "@/services/EntityService";
 import { RDFS } from "@/vocabulary/RDFS";
-import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Dashboard",
@@ -46,6 +46,11 @@ export default defineComponent({
 
     async getConfigs(): Promise<void> {
       this.configs = await ConfigService.getDashboardLayout("conceptDashboard");
+      if (isArrayHasLength(this.configs)) {
+        this.configs.sort((a: DashboardLayout, b: DashboardLayout) => {
+          return a.order - b.order;
+        });
+      }
     },
 
     async getCardsData(): Promise<void> {
@@ -68,34 +73,13 @@ export default defineComponent({
 <style scoped>
 .dashboard-container {
   grid-area: content;
-  display: grid;
+  display: flex;
+  flex-flow: row wrap;
   column-gap: 7px;
   row-gap: 7px;
   width: 100%;
   height: calc(100vh - 2rem);
   overflow-y: auto;
   overflow-x: hidden;
-}
-
-@media screen and (min-width: 1024px) {
-  .dashboard-container {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    grid-template-areas:
-      "overview types"
-      "schemes status";
-  }
-}
-
-@media screen and (max-width: 1023px) {
-  .dashboard-container {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr;
-    grid-template-areas:
-      "overview"
-      "types"
-      "schemes"
-      "status";
-  }
 }
 </style>

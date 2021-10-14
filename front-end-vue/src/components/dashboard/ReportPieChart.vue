@@ -1,5 +1,5 @@
 <template>
-  <div class="dashcard-container">
+  <div :id="id" class="dashcard-container">
     <Card class="dashcard dash-pie">
       <template #title>
         <span v-if="name">{{ name }}</span>
@@ -11,7 +11,9 @@
         <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="loading">
           <ProgressSpinner />
         </div>
-        <Chart v-else type="pie" :data="chartConceptTypes" :options="chartOptions" :height="graphHeight" />
+        <div v-else class="chart-container">
+          <Chart type="pie" :data="chartConceptTypes" :options="chartOptions" />
+        </div>
       </template>
     </Card>
   </div>
@@ -25,13 +27,15 @@ import { setTooltips, rescaleData } from "@/helpers/ChartRescale";
 import { ChartOptions } from "@/models/charts/ChartOptions";
 import { RDFS } from "@/vocabulary/RDFS";
 import { OWL } from "@/vocabulary/OWL";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "ReportPieChart",
   props: {
     name: { type: String, required: false },
     description: { type: String, required: false },
-    inputData: { type: Array as PropType<Array<any>>, required: true }
+    inputData: { type: Array as PropType<Array<any>>, required: true },
+    id: { type: String, required: true }
   },
   data() {
     return {
@@ -47,7 +51,8 @@ export default defineComponent({
               e.native.target.style.cursor = "default";
             }
           }
-        }
+        },
+        maintainAspectRatio: false
       } as ChartOptions,
       realData: [] as number[],
       chartConceptTypes: new PieChartData(
@@ -60,21 +65,25 @@ export default defineComponent({
           }
         ],
         []
-      ),
-      graphHeight: 200
+      )
     };
   },
   mounted() {
     this.$nextTick(() => {
-      window.addEventListener("resize", this.setLegendOptions);
+      window.addEventListener("resize", this.onResize);
     });
     this.setChartData();
-    this.setLegendOptions();
+    this.onResize();
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.setLegendOptions);
+    window.removeEventListener("resize", this.onResize);
   },
   methods: {
+    onResize() {
+      this.setLegendOptions();
+      this.setChartSize();
+    },
+
     setChartData(): void {
       this.loading = true;
       for (const entry of this.inputData) {
@@ -95,6 +104,32 @@ export default defineComponent({
       const colours = palette("tol-rainbow", colourCount);
       this.chartConceptTypes.datasets[0].backgroundColor = colours.map((color: string) => "#" + color + "BB");
       this.chartConceptTypes.datasets[0].hoverBackgroundColor = colours.map((color: string) => "#" + color);
+    },
+
+    setChartSize(): void {
+      const container = document.getElementById(this.id) as HTMLElement;
+      const html = document.documentElement;
+      const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
+      const title = container?.getElementsByClassName("p-card-title")[0] as HTMLElement;
+      const subTitle = container?.getElementsByClassName("p-card-subtitle")[0] as HTMLElement;
+      const content = container.getElementsByClassName("p-card-content")[0] as HTMLElement;
+      let height;
+      if (container) {
+        height = container.getBoundingClientRect().height;
+        if (currentFontSize) {
+          height -= currentFontSize * 2;
+        }
+        if (title) {
+          height -= title.getBoundingClientRect().height;
+        }
+        if (subTitle) {
+          height -= subTitle.getBoundingClientRect().height;
+        }
+        content.style.height = height + "px";
+        content.style.maxHeight = height + "px";
+      } else {
+        LoggerService.error(undefined, `Failed to set chart size for element id: ${this.id}`);
+      }
     },
 
     setLegendOptions(): void {
@@ -194,26 +229,29 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.dashcard-container {
-  height: 100%;
-  width: 100%;
-}
-@media screen and (min-width: 1440px) {
+@media screen and (min-width: 1024px) {
   .dashcard-container {
-    max-width: calc(35vw - 57.5px - 21px);
-  }
-}
-
-@media screen and (min-width: 1024px) and (max-width: 1439px) {
-  .dashcard-container {
-    max-width: calc(32vw - 21px);
+    height: calc(50% - 7px);
+    width: calc(50% - 7px);
   }
 }
 
 @media screen and (max-width: 1023px) {
   .dashcard-container {
-    max-width: calc(62vw - 21px);
+    height: calc(50% - 7px);
+    width: calc(100%);
   }
+}
+
+.dashcard-container ::v-deep(.p-card-body) {
+  height: 100%;
+  width: 100%;
+}
+
+.chart-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
 }
 
 .dashcard {
@@ -222,7 +260,7 @@ export default defineComponent({
 }
 
 .p-chart {
-  height: fit-content;
+  height: 100%;
   width: 100%;
 }
 
