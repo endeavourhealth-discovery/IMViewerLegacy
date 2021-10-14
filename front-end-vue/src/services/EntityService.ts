@@ -24,9 +24,9 @@ export default class EntityService {
           predicate: predicates.join(",")
         }
       });
-      return axiosReturn || {};
+      return axiosReturn || ({} as any);
     } catch (error) {
-      return {};
+      return {} as any;
     }
   }
 
@@ -93,9 +93,9 @@ export default class EntityService {
       const axiosReturn = await axios.get(this.api + "api/entity", {
         params: { iri: iri }
       });
-      return axiosReturn || {};
+      return axiosReturn || ({} as any);
     } catch (error) {
-      return {};
+      return {} as any;
     }
   }
 

@@ -7,30 +7,30 @@ export default class CatalogueService {
     try {
       const axiosReturn = (await axios.get(this.api + "instance/search", {
         params: { request: request, typesIris: typesIris.join(",") }
-      })) as [];
-      return axiosReturn || [];
+      })) as any[];
+      return axiosReturn || ([] as any[]);
     } catch (error) {
-      return [];
+      return [] as any[];
     }
   }
 
   public static async getPartialInstance(iri: string, predicates: string[]): Promise<any> {
     try {
-      const axiosReturn = await axios.get(this.api + "instance/partial", {
+      const axiosReturn = (await axios.get(this.api + "instance/partial", {
         params: { iri: iri, predicate: predicates }
-      });
-      return axiosReturn || {};
+      })) as any;
+      return axiosReturn || ({} as any);
     } catch (error) {
-      return {};
+      return {} as any;
     }
   }
 
   public static async getTypesCount(): Promise<any[]> {
     try {
-      const axiosReturn = (await axios.get(this.api + "instance/typesCount")) as [];
-      return axiosReturn || [];
+      const axiosReturn = (await axios.get(this.api + "instance/typesCount")) as any[];
+      return axiosReturn || ([] as any[]);
     } catch (error) {
-      return [];
+      return [] as any[];
     }
   }
 }
