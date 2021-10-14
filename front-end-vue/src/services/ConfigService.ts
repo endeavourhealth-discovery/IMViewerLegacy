@@ -12,7 +12,7 @@ export default class ConfigService {
           name: name
         }
       })) as DefinitionConfig[];
-      return axiosReturn ? axiosReturn : ([] as DefinitionConfig[]);
+      return axiosReturn || ([] as DefinitionConfig[]);
     } catch (error) {
       return [] as DefinitionConfig[];
     }
@@ -21,7 +21,7 @@ export default class ConfigService {
   public static async getFilterDefaults(): Promise<FilterDefaultsConfig> {
     try {
       const axiosReturn = (await axios.get(this.api + "api/config/filterDefaults")) as FilterDefaultsConfig;
-      return axiosReturn ? axiosReturn : ({} as FilterDefaultsConfig);
+      return axiosReturn || ({} as FilterDefaultsConfig);
     } catch (error) {
       return {} as FilterDefaultsConfig;
     }

@@ -15,7 +15,7 @@ export default class WorkflowService {
   public static async getWorkflowTasks(): Promise<any[]> {
     try {
       const axiosReturn = (await axios.get(this.api + "workflow/tasks")) as [];
-      return axiosReturn ? axiosReturn : [];
+      return axiosReturn || [];
     } catch (error) {
       return [];
     }
