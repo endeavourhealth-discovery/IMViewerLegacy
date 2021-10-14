@@ -1,9 +1,11 @@
 <template>
-  <div class="dashboard-container">
-    <report-table :key="cardsData[0].key" :iri="cardsData[0].iri" />
-    <report-pie-chart :key="cardsData[1].key" :iri="cardsData[1].iri" />
-    <report-pie-chart :key="cardsData[2].key" :iri="cardsData[2].iri" />
-    <report-pie-chart :key="cardsData[3].key" :iri="cardsData[3].iri" />
+  <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container" v-if="loading">
+    <ProgressSpinner />
+  </div>
+  <div v-if="!loading" class="dashboard-container">
+    <template v-for="(cardData, index) in cardsData" :key="index">
+      <component :is="cardData.component" :inputData="cardData.inputData" :name="cardData.name" :description="cardData.description" :id="'dashCard-' + index" />
+    </template>
   </div>
 </template>
 
@@ -11,35 +13,59 @@
 import { defineComponent } from "vue";
 import ReportTable from "@/components/dashboard/ReportTable.vue";
 import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
+import ConfigService from "@/services/ConfigService";
 import { IM } from "@/vocabulary/IM";
+import { DashboardLayout } from "@/models/configs/DashboardLayout";
+import EntityService from "@/services/EntityService";
+import { RDFS } from "@/vocabulary/RDFS";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Dashboard",
   components: {
-    "report-table": ReportTable,
-    "report-pie-chart": ReportPieChart
+    ReportTable,
+    ReportPieChart
+  },
+  async mounted() {
+    await this.init();
   },
   data() {
     return {
-      cardsData: [
-        {
-          key: "conceptCategory",
-          iri: IM.CONCEPT_CATEGORY
-        },
-        {
-          key: "conceptTypes",
-          iri: IM.CONCEPT_TYPES
-        },
-        {
-          key: "conceptSchemes",
-          iri: IM.CONCEPT_SCHEMES
-        },
-        {
-          key: "conceptStatus",
-          iri: IM.CONCEPT_STATUS
-        }
-      ] as { key: string; iri: string }[]
+      loading: false,
+      configs: [] as DashboardLayout[],
+      cardsData: [] as { name: string; description: string; inputData: any; component: string }[]
     };
+  },
+  methods: {
+    async init(): Promise<void> {
+      this.loading = true;
+      await this.getConfigs();
+      await this.getCardsData();
+      this.loading = false;
+    },
+
+    async getConfigs(): Promise<void> {
+      this.configs = await ConfigService.getDashboardLayout("conceptDashboard");
+      if (isArrayHasLength(this.configs)) {
+        this.configs.sort((a: DashboardLayout, b: DashboardLayout) => {
+          return a.order - b.order;
+        });
+      }
+    },
+
+    async getCardsData(): Promise<void> {
+      this.configs.forEach(async config => {
+        const result = await EntityService.getPartialEntity(config.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
+        if (!isObjectHasKeys(result)) return;
+        const cardData = {
+          name: result[RDFS.LABEL],
+          description: result[RDFS.COMMENT],
+          inputData: result[IM.STATS_REPORT_ENTRY],
+          component: config.type
+        };
+        this.cardsData.push(cardData);
+      });
+    }
   }
 });
 </script>
@@ -47,34 +73,13 @@ export default defineComponent({
 <style scoped>
 .dashboard-container {
   grid-area: content;
-  display: grid;
+  display: flex;
+  flex-flow: row wrap;
   column-gap: 7px;
   row-gap: 7px;
   width: 100%;
   height: calc(100vh - 2rem);
   overflow-y: auto;
   overflow-x: hidden;
-}
-
-@media screen and (min-width: 1024px) {
-  .dashboard-container {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    grid-template-areas:
-      "overview types"
-      "schemes status";
-  }
-}
-
-@media screen and (max-width: 1023px) {
-  .dashboard-container {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr;
-    grid-template-areas:
-      "overview"
-      "types"
-      "schemes"
-      "status";
-  }
 }
 </style>

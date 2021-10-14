@@ -1,40 +1,45 @@
 <template>
-  <div class="dashcard-container">
+  <div :id="id" class="dashcard-container">
     <Card class="dashcard dash-pie">
-      <template #title> {{ name }} </template>
+      <template #title>
+        <span v-if="name">{{ name }}</span>
+      </template>
       <template #subtitle>
-        {{ description }}
+        <span v-if="description">{{ description }}</span>
       </template>
       <template #content>
         <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="loading">
           <ProgressSpinner />
         </div>
-        <Chart v-if="!loading" :key="'pie' + iri" type="pie" :data="chartConceptTypes" :options="chartOptions" :height="graphHeight" />
+        <div v-else class="chart-container">
+          <Chart type="pie" :data="chartConceptTypes" :options="chartOptions" />
+        </div>
       </template>
     </Card>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
 const palette = require("../../../node_modules/google-palette");
 import { PieChartData } from "@/models/charts/PieChartData";
 import { setTooltips, rescaleData } from "@/helpers/ChartRescale";
 import { ChartOptions } from "@/models/charts/ChartOptions";
-import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 import { OWL } from "@/vocabulary/OWL";
-import EntityService from "@/services/EntityService";
-import { isArrayHasLength, isObject } from "@/helpers/DataTypeCheckers";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "ReportPieChart",
-  props: ["iri"],
+  props: {
+    name: { type: String, required: false },
+    description: { type: String, required: false },
+    inputData: { type: Array as PropType<Array<any>>, required: true },
+    id: { type: String, required: true }
+  },
   data() {
     return {
-      name: "",
       loading: true,
-      description: "",
       chartOptions: {
         plugins: {
           legend: {
@@ -46,7 +51,8 @@ export default defineComponent({
               e.native.target.style.cursor = "default";
             }
           }
-        }
+        },
+        maintainAspectRatio: false
       } as ChartOptions,
       realData: [] as number[],
       chartConceptTypes: new PieChartData(
@@ -59,38 +65,38 @@ export default defineComponent({
           }
         ],
         []
-      ),
-      graphHeight: 200
+      )
     };
   },
-  async mounted() {
+  mounted() {
     this.$nextTick(() => {
-      window.addEventListener("resize", this.setLegendOptions);
+      window.addEventListener("resize", this.onResize);
     });
-    await this.setChartData();
-    this.setLegendOptions();
+    this.setChartData();
+    this.onResize();
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.setLegendOptions);
+    window.removeEventListener("resize", this.onResize);
   },
   methods: {
-    async setChartData(): Promise<void> {
+    onResize() {
+      this.setLegendOptions();
+      this.setChartSize();
+    },
+
+    setChartData(): void {
       this.loading = true;
-      const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
-      if (isObject(result) && isArrayHasLength(Object.keys(result))) {
-        this.name = result[RDFS.LABEL];
-        this.description = result[RDFS.COMMENT];
-        for (const entry of result[IM.STATS_REPORT_ENTRY]) {
-          this.chartConceptTypes.labels.push(entry[RDFS.LABEL]);
-          this.chartConceptTypes.datasets[0].data.push(entry[OWL.HAS_VALUE]);
-        }
-        this.realData = { ...this.chartConceptTypes.datasets[0].data };
-        // set tooltip to use real data
-        this.chartOptions.plugins.tooltip = setTooltips(this.realData);
-        // refactor data to a minimum graph size (1%) if less than min
-        this.chartConceptTypes.datasets[0].data = rescaleData(this.chartConceptTypes.datasets[0].data);
-        this.setChartColours(result[IM.STATS_REPORT_ENTRY].length);
+      for (const entry of this.inputData) {
+        this.chartConceptTypes.labels.push(entry[RDFS.LABEL]);
+        this.chartConceptTypes.datasets[0].data.push(entry[OWL.HAS_VALUE]);
       }
+      this.realData = { ...this.chartConceptTypes.datasets[0].data };
+      // set tooltip to use real data
+      this.chartOptions.plugins.tooltip = setTooltips(this.realData);
+      // refactor data to a minimum graph size (1%) if less than min
+      this.chartConceptTypes.datasets[0].data = rescaleData(this.chartConceptTypes.datasets[0].data);
+      this.setChartColours(this.inputData.length);
+      // }
       this.loading = false;
     },
 
@@ -98,6 +104,32 @@ export default defineComponent({
       const colours = palette("tol-rainbow", colourCount);
       this.chartConceptTypes.datasets[0].backgroundColor = colours.map((color: string) => "#" + color + "BB");
       this.chartConceptTypes.datasets[0].hoverBackgroundColor = colours.map((color: string) => "#" + color);
+    },
+
+    setChartSize(): void {
+      const container = document.getElementById(this.id) as HTMLElement;
+      const html = document.documentElement;
+      const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
+      const title = container?.getElementsByClassName("p-card-title")[0] as HTMLElement;
+      const subTitle = container?.getElementsByClassName("p-card-subtitle")[0] as HTMLElement;
+      const content = container.getElementsByClassName("p-card-content")[0] as HTMLElement;
+      let height;
+      if (container) {
+        height = container.getBoundingClientRect().height;
+        if (currentFontSize) {
+          height -= currentFontSize * 2;
+        }
+        if (title) {
+          height -= title.getBoundingClientRect().height;
+        }
+        if (subTitle) {
+          height -= subTitle.getBoundingClientRect().height;
+        }
+        content.style.height = height + "px";
+        content.style.maxHeight = height + "px";
+      } else {
+        LoggerService.error(undefined, `Failed to set chart size for element id: ${this.id}`);
+      }
     },
 
     setLegendOptions(): void {
@@ -197,26 +229,29 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.dashcard-container {
-  height: 100%;
-  width: 100%;
-}
-@media screen and (min-width: 1440px) {
+@media screen and (min-width: 1024px) {
   .dashcard-container {
-    max-width: calc(35vw - 57.5px - 21px);
-  }
-}
-
-@media screen and (min-width: 1024px) and (max-width: 1439px) {
-  .dashcard-container {
-    max-width: calc(32vw - 21px);
+    height: calc(50% - 7px);
+    width: calc(50% - 7px);
   }
 }
 
 @media screen and (max-width: 1023px) {
   .dashcard-container {
-    max-width: calc(62vw - 21px);
+    height: calc(50% - 7px);
+    width: calc(100%);
   }
+}
+
+.dashcard-container ::v-deep(.p-card-body) {
+  height: 100%;
+  width: 100%;
+}
+
+.chart-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
 }
 
 .dashcard {
@@ -225,7 +260,7 @@ export default defineComponent({
 }
 
 .p-chart {
-  height: fit-content;
+  height: 100%;
   width: 100%;
 }
 
