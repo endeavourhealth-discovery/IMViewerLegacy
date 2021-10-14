@@ -5,7 +5,7 @@ describe("ConfigService.ts", () => {
   const api = process.env.VUE_APP_API;
 
   beforeEach(() => {
-    axios.get = jest.fn().mockResolvedValue({ data: ["test config"] });
+    axios.get = jest.fn().mockResolvedValue(["test config"]);
   });
 
   it("can get component layout", async () => {

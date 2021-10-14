@@ -81,6 +81,7 @@ import awsconfig from "./aws-exports";
 import LoggerService from "./services/LoggerService";
 import axios from "axios";
 import APIError from "./models/errors/APIError";
+import { isObjectHasKeys } from "./helpers/DataTypeCheckers";
 
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
@@ -145,29 +146,18 @@ const app = createApp(App)
   .component("InputSwitch", InputSwitch)
   .component("Tag", Tag);
 
-app.config.errorHandler = (error: any, vm, info) => {
-  LoggerService.error(error.fullMessage || (error.message as string));
-  vm?.$toast.add({
-    severity: "error",
-    summary: error.summaryMessage || "Error",
-    detail: error.message,
-    life: 4000
-  });
-};
+const vm = app.mount("#app");
 
 axios.interceptors.response.use(
   response => {
-    return response;
+    return isObjectHasKeys(response, ["data"]) ? response.data : undefined;
   },
   error => {
-    if (Object.prototype.hasOwnProperty.call(error, "response") && Object.prototype.hasOwnProperty.call(error.response, "data")) {
-      throw new APIError(error.response.data.status, error.response.data.error, `Call to ${error.response.data.path} failed.`);
-    }
-    // 499 -> error code for request cancelled by user
-    if (error.message?.status !== 499) {
-      throw new Error(error);
-    }
+    vm.$toast.add({
+      severity: "error",
+      summary: "Request error",
+      detail: "Request for " + error.config.url.substring(error.config.url.lastIndexOf("/") + 1) + " was unsuccessful. " + error.message + ".",
+      life: 4000
+    });
   }
 );
-
-app.mount("#app");
