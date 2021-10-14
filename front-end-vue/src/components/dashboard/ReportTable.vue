@@ -1,5 +1,5 @@
 <template>
-  <div class="dashcard-container">
+  <div :id="id" class="dashcard-container">
     <Card class="dashcard dash-table">
       <template #title>
         <span v-if="name">{{ name }}</span>
@@ -33,7 +33,8 @@ export default defineComponent({
   props: {
     name: { type: String, required: false },
     description: { type: String, required: false },
-    inputData: { type: Array as PropType<Array<any>>, required: true }
+    inputData: { type: Array as PropType<Array<any>>, required: true },
+    id: { type: String, required: true }
   },
   data() {
     return {
