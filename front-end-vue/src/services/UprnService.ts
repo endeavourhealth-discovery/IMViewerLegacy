@@ -15,39 +15,48 @@ export default class UprnService {
       }
     } as any;
     if (area) config.params.qpost = area;
-    const axiosReturn = (await axios.get(this.api + "/getinfo", config)).data;
-    return axiosReturn ? axiosReturn : {};
+
+    try {
+      const axiosReturn = await axios.get(this.api + "/getinfo", config);
+      return axiosReturn || {};
+    } catch (error) {
+      return {};
+    }
   }
 
   public static async getUprn(uprn: number): Promise<any> {
-    const axiosReturn = (
-      await axios.get(this.api + "/getuprn", {
+    try {
+      const axiosReturn = await axios.get(this.api + "/getuprn", {
         params: { uprn: uprn },
         auth: {
           username: this.username,
           password: this.password
         }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : {};
+      });
+      return axiosReturn || {};
+    } catch (error) {
+      return {};
+    }
   }
 
   public static async getActivity(): Promise<any[]> {
-    const axiosReturn = (
-      await axios.get(this.api + "/activity", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "/activity", {
         params: { u: this.userId },
         auth: {
           username: this.username,
           password: this.password
         }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : [];
+      })) as [];
+      return axiosReturn || [];
+    } catch (error) {
+      return [];
+    }
   }
 
   public static async download(filename: string): Promise<any> {
-    const axiosReturn = (
-      await axios.get(this.api + "/filedownload2", {
+    try {
+      const axiosReturn = await axios.get(this.api + "/filedownload2", {
         params: {
           userid: this.userId,
           filename: filename
@@ -57,17 +66,19 @@ export default class UprnService {
           username: this.username,
           password: this.password
         }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : {};
+      });
+      return axiosReturn || {};
+    } catch (error) {
+      return {};
+    }
   }
 
   public static async upload(fileData: any): Promise<any> {
     const formData = new FormData();
     formData.append("file", fileData, fileData.name);
     formData.append("userid", this.userId);
-    const axiosReturn = (
-      await axios.post(this.api + "/fileUpload2", formData, {
+    try {
+      const axiosReturn = await axios.post(this.api + "/fileUpload2", formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         },
@@ -75,8 +86,10 @@ export default class UprnService {
           username: this.username,
           password: this.password
         }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : {};
+      });
+      return axiosReturn || {};
+    } catch (error) {
+      return {};
+    }
   }
 }

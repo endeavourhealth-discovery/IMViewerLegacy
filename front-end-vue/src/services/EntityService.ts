@@ -17,195 +17,225 @@ export default class EntityService {
   static api = process.env.VUE_APP_API;
 
   public static async getPartialEntity(iri: string, predicates: string[]): Promise<any> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/partial", {
+    try {
+      const axiosReturn = await axios.get(this.api + "api/entity/partial", {
         params: {
           iri: iri,
           predicate: predicates.join(",")
         }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : {};
+      });
+      return axiosReturn || ({} as any);
+    } catch (error) {
+      return {} as any;
+    }
   }
 
   public static async getPartialEntityBundle(iri: string, predicates: string[]): Promise<PartialBundle> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/partialBundle", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/partialBundle", {
         params: {
           iri: iri,
           predicate: predicates.join(",")
         }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : ({} as PartialBundle);
+      })) as PartialBundle;
+      return axiosReturn || ({} as PartialBundle);
+    } catch (error) {
+      return {} as PartialBundle;
+    }
   }
 
   public static async getInferredBundle(iri: string): Promise<PartialBundle> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/inferredBundle", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/inferredBundle", {
         params: {
           iri: iri
         }
-      })
-    ).data;
-    if (isObjectHasKeys(axiosReturn, ["entity", "predicates"]) && Object.keys(axiosReturn.entity).length > 1) {
-      return axiosReturn;
-    } else {
+      })) as PartialBundle;
+      if (isObjectHasKeys(axiosReturn, ["entity", "predicates"]) && Object.keys(axiosReturn.entity).length > 1) {
+        return axiosReturn;
+      }
+      return {} as PartialBundle;
+    } catch (error) {
       return {} as PartialBundle;
     }
   }
 
   public static async getAxiomBundle(iri: string): Promise<PartialBundle> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/axiomBundle", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/axiomBundle", {
         params: {
           iri: iri
         }
-      })
-    ).data;
-    if (isObjectHasKeys(axiosReturn, ["entity", "predicates"]) && Object.keys(axiosReturn.entity).length > 1) {
-      return axiosReturn;
-    } else {
+      })) as PartialBundle;
+      if (isObjectHasKeys(axiosReturn, ["entity", "predicates"]) && Object.keys(axiosReturn.entity).length > 1) {
+        return axiosReturn;
+      }
+      return {} as PartialBundle;
+    } catch (error) {
       return {} as PartialBundle;
     }
   }
 
   public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<SearchResponse> {
-    const axiosReturn = (
-      await axios.post(this.api + "api/entity/search", request, {
+    try {
+      const axiosReturn = (await axios.post(this.api + "api/entity/search", request, {
         cancelToken: cancelToken
-      })
-    )?.data;
-    return axiosReturn ? axiosReturn : ({} as SearchResponse);
+      })) as SearchResponse;
+      return axiosReturn || ({} as SearchResponse);
+    } catch (error) {
+      return {} as SearchResponse;
+    }
   }
 
   //obsolete, to be deleted on editor branch merge
   public static async getEntity(iri: string): Promise<any> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity", {
+    try {
+      const axiosReturn = await axios.get(this.api + "api/entity", {
         params: { iri: iri }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : {};
+      });
+      return axiosReturn || ({} as any);
+    } catch (error) {
+      return {} as any;
+    }
   }
 
   public static async getEntityDefinitionDto(iri: string): Promise<EntityDefinitionDto> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/definition", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/definition", {
         params: { iri: iri }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : ({} as EntityDefinitionDto);
+      })) as EntityDefinitionDto;
+      return axiosReturn || ({} as EntityDefinitionDto);
+    } catch (error) {
+      return {} as EntityDefinitionDto;
+    }
   }
 
   public static async getEntityParents(iri: string): Promise<EntityReferenceNode[]> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/parents", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/parents", {
         params: { iri: iri }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : ([] as EntityReferenceNode[]);
+      })) as EntityReferenceNode[];
+      return axiosReturn || ([] as EntityReferenceNode[]);
+    } catch (error) {
+      return [] as EntityReferenceNode[];
+    }
   }
 
   public static async getEntityChildren(iri: string, cancelToken?: CancelToken): Promise<EntityReferenceNode[]> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/children", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/children", {
         params: { iri: iri },
         cancelToken: cancelToken
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : ([] as EntityReferenceNode[]);
+      })) as EntityReferenceNode[];
+      return axiosReturn || ([] as EntityReferenceNode[]);
+    } catch (error) {
+      return [] as EntityReferenceNode[];
+    }
   }
 
   public static async getEntityUsages(iri: string, pageIndex: number, pageSize: number): Promise<TTIriRef[]> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/usages", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/usages", {
         params: {
           iri: iri,
           page: pageIndex,
           size: pageSize
         }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : ([] as TTIriRef[]);
+      })) as TTIriRef[];
+      return axiosReturn || ([] as TTIriRef[]);
+    } catch (error) {
+      return [] as TTIriRef[];
+    }
   }
 
   public static async getUsagesTotalRecords(iri: string): Promise<number> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/usagesTotalRecords", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/usagesTotalRecords", {
         params: {
           iri: iri
         }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : 0;
+      })) as number;
+      return axiosReturn || 0;
+    } catch (error) {
+      return 0;
+    }
   }
 
   public static async getEntityMembers(iri: string, expandMembers?: boolean, expandSubsets?: boolean, limit?: number): Promise<ExportValueSet> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/members", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/members", {
         params: {
           iri: iri,
           expandMembers: expandMembers,
           expandSubsets: expandSubsets,
           limit: limit
         }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : ({} as ExportValueSet);
-  }
-
-  public static async getSchemeOptions(): Promise<EntityReferenceNode[]> {
-    return this.getEntityChildren(IM.CODE_SCHEME);
-  }
-
-  public static async saveEntity(concept: any): Promise<any> {
-    return axios.post(this.api + "api/entity", concept);
+      })) as ExportValueSet;
+      return axiosReturn || ({} as ExportValueSet);
+    } catch (error) {
+      return {} as ExportValueSet;
+    }
   }
 
   public static async getEntityGraph(iri: string): Promise<GraphData> {
-    const axiosReturn = (await axios.get(this.api + "api/entity/graph", { params: { iri: iri } })).data;
-    return axiosReturn ? axiosReturn : ({} as GraphData);
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/graph", { params: { iri: iri } })) as GraphData;
+      return axiosReturn || ({} as GraphData);
+    } catch (error) {
+      return {} as GraphData;
+    }
   }
 
   public static async getEntityTermCodes(iri: string): Promise<TermCode[]> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/termCode", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/termCode", {
         params: { iri: iri }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : ([] as TermCode[]);
+      })) as TermCode[];
+      return axiosReturn || ([] as TermCode[]);
+    } catch (error) {
+      return {} as TermCode[];
+    }
   }
 
   public static async getDataModelProperties(iri: string): Promise<DataModelProperty[]> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/dataModelProperties", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/dataModelProperties", {
         params: { iri: iri }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : ([] as DataModelProperty[]);
+      })) as DataModelProperty[];
+      return axiosReturn || ([] as DataModelProperty[]);
+    } catch (error) {
+      return [] as DataModelProperty[];
+    }
   }
 
   public static async getEntitySummary(iri: string): Promise<ConceptSummary> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/summary", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/summary", {
         params: { iri: iri }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : ({} as ConceptSummary);
+      })) as ConceptSummary;
+      return axiosReturn || ({} as ConceptSummary);
+    } catch (error) {
+      return {} as ConceptSummary;
+    }
   }
 
   public static async getNamespaces(): Promise<Namespace[]> {
-    const axiosReturn = (await axios.get(this.api + "api/entity/namespaces")).data;
-    return axiosReturn ? axiosReturn : ([] as Namespace[]);
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/namespaces")) as Namespace[];
+      return axiosReturn || ([] as Namespace[]);
+    } catch (error) {
+      return [] as Namespace[];
+    }
   }
 
   public static async getComplexMembers(iri: string): Promise<string[]> {
-    const axiosReturn = (
-      await axios.get(this.api + "api/entity/complexMembers", {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/complexMembers", {
         params: { iri: iri }
-      })
-    ).data;
-    return axiosReturn ? axiosReturn : ([] as string[]);
+      })) as string[];
+      return axiosReturn || ([] as string[]);
+    } catch (error) {
+      return [] as string[];
+    }
   }
 }
