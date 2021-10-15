@@ -182,42 +182,52 @@ export default defineComponent({
 
     async expandChildren(node: TreeNode): Promise<void> {
       node.loading = true;
+      this.resetExpandedKeys(node);
       this.expandedKeys[node.key] = true;
       const children = await EntityService.getEntityChildren(node.data);
+      node.children = [];
       children.forEach((child: EntityReferenceNode) => {
-        if (!this.containsChild(node.children, child)) {
-          const newNode = this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren);
-          node.children.push(newNode);
-        }
+        node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
       });
       node.loading = false;
     },
 
-    containsChild(children: TreeNode[], child: EntityReferenceNode): boolean {
-      if (children.some(e => e.data === child["@id"])) {
-        return true;
-      }
-      return false;
+    resetExpandedKeys(node: TreeNode) {
+      const newExpandedKeys = {} as any;
+      Object.keys(this.expandedKeys).forEach(expanded => {
+        const isChild = node.children.find(child => child.label === expanded) ? true : false;
+        if (this.expandedKeys[expanded] === true && !isChild) {
+          newExpandedKeys[expanded] = true;
+        }
+      });
+      this.expandedKeys = newExpandedKeys;
+    },
+
+    getSelectedFromRootOrRoot() {
+      const selectedLabel = Object.keys(this.selectedKey)[0];
+      return this.root.find(child => child.label === selectedLabel) || this.root[0];
     },
 
     async expandParents(): Promise<void> {
-      const selectedLabel = Object.keys(this.selectedKey)[0];
-      const selected = this.root.find(child => child.label === selectedLabel) || this.root[0];
-      this.expandedKeys[selected.key] = false;
-      const parentsNodes = [] as TreeNode[];
-      const parents = await EntityService.getEntityParents(selected.data);
-      parents.forEach((parent: EntityReferenceNode) => {
-        parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, true));
-      });
+      const selected = this.getSelectedFromRootOrRoot();
+      if (!MODULE_IRIS.includes(selected.data)) {
+        const parentsNodes = [] as TreeNode[];
+        const parents = await EntityService.getEntityParents(selected.data);
+        parents.forEach((parent: EntityReferenceNode) => {
+          parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, true));
+        });
 
-      // optional - adds child to last node
-      parentsNodes[parentsNodes.length - 1].children.push(selected);
-      this.expandedKeys[parentsNodes[parentsNodes.length - 1].key] = true;
-      this.expandedKeys[selected.key] = false;
+        if (parents.length > 1) {
+          this.expandedKeys[selected.key] = false;
+        }
 
-      this.root = parentsNodes;
+        parentsNodes[parentsNodes.length - 1].children.push(selected);
+        this.expandedKeys[parentsNodes[parentsNodes.length - 1].key] = true;
 
-      await this.getFirstParent(this.root[0]);
+        this.root = parentsNodes;
+
+        await this.getFirstParent(this.root[0]);
+      }
     },
 
     async getFirstParent(node: TreeNode): Promise<void> {
