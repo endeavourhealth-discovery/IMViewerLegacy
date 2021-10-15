@@ -222,11 +222,11 @@ export default defineComponent({
 
     resetToHome(): void {
       this.$store.commit("updateSideNavHierarchyFocus", {
-        name: "InformationModel",
-        fullName: "Information Model",
-        iri: IM.MODULE_IM
+        name: "Ontology",
+        fullName: "Ontologies",
+        iri: IM.MODULE_ONTOLOGY
       });
-      this.$store.commit("updateConceptIri", IM.MODULE_IM);
+      this.$store.commit("updateConceptIri", IM.MODULE_ONTOLOGY);
       this.$emit("hierarchyFocusSelected");
       this.$router.push({ name: "Dashboard" });
     },
