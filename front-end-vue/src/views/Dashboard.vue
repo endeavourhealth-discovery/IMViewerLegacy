@@ -4,7 +4,15 @@
   </div>
   <div v-if="!loading" class="dashboard-container">
     <template v-for="(cardData, index) in cardsData" :key="index">
-      <component :is="cardData.component" :inputData="cardData.inputData" :name="cardData.name" :description="cardData.description" :id="'dashCard-' + index" />
+      <component
+        :is="cardData.component"
+        :inputData="cardData.inputData"
+        :name="cardData.name"
+        :description="cardData.description"
+        :id="'dashCard-' + index"
+        labelKey="http://www.w3.org/2000/01/rdf-schema#label"
+        dataKey="http://www.w3.org/2002/07/owl#hasValue"
+      />
     </template>
   </div>
 </template>
@@ -12,7 +20,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import ReportTable from "@/components/dashboard/ReportTable.vue";
-import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
+import PieChartDashCard from "@/components/dashboard/PieChartDashCard.vue";
 import ConfigService from "@/services/ConfigService";
 import { IM } from "@/vocabulary/IM";
 import { DashboardLayout } from "@/models/configs/DashboardLayout";
@@ -24,7 +32,7 @@ export default defineComponent({
   name: "Dashboard",
   components: {
     ReportTable,
-    ReportPieChart
+    PieChartDashCard
   },
   async mounted() {
     await this.init();
@@ -81,5 +89,19 @@ export default defineComponent({
   height: calc(100vh - 2rem);
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+@media screen and (min-width: 1024px) {
+  .dashboard-container ::v-deep(.dashcard-container) {
+    height: calc(50% - 7px);
+    width: calc(50% - 7px);
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .dashboard-container ::v-deep(.dashcard-container) {
+    height: calc(50% - 7px);
+    width: calc(100%);
+  }
 }
 </style>
