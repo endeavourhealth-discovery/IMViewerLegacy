@@ -20,7 +20,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import ReportTable from "@/components/dashboard/ReportTable.vue";
-import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
+import PieChartDashCard from "@/components/dashboard/PieChartDashCard.vue";
 import ConfigService from "@/services/ConfigService";
 import { IM } from "@/vocabulary/IM";
 import { DashboardLayout } from "@/models/configs/DashboardLayout";
@@ -32,7 +32,7 @@ export default defineComponent({
   name: "Dashboard",
   components: {
     ReportTable,
-    ReportPieChart
+    PieChartDashCard
   },
   async mounted() {
     await this.init();

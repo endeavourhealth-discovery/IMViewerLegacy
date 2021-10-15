@@ -4,7 +4,7 @@ import DataTable from "primevue/datatable";
 import Chart from "primevue/chart";
 import CatalogueDashboard from "@/components/catalogue/CatalogueDashboard.vue";
 import Column from "primevue/column";
-import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
+import PieChartDashCard from "@/components/dashboard/PieChartDashCard.vue";
 
 describe("CatalogueDashboard.vue", () => {
   let wrapper: any;
@@ -12,7 +12,7 @@ describe("CatalogueDashboard.vue", () => {
   beforeEach(() => {
     wrapper = shallowMount(CatalogueDashboard, {
       global: {
-        components: { Card, DataTable, Chart, Column, ReportPieChart }
+        components: { Card, DataTable, Chart, Column, PieChartDashCard }
       },
       props: {
         types: [

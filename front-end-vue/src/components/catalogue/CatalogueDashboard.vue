@@ -24,7 +24,7 @@
               <strong>Pie Chart</strong>
             </p>
             <div class="pie-chart-container">
-              <ReportPieChart name="Pie chart" description="Description" :inputData="types" id="catalogue-pie-chart" labelKey="label" dataKey="count" />
+              <ResizeablePieChart :inputData="types" id="catalogue-pie-chart" labelKey="label" dataKey="count" />
             </div>
           </div>
         </div>
@@ -36,7 +36,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { PropType } from "@vue/runtime-core";
-import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
+import ResizeablePieChart from "@/components/generics/ResizeablePieChart.vue";
 
 export default defineComponent({
   name: "CatalogueDashboard",
@@ -47,23 +47,9 @@ export default defineComponent({
     }
   },
   components: {
-    ReportPieChart
+    ResizeablePieChart
   }
 });
 </script>
 
-<style scoped>
-@media screen and (min-width: 1024px) {
-  .pie-chart-container ::v-deep(.dashcard-container) {
-    height: 100%;
-    width: 100%;
-  }
-}
-
-@media screen and (max-width: 1023px) {
-  .pie-chart-container ::v-deep(.dashcard-container) {
-    height: 100%;
-    width: 100%;
-  }
-}
-</style>
+<style scoped></style>

@@ -1,7 +1,7 @@
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import Dashboard from "@/views/Dashboard.vue";
 import ReportTable from "@/components/dashboard/ReportTable.vue";
-import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
+import PieChartDashCard from "@/components/dashboard/PieChartDashCard.vue";
 import ProgressSpinner from "primevue/progressspinner";
 import ConfigService from "@/services/ConfigService";
 import EntityService from "@/services/EntityService";
@@ -41,7 +41,7 @@ describe("Dashboard.vue", () => {
 
     wrapper = shallowMount(Dashboard, {
       global: {
-        components: { ReportTable, ReportPieChart, ProgressSpinner }
+        components: { ReportTable, PieChartDashCard, ProgressSpinner }
       }
     });
 

@@ -1,12 +1,12 @@
 import { shallowMount } from "@vue/test-utils";
-import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
+import ResizeablePieChart from "@/components/generics/ResizeablePieChart.vue";
 import Card from "primevue/card";
 import Chart from "primevue/chart";
 import ProgressSpinner from "primevue/progressspinner";
 
 import { PieChartData } from "@/models/charts/PieChartData";
 
-describe("ReportPieChart.vue", () => {
+describe("PieChartDashCard.vue", () => {
   let wrapper: any;
   let docSpyId: any;
   let docSpyClass: any;
@@ -42,15 +42,9 @@ describe("ReportPieChart.vue", () => {
     windowSpy = jest.spyOn(window, "getComputedStyle");
     windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue("16px") });
 
-    const err = console.error;
-    console.error = jest.fn();
-
-    wrapper = shallowMount(ReportPieChart, {
+    wrapper = shallowMount(ResizeablePieChart, {
       props: {
-        name: "Ontology concept types",
         inputData: inputData,
-        description: "A brief overview of the types of data stored in the Ontology",
-        id: "Chart1",
         labelKey: "http://www.w3.org/2000/01/rdf-schema#label",
         dataKey: "http://www.w3.org/2002/07/owl#hasValue"
       },
@@ -58,8 +52,6 @@ describe("ReportPieChart.vue", () => {
         components: { Card, Chart, ProgressSpinner }
       }
     });
-
-    console.error = err;
 
     await wrapper.vm.$nextTick();
   });
@@ -152,21 +144,6 @@ describe("ReportPieChart.vue", () => {
         "Query template"
       ]
     };
-    // const testChartOptions = {
-    //   legend: {
-    //     position: "right",
-    //     onHover: function(e: any) {}
-    //   },
-    //   hover: {
-    //     onHover: function(e: any) {}
-    //   },
-    //   tooltips: {
-    //     callbacks: {
-    //       label: function(t: any, d: any) {}
-    //     }
-    //   }
-    // };
-    // wrapper.vm.chartOptions = {};
     wrapper.vm.realData = [] as number[];
     wrapper.vm.chartConceptTypes = new PieChartData(
       [
@@ -201,7 +178,6 @@ describe("ReportPieChart.vue", () => {
       "14": 2,
       "15": 1
     });
-    // expect(wrapper.vm.chartOptions.toString()).toEqual(testChartOptions.toString());
   });
 
   it("can setChartColours", async () => {
