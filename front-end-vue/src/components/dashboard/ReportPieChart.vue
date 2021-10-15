@@ -25,8 +25,6 @@ const palette = require("../../../node_modules/google-palette");
 import { PieChartData } from "@/models/charts/PieChartData";
 import { setTooltips, rescaleData } from "@/helpers/ChartRescale";
 import { ChartOptions } from "@/models/charts/ChartOptions";
-import { RDFS } from "@/vocabulary/RDFS";
-import { OWL } from "@/vocabulary/OWL";
 import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
@@ -35,7 +33,9 @@ export default defineComponent({
     name: { type: String, required: false },
     description: { type: String, required: false },
     inputData: { type: Array as PropType<Array<any>>, required: true },
-    id: { type: String, required: true }
+    id: { type: String, required: true },
+    labelKey: { type: String, required: true },
+    dataKey: { type: String, required: true }
   },
   data() {
     return {
@@ -87,8 +87,8 @@ export default defineComponent({
     setChartData(): void {
       this.loading = true;
       for (const entry of this.inputData) {
-        this.chartConceptTypes.labels.push(entry[RDFS.LABEL]);
-        this.chartConceptTypes.datasets[0].data.push(entry[OWL.HAS_VALUE]);
+        this.chartConceptTypes.labels.push(entry[this.labelKey]);
+        this.chartConceptTypes.datasets[0].data.push(entry[this.dataKey]);
       }
       this.realData = { ...this.chartConceptTypes.datasets[0].data };
       // set tooltip to use real data
@@ -228,20 +228,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-@media screen and (min-width: 1024px) {
-  .dashcard-container {
-    height: calc(50% - 7px);
-    width: calc(50% - 7px);
-  }
-}
-
-@media screen and (max-width: 1023px) {
-  .dashcard-container {
-    height: calc(50% - 7px);
-    width: calc(100%);
-  }
-}
-
 .dashcard-container ::v-deep(.p-card-body) {
   height: 100%;
   width: 100%;

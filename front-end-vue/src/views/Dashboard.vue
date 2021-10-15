@@ -4,7 +4,15 @@
   </div>
   <div v-if="!loading" class="dashboard-container">
     <template v-for="(cardData, index) in cardsData" :key="index">
-      <component :is="cardData.component" :inputData="cardData.inputData" :name="cardData.name" :description="cardData.description" :id="'dashCard-' + index" />
+      <component
+        :is="cardData.component"
+        :inputData="cardData.inputData"
+        :name="cardData.name"
+        :description="cardData.description"
+        :id="'dashCard-' + index"
+        labelKey="http://www.w3.org/2000/01/rdf-schema#label"
+        dataKey="http://www.w3.org/2002/07/owl#hasValue"
+      />
     </template>
   </div>
 </template>
@@ -81,5 +89,19 @@ export default defineComponent({
   height: calc(100vh - 2rem);
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+@media screen and (min-width: 1024px) {
+  .dashboard-container ::v-deep(.dashcard-container) {
+    height: calc(50% - 7px);
+    width: calc(50% - 7px);
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .dashboard-container ::v-deep(.dashcard-container) {
+    height: calc(50% - 7px);
+    width: calc(100%);
+  }
 }
 </style>
