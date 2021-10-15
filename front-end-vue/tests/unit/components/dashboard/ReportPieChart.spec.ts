@@ -50,7 +50,9 @@ describe("ReportPieChart.vue", () => {
         name: "Ontology concept types",
         inputData: inputData,
         description: "A brief overview of the types of data stored in the Ontology",
-        id: "Chart1"
+        id: "Chart1",
+        labelKey: "http://www.w3.org/2000/01/rdf-schema#label",
+        dataKey: "http://www.w3.org/2002/07/owl#hasValue"
       },
       global: {
         components: { Card, Chart, ProgressSpinner }
