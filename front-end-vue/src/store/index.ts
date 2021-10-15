@@ -27,6 +27,7 @@ export default createStore({
     historyCount: 0 as number,
     focusTree: false as boolean,
     treeLocked: true as boolean,
+    resetTree: false as boolean,
     sideNavHierarchyFocus: {
       name: "Ontology",
       fullName: "Ontologies",
@@ -101,6 +102,9 @@ export default createStore({
     },
     updateTreeLocked(state, bool) {
       state.treeLocked = bool;
+    },
+    updateResetTree(state, bool) {
+      state.resetTree = bool;
     },
     updateSideNavHierarchyFocus(state, focus) {
       state.sideNavHierarchyFocus = focus;
