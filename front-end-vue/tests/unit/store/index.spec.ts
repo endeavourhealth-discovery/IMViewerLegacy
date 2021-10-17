@@ -10,8 +10,6 @@ import { IM } from "@/vocabulary/IM";
 
 describe("state", () => {
   it("should start with the correct values", () => {
-    const test = new Map<string, boolean>();
-    expect(store.state.loading).toEqual(test);
     expect(store.state.conceptIri).toBe("http://endhealth.info/im#DiscoveryOntology");
     expect(store.state.history).toEqual([]);
     expect(store.state.searchResults).toEqual([]);
@@ -153,13 +151,6 @@ describe("mutations", () => {
     testfilters.set("legacy", true);
     store.commit("updateQuickFiltersStatus", { key: "legacy", value: true });
     expect(store.state.quickFiltersStatus).toEqual(testfilters);
-  });
-
-  it("can updateloading", () => {
-    const testLoading = new Map<string, boolean>();
-    testLoading.set("concept", true);
-    store.commit("updateLoading", { key: "concept", value: true });
-    expect(store.state.loading).toEqual(testLoading);
   });
 
   it("can updateFilterOptions", () => {

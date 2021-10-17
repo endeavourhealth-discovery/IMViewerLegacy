@@ -95,7 +95,6 @@ import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 import { RDFS } from "@/vocabulary/RDFS";
 import { IM } from "@/vocabulary/IM";
-import { OWL } from "@/vocabulary/OWL";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { DataModelProperty } from "@/models/properties/DataModelProperty";
 import { ExportValueSet } from "@/models/members/ExportValueSet";

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container" v-if="$store.state.loading.get('mappings')">
+  <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container" v-if="loading">
     <ProgressSpinner />
   </div>
   <OrganizationChart v-else :value="data">
@@ -96,7 +96,8 @@ export default defineComponent({
       data: {} as any,
       hoveredResult: {} as MapItem,
       simpleMaps: [] as SimpleMap[],
-      namespaces: [] as Namespace[]
+      namespaces: [] as Namespace[],
+      loading: false
     };
   },
   async mounted() {
@@ -104,17 +105,11 @@ export default defineComponent({
   },
   methods: {
     async updateMappings() {
-      this.$store.commit("updateLoading", {
-        key: "mappings",
-        value: true
-      });
+      this.loading = true;
       await this.getMappings();
       this.getSimpleMapsNamespaces();
       this.data = this.createChartStructure(this.mappings);
-      this.$store.commit("updateLoading", {
-        key: "mappings",
-        value: false
-      });
+      this.loading = false;
     },
     async getMappings(): Promise<void> {
       this.mappings = (await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP]))[IM.HAS_MAP] || [];
@@ -123,26 +118,17 @@ export default defineComponent({
       this.namespaces = await EntityService.getNamespaces();
 
       this.simpleMaps = (await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO]))[IM.MATCHED_TO] || [];
-      if (this.simpleMaps.length && this.namespaces) {
-        this.simpleMaps.forEach((mapItem: SimpleMap) => {
-          const found = this.namespaces.find((namespace: Namespace) => namespace.iri === mapItem["@id"].split("#")[0] + "#");
-          if (found) {
-            mapItem.scheme = found.name;
-          } else {
-            mapItem.scheme = "None";
-          }
-          mapItem.code = mapItem["@id"].split("#")[1];
-        });
-      }
     },
 
     createChartTableNode(
-      items: {
-        assuranceLevel: string;
-        iri: string;
-        name: string;
-        priority: number;
-      }[] | SimpleMapIri[],
+      items:
+        | {
+            assuranceLevel: string;
+            iri: string;
+            name: string;
+            priority: number;
+          }[]
+        | SimpleMapIri[],
       location: string,
       position: number,
       type: string
@@ -193,7 +179,8 @@ export default defineComponent({
             assuranceLevel: item[IM.ASSURANCE_LEVEL].name
           });
         });
-        return [this.createChartTableNode(mappedList.sort(this.byPriority), location, positionInLevel, "childList")];
+        mappedList.sort(this.byPriority);
+        return [this.createChartTableNode(mappedList, location, positionInLevel, "childList")];
       } else {
         // is array
         const results = [] as ChartMapNode[];
@@ -248,7 +235,8 @@ export default defineComponent({
           code: mapItem.code
         });
       });
-      return [this.createChartTableNode(simpleMapsList.sort(this.byScheme), location, positionInLevel, "simpleMapsList")];
+      simpleMapsList.sort(this.byScheme);
+      return [this.createChartTableNode(simpleMapsList, location, positionInLevel, "simpleMapsList")];
     },
 
     getSimpleMapsNamespaces(): void {

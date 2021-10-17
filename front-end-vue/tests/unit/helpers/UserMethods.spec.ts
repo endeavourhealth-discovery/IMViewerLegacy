@@ -1,10 +1,4 @@
-import {
-  verifyIsEmail,
-  verifyPasswordsMatch,
-  verifyIsName,
-  verifyIsUsername,
-  checkPasswordStrength
-} from "@/helpers/UserMethods";
+import { verifyIsEmail, verifyPasswordsMatch, verifyIsName, verifyIsUsername, checkPasswordStrength } from "@/helpers/UserMethods";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 
 describe("verifyIsEmail", () => {
@@ -88,14 +82,19 @@ describe("verifyIsName", () => {
     expect(verifyIsName(name)).toBe(false);
   });
 
-  it("should fail with whitespace", () => {
-    const name = "John Doe";
-    expect(verifyIsName(name)).toBe(false);
-  });
-
   it("should fail with numbers", () => {
     const name = "John2";
     expect(verifyIsName(name)).toBe(false);
+  });
+
+  it("should pass with international characters", () => {
+    const name = "陳大文";
+    expect(verifyIsName(name)).toBe(true);
+  });
+
+  it("should pass with accent characters", () => {
+    const name = "Renée";
+    expect(verifyIsName(name)).toBe(true);
   });
 
   it("should pass with valid name", () => {

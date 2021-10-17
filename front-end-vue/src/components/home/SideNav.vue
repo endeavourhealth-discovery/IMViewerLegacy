@@ -220,15 +220,14 @@ export default defineComponent({
       return require("@/assets/avatars/" + item);
     },
 
-    resetToHome(): void {
-      this.$store.commit("updateSideNavHierarchyFocus", {
-        name: "InformationModel",
-        fullName: "Information Model",
-        iri: IM.MODULE_IM
-      });
-      this.$store.commit("updateConceptIri", IM.MODULE_IM);
-      this.$emit("hierarchyFocusSelected");
-      this.$router.push({ name: "Dashboard" });
+    async resetToHome(): Promise<void> {
+      this.$store.commit("updateModuleSelectedEntities", { module: this.menuItems[0].name, iri: this.menuItems[0].iri });
+      this.$store.commit("updateModuleSelectedEntities", { module: this.menuItems[1].name, iri: this.menuItems[1].iri });
+      this.$store.commit("updateModuleSelectedEntities", { module: this.menuItems[2].name, iri: this.menuItems[2].iri });
+      this.$store.commit("updateModuleSelectedEntities", { module: this.menuItems[3].name, iri: this.menuItems[3].iri });
+      await this.$nextTick();
+      this.handleCenterIconClick(this.menuItems[0]);
+      this.$store.commit("updateResetTree", true);
     },
 
     handleCenterIconClick(item: ModuleItem): void {

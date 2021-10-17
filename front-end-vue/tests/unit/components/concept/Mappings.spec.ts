@@ -96,6 +96,7 @@ describe("Mappings.vue", () => {
       props: { conceptIri: "http://snomed.info/sct#723312009" }
     });
     await flushPromises();
+    await wrapper.vm.$nextTick();
     jest.clearAllMocks();
   });
 
@@ -106,15 +107,6 @@ describe("Mappings.vue", () => {
     expect(wrapper.vm.getMappings).toHaveBeenCalledTimes(1);
     await flushPromises();
     expect(wrapper.vm.createChartStructure).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateLoading", {
-      key: "mappings",
-      value: true
-    });
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", {
-      key: "mappings",
-      value: false
-    });
   });
 
   it("can get mappings ___ success", async () => {
@@ -412,6 +404,150 @@ describe("Mappings.vue", () => {
     });
   });
 
+  it("can generateSimpleMapsNodes ___ isArrayHasLength", () => {
+    wrapper.vm.createChartTableNode = jest.fn().mockReturnValue({
+      data: {
+        mapItems: [
+          {
+            code: "^ESCTAM784250",
+            iri: "http://endhealth.info/emis#^ESCTAM784250",
+            name: "Amputation of right foot",
+            scheme: "EMIS (inc. Read2 like) namespace"
+          },
+          {
+            code: "^ESCTAM784250",
+            iri: "http://endhealth.info/emis#^ESCTAM784250",
+            name: "Amputation of right foot",
+            scheme: "EMIS (inc. Read2 like) namespace"
+          }
+        ]
+      },
+      key: "location_1",
+      type: "simpleMapsList"
+    });
+    expect(wrapper.vm.generateSimpleMapsNodes(MATCHED_TOS[IM.MATCHED_TO], "location", 1)).toStrictEqual([
+      {
+        data: {
+          mapItems: [
+            {
+              code: "^ESCTAM784250",
+              iri: "http://endhealth.info/emis#^ESCTAM784250",
+              name: "Amputation of right foot",
+              scheme: "EMIS (inc. Read2 like) namespace"
+            },
+            {
+              code: "^ESCTAM784250",
+              iri: "http://endhealth.info/emis#^ESCTAM784250",
+              name: "Amputation of right foot",
+              scheme: "EMIS (inc. Read2 like) namespace"
+            }
+          ]
+        },
+        key: "location_1",
+        type: "simpleMapsList"
+      }
+    ]);
+    expect(wrapper.vm.createChartTableNode).toHaveBeenCalledWith(
+      [
+        {
+          code: "^ESCTAM784250",
+          iri: "http://endhealth.info/emis#^ESCTAM784250",
+          name: "Amputation of right foot",
+          scheme: "EMIS (inc. Read2 like) namespace"
+        },
+        {
+          code: "^ESCTAM784250",
+          iri: "http://endhealth.info/emis#^ESCTAM784250",
+          name: "Amputation of right foot",
+          scheme: "EMIS (inc. Read2 like) namespace"
+        }
+      ],
+      "location",
+      1,
+      "simpleMapsList"
+    );
+  });
+
+  it("can generateSimpleMapsNodes ___ not isArrayHasLength", () => {
+    wrapper.vm.createChartTableNode = jest.fn().mockReturnValue({
+      data: {
+        mapItems: []
+      },
+      key: "location_1",
+      type: "simpleMapsList"
+    });
+    expect(wrapper.vm.generateSimpleMapsNodes([], "location", 1)).toStrictEqual([{ data: { mapItems: [] }, key: "location_1", type: "simpleMapsList" }]);
+    expect(wrapper.vm.createChartTableNode).toHaveBeenCalledWith([], "location", 1, "simpleMapsList");
+  });
+
+  it("can generateSimpleMapsNamespaces ___ isArray ___ found", () => {
+    wrapper.vm.simpleMaps = [
+      {
+        "@id": "http://endhealth.info/emis#^ESCTAM784250",
+        code: "^ESCTAM784250",
+        name: "Amputation of right foot",
+        scheme: "unknown"
+      },
+      { "@id": "http://endhealth.info/emis#^ESCTAM784250", code: "^ESCTAM784250", name: "Amputation of right foot", scheme: "unknown" }
+    ];
+    wrapper.vm.getSimpleMapsNamespaces();
+    expect(wrapper.vm.simpleMaps).toStrictEqual([
+      {
+        "@id": "http://endhealth.info/emis#^ESCTAM784250",
+        code: "^ESCTAM784250",
+        name: "Amputation of right foot",
+        scheme: "EMIS (inc. Read2 like) namespace"
+      },
+      { "@id": "http://endhealth.info/emis#^ESCTAM784250", code: "^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" }
+    ]);
+  });
+
+  it("can generateSimpleMapsNamespaces ___ not isArray ___ found", () => {
+    wrapper.vm.simpleMaps = [
+      {
+        "@id": "http://endhealth.info/emis#^ESCTAM784250",
+        code: "^ESCTAM784250",
+        name: "Amputation of right foot",
+        scheme: "unknown"
+      },
+      { "@id": "http://endhealth.info/emis#^ESCTAM784250", code: "^ESCTAM784250", name: "Amputation of right foot", scheme: "unknown" }
+    ];
+    wrapper.vm.namespaces = [];
+    wrapper.vm.getSimpleMapsNamespaces();
+    expect(wrapper.vm.simpleMaps).toStrictEqual([
+      {
+        "@id": "http://endhealth.info/emis#^ESCTAM784250",
+        code: "^ESCTAM784250",
+        name: "Amputation of right foot",
+        scheme: "unknown"
+      },
+      { "@id": "http://endhealth.info/emis#^ESCTAM784250", code: "^ESCTAM784250", name: "Amputation of right foot", scheme: "unknown" }
+    ]);
+  });
+
+  it("can generateSimpleMapsNamespaces ___ isArray ___ not found", () => {
+    wrapper.vm.simpleMaps = [
+      {
+        "@id": "http://endhealth.info/emis#^ESCTAM784250",
+        code: "^ESCTAM784250",
+        name: "Amputation of right foot",
+        scheme: "unknown"
+      },
+      { "@id": "http://endhealth.info/emis#^ESCTAM784250", code: "^ESCTAM784250", name: "Amputation of right foot", scheme: "unknown" }
+    ];
+    wrapper.vm.namespaces = [{ iri: "testIri", name: "testName" }];
+    wrapper.vm.getSimpleMapsNamespaces();
+    expect(wrapper.vm.simpleMaps).toStrictEqual([
+      {
+        "@id": "http://endhealth.info/emis#^ESCTAM784250",
+        code: "^ESCTAM784250",
+        name: "Amputation of right foot",
+        scheme: "None"
+      },
+      { "@id": "http://endhealth.info/emis#^ESCTAM784250", code: "^ESCTAM784250", name: "Amputation of right foot", scheme: "None" }
+    ]);
+  });
+
   it("can get bypriority ___ 1", () => {
     expect(wrapper.vm.byPriority({ priority: 9 }, { priority: 7 })).toBe(1);
   });
@@ -422,5 +558,17 @@ describe("Mappings.vue", () => {
 
   it("can get bypriority ___ 0", () => {
     expect(wrapper.vm.byPriority({ priority: 2 }, { priority: 2 })).toBe(0);
+  });
+
+  it("can get byScheme ___ 1", () => {
+    expect(wrapper.vm.byScheme({ scheme: 9 }, { scheme: 7 })).toBe(1);
+  });
+
+  it("can get byScheme ___ -1", () => {
+    expect(wrapper.vm.byScheme({ scheme: 7 }, { scheme: 10 })).toBe(-1);
+  });
+
+  it("can get byScheme ___ 0", () => {
+    expect(wrapper.vm.byScheme({ scheme: 2 }, { scheme: 2 })).toBe(0);
   });
 });

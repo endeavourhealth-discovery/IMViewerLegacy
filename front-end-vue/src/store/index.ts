@@ -16,7 +16,6 @@ import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 export default createStore({
   // update stateType.ts when adding new state!
   state: {
-    loading: new Map<string, boolean>(),
     cancelSource: axios.CancelToken.source(),
     conceptIri: IM.MODULE_ONTOLOGY,
     history: [] as HistoryItem[],
@@ -28,6 +27,7 @@ export default createStore({
     historyCount: 0 as number,
     focusTree: false as boolean,
     treeLocked: true as boolean,
+    resetTree: false as boolean,
     sideNavHierarchyFocus: {
       name: "Ontology",
       fullName: "Ontologies",
@@ -81,9 +81,6 @@ export default createStore({
     updateQuickFiltersStatus(state, status) {
       state.quickFiltersStatus.set(status.key, status.value);
     },
-    updateLoading(state, loading) {
-      state.loading.set(loading.key, loading.value);
-    },
     updateCurrentUser(state, user) {
       state.currentUser = user;
     },
@@ -105,6 +102,9 @@ export default createStore({
     },
     updateTreeLocked(state, bool) {
       state.treeLocked = bool;
+    },
+    updateResetTree(state, bool) {
+      state.resetTree = bool;
     },
     updateSideNavHierarchyFocus(state, focus) {
       state.sideNavHierarchyFocus = focus;
