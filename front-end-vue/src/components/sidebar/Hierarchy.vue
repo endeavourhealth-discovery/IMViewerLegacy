@@ -204,6 +204,7 @@ export default defineComponent({
 
     resetExpandedKeys(node: TreeNode) {
       const newExpandedKeys = {} as any;
+
       Object.keys(this.expandedKeys).forEach(expanded => {
         const isChild = node.children.find(child => child.label === expanded) ? true : false;
         if (this.expandedKeys[expanded] === true && !isChild) {
@@ -211,31 +212,59 @@ export default defineComponent({
         }
       });
       this.expandedKeys = newExpandedKeys;
+      this.expandedKeys = { ...this.expandedKeys };
     },
 
-    getSelectedFromRootOrRoot() {
-      const selectedLabel = Object.keys(this.selectedKey)[0];
-      return this.root.find(child => child.label === selectedLabel) || this.root[0];
+    getSelectedNodeRecursevily() {
+      const selectedKey = Object.keys(this.selectedKey)[0];
+      let result = [] as TreeNode[];
+      this.recursiveSearchForNode(selectedKey, this.root, result);
+      return result[0] || this.root[0];
+    },
+
+    getNodeToExpand() {
+      const selectedKey = Object.keys(this.selectedKey)[0];
+      return this.root.find(node => node.key === selectedKey) || this.root[0];
+    },
+
+    recursiveSearchForNode(key: string, nodes: TreeNode[], result: TreeNode[]) {
+      const node = nodes.find(child => child.key === key);
+      if (node) {
+        result.push(node);
+        return;
+      }
+      if (nodes.length) {
+        nodes.forEach(node => {
+          this.recursiveSearchForNode(key, node.children, result);
+        });
+      }
+    },
+
+    childrenContainNode(nodes: TreeNode[]): boolean {
+      const selectedKey = Object.keys(this.selectedKey)[0];
+      let result = [] as TreeNode[];
+      this.recursiveSearchForNode(selectedKey, nodes, result);
+      return result[0] ? true : false;
     },
 
     async expandParents(): Promise<void> {
-      const selected = this.getSelectedFromRootOrRoot();
-      if (!MODULE_IRIS.includes(selected.data)) {
+      const selected = this.getSelectedNodeRecursevily();
+      const nodeToExpand = this.getNodeToExpand();
+      if (!MODULE_IRIS.includes(nodeToExpand.data)) {
         const parentsNodes = [] as TreeNode[];
-        const parents = await EntityService.getEntityParents(selected.data);
+        const parents = await EntityService.getEntityParents(nodeToExpand.data);
         parents.forEach((parent: EntityReferenceNode) => {
           parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, true));
         });
 
-        if (parents.length > 1) {
-          this.expandedKeys[selected.key] = false;
+        if (selected.key !== nodeToExpand.key && !this.childrenContainNode(nodeToExpand.children)) {
+          nodeToExpand.children.push(selected);
+          this.expandedKeys[nodeToExpand.key] = true;
         }
 
-        parentsNodes[parentsNodes.length - 1].children.push(selected);
+        parentsNodes[parentsNodes.length - 1].children.push(nodeToExpand);
         this.expandedKeys[parentsNodes[parentsNodes.length - 1].key] = true;
-
         this.root = parentsNodes;
-
         await this.getFirstParent(this.root[0]);
       }
     },
