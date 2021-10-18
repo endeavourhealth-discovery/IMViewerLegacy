@@ -65,7 +65,7 @@ export default defineComponent({
   name: "Hierarchy",
   props: { active: { type: Number, required: true } },
   emits: ["showTree"],
-  computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus", "history"]),
+  computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus", "history", "resetTree"]),
   watch: {
     async conceptIri(newValue) {
       await this.getConceptAggregate(newValue);
@@ -100,6 +100,16 @@ export default defineComponent({
       if (!newValue) {
         await this.getConceptAggregate(this.conceptIri);
         this.refreshTree();
+      }
+    },
+    async resetTree(newValue) {
+      if (newValue) {
+        this.selectedKey = {};
+        this.parentLabel = "";
+        this.expandedKeys = {};
+        await this.getConceptAggregate(IM.MODULE_ONTOLOGY);
+        this.refreshTree();
+        this.$store.commit("updateResetTree", false);
       }
     }
   },

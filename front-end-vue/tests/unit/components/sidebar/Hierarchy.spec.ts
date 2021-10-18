@@ -835,14 +835,6 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
   });
 
-  it("routes onNodeSelect ___ IM", () => {
-    wrapper.vm.onNodeSelect({
-      data: "http://endhealth.info/im#InformationModel"
-    });
-    expect(mockRouter.push).toHaveBeenCalledTimes(1);
-    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Dashboard" });
-  });
-
   it("routes onNodeSelect ___ Concept", () => {
     wrapper.vm.onNodeSelect({ data: "http://endhealth.info/im#TestConcept" });
     expect(mockRouter.push).toHaveBeenCalledTimes(1);
