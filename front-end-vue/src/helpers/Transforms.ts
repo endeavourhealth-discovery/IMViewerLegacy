@@ -44,7 +44,7 @@ export function ttNodeToString(pred: string, node: any, indent: number, iriMap: 
   result += "\n";
 
   for (const p of Object.keys(node)) {
-    result += pad + "  " + iriMap[p] + " : " + ttValueToString("", node[p], iriMap, indent + 1);
+    result += pad + iriMap[p] + " : " + ttValueToString("", node[p], iriMap, indent + 1);
   }
 
   return result;
