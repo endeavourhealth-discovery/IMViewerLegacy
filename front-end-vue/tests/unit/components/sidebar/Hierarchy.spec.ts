@@ -845,7 +845,6 @@ describe("Hierarchy.vue ___ Concept", () => {
   });
 
   it("can expand children", async () => {
-    wrapper.vm.containsChild = jest.fn().mockReturnValue(false);
     const testNode = {
       data: "http://endhealth.info/im#TestConcept",
       key: "http://endhealth.info/im#TestConcept",
@@ -858,12 +857,10 @@ describe("Hierarchy.vue ___ Concept", () => {
     await wrapper.vm.$nextTick();
     expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept");
-    expect(wrapper.vm.containsChild).toHaveBeenCalled();
-    expect(testNode.children).toHaveLength(21);
+    expect(testNode.children).toHaveLength(20);
   });
 
   it("can expand children ___ containsChildTrue", async () => {
-    wrapper.vm.containsChild = jest.fn().mockReturnValue(true);
     const testNode = {
       data: "http://endhealth.info/im#TestConcept",
       key: "http://endhealth.info/im#TestConcept",
@@ -876,16 +873,7 @@ describe("Hierarchy.vue ___ Concept", () => {
     await wrapper.vm.$nextTick();
     expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept");
-    expect(wrapper.vm.containsChild).toHaveBeenCalled();
-    expect(testNode.children).toHaveLength(0);
-  });
-
-  it("can check containsChild ___ false", async () => {
-    expect(wrapper.vm.containsChild([{ data: "TestFail" }], { "@id": "TestId" })).toBeFalsy();
-  });
-
-  it("can check containsChild ___ true", async () => {
-    expect(wrapper.vm.containsChild([{ data: "TestId" }], { "@id": "TestId" })).toBeTruthy();
+    expect(testNode.children).toHaveLength(20);
   });
 
   it("can expand parents __ api pass", async () => {
