@@ -30,12 +30,8 @@
             <InputText v-model="filters1['global'].value" placeholder="Keyword Search" />
           </span>
           <div class="checkboxes-container">
-            <div>
-              <Button icon="pi pi-cloud-download" label="Download definition" @click="download(false)" />
-            </div>
-            <div>
-              <Button icon="pi pi-cloud-download" label="Download expanded" @click="download(true)" />
-            </div>
+            <Button type="button" label="Download..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
+            <Menu id="overlay_menu" ref="menu" :model="downloadMenu" :popup="true" />
           </div>
         </div>
       </template>
@@ -82,6 +78,9 @@ import EntityService from "@/services/EntityService";
 import { FilterMatchMode } from "primevue/api";
 import LoggerService from "@/services/LoggerService";
 import ComplexMembers from "@/components/concept/members/ComplexMembers.vue";
+import { ValueSetMember } from "@/models/members/ValueSetMember";
+import { ExportValueSet } from "@/models/members/ExportValueSet";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Members",
@@ -106,27 +105,37 @@ export default defineComponent({
   data() {
     return {
       loading: false,
-      members: {} as any,
-      combinedMembers: [] as any,
+      members: {} as ExportValueSet,
+      combinedMembers: [] as ValueSetMember[],
       filters1: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       },
-      selected: {} as any,
-      subsets: [] as any[],
-      expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]
+      selected: {} as ValueSetMember,
+      subsets: [] as string[],
+      expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"],
+      downloadMenu: [
+        { label: "Definition", command: () => this.download(false) },
+        { label: "Expanded (v2)", command: () => this.download(true) },
+        { label: "Expanded (v1)", command: () => this.download(true, true) }
+      ]
     };
   },
   methods: {
-    async onRowGroupExpand() {
+    toggle(event: any) {
+      const x = this.$refs.menu as any;
+      x.toggle(event);
+    },
+
+    onRowGroupExpand(): void {
       this.setTableWidth();
     },
 
-    onRowGroupCollapse() {
+    onRowGroupCollapse(): void {
       this.setTableWidth();
     },
 
-    onRowSelect() {
-      if (this.selected != null && this.selected.entity != null) {
+    onRowSelect(): void {
+      if (isObjectHasKeys(this.selected, ["entity"]) && isObjectHasKeys(this.selected.entity, ["@id"])) {
         this.$router.push({
           name: "Concept",
           params: { selectedIri: this.selected.entity["@id"] }
@@ -135,12 +144,12 @@ export default defineComponent({
       }
     },
 
-    async getMembers() {
+    async getMembers(): Promise<void> {
       this.loading = true;
       this.expandedRowGroups = ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"];
-      this.selected = {};
+      this.selected = {} as ValueSetMember;
       this.subsets = [];
-      this.members = await EntityService.getEntityMembers(this.conceptIri as string, false, false, 2000);
+      this.members = await EntityService.getEntityMembers(this.conceptIri, false, false, 2000);
       this.sortMembers();
       this.combinedMembers = this.members.members;
       this.setSubsets();
@@ -148,8 +157,8 @@ export default defineComponent({
       this.loading = false;
     },
 
-    setSubsets() {
-      this.combinedMembers.forEach((member: any) => {
+    setSubsets(): void {
+      this.combinedMembers.forEach((member: ValueSetMember) => {
         if (!this.subsets.some(e => e === member.label)) {
           if (member.type === "SUBSET") {
             this.subsets.push(member.label);
@@ -158,9 +167,11 @@ export default defineComponent({
       });
     },
 
-    download(expanded: boolean) {
-      const modIri = (this.conceptIri as string).replace(/\//gi, "%2F").replace(/#/gi, "%23");
-      const popup = window.open(process.env.VUE_APP_API + "api/entity/download?iri=" + modIri + "&members=true&expandMembers=" + expanded + "&format=excel");
+    download(expanded: boolean, v1 = false): void {
+      const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
+      const popup = window.open(
+        process.env.VUE_APP_API + "api/set/download?iri=" + modIri + "&expandMembers=" + expanded + "&v1=" + (expanded && v1) + "&format=excel"
+      );
       if (!popup) {
         this.$toast.add(LoggerService.error("Download failed from server"));
       } else {
@@ -168,15 +179,15 @@ export default defineComponent({
       }
     },
 
-    sortMembers() {
-      if (this.members && Object.prototype.hasOwnProperty.call(this.members, "members") && Array.isArray(this.members.members)) {
-        this.members.members = this.members.members.sort((a: any, b: any) =>
+    sortMembers(): void {
+      if (isObjectHasKeys(this.members, ["members"]) && isArrayHasLength(this.members.members)) {
+        this.members.members.sort((a: ValueSetMember, b: ValueSetMember) =>
           a.label.localeCompare(b.label) == 0 ? a.entity.name.localeCompare(b.entity.name) : a.label.localeCompare(b.label)
         );
       }
     },
 
-    onResize() {
+    onResize(): void {
       this.setTableWidth();
     },
 

@@ -18,21 +18,21 @@ export default defineComponent({
   },
   watch: {
     async conceptIri() {
-      await this.init();
+      this.init();
     }
   },
   async mounted() {
-    await this.init();
+    this.init();
   },
   data() {
     return {
-      complexMembers: {} as any,
+      complexMembers: [] as string[],
       loading: false
     };
   },
   methods: {
-    init() {
-      this.getComplexMembers();
+    async init() {
+      await this.getComplexMembers();
     },
 
     async getComplexMembers() {

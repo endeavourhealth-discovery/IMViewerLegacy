@@ -25,7 +25,7 @@
             <InputText
               type="text"
               v-model="searchRequest"
-              @keydown="checkKey($event)"
+              @keydown="checkKey($event.code)"
               placeholder="Search"
               class="p-inputtext-lg search-input"
               autoWidth="false"
@@ -109,6 +109,7 @@ import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import CatalogueService from "@/services/CatalogueService";
 import CatalogueDashboard from "@/components/catalogue/CatalogueDashboard.vue";
+import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
   name: "Catalogue",
@@ -133,7 +134,7 @@ export default defineComponent({
       location: "",
       types: [] as any[],
       selectedType: [] as any[],
-      typesIris: ["http://endhealth.info/im#Organisation"] as string[],
+      typesIris: [] as string[],
       dash: true
     };
   },
@@ -159,7 +160,7 @@ export default defineComponent({
     },
 
     checkKey(event: any) {
-      if (event.code === "Enter") {
+      if (this.searchRequest.length > 2 && event === "Enter") {
         this.getSearchResult();
       }
     },
@@ -188,7 +189,6 @@ export default defineComponent({
 
     async getPartialInstance() {
       window.history.pushState("", "", "/individual/" + this.instanceIri);
-      // console.log(document.location.href);
       const result = await CatalogueService.getPartialInstance(this.instanceIri, this.predicate);
       if (result) this.instance = result;
 
@@ -201,7 +201,7 @@ export default defineComponent({
             label: this.instance.entity[predicate],
             children: []
           });
-        } else if (predicate === "http://endhealth.info/im#address") {
+        } else if (predicate === IM.ADDRESS) {
           this.instanceData.push({
             key: level,
             label: this.getPredicateName(predicate) + " : ",
@@ -239,7 +239,6 @@ export default defineComponent({
     navigate(instance: any) {
       this.instanceIri = instance["@id"];
       this.instanceName = instance.name ? instance.name : instance["@id"];
-      // console.log(this.instanceIri);
       this.displayInstance();
     },
 

@@ -1,92 +1,87 @@
 <template>
-  <div class="dashcard-container">
+  <div :id="id" class="dashcard-container">
     <Card class="dashcard dash-table">
-      <template #title> Ontology overview </template>
+      <template #title>
+        <span v-if="name">{{ name }}</span>
+      </template>
       <template #subtitle>
-        A brief overview of the concepts stored in the Ontology
+        <span v-if="description">{{ description }}</span>
       </template>
       <template #content>
-        <DataTable v-if="!$store.state.loading.get('reportTable_' + iri)" :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="350px">
+        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="loading">
+          <ProgressSpinner />
+        </div>
+        <DataTable v-else :value="tableData" class="p-datatable-sm" :scrollable="true" scrollHeight="350px">
           <template #header>
             Ontology data
           </template>
           <Column field="label" header="Label"></Column>
           <Column field="count" header="Total"></Column>
         </DataTable>
-        <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container" v-if="$store.state.loading.get('reportTable_' + iri)">
-          <ProgressSpinner />
-        </div>
       </template>
     </Card>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { IM } from "@/vocabulary/IM";
+import { defineComponent, PropType } from "vue";
 import { RDFS } from "@/vocabulary/RDFS";
 import { OWL } from "@/vocabulary/OWL";
-import EntityService from "@/services/EntityService";
 
 export default defineComponent({
-  name: "OntologyOverview",
-  props: ["iri"],
+  name: "ReportTable",
+  props: {
+    name: { type: String, required: false },
+    description: { type: String, required: false },
+    inputData: { type: Array as PropType<Array<any>>, required: true },
+    id: { type: String, required: true }
+  },
   data() {
     return {
-      tableData: [] as any
+      tableData: [] as { count: number; label: string }[],
+      loading: false
     };
   },
   async mounted() {
-    // table data
-    this.$store.commit("updateLoading", {
-      key: "reportTable_" + this.iri,
-      value: true
-    });
-    const result = await EntityService.getPartialEntity(this.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
-    if (Object.keys(result).includes(IM.STATS_REPORT_ENTRY)) {
-      this.tableData = [];
-
-      for (const entry of result[IM.STATS_REPORT_ENTRY]) {
+    await this.getReportTableData();
+  },
+  methods: {
+    async getReportTableData(): Promise<void> {
+      this.loading = true;
+      for (const entry of this.inputData) {
         this.tableData.push({
           label: entry[RDFS.LABEL],
           count: +entry[OWL.HAS_VALUE]
         });
       }
+      this.loading = false;
     }
-    this.$store.commit("updateLoading", {
-      key: "reportTable_" + this.iri,
-      value: false
-    });
   }
 });
 </script>
 
 <style scoped>
-.dashcard-container {
-  grid-area: overview;
-  height: 100%;
-  width: 100%;
-}
-
-@media screen and (min-width: 1440px) {
+@media screen and (min-width: 1024px) {
   .dashcard-container {
-    max-width: calc(35vw - 57.5px - 21px);
-  }
-}
-
-@media screen and (min-width: 1024px) and (max-width: 1439px) {
-  .dashcard-container {
-    max-width: calc(32vw - 21px);
+    height: calc(50% - 7px);
+    width: calc(50% - 7px);
   }
 }
 
 @media screen and (max-width: 1023px) {
   .dashcard-container {
-    max-width: calc(62vw - 21px);
+    height: calc(50% - 7px);
+    width: calc(100%);
   }
 }
+
 .dashcard {
   height: 100%;
   width: 100%;
+}
+
+.loading-container {
+  width: 100%;
+  height: 100%;
 }
 </style>

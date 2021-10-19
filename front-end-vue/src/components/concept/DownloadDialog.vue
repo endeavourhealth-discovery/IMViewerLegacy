@@ -95,11 +95,20 @@ import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 import { RDFS } from "@/vocabulary/RDFS";
 import { IM } from "@/vocabulary/IM";
-import { OWL } from "@/vocabulary/OWL";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { DataModelProperty } from "@/models/properties/DataModelProperty";
+import { ExportValueSet } from "@/models/members/ExportValueSet";
+import { TermCode } from "@/models/terms/TermCode";
+import { PartialBundle } from "@/models/entityServiceTypes/EntityServiceTypes";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
+import { TTIriRef } from "@/models/TripleTree";
 
 export default defineComponent({
   name: "DownloadDialog",
-  props: ["conceptIri", "showDialog"],
+  props: {
+    conceptIri: { type: String, required: true },
+    showDialog: { type: Boolean, required: true }
+  },
   emits: ["closeDownloadDialog"],
   watch: {
     async conceptIri(newValue) {
@@ -113,14 +122,14 @@ export default defineComponent({
   data() {
     return {
       concept: {} as any,
-      inferred: {} as any,
-      axioms: {} as any,
-      hasSubTypes: [] as any[],
-      isChildOf: [] as any[],
+      inferred: {} as PartialBundle,
+      axioms: {} as PartialBundle,
+      hasSubTypes: [] as EntityReferenceNode[],
+      isChildOf: [] as TTIriRef[],
       hasChildren: [] as any[],
-      terms: [] as any[],
-      dataModelProperties: [] as any[],
-      members: {} as any,
+      terms: [] as TermCode[],
+      dataModelProperties: [] as DataModelProperty[],
+      members: {} as ExportValueSet,
       includeHasSubTypes: true,
       includeDataModelProperties: true,
       includeMembers: true,
@@ -149,11 +158,11 @@ export default defineComponent({
     };
   },
   methods: {
-    closeDownloadDialog() {
+    closeDownloadDialog(): void {
       this.$emit("closeDownloadDialog");
     },
 
-    downloadConcept() {
+    downloadConcept(): void {
       const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
 
       const url =
@@ -191,19 +200,19 @@ export default defineComponent({
       this.closeDownloadDialog();
     },
 
-    async init(iri: string) {
+    async init(iri: string): Promise<void> {
       this.loading = true;
       this.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
-      if (Object.prototype.hasOwnProperty.call(this.concept, IM.IS_CHILD_OF) && this.concept[IM.IS_CHILD_OF].length) {
+      if (isObjectHasKeys(this.concept, [IM.IS_CHILD_OF]) && isArrayHasLength(this.concept[IM.IS_CHILD_OF])) {
         this.isChildOf = this.concept[IM.IS_CHILD_OF];
       }
-      if (Object.prototype.hasOwnProperty.call(this.concept, IM.HAS_CHILDREN) && this.concept[IM.HAS_CHILDREN]) {
+      if (isObjectHasKeys(this.concept, [IM.HAS_CHILDREN]) && this.concept[IM.HAS_CHILDREN]) {
         this.hasChildren = this.concept[IM.HAS_CHILDREN];
       }
 
-      this.inferred = await EntityService.getPartialEntity(iri, [IM.IS_A, IM.ROLE_GROUP]);
+      this.inferred = await EntityService.getInferredBundle(iri);
 
-      this.axioms = await EntityService.getPartialEntity(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
+      this.axioms = await EntityService.getAxiomBundle(iri);
 
       this.hasSubTypes = await EntityService.getEntityChildren(iri);
 
@@ -217,7 +226,7 @@ export default defineComponent({
       this.loading = false;
     },
 
-    setIncludeBooleans() {
+    setIncludeBooleans(): void {
       this.includeInferred = !!this.inferred;
       this.includeAxioms = !!this.axioms;
       this.includeHasSubTypes = !!this.hasSubTypes.length;
@@ -225,7 +234,7 @@ export default defineComponent({
       this.includeHasChildren = !!this.hasChildren.length;
       this.includeTerms = !!this.terms.length;
       this.includeDataModelProperties = !!this.dataModelProperties.length;
-      this.includeMembers = !!(Object.prototype.hasOwnProperty.call(this.members, "members") && this.members.members.length);
+      this.includeMembers = !!(isObjectHasKeys(this.members, ["members"]) && isArrayHasLength(this.members.members));
     }
   }
 });

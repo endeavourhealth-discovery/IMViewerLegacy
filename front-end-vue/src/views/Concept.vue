@@ -1,19 +1,16 @@
 <template>
   <div id="concept-main-container">
-    <!-- <div v-if="loading" class="loading-container">
-      <ProgressSpinner />
-    </div> -->
     <Panel>
       <template #icons>
         <div class="icons-container">
           <button class="p-panel-header-icon p-link p-mr-2" @click="focusTree" v-tooltip.left="'Focus hierarchy tree to this concept'">
             <i class="fas fa-sitemap" aria-hidden="true"></i>
           </button>
-          <div v-if="Object.keys(concept).includes('subtypes') && Object.keys(concept).includes('dataModelProperties')" class="copy-container">
+          <div v-if="isObjectHasKeysWrapper(concept, ['axioms'])" class="copy-container">
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
-              v-clipboard:copy="copyConceptToClipboard()"
+              v-clipboard:copy="copyConceptToClipboardVueWrapper(concept, configs)"
               v-clipboard:success="onCopy"
               v-clipboard:error="onCopyError"
               v-tooltip="'Copy concept to clipboard \n (right click to copy individual properties)'"
@@ -114,7 +111,10 @@ import { MODULE_IRIS } from "@/helpers/ModuleIris";
 import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
 import Properties from "@/components/concept/Properties.vue";
-import { bundleToText } from "@/helpers/Transforms";
+import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
+import { TTIriRef } from "@/models/TripleTree";
+import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Concept",
@@ -159,7 +159,7 @@ export default defineComponent({
     },
 
     isProperty(): boolean {
-      return isOfTypes(this.types, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY);
+      return isOfTypes(this.types, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY, OWL.DATATYPE_PROPERTY);
     },
 
     ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel", "activeModule"])
@@ -179,15 +179,7 @@ export default defineComponent({
   },
   async mounted() {
     await this.init();
-    if (this.activeModule === "Sets") {
-      this.active = 2;
-    }
-    if (this.activeModule === "DataModel") {
-      this.active = 3;
-    }
-
     window.addEventListener("resize", this.onResize);
-
     this.setContentHeight();
   },
   beforeUnmount() {
@@ -201,15 +193,14 @@ export default defineComponent({
       concept: {} as any,
       definitionText: "",
       display: false,
-      types: [],
+      types: [] as TTIriRef[],
       header: "",
       dialogHeader: "",
       active: 0,
       contentHeight: "",
       contentHeightValue: 0,
       copyMenuItems: [] as any,
-      configs: [] as any,
-      axiomObject: {} as any
+      configs: [] as DefinitionConfig[]
     };
   },
   methods: {
@@ -232,62 +223,54 @@ export default defineComponent({
       this.$router.push({ name: "Create" });
     },
 
-    async getConcept(iri: string) {
+    async getConcept(iri: string): Promise<void> {
       const predicates = this.configs
-        .filter((c: any) => c.type !== "Divider")
-        .filter((c: any) => c.predicate !== "subtypes")
-        .filter((c: any) => c.predicate !== "inferred")
-        .filter((c: any) => c.predicate !== "dataModelProperties")
-        .filter((c: any) => c.predicate !== "termCodes")
-        .filter((c: any) => c.predicate !== "axioms")
-        .map((c: any) => c.predicate);
+        .filter((c: DefinitionConfig) => c.type !== "Divider")
+        .filter((c: DefinitionConfig) => c.predicate !== "subtypes")
+        .filter((c: DefinitionConfig) => c.predicate !== "inferred")
+        .filter((c: DefinitionConfig) => c.predicate !== "termCodes")
+        .filter((c: DefinitionConfig) => c.predicate !== "axioms")
+        .map((c: DefinitionConfig) => c.predicate);
 
       this.concept = await EntityService.getPartialEntity(iri, predicates);
 
-      const childrenReturn = await EntityService.getEntityChildren(iri);
-      if (childrenReturn) this.concept["subtypes"] = childrenReturn;
+      this.concept["subtypes"] = await EntityService.getEntityChildren(iri);
 
-      const termCodesReturn = await EntityService.getEntityTermCodes(iri);
-      if (termCodesReturn) this.concept["termCodes"] = termCodesReturn;
+      this.concept["termCodes"] = await EntityService.getEntityTermCodes(iri);
     },
 
-    async getProperties(iri: string) {
-      this.concept["dataModelProperties"] = await EntityService.getDataModelProperties(iri);
+    async getInferred(iri: string): Promise<void> {
+      this.concept["inferred"] = await EntityService.getInferredBundle(iri);
     },
 
-    async getInferred(iri: string) {
-      this.concept["inferred"] = await EntityService.getPartialEntityBundle(iri, [IM.IS_A, IM.ROLE_GROUP]);
+    async getStated(iri: string): Promise<void> {
+      this.concept["axioms"] = await EntityService.getAxiomBundle(iri);
     },
 
-    async getStated(iri: string) {
-      this.concept["axioms"] = await EntityService.getPartialEntityBundle(iri, [RDFS.SUBCLASS_OF, RDFS.SUB_PROPERTY_OF, OWL.EQUIVALENT_CLASS]);
-    },
-
-    async getConfig(name: string) {
+    async getConfig(name: string): Promise<void> {
       const configReturn = await ConfigService.getComponentLayout(name);
       if (configReturn) {
         this.configs = configReturn;
-        this.configs.sort((a: any, b: any) => {
+        this.configs.sort((a: DefinitionConfig, b: DefinitionConfig) => {
           return a.order - b.order;
         });
       }
     },
 
-    async init() {
+    async init(): Promise<void> {
       this.loading = true;
       await this.getConfig("definition");
       await this.getConcept(this.conceptIri);
       await this.getInferred(this.conceptIri);
       await this.getStated(this.conceptIri);
-      await this.getProperties(this.conceptIri);
-      this.types = Object.prototype.hasOwnProperty.call(this.concept, RDF.TYPE) ? this.concept[RDF.TYPE] : [];
+      this.types = isObjectHasKeys(this.concept, [RDF.TYPE]) ? this.concept[RDF.TYPE] : ([] as TTIriRef[]);
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
       this.setStoreType();
       this.loading = false;
     },
 
-    setStoreType() {
+    setStoreType(): void {
       let type;
       if (this.isSet) {
         type = "Sets";
@@ -297,26 +280,27 @@ export default defineComponent({
         type = "Queries";
       } else if (this.isRecordModel) {
         type = "DataModel";
+      } else if (this.isProperty) {
+        type = "Property";
       } else {
         type = this.activeModule;
       }
-
       this.$store.commit("updateSelectedEntityType", type);
       if (!MODULE_IRIS.includes(this.conceptIri)) {
         this.$store.commit("updateModuleSelectedEntities", {
-          module: type,
+          module: this.isProperty ? "DataModel" : type,
           iri: this.conceptIri
         });
       }
     },
 
-    setActivePanel(newType: string, oldType: string) {
+    setActivePanel(newType: string, oldType: string): void {
       if (newType === oldType) {
         this.active = this.conceptActivePanel;
       } else {
-        if (newType === "Sets") {
+        if (this.isSet) {
           this.active = 2;
-        } else if (newType === "DataModel") {
+        } else if (this.isRecordModel) {
           this.active = 3;
         } else {
           this.active = 0;
@@ -349,83 +333,8 @@ export default defineComponent({
       this.showDownloadDialog = false;
     },
 
-    conceptObjectToCopyString(key: string, value: any, counter: number, totalKeys: number): { label: string; value: string } | undefined {
-      let newString = "";
-      let returnString = "";
-      const label = this.configs.find((config: any) => config.predicate === key);
-      if (!label) {
-        return;
-      }
-      let newKey = label.label;
-      if (Array.isArray(value)) {
-        if (value.length) {
-          if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
-            newString = value.map(item => item.name).join(",\n\t");
-          } else if (Object.prototype.hasOwnProperty.call(value[0], "property") && Object.prototype.hasOwnProperty.call(value[0].property, "name")) {
-            newString = value.map(item => item.property.name).join(",\n\t");
-          } else {
-            LoggerService.warn(
-              undefined,
-              "Uncovered object property or missing name found for key: " + key + " at conceptObjectToCopyString within Concept.vue"
-            );
-          }
-          if (newString) {
-            if (counter === totalKeys - 1) {
-              returnString = newKey + ": [\n\t" + newString + "\n]";
-            } else {
-              returnString = newKey + ": [\n\t" + newString + "\n],\n";
-            }
-          }
-        }
-      } else if (Object.prototype.toString.call(value) === "[object Object]" && Object.prototype.hasOwnProperty.call(value, "name")) {
-        newString = value.name;
-        if (newString) {
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ": " + newString;
-          } else {
-            returnString = newKey + ": " + newString + ",\n";
-          }
-        }
-      } else if (
-        Object.prototype.toString.call(value) === "[object Object]" &&
-        Object.prototype.hasOwnProperty.call(value, "entity") &&
-        Object.prototype.hasOwnProperty.call(value, "predicates")
-      ) {
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ': "\n' + bundleToText(value) + '\n"';
-        } else {
-          returnString = newKey + ': "\n' + bundleToText(value) + '\n",\n';
-        }
-      } else if (typeof value === "string") {
-        newString = value.replace(/\n/g, "\n\t").replace(/<p>/g, "\n\t") as string;
-        if (newString) {
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ": " + newString;
-          } else {
-            returnString = newKey + ": " + newString + ",\n";
-          }
-        }
-      } else {
-        returnString = JSON.stringify(value);
-      }
-      return { label: newKey, value: returnString };
-    },
-
-    copyConceptToClipboard(): string {
-      const totalKeys = Object.keys(this.concept).length;
-      let counter = 0;
-      let returnString = "";
-      let key: string;
-      let value: any;
-      for ([key, value] of Object.entries(this.concept)) {
-        const copyString = this.conceptObjectToCopyString(key, value, counter, totalKeys);
-        if (copyString) returnString += copyString.value;
-        counter++;
-      }
-      if (returnString.endsWith(",\n")) {
-        return returnString.slice(0, -2);
-      }
-      return returnString;
+    copyConceptToClipboardVueWrapper(concept: any, configs: DefinitionConfig[]) {
+      return copyConceptToClipboard(concept, configs);
     },
 
     onCopy(): void {
@@ -436,12 +345,12 @@ export default defineComponent({
       this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
     },
 
-    onCopyRightClick(event: any) {
+    onCopyRightClick(event: any): void {
       const x = this.$refs.copyMenu as any;
       x.show(event);
     },
 
-    setCopyMenuItems() {
+    setCopyMenuItems(): void {
       this.copyMenuItems = [
         {
           label: "Copy",
@@ -454,7 +363,7 @@ export default defineComponent({
           label: "All",
           command: async () => {
             await navigator.clipboard
-              .writeText(this.copyConceptToClipboard())
+              .writeText(copyConceptToClipboard(this.concept, this.configs))
               .then(() => {
                 this.$toast.add(LoggerService.success("Concept copied to clipboard"));
               })
@@ -468,7 +377,7 @@ export default defineComponent({
       let key: string;
       let value: any;
       for ([key, value] of Object.entries(this.concept)) {
-        let result = this.conceptObjectToCopyString(key, value, 0, 1);
+        let result = conceptObjectToCopyString(key, value, 0, 1, this.configs);
         if (!result || !result.value) continue;
         const label = result.label;
         const text = result.value;
@@ -486,6 +395,10 @@ export default defineComponent({
           }
         });
       }
+    },
+
+    isObjectHasKeysWrapper(object: any, keys: string[]) {
+      return isObjectHasKeys(object, keys);
     }
   }
 });

@@ -3,12 +3,12 @@
 // Class, Record Type
 // Everything else
 
-import { ConceptReference } from "@/models/ConceptReference";
+import { TTIriRef } from "@/models/TripleTree";
 import { IM } from "@/vocabulary/IM";
 import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
 
-export function isOfTypes(conceptTypeElements: ConceptReference[], ...types: string[]): boolean {
+export function isOfTypes(conceptTypeElements: TTIriRef[], ...types: string[]): boolean {
   if (!conceptTypeElements || !conceptTypeElements.length) {
     return false;
   }
@@ -23,11 +23,11 @@ export function isOfTypes(conceptTypeElements: ConceptReference[], ...types: str
   return found;
 }
 
-export function isValueSet(conceptTypes: ConceptReference[]): boolean {
+export function isValueSet(conceptTypes: TTIriRef[]): boolean {
   return isOfTypes(conceptTypes, IM.SET, IM.QUERY_SET, IM.VALUE_SET, IM.CONCEPT_SET);
 }
 
-export function getIconFromType(conceptTypes: ConceptReference[]): string {
+export function getIconFromType(conceptTypes: TTIriRef[]): string {
   if (isOfTypes(conceptTypes, SHACL.NODESHAPE)) {
     return "fas fa-fw fa-project-diagram";
   }
@@ -52,7 +52,7 @@ export function getIconFromType(conceptTypes: ConceptReference[]): string {
 }
 
 const palette = require("../../node_modules/google-palette");
-export function getColourFromType(conceptTypes: ConceptReference[]): string {
+export function getColourFromType(conceptTypes: TTIriRef[]): string {
   const bgs = palette("tol-rainbow", 6);
   const bgsFixed = bgs.map((color: string) => "#" + color + "88");
 

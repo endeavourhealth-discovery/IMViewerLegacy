@@ -1,7 +1,8 @@
 <template>
-  <div v-if="data" id="axioms-container" :style="{ width: size }">
+  <div v-if="hasData" id="axioms-container" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}</strong>
+      <span v-if="getCount()">&nbsp;({{ getCount() }})</span>
       <Button
         :icon="buttonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
         class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
@@ -24,20 +25,30 @@
 import { defineComponent } from "@vue/runtime-core";
 import { bundleToText } from "@/helpers/Transforms";
 import { TTBundle } from "@/models/TripleTree";
-import {mapState} from 'vuex';
+import { mapState } from "vuex";
+import { PartialEntity } from "@/models/PartialEntity";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "TextDefinition",
   props: {
     label: { type: String },
-    data: { type: Object, required: true },
-    size: { type: String }
+    data: { type: Object as () => PartialEntity, required: true },
+    size: { type: String },
+    show: { type: Boolean }
   },
   computed: {
+    hasData(): boolean {
+      if (isObjectHasKeys(this.data, ["entity", "predicates"]) && isObjectHasKeys(this.data.predicates) && isObjectHasKeys(this.data.entity)) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     ...mapState(["selectedEntityType"])
   },
   mounted() {
-    if (this.selectedEntityType === "Ontology" && this.label === "Inferred") {
+    if (this.label === "Inferred") {
       const button = document.getElementById(`expand-button-${this.label}`) as HTMLElement;
       if (button) button.click();
     }
@@ -49,11 +60,18 @@ export default defineComponent({
     };
   },
   methods: {
-    setButtonExpanded() {
-      this.buttonExpanded ? (this.buttonExpanded = false) : (this.buttonExpanded = true);
+    setButtonExpanded(): void {
+      this.buttonExpanded = !this.buttonExpanded;
     },
     getDefinition(): string {
       return bundleToText(this.data as TTBundle);
+    },
+    getCount(): number {
+      let count = 0;
+      Object.keys(this.data.entity).forEach(key => {
+        count += (this.data.entity as any)[key].length;
+      });
+      return count;
     }
   }
 });

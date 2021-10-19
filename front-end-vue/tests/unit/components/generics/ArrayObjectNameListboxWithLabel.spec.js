@@ -4,11 +4,13 @@ import Listbox from "primevue/listbox";
 import Button from "primevue/button";
 import StyleClass from "primevue/styleclass";
 
-describe("ArrayObjectNameListboxWithLabel.vue", () => {
+describe("ArrayObjectNameListboxWithLabel.vue ___ ontology", () => {
   let wrapper;
   let mockRoute;
   let mockRouter;
   let mockStore;
+  let docSpy;
+  let mockButton;
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -19,7 +21,14 @@ describe("ArrayObjectNameListboxWithLabel.vue", () => {
       state: {
         selectedEntityType: "Ontology"
       }
-    }
+    };
+
+    mockButton = {
+      click: jest.fn()
+    };
+
+    docSpy = jest.spyOn(document, "getElementById");
+    docSpy.mockReturnValue(mockButton);
 
     wrapper = mount(ArrayObjectNameListboxWithLabel, {
       global: {
@@ -36,6 +45,8 @@ describe("ArrayObjectNameListboxWithLabel.vue", () => {
         ]
       }
     });
+
+    jest.clearAllMocks();
   });
 
   it("renders mounted data", () => {
@@ -44,6 +55,11 @@ describe("ArrayObjectNameListboxWithLabel.vue", () => {
     const row1 = wrapper.get(".data-name");
     expect(row1.text()).toBe("Acquired curvature of spine (disorder)");
     expect(wrapper.vm.selected).toStrictEqual({});
+  });
+
+  it("expandAtStartup ___ true", () => {
+    wrapper.vm.expandAtStartup();
+    expect(mockButton.click).toHaveBeenCalledTimes(1);
   });
 
   it("can check isArrayObjectWithName ___ true", () => {
@@ -66,9 +82,7 @@ describe("ArrayObjectNameListboxWithLabel.vue", () => {
     const warn = console.warn;
     console.warn = jest.fn();
     expect(ArrayObjectNameListboxWithLabel.computed.isArrayObjectWithName.call({ data: undefined })).toBe(false);
-    expect(console.warn).not.toHaveBeenCalledWith(
-      "Data error. Data is not array, array does not contain Object or Object has no property 'name' for use within component ArrayObjectNameListboxWithLabel.vue"
-    );
+    expect(console.warn).not.toHaveBeenCalled();
     console.warn = warn;
   });
 
@@ -107,5 +121,62 @@ describe("ArrayObjectNameListboxWithLabel.vue", () => {
     wrapper.vm.buttonExpanded = true;
     wrapper.vm.setButtonExpanded();
     expect(wrapper.vm.buttonExpanded).toBe(false);
+  });
+});
+
+describe("ArrayObjectNameListboxWithLabel.vue ___ ontology", () => {
+  let wrapper;
+  let mockRoute;
+  let mockRouter;
+  let mockStore;
+  let docSpy;
+  let mockButton;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+
+    mockRoute = { name: "Concept" };
+    mockRouter = { push: jest.fn() };
+    mockStore = {
+      state: {
+        selectedEntityType: "Sets"
+      }
+    };
+
+    mockButton = {
+      click: jest.fn()
+    };
+
+    docSpy = jest.spyOn(document, "getElementById");
+    docSpy.mockReturnValue(mockButton);
+
+    wrapper = mount(ArrayObjectNameListboxWithLabel, {
+      global: {
+        components: { Listbox, Button },
+        mocks: { $route: mockRoute, $router: mockRouter, $store: mockStore },
+        directives: { styleclass: StyleClass }
+      },
+      props: {
+        label: "Subtype of",
+        size: "50%",
+        data: [
+          { "@id": "http://snomed.info/sct#12903001", name: "Acquired curvature of spine (disorder)" },
+          { "@id": "http://snomed.info/sct#298382003", name: "Scoliosis deformity of spine (disorder)" }
+        ]
+      }
+    });
+
+    jest.clearAllMocks();
+  });
+
+  it("expandAtStartup ___ false", () => {
+    wrapper.vm.expandAtStartup();
+    expect(mockButton.click).not.toHaveBeenCalled();
+  });
+
+  it("expandAtStartup ___ no button", () => {
+    docSpy.mockReturnValue(false);
+    wrapper.vm.expandAtStartup();
+    expect(mockButton.click).not.toHaveBeenCalled();
   });
 });

@@ -1,31 +1,23 @@
 import { IM } from "@/vocabulary/IM";
 import { OWL } from "@/vocabulary/OWL";
-import { TTBundle, TTIriRef } from '@/models/TripleTree';
+import { TTBundle, TTIriRef } from "@/models/TripleTree";
 
 export function bundleToText(bundle: TTBundle): string {
-  const iriMap: any = {};
-
-  // Add predicate id -> name map from results
-  for (const p of bundle.predicates) {
-    iriMap[p["@id"]] = p["name"];
-  }
-
   // Add custom id -> name maps
-  iriMap[IM.IS_A] = "Is a";
-  iriMap[OWL.EQUIVALENT_CLASS] = "Is equivalent to";
-  iriMap[OWL.INTERSECTION_OF] = "Combination of";
-  iriMap[OWL.SOME_VALUES_FROM] = "With a value";
-  iriMap[OWL.ON_PROPERTY] = "On property";
+  bundle.predicates[IM.IS_A] = "Is a";
+  bundle.predicates[OWL.EQUIVALENT_CLASS] = "Is equivalent to";
+  bundle.predicates[OWL.INTERSECTION_OF] = "Combination of";
+  bundle.predicates[OWL.SOME_VALUES_FROM] = "With a value";
+  bundle.predicates[OWL.ON_PROPERTY] = "On property";
 
   delete bundle.entity["@id"];
 
   let result = "";
 
   for (const p of Object.keys(bundle.entity)) {
-    result += ttValueToString(iriMap[p], bundle.entity[p], iriMap, 0);
+    result += ttValueToString(bundle.predicates[p], bundle.entity[p], bundle.predicates, 0);
   }
-
-  return result;
+  return result.replace(/ *\([^)]*\) */g, "");
 }
 
 export function ttValueToString(pred: string, node: any, iriMap: any, indent: number): string {
@@ -35,7 +27,7 @@ export function ttValueToString(pred: string, node: any, iriMap: any, indent: nu
   } else if (node instanceof Array) {
     return ttArrayToString(pred, node, indent, iriMap);
   } else if (node instanceof Object) {
-    return ttNodeToString(pred, node, indent, iriMap  );
+    return ttNodeToString(pred, node, indent, iriMap);
   } else {
     return pad + node;
   }
@@ -52,7 +44,7 @@ export function ttNodeToString(pred: string, node: any, indent: number, iriMap: 
   result += "\n";
 
   for (const p of Object.keys(node)) {
-    result += pad + "  " + iriMap[p] + " : " + ttValueToString("", node[p], iriMap, indent + 1);
+    result += pad + iriMap[p] + " : " + ttValueToString("", node[p], iriMap, indent + 1);
   }
 
   return result;

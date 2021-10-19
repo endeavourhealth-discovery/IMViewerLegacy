@@ -40,6 +40,7 @@ import { defineComponent, PropType } from "vue";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import LoggerService from "@/services/LoggerService";
 import { mapState } from "vuex";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "ArrayObjectNameListboxWithLabel",
@@ -51,18 +52,10 @@ export default defineComponent({
   },
   computed: {
     isArrayObjectWithName(): boolean {
-      if (!this.data) {
-        return false;
-      }
-      if (
-        Array.isArray(this.data) &&
-        this.data.length &&
-        this.data.every(item => Object.prototype.toString.call(item) === "[object Object]") &&
-        this.data.every(item => Object.prototype.hasOwnProperty.call(item, "name"))
-      ) {
+      if (!this.data) return false;
+      if (!isArrayHasLength(this.data)) return false;
+      if (this.data.every(item => isObjectHasKeys(item, ["name"]))) {
         return true;
-      } else if (Array.isArray(this.data) && this.data.length === 0) {
-        return false;
       } else {
         LoggerService.warn(
           undefined,
@@ -74,10 +67,7 @@ export default defineComponent({
     ...mapState(["selectedEntityType"])
   },
   mounted() {
-    if (this.selectedEntityType === "Ontology" && this.label === "Is a") {
-      const button = document.getElementById(`expand-button-${this.id}`) as HTMLElement;
-      if (button) button.click();
-    }
+    this.expandAtStartup();
   },
   data() {
     return {
@@ -86,7 +76,7 @@ export default defineComponent({
     };
   },
   methods: {
-    navigate(iri: any) {
+    navigate(iri: string) {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
       if (iri)
         this.$router.push({
@@ -96,7 +86,14 @@ export default defineComponent({
     },
 
     setButtonExpanded() {
-      this.buttonExpanded ? (this.buttonExpanded = false) : (this.buttonExpanded = true);
+      this.buttonExpanded = !this.buttonExpanded;
+    },
+
+    expandAtStartup() {
+      if (this.selectedEntityType === "Ontology" && this.label === "Is a") {
+        const button = document.getElementById(`expand-button-${this.id}`) as HTMLElement;
+        if (button) button.click();
+      }
     }
   }
 });

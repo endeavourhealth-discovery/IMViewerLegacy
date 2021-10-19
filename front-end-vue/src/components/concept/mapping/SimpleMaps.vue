@@ -39,11 +39,16 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
+import { SimpleMap } from "@/models/mappings/SimpleMap";
 
 export default defineComponent({
   name: "SimpleMaps",
-  components: {},
-  props: ["data"],
+  props: {
+    data: {
+      type: Object as () => SimpleMap,
+      required: true
+    }
+  },
   async mounted() {
     window.addEventListener("resize", this.onResize);
     this.onResize();
@@ -53,7 +58,6 @@ export default defineComponent({
   },
   data() {
     return {
-      selected: {} as any,
       loading: false,
       scrollHeight: "500px",
       rows: 25

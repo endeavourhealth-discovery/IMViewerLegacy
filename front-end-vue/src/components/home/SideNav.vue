@@ -26,14 +26,13 @@
           <img
             v-if="isLoggedIn"
             class="avatar-icon"
-            :src="getUrl(currentUser.avatar.value)"
+            :src="getUrl(currentUser.avatar)"
             alt="avatar icon"
             @click="toggle"
             aria-haspopup="true"
             aria-controls="overlay_menu"
           />
           <Menu ref="menu" :model="getItems()" :popup="true" id="popup-user" />
-          <!-- <i class="pi pi-cog settings-icon" aria-hidden="true"></i> -->
         </div>
       </div>
     </div>
@@ -45,6 +44,7 @@ import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
+import { LoginItem, AccountItem, ModuleItem } from "@/models/sideNav/MenuItems";
 
 export default defineComponent({
   name: "SideNav",
@@ -121,7 +121,7 @@ export default defineComponent({
           icon: "fa fa-fw fa-user-plus",
           to: "/user/register"
         }
-      ] as { label: string; icon: string; to: string }[],
+      ] as LoginItem[],
 
       accountItems: [
         {
@@ -144,7 +144,7 @@ export default defineComponent({
           icon: "fa fa-fw fa-sign-out-alt",
           to: "/user/logout" //+ this.user.id
         }
-      ] as { label: string; icon: string; to: string }[],
+      ] as AccountItem[],
 
       menuItems: [
         {
@@ -195,7 +195,7 @@ export default defineComponent({
         //   name: "Assign",
         //   route: "UPRN"
         // }
-      ]
+      ] as ModuleItem[]
     };
   },
   methods: {
@@ -203,7 +203,7 @@ export default defineComponent({
       return item === this.sideNavHierarchyFocus.name ? true : false;
     },
 
-    getItems(): { label: string; icon: string; to: string }[] {
+    getItems(): LoginItem[] | AccountItem[] {
       if (this.isLoggedIn) {
         return this.accountItems;
       } else {
@@ -220,18 +220,17 @@ export default defineComponent({
       return require("@/assets/avatars/" + item);
     },
 
-    resetToHome(): void {
-      this.$store.commit("updateSideNavHierarchyFocus", {
-        name: "InformationModel",
-        fullName: "Information Model",
-        iri: IM.MODULE_IM
-      });
-      this.$store.commit("updateConceptIri", IM.MODULE_IM);
-      this.$emit("hierarchyFocusSelected");
-      this.$router.push({ name: "Dashboard" });
+    async resetToHome(): Promise<void> {
+      this.$store.commit("updateModuleSelectedEntities", { module: this.menuItems[0].name, iri: this.menuItems[0].iri });
+      this.$store.commit("updateModuleSelectedEntities", { module: this.menuItems[1].name, iri: this.menuItems[1].iri });
+      this.$store.commit("updateModuleSelectedEntities", { module: this.menuItems[2].name, iri: this.menuItems[2].iri });
+      this.$store.commit("updateModuleSelectedEntities", { module: this.menuItems[3].name, iri: this.menuItems[3].iri });
+      await this.$nextTick();
+      this.handleCenterIconClick(this.menuItems[0]);
+      this.$store.commit("updateResetTree", true);
     },
 
-    handleCenterIconClick(item: any) {
+    handleCenterIconClick(item: ModuleItem): void {
       let route = item.route;
       let moduleIri = "";
       if (item.name === "Ontology" || item.name === "Sets" || item.name === "Queries" || item.name === "DataModel") {

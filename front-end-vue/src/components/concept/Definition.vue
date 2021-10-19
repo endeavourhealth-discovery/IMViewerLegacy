@@ -16,8 +16,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import DataModelProperties from "./definition/DataModelProperties.vue";
+import { defineComponent, PropType } from "vue";
 import ArrayObjectNamesToStringWithLabel from "@/components/generics/ArrayObjectNamesToStringWithLabel.vue";
 import TextHTMLWithLabel from "@/components/generics/TextHTMLWithLabel.vue";
 import TextWithLabel from "@/components/generics/TextWithLabel.vue";
@@ -26,12 +25,14 @@ import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNa
 import TermsTable from "@/components/concept/definition/TermsTable.vue";
 import TextSectionHeader from "@/components/generics/TextSectionHeader.vue";
 import SectionDivider from "@/components/generics/SectionDivider.vue";
-import TextDefinition from '@/components/concept/definition/TextDefinition.vue';
+import TextDefinition from "@/components/generics/TextDefinition.vue";
+import ObjectNameTagWithLabel from "@/components/generics/ObjectNameTagWithLabel.vue";
+import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
+import { isArrayHasLength, isObject, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Definition",
   components: {
-    DataModelProperties,
     ArrayObjectNamesToStringWithLabel,
     TextHTMLWithLabel,
     TextWithLabel,
@@ -40,11 +41,15 @@ export default defineComponent({
     TermsTable,
     TextSectionHeader,
     SectionDivider,
-    TextDefinition
+    TextDefinition,
+    ObjectNameTagWithLabel
   },
-  props: ["concept", "configs"],
+  props: {
+    concept: { type: Object, required: true },
+    configs: { type: Array as PropType<Array<DefinitionConfig>>, required: true }
+  },
   methods: {
-    showItem(config: any, index: number): boolean {
+    showItem(config: DefinitionConfig, index: number): boolean {
       let dataResults = [];
       if (config.type === "SectionDivider") {
         let i = index - 1;
@@ -70,23 +75,22 @@ export default defineComponent({
         const data = this.concept[this.configs[index].predicate];
         dataResults.push(this.hasData(data));
       }
-      const show = !dataResults.every(value => value === false);
-      return show;
+      return !dataResults.every(value => value === false);
     },
 
     hasData(data: any): boolean {
       if (!data) {
         return false;
       } else if (Array.isArray(data)) {
-        return data.length ? true : false;
+        return isArrayHasLength(data) ? true : false;
       } else if (typeof data === "string") {
         return data ? true : false;
-      } else if (Object.prototype.toString.call(data) === "[object Object]" && Object.prototype.hasOwnProperty.call(data, "count")) {
+      } else if (isObjectHasKeys(data, ["count"])) {
         return data.count ? true : false;
-      } else if (Object.prototype.toString.call(data) === "[object Object]") {
-        return Object.keys(data).length ? true : false;
+      } else if (isObject(data)) {
+        return isObjectHasKeys(data) ? true : false;
       } else {
-        console.log("Unexpected data type encountered for function hasData in definition");
+        console.log(`Unexpected data type encountered for function hasData in definition. Data: ${JSON.stringify(data)}`);
         return false;
       }
     }

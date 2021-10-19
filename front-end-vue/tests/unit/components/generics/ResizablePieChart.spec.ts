@@ -1,117 +1,59 @@
 import { shallowMount } from "@vue/test-utils";
-import ReportPieChart from "@/components/dashboard/ReportPieChart.vue";
+import ResizeablePieChart from "@/components/generics/ResizeablePieChart.vue";
 import Card from "primevue/card";
 import Chart from "primevue/chart";
 import ProgressSpinner from "primevue/progressspinner";
 
 import { PieChartData } from "@/models/charts/PieChartData";
-import EntityService from "@/services/EntityService";
 
-describe("ReportPieChart.vue", () => {
+describe("PieChartDashCard.vue", () => {
   let wrapper: any;
-  let mockStore: any;
-  let mockToast: any;
+  let docSpyId: any;
+  let docSpyClass: any;
+  let windowSpy: any;
+  let inputData = [
+    { "http://www.w3.org/2002/07/owl#hasValue": 1030354, "http://www.w3.org/2000/01/rdf-schema#label": "Class" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 93282, "http://www.w3.org/2000/01/rdf-schema#label": "Legacy concept" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 1811, "http://www.w3.org/2000/01/rdf-schema#label": "Object property" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 1122, "http://www.w3.org/2000/01/rdf-schema#label": "Set" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 99, "http://www.w3.org/2000/01/rdf-schema#label": "Node shape" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 94, "http://www.w3.org/2000/01/rdf-schema#label": "Record type" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 68, "http://www.w3.org/2000/01/rdf-schema#label": "Data property" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 45, "http://www.w3.org/2000/01/rdf-schema#label": "Query set" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 26, "http://www.w3.org/2000/01/rdf-schema#label": "Functional property" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 23, "http://www.w3.org/2000/01/rdf-schema#label": "Annotation property" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 11, "http://www.w3.org/2000/01/rdf-schema#label": "Symmetric property" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 11, "http://www.w3.org/2000/01/rdf-schema#label": "Transitive property" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 8, "http://www.w3.org/2000/01/rdf-schema#label": "Folder" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 8, "http://www.w3.org/2000/01/rdf-schema#label": "Value set" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 2, "http://www.w3.org/2000/01/rdf-schema#label": "Reflexive property" },
+    { "http://www.w3.org/2002/07/owl#hasValue": 1, "http://www.w3.org/2000/01/rdf-schema#label": "Query template" }
+  ];
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
-    EntityService.getPartialEntity = jest.fn().mockResolvedValue({
-      "@id": "http://endhealth.info/im#ontologyConceptTypes",
-      "http://endhealth.info/im#hasStatsReportEntry": [
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 1030354,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Class"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 93282,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Legacy concept"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 1811,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Object property"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 1122,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Set"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 99,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Node shape"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 94,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Record type"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 68,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Data property"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 45,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Query set"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 26,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Functional property"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 23,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Annotation property"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 11,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Symmetric property"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 11,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Transitive property"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 8,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Folder"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 8,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Value set"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 2,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Reflexive property"
-        },
-        {
-          "http://www.w3.org/2002/07/owl#hasValue": 1,
-          "http://www.w3.org/2000/01/rdf-schema#label": "Query template"
-        }
-      ],
-      "http://www.w3.org/2000/01/rdf-schema#comment": "A brief overview of the types of data stored in the Ontology",
-      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
-        "@id": "http://endhealth.info/im#statsReport",
-        name: "Statistics Report"
+
+    docSpyId = jest.spyOn(document, "getElementById");
+    docSpyId.mockReturnValue(undefined);
+
+    docSpyClass = jest.spyOn(document, "getElementsByClassName");
+    docSpyClass.mockReturnValue([undefined]);
+
+    windowSpy = jest.spyOn(window, "getComputedStyle");
+    windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue("16px") });
+
+    wrapper = shallowMount(ResizeablePieChart, {
+      props: {
+        inputData: inputData,
+        labelKey: "http://www.w3.org/2000/01/rdf-schema#label",
+        dataKey: "http://www.w3.org/2002/07/owl#hasValue"
       },
-      "http://www.w3.org/2000/01/rdf-schema#label": "Ontology concept types"
-    });
-    mockStore = {
-      commit: jest.fn()
-    };
-    mockToast = {
-      add: jest.fn()
-    };
-    wrapper = shallowMount(ReportPieChart, {
-      props: { iri: "im:Test" },
       global: {
-        components: { Card, Chart, ProgressSpinner },
-        mocks: { $store: mockStore, $toast: mockToast }
+        components: { Card, Chart, ProgressSpinner }
       }
     });
-  });
 
-  it("sets the store loading over mount", async () => {
-    expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateLoading", { key: "reportPie_im:Test", value: true });
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateLoading", { key: "reportPie_im:Test", value: false });
-  });
-
-  it("calls the report service on mount", () => {
-    expect(EntityService.getPartialEntity).toBeCalledTimes(1);
+    await wrapper.vm.$nextTick();
   });
 
   it("can remove eventListener", () => {
@@ -122,7 +64,7 @@ describe("ReportPieChart.vue", () => {
     spy.mockReset();
   });
 
-  it("processes api return into realData, chartOptions and chartConceptTypes", async () => {
+  it("can setChartData", async () => {
     const testChartConceptType = {
       datasets: [
         {
@@ -202,20 +144,21 @@ describe("ReportPieChart.vue", () => {
         "Query template"
       ]
     };
-    const testChartOptions = {
-      legend: {
-        position: "right",
-        onHover: function(e: any) {}
-      },
-      hover: {
-        onHover: function(e: any) {}
-      },
-      tooltips: {
-        callbacks: {
-          label: function(t: any, d: any) {}
+    wrapper.vm.realData = [] as number[];
+    wrapper.vm.chartConceptTypes = new PieChartData(
+      [
+        {
+          data: [],
+          backgroundColor: [],
+          hoverBackgroundColor: [],
+          borderRadius: 1
         }
-      }
-    };
+      ],
+      []
+    ) as PieChartData;
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setChartData();
+    await wrapper.vm.$nextTick();
     expect(wrapper.vm.chartConceptTypes).toEqual(testChartConceptType);
     expect(wrapper.vm.realData).toStrictEqual({
       "0": 1030354,
@@ -235,7 +178,6 @@ describe("ReportPieChart.vue", () => {
       "14": 2,
       "15": 1
     });
-    expect(wrapper.vm.chartOptions.toString()).toEqual(testChartOptions.toString());
   });
 
   it("can setChartColours", async () => {
@@ -346,6 +288,7 @@ describe("ReportPieChart.vue", () => {
       labels: []
     });
   });
+
   it("setsLegendOptions ___ width > 1750", async () => {
     global.innerWidth = 1760;
     const testOptions = {

@@ -103,7 +103,7 @@
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
 import { User } from "@/models/user/User";
-import Swal from "sweetalert2";
+import Swal, { SweetAlertIcon } from "sweetalert2";
 import { verifyIsEmail, verifyPasswordsMatch, verifyEmailsMatch, verifyIsName, checkPasswordStrength } from "@/helpers/UserMethods";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 import AuthService from "@/services/AuthService";
@@ -206,85 +206,53 @@ export default defineComponent({
       this.showLastNameNotice = this.lastNameVerified ? false : true;
     },
 
-    handleEditSubmit(): void {
-      if (this.passwordFieldsVerified() && this.userFieldsVerified()) {
-        const updatedUser = new User(this.username, this.firstName, this.lastName, this.email1, "", this.selectedAvatar);
-        updatedUser.setId(this.currentUser.id);
-        AuthService.updateUser(updatedUser).then(res => {
-          if (res.status === 200) {
-            AuthService.changePassword(this.passwordOld, this.passwordNew1).then(res2 => {
-              if (res2.status === 200) {
-                Swal.fire({
-                  icon: "success",
-                  title: "Success",
-                  text: "User details and password successfully updated"
-                }).then(() => {
-                  this.$store.commit("updateCurrentUser", res.user);
-                  this.$router.push({ name: "UserDetails" });
-                });
-              } else {
-                Swal.fire({
-                  icon: "error",
-                  title: "Error",
-                  text: "Password update failed, but user details updated successfully. " + res2.message
-                });
-              }
-            });
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: res.message
-            });
-          }
-        });
-      } else if (this.showPasswordEdit) {
-        if (!this.passwordDifferentFromOriginal()) {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "New password can not be the same as the current password."
-          });
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Authentication failed. Please check your current password."
-          });
-        }
-      } else if (!this.checkForChanges()) {
-        Swal.fire({
-          icon: "warning",
-          title: "Nothing to update",
-          text: "Your account details have not been updated."
-        });
-      } else if (this.userFieldsVerified()) {
-        const updatedUser = new User(this.username, this.firstName, this.lastName, this.email1, "", this.selectedAvatar);
-        updatedUser.setId(this.currentUser.id);
-        AuthService.updateUser(updatedUser).then(res => {
-          if (res.status === 200) {
-            Swal.fire({
-              icon: "success",
-              title: "Success",
-              text: "Account details updated successfully"
-            }).then(() => {
+    async swalert(icon: SweetAlertIcon, title: string, text: string) {
+      Swal.fire({
+        icon: icon,
+        title: title,
+        text: text
+      });
+    },
+
+    handleFieldsVerified(handlePasswordChange: boolean) {
+      const updatedUser = new User(this.username, this.firstName, this.lastName, this.email1, "", this.selectedAvatar);
+      updatedUser.setId(this.currentUser.id);
+      AuthService.updateUser(updatedUser).then(res => {
+        if (res.status === 200) {
+          if (!handlePasswordChange) {
+            this.swalert("success", "Success", "Account details updated successfully.").then(() => {
               this.$store.commit("updateCurrentUser", res.user);
               this.$router.push({ name: "UserDetails" });
             });
           } else {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: res.message
+            AuthService.changePassword(this.passwordOld, this.passwordNew1).then(res2 => {
+              res2.status === 200
+                ? this.swalert("success", "Success", "User details and password successfully updated.")
+                : this.swalert("error", "Error", "Password update failed, but user details updated successfully. " + res2.message);
+              this.$store.commit("updateCurrentUser", res.user);
+              this.$router.push({ name: "UserDetails" });
             });
           }
-        });
+        } else {
+          this.swalert("error", "Error", res.message);
+        }
+      });
+    },
+
+    handleEditSubmit(): void {
+      if (this.userFieldsVerified() && this.passwordFieldsVerified()) {
+        this.handleFieldsVerified(true);
+      } else if (this.showPasswordEdit) {
+        const message = !this.passwordDifferentFromOriginal()
+          ? "New password can not be the same as the current password."
+          : "Authentication failed. Please check your current password.";
+        this.swalert("error", "Error", message);
+      } else if (!this.checkForChanges()) {
+        this.swalert("warning", "Nothing to update", "Your account details have not been updated.");
+      } else if (this.userFieldsVerified()) {
+        this.handleFieldsVerified(false);
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Error with user form"
-        });
+        this.swalert("error", "Error", "Error with user form");
       }
     },
 
@@ -295,7 +263,7 @@ export default defineComponent({
         verifyEmailsMatch(this.email1, this.email2) &&
         verifyIsName(this.firstName) &&
         verifyIsName(this.lastName) &&
-        "value" in this.selectedAvatar
+        this.selectedAvatar
       ) {
         return true;
       } else {
@@ -346,7 +314,7 @@ export default defineComponent({
       });
     },
 
-    updateAvatar(newValue: { value: string }): void {
+    updateAvatar(newValue: string): void {
       this.selectedAvatar = newValue;
     },
 
@@ -365,7 +333,7 @@ export default defineComponent({
         this.currentUser.firstName === this.firstName &&
         this.currentUser.lastName === this.lastName &&
         this.currentUser.email === this.email1 &&
-        this.currentUser.avatar.value === this.selectedAvatar.value
+        this.currentUser.avatar === this.selectedAvatar
       ) {
         return false;
       } else {

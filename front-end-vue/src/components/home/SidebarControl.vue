@@ -28,7 +28,7 @@
         </template>
 
         <div class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container">
-          <SearchResults />
+          <SearchResults :loading="loading" />
           <Filters :search="search" />
         </div>
       </TabPanel>
@@ -53,11 +53,15 @@ import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
 import axios from "axios";
 import { mapState } from "vuex";
+import { TTIriRef } from "@/models/TripleTree";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
+import { Namespace } from "@/models/Namespace";
+import { isArrayHasLength, isObject } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "SidebarControl",
   components: { Hierarchy, History, SearchResults, Filters },
-  props: ["focusHierarchy"],
+  props: { focusHierarchy: Boolean },
   computed: mapState(["filterOptions", "selectedFilters"]),
   emits: ["hierarchyFocused"],
   watch: {
@@ -70,10 +74,11 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false,
       searchTerm: "",
       active: 0,
       debounce: 0,
-      request: null as any,
+      request: {} as { cancel: any; msg: string },
       windowHeight: 0,
       windowWidth: 0
     };
@@ -93,29 +98,27 @@ export default defineComponent({
 
     async search(): Promise<void> {
       if (this.searchTerm.length > 2) {
-        this.$store.commit("updateLoading", {
-          key: "searchResults",
-          value: true
-        });
+        this.loading = true;
         this.active = 1;
         const searchRequest = new SearchRequest();
         searchRequest.termFilter = this.searchTerm;
         searchRequest.sortBy = SortBy.Usage;
         searchRequest.page = 1;
         searchRequest.size = 100;
-        searchRequest.schemeFilter = this.selectedFilters.schemes.map((scheme: any) => scheme.iri);
+        searchRequest.schemeFilter = this.selectedFilters.schemes.map((scheme: Namespace) => scheme.iri);
 
         searchRequest.statusFilter = [];
-        this.selectedFilters.status.forEach((status: any) => {
+        this.selectedFilters.status.forEach((status: EntityReferenceNode) => {
           searchRequest.statusFilter.push(status["@id"]);
         });
 
         searchRequest.typeFilter = [];
-        this.selectedFilters.types.forEach((type: any) => {
+        this.selectedFilters.types.forEach((type: TTIriRef) => {
           searchRequest.typeFilter.push(type["@id"]);
         });
-        if (this.request) {
-          await this.request.cancel("Search cancelled by user");
+        if (isObject(this.request) && isArrayHasLength(Object.keys(this.request))) {
+          await this.request.cancel({ status: 499, message: "Search cancelled by user" });
+          this.loading = true;
         }
         const axiosSource = axios.CancelToken.source();
         this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
@@ -123,10 +126,7 @@ export default defineComponent({
           searchRequest: searchRequest,
           cancelToken: axiosSource.token
         });
-        this.$store.commit("updateLoading", {
-          key: "searchResults",
-          value: false
-        });
+        this.loading = false;
       } else {
         this.active = 0;
       }

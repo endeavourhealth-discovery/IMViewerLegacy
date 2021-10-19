@@ -66,9 +66,8 @@ import { RouteRecordName } from "vue-router";
 
 export default defineComponent({
   name: "Graph",
-  components: {},
   props: {
-    conceptIri: String
+    conceptIri: { type: String, required: true }
   },
   watch: {
     async conceptIri(newValue) {
@@ -82,25 +81,25 @@ export default defineComponent({
     };
   },
   async mounted() {
-    if (this.conceptIri) {
-      await this.getGraph(this.conceptIri);
-    }
+    await this.getGraph(this.conceptIri);
   },
   methods: {
-    getTypeFromIri(iri: string) {
-      switch (iri) {
-        case "http://www.w3.org/2001/XMLSchema#string":
-          return "String";
-        default:
-          return "String";
+    getTypeFromIri(iri: string): string {
+      if (!iri.includes("#")) {
+        return iri;
       }
+      let part = iri.split("#")[1];
+      part = part.includes(":") ? part.split(":")[1] : part;
+      return part.charAt(0).toUpperCase() + part.slice(1);
     },
-    async getGraph(iri: string) {
+
+    async getGraph(iri: string): Promise<void> {
       this.loading = true;
       this.graph = await EntityService.getEntityGraph(iri);
       this.loading = false;
     },
-    navigate(iri: string) {
+
+    navigate(iri: string): void {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
       if (iri)
         this.$router.push({

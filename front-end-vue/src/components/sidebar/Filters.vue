@@ -32,11 +32,16 @@ import ConfigService from "@/services/ConfigService";
 import EntityService from "@/services/EntityService";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
+import { Namespace } from "@/models/Namespace";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
+import { FilterDefaultsConfig } from "@/models/configs/FilterDefaultsConfig";
+import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
+import { IM } from "@/vocabulary/IM";
+import { NAMESPACES } from "@/vocabulary/NAMESPACES";
 
 export default defineComponent({
   name: "Filters",
-  components: {},
-  props: ["search"],
+  props: { search: { type: Function, required: true } },
   computed: mapState(["filterOptions", "selectedFilters", "quickFiltersStatus"]),
   watch: {
     includeLegacy(newValue) {
@@ -59,23 +64,23 @@ export default defineComponent({
   },
   data() {
     return {
-      statusOptions: [] as any[],
-      schemeOptions: [] as any[],
-      typeOptions: [] as any[],
-      selectedStatus: [] as any[],
-      selectedSchemes: [] as any[],
-      selectedTypes: [] as any[],
-      configs: {} as any,
+      statusOptions: [] as EntityReferenceNode[],
+      schemeOptions: [] as Namespace[],
+      typeOptions: [] as EntityReferenceNode[],
+      selectedStatus: [] as EntityReferenceNode[],
+      selectedSchemes: [] as Namespace[],
+      selectedTypes: [] as EntityReferenceNode[],
+      configs: {} as FilterDefaultsConfig,
       includeLegacy: false
     };
   },
   methods: {
-    checkForSearch() {
+    checkForSearch(): void {
       this.updateStoreSelectedFilters();
       this.search();
     },
 
-    setFilters() {
+    setFilters(): void {
       this.$store.commit("updateFilterOptions", {
         status: this.statusOptions,
         scheme: this.schemeOptions,
@@ -83,8 +88,8 @@ export default defineComponent({
       });
     },
 
-    setDefaults() {
-      if (!this.selectedFilters.status.length && !this.selectedFilters.schemes.length && !this.selectedFilters.types.length) {
+    setDefaults(): void {
+      if (!isArrayHasLength(this.selectedFilters.status) && !isArrayHasLength(this.selectedFilters.schemes) && !isArrayHasLength(this.selectedFilters.types)) {
         this.selectedStatus = this.statusOptions.filter(item => this.configs.statusOptions.includes(item.name));
         this.selectedSchemes = this.schemeOptions.filter(item => this.configs.schemeOptions.includes(item.name));
         this.selectedTypes = this.typeOptions.filter(item => this.configs.typeOptions.includes(item.name));
@@ -100,7 +105,7 @@ export default defineComponent({
       }
     },
 
-    updateStoreSelectedFilters() {
+    updateStoreSelectedFilters(): void {
       this.$store.commit("updateSelectedFilters", {
         status: this.selectedStatus,
         schemes: this.selectedSchemes,
@@ -108,21 +113,22 @@ export default defineComponent({
       });
     },
 
-    async getFilterOptions() {
+    async getFilterOptions(): Promise<void> {
       this.configs = await ConfigService.getFilterDefaults();
 
       this.schemeOptions = await EntityService.getNamespaces();
 
-      this.statusOptions = await EntityService.getEntityChildren("http://endhealth.info/im#Status");
+      this.statusOptions = await EntityService.getEntityChildren(IM.STATUS);
 
-      this.typeOptions = await EntityService.getEntityChildren("http://endhealth.info/im#ModellingEntityType");
+      this.typeOptions = await EntityService.getEntityChildren(IM.MODELLING_ENTITY_TYPE);
     },
 
-    setLegacy(include: boolean) {
-      const emisScheme = this.selectedSchemes.findIndex(scheme => scheme.iri === "http://endhealth.info/emis#");
+    setLegacy(include: boolean): void {
+      const emisScheme = this.selectedSchemes.findIndex(scheme => scheme.iri === NAMESPACES.EMIS);
       if (include) {
         if (emisScheme === -1) {
-          this.selectedSchemes.push(this.schemeOptions.find(scheme => scheme.iri === "http://endhealth.info/emis#"));
+          const found = this.schemeOptions.find(scheme => scheme.iri === NAMESPACES.EMIS);
+          if (found) this.selectedSchemes.push(found);
         }
       } else {
         if (emisScheme > -1) {

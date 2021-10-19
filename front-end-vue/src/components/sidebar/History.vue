@@ -22,11 +22,10 @@ export default defineComponent({
     };
   },
   methods: {
-    getHistory(): any {
-      const viewHistory = this.history.filter((obj: any) => {
+    getHistory(): HistoryItem[] {
+      return this.history.filter((obj: any) => {
         return !!obj.conceptName;
       });
-      return viewHistory;
     },
 
     navigate(): void {
