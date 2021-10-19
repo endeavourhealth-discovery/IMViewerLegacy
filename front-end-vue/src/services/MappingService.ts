@@ -6,32 +6,56 @@ export default class MappingService {
   static api = process.env.VUE_APP_API;
 
   public static async getMappedTTDocument(formData: FormData): Promise<any> {
-    const response = await axios.post(this.api + "api/mapping", formData);
-    return response.data;
+    try {
+      const response = (await axios.post(this.api + "api/mapping", formData)) as any;
+      return response || ({} as any);
+    } catch (error) {
+      return {} as any;
+    }
   }
 
   public static async getNewPredicates(formData: FormData): Promise<string[]> {
-    const response = await axios.post(this.api + "api/mapping/newPredicates", formData);
-    return response.data;
+    try {
+      const response = (await axios.post(this.api + "api/mapping/newPredicates", formData)) as string[];
+      return response || ([] as string[]);
+    } catch (error) {
+      return [] as string[];
+    }
   }
 
   static async getReferenceSuggestions(formData: FormData): Promise<string[]> {
-    const response = await axios.post(this.api + "api/mapping/references", formData);
-    return response.data;
+    try {
+      const response = (await axios.post(this.api + "api/mapping/references", formData)) as string[];
+      return response || ([] as string[]);
+    } catch (error) {
+      return [] as string[];
+    }
   }
 
   static async getMapDocuments(): Promise<MapDocument[]> {
-    const response = await axios.get(this.api + "api/mapping/mapDocument");
-    return response.data;
+    try {
+      const response = (await axios.get(this.api + "api/mapping/mapDocument")) as MapDocument[];
+      return response || ([] as MapDocument[]);
+    } catch (error) {
+      return [] as MapDocument[];
+    }
   }
 
   static async getMapDocument(id: number): Promise<MapDocument> {
-    const response = await axios.get(this.api + "api/mapping/mapDocument/" + id);
-    return response.data;
+    try {
+      const response = (await axios.get(this.api + "api/mapping/mapDocument/" + id)) as MapDocument;
+      return response || ({} as MapDocument);
+    } catch (error) {
+      return {} as MapDocument;
+    }
   }
 
   static async getMapDocumentError(formData: FormData): Promise<MapDocumentError> {
-    const response = await axios.post(this.api + "api/mapping/mapDocument/errors", formData);
-    return response.data;
+    try {
+      const response = (await axios.post(this.api + "api/mapping/mapDocument/errors", formData)) as MapDocumentError;
+      return response || ({} as MapDocumentError);
+    } catch (error) {
+      return {} as MapDocumentError;
+    }
   }
 }
