@@ -192,7 +192,8 @@ export default defineComponent({
 
     async expandChildren(node: TreeNode): Promise<void> {
       node.loading = true;
-      this.resetExpandedKeys(node);
+      this.resetExpandedKeys(node.children);
+      this.expandedKeys = { ...this.expandedKeys };
       this.expandedKeys[node.key] = true;
       const children = await EntityService.getEntityChildren(node.data);
       node.children = [];
@@ -202,17 +203,13 @@ export default defineComponent({
       node.loading = false;
     },
 
-    resetExpandedKeys(node: TreeNode) {
-      const newExpandedKeys = {} as any;
-
-      Object.keys(this.expandedKeys).forEach(expanded => {
-        const isChild = node.children.find(child => child.label === expanded) ? true : false;
-        if (this.expandedKeys[expanded] === true && !isChild) {
-          newExpandedKeys[expanded] = true;
-        }
-      });
-      this.expandedKeys = newExpandedKeys;
-      this.expandedKeys = { ...this.expandedKeys };
+    resetExpandedKeys(nodes: TreeNode[]) {
+      if (nodes) {
+        nodes.forEach(childNode => {
+          this.expandedKeys[childNode.key] = false;
+          this.resetExpandedKeys(childNode.children);
+        });
+      }
     },
 
     getSelectedNodeRecursevily() {
