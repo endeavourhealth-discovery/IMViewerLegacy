@@ -225,22 +225,22 @@ export default defineComponent({
     },
 
     recursiveSearchForNode(key: string, nodes: TreeNode[], result: TreeNode[]) {
-      const node = nodes.find(child => child.key === key);
-      if (node) {
-        result.push(node);
-        return;
-      }
       if (nodes.length) {
+        const node = nodes.find(child => child.key === key);
+        if (node) {
+          result.push(node);
+          return;
+        }
+
         nodes.forEach(node => {
           this.recursiveSearchForNode(key, node.children, result);
         });
       }
     },
 
-    childrenContainNode(nodes: TreeNode[]): boolean {
-      const selectedKey = Object.keys(this.selectedKey)[0];
+    nodeIsChildOf(child: TreeNode, parent: TreeNode): boolean {
       let result = [] as TreeNode[];
-      this.recursiveSearchForNode(selectedKey, nodes, result);
+      this.recursiveSearchForNode(child.key, parent.children, result);
       return result[0] ? true : false;
     },
 
@@ -254,13 +254,14 @@ export default defineComponent({
           parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, true));
         });
 
-        if (selected.key !== nodeToExpand.key && !this.childrenContainNode(nodeToExpand.children)) {
+        if (selected.key !== nodeToExpand.key && !this.nodeIsChildOf(selected, nodeToExpand)) {
           nodeToExpand.children.push(selected);
-          this.expandedKeys[nodeToExpand.key] = true;
         }
 
+        this.expandedKeys[nodeToExpand.key] = true;
         parentsNodes[parentsNodes.length - 1].children.push(nodeToExpand);
         this.expandedKeys[parentsNodes[parentsNodes.length - 1].key] = true;
+
         this.root = parentsNodes;
         await this.getFirstParent(this.root[0]);
       }
