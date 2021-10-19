@@ -28,7 +28,7 @@
           <div class="p-field p-col-12 p-md-3">
             <span class="p-float-label">
               <AutoComplete
-                v-if="isReferenceType(mapping.subjectMapType) && formObject.contentFileType === 'text/csv'"
+                v-if="isReferenceType(mapping.subjectMapType) && (formObject.contentFileType === 'text/csv' || formObject.contentFileType === 'text/plain')"
                 v-model="mapping.subjectMapValue"
                 :dropdown="true"
                 @complete="searchReference(mapping.subjectMapValue)"
