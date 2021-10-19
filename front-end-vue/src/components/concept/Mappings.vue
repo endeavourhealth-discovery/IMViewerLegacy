@@ -118,6 +118,9 @@ export default defineComponent({
       this.namespaces = await EntityService.getNamespaces();
 
       this.simpleMaps = (await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO]))[IM.MATCHED_TO] || [];
+      if (!this.simpleMaps.length) {
+        this.simpleMaps = (await EntityService.getMatchedFrom(this.conceptIri)) || [];
+      }
     },
 
     createChartTableNode(

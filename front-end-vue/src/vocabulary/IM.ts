@@ -19,11 +19,13 @@ export class IM {
   public static ONE_OF = IM.NAMESPACE + "oneOf";
   public static MAP_ADVICE = IM.NAMESPACE + "mapAdvice";
   public static MATCHED_TO = IM.NAMESPACE + "matchedTo";
+  public static MATCHED_FROM = IM.NAMESPACE + "matchedFrom";
   public static MAP_PRIORITY = IM.NAMESPACE + "mapPriority";
   public static ASSURANCE_LEVEL = IM.NAMESPACE + "assuranceLevel";
   public static COMBINATION_OF = IM.NAMESPACE + "combinationOf";
   public static SOME_OF = IM.NAMESPACE + "someOf";
   public static MAPPED_TO = IM.NAMESPACE + "mappedTo";
+  public static MAPPED_FROM = IM.NAMESPACE + "mappedFrom";
   //maps assurance levels
   public static NATIONALLY_ASSURED_UK = IM.NAMESPACE + "NationallyAssuredUK";
 
