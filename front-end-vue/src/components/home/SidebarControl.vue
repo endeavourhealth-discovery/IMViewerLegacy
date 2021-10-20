@@ -61,14 +61,12 @@ import { isArrayHasLength, isObject } from "@/helpers/DataTypeCheckers";
 export default defineComponent({
   name: "SidebarControl",
   components: { Hierarchy, History, SearchResults, Filters },
-  props: { focusHierarchy: Boolean },
-  computed: mapState(["filterOptions", "selectedFilters"]),
-  emits: ["hierarchyFocused"],
+  computed: mapState(["filterOptions", "selectedFilters", "focusHierarchy"]),
   watch: {
     focusHierarchy(newValue) {
       if (newValue) {
         this.active = 0;
-        this.$emit("hierarchyFocused");
+        this.$store.commit("updateFocusHierarchy", false);
       }
     }
   },
