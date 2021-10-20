@@ -240,15 +240,4 @@ export default class EntityService {
       return [] as Namespace[];
     }
   }
-
-  public static async getComplexMembers(iri: string): Promise<string[]> {
-    try {
-      const axiosReturn = (await axios.get(this.api + "api/entity/complexMembers", {
-        params: { iri: iri }
-      })) as string[];
-      return axiosReturn || ([] as string[]);
-    } catch (error) {
-      return [] as string[];
-    }
-  }
 }
