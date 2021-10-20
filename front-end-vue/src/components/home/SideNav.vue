@@ -48,8 +48,7 @@ import { LoginItem, AccountItem, ModuleItem } from "@/models/sideNav/MenuItems";
 
 export default defineComponent({
   name: "SideNav",
-  computed: mapState(["currentUser", "isLoggedIn", "sideNavHierarchyFocus", "selectedEntityType", "moduleSelectedEntities", "conceptIri"]),
-  emits: ["hierarchyFocusSelected"],
+  computed: mapState(["currentUser", "isLoggedIn", "sideNavHierarchyFocus", "selectedEntityType", "moduleSelectedEntities", "conceptIri", "focusHierarchy"]),
   watch: {
     selectedEntityType(newValue) {
       switch (newValue) {
@@ -246,7 +245,7 @@ export default defineComponent({
           route = "Concept";
           moduleIri = this.moduleSelectedEntities.get(item.name);
         }
-        this.$emit("hierarchyFocusSelected");
+        this.$store.commit("updateFocusHierarchy", true);
       }
       if (item.name === "Catalogue") {
         this.$store.commit("updateSideNavHierarchyFocus", {
