@@ -41,8 +41,7 @@ export default defineComponent({
     });
     if (!toStepRoute) {
       this.$confirm.require({
-        message:
-          "All unsaved changes will be lost. Are you sure you want to proceed?",
+        message: "All unsaved changes will be lost. Are you sure you want to proceed?",
         header: "Confirmation",
         icon: "pi pi-exclamation-triangle",
         accept: () => {
@@ -78,11 +77,12 @@ export default defineComponent({
               label: "Concept",
               icon: "far fa-lightbulb",
               disabled: this.selectedType === "concept" ? true : false,
+              style: this.selectedType === "concept" ? "box-shadow: inset 0 0 0 0.15rem #a6d5fa;" : "",
               command: () => {
+                if (this.selectedType === "concept") return;
                 if (this.selectedType !== "") {
                   this.$confirm.require({
-                    message:
-                      "All unsaved changes will be lost. Are you sure you want to proceed?",
+                    message: "All unsaved changes will be lost. Are you sure you want to proceed?",
                     header: "Confirmation",
                     icon: "pi pi-exclamation-triangle",
                     accept: () => {
@@ -102,11 +102,12 @@ export default defineComponent({
               label: "Value set",
               icon: "fas fa-book-medical",
               disabled: this.selectedType === "valueset" ? true : false,
+              style: this.selectedType === "valueset" ? "box-shadow: inset 0 0 0 0.15rem #a6d5fa;" : "",
               command: () => {
+                if (this.selectedType === "valueset") return;
                 if (this.selectedType !== "") {
                   this.$confirm.require({
-                    message:
-                      "All unsaved changes will be lost. Are you sure you want to proceed?",
+                    message: "All unsaved changes will be lost. Are you sure you want to proceed?",
                     header: "Confirmation",
                     icon: "pi pi-exclamation-triangle",
                     accept: () => {
