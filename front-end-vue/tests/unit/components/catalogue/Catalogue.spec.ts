@@ -14,8 +14,12 @@ import CatalogueService from "@/services/CatalogueService";
 
 describe("Catalogue.vue", () => {
   let wrapper: any;
+  let mockRouter: any;
 
   beforeEach(() => {
+    mockRouter = {
+      push: jest.fn()
+    };
 
     CatalogueService.getPartialInstance = jest.fn().mockResolvedValue({
       entity: {
@@ -54,6 +58,7 @@ describe("Catalogue.vue", () => {
     wrapper = shallowMount(Catalogue, {
       global: {
         components: { MultiSelect, Card, InputText, TabPanel, Listbox, TabView, Tree, Panel, CatalogueDashboard, SideNav },
+        mocks: { $router: mockRouter }
       }
     });
   });
@@ -122,6 +127,8 @@ describe("Catalogue.vue", () => {
   it("get tree data", async() => {
     wrapper.vm.instanceIri = "http://org.endhealth.info/im#FQK48";
     wrapper.vm.getPartialInstance();
+    await wrapper.vm.$nextTick();
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
     expect(CatalogueService.getPartialInstance).toHaveBeenCalledTimes(1);
     expect(CatalogueService.getPartialInstance).toHaveBeenCalledWith("http://org.endhealth.info/im#FQK48",[]);
     await flushPromises();

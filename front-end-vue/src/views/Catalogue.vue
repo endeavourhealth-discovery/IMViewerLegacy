@@ -1,91 +1,89 @@
 <template>
   <side-nav />
   <div class="layout-main">
-    <div class="home">
-      <div class="p-grid">
-        <div class="p-col-3">
-          <Card style="margin-bottom: 0.5em">
-            <template #content>
-              <p style="margin-bottom: 1em; font-size: 14px">Select Type</p>
-              <MultiSelect
-                id="type"
-                v-model="selectedType"
-                :options="types"
-                optionLabel="label"
-                placeholder="Select"
-                display="chip"
-                style="width: 100%"
-                class="p-inputtext-lg"
-                @change="setIris()"
+    <div class="_container">
+      <div class="p-grid _container">
+        <div class="p-col-3" id="side-menu">
+          <div id="tab">
+            <span class="p-input-icon-left" id="search-bar" style="margin-bottom: 0.2em">
+              <i class="pi pi-search" aria-hidden="true" />
+              <InputText
+                type="text"
+                v-model="searchRequest"
+                @keydown="checkKey($event.code)"
+                placeholder="Search"
+                class="p-inputtext-lg search-input"
+                autoWidth="false"
               />
-            </template>
-          </Card>
-          <span class="p-input-icon-left" id="search-bar" style="margin-bottom: 0.2em">
-            <i class="pi pi-search" aria-hidden="true" />
-            <InputText
-              type="text"
-              v-model="searchRequest"
-              @keydown="checkKey($event.code)"
-              placeholder="Search"
-              class="p-inputtext-lg search-input"
-              autoWidth="false"
-            />
-          </span>
-          <TabView v-model:activeIndex="active">
-            <TabPanel>
-              <template #header>
-                <i style="padding: 1px" class="fas fa-search icon-header" aria-hidden="true" />
-                <span>Search Results</span>
-              </template>
-              <Listbox
-                v-model="selected"
-                :options="searchResults"
-                @click="setSelectedInstance()"
-                :virtualScrollerOptions="{ itemSize: 31 }"
-                style="width:100%"
-                listStyle="height:550px"
-              >
-                <template #option="slotProps">
-                  <div v-if="slotProps.option.name">
-                    <span>{{ slotProps.option.name }}</span>
-                  </div>
-                  <div v-else>
-                    <span>{{ slotProps.option["@id"] }}</span>
-                  </div>
+            </span>
+            <TabView v-model:activeIndex="active">
+              <TabPanel>
+                <template #header>
+                  <i style="padding: 1px" class="fas fa-search icon-header" aria-hidden="true" />
+                  <span>Search Results</span>
                 </template>
-              </Listbox>
-            </TabPanel>
-            <TabPanel>
-              <template #header>
-                <i class="fas fa-history icon-header" aria-hidden="true" />
-                <span>History</span>
-              </template>
-              <Listbox
-                v-model="selected"
-                :options="history"
-                class="history-listbox"
-                @click="setSelectedInstance()"
-                :virtualScrollerOptions="{ itemSize: 31 }"
-                style="width:100%"
-                listStyle="height:700px"
-              >
-                <template #option="slotProps">
-                  <div v-if="slotProps.option.name">
-                    <span>{{ slotProps.option.name }}</span>
-                  </div>
-                  <div v-else>
-                    <span>{{ slotProps.option["@id"] }}</span>
-                  </div>
+                <Listbox
+                  v-model="selected"
+                  :options="searchResults"
+                  @click="setSelectedInstance()"
+                  :virtualScrollerOptions="{ itemSize: 31 }"
+                  style="width:100%; margin-bottom:2em"
+                  listStyle="height:550px"
+                >
+                  <template #option="slotProps">
+                    <div v-if="slotProps.option.name">
+                      <span>{{ slotProps.option.name }}</span>
+                    </div>
+                    <div v-else>
+                      <span>{{ slotProps.option["@id"] }}</span>
+                    </div>
+                  </template>
+                </Listbox>
+                <p style="margin-bottom: 1em; font-size: 14px">Select Type</p>
+                <MultiSelect
+                  id="type"
+                  v-model="selectedType"
+                  :options="types"
+                  optionLabel="label"
+                  placeholder="Select"
+                  display="chip"
+                  style="width: 100%; margin-bottom: 2em"
+                  class="p-inputtext-lg"
+                  @change="setIris()"
+                />
+              </TabPanel>
+              <TabPanel>
+                <template #header>
+                  <i class="fas fa-history icon-header" aria-hidden="true" />
+                  <span>History</span>
                 </template>
-              </Listbox>
-            </TabPanel>
-          </TabView>
-        </div>
-        <div class="p-col-9" style="height: 100%">
-          <div v-if="this.dash">
-            <CatalogueDashboard v-if="types.length" :types="types" />
+                <Listbox
+                  v-model="selected"
+                  :options="history"
+                  class="history-listbox"
+                  @click="setSelectedInstance()"
+                  :virtualScrollerOptions="{ itemSize: 31 }"
+                  style="width:100%"
+                  listStyle="height:700px"
+                >
+                  <template #option="slotProps">
+                    <div v-if="slotProps.option.name">
+                      <span>{{ slotProps.option.name }}</span>
+                    </div>
+                    <div v-else>
+                      <span>{{ slotProps.option["@id"] }}</span>
+                    </div>
+                  </template>
+                </Listbox>
+              </TabPanel>
+            </TabView>
           </div>
-          <div v-else>
+        </div>
+        <div class="p-col-9 full_height">
+          <div v-if="this.dash" class="full_height">
+            <CatalogueDashboard v-if="types.length" :types="types" class="full_height" />
+          </div>
+          <div v-else id="panel-container">
             <Panel>
               <template #header v-if="instanceName"> {{ instanceName }}</template>
               <template #header v-else> {{ instanceIri }}</template>
@@ -93,7 +91,7 @@
                 <template #default="slotProps"> {{ slotProps.node.label }} {{ slotProps.node.data }} </template>
                 <template #address="slotProps">
                   {{ slotProps.node.label }}
-                  <a href="#/catalogue" @click="navigate(slotProps.node.data)">{{ slotProps.node.data["@id"] }}</a>
+                  <a href="javascript:void(0)" @click="navigate(slotProps.node.data)">{{ slotProps.node.data["@id"] }}</a>
                 </template>
               </Tree>
             </Panel>
@@ -186,12 +184,13 @@ export default defineComponent({
         });
       }
     },
-
     async getPartialInstance() {
-      window.history.pushState("", "", "/individual/" + this.instanceIri);
+      await this.$router.push({
+        name: "Individual",
+        params: { selectedIri: this.instanceIri }
+      });
       const result = await CatalogueService.getPartialInstance(this.instanceIri, this.predicate);
       if (result) this.instance = result;
-
       this.instanceData = [];
       let level = 0;
       Object.keys(this.instance.entity).forEach((predicate: any) => {
@@ -251,7 +250,6 @@ export default defineComponent({
       });
       return name;
     },
-
     getChildren(predicate: string) {
       console.log("?");
     }
@@ -264,5 +262,42 @@ export default defineComponent({
 }
 .search-input {
   width: 100%;
+}
+._container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.full_height {
+  height: 100%;
+}
+
+#side-menu {
+  flex-grow: 100;
+}
+
+#side-menu ::v-deep(.p-tabview-panels) {
+  flex-grow: 6;
+  overflow-y: auto;
+}
+
+#side-menu ::v-deep(.p-tabview-panel) {
+  height: 100%;
+}
+
+#panel-container {
+  width: 100%;
+  display: grid;
+  gap: 1rem 1rem;
+  align-items: start;
+  overflow: auto;
+  background-color: #ffffff;
+  height: 100%;
+}
+
+#tab {
+  height: 100%;
+  background-color: #ffffff;
 }
 </style>
