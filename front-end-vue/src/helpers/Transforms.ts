@@ -73,7 +73,7 @@ export function ttNodeToString(node: any, previousType: string, previousKey: str
         }
       }
       first = false;
-    } else if (last && group) {
+    } else if (last && group && !first) {
       if (isObjectHasKeys(value, ["@id"])) {
         if (iriMap[key]) {
           result += pad + "  " + iriMap[key].replace(/ *\([^)]*\) */g, "") + " : ";
