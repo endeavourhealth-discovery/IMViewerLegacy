@@ -50,82 +50,38 @@ export function ttNodeToString(node: any, previousType: string, previousKey: str
   const totalKeys = Object.keys(node).length;
   let count = 1;
   let group = false;
-  if (previousKey === IM.ROLE_GROUP || previousKey === OWL.INTERSECTION_OF || previousKey === OWL.SOME_VALUES_FROM) group = true;
+  if (totalKeys > 1) group = true;
   for (const [key, value] of Object.entries(node)) {
     if (totalKeys === count) last = true;
     if (count === 1) first = true;
-    if (first && group && !last) {
-      if (isObjectHasKeys(value, ["@id"])) {
-        if (iriMap[key]) {
-          result += pad + "( " + iriMap[key].replace(/ *\([^)]*\) */g, "") + " : ";
-          result += ttIriToString(value as TTIriRef, "object", indent, true);
-          result += "\n";
-        } else {
-          result += ttIriToString(value as TTIriRef, "object", indent, false);
-        }
-      } else {
-        if (iriMap[key]) result += pad + "( " + iriMap[key].replace(/ *\([^)]*\) */g, "") + ":\n";
-        if (previousType === "array") {
-          result += ttValueToString(value, "object", key, iriMap, indent + 1);
-        }
-        if (previousType === "object") {
-          result += ttValueToString(value, "object", key, iriMap, indent);
-        }
+    let prefix = "";
+    let suffix = "\n";
+
+    if (group) {
+      prefix = "  ";
+      if (first) {
+        prefix = "( ";
+        first = false;
       }
-      first = false;
-    } else if (last && group && !first) {
-      if (isObjectHasKeys(value, ["@id"])) {
-        if (iriMap[key]) {
-          result += pad + "  " + iriMap[key].replace(/ *\([^)]*\) */g, "") + " : ";
-          result += ttIriToString(value as TTIriRef, "object", indent, true);
-          result += " )\n";
-        } else {
-          result += ttIriToString(value as TTIriRef, "object", indent, false);
-        }
-      } else {
-        if (iriMap[key]) result += pad + "  " + iriMap[key].replace(/ *\([^)]*\) */g, "") + ":\n";
-        if (previousType === "array") {
-          result += ttValueToString(value, "object", key, iriMap, indent + 1);
-        }
-        if (previousType === "object") {
-          result += ttValueToString(value, "object", key, iriMap, indent);
-        }
+      if (last) {
+        suffix = ")\n";
       }
-    } else if (group) {
-      if (isObjectHasKeys(value, ["@id"])) {
-        if (iriMap[key]) {
-          result += pad + "  " + iriMap[key].replace(/ *\([^)]*\) */g, "") + " : ";
-          result += ttIriToString(value as TTIriRef, "object", indent, true);
-          result += "\n";
-        } else {
-          result += ttIriToString(value as TTIriRef, "object", indent, false);
-        }
+    }
+    if (isObjectHasKeys(value, ["@id"])) {
+      if (iriMap[key]) {
+        result += pad + prefix + iriMap[key].replace(/ *\([^)]*\) */g, "") + " : ";
+        result += ttIriToString(value as TTIriRef, "object", indent, true);
+        result += suffix;
       } else {
-        if (iriMap[key]) result += pad + "  " + iriMap[key].replace(/ *\([^)]*\) */g, "") + ":\n";
-        if (previousType === "array") {
-          result += ttValueToString(value, "object", key, iriMap, indent + 1);
-        }
-        if (previousType === "object") {
-          result += ttValueToString(value, "object", key, iriMap, indent);
-        }
+        result += ttIriToString(value as TTIriRef, "object", indent, false);
       }
     } else {
-      if (isObjectHasKeys(value, ["@id"])) {
-        if (iriMap[key]) {
-          result += pad + iriMap[key].replace(/ *\([^)]*\) */g, "") + " : ";
-          result += ttIriToString(value as TTIriRef, "object", indent, true);
-          result += "\n";
-        } else {
-          result += ttIriToString(value as TTIriRef, "object", indent, false);
-        }
-      } else {
-        if (iriMap[key]) result += pad + iriMap[key].replace(/ *\([^)]*\) */g, "") + ":\n";
-        if (previousType === "array") {
-          result += ttValueToString(value, "object", key, iriMap, indent + 1);
-        }
-        if (previousType === "object") {
-          result += ttValueToString(value, "object", key, iriMap, indent);
-        }
+      if (iriMap[key]) result += pad + prefix + iriMap[key].replace(/ *\([^)]*\) */g, "") + ":\n";
+      if (previousType === "array") {
+        result += ttValueToString(value, "object", key, iriMap, indent + 1);
+      }
+      if (previousType === "object") {
+        result += ttValueToString(value, "object", key, iriMap, indent);
       }
     }
     count++;
