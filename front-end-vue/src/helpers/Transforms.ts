@@ -16,17 +16,17 @@ export function bundleToText(bundle: TTBundle): string {
 
   let result = "";
 
-  result += ttValueToString(bundle.entity, "object", "", bundle.predicates, 0);
+  result += ttValueToString(bundle.entity, "object", bundle.predicates, 0);
   return result;
 }
 
-export function ttValueToString(node: any, previousType: string, previousKey: string, iriMap: any, indent: number): string {
+export function ttValueToString(node: any, previousType: string, iriMap: any, indent: number): string {
   if (isObjectHasKeys(node, ["@id"])) {
     return ttIriToString(node, previousType, indent, false);
   } else if (isObjectHasKeys(node)) {
-    return ttNodeToString(node, previousType, previousKey, indent, iriMap);
+    return ttNodeToString(node, previousType, indent, iriMap);
   } else if (isArrayHasLength(node)) {
-    return ttArrayToString(node, previousType, previousKey, indent, iriMap);
+    return ttArrayToString(node, indent, iriMap);
   } else {
     return "";
   }
@@ -42,7 +42,7 @@ export function ttIriToString(iri: TTIriRef, previous: string, indent: number, i
   return result;
 }
 
-export function ttNodeToString(node: any, previousType: string, previousKey: string, indent: number, iriMap: any): string {
+export function ttNodeToString(node: any, previousType: string, indent: number, iriMap: any): string {
   const pad = "  ".repeat(indent);
   let result = "";
   let first = true;
@@ -78,10 +78,14 @@ export function ttNodeToString(node: any, previousType: string, previousKey: str
     } else {
       if (iriMap[key]) result += pad + prefix + iriMap[key].replace(/ *\([^)]*\) */g, "") + ":\n";
       if (previousType === "array") {
-        result += ttValueToString(value, "object", key, iriMap, indent + 1);
+        if (group) {
+          result += ttValueToString(value, "object", iriMap, indent + 1);
+        } else {
+          result += ttValueToString(value, "object", iriMap, indent);
+        }
       }
       if (previousType === "object") {
-        result += ttValueToString(value, "object", key, iriMap, indent);
+        result += ttValueToString(value, "object", iriMap, indent);
       }
     }
     count++;
@@ -89,10 +93,10 @@ export function ttNodeToString(node: any, previousType: string, previousKey: str
   return result;
 }
 
-export function ttArrayToString(arr: any[], previousType: string, previousKey: string, indent: number, iriMap: any): string {
+export function ttArrayToString(arr: any[], indent: number, iriMap: any): string {
   let result = "";
-  for (const [index, item] of arr.entries()) {
-    result += ttValueToString(item, "array", previousKey, iriMap, indent + 1);
+  for (const item of arr) {
+    result += ttValueToString(item, "array", iriMap, indent + 1);
   }
   return result;
 }
