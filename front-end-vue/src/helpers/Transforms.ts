@@ -4,7 +4,6 @@ import { TTBundle, TTIriRef } from "@/models/TripleTree";
 import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
 
 export function bundleToText(bundle: TTBundle): string {
-  console.log(bundle);
   // Add custom id -> name maps
   bundle.predicates[IM.IS_A] = "Is a";
   bundle.predicates[OWL.EQUIVALENT_CLASS] = "Is equivalent to";

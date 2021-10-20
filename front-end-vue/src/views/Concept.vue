@@ -241,7 +241,6 @@ export default defineComponent({
 
     async getInferred(iri: string): Promise<void> {
       const result = await EntityService.getInferredBundle(iri);
-      console.log(result);
       if (isObjectHasKeys(result, ["entity"]) && isObjectHasKeys(result.entity, [IM.IS_A, IM.ROLE_GROUP])) {
         this.concept["inferred"] = { entity: { "http://endhealth.info/im#isA": result.entity[IM.IS_A] }, predicates: result.predicates };
         this.concept["inferred"].entity[IM.IS_A].push({ "http://endhealth.info/im#roleGroup": result.entity[IM.ROLE_GROUP] });
