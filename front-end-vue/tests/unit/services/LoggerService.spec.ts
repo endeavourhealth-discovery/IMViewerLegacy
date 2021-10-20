@@ -33,26 +33,26 @@ describe("LoggerService", () => {
     const testError = new Error("Test error message");
     beforeEach(() => {
       jest.clearAllMocks();
-      console.log = jest.fn();
+      console.warn = jest.fn();
     });
 
     it("creates a log in the console and returns a toast message", () => {
       const result = LoggerService.warn("Test warn toast", testError);
-      expect(console.log).toHaveBeenCalledTimes(1);
-      expect(console.log).toHaveBeenCalledWith(testError);
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledWith(testError);
       expect(result).toStrictEqual({ severity: "warn", summary: "Warning", detail: "Test warn toast", life: 3000 });
     });
 
     it("creates a log in the console no return toast message", () => {
       const result = LoggerService.warn(undefined, testError);
-      expect(console.log).toHaveBeenCalledTimes(1);
-      expect(console.log).toHaveBeenCalledWith(testError);
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledWith(testError);
       expect(result).toBeUndefined();
     });
 
     it("returns a toast message, no console", () => {
       const result = LoggerService.warn("Test warn toast");
-      expect(console.log).not.toHaveBeenCalled();
+      expect(console.warn).not.toHaveBeenCalled();
       expect(result).toStrictEqual({ severity: "warn", summary: "Warning", detail: "Test warn toast", life: 3000 });
     });
   });

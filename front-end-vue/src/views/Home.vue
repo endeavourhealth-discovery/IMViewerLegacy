@@ -1,9 +1,8 @@
 <template>
-  <SideNav />
+  <SideNav @hierarchyFocusSelected="focusHierarchy = true" />
   <div class="layout-main">
     <div class="main-grid">
-      <!-- <Header /> -->
-      <SidebarControl />
+      <SidebarControl :focusHierarchy="focusHierarchy" @hierarchyFocused="focusHierarchy = false" />
       <router-view />
     </div>
   </div>
@@ -13,6 +12,8 @@
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import SidebarControl from "@/components/home/SidebarControl.vue";
+import { mapState } from "vuex";
+import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
   name: "Home",
@@ -21,6 +22,12 @@ export default defineComponent({
     SidebarControl
   },
   emits: ["userPopupToggled"],
+  computed: mapState(["sideNavHierarchyFocus"]),
+  data() {
+    return {
+      focusHierarchy: false
+    };
+  },
   async mounted() {
     // check for user and log them in if found or logout if not
     await this.$store.dispatch("authenticateCurrentUser");
@@ -29,15 +36,22 @@ export default defineComponent({
   methods: {
     updateRoute(): void {
       if (this.$route.name === "Home" || this.$route.name === "Dashboard") {
-        this.$store.commit(
-          "updateConceptIri",
-          "http://endhealth.info/im#DiscoveryOntology"
-        );
+        switch (this.sideNavHierarchyFocus.name) {
+          case "InformationModel":
+            this.$store.commit("updateConceptIri", IM.MODULE_IM);
+            break;
+          case "Ontology":
+            this.$store.commit("updateConceptIri", IM.MODULE_ONTOLOGY);
+            break;
+          case "ValueSets":
+            this.$store.commit("updateConceptIri", IM.MODULE_SETS);
+            break;
+          case "Queries":
+            this.$store.commit("updateConceptIri", IM.MODULE_QUERIES);
+            break;
+        }
       } else if (this.$route.name === "Concept") {
-        this.$store.commit(
-          "updateConceptIri",
-          this.$route.params.selectedIri as string
-        );
+        this.$store.commit("updateConceptIri", this.$route.params.selectedIri as string);
       }
     }
   }

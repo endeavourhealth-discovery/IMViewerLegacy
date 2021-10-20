@@ -1,82 +1,38 @@
 <template>
   <transition name="layout-sidebar">
     <div class="layout-sidebar layout-sidebar-dark">
-      <div
-        id="sidebar"
-        class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center"
-      >
+      <div id="sidebar" class="layout-menu-container p-d-flex p-flex-column p-jc-between p-ai-center">
         <div>
-          <img
-            class="im-logo"
-            src="../../assets/logos/Logo-object-empty.png"
-            alt="IM logo"
-            @click="resetToHome"
-          />
+          <img class="im-logo" src="../../assets/logos/Logo-object-empty.png" alt="IM logo" @click="resetToHome" />
         </div>
 
-        <!--
         <div id="center-icons" style="color: grey">
-          <div v-bind:class="{ active: isActive(['Dashboard', 'Concept']) }" @click="$router.push({ name: 'Dashboard' })">
-            <font-awesome-icon
-              class="sidebutton"
-              :icon="['fas', 'book']"
-              style="padding: 5px"
-              fixed-width
-            />
-            <div>Ontology</div>
-          </div>
-          <div v-bind:class="{ active: isActive(['UPRN']) }" @click="$router.push({ name: 'UPRN' })">
-            <font-awesome-icon
-                class="sidebutton"
-                :icon="['fas', 'map-marked-alt']"
-                style="padding: 5px"
-                fixed-width
-            />
-            <div>UPRN</div>
-          </div>
-          <div v-bind:class="{ active: isActive('Workflow') }" class="disabled">
-            <font-awesome-icon
-              class="sidebutton"
-              :icon="['fas', 'tasks']"
-              size="4x"
-              style="padding: 5px"
-            />
-            <div>Workflow</div>
-          </div>
-          <div v-bind:class="{ active: isActive('Mapping') }" class="disabled">
-            <font-awesome-icon
-              class="sidebutton"
-              :icon="['fas', 'map']"
-              size="4x"
-              style="padding: 5px"
-            />
-            <div>Mapping</div>
+          <div
+            v-for="item in menuItems"
+            :key="item.route"
+            class="center-icon-container"
+            v-bind:class="{ active: isActive(item.name) }"
+            @click="handleCenterIconClick(item)"
+          >
+            <font-awesome-icon class="sidebutton center-icon" :icon="item.icon" style="padding: 5px" fixed-width />
+            <div class="center-icon-text">{{ item.name }}</div>
           </div>
         </div>
 
-        -->
         <div class="footer user-settings">
-          <span
-            v-if="!isLoggedIn"
-            id="user-icon"
-            @click="toggle"
-            aria-haspopup="true"
-            aria-controls="overlay_menu"
-            aria-hidden="true"
-          >
-            <i class="fas fa-users"></i>
+          <span v-if="!isLoggedIn" id="user-icon" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" aria-hidden="true">
+            <i class="fas fa-users" aria-hidden="true"></i>
           </span>
           <img
             v-if="isLoggedIn"
             class="avatar-icon"
-            :src="getUrl(currentUser.avatar.value)"
+            :src="getUrl(currentUser.avatar)"
             alt="avatar icon"
             @click="toggle"
             aria-haspopup="true"
             aria-controls="overlay_menu"
           />
           <Menu ref="menu" :model="getItems()" :popup="true" id="popup-user" />
-          <!-- <i class="pi pi-cog settings-icon" aria-hidden="true"></i> -->
         </div>
       </div>
     </div>
@@ -84,12 +40,73 @@
 </template>
 
 <script lang="ts">
+import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
+import { MODULE_IRIS } from "@/helpers/ModuleIris";
+import { LoginItem, AccountItem, ModuleItem } from "@/models/sideNav/MenuItems";
 
 export default defineComponent({
   name: "SideNav",
-  computed: mapState(["currentUser", "isLoggedIn"]),
+  computed: mapState(["currentUser", "isLoggedIn", "sideNavHierarchyFocus", "selectedEntityType", "moduleSelectedEntities", "conceptIri"]),
+  emits: ["hierarchyFocusSelected"],
+  watch: {
+    selectedEntityType(newValue) {
+      switch (newValue) {
+        case "Ontology":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[0].name,
+            fullName: this.menuItems[0].fullName,
+            iri: this.menuItems[0].iri,
+            route: this.menuItems[0].route
+          });
+          break;
+        case "Sets":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[1].name,
+            fullName: this.menuItems[1].fullName,
+            iri: this.menuItems[1].iri,
+            route: this.menuItems[1].route
+          });
+          break;
+        case "DataModel":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[2].name,
+            fullName: this.menuItems[2].fullName,
+            iri: this.menuItems[2].iri,
+            route: this.menuItems[2].route
+          });
+          break;
+        case "Catalogue":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[3].name,
+            fullName: this.menuItems[3].fullName,
+            iri: this.menuItems[3].iri,
+            route: this.menuItems[3].route
+          });
+          break;
+        case "Queries":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[3].name,
+            fullName: this.menuItems[3].fullName,
+            iri: this.menuItems[3].iri,
+            route: this.menuItems[3].route
+          });
+          break;
+        case "Folder":
+          this.handleCenterIconClick(this.sideNavHierarchyFocus);
+          break;
+        default:
+          console.log("unknown selectedEntityType detected in sidenav watcher");
+          break;
+      }
+    },
+    sideNavHierarchyFocus(newValue, oldValue) {
+      if (newValue.name !== oldValue.name) {
+        this.handleCenterIconClick(newValue);
+      }
+    }
+  },
   data() {
     return {
       userPopupBottom: 0,
@@ -104,7 +121,7 @@ export default defineComponent({
           icon: "fa fa-fw fa-user-plus",
           to: "/user/register"
         }
-      ] as { label: string; icon: string; to: string }[],
+      ] as LoginItem[],
 
       accountItems: [
         {
@@ -127,15 +144,66 @@ export default defineComponent({
           icon: "fa fa-fw fa-sign-out-alt",
           to: "/user/logout" //+ this.user.id
         }
-      ] as { label: string; icon: string; to: string }[]
+      ] as AccountItem[],
+
+      menuItems: [
+        {
+          icon: ["fas", "book"],
+          name: "Ontology",
+          fullName: "Ontologies",
+          route: "Dashboard",
+          iri: IM.MODULE_ONTOLOGY
+        },
+        {
+          icon: ["fas", "layer-group"],
+          name: "Sets",
+          fullName: "Concept sets and value sets",
+          route: "Dashboard",
+          iri: IM.MODULE_SETS
+        },
+        {
+          icon: ["fas", "archive"],
+          name: "DataModel",
+          fullName: "Data model",
+          route: "Dashboard",
+          iri: IM.MODULE_DATA_MODEL
+        },
+        // {
+        //   icon: ["fas", "fax"],
+        //   name: "Catalogue",
+        //   fullName: "Catalogue",
+        //   route: "Catalogue",
+        //   iri: IM.MODULE_CATALOGUE
+        // },
+        {
+          icon: ["fas", "search"],
+          name: "Queries",
+          fullName: "Query templates",
+          route: "Dashboard",
+          iri: IM.MODULE_QUERIES
+        }
+        // {
+        //   icon: ["fas", "tasks"],
+        //   name: "Workflow"
+        // },
+        // {
+        //   icon: ["fas", "map"],
+        //   name: "Maps"
+        // },
+        // {
+        //   icon: ["fas", "map-marked-alt"],
+        //   name: "Assign",
+        //   route: "UPRN"
+        // }
+      ] as ModuleItem[]
     };
   },
   methods: {
-    isActive(items: any[]): boolean {
-      return items.indexOf(this.$route.name) >= 0;
+    isActive(item: string): boolean {
+      return item === this.sideNavHierarchyFocus.name ? true : false;
     },
 
-    getItems(): { label: string; icon: string; to: string }[] {
+    getItems(): LoginItem[] | AccountItem[] {
       if (this.isLoggedIn) {
         return this.accountItems;
       } else {
@@ -152,12 +220,50 @@ export default defineComponent({
       return require("@/assets/avatars/" + item);
     },
 
-    resetToHome(): void {
-      this.$store.commit(
-        "updateConceptIri",
-        "http://endhealth.info/im#DiscoveryOntology"
-      );
-      this.$router.push({ name: "Dashboard" });
+    async resetToHome(): Promise<void> {
+      this.$store.commit("updateModuleSelectedEntities", { module: this.menuItems[0].name, iri: this.menuItems[0].iri });
+      this.$store.commit("updateModuleSelectedEntities", { module: this.menuItems[1].name, iri: this.menuItems[1].iri });
+      this.$store.commit("updateModuleSelectedEntities", { module: this.menuItems[2].name, iri: this.menuItems[2].iri });
+      this.$store.commit("updateModuleSelectedEntities", { module: this.menuItems[3].name, iri: this.menuItems[3].iri });
+      await this.$nextTick();
+      this.handleCenterIconClick(this.menuItems[0]);
+      this.$store.commit("updateResetTree", true);
+    },
+
+    handleCenterIconClick(item: ModuleItem): void {
+      let route = item.route;
+      let moduleIri = "";
+      if (item.name === "Ontology" || item.name === "Sets" || item.name === "Queries" || item.name === "DataModel") {
+        this.$store.commit("updateSideNavHierarchyFocus", {
+          name: item.name,
+          fullName: item.fullName,
+          iri: item.iri,
+          route: "Dashboard"
+        });
+        this.$store.commit("updateConceptIri", this.moduleSelectedEntities.get(item.name));
+        this.$store.commit("updateActiveModule", item.name);
+        if (!MODULE_IRIS.includes(this.moduleSelectedEntities.get(item.name))) {
+          route = "Concept";
+          moduleIri = this.moduleSelectedEntities.get(item.name);
+        }
+        this.$emit("hierarchyFocusSelected");
+      }
+      if (item.name === "Catalogue") {
+        this.$store.commit("updateSideNavHierarchyFocus", {
+          name: item.name,
+          fullName: item.fullName,
+          iri: item.iri,
+          route: item.route
+        });
+      }
+      if (moduleIri !== "") {
+        this.$router.push({
+          name: route,
+          params: { selectedIri: moduleIri }
+        });
+      } else {
+        this.$router.push({ name: route });
+      }
     }
   }
 });
@@ -176,13 +282,25 @@ export default defineComponent({
 #center-icons {
   text-align: center;
   width: 100%;
+  flex-grow: 20;
+  overflow: auto;
 }
 
-#center-icons div {
+.center-icon-container {
   width: 100%;
   padding-right: 5px;
   border-right: 0;
   margin-bottom: 20px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.center-icon-text {
+  padding-right: 0;
+  width: 100%;
+  word-break: break-all;
 }
 
 #center-icons .active {
@@ -191,19 +309,8 @@ export default defineComponent({
 }
 
 .disabled * {
+  color: #555555;
   cursor: not-allowed !important;
-}
-
-@media screen and (max-width: 1439px) {
-  .layout-menu-container {
-    width: 8vw;
-  }
-}
-
-@media screen and (min-width: 1440px) {
-  .layout-menu-container {
-    width: 115px;
-  }
 }
 
 .sidebutton {
@@ -241,6 +348,7 @@ export default defineComponent({
   border: 1px solid lightgray;
   border-radius: 50%;
   cursor: pointer;
+  margin-right: 5px;
 }
 
 .im-logo {
@@ -252,6 +360,10 @@ export default defineComponent({
 }
 
 @media screen and (max-width: 1439px) {
+  .layout-menu-container {
+    width: 8vw;
+  }
+
   #user-icon,
   .sidebutton {
     font-size: 4vw;
@@ -264,12 +376,20 @@ export default defineComponent({
   .im-logo {
     width: 7vw;
   }
+
+  .center-icon-text {
+    font-size: 1rem;
+  }
 }
 
 @media screen and (min-width: 1440px) {
+  .layout-menu-container {
+    width: 115px;
+  }
+
   #user-icon,
   .sidebutton {
-    font-size: 60px;
+    font-size: 50px;
   }
 
   .avatar-icon {
@@ -278,6 +398,10 @@ export default defineComponent({
 
   .im-logo {
     width: 100px;
+  }
+
+  .center-icon-text {
+    font-size: 1.5rem;
   }
 }
 </style>

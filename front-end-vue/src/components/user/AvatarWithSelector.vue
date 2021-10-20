@@ -1,39 +1,17 @@
 <template>
   <div class="avatar-container">
-    <img
-      id="selected-avatar"
-      :src="getUrl(newAvatar.value)"
-      alt="avatar icon"
-    />
-    <Button
-      icon="pi pi-angle-down"
-      class="p-button-rounded p-button-primary avatar-button"
-      @click="toggleAvatarSelect"
-    />
+    <img id="selected-avatar" :src="getUrl(newAvatar)" alt="avatar icon" />
+    <Button icon="pi pi-angle-down" class="p-button-rounded p-button-primary avatar-button" @click="toggleAvatarSelect" />
     <OverlayPanel ref="avatar" class="avatar-popup">
       <div>
         Icons made by
-        <a
-          href="https://www.flaticon.com/authors/vitaly-gorbachev"
-          title="Vitaly Gorbachev"
-          >Vitaly Gorbachev</a
-        >
+        <a href="https://www.flaticon.com/authors/vitaly-gorbachev" title="Vitaly Gorbachev">Vitaly Gorbachev</a>
         from
-        <a href="https://www.flaticon.com/" title="Flaticon"
-          >www.flaticon.com</a
-        >
+        <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
       </div>
-      <SelectButton
-        v-model="newAvatar"
-        :options="avatarOptions"
-        dataKey="value"
-      >
+      <SelectButton v-model="newAvatar" :options="avatarOptions">
         <template #option="slotProps">
-          <img
-            class="avatar-select avatar-icon"
-            :src="require('@/assets/avatars/' + slotProps.option.value)"
-            alt="avatar icon"
-          />
+          <img class="avatar-select avatar-icon" :src="require('@/assets/avatars/' + slotProps.option)" alt="avatar icon" />
         </template>
       </SelectButton>
     </OverlayPanel>
@@ -46,7 +24,7 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "AvatarWithSelector",
-  props: ["selectedAvatar"],
+  props: { selectedAvatar: { type: String } },
   emits: ["avatarSelected"],
   watch: {
     selectedAvatar(newValue) {

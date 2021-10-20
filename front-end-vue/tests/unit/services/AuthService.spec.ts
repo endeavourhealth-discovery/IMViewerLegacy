@@ -4,7 +4,7 @@ import AuthService from "@/services/AuthService";
 import { User } from "@/models/user/User";
 import { CustomAlert } from "@/models/user/CustomAlert";
 
-const testUser = new User("devtest", "John", "Doe", "john.doe@ergosoft.co.uk", "12345678", { value: "colour/002-man.png" });
+const testUser = new User("devtest", "John", "Doe", "john.doe@ergosoft.co.uk", "12345678", "colour/002-man.png");
 
 describe("register", () => {
   beforeEach(() => {
@@ -12,15 +12,19 @@ describe("register", () => {
   });
 
   it("returns 201 with auth success", async () => {
-    Auth.signUp = jest.fn().mockResolvedValue({ status: 200, message: "test confirm code"});
+    Auth.signUp = jest.fn().mockResolvedValue({ status: 200, message: "test confirm code" });
     const result = AuthService.register(testUser);
     let promiseResult: any;
     result.then(res => {
-      promiseResult = res
-    })
-    await flushPromises()
+      promiseResult = res;
+    });
+    await flushPromises();
     expect(Auth.signUp).toHaveBeenCalledTimes(1);
-    expect(Auth.signUp).toHaveBeenCalledWith({ username: "devtest", password: "12345678", attributes: { email: "john.doe@ergosoft.co.uk", "custom:forename": "John", "custom:surname": "Doe", "custom:avatar": "colour/002-man.png"}});
+    expect(Auth.signUp).toHaveBeenCalledWith({
+      username: "devtest",
+      password: "12345678",
+      attributes: { email: "john.doe@ergosoft.co.uk", "custom:forename": "John", "custom:surname": "Doe", "custom:avatar": "colour/002-man.png" }
+    });
     expect(promiseResult).toStrictEqual(new CustomAlert(201, "User registered successfully"));
   });
 
@@ -30,12 +34,16 @@ describe("register", () => {
     let promiseResult: any;
     let err: any;
     result.then(res => {
-      err = res.error
-      promiseResult = res
+      err = res.error;
+      promiseResult = res;
     });
-    await flushPromises()
+    await flushPromises();
     expect(Auth.signUp).toHaveBeenCalledTimes(1);
-    expect(Auth.signUp).toHaveBeenCalledWith({ username: "devtest", password: "12345678", attributes: { email: "john.doe@ergosoft.co.uk", "custom:forename": "John", "custom:surname": "Doe", "custom:avatar": "colour/002-man.png"}});
+    expect(Auth.signUp).toHaveBeenCalledWith({
+      username: "devtest",
+      password: "12345678",
+      attributes: { email: "john.doe@ergosoft.co.uk", "custom:forename": "John", "custom:surname": "Doe", "custom:avatar": "colour/002-man.png" }
+    });
     expect(promiseResult).toStrictEqual(new CustomAlert(409, "Username already exists", err));
   });
 
@@ -45,12 +53,16 @@ describe("register", () => {
     let promiseResult: any;
     let err: any;
     result.then(res => {
-      err = res.error
-      promiseResult = res
+      err = res.error;
+      promiseResult = res;
     });
-    await flushPromises()
+    await flushPromises();
     expect(Auth.signUp).toHaveBeenCalledTimes(1);
-    expect(Auth.signUp).toHaveBeenCalledWith({ username: "devtest", password: "12345678", attributes: { email: "john.doe@ergosoft.co.uk", "custom:forename": "John", "custom:surname": "Doe", "custom:avatar": "colour/002-man.png"}});
+    expect(Auth.signUp).toHaveBeenCalledWith({
+      username: "devtest",
+      password: "12345678",
+      attributes: { email: "john.doe@ergosoft.co.uk", "custom:forename": "John", "custom:surname": "Doe", "custom:avatar": "colour/002-man.png" }
+    });
     expect(promiseResult).toStrictEqual(new CustomAlert(400, "User registration failed", err));
   });
 });
@@ -61,13 +73,13 @@ describe("confirmRegister", () => {
   });
 
   it("returns 200 with auth success", async () => {
-    Auth.confirmSignUp = jest.fn().mockResolvedValue({ status: 200, message: "test confirm code"});
+    Auth.confirmSignUp = jest.fn().mockResolvedValue({ status: 200, message: "test confirm code" });
     const result = AuthService.confirmRegister("devtest", "123456");
     let promiseResult: any;
     result.then(res => {
-      promiseResult = res
-    })
-    await flushPromises()
+      promiseResult = res;
+    });
+    await flushPromises();
     expect(Auth.confirmSignUp).toHaveBeenCalledTimes(1);
     expect(Auth.confirmSignUp).toHaveBeenCalledWith("devtest", "123456");
     expect(promiseResult).toStrictEqual(new CustomAlert(200, "Register confirmation successful"));
@@ -79,10 +91,10 @@ describe("confirmRegister", () => {
     let promiseResult: any;
     let err: any;
     result.then(res => {
-      err = res.error
-      promiseResult = res
+      err = res.error;
+      promiseResult = res;
     });
-    await flushPromises()
+    await flushPromises();
     expect(Auth.confirmSignUp).toHaveBeenCalledTimes(1);
     expect(Auth.confirmSignUp).toHaveBeenCalledWith("devtest", "123456");
     expect(promiseResult).toStrictEqual(new CustomAlert(403, "Failed register confirmation", err));
@@ -109,8 +121,8 @@ describe("signIn", () => {
     const result = AuthService.signIn("devTest", "12345678");
     let promiseResult: any;
     result.then(res => {
-      promiseResult = res
-    })
+      promiseResult = res;
+    });
     await flushPromises();
     testUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g09");
     testUser.password = "";
@@ -125,8 +137,8 @@ describe("signIn", () => {
     let promiseResult: any;
     let err: any;
     result.then(res => {
-      err = res.error
-      promiseResult = res
+      err = res.error;
+      promiseResult = res;
     });
     await flushPromises();
     expect(Auth.signIn).toHaveBeenCalledTimes(1);
@@ -140,8 +152,8 @@ describe("signIn", () => {
     let promiseResult: any;
     let err: any;
     result.then(res => {
-      err = res.error
-      promiseResult = res
+      err = res.error;
+      promiseResult = res;
     });
     await flushPromises();
     expect(Auth.signIn).toHaveBeenCalledTimes(1);
@@ -156,12 +168,12 @@ describe("resendConfirmationCode", () => {
   });
 
   it("returns 200 with auth success", async () => {
-    Auth.resendSignUp = jest.fn().mockResolvedValue( { code: 200 });
+    Auth.resendSignUp = jest.fn().mockResolvedValue({ code: 200 });
     const result = AuthService.resendConfirmationCode("devTest");
     let promiseResult: any;
     result.then(res => {
-      promiseResult = res
-    })
+      promiseResult = res;
+    });
     await flushPromises();
     expect(Auth.resendSignUp).toHaveBeenCalledTimes(1);
     expect(Auth.resendSignUp).toHaveBeenCalledWith("devTest");
@@ -174,8 +186,8 @@ describe("resendConfirmationCode", () => {
     let promiseResult: any;
     let err: any;
     result.then(res => {
-      err = res.error
-      promiseResult = res
+      err = res.error;
+      promiseResult = res;
     });
     await flushPromises();
     expect(Auth.resendSignUp).toHaveBeenCalledTimes(1);
@@ -190,12 +202,12 @@ describe("signOut", () => {
   });
 
   it("returns 200 with auth success", async () => {
-    Auth.signOut = jest.fn().mockResolvedValue( { code: 200 });
+    Auth.signOut = jest.fn().mockResolvedValue({ code: 200 });
     const result = AuthService.signOut();
     let promiseResult: any;
     result.then(res => {
-      promiseResult = res
-    })
+      promiseResult = res;
+    });
     await flushPromises();
     expect(Auth.signOut).toHaveBeenCalledTimes(1);
     expect(promiseResult).toStrictEqual(new CustomAlert(200, "Logged out successfully"));
@@ -207,8 +219,8 @@ describe("signOut", () => {
     let promiseResult: any;
     let err: any;
     result.then(res => {
-      err = res.error
-      promiseResult = res
+      err = res.error;
+      promiseResult = res;
     });
     await flushPromises();
     expect(Auth.signOut).toHaveBeenCalledTimes(1);
@@ -222,94 +234,121 @@ describe("updateUser", () => {
   });
 
   it("returns 200 with auth success, id remains same, password returns empty", async () => {
-    Auth.currentAuthenticatedUser = jest.fn().mockResolvedValueOnce({
-      username: "devtest",
-      attributes: {
-        "custom:avatar": "colour/002-man.png",
-        "custom:forename": "John",
-        "custom:surname": "Doe",
-        email: "john.doe@ergosoft.co.uk",
-        email_verified: true,
-        sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
-      }
-    }).mockResolvedValueOnce({
-      username: "devtestupdated",
-      attributes: {
-        "custom:avatar": "colour/003-man.png",
-        "custom:forename": "Bill",
-        "custom:surname": "Williams",
-        email: "bill.williams@ergosoft.co.uk",
-        email_verified: true,
-        sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
-      }
-    });
+    Auth.currentAuthenticatedUser = jest
+      .fn()
+      .mockResolvedValueOnce({
+        username: "devtest",
+        attributes: {
+          "custom:avatar": "colour/002-man.png",
+          "custom:forename": "John",
+          "custom:surname": "Doe",
+          email: "john.doe@ergosoft.co.uk",
+          email_verified: true,
+          sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
+        }
+      })
+      .mockResolvedValueOnce({
+        username: "devtestupdated",
+        attributes: {
+          "custom:avatar": "colour/003-man.png",
+          "custom:forename": "Bill",
+          "custom:surname": "Williams",
+          email: "bill.williams@ergosoft.co.uk",
+          email_verified: true,
+          sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
+        }
+      });
     Auth.updateUserAttributes = jest.fn().mockResolvedValue({ code: "UpdateUser", name: "updatesuccess", message: "User updated" });
-    const updatedUser = new User("devtestupdated", "Bill", "Williams", "bill.williams@ergosoft.co.uk", "87654321", { value: "colour/003-man.png" });
-    updatedUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g09")
+    const updatedUser = new User("devtestupdated", "Bill", "Williams", "bill.williams@ergosoft.co.uk", "87654321", "colour/003-man.png");
+    updatedUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g09");
     const result = AuthService.updateUser(updatedUser);
     let promiseResult: any;
     result.then(res => {
-      promiseResult = res
-    })
+      promiseResult = res;
+    });
     await flushPromises();
     expect(Auth.currentAuthenticatedUser).toHaveBeenCalledTimes(2);
     expect(Auth.updateUserAttributes).toHaveBeenCalledTimes(1);
-    expect(Auth.updateUserAttributes).toHaveBeenCalledWith({
-      username: "devtest",
-      attributes: {
-        "custom:avatar": "colour/002-man.png",
-        "custom:forename": "John",
-        "custom:surname": "Doe",
-        email: "john.doe@ergosoft.co.uk",
-        email_verified: true,
-        sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
+    expect(Auth.updateUserAttributes).toHaveBeenCalledWith(
+      {
+        username: "devtest",
+        attributes: {
+          "custom:avatar": "colour/002-man.png",
+          "custom:forename": "John",
+          "custom:surname": "Doe",
+          email: "john.doe@ergosoft.co.uk",
+          email_verified: true,
+          sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
+        }
+      },
+      {
+        "custom:avatar": "colour/003-man.png",
+        "custom:forename": "Bill",
+        "custom:surname": "Williams",
+        email: "bill.williams@ergosoft.co.uk"
       }
-    }, {
-      "custom:avatar": "colour/003-man.png",
-      "custom:forename": "Bill",
-      "custom:surname": "Williams",
-      email: "bill.williams@ergosoft.co.uk",
-    });
+    );
     updatedUser.password = "";
     expect(promiseResult).toStrictEqual(new CustomAlert(200, "User updated successfully", undefined, updatedUser));
   });
 
   it("returns 403 with auth fail, ids differ", async () => {
-    Auth.currentAuthenticatedUser = jest.fn().mockResolvedValueOnce({
-      username: "devtest",
-      attributes: {
-        "custom:avatar": "colour/002-man.png",
-        "custom:forename": "John",
-        "custom:surname": "Doe",
-        email: "john.doe@ergosoft.co.uk",
-        email_verified: true,
-        sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
-      }
-    }).mockResolvedValueOnce({
-      username: "devtestupdated",
-      attributes: {
-        "custom:avatar": "colour/003-man.png",
-        "custom:forename": "Bill",
-        "custom:surname": "Williams",
-        email: "bill.williams@ergosoft.co.uk",
-        email_verified: true,
-        sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
-      }
-    });
+    Auth.currentAuthenticatedUser = jest
+      .fn()
+      .mockResolvedValueOnce({
+        username: "devtest",
+        attributes: {
+          "custom:avatar": "colour/002-man.png",
+          "custom:forename": "John",
+          "custom:surname": "Doe",
+          email: "john.doe@ergosoft.co.uk",
+          email_verified: true,
+          sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
+        }
+      })
+      .mockResolvedValueOnce({
+        username: "devtestupdated",
+        attributes: {
+          "custom:avatar": "colour/003-man.png",
+          "custom:forename": "Bill",
+          "custom:surname": "Williams",
+          email: "bill.williams@ergosoft.co.uk",
+          email_verified: true,
+          sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
+        }
+      });
     Auth.updateUserAttributes = jest.fn().mockResolvedValue({ code: "UpdateUser", name: "updatesuccess", message: "User updated" });
-    const updatedUser = new User("devtestupdated", "Bill", "Williams", "bill.williams@ergosoft.co.uk", "87654321", { value: "colour/003-man.png" });
-    updatedUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g08")
+    const updatedUser = new User("devtestupdated", "Bill", "Williams", "bill.williams@ergosoft.co.uk", "87654321", "colour/003-man.png");
+    updatedUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g08");
     const result = AuthService.updateUser(updatedUser);
     let promiseResult: any;
     let err: any;
     result.then(res => {
-      err = res.error
-      promiseResult = res
-    })
+      err = res.error;
+      promiseResult = res;
+    });
     await flushPromises();
     expect(Auth.currentAuthenticatedUser).toHaveBeenCalledTimes(1);
     expect(Auth.updateUserAttributes).toHaveBeenCalledTimes(0);
     expect(promiseResult).toStrictEqual(new CustomAlert(403, "Authentication error with server", err));
+  });
+
+  it("returns 500 with auth fail", async () => {
+    Auth.currentAuthenticatedUser = jest.fn().mockRejectedValue(false);
+    Auth.updateUserAttributes = jest.fn().mockRejectedValue(false);
+    const updatedUser = new User("devtestupdated", "Bill", "Williams", "bill.williams@ergosoft.co.uk", "87654321", "colour/003-man.png");
+    updatedUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g08");
+    const result = AuthService.updateUser(updatedUser);
+    let promiseResult: any;
+    let err: any;
+    result.then(res => {
+      err = res.error;
+      promiseResult = res;
+    });
+    await flushPromises();
+    expect(Auth.currentAuthenticatedUser).toHaveBeenCalledTimes(1);
+    expect(Auth.updateUserAttributes).toHaveBeenCalledTimes(0);
+    expect(promiseResult).toStrictEqual(new CustomAlert(500, "Error authenticating current user", err));
   });
 });
 
@@ -330,12 +369,12 @@ describe("changePassword", () => {
         sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
       }
     });
-    Auth.changePassword = jest.fn().mockResolvedValue( { code: 200 });
+    Auth.changePassword = jest.fn().mockResolvedValue({ code: 200 });
     const result = AuthService.changePassword("12345678", "87654321");
     let promiseResult: any;
     result.then(res => {
-      promiseResult = res
-    })
+      promiseResult = res;
+    });
     await flushPromises();
     expect(Auth.currentAuthenticatedUser).toHaveBeenCalledTimes(1);
     expect(Auth.changePassword).toHaveBeenCalledTimes(1);
@@ -354,13 +393,13 @@ describe("changePassword", () => {
         sub: "9gkej864-l39k-9u87-4lau-w7777b3m5g09"
       }
     });
-    Auth.changePassword = jest.fn().mockRejectedValue( { code: "passwordChangeError", message: "Password change error" });
+    Auth.changePassword = jest.fn().mockRejectedValue({ code: "passwordChangeError", message: "Password change error" });
     const result = AuthService.changePassword("12345678", "87654321");
     let promiseResult: any;
     let err: any;
     result.then(res => {
-      err = res.error
-      promiseResult = res
+      err = res.error;
+      promiseResult = res;
     });
     await flushPromises();
     expect(Auth.currentAuthenticatedUser).toHaveBeenCalledTimes(1);
@@ -375,12 +414,12 @@ describe("forgotPassword", () => {
   });
 
   it("returns 200 with auth success", async () => {
-    Auth.forgotPassword = jest.fn().mockResolvedValue( { code: 200 });
+    Auth.forgotPassword = jest.fn().mockResolvedValue({ code: 200 });
     const result = AuthService.forgotPassword("devtest");
     let promiseResult: any;
     result.then(res => {
-      promiseResult = res
-    })
+      promiseResult = res;
+    });
     await flushPromises();
     expect(Auth.forgotPassword).toHaveBeenCalledTimes(1);
     expect(Auth.forgotPassword).toHaveBeenCalledWith("devtest");
@@ -388,13 +427,13 @@ describe("forgotPassword", () => {
   });
 
   it("returns 400 with auth fail ___ fail", async () => {
-    Auth.forgotPassword = jest.fn().mockRejectedValue( { code: "PasswordResetFail", message: "Password reset error" });
+    Auth.forgotPassword = jest.fn().mockRejectedValue({ code: "PasswordResetFail", message: "Password reset error" });
     const result = AuthService.forgotPassword("devtest");
     let promiseResult: any;
     let err: any;
     result.then(res => {
-      err = res.error
-      promiseResult = res
+      err = res.error;
+      promiseResult = res;
     });
     await flushPromises();
     expect(Auth.forgotPassword).toHaveBeenCalledTimes(1);
@@ -409,12 +448,12 @@ describe("forgotPasswordSubmit", () => {
   });
 
   it("returns 200 with auth success", async () => {
-    Auth.forgotPasswordSubmit = jest.fn().mockResolvedValue( { code: 200 });
+    Auth.forgotPasswordSubmit = jest.fn().mockResolvedValue({ code: 200 });
     const result = AuthService.forgotPasswordSubmit("devtest", "123456", "87654321");
     let promiseResult: any;
     result.then(res => {
-      promiseResult = res
-    })
+      promiseResult = res;
+    });
     await flushPromises();
     expect(Auth.forgotPasswordSubmit).toHaveBeenCalledTimes(1);
     expect(Auth.forgotPasswordSubmit).toHaveBeenCalledWith("devtest", "123456", "87654321");
@@ -422,13 +461,13 @@ describe("forgotPasswordSubmit", () => {
   });
 
   it("returns 400 with auth fail ___ fail", async () => {
-    Auth.forgotPasswordSubmit = jest.fn().mockRejectedValue( { code: "PasswordResetCodeFail", message: "Password reset code error" });
+    Auth.forgotPasswordSubmit = jest.fn().mockRejectedValue({ code: "PasswordResetCodeFail", message: "Password reset code error" });
     const result = AuthService.forgotPasswordSubmit("devtest", "123456", "87654321");
     let promiseResult: any;
     let err: any;
     result.then(res => {
-      err = res.error
-      promiseResult = res
+      err = res.error;
+      promiseResult = res;
     });
     await flushPromises();
     expect(Auth.forgotPasswordSubmit).toHaveBeenCalledTimes(1);
@@ -437,13 +476,13 @@ describe("forgotPasswordSubmit", () => {
   });
 
   it("returns 403 with auth fail ___ expired", async () => {
-    Auth.forgotPasswordSubmit = jest.fn().mockRejectedValue( { code: "ExpiredCodeException", message: "Password reset error" });
+    Auth.forgotPasswordSubmit = jest.fn().mockRejectedValue({ code: "ExpiredCodeException", message: "Password reset error" });
     const result = AuthService.forgotPasswordSubmit("devtest", "123456", "87654321");
     let promiseResult: any;
     let err: any;
     result.then(res => {
-      err = res.error
-      promiseResult = res
+      err = res.error;
+      promiseResult = res;
     });
     await flushPromises();
     expect(Auth.forgotPasswordSubmit).toHaveBeenCalledTimes(1);
@@ -458,12 +497,12 @@ describe("forgotUsername", () => {
   });
 
   it("returns 200 with auth success", async () => {
-    Auth.verifyCurrentUserAttribute = jest.fn().mockResolvedValue( { code: 200 });
+    Auth.verifyCurrentUserAttribute = jest.fn().mockResolvedValue({ code: 200 });
     const result = AuthService.forgotUsername("john.doe@ergosoft.co.uk");
     let promiseResult: any;
     result.then(res => {
-      promiseResult = res
-    })
+      promiseResult = res;
+    });
     await flushPromises();
     expect(Auth.verifyCurrentUserAttribute).toHaveBeenCalledTimes(1);
     expect(Auth.verifyCurrentUserAttribute).toHaveBeenCalledWith("john.doe@ergosoft.co.uk");
@@ -471,13 +510,13 @@ describe("forgotUsername", () => {
   });
 
   it("returns 400 with auth fail ___ fail", async () => {
-    Auth.verifyCurrentUserAttribute = jest.fn().mockRejectedValue( { code: "UsernameRecoveryFail", message: "Username recovery error" });
+    Auth.verifyCurrentUserAttribute = jest.fn().mockRejectedValue({ code: "UsernameRecoveryFail", message: "Username recovery error" });
     const result = AuthService.forgotUsername("john.doe@ergosoft.co.uk");
     let promiseResult: any;
     let err: any;
     result.then(res => {
-      err = res.error
-      promiseResult = res
+      err = res.error;
+      promiseResult = res;
     });
     await flushPromises();
     expect(Auth.verifyCurrentUserAttribute).toHaveBeenCalledTimes(1);
@@ -506,10 +545,10 @@ describe("getCurrentAuthenticatedUser", () => {
     const result = AuthService.getCurrentAuthenticatedUser();
     let promiseResult: any;
     result.then(res => {
-      promiseResult = res
-    })
+      promiseResult = res;
+    });
     await flushPromises();
-    const currentUser = new User("devtest", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "colour/002-man.png" });
+    const currentUser = new User("devtest", "John", "Doe", "john.doe@ergosoft.co.uk", "", "colour/002-man.png");
     currentUser.setId("9gkej864-l39k-9u87-4lau-w7777b3m5g09");
     expect(Auth.currentAuthenticatedUser).toHaveBeenCalledTimes(1);
     expect(promiseResult).toStrictEqual(new CustomAlert(200, "User authenticated successfully", undefined, currentUser));
@@ -521,8 +560,8 @@ describe("getCurrentAuthenticatedUser", () => {
     let promiseResult: any;
     let err: any;
     result.then(res => {
-      err = res.error
-      promiseResult = res
+      err = res.error;
+      promiseResult = res;
     });
     await flushPromises();
     expect(Auth.currentAuthenticatedUser).toHaveBeenCalledTimes(1);

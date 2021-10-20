@@ -12,7 +12,7 @@ export default {
           email: userToRegister.email,
           "custom:forename": userToRegister.firstName,
           "custom:surname": userToRegister.lastName,
-          "custom:avatar": userToRegister.avatar.value
+          "custom:avatar": userToRegister.avatar
         }
       });
       return new CustomAlert(201, "User registered successfully");
@@ -43,7 +43,7 @@ export default {
         user.attributes["custom:surname"],
         user.attributes.email,
         "",
-        { value: user.attributes["custom:avatar"] }
+        user.attributes["custom:avatar"]
       );
       signedInUser.setId(user.attributes.sub);
       return new CustomAlert(200, "Login successful", undefined, signedInUser);
@@ -51,11 +51,7 @@ export default {
       if (err.code === "UserNotConfirmedException") {
         return new CustomAlert(401, err.message, err); //message: "User is not confirmed."
       }
-      return new CustomAlert(
-        403,
-        "Login failed. Check username and password are correct",
-        err
-      );
+      return new CustomAlert(403, "Login failed. Check username and password are correct", err);
     }
   },
 
@@ -90,7 +86,7 @@ export default {
           email: userToUpdate.email,
           "custom:forename": userToUpdate.firstName,
           "custom:surname": userToUpdate.lastName,
-          "custom:avatar": userToUpdate.avatar.value
+          "custom:avatar": userToUpdate.avatar
         };
         await Auth.updateUserAttributes(user, atts);
         const updateResults = await Auth.currentAuthenticatedUser();
@@ -100,15 +96,10 @@ export default {
           updateResults.attributes["custom:surname"],
           updateResults.attributes.email,
           "",
-          { value: updateResults.attributes["custom:avatar"] }
+          updateResults.attributes["custom:avatar"]
         );
         updatedUser.setId(updateResults.attributes.sub);
-        return new CustomAlert(
-          200,
-          "User updated successfully",
-          undefined,
-          updatedUser
-        );
+        return new CustomAlert(200, "User updated successfully", undefined, updatedUser);
       } else {
         return new CustomAlert(403, "Authentication error with server");
       }
@@ -117,10 +108,7 @@ export default {
     }
   },
 
-  async changePassword(
-    oldPassword: string,
-    newPassword: string
-  ): Promise<CustomAlert> {
+  async changePassword(oldPassword: string, newPassword: string): Promise<CustomAlert> {
     try {
       const user = await Auth.currentAuthenticatedUser();
       await Auth.changePassword(user, oldPassword, newPassword);
@@ -139,11 +127,7 @@ export default {
     }
   },
 
-  async forgotPasswordSubmit(
-    username: string,
-    code: string,
-    newPassword: string
-  ): Promise<CustomAlert> {
+  async forgotPasswordSubmit(username: string, code: string, newPassword: string): Promise<CustomAlert> {
     try {
       await Auth.forgotPasswordSubmit(username, code, newPassword);
       return new CustomAlert(200, "Password reset successfully");
@@ -151,11 +135,7 @@ export default {
       if (err.code === "ExpiredCodeException") {
         return new CustomAlert(403, "Code has expired", err);
       }
-      return new CustomAlert(
-        400,
-        "Error submitting password-reset credentials",
-        err
-      );
+      return new CustomAlert(400, "Error submitting password-reset credentials", err);
     }
   },
 
@@ -177,15 +157,10 @@ export default {
         cognitoUser.attributes["custom:surname"],
         cognitoUser.attributes.email,
         "",
-        { value: cognitoUser.attributes["custom:avatar"] }
+        cognitoUser.attributes["custom:avatar"]
       );
       authenticatedUser.setId(cognitoUser.attributes.sub);
-      return new CustomAlert(
-        200,
-        "User authenticated successfully",
-        undefined,
-        authenticatedUser
-      );
+      return new CustomAlert(200, "User authenticated successfully", undefined, authenticatedUser);
     } catch (err) {
       return new CustomAlert(403, "Error authenticating current user", err);
     }

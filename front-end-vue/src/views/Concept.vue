@@ -3,32 +3,22 @@
     <Panel>
       <template #icons>
         <div class="icons-container">
-          <button
-            class="p-panel-header-icon p-link p-mr-2"
-            @click="focusTree"
-            v-tooltip.left="'Focus hierarchy tree to this concept'"
-          >
+          <button class="p-panel-header-icon p-link p-mr-2" @click="focusTree" v-tooltip.left="'Focus hierarchy tree to this concept'">
             <i class="fas fa-sitemap" aria-hidden="true"></i>
           </button>
-          <div v-if="'iri' in concept" class="copy-container">
+          <div v-if="isObjectHasKeysWrapper(concept, ['axioms'])" class="copy-container">
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
-              v-clipboard:copy="copyConceptToClipboard(concept)"
+              v-clipboard:copy="copyConceptToClipboardVueWrapper(concept, configs)"
               v-clipboard:success="onCopy"
               v-clipboard:error="onCopyError"
-              v-tooltip="
-                'Copy concept to clipboard \n (right click to copy individual properties)'
-              "
+              v-tooltip="'Copy concept to clipboard \n (right click to copy individual properties)'"
               @contextmenu="onCopyRightClick"
             />
             <ContextMenu ref="copyMenu" :model="copyMenuItems" />
           </div>
-          <button
-            class="p-panel-header-icon p-link p-mr-2"
-            @click="openDownloadDialog"
-            v-tooltip.bottom="'Download concept'"
-          >
+          <button class="p-panel-header-icon p-link p-mr-2" @click="openDownloadDialog" v-tooltip.bottom="'Download concept'">
             <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
           </button>
           <!--<button
@@ -51,135 +41,49 @@
         <PanelHeader :types="types" :header="header" />
       </template>
       <div id="concept-content-dialogs-container">
-        <div
-          v-if="Object.keys(concept).length && isSet"
-          id="concept-panel-container"
-        >
-          <TabView v-model:activeIndex="active">
+        <div id="concept-panel-container">
+          <TabView v-model:activeIndex="active" :lazy="true">
             <TabPanel header="Definition">
-              <div
-                class="concept-panel-content"
-                id="definition-container"
-                :style="contentHeight"
-              >
-                <Definition
-                  :concept="concept"
-                  :properties="properties"
-                  :contentHeight="contentHeightValue"
-                  v-if="active === 0"
-                />
+              <div v-if="loading" class="loading-container" :style="contentHeight">
+                <ProgressSpinner />
+              </div>
+              <div v-else class="concept-panel-content" id="definition-container" :style="contentHeight">
+                <Definition :concept="concept" :configs="configs" />
               </div>
             </TabPanel>
-            <TabPanel header="Terms">
-              <div
-                class="concept-panel-content"
-                id="terms-container"
-                :style="contentHeight"
-              >
-                <Terms :conceptIri="conceptIri" v-if="active === 1" />
+            <TabPanel header="Maps" v-if="showMappings">
+              <div class="concept-panel-content" id="mappings-container" :style="contentHeight">
+                <Mappings :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Used in">
-              <div
-                class="concept-panel-content"
-                id="usedin-container"
-                :style="contentHeight"
-              >
-                <UsedIn :conceptIri="conceptIri" v-if="active === 2" />
+              <div class="concept-panel-content" id="usedin-container" :style="contentHeight">
+                <UsedIn :conceptIri="conceptIri" />
               </div>
             </TabPanel>
-            <TabPanel header="Members">
-              <div
-                class="concept-panel-content"
-                id="members-container"
-                :style="contentHeight"
-              >
-                <Members :conceptIri="conceptIri" v-if="active === 3" />
+            <TabPanel header="Graph" v-if="showGraph">
+              <div class="concept-panel-content" id="graph-container" :style="contentHeight">
+                <Graph :conceptIri="conceptIri" />
+              </div>
+            </TabPanel>
+            <TabPanel header="Properties" v-if="isRecordModel">
+              <div class="concept-panel-content" id="properties-container" :style="contentHeight">
+                <Properties :conceptIri="conceptIri" />
+              </div>
+            </TabPanel>
+            <TabPanel header="Members" v-if="isSet">
+              <div class="concept-panel-content" id="members-container" :style="contentHeight">
+                <Members :conceptIri="conceptIri" @memberClick="active = 0" />
               </div>
             </TabPanel>
             <TabPanel header="Hierarchy position">
-              <div
-                class="concept-panel-content"
-                id="secondary-tree-container"
-                :style="contentHeight"
-              >
-                <SecondaryTree :conceptIri="conceptIri" v-if="active === 4" />
+              <div class="concept-panel-content" id="secondary-tree-container" :style="contentHeight">
+                <SecondaryTree :conceptIri="conceptIri" />
               </div>
             </TabPanel>
           </TabView>
         </div>
-        <div
-          v-if="Object.keys(concept).length && !isSet"
-          id="concept-panel-container"
-        >
-          <TabView v-model:activeIndex="active">
-            <TabPanel header="Definition">
-              <div
-                class="concept-panel-content"
-                id="definition-container"
-                :style="contentHeight"
-              >
-                <Definition
-                  :concept="concept"
-                  :properties="properties"
-                  :contentHeight="contentHeightValue"
-                  v-if="active === 0"
-                />
-              </div>
-            </TabPanel>
-            <TabPanel header="Terms">
-              <div
-                class="concept-panel-content"
-                id="terms-container"
-                :style="contentHeight"
-              >
-                <Terms :conceptIri="conceptIri" v-if="active === 1" />
-              </div>
-            </TabPanel>
-            <TabPanel header="Maps">
-              <div
-                class="concept-panel-content"
-                id="complex-mappings-container"
-                :style="contentHeight"
-              >
-                <ComplexMappings :conceptIri="conceptIri" v-if="active === 2" />
-              </div>
-            </TabPanel>
-            <TabPanel header="Used In">
-              <div
-                class="concept-panel-content"
-                id="usedin-container"
-                :style="contentHeight"
-              >
-                <UsedIn :conceptIri="conceptIri" v-if="active === 3" />
-              </div>
-            </TabPanel>
-            <TabPanel header="Graph">
-              <div
-                class="concept-panel-content"
-                id="graph-container"
-                :style="contentHeight"
-              >
-                <Graph :conceptIri="conceptIri" v-if="active === 4" />
-              </div>
-            </TabPanel>
-            <TabPanel header="Hierarchy position">
-              <div
-                class="concept-panel-content"
-                id="secondary-tree-container"
-                :style="contentHeight"
-              >
-                <SecondaryTree :conceptIri="conceptIri" v-if="active === 5" />
-              </div>
-            </TabPanel>
-          </TabView>
-        </div>
-        <DownloadDialog
-          v-if="showDownloadDialog"
-          @closeDownloadDialog="closeDownloadDialog"
-          :showDialog="showDownloadDialog"
-          :conceptIri="conceptIri"
-        />
+        <DownloadDialog v-if="showDownloadDialog" @closeDownloadDialog="closeDownloadDialog" :showDialog="showDownloadDialog" :conceptIri="conceptIri" />
       </div>
     </Panel>
   </div>
@@ -188,80 +92,122 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Graph from "../components/concept/Graph.vue";
-import Terms from "../components/concept/Terms.vue";
 import Definition from "../components/concept/Definition.vue";
 import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
-import ComplexMappings from "../components/concept/ComplexMappings.vue";
-import { isValueSet } from "@/helpers/ConceptTypeMethods";
+import Mappings from "../components/concept/Mappings.vue";
+import { isOfTypes, isValueSet } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
+import ConfigService from "@/services/ConfigService";
 import LoggerService from "@/services/LoggerService";
 import SecondaryTree from "../components/concept/SecondaryTree.vue";
+import { IM } from "@/vocabulary/IM";
+import { RDF } from "@/vocabulary/RDF";
+import { RDFS } from "@/vocabulary/RDFS";
+import { MODULE_IRIS } from "@/helpers/ModuleIris";
+import { OWL } from "@/vocabulary/OWL";
+import { SHACL } from "@/vocabulary/SHACL";
+import Properties from "@/components/concept/Properties.vue";
+import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
+import { TTIriRef } from "@/models/TripleTree";
+import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Concept",
   components: {
     PanelHeader,
     Graph,
-    Terms,
     UsedIn,
     Members,
     Definition,
     DownloadDialog,
     SecondaryTree,
-    ComplexMappings
+    Mappings,
+    Properties
   },
   computed: {
-    isSet(): any {
-      const conceptTypeElements = this?.concept?.types;
-      return isValueSet(conceptTypeElements);
+    isSet(): boolean {
+      return isValueSet(this.types);
     },
 
-    ...mapState(["conceptIri"])
+    showGraph(): boolean {
+      return isOfTypes(this.types, OWL.CLASS, SHACL.NODESHAPE);
+    },
+
+    showMappings(): boolean {
+      return isOfTypes(this.types, OWL.CLASS) && !isOfTypes(this.types, SHACL.NODESHAPE);
+    },
+
+    isClass(): boolean {
+      return isOfTypes(this.types, OWL.CLASS);
+    },
+
+    isQuery(): boolean {
+      return isOfTypes(this.types, IM.QUERY_TEMPLATE);
+    },
+
+    isRecordModel(): boolean {
+      return isOfTypes(this.types, SHACL.NODESHAPE);
+    },
+
+    isFolder(): boolean {
+      return isOfTypes(this.types, IM.FOLDER);
+    },
+
+    isProperty(): boolean {
+      return isOfTypes(this.types, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY, OWL.DATATYPE_PROPERTY);
+    },
+
+    ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel", "activeModule"])
   },
   watch: {
     async conceptIri() {
       this.init();
     },
-    concept(newValue) {
-      if (Object.keys(newValue).length) {
-        this.setCopyMenuItems(newValue);
-      }
+
+    selectedEntityType(newValue, oldValue) {
+      this.setActivePanel(newValue, oldValue);
+    },
+
+    active(newValue) {
+      this.$store.commit("updateConceptActivePanel", newValue);
     }
   },
   async mounted() {
     await this.init();
-
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.setContentHeight);
-    });
-
+    window.addEventListener("resize", this.onResize);
     this.setContentHeight();
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.setContentHeight);
+    window.removeEventListener("resize", this.onResize);
   },
   data() {
     return {
+      loading: false,
       editDialogView: true,
       showDownloadDialog: false,
       concept: {} as any,
-      properties: [] as any[],
       definitionText: "",
       display: false,
-      types: [],
+      types: [] as TTIriRef[],
       header: "",
       dialogHeader: "",
       active: 0,
       contentHeight: "",
       contentHeightValue: 0,
-      copyMenuItems: [] as any
+      copyMenuItems: [] as any,
+      configs: [] as DefinitionConfig[]
     };
   },
   methods: {
+    onResize(): void {
+      this.setContentHeight();
+    },
+
     focusTree(): void {
       this.$store.commit("updateFocusTree", true);
     },
@@ -277,52 +223,112 @@ export default defineComponent({
       this.$router.push({ name: "Create" });
     },
 
-    setContentHeight(): void {
-      const container = document.getElementById(
-        "concept-main-container"
-      ) as HTMLElement;
-      const header = container.getElementsByClassName(
-        "p-panel-header"
-      )[0] as HTMLElement;
-      const nav = container.getElementsByClassName(
-        "p-tabview-nav"
-      )[0] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
-      if (header && container && currentFontSize) {
-        const calcHeight =
-          container.getBoundingClientRect().height -
-          header.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
-          4 * currentFontSize -
-          1;
-        this.contentHeight =
-          "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
-        this.contentHeightValue = calcHeight;
+    async getConcept(iri: string): Promise<void> {
+      const predicates = this.configs
+        .filter((c: DefinitionConfig) => c.type !== "Divider")
+        .filter((c: DefinitionConfig) => c.predicate !== "subtypes")
+        .filter((c: DefinitionConfig) => c.predicate !== "inferred")
+        .filter((c: DefinitionConfig) => c.predicate !== "termCodes")
+        .filter((c: DefinitionConfig) => c.predicate !== "axioms")
+        .map((c: DefinitionConfig) => c.predicate);
+
+      this.concept = await EntityService.getPartialEntity(iri, predicates);
+
+      this.concept["subtypes"] = await EntityService.getEntityChildren(iri);
+
+      this.concept["termCodes"] = await EntityService.getEntityTermCodes(iri);
+    },
+
+    async getInferred(iri: string): Promise<void> {
+      const result = await EntityService.getInferredBundle(iri);
+      if (isObjectHasKeys(result, ["entity"]) && isObjectHasKeys(result.entity, [IM.IS_A, IM.ROLE_GROUP])) {
+        this.concept["inferred"] = { entity: { "http://endhealth.info/im#isA": result.entity[IM.IS_A] }, predicates: result.predicates };
+        this.concept["inferred"].entity[IM.IS_A].push({ "http://endhealth.info/im#roleGroup": result.entity[IM.ROLE_GROUP] });
       } else {
-        LoggerService.error(
-          "Content sizing error",
-          "failed to get element(s) for concept content resizing"
-        );
+        this.concept["inferred"] = result;
       }
     },
 
-    async getConcept(iri: string) {
-      return (await ConceptService.getConceptDefinitionDto(iri)).data;
+    async getStated(iri: string): Promise<void> {
+      this.concept["axioms"] = await EntityService.getAxiomBundle(iri);
     },
 
-    async getProperties(iri: string) {
-      return (await ConceptService.getRecordStructure(iri)).data;
+    async getConfig(name: string): Promise<void> {
+      const configReturn = await ConfigService.getComponentLayout(name);
+      if (configReturn) {
+        this.configs = configReturn;
+        this.configs.sort((a: DefinitionConfig, b: DefinitionConfig) => {
+          return a.order - b.order;
+        });
+      }
     },
 
-    async init() {
-      this.properties = await this.getProperties(this.conceptIri);
-      this.concept = await this.getConcept(this.conceptIri);
-      this.types = this.concept?.types;
-      this.header = this.concept?.name;
+    async init(): Promise<void> {
+      this.loading = true;
+      await this.getConfig("definition");
+      await this.getConcept(this.conceptIri);
+      await this.getInferred(this.conceptIri);
+      await this.getStated(this.conceptIri);
+      this.types = isObjectHasKeys(this.concept, [RDF.TYPE]) ? this.concept[RDF.TYPE] : ([] as TTIriRef[]);
+      this.header = this.concept[RDFS.LABEL];
+      this.setCopyMenuItems();
+      this.setStoreType();
+      this.loading = false;
+    },
+
+    setStoreType(): void {
+      let type;
+      if (this.isSet) {
+        type = "Sets";
+      } else if (this.isClass && !this.isRecordModel) {
+        type = "Ontology";
+      } else if (this.isQuery) {
+        type = "Queries";
+      } else if (this.isRecordModel) {
+        type = "DataModel";
+      } else if (this.isProperty) {
+        type = "Property";
+      } else {
+        type = this.activeModule;
+      }
+      this.$store.commit("updateSelectedEntityType", type);
+      if (!MODULE_IRIS.includes(this.conceptIri)) {
+        this.$store.commit("updateModuleSelectedEntities", {
+          module: this.isProperty ? "DataModel" : type,
+          iri: this.conceptIri
+        });
+      }
+    },
+
+    setActivePanel(newType: string, oldType: string): void {
+      if (newType === oldType) {
+        this.active = this.conceptActivePanel;
+      } else {
+        if (this.isSet) {
+          this.active = 2;
+        } else if (this.isRecordModel) {
+          this.active = 3;
+        } else {
+          this.active = 0;
+        }
+      }
+    },
+
+    setContentHeight(): void {
+      const container = document.getElementById("concept-main-container") as HTMLElement;
+      const header = container?.getElementsByClassName("p-panel-header")[0] as HTMLElement;
+      const nav = container?.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
+      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
+      if (header && container && nav && currentFontSize) {
+        const calcHeight =
+          container.getBoundingClientRect().height - header.getBoundingClientRect().height - nav.getBoundingClientRect().height - 4 * currentFontSize - 1;
+        this.contentHeight = "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
+        this.contentHeightValue = calcHeight;
+      } else {
+        this.contentHeight = "height: 800px; max-height: 800px;";
+        this.contentHeightValue = 800;
+        LoggerService.error("Content sizing error", "failed to get element(s) for concept content resizing");
+      }
     },
 
     openDownloadDialog(): void {
@@ -333,48 +339,8 @@ export default defineComponent({
       this.showDownloadDialog = false;
     },
 
-    copyConceptToClipboard(concept: any): string {
-      let isasString = "";
-      let subTypesString = "";
-      let propertiesString = "";
-      if (concept.isa.length > 0) {
-        isasString = concept.isa.map((item: any) => item.name).join(", ");
-      }
-      if (concept.subtypes.length > 0) {
-        subTypesString = concept.subtypes
-          .map((item: any) => item.name)
-          .join(", ");
-      }
-      if (this.properties.length > 0) {
-        propertiesString = this.properties
-          .map((item: any) => item.property.name)
-          .join(", ");
-      }
-      let returnString =
-        "Name: " +
-        concept.name +
-        ",\nIri: " +
-        concept.iri +
-        ",\nStatus: " +
-        concept.status +
-        ",\nType: " +
-        concept.types[0].name +
-        ",\nIs-a: " +
-        "[" +
-        isasString +
-        "]" +
-        ",\nSubtypes: " +
-        "[" +
-        subTypesString +
-        "]" +
-        ",\nProperties: " +
-        "[" +
-        propertiesString +
-        "]";
-      if (concept.description) {
-        returnString = returnString + ",\nDescription: " + concept.description;
-      }
-      return returnString;
+    copyConceptToClipboardVueWrapper(concept: any, configs: DefinitionConfig[]) {
+      return copyConceptToClipboard(concept, configs);
     },
 
     onCopy(): void {
@@ -385,28 +351,12 @@ export default defineComponent({
       this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
     },
 
-    onCopyRightClick(event: any) {
+    onCopyRightClick(event: any): void {
       const x = this.$refs.copyMenu as any;
       x.show(event);
     },
 
-    setCopyMenuItems(concept: any) {
-      let isasString = "";
-      let subTypesString = "";
-      let propertiesString = "";
-      if ("isa" in concept && concept.isa.length > 0) {
-        isasString = concept.isa.map((item: any) => item.name).join(", ");
-      }
-      if ("subtypes" in concept && concept.subtypes.length > 0) {
-        subTypesString = concept.subtypes
-          .map((item: any) => item.name)
-          .join(", ");
-      }
-      if (this.properties.length > 0) {
-        propertiesString = this.properties
-          .map((item: any) => item.property.name)
-          .join(", ");
-      }
+    setCopyMenuItems(): void {
       this.copyMenuItems = [
         {
           label: "Copy",
@@ -419,170 +369,42 @@ export default defineComponent({
           label: "All",
           command: async () => {
             await navigator.clipboard
-              .writeText(this.copyConceptToClipboard(concept))
+              .writeText(copyConceptToClipboard(this.concept, this.configs))
               .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Concept copied to clipboard")
-                );
+                this.$toast.add(LoggerService.success("Concept copied to clipboard"));
               })
               .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy concept to clipboard",
-                    err
-                  )
-                );
-              });
-          }
-        },
-        {
-          label: "Name",
-          command: async () => {
-            await navigator.clipboard
-              .writeText(concept.name)
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Name copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy name to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Iri",
-          command: async () => {
-            await navigator.clipboard
-              .writeText(concept.iri)
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Iri copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy iri to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Status",
-          command: async () => {
-            await navigator.clipboard
-              .writeText(concept.status)
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Status copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy status to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Type",
-          command: async () => {
-            await navigator.clipboard
-              .writeText(concept.types[0].name)
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Type copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy type to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Is a",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("[" + isasString + "]")
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Is-a's copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error("Failed to copy is-a's to clipboard", err)
-                );
-              });
-          }
-        },
-        {
-          label: "Subtypes",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("[" + subTypesString + "]")
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Subtypes copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy subtypes to clipboard",
-                    err
-                  )
-                );
-              });
-          }
-        },
-        {
-          label: "Properties",
-          command: async () => {
-            await navigator.clipboard
-              .writeText("[" + propertiesString + "]")
-              .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Properties copied to clipboard")
-                );
-              })
-              .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy properties to clipboard",
-                    err
-                  )
-                );
+                this.$toast.add(LoggerService.error("Failed to copy concept to clipboard", err));
               });
           }
         }
       ];
-      if (concept.description) {
+
+      let key: string;
+      let value: any;
+      for ([key, value] of Object.entries(this.concept)) {
+        let result = conceptObjectToCopyString(key, value, 0, 1, this.configs);
+        if (!result || !result.value) continue;
+        const label = result.label;
+        const text = result.value;
         this.copyMenuItems.push({
-          label: "Description",
+          label: label,
           command: async () => {
             await navigator.clipboard
-              .writeText(concept.description)
+              .writeText(text)
               .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Description copied to clipboard")
-                );
+                this.$toast.add(LoggerService.success(label + " copied to clipboard"));
               })
               .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy description to clipboard",
-                    err
-                  )
-                );
+                this.$toast.add(LoggerService.error("Failed to copy " + label + " to clipboard", err));
               });
           }
         });
       }
+    },
+
+    isObjectHasKeysWrapper(object: any, keys: string[]) {
+      return isObjectHasKeys(object, keys);
     }
   }
 });
@@ -622,6 +444,15 @@ export default defineComponent({
 .icons-container {
   display: flex;
   flex-flow: row nowrap;
+  align-items: center;
+}
+
+.loading-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
   align-items: center;
 }
 </style>

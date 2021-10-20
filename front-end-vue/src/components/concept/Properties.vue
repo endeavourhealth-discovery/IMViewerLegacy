@@ -1,82 +1,105 @@
 <template>
-  <DataTable
-    :value="properties"
-    :paginator="properties.length > 5 ? true : false"
-    :rows="5"
-    :scrollable="true"
-    :scrollHeight="scrollHeight"
-    id="properties-table"
-  >
-    <template #empty>
-      No records found
-    </template>
-    <Column field="property.name" header="Name" :sortable="true">
-      <template #body="slotProps">
-        <div class="link" @click="navigate(slotProps.data.property?.iri)">
-          {{ slotProps.data.property?.name }}
+  <div id="properties-table-container">
+    <DataTable :value="dataModelPropsData" :scrollable="true" ref="propertiesTable" :loading="loading">
+      <template #empty>
+        No records found
+      </template>
+      <template #loading>
+        Loading data. Please wait...
+      </template>
+      <template #header>
+        <div class="table-header">
+          Data model properties
+          <Button label="Download" @click="exportCSV()" />
         </div>
       </template>
-    </Column>
-    <Column field="type.name" header="Type" :sortable="true">
-      <template #body="slotProps">
-        <div class="link" @click="navigate(slotProps.data.type.iri)">
-          {{ slotProps.data.type?.name || slotProps.data.type?.iri }}
-        </div>
-      </template>
-    </Column>
-    <Column field="inherited.name" header="Inherited From" :sortable="true">
-      <template #body="slotProps">
-        <div
-          v-if="slotProps.data.inherited?.name"
-          class="link"
-          @click="navigate(slotProps.data.inherited?.iri)"
-        >
-          {{ slotProps.data.inherited?.name }}
-        </div>
-        <div v-else>-</div>
-      </template>
-    </Column>
-    <Column field="cardinality" header="Cardinality">
-      <template #body="slotProps">
-        <div v-if="slotProps.data.cardinality">
-          {{
-            `${slotProps.data.cardinality.minExclusive ||
-              slotProps.data.cardinality.minInclusive ||
-              0} :
-            ${slotProps.data.cardinality.maxExclusive ||
-              slotProps.data.cardinality.maxInclusive ||
-              "*"}`
-          }}
-        </div>
-        <div v-else>-</div>
-      </template>
-    </Column>
-  </DataTable>
+      <Column field="propertyDisplay" header="Name" :sortable="true">
+        <template #body="slotProps">
+          <div class="link" @click="navigate(slotProps.data.propertyId)">
+            {{ slotProps.data.propertyDisplay }}
+          </div>
+        </template>
+      </Column>
+      <Column field="typeDisplay" header="Type" :sortable="true">
+        <template #body="slotProps">
+          <div class="link" @click="navigate(slotProps.data.typeId)">
+            {{ slotProps.data.typeDisplay }}
+          </div>
+        </template>
+      </Column>
+      <Column field="inheritedDisplay" header="Inherited From" :sortable="true">
+        <template #body="slotProps">
+          <div class="link" @click="navigate(slotProps.data.inheritedId)">
+            {{ slotProps.data.inheritedDisplay }}
+          </div>
+        </template>
+      </Column>
+      <Column field="cardinality" header="Cardinality">
+        <template #body="slotProps">
+          {{ slotProps.data.cardinality }}
+        </template>
+      </Column>
+    </DataTable>
+  </div>
 </template>
 <script lang="ts">
-import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
-import { defineComponent } from "@vue/runtime-core";
+import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
+import { defineComponent } from "@vue/runtime-core";
+import { RouteRecordName } from "vue-router";
+import { DataModelProperty, ProcessedDataModelProperty } from "@/models/properties/DataModelProperty";
 
 export default defineComponent({
   name: "Properties",
   components: {},
-  props: ["properties", "contentHeight"],
-  watch: {
-    contentHeight() {
-      this.setScrollHeight();
-    }
+  props: {
+    conceptIri: { type: String, required: true }
   },
-  mounted() {
-    this.setScrollHeight();
+  watch: {
+    async conceptIri(newValue) {
+      await this.getDataModelProps(newValue);
+    }
   },
   data() {
     return {
-      scrollHeight: ""
+      loading: false,
+      dataModelPropsData: [] as ProcessedDataModelProperty[],
+      scrollHeight: "500px"
     };
   },
+  async mounted() {
+    if (this.conceptIri) {
+      window.addEventListener("resize", this.setScrollHeight);
+      this.setScrollHeight();
+      await this.getDataModelProps(this.conceptIri);
+    }
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.setScrollHeight);
+  },
   methods: {
-    navigate(iri: any) {
+    async getDataModelProps(iri: string): Promise<void> {
+      this.loading = true;
+      const result = await EntityService.getDataModelProperties(iri);
+      this.dataModelPropsData = result.map((prop: DataModelProperty) => {
+        return {
+          propertyId: prop.property["@id"],
+          propertyName: prop.property.name,
+          propertyDisplay: prop.property.name,
+          typeId: prop.type["@id"],
+          typeName: prop.type.name,
+          typeDisplay: prop.type?.name || prop.type?.["@id"],
+          inheritedId: prop.inheritedFrom?.["@id"],
+          inheritedName: prop.inheritedFrom?.name,
+          inheritedDisplay: prop.inheritedFrom?.name || "-",
+          cardinality: `${prop.minExclusive || prop.minInclusive || 0} :
+            ${prop.maxExclusive || prop.maxInclusive || "*"}`
+        };
+      });
+      this.loading = false;
+    },
+
+    navigate(iri: any): void {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
       if (iri)
         this.$router.push({
@@ -86,67 +109,38 @@ export default defineComponent({
     },
 
     setScrollHeight(): void {
-      const container = document.getElementById(
-        "definition-container"
-      ) as HTMLElement;
-      const properties = document.getElementById(
-        "properties-table"
-      ) as HTMLElement;
-      const summary = container.getElementsByClassName(
-        "summary-container"
-      )[0] as HTMLElement;
-      const defDivider = container.getElementsByClassName(
-        "p-divider"
-      )[0] as HTMLElement;
-      const defContainer = container.getElementsByClassName(
-        "definitional-container"
-      )[0] as HTMLElement;
-      const structDivider = container.getElementsByClassName(
-        "p-divider"
-      )[1] as HTMLElement;
-      const paginator = properties.getElementsByClassName(
-        "p-paginator"
-      )[0] as HTMLElement;
-      if (
-        container &&
-        properties &&
-        summary &&
-        defDivider &&
-        defContainer &&
-        structDivider
-      ) {
-        if (paginator) {
-          this.scrollHeight =
-            this.contentHeight -
-            summary.getBoundingClientRect().height -
-            defDivider.getBoundingClientRect().height -
-            defContainer.getBoundingClientRect().height -
-            structDivider.getBoundingClientRect().height -
-            paginator.getBoundingClientRect().height -
-            1 +
-            "px";
-        } else {
-          this.scrollHeight =
-            this.contentHeight -
-            summary.getBoundingClientRect().height -
-            defDivider.getBoundingClientRect().height -
-            defContainer.getBoundingClientRect().height -
-            structDivider.getBoundingClientRect().height -
-            1 +
-            "px";
-        }
+      const container = document.getElementById("properties-table-container") as HTMLElement;
+      const paginator = container?.getElementsByClassName("p-paginator")[0] as HTMLElement;
+      if (container && paginator) {
+        const height = container.getBoundingClientRect().height - paginator.getBoundingClientRect().height - 1 + "px";
+        this.scrollHeight = height;
+      } else if (container && !paginator) {
+        const height = container.getBoundingClientRect().height - 1 + "px";
+        this.scrollHeight = height;
       } else {
-        LoggerService.error(
-          "Properties table scroll height setter failed due to undefined element"
-        );
+        LoggerService.error(undefined, "Failed to set Properties table scroll height. Required elements not found.");
       }
+    },
+
+    exportCSV(): void {
+      (this.$refs as any).propertiesTable.exportCSV();
     }
   }
 });
 </script>
 
 <style scoped>
+#properties-table-container {
+  height: 100%;
+}
+
 div.link {
   cursor: pointer;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 </style>

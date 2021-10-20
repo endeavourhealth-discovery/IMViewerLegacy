@@ -30,12 +30,7 @@ describe("History.vue", () => {
   });
 
   it("returns a history item ___ all pass", () => {
-    expect(wrapper.vm.history()).toStrictEqual(mockStore.state.history);
-  });
-
-  it("returns a history items ___ missing names", () => {
-    mockStore.state.history = [{ iri: "TestIri" }, { conceptName: "Test history item 1" }]
-    expect(wrapper.vm.history()).toStrictEqual([mockStore.state.history[1]]);
+    expect(wrapper.vm.getHistory()).toStrictEqual(mockStore.state.history);
   });
 
   it("can navigate", async() => {
@@ -45,4 +40,31 @@ describe("History.vue", () => {
     expect(mockRouter.push).toHaveBeenCalledTimes(1);
     expect(mockRouter.push).toHaveBeenLastCalledWith("Test url");
   })
+});
+
+describe("History.vue ___ missing name store", () => {
+  let wrapper: any;
+  let mockStore: any;
+  let mockRouter: any;
+
+  beforeEach(() => {
+    mockStore = {
+      state: {
+        history: [{ iri: "TestIri" }, { conceptName: "Test history item 2" }]
+      }
+    };
+    mockRouter = {
+      push: jest.fn()
+    };
+    wrapper = mount(History, {
+      global: {
+        components: { Listbox, Divider },
+        mocks: { $store: mockStore, $router: mockRouter }
+      }
+    });
+  });
+
+  it("returns a history items ___ missing names", () => {
+    expect(wrapper.vm.getHistory()).toStrictEqual([mockStore.state.history[1]]);
+  });
 });

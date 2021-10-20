@@ -27,12 +27,12 @@ describe("register.vue empty", () => {
 
     testUser = new User("DevTest", "John", "Doe", "devtest@ergo.co.uk", "12345678", avatars[0]);
     mockStore = {
-      commit: jest.fn(),
-    }
+      commit: jest.fn()
+    };
     mockRouter = {
       push: jest.fn(),
       go: jest.fn()
-    }
+    };
     wrapper = mount(Register, {
       global: {
         components: { Card, Button, InputText, InlineMessage, SelectButton, OverlayPanel, AvatarWithSelector },
@@ -71,11 +71,11 @@ describe("register.vue prefilled", () => {
     testUser = new User("DevTest", "John", "Doe", "devtest@ergo.co.uk", "12345678", avatars[0]);
     mockStore = {
       commit: jest.fn()
-    }
+    };
     mockRouter = {
       push: jest.fn(),
       go: jest.fn()
-    }
+    };
     wrapper = mount(Register, {
       global: {
         components: { Card, Button, InputText, InlineMessage, SelectButton, OverlayPanel, AvatarWithSelector },
@@ -89,7 +89,7 @@ describe("register.vue prefilled", () => {
     wrapper.vm.password2 = "12345678";
     wrapper.vm.firstName = "John";
     wrapper.vm.lastName = "Doe";
-    wrapper.vm.selectedAvatar = avatars[0]
+    wrapper.vm.selectedAvatar = avatars[0];
   });
 
   it("should render data to form", async () => {
@@ -356,28 +356,28 @@ describe("register.vue prefilled", () => {
     expect(allVerifiedResult).toBe(true);
   });
 
-  it("should updateAvatar", async() => {
+  it("should updateAvatar", async () => {
     expect(wrapper.vm.selectedAvatar).toStrictEqual(avatars[0]);
-    wrapper.vm.updateAvatar({ value: "colour/003-man.png" });
+    wrapper.vm.updateAvatar("colour/003-man.png");
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.selectedAvatar).toStrictEqual({ value: "colour/003-man.png"});
+    expect(wrapper.vm.selectedAvatar).toStrictEqual("colour/003-man.png");
   });
 
-  it("can check a keycode ___ correct", async() => {
+  it("can check a keycode ___ correct", async () => {
     await wrapper.vm.$nextTick();
     wrapper.vm.checkKey({ keyCode: 13 });
     await wrapper.vm.$nextTick();
     expect(AuthService.register).toBeCalledTimes(1);
   });
 
-  it("can check a keycode ___ incorrect", async() => {
+  it("can check a keycode ___ incorrect", async () => {
     await wrapper.vm.$nextTick();
     wrapper.vm.checkKey({ keyCode: 12 });
     await wrapper.vm.$nextTick();
     expect(AuthService.register).toBeCalledTimes(0);
   });
 
-  it("hits authservice if all verified", async() => {
+  it("hits authservice if all verified", async () => {
     await wrapper.vm.$nextTick();
     wrapper.vm.handleSubmit();
     await wrapper.vm.$nextTick();
@@ -385,7 +385,7 @@ describe("register.vue prefilled", () => {
     expect(AuthService.register).toBeCalledWith(testUser);
   });
 
-  it("fires swal on auth success", async() => {
+  it("fires swal on auth success", async () => {
     await wrapper.vm.$nextTick();
     wrapper.vm.handleSubmit();
     await wrapper.vm.$nextTick();
@@ -399,7 +399,7 @@ describe("register.vue prefilled", () => {
     });
   });
 
-  it("fires emit on auth success", async() => {
+  it("fires emit on auth success", async () => {
     await wrapper.vm.$nextTick();
     wrapper.vm.handleSubmit();
     await wrapper.vm.$nextTick();
@@ -408,7 +408,7 @@ describe("register.vue prefilled", () => {
     expect(wrapper.emitted("userCreated")[0]).toStrictEqual([testUser]);
   });
 
-  it("updates store and reroutes on auth success and swal confirmed", async() => {
+  it("updates store and reroutes on auth success and swal confirmed", async () => {
     await wrapper.vm.$nextTick();
     wrapper.vm.handleSubmit();
     await wrapper.vm.$nextTick();
@@ -419,7 +419,7 @@ describe("register.vue prefilled", () => {
     expect(mockRouter.push).toBeCalledWith({ name: "ConfirmCode" });
   });
 
-  it("clears form on auth success and swal cancelled", async() => {
+  it("clears form on auth success and swal cancelled", async () => {
     Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: false }));
     await wrapper.vm.$nextTick();
     wrapper.vm.handleSubmit();
@@ -428,7 +428,7 @@ describe("register.vue prefilled", () => {
     expect(wrapper.vm.username).toBe("");
   });
 
-  it("fires swal on auth success ___ 409", async() => {
+  it("fires swal on auth success ___ 409", async () => {
     AuthService.register = jest.fn().mockResolvedValue({ status: 409, message: "Username taken" });
     await wrapper.vm.$nextTick();
     wrapper.vm.handleSubmit();
@@ -443,7 +443,7 @@ describe("register.vue prefilled", () => {
     });
   });
 
-  it("fires swal on auth success ___ other", async() => {
+  it("fires swal on auth success ___ other", async () => {
     AuthService.register = jest.fn().mockResolvedValue({ status: 400, message: "Register failed" });
     await wrapper.vm.$nextTick();
     wrapper.vm.handleSubmit();
@@ -458,7 +458,7 @@ describe("register.vue prefilled", () => {
     });
   });
 
-  it("fires swal on verified fail", async() => {
+  it("fires swal on verified fail", async () => {
     wrapper.vm.password1 = "1234";
     await wrapper.vm.$nextTick();
     wrapper.vm.handleSubmit();
@@ -473,13 +473,13 @@ describe("register.vue prefilled", () => {
     });
   });
 
-  it("can setShowUsernameNotice ___ false", async() => {
+  it("can setShowUsernameNotice ___ false", async () => {
     wrapper.vm.setShowUsernameNotice();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.showUsernameNotice).toBe(false);
   });
 
-  it("can setShowUsernameNotice ___ true", async() => {
+  it("can setShowUsernameNotice ___ true", async () => {
     wrapper.vm.username = "Big Bob";
     await wrapper.vm.$nextTick();
     wrapper.vm.setShowUsernameNotice();
@@ -487,25 +487,25 @@ describe("register.vue prefilled", () => {
     expect(wrapper.vm.showUsernameNotice).toBe(true);
   });
 
-  it("can setShowEmail1Notice ___ false", async() => {
+  it("can setShowEmail1Notice ___ false", async () => {
     wrapper.vm.setShowEmail1Notice(false);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.showEmail1Notice).toBe(false);
   });
 
-  it("can setShowEmail1Notice ___ true", async() => {
+  it("can setShowEmail1Notice ___ true", async () => {
     wrapper.vm.setShowEmail1Notice(true);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.showEmail1Notice).toBe(true);
   });
 
-  it("can setShowEmail2Notice ___ false", async() => {
+  it("can setShowEmail2Notice ___ false", async () => {
     wrapper.vm.setShowEmail2Notice();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.showEmail2Notice).toBe(false);
   });
 
-  it("can setShowEmail2Notice ___ true", async() => {
+  it("can setShowEmail2Notice ___ true", async () => {
     wrapper.vm.email2 = "test@ergo.co.uk";
     await wrapper.vm.$nextTick();
     wrapper.vm.setShowEmail2Notice();
@@ -513,13 +513,13 @@ describe("register.vue prefilled", () => {
     expect(wrapper.vm.showEmail2Notice).toBe(true);
   });
 
-  it("can setShowPassword2Notice ___ false", async() => {
+  it("can setShowPassword2Notice ___ false", async () => {
     wrapper.vm.setShowPassword2Notice();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.showPassword2Notice).toBe(false);
   });
 
-  it("can setShowPassword2Notice ___ true", async() => {
+  it("can setShowPassword2Notice ___ true", async () => {
     wrapper.vm.password2 = "abcdefghi";
     await wrapper.vm.$nextTick();
     wrapper.vm.setShowPassword2Notice();
@@ -527,13 +527,13 @@ describe("register.vue prefilled", () => {
     expect(wrapper.vm.showPassword2Notice).toBe(true);
   });
 
-  it("can setShowFirstNameNotice ___ false", async() => {
+  it("can setShowFirstNameNotice ___ false", async () => {
     wrapper.vm.setShowFirstNameNotice();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.showFirstNameNotice).toBe(false);
   });
 
-  it("can setShowFirstNameNotice ___ true", async() => {
+  it("can setShowFirstNameNotice ___ true", async () => {
     wrapper.vm.firstName = "$%B0b";
     await wrapper.vm.$nextTick();
     wrapper.vm.setShowFirstNameNotice();
@@ -541,13 +541,13 @@ describe("register.vue prefilled", () => {
     expect(wrapper.vm.showFirstNameNotice).toBe(true);
   });
 
-  it("can setShowLastNameNotice ___ false", async() => {
+  it("can setShowLastNameNotice ___ false", async () => {
     wrapper.vm.setShowLastNameNotice();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.showLastNameNotice).toBe(false);
   });
 
-  it("can setShowLastNameNotice ___ true", async() => {
+  it("can setShowLastNameNotice ___ true", async () => {
     wrapper.vm.lastName = "$%B0b";
     await wrapper.vm.$nextTick();
     wrapper.vm.setShowLastNameNotice();
@@ -572,11 +572,11 @@ describe("AuthService fail", () => {
     testUser = new User("DevTest", "John", "Doe", "devtest@ergo.co.uk", "12345678", avatars[0]);
     mockStore = {
       commit: jest.fn()
-    }
+    };
     mockRouter = {
       push: jest.fn(),
       go: jest.fn()
-    }
+    };
     wrapper = mount(Register, {
       global: {
         components: { Card, Button, InputText, InlineMessage, SelectButton, OverlayPanel, AvatarWithSelector },
@@ -590,13 +590,13 @@ describe("AuthService fail", () => {
     wrapper.vm.password2 = "12345678";
     wrapper.vm.firstName = "John";
     wrapper.vm.lastName = "Doe";
-    wrapper.vm.selectedAvatar = avatars[0]
+    wrapper.vm.selectedAvatar = avatars[0];
   });
-  it("logs AuthService error to console", async() => {
+  it("logs AuthService error to console", async () => {
     wrapper.vm.handleSubmit();
     await wrapper.vm.$nextTick();
     await flushPromises();
     expect(console.error).toHaveBeenCalledTimes(1);
     expect(console.error).toHaveBeenCalledWith({ status: 500, message: "Register test failed" });
-  })
-})
+  });
+});

@@ -1,118 +1,98 @@
 <template>
   <div class="content-container">
-    <div class="p-d-flex p-flex-row p-jc-start summary-container">
-      <div class="left-side">
-        <div class="p-d-flex p-flex-row p-jc-start p-ai-center">
-          <p>
-            <strong>Name:</strong>
-            {{ concept.name }}
-          </p>
-        </div>
-        <p class="break-text">
-          <strong>Iri:</strong>
-          {{ concept.iri }}
-        </p>
-        <p>
-          <strong>Status: </strong>
-          {{ concept.status }}
-        </p>
-        <p>
-          <strong>Types: </strong>
-          {{ conceptTypes }}
-        </p>
-      </div>
-      <div class="right-side" v-if="concept.description">
-        <strong>Description:</strong>
-        <Description :description="descriptionHTML" />
-      </div>
+    <div class="summary-container">
+      <template v-for="(config, index) in configs" :key="index">
+        <component
+          :is="config.type"
+          :label="config.label"
+          :data="concept[config.predicate]"
+          :size="config.size"
+          :id="config.type + index"
+          :show="showItem(config, index)"
+        />
+      </template>
     </div>
-    <Divider align="left">
-      <div class="p-d-inline-flex p-ai-center">
-        <strong>Definitional properties</strong>
-      </div>
-    </Divider>
-    <div class="p-d-flex p-flex-row p-jc-start definitional-container">
-      <div class="left-side">
-        <strong>is a: </strong>{{ concept.isa?.length }}
-        <Listbox
-          :options="concept.isa"
-          listStyle="height: 12rem;"
-          v-model="selected"
-          @change="navigate(selected.iri)"
-        >
-          <template #option="slotProps">
-            <div>
-              {{ slotProps.option?.name || slotProps.option?.["@id"] }}
-            </div>
-          </template>
-        </Listbox>
-      </div>
-      <div class="right-side">
-        <strong>has sub types: </strong>{{ concept.subtypes?.length }}
-        <Listbox
-          :options="concept.subtypes"
-          listStyle="height: 12rem;"
-          v-model="selected"
-          @change="navigate(selected.iri)"
-        >
-          <template #option="slotProps">
-            <div>
-              {{ slotProps.option.name || slotProps.option["@id"] }}
-            </div>
-          </template>
-        </Listbox>
-      </div>
-    </div>
-    <Divider align="left">
-      <div class="p-d-inline-flex p-ai-center">
-        <strong>Structure properties</strong>
-      </div>
-    </Divider>
-    <Properties :properties="properties" :contentHeight="contentHeight" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
-import Description from "./Description.vue";
-import Properties from "./Properties.vue";
+import { defineComponent, PropType } from "vue";
+import ArrayObjectNamesToStringWithLabel from "@/components/generics/ArrayObjectNamesToStringWithLabel.vue";
+import TextHTMLWithLabel from "@/components/generics/TextHTMLWithLabel.vue";
+import TextWithLabel from "@/components/generics/TextWithLabel.vue";
+import ObjectNameWithLabel from "@/components/generics/ObjectNameWithLabel.vue";
+import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNameListboxWithLabel.vue";
+import TermsTable from "@/components/concept/definition/TermsTable.vue";
+import TextSectionHeader from "@/components/generics/TextSectionHeader.vue";
+import SectionDivider from "@/components/generics/SectionDivider.vue";
+import TextDefinition from "@/components/generics/TextDefinition.vue";
+import ObjectNameTagWithLabel from "@/components/generics/ObjectNameTagWithLabel.vue";
+import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
+import { isArrayHasLength, isObject, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Definition",
-  components: { Description, Properties },
-  props: ["concept", "properties", "contentHeight"],
-  computed: {
-    conceptTypes(): string {
-      return this.concept?.types
-        ?.map(function(type: any) {
-          return type.name;
-        })
-        .join(", ");
-    },
-
-    descriptionHTML(): string {
-      const text = this.concept.description?.replaceAll(
-        "<p>",
-        "</p>\n<p class='description-p'>"
-      );
-      return "<p class='description-p'>" + text + "</p>";
-    }
+  components: {
+    ArrayObjectNamesToStringWithLabel,
+    TextHTMLWithLabel,
+    TextWithLabel,
+    ObjectNameWithLabel,
+    ArrayObjectNameListboxWithLabel,
+    TermsTable,
+    TextSectionHeader,
+    SectionDivider,
+    TextDefinition,
+    ObjectNameTagWithLabel
   },
-  data() {
-    return {
-      selected: {},
-      copyMenuItems: [] as any
-    };
+  props: {
+    concept: { type: Object, required: true },
+    configs: { type: Array as PropType<Array<DefinitionConfig>>, required: true }
   },
   methods: {
-    navigate(iri: any) {
-      const currentRoute = this.$route.name as RouteRecordName | undefined;
-      if (iri)
-        this.$router.push({
-          name: currentRoute,
-          params: { selectedIri: iri }
-        });
+    showItem(config: DefinitionConfig, index: number): boolean {
+      let dataResults = [];
+      if (config.type === "SectionDivider") {
+        let i = index - 1;
+        while (i > 0) {
+          const data = this.concept[this.configs[i].predicate];
+          if (this.configs[i].type === "SectionDivider") {
+            break;
+          }
+          dataResults.push(this.hasData(data));
+          i--;
+        }
+      } else if (config.type === "TextSectionHeader") {
+        let i = index + 1;
+        const data = this.concept[this.configs[i].predicate];
+        while (i < this.configs.length) {
+          if (this.configs[i].type === "SectionDivider") {
+            break;
+          }
+          dataResults.push(this.hasData(data));
+          i++;
+        }
+      } else {
+        const data = this.concept[this.configs[index].predicate];
+        dataResults.push(this.hasData(data));
+      }
+      return !dataResults.every(value => value === false);
+    },
+
+    hasData(data: any): boolean {
+      if (!data) {
+        return false;
+      } else if (Array.isArray(data)) {
+        return isArrayHasLength(data) ? true : false;
+      } else if (typeof data === "string") {
+        return data ? true : false;
+      } else if (isObjectHasKeys(data, ["count"])) {
+        return data.count ? true : false;
+      } else if (isObject(data)) {
+        return isObjectHasKeys(data) ? true : false;
+      } else {
+        console.log(`Unexpected data type encountered for function hasData in definition. Data: ${JSON.stringify(data)}`);
+        return false;
+      }
     }
   }
 });
@@ -124,49 +104,17 @@ export default defineComponent({
 }
 
 .summary-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
   width: 100%;
-  gap: 7px;
+  row-gap: 0.5rem;
 }
 
-.left-side {
-  width: 50%;
-}
-
-.right-side {
-  width: 50%;
-}
-
-.custom .p-scrollpanel-wrapper {
-  border-right: 9px solid #f4f4f4;
-}
-
-.custom .p-scrollpanel-bar {
-  background-color: #1976d2 !important;
-  opacity: 1;
-  transition: background-color 0.3s;
-}
-
-.custom .p-scrollpanel-bar:hover {
-  background-color: #135ba1 !important;
-}
-
-p {
-  margin: 0;
-}
-
-#synonyms-button {
-  margin-left: 0.5em;
-}
-
-.break-text {
-  word-break: break-all;
-}
-
-.description {
-  height: 100%;
-  width: 100%;
-}
-.link {
-  cursor: pointer;
+.summary-container ::v-deep(.expand-button) {
+  height: 1.5rem !important;
+  width: 0.75rem !important;
+  padding: 0.4375rem 0.7rem !important;
+  margin-left: 0.5rem;
 }
 </style>

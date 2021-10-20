@@ -3,48 +3,36 @@
 // Class, Record Type
 // Everything else
 
-import { ConceptReference } from "@/models/TTConcept/ConceptReference";
+import { TTIriRef } from "@/models/TripleTree";
 import { IM } from "@/vocabulary/IM";
 import { OWL } from "@/vocabulary/OWL";
+import { SHACL } from "@/vocabulary/SHACL";
 
-export function isValueSet(conceptTypeElements: ConceptReference[]): boolean {
-  return conceptTypeElements?.some(
-    (e: any) =>
-      e.iri === IM.SET ||
-      e.iri === IM.QUERY_SET ||
-      e.iri === IM.VALUE_SET ||
-      e[IM.IRI] === IM.SET ||
-      e[IM.IRI] === IM.QUERY_SET ||
-      e[IM.IRI] === IM.VALUE_SET
-  );
+export function isOfTypes(conceptTypeElements: TTIriRef[], ...types: string[]): boolean {
+  if (!conceptTypeElements || !conceptTypeElements.length) {
+    return false;
+  }
+  let found = false;
+  let index = 0;
+  while (!found && index < types.length) {
+    if (conceptTypeElements.some((e: any) => e.iri === types[index] || e[IM.IRI] === types[index])) {
+      found = true;
+    }
+    index++;
+  }
+  return found;
 }
 
-export function isRecordModel(
-  conceptTypeElements: ConceptReference[]
-): boolean {
-  return conceptTypeElements?.some((e: any) => {
-    return e.iri === IM.RECORD_TYPE || e[IM.IRI] === IM.RECORD_TYPE;
-  });
+export function isValueSet(conceptTypes: TTIriRef[]): boolean {
+  return isOfTypes(conceptTypes, IM.SET, IM.QUERY_SET, IM.VALUE_SET, IM.CONCEPT_SET);
 }
 
-export function isProperty(conceptTypeElements: ConceptReference[]): boolean {
-  return conceptTypeElements?.some((e: any) => {
-    return e[IM.IRI] === OWL.OBJECT_PROPERTY || e[IM.IRI] === IM.DATA_PROPERTY;
-  });
-}
-
-export function isFolder(conceptTypeElements: ConceptReference[]): boolean {
-  return conceptTypeElements?.some((e: any) => {
-    return e[IM.IRI] === IM.FOLDER || e.iri === IM.FOLDER;
-  });
-}
-
-export function getIconFromType(conceptTypes: ConceptReference[]): string {
-  if (isRecordModel(conceptTypes)) {
+export function getIconFromType(conceptTypes: TTIriRef[]): string {
+  if (isOfTypes(conceptTypes, SHACL.NODESHAPE)) {
     return "fas fa-fw fa-project-diagram";
   }
 
-  if (isProperty(conceptTypes)) {
+  if (isOfTypes(conceptTypes, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY)) {
     return "far fa-fw fa-edit";
   }
 
@@ -52,33 +40,41 @@ export function getIconFromType(conceptTypes: ConceptReference[]): string {
     return "fas fa-fw fa-tasks";
   }
 
-  if (isFolder(conceptTypes)) {
+  if (isOfTypes(conceptTypes, IM.FOLDER)) {
     return "fas fa-fw fa-folder";
+  }
+
+  if (isOfTypes(conceptTypes, IM.QUERY_TEMPLATE)) {
+    return "fas fa-fw fa-search";
   }
 
   return "far fa-fw fa-lightbulb";
 }
 
 const palette = require("../../node_modules/google-palette");
-export function getColourFromType(conceptTypes: ConceptReference[]): string {
-  const bgs = palette("tol-rainbow", 5);
+export function getColourFromType(conceptTypes: TTIriRef[]): string {
+  const bgs = palette("tol-rainbow", 6);
   const bgsFixed = bgs.map((color: string) => "#" + color + "88");
 
-  if (isRecordModel(conceptTypes)) {
+  if (isOfTypes(conceptTypes, SHACL.NODESHAPE)) {
     return bgsFixed[0];
   }
 
-  if (isProperty(conceptTypes)) {
-    return bgsFixed[4];
+  if (isOfTypes(conceptTypes, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY)) {
+    return bgsFixed[5];
   }
 
   if (isValueSet(conceptTypes)) {
     return bgsFixed[2];
   }
 
-  if (isFolder(conceptTypes)) {
+  if (isOfTypes(conceptTypes, IM.FOLDER)) {
     return bgsFixed[1];
   }
 
-  return bgsFixed[3];
+  if (isOfTypes(conceptTypes, IM.QUERY_TEMPLATE)) {
+    return bgsFixed[3];
+  }
+
+  return bgsFixed[4];
 }

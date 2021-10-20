@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container"
-    v-if="loading"
-  >
+  <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container" v-if="loading">
     <ProgressSpinner />
   </div>
   <OrganizationChart v-else :value="graph" :collapsible="true">
@@ -13,7 +10,7 @@
       <span>{{ slotProps.node.name }}</span>
     </template>
     <template #PROPERTIES="slotProps">
-      <table>
+      <table aria-label="graph semantic properties table">
         <thead>
           <tr>
             <th scope="col">Name</th>
@@ -24,14 +21,19 @@
           <tr v-for="prop in slotProps.node.leafNodes" :key="prop">
             <td @click="navigate(prop.iri)">{{ prop.name }}</td>
             <td @click="navigate(prop.valueTypeIri)">
-              {{ prop.valueTypeName }}
+              {{ prop.valueTypeName || getTypeFromIri(prop.valueTypeIri) }}
             </td>
           </tr>
         </tbody>
       </table>
     </template>
     <template #ISA="slotProps">
-      <table>
+      <table aria-label="graph isa's table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+          </tr>
+        </thead>
         <tbody>
           <tr v-for="isa in slotProps.node.leafNodes" :key="isa">
             <td @click="navigate(isa.iri)">{{ isa.name }}</td>
@@ -40,7 +42,12 @@
       </table>
     </template>
     <template #SUBTYPE="slotProps">
-      <table>
+      <table aria-label="graph subtypes table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+          </tr>
+        </thead>
         <tbody>
           <tr v-for="subtype in slotProps.node.leafNodes" :key="subtype">
             <td @click="navigate(subtype.iri)">{{ subtype.name }}</td>
@@ -54,14 +61,13 @@
 <script lang="ts">
 import GraphData from "../../models/GraphData";
 import { defineComponent } from "@vue/runtime-core";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
 import { RouteRecordName } from "vue-router";
 
 export default defineComponent({
   name: "Graph",
-  components: {},
   props: {
-    conceptIri: String
+    conceptIri: { type: String, required: true }
   },
   watch: {
     async conceptIri(newValue) {
@@ -75,17 +81,25 @@ export default defineComponent({
     };
   },
   async mounted() {
-    if (this.conceptIri) {
-      await this.getGraph(this.conceptIri);
-    }
+    await this.getGraph(this.conceptIri);
   },
   methods: {
-    async getGraph(iri: string) {
+    getTypeFromIri(iri: string): string {
+      if (!iri.includes("#")) {
+        return iri;
+      }
+      let part = iri.split("#")[1];
+      part = part.includes(":") ? part.split(":")[1] : part;
+      return part.charAt(0).toUpperCase() + part.slice(1);
+    },
+
+    async getGraph(iri: string): Promise<void> {
       this.loading = true;
-      this.graph = (await ConceptService.getConceptGraph(iri)).data;
+      this.graph = await EntityService.getEntityGraph(iri);
       this.loading = false;
     },
-    navigate(iri: string) {
+
+    navigate(iri: string): void {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
       if (iri)
         this.$router.push({

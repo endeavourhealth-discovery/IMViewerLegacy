@@ -1,132 +1,198 @@
 <template>
-  <div class="p-d-flex p-flex-row members-container">
-    <div class="included-container">
-      <div class="p-d-flex p-flex-row p-jc-center" v-if="loading">
-        <div class="spinner">
-          <ProgressSpinner />
-        </div>
-      </div>
-      <Listbox
-        v-else
-        :listStyle="listHeight"
-        :filter="true"
-        emptyMessage="No results found"
-        emptyFilterMessage="No results found"
-        v-model="selectedIncludedMember"
-        @change="onNodeSelect(selectedIncludedMember.member)"
-        :options="combinedMembers"
-      >
-        <template #option="slotProps">
-          <div>
-            <span>
-              <div>
-                <i
-                  v-if="slotProps.option.included"
-                  class="pi pi-plus"
-                  style="fontSize: 0.7rem"
-                  aria-hidden="true"
-                ></i>
-                <i
-                  v-if="!slotProps.option.included"
-                  class="pi pi-minus"
-                  style="fontSize: 0.7rem"
-                  aria-hidden="true"
-                ></i>
-                {{
-                  slotProps.option.member?.concept.name ||
-                    slotProps.option.member?.concept["@id"]
-                }}
-              </div>
-            </span>
+  <div id="members-table-container">
+    <DataTable
+      :value="combinedMembers"
+      showGridlines
+      rowGroupMode="subheader"
+      groupRowsBy="label"
+      :expandableRowGroups="true"
+      v-model:expandedRowGroups="expandedRowGroups"
+      @rowgroupExpand="onRowGroupExpand"
+      @rowgroupCollapse="onRowGroupCollapse"
+      v-model:filters="filters1"
+      filterDisplay="menu"
+      :globalFilterFields="['code', 'entity.name', 'scheme.name', 'label']"
+      :scrollable="true"
+      sortMode="single"
+      sortField="label"
+      :sortOrder="1"
+      class="p-datatable-sm"
+      scrollHeight="flex"
+      v-model:selection="selected"
+      selectionMode="single"
+      :loading="loading"
+      @rowSelect="onRowSelect"
+    >
+      <template #header>
+        <div class="p-d-flex p-jc-between">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search" aria-hidden="true" />
+            <InputText v-model="filters1['global'].value" placeholder="Keyword Search" />
+          </span>
+          <div class="checkboxes-container">
+            <Button type="button" label="Download..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
+            <Menu id="overlay_menu" ref="menu" :model="downloadMenu" :popup="true" />
           </div>
+        </div>
+      </template>
+      <template #empty>
+        No members found.
+      </template>
+      <template #loading>
+        Loading data. Please wait...
+      </template>
+      <Column field="entity.name" header="Name" filter-field="entity.name">
+        <template #body="slotProps">
+          <div v-html="slotProps.data.entity.name" class="html-container"></div>
         </template>
-      </Listbox>
-    </div>
+      </Column>
+      <template #groupheader="slotProps">
+        <span v-for="subSet in subsets" :key="subSet">
+          <span v-if="slotProps.data.label === subSet" class="group-header">
+            {{ subSet }}
+          </span>
+        </span>
+        <span v-if="slotProps.data.type === 'INCLUDED'" class="group-header">
+          Included Members
+        </span>
+        <span v-if="slotProps.data.type === 'EXCLUDED'" class="group-header">
+          Excluded Members
+        </span>
+        <span v-if="slotProps.data.type === 'EXPANDED'" class="group-header">
+          Expanded Members
+        </span>
+        <span v-if="slotProps.data.type === 'COMPLEX'" class="group-header">
+          Complex Members
+        </span>
+      </template>
+    </DataTable>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
-import ConceptService from "@/services/ConceptService";
+import EntityService from "@/services/EntityService";
+import { FilterMatchMode } from "primevue/api";
+import LoggerService from "@/services/LoggerService";
+import { ValueSetMember } from "@/models/members/ValueSetMember";
+import { ExportValueSet } from "@/models/members/ExportValueSet";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Members",
-  components: {},
   props: {
-    conceptIri: String
+    conceptIri: { type: String, required: true }
   },
+  emits: ["memberClick"],
   watch: {
-    async conceptIri(newValue) {
-      await this.getMembers(newValue);
+    async conceptIri() {
+      await this.getMembers();
     }
   },
   async mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.setListboxHeight);
-    });
-
-    this.setListboxHeight();
-
-    if (this.conceptIri) {
-      await this.getMembers(this.conceptIri);
-    }
+    window.addEventListener("resize", this.onResize);
+    await this.getMembers();
+    this.onResize();
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.setListboxHeight);
+    window.removeEventListener("resize", this.onResize);
   },
   data() {
     return {
       loading: false,
-      members: [] as any,
-      selectedIncludedMember: {},
-      combinedMembers: [] as any,
-      listHeight: ""
+      members: {} as ExportValueSet,
+      combinedMembers: [] as ValueSetMember[],
+      filters1: {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+      },
+      selected: {} as ValueSetMember,
+      subsets: [] as string[],
+      expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"],
+      downloadMenu: [
+        { label: "Definition", command: () => this.download(false) },
+        { label: "Expanded (v2)", command: () => this.download(true) },
+        { label: "Expanded (v1)", command: () => this.download(true, true) }
+      ]
     };
   },
   methods: {
-    async getMembers(iri: string) {
-      this.loading = true;
-      this.members = (await ConceptService.getConceptMembers(iri, false)).data;
-      this.loading = false;
-      this.combinedMembers = this.getCombinedMembers();
-    },
-    getCombinedMembers() {
-      const combinedMembers: { included: boolean; member: any }[] = [];
-      this.members?.included?.forEach((included: any) => {
-        const member = { included: true, member: included };
-        combinedMembers.push(member);
-      });
-      this.members?.excluded?.forEach((included: any) => {
-        const member = { included: false, member: included };
-        combinedMembers.push(member);
-      });
-      return combinedMembers;
-    },
-    onNodeSelect(member: any) {
-      this.$router.push({
-        name: "Concept",
-        params: { selectedIri: member.concept["@id"] }
-      });
-    },
-
     toggle(event: any) {
       const x = this.$refs.menu as any;
       x.toggle(event);
     },
 
-    setListboxHeight(): void {
-      const container = document.getElementById(
-        "members-container"
-      ) as HTMLElement;
-      const listHeader = container.getElementsByClassName(
-        "p-listbox-header"
-      )[0] as HTMLElement;
-      if (container && listHeader) {
-        const newHeight =
-          container.getBoundingClientRect().height -
-          listHeader.getBoundingClientRect().height -
-          7;
-        this.listHeight = "height: " + newHeight + "px;";
+    onRowGroupExpand(): void {
+      this.setTableWidth();
+    },
+
+    onRowGroupCollapse(): void {
+      this.setTableWidth();
+    },
+
+    onRowSelect(): void {
+      if (isObjectHasKeys(this.selected, ["entity"]) && isObjectHasKeys(this.selected.entity, ["@id"])) {
+        this.$router.push({
+          name: "Concept",
+          params: { selectedIri: this.selected.entity["@id"] }
+        });
+        this.$emit("memberClick");
+      }
+    },
+
+    async getMembers(): Promise<void> {
+      this.loading = true;
+      this.expandedRowGroups = ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"];
+      this.selected = {} as ValueSetMember;
+      this.subsets = [];
+      this.members = await EntityService.getEntityMembers(this.conceptIri, false, false, 2000);
+      this.sortMembers();
+      this.combinedMembers = this.members.members;
+      this.setSubsets();
+      this.setTableWidth();
+      this.loading = false;
+    },
+
+    setSubsets(): void {
+      this.combinedMembers.forEach((member: ValueSetMember) => {
+        if (!this.subsets.some(e => e === member.label)) {
+          if (member.type === "SUBSET") {
+            this.subsets.push(member.label);
+          }
+        }
+      });
+    },
+
+    download(expanded: boolean, v1 = false): void {
+      const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
+      const popup = window.open(
+        process.env.VUE_APP_API + "api/set/download?iri=" + modIri + "&expandMembers=" + expanded + "&v1=" + (expanded && v1) + "&format=excel"
+      );
+      if (!popup) {
+        this.$toast.add(LoggerService.error("Download failed from server"));
+      } else {
+        this.$toast.add(LoggerService.success("Download will begin shortly"));
+      }
+    },
+
+    sortMembers(): void {
+      if (isObjectHasKeys(this.members, ["members"]) && isArrayHasLength(this.members.members)) {
+        this.members.members.sort((a: ValueSetMember, b: ValueSetMember) =>
+          a.label.localeCompare(b.label) == 0 ? a.entity.name.localeCompare(b.entity.name) : a.label.localeCompare(b.label)
+        );
+      }
+    },
+
+    onResize(): void {
+      this.setTableWidth();
+    },
+
+    setTableWidth(): void {
+      const container = document.getElementById("members-table-container") as HTMLElement;
+      const table = container?.getElementsByClassName("p-datatable-table")[0] as HTMLElement;
+      if (table) {
+        table.style.width = "100%";
+      } else {
+        LoggerService.error(undefined, "Failed to set members table width. Required element(s) not found.");
       }
     }
   }
@@ -134,18 +200,49 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.p-panel-header {
-  all: unset;
-}
-.members-container {
-  width: 100%;
+#members-table-container {
   height: 100%;
-}
-.included-container {
   width: 100%;
-  height: 100%;
 }
-.excluded-container {
-  width: 50%;
+
+#members-table-container ::v-deep(.p-datatable-wrapper) {
+  overflow-x: hidden;
+}
+
+#members-table-container ::v-deep(td) {
+  word-break: break-all;
+}
+
+.group-header {
+  font-weight: 700;
+  color: rgba(51, 153, 255, 0.8);
+}
+
+.checkboxes-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-label-container {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.complex-member-container {
+  width: 100%;
+}
+
+.html-container {
+  width: 100%;
+  padding: 1rem;
+}
+
+.html-container ::v-deep(p) {
+  margin-bottom: 0 !important;
 }
 </style>

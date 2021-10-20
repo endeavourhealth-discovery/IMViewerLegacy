@@ -3,6 +3,7 @@ import Home from "../views/Home.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Datamodel from "../views/Concept.vue";
 import Workflow from "../views/Workflow.vue";
+import Catalogue from "../views/Catalogue.vue";
 import UPRN from "../views/Uprn.vue";
 import User from "../views/User.vue";
 import Editor from "../views/Editor.vue";
@@ -19,7 +20,6 @@ import SnomedLicense from "../views/SnomedLicense.vue";
 import Creator from "../views/Creator.vue";
 import DefinitionForm from "../components/creator/DefinitionForm.vue";
 import IsasForm from "../components/creator/IsasForm.vue";
-// import RecoverByEmail from "../components/user/RecoverByEmail.vue";
 import store from "@/store/index";
 import { nextTick } from "vue";
 
@@ -89,12 +89,6 @@ const routes: Array<RouteRecordRaw> = [
         name: "ForgotPasswordSubmit",
         component: ForgotPasswordSubmit
       }
-      //this isn't currently possible with AWS Auth
-      // {
-      //   path: "account-recovery",
-      //   name: "RecoverByEmail",
-      //   component: RecoverByEmail
-      // }
     ]
   },
   {
@@ -172,6 +166,24 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       requiresLicense: true
     }
+  },
+  {
+    path: "/catalogue",
+    name: "Catalogue",
+    component: Catalogue,
+    meta: {
+      requiresLicense: true
+    },
+    children: [
+      {
+        path: "/individual/:selectedIri",
+        name: "Individual",
+        component: Catalogue,
+        meta: {
+          requiresLicense: true
+        }
+      }
+    ]
   },
   {
     path: "/uprn",

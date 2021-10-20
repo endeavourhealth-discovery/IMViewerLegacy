@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library, dom } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
+
 dom.watch();
 
 library.add(fas, far);
@@ -59,7 +60,6 @@ import Menubar from "primevue/menubar";
 import InlineMessage from "primevue/inlinemessage";
 import Message from "primevue/message";
 import ConfirmationService from "primevue/confirmationservice";
-import ConfirmDialogue from "primevue/confirmdialog";
 import Avatar from "primevue/avatar";
 import MegaMenu from "primevue/megamenu";
 import Timeline from "primevue/timeline";
@@ -70,9 +70,19 @@ import Checkbox from "primevue/checkbox";
 import PickList from "primevue/picklist";
 import Steps from "primevue/steps";
 import ContextMenu from "primevue/contextmenu";
+import { FilterMatchMode, FilterOperator } from "primevue/api";
+import RadioButton from "primevue/radiobutton";
+import ConfirmPopup from "primevue/confirmpopup";
+import InputSwitch from "primevue/inputswitch";
+import StyleClass from "primevue/styleclass";
+import Tag from "primevue/tag";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
+import LoggerService from "./services/LoggerService";
+import axios from "axios";
+import APIError from "./models/errors/APIError";
+import { isObjectHasKeys } from "./helpers/DataTypeCheckers";
 
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
@@ -88,6 +98,7 @@ const app = createApp(App)
     appendToBody: true
   })
   .directive("tooltip", Tooltip)
+  .directive("styleclass", StyleClass)
   .component("Card", Card)
   .component("ProgressSpinner", ProgressSpinner)
   .component("TabView", TabView)
@@ -120,7 +131,6 @@ const app = createApp(App)
   .component("Menubar", Menubar)
   .component("InlineMessage", InlineMessage)
   .component("Message", Message)
-  .component("ConfirmDialogue", ConfirmDialogue)
   .component("Avatar", Avatar)
   .component("MegaMenu", MegaMenu)
   .component("Timeline", Timeline)
@@ -130,6 +140,27 @@ const app = createApp(App)
   .component("PickList", PickList)
   .component("FileUpload", FileUpload)
   .component("Steps", Steps)
-  .component("ContextMenu", ContextMenu);
+  .component("ContextMenu", ContextMenu)
+  .component("ContextMenu", ContextMenu)
+  .component("FilterMatchMode", FilterMatchMode)
+  .component("FilterOperator", FilterOperator)
+  .component("RadioButton", RadioButton)
+  .component("ConfirmPopup", ConfirmPopup)
+  .component("InputSwitch", InputSwitch)
+  .component("Tag", Tag);
 
-app.mount("#app");
+const vm = app.mount("#app");
+
+axios.interceptors.response.use(
+  response => {
+    return isObjectHasKeys(response, ["data"]) ? response.data : undefined;
+  },
+  error => {
+    vm.$toast.add({
+      severity: "error",
+      summary: "Request error",
+      detail: "Request for " + error.config.url.substring(error.config.url.lastIndexOf("/") + 1) + " was unsuccessful. " + error.message + ".",
+      life: 4000
+    });
+  }
+);
