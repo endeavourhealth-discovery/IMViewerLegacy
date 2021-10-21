@@ -48,7 +48,7 @@ export default defineComponent({
     ...mapState(["selectedEntityType"])
   },
   mounted() {
-    if (this.selectedEntityType === "Ontology" && this.label === "Inferred") {
+    if (this.label === "Inferred") {
       const button = document.getElementById(`expand-button-${this.label}`) as HTMLElement;
       if (button) button.click();
     }

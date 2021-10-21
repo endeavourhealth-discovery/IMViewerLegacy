@@ -16,6 +16,19 @@ import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 export default class EntityService {
   static api = process.env.VUE_APP_API;
 
+  public static async getMatchedFrom(iri: string): Promise<any[]> {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/matchedFrom", {
+        params: {
+          iri: iri
+        }
+      })) as any[];
+      return axiosReturn || ([] as any[]);
+    } catch (error) {
+      return [] as any[];
+    }
+  }
+
   public static async getPartialEntity(iri: string, predicates: string[]): Promise<any> {
     try {
       const axiosReturn = await axios.get(this.api + "api/entity/partial", {
@@ -225,17 +238,6 @@ export default class EntityService {
       return axiosReturn || ([] as Namespace[]);
     } catch (error) {
       return [] as Namespace[];
-    }
-  }
-
-  public static async getComplexMembers(iri: string): Promise<string[]> {
-    try {
-      const axiosReturn = (await axios.get(this.api + "api/entity/complexMembers", {
-        params: { iri: iri }
-      })) as string[];
-      return axiosReturn || ([] as string[]);
-    } catch (error) {
-      return [] as string[];
     }
   }
 }

@@ -158,11 +158,7 @@ export default defineComponent({
       });
       this.root = [] as TreeNode[];
 
-      if (isArrayHasLength(parentHierarchy)) {
-        this.parentLabel = parentHierarchy[0].name;
-      } else {
-        this.parentLabel = "";
-      }
+      this.parentLabel = isArrayHasLength(parentHierarchy) ? parentHierarchy[0].name : "";
 
       this.root.push(selectedConcept);
       this.expandedKeys[selectedConcept.key] = true;
@@ -182,7 +178,7 @@ export default defineComponent({
       };
     },
 
-    onNodeSelect(node: TreeNode): void {
+    async onNodeSelect(node: TreeNode): Promise<void> {
       if (MODULE_IRIS.includes(node.data)) {
         this.$router.push({ name: "Dashboard" });
       } else {
@@ -190,54 +186,90 @@ export default defineComponent({
           name: "Concept",
           params: { selectedIri: node.data }
         });
+        await this.getFirstParent(node);
       }
     },
 
     async expandChildren(node: TreeNode): Promise<void> {
       node.loading = true;
+      this.resetExpandedKeys(node.children);
+      this.expandedKeys = { ...this.expandedKeys };
       this.expandedKeys[node.key] = true;
       const children = await EntityService.getEntityChildren(node.data);
-
+      node.children = [];
       children.forEach((child: EntityReferenceNode) => {
-        if (!this.containsChild(node.children, child)) {
-          node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
-        }
+        node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
       });
       node.loading = false;
     },
 
-    containsChild(children: TreeNode[], child: EntityReferenceNode): boolean {
-      if (children.some(e => e.data === child["@id"])) {
-        return true;
+    resetExpandedKeys(nodes: TreeNode[]) {
+      if (nodes) {
+        nodes.forEach(childNode => {
+          this.expandedKeys[childNode.key] = false;
+          this.resetExpandedKeys(childNode.children);
+        });
       }
-      return false;
+    },
+
+    getSelectedNodeRecursevily() {
+      const selectedKey = Object.keys(this.selectedKey)[0];
+      let result = [] as TreeNode[];
+      this.recursiveSearchForNode(selectedKey, this.root, result);
+      return result[0] || this.root[0];
+    },
+
+    getNodeToExpand() {
+      const selectedKey = Object.keys(this.selectedKey)[0];
+      return this.root.find(node => node.key === selectedKey) || this.root[0];
+    },
+
+    recursiveSearchForNode(key: string, nodes: TreeNode[], result: TreeNode[]) {
+      if (nodes.length) {
+        const node = nodes.find(child => child.key === key);
+        if (node) {
+          result.push(node);
+          return;
+        }
+
+        nodes.forEach(node => {
+          this.recursiveSearchForNode(key, node.children, result);
+        });
+      }
+    },
+
+    nodeIsChildOf(child: TreeNode, parent: TreeNode): boolean {
+      let result = [] as TreeNode[];
+      this.recursiveSearchForNode(child.key, parent.children, result);
+      return result[0] ? true : false;
     },
 
     async expandParents(): Promise<void> {
-      this.expandedKeys[this.root[0].key] = true;
+      const selected = this.getSelectedNodeRecursevily();
+      const nodeToExpand = this.getNodeToExpand();
+      if (!MODULE_IRIS.includes(nodeToExpand.data)) {
+        const parentsNodes = [] as TreeNode[];
+        const parents = await EntityService.getEntityParents(nodeToExpand.data);
+        parents.forEach((parent: EntityReferenceNode) => {
+          parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, true));
+        });
 
-      const parentsNodes = [] as TreeNode[];
-      const parents = await EntityService.getEntityParents(this.root[0].data);
-      parents.forEach((parent: EntityReferenceNode) => {
-        parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, true));
-      });
+        if (selected.key !== nodeToExpand.key && !this.nodeIsChildOf(selected, nodeToExpand)) {
+          nodeToExpand.children.push(selected);
+        }
 
-      parentsNodes.forEach((parentNode: TreeNode) => {
-        parentNode.children.push(this.root[0]);
-        this.expandedKeys[parentNode.key] = true;
-      });
+        this.expandedKeys[nodeToExpand.key] = true;
+        parentsNodes[parentsNodes.length - 1].children.push(nodeToExpand);
+        this.expandedKeys[parentsNodes[parentsNodes.length - 1].key] = true;
 
-      this.root = parentsNodes;
-
-      const parentsReturn2 = await EntityService.getEntityParents(this.root[0].data);
-
-      if (parentsReturn2[0]) {
-        this.parentLabel = parentsReturn2[0].name;
-      } else {
-        this.parentLabel = "";
+        this.root = parentsNodes;
+        await this.getFirstParent(this.root[0]);
       }
-      // this refreshes the keys so they start open if children and parents were both expanded
-      this.expandedKeys = { ...this.expandedKeys };
+    },
+
+    async getFirstParent(node: TreeNode): Promise<void> {
+      const parentsReturn = await EntityService.getEntityParents(node.data);
+      this.parentLabel = parentsReturn[0] ? parentsReturn[0].name : "";
     },
 
     async resetConcept(): Promise<void> {

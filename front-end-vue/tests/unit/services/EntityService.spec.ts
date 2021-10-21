@@ -113,11 +113,4 @@ describe("EntityService.ts", () => {
     expect(axios.get).toHaveBeenCalledWith(api + "api/entity/namespaces");
     expect(result).toBe("axios get return");
   });
-
-  it("can get complex members", async () => {
-    const result = await EntityService.getComplexMembers("testIri");
-    expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "api/entity/complexMembers", { params: { iri: "testIri" } });
-    expect(result).toBe("axios get return");
-  });
 });

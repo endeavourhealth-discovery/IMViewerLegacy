@@ -150,7 +150,17 @@ const routes: Array<RouteRecordRaw> = [
     component: Catalogue,
     meta: {
       requiresLicense: true
-    }
+    },
+    children: [
+      {
+        path: "/individual/:selectedIri",
+        name: "Individual",
+        component: Catalogue,
+        meta: {
+          requiresLicense: true
+        }
+      }
+    ]
   },
   {
     path: "/uprn",
