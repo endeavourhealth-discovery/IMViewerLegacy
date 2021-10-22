@@ -16,26 +16,8 @@
       </div>
     </template>
     <template #footer>
-      <div class="footer button-bar">
-        <!-- <Button
-          v-if="pageIndex > 0"
-          label="Previous"
-          icon="fas fa-chevron-circle-left"
-          class=""
-          @click="handlePrevious"
-        /> -->
-        <Button
-          label="Clear"
-          icon="fas fa-undo-alt"
-          class="p-button-warning"
-          @click="handleClear"
-        />
-        <Button
-          label="Next"
-          icon="fas fa-chevron-circle-right"
-          class=""
-          @click="handleNext"
-        />
+      <div class="footer">
+        <StepsButtonBar :pageIndex="pageIndex" @clearForm="handleClear" @nextPage="handleNext" @previousPage="handlePrev" />
       </div>
     </template>
   </Card>
@@ -43,12 +25,14 @@
 
 <script lang="ts">
 import { IM } from "@/vocabulary/IM";
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
+import StepsButtonBar from "@/components/creator/StepsButtonBar.vue";
 
 export default defineComponent({
   name: "DefinitionForm",
-  props: ["formData", "pageIndex"],
+  props: { formData: { type: Object as PropType<any> }, pageIndex: { type: Number } },
   emits: ["prevPage", "nextPage"],
+  components: { StepsButtonBar },
   data() {
     return {
       name: "",
@@ -57,13 +41,18 @@ export default defineComponent({
   },
   methods: {
     handleNext() {
-      const formData = { name: this.name, iri: this.iri };
-      this.$emit("nextPage", { formData: formData, pageIndex: this.pageIndex });
+      const data = { definition: { name: this.name, iri: this.iri } };
+      this.$emit("nextPage", data);
     },
 
     handleClear() {
       this.name = "";
       this.iri = IM.NAMESPACE;
+    },
+
+    handlePrev() {
+      const data = { definition: { name: this.name, iri: this.iri } };
+      this.$emit("prevPage", data);
     },
 
     setIri() {
@@ -78,11 +67,18 @@ export default defineComponent({
   height: calc(100% - 53px);
 }
 
-.footer {
+#create-definition-container {
+  height: calc(100% - 53px);
+}
+
+#create-definition-container ::v-deep(.p-card-body) {
+  height: 100%;
   display: flex;
-  flex-flow: row nowrap;
-  gap: 7px;
-  justify-content: flex-end;
-  align-items: center;
+  flex-flow: column nowrap;
+}
+
+#create-definition-container ::v-deep(.p-card-content) {
+  flex-grow: 100;
+  overflow-y: auto;
 }
 </style>

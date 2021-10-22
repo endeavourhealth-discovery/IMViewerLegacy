@@ -167,16 +167,23 @@ export default defineComponent({
     },
 
     nextPage(event: any) {
-      for (let field in event.formData) {
-        this.formObject[field] = event.formData[field];
+      for (let field in event) {
+        this.formObject[field] = event[field];
       }
-      this.currentPageIndex++;
-      this.$router.push(this.stepsItems[event.pageIndex + 1].to);
+      if (this.currentPageIndex < this.stepsItems.length) {
+        this.currentPageIndex++;
+        this.$router.push(this.stepsItems[this.currentPageIndex].to);
+      }
     },
 
     prevPage(event: any) {
-      this.currentPageIndex--;
-      this.$router.push(this.stepsItems[event.pageIndex - 1].to);
+      for (let field in event) {
+        this.formObject[field] = event[field];
+      }
+      if (this.currentPageIndex > 0) {
+        this.currentPageIndex--;
+        this.$router.push(this.stepsItems[this.currentPageIndex].to);
+      }
     },
 
     complete() {
