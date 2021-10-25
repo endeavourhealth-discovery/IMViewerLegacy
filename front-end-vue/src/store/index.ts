@@ -54,7 +54,8 @@ export default createStore({
       ["Queries", IM.MODULE_QUERIES]
     ]),
     activeModule: "default",
-    conceptActivePanel: 0
+    conceptActivePanel: 0,
+    focusHierarchy: false
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -120,6 +121,9 @@ export default createStore({
     },
     updateActiveModule(state, module) {
       state.activeModule = module;
+    },
+    updateFocusHierarchy(state, bool) {
+      state.focusHierarchy = bool;
     }
   },
   actions: {

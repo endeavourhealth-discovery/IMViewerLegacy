@@ -1,6 +1,6 @@
 <template>
   <div class="catalogue-dashboard-container">
-    <Card class="dashboard-card">
+    <Card class="dashboard-card" style="height: 100%">
       <template #title> Catalogue instance types overview </template>
       <template #subtitle>
         A brief overview of the types of data stored in the Catalogue

@@ -43,10 +43,7 @@
       </template>
       <Column field="entity.name" header="Name" filter-field="entity.name">
         <template #body="slotProps">
-          <div v-if="slotProps.data.type === 'COMPLEX'" class="complex-member-container">
-            <ComplexMembers :conceptIri="conceptIri" />
-          </div>
-          <span v-else>{{ slotProps.data.entity.name }}</span>
+          <div v-html="slotProps.data.entity.name" class="html-container"></div>
         </template>
       </Column>
       <template #groupheader="slotProps">
@@ -77,14 +74,12 @@ import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
 import { FilterMatchMode } from "primevue/api";
 import LoggerService from "@/services/LoggerService";
-import ComplexMembers from "@/components/concept/members/ComplexMembers.vue";
 import { ValueSetMember } from "@/models/members/ValueSetMember";
 import { ExportValueSet } from "@/models/members/ExportValueSet";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Members",
-  components: { ComplexMembers },
   props: {
     conceptIri: { type: String, required: true }
   },
@@ -240,5 +235,14 @@ export default defineComponent({
 
 .complex-member-container {
   width: 100%;
+}
+
+.html-container {
+  width: 100%;
+  padding: 1rem;
+}
+
+.html-container ::v-deep(p) {
+  margin-bottom: 0 !important;
 }
 </style>

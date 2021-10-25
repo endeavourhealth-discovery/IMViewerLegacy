@@ -102,7 +102,8 @@ describe("SidebarControl.vue", () => {
             { "@id": "http://endhealth.info/im#RecordType", name: "Record type" },
             { "@id": "http://endhealth.info/im#ValueSet", name: "Value set" }
           ]
-        }
+        },
+        focusHierarchy: false
       },
       commit: jest.fn(),
       dispatch: jest.fn().mockResolvedValue("true")
@@ -135,7 +136,7 @@ describe("SidebarControl.vue", () => {
     wrapper.vm.$options.watch.focusHierarchy.call(wrapper.vm, true);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.active).toBe(0);
-    expect(wrapper.emitted().hierarchyFocused).toBeTruthy();
+    expect(mockStore.commit).toHaveBeenCalledWith("updateFocusHierarchy", false);
     wrapper.vm.active = 3;
     wrapper.vm.$options.watch.focusHierarchy.call(wrapper.vm, false);
     await wrapper.vm.$nextTick();

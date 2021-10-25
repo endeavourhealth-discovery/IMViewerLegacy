@@ -24,7 +24,8 @@ describe("SideNav.spec ___ not logged in", () => {
           ["DataModel", IM.MODULE_DATA_MODEL],
           ["Catalogue", IM.MODULE_CATALOGUE],
           ["Queries", IM.MODULE_QUERIES]
-        ])
+        ]),
+        focusHierarchy: false
       },
       commit: jest.fn()
     };
@@ -154,9 +155,9 @@ describe("SideNav.spec ___ not logged in", () => {
       iri: "http://endhealth.info/im#Discoveryontology",
       route: "Dashboard"
     });
-    expect(mockStore.commit).toHaveBeenCalledWith("updateConceptIri", "http://endhealth.info/im#DiscoveryOntology");
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateActiveModule", "Ontology");
-    expect(wrapper.emitted().hierarchyFocusSelected).toBeTruthy();
+    expect(mockStore.commit).toHaveBeenNthCalledWith(2, "updateConceptIri", "http://endhealth.info/im#DiscoveryOntology");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(3, "updateActiveModule", "Ontology");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(4, "updateFocusHierarchy", true);
     expect(mockRouter.push).toHaveBeenCalledWith({ name: "Dashboard" });
   });
 
@@ -164,7 +165,6 @@ describe("SideNav.spec ___ not logged in", () => {
     wrapper.vm.handleCenterIconClick({ name: "Workflow", route: "Workflow" });
     await wrapper.vm.$nextTick();
     expect(mockStore.commit).not.toHaveBeenCalled();
-    expect(wrapper.emitted().hierarchyFocusSelected).toBeFalsy();
     expect(mockRouter.push).toHaveBeenCalledWith({ name: "Workflow" });
   });
 
@@ -216,7 +216,16 @@ describe("SideNav.spec ___ logged in", () => {
       state: {
         currentUser: new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "12345678", "colour/001-man.png"),
         isLoggedIn: true,
-        sideNavHierarchyFocus: { name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" }
+        sideNavHierarchyFocus: { name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" },
+        selectedEntityType: "Class",
+        moduleSelectedEntities: new Map([
+          ["Ontology", IM.MODULE_ONTOLOGY],
+          ["Sets", IM.MODULE_SETS],
+          ["DataModel", IM.MODULE_DATA_MODEL],
+          ["Catalogue", IM.MODULE_CATALOGUE],
+          ["Queries", IM.MODULE_QUERIES]
+        ]),
+        focusHierarchy: false
       },
       commit: jest.fn()
     };
