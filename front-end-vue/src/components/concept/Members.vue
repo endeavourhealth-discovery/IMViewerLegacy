@@ -43,7 +43,7 @@
       </template>
       <Column field="entity.name" header="Name" filter-field="entity.name">
         <template #body="slotProps">
-          <div v-html="slotProps.data.entity.name" class="html-container"></div>
+          <div class="name-container">{{ slotProps.data.entity.name }}</div>
         </template>
       </Column>
       <template #groupheader="slotProps">
@@ -237,7 +237,7 @@ export default defineComponent({
   width: 100%;
 }
 
-.html-container {
+.name-container {
   width: 100%;
   padding: 1rem;
 }
