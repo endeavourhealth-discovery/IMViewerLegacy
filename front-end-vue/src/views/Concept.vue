@@ -21,6 +21,9 @@
           <button class="p-panel-header-icon p-link p-mr-2" @click="openDownloadDialog" v-tooltip.bottom="'Download concept'">
             <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
           </button>
+          <button class="p-panel-header-icon p-link p-mr-2" v-tooltip.bottom="'Export concept'" @click="exportConcept">
+            <i class="fas fa-file-export" aria-hidden="true"></i>
+          </button>
           <!--<button
             class="p-panel-header-icon p-link p-mr-2"
             @click="directToCreateRoute"
@@ -405,6 +408,17 @@ export default defineComponent({
 
     isObjectHasKeysWrapper(object: any, keys: string[]) {
       return isObjectHasKeys(object, keys);
+    },
+    async exportConcept() {
+      const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
+      const url = process.env.VUE_APP_API + "api/entity/exportConcept?iri=" + modIri;
+      const popup = window.open(url);
+      if (!popup) {
+        this.$toast.add(LoggerService.error("Download failed from server"));
+      } else {
+        this.$toast.add(LoggerService.success("Download will begin shortly"));
+      }
+      this.closeDownloadDialog();
     }
   }
 });
