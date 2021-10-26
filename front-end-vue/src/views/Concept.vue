@@ -76,6 +76,11 @@
                 <Members :conceptIri="conceptIri" @memberClick="active = 0" />
               </div>
             </TabPanel>
+            <TabPanel header="TTGraph">
+              <div class="concept-panel-content" id="ttgraph-container" :style="contentHeight">
+                <TTGraph :conceptIri="conceptIri" />
+              </div>
+            </TabPanel>
             <TabPanel header="Hierarchy position">
               <div class="concept-panel-content" id="secondary-tree-container" :style="contentHeight">
                 <SecondaryTree :conceptIri="conceptIri" />
@@ -92,6 +97,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Graph from "../components/concept/Graph.vue";
+import TTGraph from "../components/concept/TTGraph.vue";
 import Definition from "../components/concept/Definition.vue";
 import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
@@ -121,6 +127,7 @@ export default defineComponent({
   components: {
     PanelHeader,
     Graph,
+    TTGraph,
     UsedIn,
     Members,
     Definition,
