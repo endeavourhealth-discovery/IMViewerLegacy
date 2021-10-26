@@ -68,24 +68,17 @@ export async function ttNodeToString(node: any, previousType: string, indent: nu
         suffix = ")\n";
       }
     }
-    result = await processObject(key, value, result, previousType, indent, iriMap, pad, prefix, suffix, group);
+    result = await processObject(key, value, result, previousType, indent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group });
     count++;
   }
   return result;
 }
 
-async function processObject(
-  key: string,
-  value: any,
-  result: string,
-  previousType: string,
-  indent: number,
-  iriMap: any,
-  pad: string,
-  prefix: string,
-  suffix: string,
-  group: boolean
-) {
+async function processObject(key: string, value: any, result: string, previousType: string, indent: number, iriMap: any, stringAdditions: any) {
+  const pad = stringAdditions.pad;
+  const prefix = stringAdditions.prefix;
+  const suffix = stringAdditions.suffix;
+  const group = stringAdditions.group;
   if (isObjectHasKeys(value, ["@id"])) {
     if (iriMap[key]) {
       result += pad + prefix + iriMap[key].replace(/ *\([^)]*\) */g, "") + " : ";

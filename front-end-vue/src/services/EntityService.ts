@@ -10,7 +10,6 @@ import { TermCode } from "@/models/terms/TermCode";
 import { DataModelProperty } from "@/models/properties/DataModelProperty";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { Namespace } from "@/models/Namespace";
-import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default class EntityService {
   static api = process.env.VUE_APP_API;
