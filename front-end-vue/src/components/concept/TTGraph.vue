@@ -29,39 +29,43 @@ export default defineComponent({
     return {
       loading: false,
       data: {
-        name: "flare",
+        name: "Encounter (record type)",
         children: [
           {
-            name: "analytics",
+            name: "is a",
             children: [
               {
-                name: "cluster",
-                children: [
-                  {
-                    name: "AgglomerativeCluster",
-                    value: 3938
-                  },
-                  {
-                    name: "CommunityStructure",
-                    value: 3812
-                  },
-                  {
-                    name: "HierarchicalCluster",
-                    value: 6714
-                  },
-                  {
-                    name: "MergeEdge",
-                    value: 743
-                  }
-                ]
+                name: "Event",
+                children: []
+              }
+            ]
+          },
+          {
+            name: "has property",
+            children: [
+              {
+                name: "additional Practitioners",
+                children: [{ name: "Practitioner in role (record type)", children: [] }]
               },
               {
-                name: "graph",
-                children: []
+                name: "completion Status",
+                children: [{ name: "Ontological concept", children: [] }]
               },
               {
-                name: "optimization",
-                children: []
+                name: "duration",
+                children: [{ name: "Ontological concept", children: [] }]
+              },
+              {
+                name: "has section",
+                children: [{ name: "Section (structural)", children: [] }]
+              },
+              {
+                name: "linked appointment",
+                children: [{ name: "Appointment (record type)", children: [] }]
+              },
+              {
+                name: "linked care episode",
+                children: [{ name: "Episode of care (record type)", children: [] }]
               }
             ]
           }
@@ -93,7 +97,7 @@ export default defineComponent({
             .distance(0)
             .strength(1)
         )
-        .force("charge", d3.forceManyBody().strength(-50))
+        .force("charge", d3.forceManyBody().strength(-1500))
         .force("x", d3.forceX())
         .force("y", d3.forceY());
 
@@ -120,10 +124,18 @@ export default defineComponent({
         .join("circle")
         .attr("fill", (d: any) => (d.children ? null : "#000"))
         .attr("stroke", (d: any) => (d.children ? null : "#fff"))
-        .attr("r", 3.5)
+        .attr("r", 30.5)
         .call(this.drag(simulation) as any);
 
-      node.append("title").text((d: any) => d.data.name);
+      const nodeText = svg
+        .append("g")
+        .attr("class", "labels")
+        .selectAll("title")
+        .data(nodes)
+        .enter()
+        .append("text")
+        .style("fill", "darkOrange")
+        .text((d: any) => d.data.name);
 
       simulation.on("tick", () => {
         link
@@ -131,7 +143,7 @@ export default defineComponent({
           .attr("y1", (d: any) => d.source.y)
           .attr("x2", (d: any) => d.target.x)
           .attr("y2", (d: any) => d.target.y);
-
+        nodeText.attr("transform", (d: any) => "translate(" + d.x + "," + d.y + ")");
         node.attr("cx", (d: any) => d.x).attr("cy", (d: any) => d.y);
       });
     },
