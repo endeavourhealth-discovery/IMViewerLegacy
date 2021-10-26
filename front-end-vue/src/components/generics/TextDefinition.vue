@@ -17,7 +17,7 @@
         }"
       />
     </div>
-    <pre :class="'p-d-none tgl-' + label">{{ getDefinition() }}</pre>
+    <pre :class="'p-d-none tgl-' + label">{{ definition }}</pre>
   </div>
 </template>
 
@@ -47,24 +47,26 @@ export default defineComponent({
     },
     ...mapState(["selectedEntityType"])
   },
-  mounted() {
+  async mounted() {
     if (this.label === "Inferred") {
       const button = document.getElementById(`expand-button-${this.label}`) as HTMLElement;
       if (button) button.click();
     }
+    await this.getDefinition();
   },
   data() {
     return {
       buttonExpanded: false,
-      count: 0
+      count: 0,
+      definition: ""
     };
   },
   methods: {
     setButtonExpanded(): void {
       this.buttonExpanded = !this.buttonExpanded;
     },
-    getDefinition(): string {
-      return bundleToText(this.data as TTBundle);
+    async getDefinition(): Promise<void> {
+      this.definition = await bundleToText(this.data as TTBundle);
     },
     getCount(): number {
       let count = 0;
