@@ -4,23 +4,26 @@ import { TTBundle, TTIriRef } from "@/models/TripleTree";
 import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
 
 export function bundleToText(bundle: TTBundle): string {
-  // Add custom id -> name maps
-  bundle.predicates[IM.IS_A] = "Is a";
-  bundle.predicates[OWL.EQUIVALENT_CLASS] = "Is equivalent to";
-  bundle.predicates[OWL.INTERSECTION_OF] = "Combination of";
-  bundle.predicates[OWL.SOME_VALUES_FROM] = "With a value";
-  bundle.predicates[OWL.ON_PROPERTY] = "On property";
-  bundle.predicates[IM.ROLE_GROUP] = "Where";
-
+  let predicates = bundle.predicates;
+  predicates = getDefaultPredicates(predicates);
   delete bundle.entity["@id"];
-
   let result = "";
-
-  result += ttValueToString(bundle.entity, "object", bundle.predicates, 0);
+  result += ttValueToString(bundle.entity, "object", 0, predicates);
   return result;
 }
 
-export function ttValueToString(node: any, previousType: string, iriMap: any, indent: number): string {
+function getDefaultPredicates(predicates?: any) {
+  if (!isObjectHasKeys(predicates)) predicates = {} as any;
+  predicates[IM.IS_A] = "Is a";
+  predicates[OWL.EQUIVALENT_CLASS] = "Is equivalent to";
+  predicates[OWL.INTERSECTION_OF] = "Combination of";
+  predicates[OWL.SOME_VALUES_FROM] = "With a value";
+  predicates[OWL.ON_PROPERTY] = "On property";
+  predicates[IM.ROLE_GROUP] = "Where";
+  return predicates;
+}
+
+export function ttValueToString(node: any, previousType: string, indent: number, iriMap?: any): string {
   if (isObjectHasKeys(node, ["@id"])) {
     return ttIriToString(node, previousType, indent, false);
   } else if (isObjectHasKeys(node)) {
@@ -42,7 +45,8 @@ export function ttIriToString(iri: TTIriRef, previous: string, indent: number, i
   return result;
 }
 
-export function ttNodeToString(node: any, previousType: string, indent: number, iriMap: any): string {
+export function ttNodeToString(node: any, previousType: string, indent: number, iriMap?: any): string {
+  if (!iriMap) iriMap = getDefaultPredicates();
   const pad = "  ".repeat(indent);
   let result = "";
   let first = true;
@@ -79,13 +83,13 @@ export function ttNodeToString(node: any, previousType: string, indent: number, 
       if (iriMap[key]) result += pad + prefix + iriMap[key].replace(/ *\([^)]*\) */g, "") + ":\n";
       if (previousType === "array") {
         if (group) {
-          result += ttValueToString(value, "object", iriMap, indent + 1);
+          result += ttValueToString(value, "object", indent + 1, iriMap);
         } else {
-          result += ttValueToString(value, "object", iriMap, indent);
+          result += ttValueToString(value, "object", indent, iriMap);
         }
       }
       if (previousType === "object") {
-        result += ttValueToString(value, "object", iriMap, indent);
+        result += ttValueToString(value, "object", indent, iriMap);
       }
     }
     count++;
@@ -93,10 +97,11 @@ export function ttNodeToString(node: any, previousType: string, indent: number, 
   return result;
 }
 
-export function ttArrayToString(arr: any[], indent: number, iriMap: any): string {
+export function ttArrayToString(arr: any[], indent: number, iriMap?: any): string {
+  if (!iriMap) iriMap = getDefaultPredicates();
   let result = "";
   for (const item of arr) {
-    result += ttValueToString(item, "array", iriMap, indent + 1);
+    result += ttValueToString(item, "array", indent + 1, iriMap);
   }
   return result;
 }
