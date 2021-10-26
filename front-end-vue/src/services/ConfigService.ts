@@ -8,12 +8,11 @@ export default class ConfigService {
 
   public static async getComponentLayout(name: string): Promise<DefinitionConfig[]> {
     try {
-      const axiosReturn = (await axios.get(this.api + "api/config/componentLayout", {
+      return await axios.get(this.api + "api/config/componentLayout", {
         params: {
           name: name
         }
-      })) as DefinitionConfig[];
-      return axiosReturn || ([] as DefinitionConfig[]);
+      });
     } catch (error) {
       return [] as DefinitionConfig[];
     }
@@ -21,8 +20,7 @@ export default class ConfigService {
 
   public static async getFilterDefaults(): Promise<FilterDefaultsConfig> {
     try {
-      const axiosReturn = (await axios.get(this.api + "api/config/filterDefaults")) as FilterDefaultsConfig;
-      return axiosReturn || ({} as FilterDefaultsConfig);
+      return await axios.get(this.api + "api/config/filterDefaults");
     } catch (error) {
       return {} as FilterDefaultsConfig;
     }
@@ -30,12 +28,11 @@ export default class ConfigService {
 
   public static async getDashboardLayout(name: string): Promise<DashboardLayout[]> {
     try {
-      const axiosReturn = (await axios.get(this.api + "api/config/dashboardLayout", {
+      return await axios.get(this.api + "api/config/dashboardLayout", {
         params: {
           name: name
         }
-      })) as DashboardLayout[];
-      return axiosReturn ? axiosReturn : ([] as DashboardLayout[]);
+      });
     } catch (error) {
       return [] as DashboardLayout[];
     }
@@ -43,12 +40,11 @@ export default class ConfigService {
 
   public static async getDefaultPredicatenames(): Promise<any> {
     try {
-      const axiosReturn = (await axios.get(this.api + "api/config/defaultPredicateNames", {
+      return await axios.get(this.api + "api/config/defaultPredicateNames", {
         params: {
           name: "defaultPredicateNames"
         }
-      })) as any;
-      return axiosReturn ? axiosReturn : ({} as any);
+      });
     } catch (error) {
       return {} as any;
     }

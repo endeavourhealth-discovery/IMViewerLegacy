@@ -5,8 +5,7 @@ export default class WorkflowService {
 
   public static async getWorkflows(): Promise<any[]> {
     try {
-      const axiosReturn = (await axios.get(this.api + "workflow")) as [];
-      return axiosReturn || [];
+      return await axios.get(this.api + "workflow");
     } catch (error) {
       return [];
     }
@@ -14,8 +13,7 @@ export default class WorkflowService {
 
   public static async getWorkflowTasks(): Promise<any[]> {
     try {
-      const axiosReturn = (await axios.get(this.api + "workflow/tasks")) as [];
-      return axiosReturn || [];
+      return await axios.get(this.api + "workflow/tasks");
     } catch (error) {
       return [];
     }
