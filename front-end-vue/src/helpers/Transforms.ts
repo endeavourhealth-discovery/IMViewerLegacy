@@ -24,9 +24,9 @@ export async function ttValueToString(node: any, previousType: string, indent: n
   if (isObjectHasKeys(node, ["@id"])) {
     return ttIriToString(node, previousType, indent, false);
   } else if (isObjectHasKeys(node)) {
-    return await ttNodeToString(node, previousType, indent, iriMap);
+    return ttNodeToString(node, previousType, indent, iriMap);
   } else if (isArrayHasLength(node)) {
-    return await ttArrayToString(node, indent, iriMap);
+    return ttArrayToString(node, indent, iriMap);
   } else {
     return "";
   }
@@ -68,28 +68,44 @@ export async function ttNodeToString(node: any, previousType: string, indent: nu
         suffix = ")\n";
       }
     }
-    if (isObjectHasKeys(value, ["@id"])) {
-      if (iriMap[key]) {
-        result += pad + prefix + iriMap[key].replace(/ *\([^)]*\) */g, "") + " : ";
-        result += ttIriToString(value as TTIriRef, "object", indent, true);
-        result += suffix;
-      } else {
-        result += ttIriToString(value as TTIriRef, "object", indent, false);
-      }
+    result = await processObject(key, value, result, previousType, indent, iriMap, pad, prefix, suffix, group);
+    count++;
+  }
+  return result;
+}
+
+async function processObject(
+  key: string,
+  value: any,
+  result: string,
+  previousType: string,
+  indent: number,
+  iriMap: any,
+  pad: string,
+  prefix: string,
+  suffix: string,
+  group: boolean
+) {
+  if (isObjectHasKeys(value, ["@id"])) {
+    if (iriMap[key]) {
+      result += pad + prefix + iriMap[key].replace(/ *\([^)]*\) */g, "") + " : ";
+      result += ttIriToString(value as TTIriRef, "object", indent, true);
+      result += suffix;
     } else {
-      if (iriMap[key]) result += pad + prefix + iriMap[key].replace(/ *\([^)]*\) */g, "") + ":\n";
-      if (previousType === "array") {
-        if (group) {
-          result += await ttValueToString(value, "object", indent + 1, iriMap);
-        } else {
-          result += await ttValueToString(value, "object", indent, iriMap);
-        }
-      }
-      if (previousType === "object") {
+      result += ttIriToString(value as TTIriRef, "object", indent, false);
+    }
+  } else {
+    if (iriMap[key]) result += pad + prefix + iriMap[key].replace(/ *\([^)]*\) */g, "") + ":\n";
+    if (previousType === "array") {
+      if (group) {
+        result += await ttValueToString(value, "object", indent + 1, iriMap);
+      } else {
         result += await ttValueToString(value, "object", indent, iriMap);
       }
     }
-    count++;
+    if (previousType === "object") {
+      result += await ttValueToString(value, "object", indent, iriMap);
+    }
   }
   return result;
 }

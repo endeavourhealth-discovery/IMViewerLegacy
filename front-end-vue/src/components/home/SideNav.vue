@@ -76,7 +76,7 @@ export default defineComponent({
             route: this.menuItems[2].route
           });
           break;
-        case "Catalogue":
+        case "Queries":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[3].name,
             fullName: this.menuItems[3].fullName,
@@ -84,12 +84,12 @@ export default defineComponent({
             route: this.menuItems[3].route
           });
           break;
-        case "Queries":
+        case "Catalogue":
           this.$store.commit("updateSideNavHierarchyFocus", {
-            name: this.menuItems[3].name,
-            fullName: this.menuItems[3].fullName,
-            iri: this.menuItems[3].iri,
-            route: this.menuItems[3].route
+            name: this.menuItems[4].name,
+            fullName: this.menuItems[4].fullName,
+            iri: this.menuItems[4].iri,
+            route: this.menuItems[4].route
           });
           break;
         case "Folder":
@@ -167,13 +167,6 @@ export default defineComponent({
           route: "Dashboard",
           iri: IM.MODULE_DATA_MODEL
         },
-        // {
-        //   icon: ["fas", "fax"],
-        //   name: "Catalogue",
-        //   fullName: "Catalogue",
-        //   route: "Catalogue",
-        //   iri: IM.MODULE_CATALOGUE
-        // },
         {
           icon: ["fas", "search"],
           name: "Queries",
@@ -181,6 +174,13 @@ export default defineComponent({
           route: "Dashboard",
           iri: IM.MODULE_QUERIES
         }
+        // {
+        //   icon: ["fas", "fax"],
+        //   name: "Catalogue",
+        //   fullName: "Catalogue",
+        //   route: "Catalogue",
+        //   iri: IM.MODULE_CATALOGUE
+        // },
         // {
         //   icon: ["fas", "tasks"],
         //   name: "Workflow"
