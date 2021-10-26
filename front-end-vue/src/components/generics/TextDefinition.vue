@@ -1,5 +1,8 @@
 <template>
-  <div v-if="hasData" id="axioms-container" :style="{ width: size }">
+  <div v-if="loading" class="loading-container">
+    <ProgressSpinner />
+  </div>
+  <div v-else id="axioms-container" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}</strong>
       <span v-if="getCount()">&nbsp;({{ getCount() }})</span>
@@ -48,17 +51,21 @@ export default defineComponent({
     ...mapState(["selectedEntityType"])
   },
   async mounted() {
+    this.loading = true;
+    await this.getDefinition();
+    this.loading = false;
+    await this.$nextTick();
     if (this.label === "Inferred") {
       const button = document.getElementById(`expand-button-${this.label}`) as HTMLElement;
       if (button) button.click();
     }
-    await this.getDefinition();
   },
   data() {
     return {
       buttonExpanded: false,
       count: 0,
-      definition: ""
+      definition: "",
+      loading: false
     };
   },
   methods: {
@@ -80,6 +87,15 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.loading-container {
+  height: 100%;
+  widows: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
 pre {
   border: 1px solid #dee2e6;
   border-radius: 3px;
