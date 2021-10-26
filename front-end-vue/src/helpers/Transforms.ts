@@ -1,32 +1,32 @@
-import { IM } from "@/vocabulary/IM";
-import { OWL } from "@/vocabulary/OWL";
 import { TTBundle, TTIriRef } from "@/models/TripleTree";
 import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
+import ConfigService from "@/services/ConfigService";
 
-export function bundleToText(bundle: TTBundle): string {
-  // Add custom id -> name maps
-  bundle.predicates[IM.IS_A] = "Is a";
-  bundle.predicates[OWL.EQUIVALENT_CLASS] = "Is equivalent to";
-  bundle.predicates[OWL.INTERSECTION_OF] = "Combination of";
-  bundle.predicates[OWL.SOME_VALUES_FROM] = "With a value";
-  bundle.predicates[OWL.ON_PROPERTY] = "On property";
-  bundle.predicates[IM.ROLE_GROUP] = "Where";
-
+export async function bundleToText(bundle: TTBundle): Promise<string> {
+  let predicates = bundle.predicates;
+  predicates = await getDefaultPredicates(predicates);
   delete bundle.entity["@id"];
-
   let result = "";
-
-  result += ttValueToString(bundle.entity, "object", bundle.predicates, 0);
+  result += await ttValueToString(bundle.entity, "object", 0, predicates);
   return result;
 }
 
-export function ttValueToString(node: any, previousType: string, iriMap: any, indent: number): string {
+async function getDefaultPredicates(predicates?: any) {
+  if (!isObjectHasKeys(predicates)) predicates = {} as any;
+  const defaults = await ConfigService.getDefaultPredicatenames();
+  for (const [key, value] of Object.entries(defaults)) {
+    predicates[key] = value;
+  }
+  return predicates;
+}
+
+export async function ttValueToString(node: any, previousType: string, indent: number, iriMap?: any): Promise<string> {
   if (isObjectHasKeys(node, ["@id"])) {
     return ttIriToString(node, previousType, indent, false);
   } else if (isObjectHasKeys(node)) {
-    return ttNodeToString(node, previousType, indent, iriMap);
+    return await ttNodeToString(node, previousType, indent, iriMap);
   } else if (isArrayHasLength(node)) {
-    return ttArrayToString(node, indent, iriMap);
+    return await ttArrayToString(node, indent, iriMap);
   } else {
     return "";
   }
@@ -42,7 +42,8 @@ export function ttIriToString(iri: TTIriRef, previous: string, indent: number, i
   return result;
 }
 
-export function ttNodeToString(node: any, previousType: string, indent: number, iriMap: any): string {
+export async function ttNodeToString(node: any, previousType: string, indent: number, iriMap?: any): Promise<string> {
+  if (!iriMap) iriMap = await getDefaultPredicates();
   const pad = "  ".repeat(indent);
   let result = "";
   let first = true;
@@ -79,13 +80,13 @@ export function ttNodeToString(node: any, previousType: string, indent: number, 
       if (iriMap[key]) result += pad + prefix + iriMap[key].replace(/ *\([^)]*\) */g, "") + ":\n";
       if (previousType === "array") {
         if (group) {
-          result += ttValueToString(value, "object", iriMap, indent + 1);
+          result += await ttValueToString(value, "object", indent + 1, iriMap);
         } else {
-          result += ttValueToString(value, "object", iriMap, indent);
+          result += await ttValueToString(value, "object", indent, iriMap);
         }
       }
       if (previousType === "object") {
-        result += ttValueToString(value, "object", iriMap, indent);
+        result += await ttValueToString(value, "object", indent, iriMap);
       }
     }
     count++;
@@ -93,10 +94,11 @@ export function ttNodeToString(node: any, previousType: string, indent: number, 
   return result;
 }
 
-export function ttArrayToString(arr: any[], indent: number, iriMap: any): string {
+export async function ttArrayToString(arr: any[], indent: number, iriMap?: any): Promise<string> {
+  if (!iriMap) iriMap = await getDefaultPredicates();
   let result = "";
   for (const item of arr) {
-    result += ttValueToString(item, "array", iriMap, indent + 1);
+    result += await ttValueToString(item, "array", indent + 1, iriMap);
   }
   return result;
 }

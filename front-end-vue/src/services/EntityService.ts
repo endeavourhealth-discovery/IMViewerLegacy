@@ -73,6 +73,19 @@ export default class EntityService {
     }
   }
 
+  public static async getInferredAsString(iri: string): Promise<string> {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/inferredAsString", {
+        params: {
+          iri: iri
+        }
+      })) as string;
+      return axiosReturn;
+    } catch (error) {
+      return "";
+    }
+  }
+
   public static async getAxiomBundle(iri: string): Promise<PartialBundle> {
     try {
       const axiosReturn = (await axios.get(this.api + "api/entity/axiomBundle", {
@@ -86,6 +99,19 @@ export default class EntityService {
       return {} as PartialBundle;
     } catch (error) {
       return {} as PartialBundle;
+    }
+  }
+
+  public static async getAxiomAsString(iri: string): Promise<string> {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/entity/axiomAsString", {
+        params: {
+          iri: iri
+        }
+      })) as string;
+      return axiosReturn;
+    } catch (error) {
+      return "";
     }
   }
 

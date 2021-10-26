@@ -40,4 +40,17 @@ export default class ConfigService {
       return [] as DashboardLayout[];
     }
   }
+
+  public static async getDefaultPredicatenames(): Promise<any> {
+    try {
+      const axiosReturn = (await axios.get(this.api + "api/config/defaultPredicateNames", {
+        params: {
+          name: "defaultPredicateNames"
+        }
+      })) as any;
+      return axiosReturn ? axiosReturn : ({} as any);
+    } catch (error) {
+      return {} as any;
+    }
+  }
 }
