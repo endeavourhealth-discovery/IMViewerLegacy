@@ -175,6 +175,10 @@ export default defineComponent({
 
     active(newValue) {
       this.$store.commit("updateConceptActivePanel", newValue);
+    },
+
+    types() {
+      if (this.isFolder) this.active = 0;
     }
   },
   async mounted() {
