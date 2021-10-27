@@ -24,7 +24,7 @@ export function isOfTypes(conceptTypeElements: TTIriRef[], ...types: string[]): 
 }
 
 export function isValueSet(conceptTypes: TTIriRef[]): boolean {
-  return isOfTypes(conceptTypes, IM.SET, IM.QUERY_SET, IM.VALUE_SET, IM.CONCEPT_SET);
+  return isOfTypes(conceptTypes, IM.SET, IM.QUERY_SET, IM.VALUE_SET, IM.CONCEPT_SET, IM.CONCEPT_SET_GROUP);
 }
 
 export function getIconFromType(conceptTypes: TTIriRef[]): string {
