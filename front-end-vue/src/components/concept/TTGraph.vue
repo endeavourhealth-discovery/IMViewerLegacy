@@ -37,11 +37,23 @@ export default defineComponent({
               {
                 name: "Event",
                 children: []
+              },
+              {
+                name: "Event",
+                children: []
+              },
+              {
+                name: "Event",
+                children: []
+              },
+              {
+                name: "Event",
+                children: []
               }
             ]
           },
           {
-            name: "has property",
+            name: "123456789012 1",
             children: [
               {
                 name: "additional Practitioners",
@@ -86,6 +98,9 @@ export default defineComponent({
       const nodes = root.descendants() as any;
       const height = 400;
       const width = 600;
+      const radius = 25;
+      const side = 2 * radius;
+      const maxLength = radius / 2;
 
       const simulation = d3
         .forceSimulation(nodes)
@@ -124,7 +139,7 @@ export default defineComponent({
         .join("circle")
         .attr("fill", (d: any) => (d.children ? null : "#000"))
         .attr("stroke", (d: any) => (d.children ? null : "#fff"))
-        .attr("r", 30.5)
+        .attr("r", radius)
         .call(this.drag(simulation) as any);
 
       const nodeText = svg
@@ -133,9 +148,18 @@ export default defineComponent({
         .selectAll("title")
         .data(nodes)
         .enter()
-        .append("text")
-        .style("fill", "darkOrange")
-        .text((d: any) => d.data.name);
+        .append("foreignObject")
+        .attr("x", (d: any) => radius - side)
+        .attr("y", (d: any) => (d.data.name.length <= maxLength ? radius - side / 1.5 : radius - side / 1.4))
+        .attr("width", side)
+        .attr("height", side)
+        .attr("color", "red")
+        .style("font-size", () => `${radius / 5}px`);
+
+      const text = nodeText
+        .append("xhtml:p")
+        .text((d: any) => d.data.name)
+        .attr("style", () => "text-align:center;padding:2px;margin:2px;");
 
       simulation.on("tick", () => {
         link
@@ -143,7 +167,8 @@ export default defineComponent({
           .attr("y1", (d: any) => d.source.y)
           .attr("x2", (d: any) => d.target.x)
           .attr("y2", (d: any) => d.target.y);
-        nodeText.attr("transform", (d: any) => "translate(" + d.x + "," + d.y + ")");
+        text.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
+        nodeText.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
         node.attr("cx", (d: any) => d.x).attr("cy", (d: any) => d.y);
       });
     },
