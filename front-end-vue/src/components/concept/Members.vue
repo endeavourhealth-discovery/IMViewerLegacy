@@ -130,7 +130,7 @@ export default defineComponent({
     },
 
     onRowSelect(): void {
-      if (isObjectHasKeys(this.selected, ["entity"]) && isObjectHasKeys(this.selected.entity, ["@id"])) {
+      if (isObjectHasKeys(this.selected, ["entity"]) && isObjectHasKeys(this.selected.entity, ["@id"]) && this.selected.entity["@id"]) {
         this.$router.push({
           name: "Concept",
           params: { selectedIri: this.selected.entity["@id"] }
