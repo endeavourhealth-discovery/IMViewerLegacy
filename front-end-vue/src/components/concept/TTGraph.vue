@@ -14,6 +14,7 @@ import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import * as d3 from "d3";
+import { RDF } from "@/vocabulary/RDF";
 
 export default defineComponent({
   name: "TTGraph",
@@ -28,61 +29,7 @@ export default defineComponent({
   data() {
     return {
       loading: false,
-      data: {
-        name: "Encounter (record type)",
-        children: [
-          {
-            name: "is a",
-            children: [
-              {
-                name: "Event",
-                children: []
-              },
-              {
-                name: "Event",
-                children: []
-              },
-              {
-                name: "Event",
-                children: []
-              },
-              {
-                name: "Event",
-                children: []
-              }
-            ]
-          },
-          {
-            name: "123456789012 1",
-            children: [
-              {
-                name: "additional Practitioners",
-                children: [{ name: "Practitioner in role (record type)", children: [] }]
-              },
-              {
-                name: "completion Status",
-                children: [{ name: "Ontological concept", children: [] }]
-              },
-              {
-                name: "duration",
-                children: [{ name: "Ontological concept", children: [] }]
-              },
-              {
-                name: "has section",
-                children: [{ name: "Section (structural)", children: [] }]
-              },
-              {
-                name: "linked appointment",
-                children: [{ name: "Appointment (record type)", children: [] }]
-              },
-              {
-                name: "linked care episode",
-                children: [{ name: "Episode of care (record type)", children: [] }]
-              }
-            ]
-          }
-        ]
-      }
+      data: {} as TTGraphData
     };
   },
   async mounted() {
@@ -91,8 +38,29 @@ export default defineComponent({
   methods: {
     async getEntityBundle(iri: string) {
       const { entity, predicates } = await EntityService.getPartialEntityBundle(iri, []);
+      const firstNode = { name: entity[RDFS.LABEL], children: [] } as TTGraphData;
+      const basePredicates = [IM.HAS_STATUS, RDFS.SUBCLASS_OF, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL];
+      const keys = Object.keys(entity).filter(key => key != "@id" && !basePredicates.includes(key));
+      if (isObjectHasKeys(entity)) {
+        keys.forEach(key => {
+          const secondNode = { name: predicates[key], children: [] } as TTGraphData;
+          if (isArrayHasLength(entity[key])) {
+            entity[key].forEach((nested: any) => {
+              secondNode.children.push({ name: nested.name, children: [] });
+            });
+          } else if (isObjectHasKeys(entity[key])) {
+            secondNode.children.push({ name: entity[key].name, children: [] });
+          } else {
+            secondNode.children.push({ name: entity[key], children: [] });
+          }
+
+          firstNode.children.push(secondNode);
+        });
+      }
+      this.data = firstNode;
     },
-    drawGraph(iri: string) {
+    async drawGraph(iri: string) {
+      await this.getEntityBundle(iri);
       const root = d3.hierarchy(this.data);
       const links = root.links() as any;
       const nodes = root.descendants() as any;
@@ -150,7 +118,7 @@ export default defineComponent({
         .enter()
         .append("foreignObject")
         .attr("x", (d: any) => radius - side)
-        .attr("y", (d: any) => (d.data.name.length <= maxLength ? radius - side / 1.5 : radius - side / 1.4))
+        .attr("y", (d: any) => (d.data.name?.length <= maxLength ? radius - side / 1.5 : radius - side / 1.4))
         .attr("width", side)
         .attr("height", side)
         .attr("color", "red")
