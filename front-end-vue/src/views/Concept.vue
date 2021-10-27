@@ -252,10 +252,6 @@ export default defineComponent({
       }
     },
 
-    async getStated(iri: string): Promise<void> {
-      this.concept["axioms"] = await EntityService.getAxiomBundle(iri);
-    },
-
     async getConfig(name: string): Promise<void> {
       const configReturn = await ConfigService.getComponentLayout(name);
       if (configReturn) {
@@ -271,7 +267,6 @@ export default defineComponent({
       await this.getConfig("definition");
       await this.getConcept(this.conceptIri);
       await this.getInferred(this.conceptIri);
-      await this.getStated(this.conceptIri);
       this.types = isObjectHasKeys(this.concept, [RDF.TYPE]) ? this.concept[RDF.TYPE] : ([] as TTIriRef[]);
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
