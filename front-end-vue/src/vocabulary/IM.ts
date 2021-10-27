@@ -3,6 +3,7 @@ export class IM {
   public static PREFIX = "im";
   public static IRI = "@id";
   public static CONCEPT = IM.NAMESPACE + "Concept";
+  public static CONCEPT_SET_GROUP = IM.NAMESPACE + "ConceptSetGroup";
   public static CODE = IM.NAMESPACE + "code";
   public static SCHEME = IM.NAMESPACE + "scheme";
   public static STATUS = IM.NAMESPACE + "Status";
