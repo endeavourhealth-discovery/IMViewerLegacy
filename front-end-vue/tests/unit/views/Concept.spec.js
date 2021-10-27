@@ -36,9 +36,7 @@ describe("Concept.vue", () => {
     { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 5 },
     { label: "Inferred", predicate: "inferred", type: "TextDefinition", size: "50%", order: 6 },
     { label: "Has sub types", predicate: "subtypes", type: "ArrayObjectNameListboxWithLabel", size: "50%", order: 7 },
-    { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 8 },
-    { label: "Axioms", predicate: "axioms", type: "TextDefinition", size: "100%", order: 9 },
-    { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 10 }
+    { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 8 }
   ];
   const TYPES = [
     { "@id": "http://endhealth.info/im#RecordType", name: "Record type" },
@@ -81,13 +79,6 @@ describe("Concept.vue", () => {
     },
     predicates: [{ name: "is a", "@id": "http://endhealth.info/im#isA" }]
   };
-  const AXIOMS = {
-    entity: {
-      "@id": "http://endhealth.info/im#211000252109",
-      "http://www.w3.org/2000/01/rdf-schema#subClassOf": [{ "@id": "http://endhealth.info/im#221000252102", name: "Hospital setting" }]
-    },
-    predicates: [{ name: "subClassOf", "@id": "http://www.w3.org/2000/01/rdf-schema#subClassOf" }]
-  };
 
   let wrapper;
   let mockStore;
@@ -101,7 +92,6 @@ describe("Concept.vue", () => {
     jest.resetAllMocks();
     clipboardSpy = jest.spyOn(navigator.clipboard, "writeText");
     EntityService.getInferredBundle = jest.fn().mockResolvedValue(INFERRED);
-    EntityService.getAxiomBundle = jest.fn().mockResolvedValue(AXIOMS);
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
     EntityService.getEntityChildren = jest.fn().mockResolvedValue(CHILDREN);
     EntityService.getEntityTermCodes = jest.fn().mockResolvedValue(TERMS);
@@ -167,7 +157,6 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.concept).toStrictEqual({
       "@id": "http://endhealth.info/im#CriticalCareEncounter",
       inferred: INFERRED,
-      axioms: AXIOMS,
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
       "http://www.w3.org/2000/01/rdf-schema#comment":
         "An entry recording information about a criticial care encounter.<p>common data model attributes for Critical care encounter",
@@ -414,7 +403,6 @@ describe("Concept.vue", () => {
   it("Inits ___ Class", async () => {
     wrapper.vm.getConcept = jest.fn();
     wrapper.vm.getConfig = jest.fn();
-    wrapper.vm.getStated = jest.fn();
     wrapper.vm.getInferred = jest.fn();
     wrapper.vm.concept = {
       "@id": "http://snomed.info/sct#47518006",
@@ -428,8 +416,6 @@ describe("Concept.vue", () => {
     await flushPromises();
     expect(wrapper.vm.getConfig).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.getConfig).toHaveBeenCalledWith("definition");
-    expect(wrapper.vm.getStated).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.getStated).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
     expect(wrapper.vm.getInferred).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.getInferred).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
     expect(wrapper.vm.getConcept).toHaveBeenCalledTimes(1);
@@ -443,7 +429,6 @@ describe("Concept.vue", () => {
 
   it("Inits ___ Set", async () => {
     wrapper.vm.getConcept = jest.fn();
-    wrapper.vm.getStated = jest.fn();
     wrapper.vm.getInferred = jest.fn();
     wrapper.vm.concept = {
       "@id": "http://snomed.info/sct#47518006",
@@ -460,7 +445,6 @@ describe("Concept.vue", () => {
 
   it("Inits ___ Query", async () => {
     wrapper.vm.getConcept = jest.fn();
-    wrapper.vm.getStated = jest.fn();
     wrapper.vm.getInferred = jest.fn();
     wrapper.vm.concept = {
       "@id": "http://snomed.info/sct#47518006",
