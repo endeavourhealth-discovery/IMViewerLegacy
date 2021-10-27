@@ -138,15 +138,15 @@ export default defineComponent({
     },
 
     showGraph(): boolean {
-      return isOfTypes(this.types, OWL.CLASS, SHACL.NODESHAPE);
+      return isOfTypes(this.types, IM.CONCEPT, SHACL.NODESHAPE);
     },
 
     showMappings(): boolean {
-      return isOfTypes(this.types, OWL.CLASS) && !isOfTypes(this.types, SHACL.NODESHAPE);
+      return isOfTypes(this.types, IM.CONCEPT) && !isOfTypes(this.types, SHACL.NODESHAPE);
     },
 
     isClass(): boolean {
-      return isOfTypes(this.types, OWL.CLASS);
+      return isOfTypes(this.types, IM.CONCEPT);
     },
 
     isQuery(): boolean {

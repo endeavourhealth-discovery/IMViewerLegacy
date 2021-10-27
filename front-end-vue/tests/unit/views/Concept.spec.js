@@ -41,7 +41,7 @@ describe("Concept.vue", () => {
   const TYPES = [
     { "@id": "http://endhealth.info/im#RecordType", name: "Record type" },
     { "@id": "http://www.w3.org/ns/shacl#NodeShape", name: "Node shape" },
-    { "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }
+    { "@id": "http://endhealth.info/im#Concept", name: "Concept" }
   ];
   const CONCEPT = {
     "@id": "http://endhealth.info/im#CriticalCareEncounter",
@@ -209,7 +209,7 @@ describe("Concept.vue", () => {
   });
 
   it("can check for a set ___ false", async () => {
-    expect(Concept.computed.isSet.call({ types: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }] })).toBe(false);
+    expect(Concept.computed.isSet.call({ types: [{ name: "Concept", "@id": "http://endhealth.info/im#Concept" }] })).toBe(false);
   });
 
   it("can check for a set ___ true", async () => {
@@ -217,7 +217,7 @@ describe("Concept.vue", () => {
   });
 
   it("can check isClass ___ true", () => {
-    expect(Concept.computed.isClass.call({ types: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }] })).toBe(true);
+    expect(Concept.computed.isClass.call({ types: [{ name: "Concept", "@id": "http://endhealth.info/im#Concept" }] })).toBe(true);
   });
 
   it("can check isClass ___ false", () => {

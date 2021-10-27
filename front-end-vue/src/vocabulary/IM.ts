@@ -2,6 +2,7 @@ export class IM {
   public static NAMESPACE = "http://endhealth.info/im#";
   public static PREFIX = "im";
   public static IRI = "@id";
+  public static CONCEPT = IM.NAMESPACE + "Concept";
   public static CODE = IM.NAMESPACE + "code";
   public static SCHEME = IM.NAMESPACE + "scheme";
   public static STATUS = IM.NAMESPACE + "Status";
