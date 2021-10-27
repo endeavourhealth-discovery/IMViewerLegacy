@@ -82,18 +82,18 @@ describe("bundleToText", () => {
     "    ( Pathological process : Pathological developmental process\n" +
     "      Associated morphology : Morphologically abnormal structure\n" +
     "      Finding site : Abducens nerve structure\n" +
-    "      Occurrence : Congenital)\n" +
+    "      Occurrence : Congenital )\n" +
     "    ( Pathological process : Pathological developmental process\n" +
     "      Associated morphology : Lateral abnormal curvature\n" +
-    "      Finding site : Musculoskeletal structure of spine)\n" +
+    "      Finding site : Musculoskeletal structure of spine )\n" +
     "    ( Pathological process : Pathological developmental process\n" +
     "      Associated morphology : Morphologically abnormal structure\n" +
     "      Finding site : Skeletal muscle structure\n" +
-    "      Occurrence : Congenital)\n" +
+    "      Occurrence : Congenital )\n" +
     "    ( Pathological process : Pathological developmental process\n" +
     "      Associated morphology : Morphologically abnormal structure\n" +
     "      Finding site : Structure of eye proper\n" +
-    "      Occurrence : Congenital)\n";
+    "      Occurrence : Congenital )\n";
   beforeEach(() => {
     jest.resetAllMocks();
 

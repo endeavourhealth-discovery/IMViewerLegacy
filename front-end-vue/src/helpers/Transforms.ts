@@ -65,7 +65,7 @@ export async function ttNodeToString(node: any, previousType: string, indent: nu
         first = false;
       }
       if (last) {
-        suffix = ")\n";
+        suffix = " )\n";
       }
     }
     result = await processObject(key, value, result, previousType, indent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group });
