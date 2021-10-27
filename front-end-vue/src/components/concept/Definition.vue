@@ -87,6 +87,8 @@ export default defineComponent({
         return data ? true : false;
       } else if (isObjectHasKeys(data, ["count"])) {
         return data.count ? true : false;
+      } else if (isObjectHasKeys(data, ["entity", "predicates"])) {
+        return isObjectHasKeys(data.entity);
       } else if (isObject(data)) {
         return isObjectHasKeys(data) ? true : false;
       } else {

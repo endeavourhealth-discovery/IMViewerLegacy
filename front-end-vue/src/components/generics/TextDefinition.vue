@@ -1,8 +1,5 @@
 <template>
-  <div v-if="loading" class="loading-container">
-    <ProgressSpinner />
-  </div>
-  <div v-else id="axioms-container" :style="{ width: size }">
+  <div v-if="hasData" id="axioms-container" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}</strong>
       <span v-if="getCount()">&nbsp;({{ getCount() }})</span>
