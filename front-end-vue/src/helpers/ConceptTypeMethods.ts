@@ -27,12 +27,16 @@ export function isValueSet(conceptTypes: TTIriRef[]): boolean {
   return isOfTypes(conceptTypes, IM.SET, IM.QUERY_SET, IM.VALUE_SET, IM.CONCEPT_SET);
 }
 
+export function isProperty(conceptTypes: TTIriRef[]): boolean {
+  return isOfTypes(conceptTypes, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY, OWL.DATATYPE_PROPERTY);
+}
+
 export function getIconFromType(conceptTypes: TTIriRef[]): string {
   if (isOfTypes(conceptTypes, SHACL.NODESHAPE)) {
     return "fas fa-fw fa-project-diagram";
   }
 
-  if (isOfTypes(conceptTypes, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY)) {
+  if (isProperty(conceptTypes)) {
     return "far fa-fw fa-edit";
   }
 
@@ -60,7 +64,7 @@ export function getColourFromType(conceptTypes: TTIriRef[]): string {
     return bgsFixed[0];
   }
 
-  if (isOfTypes(conceptTypes, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY)) {
+  if (isProperty(conceptTypes)) {
     return bgsFixed[5];
   }
 
