@@ -240,6 +240,7 @@ export default defineComponent({
 .name-container {
   width: 100%;
   padding: 1rem;
+  white-space: pre;
 }
 
 .html-container ::v-deep(p) {
