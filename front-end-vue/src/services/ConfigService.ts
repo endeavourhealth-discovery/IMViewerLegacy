@@ -40,11 +40,7 @@ export default class ConfigService {
 
   public static async getDefaultPredicatenames(): Promise<any> {
     try {
-      return await axios.get(this.api + "api/config/defaultPredicateNames", {
-        params: {
-          name: "defaultPredicateNames"
-        }
-      });
+      return await axios.get(this.api + "api/config/defaultPredicateNames");
     } catch (error) {
       return {} as any;
     }
