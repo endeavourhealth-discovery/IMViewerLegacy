@@ -90,22 +90,26 @@ export default defineComponent({
         .append("svg")
         .attr("viewBox", ["" + -width / 2, "" + -height / 2, "" + width, "" + height] as any);
 
-      const link = svg
-        .append("g")
-        .attr("stroke", "#999")
-        .attr("stroke-opacity", 0.6)
-        .selectAll("line")
+      const pathLink = svg
+        .selectAll(null)
         .data(links)
-        .join("line");
+        .enter()
+        .append("path")
+        .attr("id", (d: any) => `${d.target.x}${d.target.y}${d.source.x}${d.source.y}`)
+        .attr("d", (d: any) => `M${d.source.x},${d.source.y} L${d.target.x},${d.target.y}`)
+        .style("fill", "none")
+        .style("stroke", "#AAAAAA");
 
-      const lineTextWrapper = svg
+      svg
         .selectAll(null)
         .data(links)
         .enter()
         .append("text")
-        .attr("x", (d: any) => (d.target.x + d.source.x) / 2)
-        .attr("y", (d: any) => (d.target.y + d.source.y) / 2)
-        .attr("font-size", () => `${radius / 5}px`)
+        .append("textPath")
+        .attr("xlink:href", (d: any) => `#${d.target.x}${d.target.y}${d.source.x}${d.source.y}`)
+        .style("text-anchor", "middle")
+        .attr("startOffset", "50%")
+        .attr("font-size", () => `${radius / 5 + 3}px`)
         .text((d: any) => d.target.data.name);
 
       const node = svg
@@ -141,18 +145,7 @@ export default defineComponent({
         .attr("style", () => "text-align:center;padding:2px;margin:2px;");
 
       simulation.on("tick", () => {
-        link
-          .attr("x1", (d: any) => d.source.x)
-          .attr("y1", (d: any) => d.source.y)
-          .attr("x2", (d: any) => d.target.x)
-          .attr("y2", (d: any) => d.target.y);
-
-        lineTextWrapper.attr("transform", (d: any) => {
-          const dx = (d.target.x + d.source.x) / 2;
-          const dy = (d.target.y + d.source.y) / 2;
-          return `translate(${dx},${dy})`;
-        });
-
+        pathLink.attr("d", (d: any) => `M${d.source.x},${d.source.y} L${d.target.x},${d.target.y}`);
         nodeTextWrapper.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
         nodeText.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
         node.attr("cx", (d: any) => d.x).attr("cy", (d: any) => d.y);
