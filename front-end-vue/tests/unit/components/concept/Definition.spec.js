@@ -9,8 +9,6 @@ import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNa
 
 describe("Definition.vue", () => {
   let wrapper;
-  let mockRoute;
-  let mockRouter;
   const CONCEPT = {
     "@id": "http://snomed.info/sct#298382003",
     "http://endhealth.info/im#isA": [
@@ -168,15 +166,6 @@ describe("Definition.vue", () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    mockRoute = {
-      name: "Concept"
-    };
-    mockRouter = {
-      push: jest.fn()
-    };
-
-    const warn = console.warn;
-    console.warn = jest.fn();
 
     wrapper = shallowMount(Definition, {
       global: {
@@ -187,20 +176,59 @@ describe("Definition.vue", () => {
           TextWithLabel,
           ObjectNameWithLabel,
           ArrayObjectNameListboxWithLabel
-        },
-        mocks: { $route: mockRoute, $router: mockRouter }
+        }
       },
       props: {
         concept: CONCEPT,
         configs: CONFIGS
       }
     });
-
-    console.warn = warn;
   });
 
-  it("starts with empty values + props", () => {
-    expect(wrapper.vm.concept).toStrictEqual(CONCEPT);
-    expect(wrapper.vm.configs).toStrictEqual(CONFIGS);
+  it("sets hasData ___ array ___ true", () => {
+    expect(wrapper.vm.hasData(CONCEPT[CONFIGS[5].predicate])).toBe(true);
+  });
+
+  it("sets hasData ___ array ___ false", () => {
+    expect(wrapper.vm.hasData([])).toBe(false);
+  });
+
+  it("sets hasData ___ string ___ true", () => {
+    expect(wrapper.vm.hasData("testString")).toBe(true);
+  });
+
+  it("sets hasData ___ string ___ false", () => {
+    expect(wrapper.vm.hasData("")).toBe(false);
+  });
+
+  it("sets hasData ___ object with count ___ true", () => {
+    expect(wrapper.vm.hasData({ count: 7 })).toBe(true);
+  });
+
+  it("sets hasData ___ object with count ___ false", () => {
+    expect(wrapper.vm.hasData({ count: 0 })).toBe(false);
+  });
+
+  it("sets hasData ___ object bundle ___ true", () => {
+    expect(wrapper.vm.hasData({ entity: { intersectionOf: "testString" }, predicates: ["testString"] })).toBe(true);
+  });
+
+  it("sets hasData ___ object bundle ___ false", () => {
+    expect(wrapper.vm.hasData({ entity: {}, predicates: ["testString"] })).toBe(false);
+  });
+
+  it("sets hasData ___ object ___ true", () => {
+    expect(wrapper.vm.hasData({ property: { dataModel: "testString" }, concept: ["testString"] })).toBe(true);
+  });
+
+  it("sets hasData ___ object ___ false", () => {
+    expect(wrapper.vm.hasData({})).toBe(false);
+  });
+
+  it("sets hasData ___ unknown ___ false", () => {
+    const log = console.log;
+    console.log = jest.fn();
+    wrapper.vm.hasData(3);
+    expect(console.log).toHaveBeenCalledWith(`Unexpected data type encountered for function hasData in definition. Data: 3`);
   });
 });
