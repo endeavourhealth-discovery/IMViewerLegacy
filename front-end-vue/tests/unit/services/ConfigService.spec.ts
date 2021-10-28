@@ -21,6 +21,20 @@ describe("ConfigService.ts ___ axios success", () => {
     expect(axios.get).toHaveBeenCalledWith(api + "api/config/filterDefaults");
     expect(result).toStrictEqual(["test config"]);
   });
+
+  it("can get dashboard layout", async () => {
+    const result = await ConfigService.getDashboardLayout("conceptDashboard");
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(api + "api/config/dashboardLayout", { params: { name: "conceptDashboard" } });
+    expect(result).toStrictEqual(["test config"]);
+  });
+
+  it("can get default predicate names", async () => {
+    const result = await ConfigService.getDefaultPredicatenames();
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(api + "api/config/defaultPredicateNames");
+    expect(result).toStrictEqual(["test config"]);
+  });
 });
 
 describe("ConfigService.ts ___ axios fail", () => {
@@ -41,6 +55,20 @@ describe("ConfigService.ts ___ axios fail", () => {
     const result = await ConfigService.getFilterDefaults();
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "api/config/filterDefaults");
+    expect(result).toStrictEqual({});
+  });
+
+  it("can get dashboardLayout", async () => {
+    const result = await ConfigService.getDashboardLayout("conceptDashboard");
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(api + "api/config/dashboardLayout", { params: { name: "conceptDashboard" } });
+    expect(result).toStrictEqual([]);
+  });
+
+  it("can get defaultPredicateNames", async () => {
+    const result = await ConfigService.getDefaultPredicatenames();
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(api + "api/config/defaultPredicateNames");
     expect(result).toStrictEqual({});
   });
 });
