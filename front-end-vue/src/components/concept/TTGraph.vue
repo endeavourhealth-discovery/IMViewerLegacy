@@ -59,6 +59,7 @@ export default defineComponent({
       }
       this.data = firstNode;
     },
+
     async drawGraph(iri: string) {
       await this.getEntityBundle(iri);
       const root = d3.hierarchy(this.data);
@@ -97,6 +98,16 @@ export default defineComponent({
         .data(links)
         .join("line");
 
+      const lineTextWrapper = svg
+        .selectAll(null)
+        .data(links)
+        .enter()
+        .append("text")
+        .attr("x", (d: any) => (d.target.x + d.source.x) / 2)
+        .attr("y", (d: any) => (d.target.y + d.source.y) / 2)
+        .attr("font-size", () => `${radius / 5}px`)
+        .text((d: any) => d.target.data.name);
+
       const node = svg
         .append("g")
         .attr("fill", "#fff")
@@ -110,21 +121,21 @@ export default defineComponent({
         .attr("r", radius)
         .call(this.drag(simulation) as any);
 
-      const nodeText = svg
+      const nodeTextWrapper = svg
         .append("g")
         .attr("class", "labels")
         .selectAll("title")
         .data(nodes)
         .enter()
         .append("foreignObject")
-        .attr("x", (d: any) => radius - side)
+        .attr("x", () => radius - side)
         .attr("y", (d: any) => (d.data.name?.length <= maxLength ? radius - side / 1.5 : radius - side / 1.4))
         .attr("width", side)
-        .attr("height", side)
+        .attr("height", side / 2)
         .attr("color", "red")
         .style("font-size", () => `${radius / 5}px`);
 
-      const text = nodeText
+      const nodeText = nodeTextWrapper
         .append("xhtml:p")
         .text((d: any) => d.data.name)
         .attr("style", () => "text-align:center;padding:2px;margin:2px;");
@@ -135,7 +146,14 @@ export default defineComponent({
           .attr("y1", (d: any) => d.source.y)
           .attr("x2", (d: any) => d.target.x)
           .attr("y2", (d: any) => d.target.y);
-        text.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
+
+        lineTextWrapper.attr("transform", (d: any) => {
+          const dx = (d.target.x + d.source.x) / 2;
+          const dy = (d.target.y + d.source.y) / 2;
+          return `translate(${dx},${dy})`;
+        });
+
+        nodeTextWrapper.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
         nodeText.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
         node.attr("cx", (d: any) => d.x).attr("cy", (d: any) => d.y);
       });
