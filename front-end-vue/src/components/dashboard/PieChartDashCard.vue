@@ -67,8 +67,10 @@ export default defineComponent({
       if (subTitle) {
         height -= subTitle.getBoundingClientRect().height;
       }
-      content.style.height = height + "px";
-      content.style.maxHeight = height + "px";
+      if (content) {
+        content.style.height = height + "px";
+        content.style.maxHeight = height + "px";
+      }
     }
   }
 });
