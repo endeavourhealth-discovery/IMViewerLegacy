@@ -7,7 +7,7 @@ import TextWithLabel from "@/components/generics/TextWithLabel.vue";
 import ObjectNameWithLabel from "@/components/generics/ObjectNameWithLabel.vue";
 import ArrayObjectNameListboxWithLabel from "@/components/generics/ArrayObjectNameListboxWithLabel.vue";
 
-describe("Definition.vue", () => {
+describe("Definition.vue ___ no headers", () => {
   let wrapper;
   const CONCEPT = {
     "@id": "http://snomed.info/sct#298382003",
@@ -230,5 +230,165 @@ describe("Definition.vue", () => {
     console.log = jest.fn();
     wrapper.vm.hasData(3);
     expect(console.log).toHaveBeenCalledWith(`Unexpected data type encountered for function hasData in definition. Data: 3`);
+    console.log = log;
+  });
+
+  it("sets showItem ___ divider ___ true", () => {
+    expect(wrapper.vm.showItem(CONFIGS[5], 5)).toBe(true);
+  });
+
+  it("sets showItem ___ divider ___ false", () => {
+    expect(wrapper.vm.showItem(CONFIGS[10], 10)).toBe(false);
+  });
+
+  it("sets showItem ___ other ___ true", () => {
+    expect(wrapper.vm.showItem(CONFIGS[3], 3)).toBe(true);
+  });
+
+  it("sets showItem ___ other ___ false", () => {
+    expect(wrapper.vm.showItem(CONFIGS[11], 11)).toBe(false);
+  });
+});
+
+describe("Definition.vue ___ with headers", () => {
+  let wrapper;
+  const CONCEPT = {
+    "@id": "http://endhealth.info/im#ModellingEntityType",
+    "http://www.w3.org/2000/01/rdf-schema#comment": "Classifies  types of entities used in the information model",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ "@id": "http://endhealth.info/im#Concept", name: "Concept" }],
+    "http://www.w3.org/2000/01/rdf-schema#label": "Modelling entity type",
+    subtypes: [
+      {
+        name: "Class",
+        hasChildren: true,
+        type: [
+          { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+          { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+        ],
+        "@id": "http://www.w3.org/2002/07/owl#Class"
+      },
+      {
+        name: "Concept",
+        hasChildren: true,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }],
+        "@id": "http://endhealth.info/im#Concept"
+      },
+      {
+        name: "Concept Set",
+        hasChildren: false,
+        type: [
+          { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+          { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+        ],
+        "@id": "http://endhealth.info/im#ConceptSet"
+      },
+      {
+        name: "Concept set group",
+        hasChildren: false,
+        type: [{ name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }],
+        "@id": "http://endhealth.info/im#ConceptSetGroup"
+      },
+      {
+        name: "Folder",
+        hasChildren: false,
+        type: [
+          { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+          { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
+        ],
+        "@id": "http://endhealth.info/im#Folder"
+      },
+      {
+        name: "Node shape",
+        hasChildren: false,
+        type: [
+          { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+          { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+        ],
+        "@id": "http://www.w3.org/ns/shacl#NodeShape"
+      },
+      {
+        name: "ObjectProperty",
+        hasChildren: true,
+        type: [
+          { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+          { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+        ],
+        "@id": "http://www.w3.org/2002/07/owl#ObjectProperty"
+      },
+      {
+        name: "Property",
+        hasChildren: true,
+        type: [
+          { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+          { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+        ],
+        "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
+      },
+      {
+        name: "Query template",
+        hasChildren: false,
+        type: [
+          { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+          { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
+        ],
+        "@id": "http://endhealth.info/im#QueryTemplate"
+      },
+      {
+        name: "Value set",
+        hasChildren: false,
+        type: [
+          { name: "Concept", "@id": "http://endhealth.info/im#Concept" },
+          { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+        ],
+        "@id": "http://endhealth.info/im#ValueSet"
+      }
+    ],
+    termCodes: [{ name: "Modelling entity type", scheme: "Discovery namespace" }],
+    inferred: {
+      entity: {},
+      predicates: {}
+    }
+  };
+  const CONFIGS = [
+    { label: "Summary", predicate: "None", type: "TextSectionHeader", size: "100%", order: 100 },
+    { label: "Name", predicate: "http://www.w3.org/2000/01/rdf-schema#label", type: "TextWithLabel", size: "50%", order: 101 },
+    { label: "Iri", predicate: "@id", type: "TextWithLabel", size: "50%", order: 102 },
+    { label: "Status", predicate: "http://endhealth.info/im#status", type: "ObjectNameTagWithLabel", size: "50%", order: 103 },
+    { label: "Types", predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", type: "ArrayObjectNamesToStringWithLabel", size: "50%", order: 104 },
+    { label: "Description", predicate: "http://www.w3.org/2000/01/rdf-schema#comment", type: "TextHTMLWithLabel", size: "100%", order: 105 },
+    { label: "SummaryInferredDivider", predicate: "None", type: "SectionDivider", size: "100%", order: 200 },
+    { label: "Definition", predicate: "None", type: "TextSectionHeader", size: "100%", order: 201 },
+    { label: "Inferred", predicate: "inferred", type: "TextDefinition", size: "100%", order: 202 },
+    { label: "InferredTermsDivider", predicate: "None", type: "SectionDivider", size: "100%", order: 300 },
+    { label: "Terms", predicate: "termCodes", type: "TermsTable", size: "100%", order: 301 }
+  ];
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+
+    wrapper = shallowMount(Definition, {
+      global: {
+        components: {
+          Divider,
+          ArrayObjectNamesToStringWithLabel,
+          TextHTMLWithLabel,
+          TextWithLabel,
+          ObjectNameWithLabel,
+          ArrayObjectNameListboxWithLabel
+        }
+      },
+      props: {
+        concept: CONCEPT,
+        configs: CONFIGS
+      }
+    });
+  });
+
+  it("sets showItem ___ TextSectionHeader ___ true", () => {
+    expect(wrapper.vm.showItem(CONFIGS[0], 0)).toBe(true);
+  });
+
+  it("sets showItem ___ TextSectionHeader ___ false", () => {
+    expect(wrapper.vm.showItem(CONFIGS[7], 7)).toBe(false);
   });
 });

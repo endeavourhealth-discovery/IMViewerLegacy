@@ -63,8 +63,8 @@ export default defineComponent({
         }
       } else if (config.type === "TextSectionHeader") {
         let i = index + 1;
-        const data = this.concept[this.configs[i].predicate];
         while (i < this.configs.length) {
+          const data = this.concept[this.configs[i].predicate];
           if (this.configs[i].type === "SectionDivider") {
             break;
           }
