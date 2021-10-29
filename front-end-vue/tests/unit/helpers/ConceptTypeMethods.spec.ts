@@ -8,7 +8,7 @@ describe("ConceptTypeMethods", () => {
     { "@id": "http://www.w3.org/2000/01/rdf-schema#Class", name: "Class" },
     { "@id": "http://www.w3.org/ns/shacl#NodeShape", name: "Node shape" }
   ];
-  const testPropertyType = [{ "@id": "http://endhealth.info/im#DataProperty", name: "Data property" }];
+  const testPropertyType = [{ "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property", name: "Property" }];
   const testQueryType = [{ "@id": "http://endhealth.info/im#QueryTemplate", name: "Query template" }];
   const testFolder = [{ "@id": "http://endhealth.info/im#Folder", name: "Folder" }];
 

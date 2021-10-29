@@ -84,7 +84,7 @@ export default defineComponent({
       } else if (Array.isArray(data)) {
         return isArrayHasLength(data) ? true : false;
       } else if (typeof data === "string") {
-        return data ? true : false;
+        return true;
       } else if (isObjectHasKeys(data, ["count"])) {
         return data.count ? true : false;
       } else if (isObjectHasKeys(data, ["entity", "predicates"])) {
