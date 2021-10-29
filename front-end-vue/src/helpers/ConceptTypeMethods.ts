@@ -6,6 +6,7 @@
 import { TTIriRef } from "@/models/TripleTree";
 import { IM } from "@/vocabulary/IM";
 import { OWL } from "@/vocabulary/OWL";
+import { RDF } from "@/vocabulary/RDF";
 import { SHACL } from "@/vocabulary/SHACL";
 
 export function isOfTypes(conceptTypeElements: TTIriRef[], ...types: string[]): boolean {
@@ -28,7 +29,7 @@ export function isValueSet(conceptTypes: TTIriRef[]): boolean {
 }
 
 export function isProperty(conceptTypes: TTIriRef[]): boolean {
-  return isOfTypes(conceptTypes, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY, OWL.DATATYPE_PROPERTY);
+  return isOfTypes(conceptTypes, RDF.PROPERTY);
 }
 
 export function getIconFromType(conceptTypes: TTIriRef[]): string {

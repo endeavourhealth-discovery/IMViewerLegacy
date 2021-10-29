@@ -74,10 +74,29 @@ describe("Concept.vue", () => {
   const TERMS = [{ name: "Critical care encounter (record type)" }];
   const INFERRED = {
     entity: {
-      "@id": "http://endhealth.info/im#211000252109",
-      "http://endhealth.info/im#isA": [{ "@id": "http://endhealth.info/im#221000252102", name: "Hospital setting" }]
+      "@id": "http://snomed.info/sct#298382003",
+      "http://endhealth.info/im#isA": [
+        { "@id": "http://snomed.info/sct#928000", name: "Disorder of musculoskeletal system" },
+        { "@id": "http://snomed.info/sct#699699005", name: "Disorder of vertebral column" },
+        { "@id": "http://snomed.info/sct#64217002", name: "Curvature of spine" }
+      ],
+      "http://endhealth.info/im#roleGroup": [
+        {
+          "http://snomed.info/sct#116676008": { "@id": "http://snomed.info/sct#31739005", name: "Lateral abnormal curvature" },
+          "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#289959001", name: "Musculoskeletal structure of spine" }
+        }
+      ]
     },
-    predicates: [{ name: "is a", "@id": "http://endhealth.info/im#isA" }]
+    predicates: {
+      "http://endhealth.info/im#roleGroup": "Where",
+      "http://snomed.info/sct#116676008": "Associated morphology",
+      "http://snomed.info/sct#363698007": "Finding site",
+      "http://endhealth.info/im#isA": "Is a",
+      "http://www.w3.org/2002/07/owl#onProperty": "On property",
+      "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
+      "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
+      "http://www.w3.org/2002/07/owl#equivalentClass": "Is equivalent to"
+    }
   };
 
   let wrapper;
@@ -99,7 +118,8 @@ describe("Concept.vue", () => {
     mockStore = {
       state: {
         conceptIri: "http://endhealth.info/im#CriticalCareEncounter",
-        selectedEntityType: "Class"
+        selectedEntityType: "Class",
+        activeModule: "default"
       },
       commit: jest.fn(),
       dispatch: jest.fn()
@@ -142,6 +162,7 @@ describe("Concept.vue", () => {
     });
 
     await flushPromises();
+    await wrapper.vm.$nextTick();
     jest.clearAllMocks();
   });
 
@@ -156,7 +177,33 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.configs).toStrictEqual(CONFIG);
     expect(wrapper.vm.concept).toStrictEqual({
       "@id": "http://endhealth.info/im#CriticalCareEncounter",
-      inferred: INFERRED,
+      inferred: {
+        entity: {
+          "http://endhealth.info/im#isA": [
+            { "@id": "http://snomed.info/sct#928000", name: "Disorder of musculoskeletal system" },
+            { "@id": "http://snomed.info/sct#699699005", name: "Disorder of vertebral column" },
+            { "@id": "http://snomed.info/sct#64217002", name: "Curvature of spine" },
+            {
+              "http://endhealth.info/im#roleGroup": [
+                {
+                  "http://snomed.info/sct#116676008": { "@id": "http://snomed.info/sct#31739005", name: "Lateral abnormal curvature" },
+                  "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#289959001", name: "Musculoskeletal structure of spine" }
+                }
+              ]
+            }
+          ]
+        },
+        predicates: {
+          "http://endhealth.info/im#roleGroup": "Where",
+          "http://snomed.info/sct#116676008": "Associated morphology",
+          "http://snomed.info/sct#363698007": "Finding site",
+          "http://endhealth.info/im#isA": "Is a",
+          "http://www.w3.org/2002/07/owl#onProperty": "On property",
+          "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
+          "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
+          "http://www.w3.org/2002/07/owl#equivalentClass": "Is equivalent to"
+        }
+      },
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
       "http://www.w3.org/2000/01/rdf-schema#comment":
         "An entry recording information about a criticial care encounter.<p>common data model attributes for Critical care encounter",
@@ -216,12 +263,46 @@ describe("Concept.vue", () => {
     expect(Concept.computed.isSet.call({ types: [{ name: "Concept Set", "@id": "http://endhealth.info/im#ConceptSet" }] })).toBe(true);
   });
 
-  it("can check isClass ___ true", () => {
-    expect(Concept.computed.isClass.call({ types: [{ name: "Concept", "@id": "http://endhealth.info/im#Concept" }] })).toBe(true);
+  it("can check showGraph ___ false", async () => {
+    expect(Concept.computed.showGraph.call({ types: [{ name: "Property", "@id": "http://endhealth.info/im#Property" }] })).toBe(false);
   });
 
-  it("can check isClass ___ false", () => {
-    expect(Concept.computed.isClass.call({ types: [{ name: "Concept Set", "@id": "http://endhealth.info/im#ConceptSet" }] })).toBe(false);
+  it("can check showGraph ___ true", async () => {
+    expect(
+      Concept.computed.showGraph.call({
+        types: [
+          { name: "Concept", "@id": "http://endhealth.info/im#Concept" },
+          { name: "NodeShape", "@id": "http://www.w3.org/ns/shacl#NodeShape" }
+        ]
+      })
+    ).toBe(true);
+  });
+
+  it("can check showMappings ___ false", async () => {
+    expect(
+      Concept.computed.showMappings.call({
+        types: [
+          { name: "Concept", "@id": "http://endhealth.info/im#Concept" },
+          { name: "NodeShape", "@id": "http://www.w3.org/ns/shacl#NodeShape" }
+        ]
+      })
+    ).toBe(false);
+  });
+
+  it("can check showMappings ___ true", async () => {
+    expect(
+      Concept.computed.showMappings.call({
+        types: [{ name: "Concept", "@id": "http://endhealth.info/im#Concept" }]
+      })
+    ).toBe(true);
+  });
+
+  it("can check isConcept ___ true", () => {
+    expect(Concept.computed.isConcept.call({ types: [{ name: "Concept", "@id": "http://endhealth.info/im#Concept" }] })).toBe(true);
+  });
+
+  it("can check isConcept ___ false", () => {
+    expect(Concept.computed.isConcept.call({ types: [{ name: "Concept Set", "@id": "http://endhealth.info/im#ConceptSet" }] })).toBe(false);
   });
 
   it("inits on iri change", async () => {
@@ -229,6 +310,29 @@ describe("Concept.vue", () => {
     wrapper.vm.$options.watch.conceptIri.call(wrapper.vm, "http://endhealth.info/im#DiscoveryOntology");
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.init).toHaveBeenCalledTimes(1);
+  });
+
+  it("sets active panel on selectedEntityType change", async () => {
+    wrapper.vm.setActivePanel = jest.fn();
+    wrapper.vm.$options.watch.selectedEntityType.call(wrapper.vm, "DataModel", "Ontology");
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.setActivePanel).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.setActivePanel).toHaveBeenCalledWith("DataModel", "Ontology");
+  });
+
+  it("updates store on active change", async () => {
+    wrapper.vm.$options.watch.active.call(wrapper.vm, 3);
+    await wrapper.vm.$nextTick();
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateConceptActivePanel", 3);
+  });
+
+  it("resets active on change to folderType", async () => {
+    wrapper.vm.active = 3;
+    wrapper.vm.types = [{ name: "Folder", "@id": "http://endhealth.info/im#Folder" }];
+    wrapper.vm.$options.watch.types.call(wrapper.vm, [{ name: "Folder", "@id": "http://endhealth.info/im#Folder" }]);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.active).toBe(0);
   });
 
   it("can update focusTree", () => {
@@ -392,6 +496,85 @@ describe("Concept.vue", () => {
     });
   });
 
+  it("can getInferred ___ pass", async () => {
+    EntityService.getInferredBundle.mockResolvedValue({
+      entity: {
+        "@id": "http://snomed.info/sct#298382003",
+        "http://endhealth.info/im#isA": [
+          { "@id": "http://snomed.info/sct#928000", name: "Disorder of musculoskeletal system" },
+          { "@id": "http://snomed.info/sct#699699005", name: "Disorder of vertebral column" },
+          { "@id": "http://snomed.info/sct#64217002", name: "Curvature of spine" }
+        ],
+        "http://endhealth.info/im#roleGroup": [
+          {
+            "http://snomed.info/sct#116676008": { "@id": "http://snomed.info/sct#31739005", name: "Lateral abnormal curvature" },
+            "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#289959001", name: "Musculoskeletal structure of spine" }
+          }
+        ]
+      },
+      predicates: {
+        "http://endhealth.info/im#roleGroup": "Where",
+        "http://snomed.info/sct#116676008": "Associated morphology",
+        "http://snomed.info/sct#363698007": "Finding site",
+        "http://endhealth.info/im#isA": "Is a",
+        "http://www.w3.org/2002/07/owl#onProperty": "On property",
+        "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
+        "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
+        "http://www.w3.org/2002/07/owl#equivalentClass": "Is equivalent to"
+      }
+    });
+    wrapper.vm.getInferred("http://snomed.info/sct#298382003");
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(EntityService.getInferredBundle).toHaveBeenCalledTimes(1);
+    expect(EntityService.getInferredBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.concept.inferred).toStrictEqual({
+      entity: {
+        "http://endhealth.info/im#isA": [
+          { "@id": "http://snomed.info/sct#928000", name: "Disorder of musculoskeletal system" },
+          { "@id": "http://snomed.info/sct#699699005", name: "Disorder of vertebral column" },
+          { "@id": "http://snomed.info/sct#64217002", name: "Curvature of spine" },
+          {
+            "http://endhealth.info/im#roleGroup": [
+              {
+                "http://snomed.info/sct#116676008": { "@id": "http://snomed.info/sct#31739005", name: "Lateral abnormal curvature" },
+                "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#289959001", name: "Musculoskeletal structure of spine" }
+              }
+            ]
+          }
+        ]
+      },
+      predicates: {
+        "http://endhealth.info/im#roleGroup": "Where",
+        "http://snomed.info/sct#116676008": "Associated morphology",
+        "http://snomed.info/sct#363698007": "Finding site",
+        "http://endhealth.info/im#isA": "Is a",
+        "http://www.w3.org/2002/07/owl#onProperty": "On property",
+        "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
+        "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
+        "http://www.w3.org/2002/07/owl#equivalentClass": "Is equivalent to"
+      }
+    });
+  });
+
+  it("can getInferred ___ pass ___ empty bundle", async () => {
+    EntityService.getInferredBundle.mockResolvedValue({ entity: {} });
+    wrapper.vm.getInferred("http://snomed.info/sct#298382003");
+    await flushPromises();
+    expect(EntityService.getInferredBundle).toHaveBeenCalledTimes(1);
+    expect(EntityService.getInferredBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.concept.inferred).toStrictEqual({ entity: {} });
+  });
+
+  it("can getInferred ___ pass ___ not bundle", async () => {
+    EntityService.getInferredBundle.mockResolvedValue({});
+    wrapper.vm.getInferred("http://snomed.info/sct#298382003");
+    await flushPromises();
+    expect(EntityService.getInferredBundle).toHaveBeenCalledTimes(1);
+    expect(EntityService.getInferredBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.concept.inferred).toStrictEqual({});
+  });
+
   it("can getConfig ___ pass", async () => {
     wrapper.vm.getConfig("description");
     await flushPromises();
@@ -400,10 +583,54 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.configs).toStrictEqual(CONFIG);
   });
 
-  it("Inits ___ Class", async () => {
+  it("can getConfig ___ unordered", async () => {
+    ConfigService.getComponentLayout.mockResolvedValue([
+      { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 8 },
+      { label: "Name", predicate: "http://www.w3.org/2000/01/rdf-schema#label", type: "TextWithLabel", size: "50%", order: 0 },
+      { label: "Iri", predicate: "@id", type: "TextWithLabel", size: "50%", order: 1 },
+      { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 5 },
+      { label: "Status", predicate: "http://endhealth.info/im#status", type: "ObjectNameWithLabel", size: "50%", order: 2 },
+      { label: "Types", predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", type: "ArrayObjectNamesToStringWithLabel", size: "50%", order: 3 },
+      { label: "Description", predicate: "http://www.w3.org/2000/01/rdf-schema#comment", type: "TextHTMLWithLabel", size: "100%", order: 4 },
+      { label: "Inferred", predicate: "inferred", type: "TextDefinition", size: "50%", order: 6 },
+      { label: "Has sub types", predicate: "subtypes", type: "ArrayObjectNameListboxWithLabel", size: "50%", order: 7 }
+    ]);
+    wrapper.vm.getConfig("description");
+    await flushPromises();
+    expect(ConfigService.getComponentLayout).toHaveBeenCalledTimes(1);
+    expect(ConfigService.getComponentLayout).toHaveBeenCalledWith("description");
+    expect(wrapper.vm.configs).toStrictEqual(CONFIG);
+  });
+
+  it("can getConfig ___ missing order property", async () => {
+    LoggerService.error = jest.fn();
+    ConfigService.getComponentLayout.mockResolvedValue([
+      { label: "Divider", predicate: "None", type: "Divider", size: "100%" },
+      { label: "Name", predicate: "http://www.w3.org/2000/01/rdf-schema#label", type: "TextWithLabel", size: "50%", order: 0 },
+      { label: "Iri", predicate: "@id", type: "TextWithLabel", size: "50%", order: 1 },
+      { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 5 },
+      { label: "Status", predicate: "http://endhealth.info/im#status", type: "ObjectNameWithLabel", size: "50%", order: 2 },
+      { label: "Types", predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", type: "ArrayObjectNamesToStringWithLabel", size: "50%", order: 3 },
+      { label: "Description", predicate: "http://www.w3.org/2000/01/rdf-schema#comment", type: "TextHTMLWithLabel", size: "100%", order: 4 },
+      { label: "Inferred", predicate: "inferred", type: "TextDefinition", size: "50%", order: 6 },
+      { label: "Has sub types", predicate: "subtypes", type: "ArrayObjectNameListboxWithLabel", size: "50%", order: 7 }
+    ]);
+    wrapper.vm.getConfig("description");
+    await flushPromises();
+    expect(ConfigService.getComponentLayout).toHaveBeenCalledTimes(1);
+    expect(ConfigService.getComponentLayout).toHaveBeenCalledWith("description");
+    expect(LoggerService.error).toHaveBeenCalledTimes(1);
+    expect(LoggerService.error).toHaveBeenCalledWith(
+      undefined,
+      "Failed to sort config for definition component layout. One or more config items are missing 'order' property."
+    );
+  });
+
+  it("Inits ___ has types", async () => {
     wrapper.vm.getConcept = jest.fn();
     wrapper.vm.getConfig = jest.fn();
     wrapper.vm.getInferred = jest.fn();
+    wrapper.vm.setStoreType = jest.fn();
     wrapper.vm.concept = {
       "@id": "http://snomed.info/sct#47518006",
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
@@ -420,43 +647,110 @@ describe("Concept.vue", () => {
     expect(wrapper.vm.getInferred).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
     expect(wrapper.vm.getConcept).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.getConcept).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
+    expect(wrapper.vm.setStoreType).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.types).toStrictEqual([{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }]);
     expect(wrapper.vm.header).toBe("Scoliosis caused by radiation (disorder)");
-    expect(wrapper.vm.types).toStrictEqual([{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }]);
     expect(wrapper.vm.header).toBe("Scoliosis caused by radiation (disorder)");
     expect(wrapper.vm.loading).toBe(false);
   });
 
-  it("Inits ___ Set", async () => {
+  it("Inits ___ missing types", async () => {
     wrapper.vm.getConcept = jest.fn();
+    wrapper.vm.getConfig = jest.fn();
     wrapper.vm.getInferred = jest.fn();
+    wrapper.vm.setStoreType = jest.fn();
     wrapper.vm.concept = {
       "@id": "http://snomed.info/sct#47518006",
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
-      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ name: "Concept Set", "@id": "http://endhealth.info/im#ConceptSet" }],
       "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis caused by radiation (disorder)",
       subtypes: []
     };
     wrapper.vm.init();
+    expect(wrapper.vm.loading).toBe(true);
     await flushPromises();
-    expect(wrapper.vm.types).toStrictEqual([{ name: "Concept Set", "@id": "http://endhealth.info/im#ConceptSet" }]);
+    expect(wrapper.vm.getConfig).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.getConfig).toHaveBeenCalledWith("definition");
+    expect(wrapper.vm.getInferred).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.getInferred).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
+    expect(wrapper.vm.getConcept).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.getConcept).toHaveBeenCalledWith("http://endhealth.info/im#CriticalCareEncounter");
+    expect(wrapper.vm.setStoreType).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.types).toStrictEqual([]);
     expect(wrapper.vm.header).toBe("Scoliosis caused by radiation (disorder)");
+    expect(wrapper.vm.header).toBe("Scoliosis caused by radiation (disorder)");
+    expect(wrapper.vm.loading).toBe(false);
   });
 
-  it("Inits ___ Query", async () => {
-    wrapper.vm.getConcept = jest.fn();
-    wrapper.vm.getInferred = jest.fn();
-    wrapper.vm.concept = {
-      "@id": "http://snomed.info/sct#47518006",
-      "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
-      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [{ name: "Query template", "@id": "http://endhealth.info/im#QueryTemplate" }],
-      "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis caused by radiation (disorder)",
-      subtypes: []
-    };
-    wrapper.vm.init();
-    await flushPromises();
-    expect(wrapper.vm.types).toStrictEqual([{ name: "Query template", "@id": "http://endhealth.info/im#QueryTemplate" }]);
-    expect(wrapper.vm.header).toBe("Scoliosis caused by radiation (disorder)");
+  it("can setStoreType ___ concept", async () => {
+    wrapper.vm.types = [{ "@id": "http://endhealth.info/im#Concept", name: "Concept" }];
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setStoreType();
+    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "Ontology");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(2, "updateModuleSelectedEntities", {
+      module: "Ontology",
+      iri: "http://endhealth.info/im#CriticalCareEncounter"
+    });
+  });
+
+  it("can setStoreType ___ set", async () => {
+    wrapper.vm.types = [{ "@id": "http://endhealth.info/im#ConceptSet", name: "Concept Set" }];
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setStoreType();
+    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "Sets");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(2, "updateModuleSelectedEntities", {
+      module: "Sets",
+      iri: "http://endhealth.info/im#CriticalCareEncounter"
+    });
+  });
+
+  it("can setStoreType ___ query", async () => {
+    wrapper.vm.types = [{ "@id": "http://endhealth.info/im#QueryTemplate", name: "Query template" }];
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setStoreType();
+    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "Queries");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(2, "updateModuleSelectedEntities", {
+      module: "Queries",
+      iri: "http://endhealth.info/im#CriticalCareEncounter"
+    });
+  });
+
+  it("can setStoreType ___ dataModel", async () => {
+    wrapper.vm.types = [{ "@id": "http://www.w3.org/ns/shacl#NodeShape", name: "Node shape" }];
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setStoreType();
+    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "DataModel");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(2, "updateModuleSelectedEntities", {
+      module: "DataModel",
+      iri: "http://endhealth.info/im#CriticalCareEncounter"
+    });
+  });
+
+  it("can setStoreType ___ property", async () => {
+    wrapper.vm.types = [{ "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property", name: "Property" }];
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setStoreType();
+    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "Property");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(2, "updateModuleSelectedEntities", {
+      module: "DataModel",
+      iri: "http://endhealth.info/im#CriticalCareEncounter"
+    });
+  });
+
+  it("can setStoreType ___ not found", async () => {
+    wrapper.vm.types = [];
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setStoreType();
+    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedEntityType", "default");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(2, "updateModuleSelectedEntities", {
+      module: "default",
+      iri: "http://endhealth.info/im#CriticalCareEncounter"
+    });
   });
 
   it("can openDownloadDialog", async () => {

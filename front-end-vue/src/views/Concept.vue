@@ -145,7 +145,7 @@ export default defineComponent({
       return isOfTypes(this.types, IM.CONCEPT) && !isOfTypes(this.types, SHACL.NODESHAPE);
     },
 
-    isClass(): boolean {
+    isConcept(): boolean {
       return isOfTypes(this.types, IM.CONCEPT);
     },
 
@@ -257,12 +257,13 @@ export default defineComponent({
     },
 
     async getConfig(name: string): Promise<void> {
-      const configReturn = await ConfigService.getComponentLayout(name);
-      if (configReturn) {
-        this.configs = configReturn;
+      this.configs = await ConfigService.getComponentLayout(name);
+      if (this.configs.every(config => isObjectHasKeys(config, ["order"]))) {
         this.configs.sort((a: DefinitionConfig, b: DefinitionConfig) => {
           return a.order - b.order;
         });
+      } else {
+        LoggerService.error(undefined, "Failed to sort config for definition component layout. One or more config items are missing 'order' property.");
       }
     },
 
@@ -282,7 +283,7 @@ export default defineComponent({
       let type;
       if (this.isSet) {
         type = "Sets";
-      } else if (this.isClass && !this.isRecordModel) {
+      } else if (this.isConcept && !this.isRecordModel) {
         type = "Ontology";
       } else if (this.isQuery) {
         type = "Queries";
