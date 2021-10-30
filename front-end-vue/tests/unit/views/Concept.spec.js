@@ -75,7 +75,7 @@ describe("Concept.vue", () => {
   const INFERRED = {
     entity: {
       "@id": "http://snomed.info/sct#298382003",
-      "http://endhealth.info/im#isA": [
+      "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
         { "@id": "http://snomed.info/sct#928000", name: "Disorder of musculoskeletal system" },
         { "@id": "http://snomed.info/sct#699699005", name: "Disorder of vertebral column" },
         { "@id": "http://snomed.info/sct#64217002", name: "Curvature of spine" }
@@ -91,7 +91,7 @@ describe("Concept.vue", () => {
       "http://endhealth.info/im#roleGroup": "Where",
       "http://snomed.info/sct#116676008": "Associated morphology",
       "http://snomed.info/sct#363698007": "Finding site",
-      "http://endhealth.info/im#isA": "Is a",
+      "http://www.w3.org/2000/01/rdf-schema#subClassOf": "Subclass of",
       "http://www.w3.org/2002/07/owl#onProperty": "On property",
       "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
       "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
@@ -180,7 +180,7 @@ describe("Concept.vue", () => {
       "@id": "http://endhealth.info/im#CriticalCareEncounter",
       inferred: {
         entity: {
-          "http://endhealth.info/im#isA": [
+          "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
             { "@id": "http://snomed.info/sct#928000", name: "Disorder of musculoskeletal system" },
             { "@id": "http://snomed.info/sct#699699005", name: "Disorder of vertebral column" },
             { "@id": "http://snomed.info/sct#64217002", name: "Curvature of spine" },
@@ -198,7 +198,7 @@ describe("Concept.vue", () => {
           "http://endhealth.info/im#roleGroup": "Where",
           "http://snomed.info/sct#116676008": "Associated morphology",
           "http://snomed.info/sct#363698007": "Finding site",
-          "http://endhealth.info/im#isA": "Is a",
+          "http://www.w3.org/2000/01/rdf-schema#subClassOf": "Subclass of",
           "http://www.w3.org/2002/07/owl#onProperty": "On property",
           "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
           "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
@@ -427,7 +427,7 @@ describe("Concept.vue", () => {
     });
   });
 
-  it("can getConcept ___ no isa", async () => {
+  it("can getConcept ___ no subclass", async () => {
     EntityService.getPartialEntity = jest.fn().mockResolvedValue({
       "@id": "http://snomed.info/sct#298382003",
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
@@ -501,7 +501,7 @@ describe("Concept.vue", () => {
     EntityService.getInferredBundle.mockResolvedValue({
       entity: {
         "@id": "http://snomed.info/sct#298382003",
-        "http://endhealth.info/im#isA": [
+        "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
           { "@id": "http://snomed.info/sct#928000", name: "Disorder of musculoskeletal system" },
           { "@id": "http://snomed.info/sct#699699005", name: "Disorder of vertebral column" },
           { "@id": "http://snomed.info/sct#64217002", name: "Curvature of spine" }
@@ -517,7 +517,7 @@ describe("Concept.vue", () => {
         "http://endhealth.info/im#roleGroup": "Where",
         "http://snomed.info/sct#116676008": "Associated morphology",
         "http://snomed.info/sct#363698007": "Finding site",
-        "http://endhealth.info/im#isA": "Is a",
+        "http://www.w3.org/2000/01/rdf-schema#subClassOf": "Subclass of",
         "http://www.w3.org/2002/07/owl#onProperty": "On property",
         "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
         "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
@@ -531,7 +531,7 @@ describe("Concept.vue", () => {
     expect(EntityService.getInferredBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.concept.inferred).toStrictEqual({
       entity: {
-        "http://endhealth.info/im#isA": [
+        "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
           { "@id": "http://snomed.info/sct#928000", name: "Disorder of musculoskeletal system" },
           { "@id": "http://snomed.info/sct#699699005", name: "Disorder of vertebral column" },
           { "@id": "http://snomed.info/sct#64217002", name: "Curvature of spine" },
@@ -549,7 +549,7 @@ describe("Concept.vue", () => {
         "http://endhealth.info/im#roleGroup": "Where",
         "http://snomed.info/sct#116676008": "Associated morphology",
         "http://snomed.info/sct#363698007": "Finding site",
-        "http://endhealth.info/im#isA": "Is a",
+        "http://www.w3.org/2000/01/rdf-schema#subClassOf": "Subclass of",
         "http://www.w3.org/2002/07/owl#onProperty": "On property",
         "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
         "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
