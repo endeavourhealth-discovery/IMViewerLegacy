@@ -1051,4 +1051,22 @@ describe("Concept.vue", () => {
     expect(navigator.clipboard.writeText).toHaveBeenLastCalledWith("Has sub types: [\n\tAdministrative entry,\n\tConsultation,\n\tHospital encounter\n]");
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy Has sub types to clipboard"));
   });
+
+  it("can exportConcept ___ success", () => {
+    window.open = jest.fn().mockReturnValue(true);
+    wrapper.vm.exportConcept();
+    expect(window.open).toHaveBeenCalledTimes(1);
+    expect(window.open).toHaveBeenCalledWith("/test/api/entity/exportConcept?iri=http:%2F%2Fendhealth.info%2Fim%23CriticalCareEncounter");
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Export will begin shortly"));
+  });
+
+  it("can exportConcept ___ fail", () => {
+    window.open = jest.fn().mockReturnValue(false);
+    wrapper.vm.exportConcept();
+    expect(window.open).toHaveBeenCalledTimes(1);
+    expect(window.open).toHaveBeenCalledWith("/test/api/entity/exportConcept?iri=http:%2F%2Fendhealth.info%2Fim%23CriticalCareEncounter");
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Export failed from server"));
+  });
 });

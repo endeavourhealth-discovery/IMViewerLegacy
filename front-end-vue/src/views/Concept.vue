@@ -111,7 +111,6 @@ import { IM } from "@/vocabulary/IM";
 import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
-import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
 import Properties from "@/components/concept/Properties.vue";
 import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
@@ -409,16 +408,16 @@ export default defineComponent({
     isObjectHasKeysWrapper(object: any, keys: string[]) {
       return isObjectHasKeys(object, keys);
     },
+
     async exportConcept() {
       const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
       const url = process.env.VUE_APP_API + "api/entity/exportConcept?iri=" + modIri;
       const popup = window.open(url);
       if (!popup) {
-        this.$toast.add(LoggerService.error("Download failed from server"));
+        this.$toast.add(LoggerService.error("Export failed from server"));
       } else {
-        this.$toast.add(LoggerService.success("Download will begin shortly"));
+        this.$toast.add(LoggerService.success("Export will begin shortly"));
       }
-      this.closeDownloadDialog();
     }
   }
 });

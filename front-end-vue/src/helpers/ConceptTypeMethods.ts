@@ -5,7 +5,6 @@
 
 import { TTIriRef } from "@/models/TripleTree";
 import { IM } from "@/vocabulary/IM";
-import { OWL } from "@/vocabulary/OWL";
 import { RDF } from "@/vocabulary/RDF";
 import { SHACL } from "@/vocabulary/SHACL";
 
