@@ -1,183 +1,251 @@
 import { SearchRequest } from "@/models/search/SearchRequest";
-import axios, { AxiosResponse, CancelToken } from "axios";
-import { ConceptNode } from "@/models/ConceptNode";
-import { IM } from "@/vocabulary/IM";
+import axios, { CancelToken } from "axios";
+import GraphData from "@/models/GraphData";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
+import { PartialBundle, SearchResponse } from "@/models/entityServiceTypes/EntityServiceTypes";
+import { EntityDefinitionDto } from "@/models/EntityDefinitionDto";
+import { TTIriRef } from "@/models/TripleTree";
+import { ExportValueSet } from "@/models/members/ExportValueSet";
+import { TermCode } from "@/models/terms/TermCode";
+import { DataModelProperty } from "@/models/properties/DataModelProperty";
+import { ConceptSummary } from "@/models/search/ConceptSummary";
+import { Namespace } from "@/models/Namespace";
 
 export default class EntityService {
-  public static async getPartialEntity(
-    iri: string,
-    predicates: string[]
-  ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/partial", {
-      params: {
-        iri: iri,
-        predicate: predicates.join(",")
-      }
-    });
-  }
-
   static api = process.env.VUE_APP_API;
 
-  public static async advancedSearch(
-    request: SearchRequest,
-    cancelToken: CancelToken
-  ): Promise<AxiosResponse<any>> {
-    return axios.post(this.api + "api/entity/search", request, {
-      cancelToken: cancelToken
-    });
+  public static async getMatchedFrom(iri: string): Promise<any[]> {
+    try {
+      return await axios.get(this.api + "api/entity/matchedFrom", {
+        params: {
+          iri: iri
+        }
+      });
+    } catch (error) {
+      return [] as any[];
+    }
   }
 
-  public static async getEntity(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity", {
-      params: { iri: iri }
-    });
+  public static async getPartialEntity(iri: string, predicates: string[]): Promise<any> {
+    try {
+      return await axios.get(this.api + "api/entity/partial", {
+        params: {
+          iri: iri,
+          predicate: predicates.join(",")
+        }
+      });
+    } catch (error) {
+      return {} as any;
+    }
   }
 
-  public static async getEntityDefinitionDto(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/definition", {
-      params: { iri: iri }
-    });
+  public static async getPartialEntityBundle(iri: string, predicates: string[]): Promise<PartialBundle> {
+    try {
+      return await axios.get(this.api + "api/entity/partialBundle", {
+        params: {
+          iri: iri,
+          predicate: predicates.join(",")
+        }
+      });
+    } catch (error) {
+      return {} as PartialBundle;
+    }
   }
 
-  public static async getEntityImLang(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity", {
-      params: { iri: iri },
-      headers: {
-        accept: "application/imlang"
-      },
-      responseType: "text"
-    });
+  public static async getInferredBundle(iri: string): Promise<PartialBundle> {
+    try {
+      return await axios.get(this.api + "api/entity/inferredBundle", {
+        params: {
+          iri: iri
+        }
+      });
+    } catch (error) {
+      return {} as PartialBundle;
+    }
   }
 
-  public static async getEntityParents(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
-    return axios.get<ConceptNode[]>(this.api + "api/entity/parents", {
-      params: { iri: iri }
-    });
+  public static async getInferredAsString(iri: string): Promise<string> {
+    try {
+      return await axios.get(this.api + "api/entity/inferredAsString", {
+        params: {
+          iri: iri
+        }
+      });
+    } catch (error) {
+      return "";
+    }
   }
 
-  public static async getEntityChildren(
-    iri: string,
-    cancelToken?: CancelToken
-  ): Promise<AxiosResponse<any>> {
-    return axios.get<ConceptNode[]>(this.api + "api/entity/children", {
-      params: { iri: iri },
-      cancelToken: cancelToken
-    });
+  public static async getAxiomBundle(iri: string): Promise<PartialBundle> {
+    try {
+      return await axios.get(this.api + "api/entity/axiomBundle", {
+        params: {
+          iri: iri
+        }
+      });
+    } catch (error) {
+      return {} as PartialBundle;
+    }
   }
 
-  public static async getEntityUsages(
-    iri: string,
-    pageIndex: number,
-    pageSize: number
-  ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/usages", {
-      params: {
-        iri: iri,
-        page: pageIndex,
-        size: pageSize
-      }
-    });
+  public static async getAxiomAsString(iri: string): Promise<string> {
+    try {
+      return await axios.get(this.api + "api/entity/axiomAsString", {
+        params: {
+          iri: iri
+        }
+      });
+    } catch (error) {
+      return "";
+    }
   }
 
-  public static async getUsagesTotalRecords(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/usagesTotalRecords", {
-      params: {
-        iri: iri
-      }
-    });
+  public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<SearchResponse> {
+    try {
+      return await axios.post(this.api + "api/entity/search", request, {
+        cancelToken: cancelToken
+      });
+    } catch (error) {
+      return {} as SearchResponse;
+    }
   }
 
-  public static async getEntityMembers(
-    iri: string,
-    expandMembers?: boolean,
-    expandSubsets?: boolean,
-    limit?: number
-  ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/members", {
-      params: {
-        iri: iri,
-        expandMembers: expandMembers,
-        expandSubsets: expandSubsets,
-        limit: limit
-      }
-    });
+  //obsolete, to be deleted on editor branch merge
+  public static async getEntity(iri: string): Promise<any> {
+    try {
+      return await axios.get(this.api + "api/entity", {
+        params: { iri: iri }
+      });
+    } catch (error) {
+      return {} as any;
+    }
   }
 
-  public static async getSchemeOptions(): Promise<AxiosResponse<any>> {
-    return this.getEntityChildren(IM.CODE_SCHEME);
+  public static async getEntityDefinitionDto(iri: string): Promise<EntityDefinitionDto> {
+    try {
+      return await axios.get(this.api + "api/entity/definition", {
+        params: { iri: iri }
+      });
+    } catch (error) {
+      return {} as EntityDefinitionDto;
+    }
   }
 
-  public static async saveEntity(concept: any): Promise<AxiosResponse<any>> {
-    return axios.post(this.api + "api/entity", concept);
+  public static async getEntityParents(iri: string): Promise<EntityReferenceNode[]> {
+    try {
+      return await axios.get(this.api + "api/entity/parents", {
+        params: { iri: iri }
+      });
+    } catch (error) {
+      return [] as EntityReferenceNode[];
+    }
   }
 
-  public static getEntityGraph(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/graph", { params: { iri: iri } });
+  public static async getEntityChildren(iri: string, cancelToken?: CancelToken): Promise<EntityReferenceNode[]> {
+    try {
+      return await axios.get(this.api + "api/entity/children", {
+        params: { iri: iri },
+        cancelToken: cancelToken
+      });
+    } catch (error) {
+      return [] as EntityReferenceNode[];
+    }
   }
 
-  public static getEntityTermCodes(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/termCode", {
-      params: { iri: iri }
-    });
+  public static async getEntityUsages(iri: string, pageIndex: number, pageSize: number): Promise<TTIriRef[]> {
+    try {
+      return await axios.get(this.api + "api/entity/usages", {
+        params: {
+          iri: iri,
+          page: pageIndex,
+          size: pageSize
+        }
+      });
+    } catch (error) {
+      return [] as TTIriRef[];
+    }
   }
 
-  public static getSemanticProperties(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/semanticProperties", {
-      params: { iri: iri }
-    });
+  public static async getUsagesTotalRecords(iri: string): Promise<number> {
+    try {
+      return await axios.get(this.api + "api/entity/usagesTotalRecords", {
+        params: {
+          iri: iri
+        }
+      });
+    } catch (error) {
+      return 0;
+    }
   }
 
-  public static getDataModelProperties(
-    iri: string
-  ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/dataModelProperties", {
-      params: { iri: iri }
-    });
+  public static async getEntityMembers(iri: string, expandMembers?: boolean, expandSubsets?: boolean, limit?: number): Promise<ExportValueSet> {
+    try {
+      return await axios.get(this.api + "api/entity/members", {
+        params: {
+          iri: iri,
+          expandMembers: expandMembers,
+          expandSubsets: expandSubsets,
+          limit: limit
+        }
+      });
+    } catch (error) {
+      return {} as ExportValueSet;
+    }
   }
 
-  public static getComplexMappings(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/complexMappings", {
-      params: { iri: iri }
-    });
+  public static async getEntityGraph(iri: string): Promise<GraphData> {
+    try {
+      return await axios.get(this.api + "api/entity/graph", { params: { iri: iri } });
+    } catch (error) {
+      return {} as GraphData;
+    }
   }
 
-  public static getEntitySummary(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/summary", {
-      params: { iri: iri }
-    });
+  public static async getEntityTermCodes(iri: string): Promise<TermCode[]> {
+    try {
+      return await axios.get(this.api + "api/entity/termCode", {
+        params: { iri: iri }
+      });
+    } catch (error) {
+      return {} as TermCode[];
+    }
   }
 
-  public static getNamespaces(): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/namespaces");
+  public static async getDataModelProperties(iri: string): Promise<DataModelProperty[]> {
+    try {
+      return await axios.get(this.api + "api/entity/dataModelProperties", {
+        params: { iri: iri }
+      });
+    } catch (error) {
+      return [] as DataModelProperty[];
+    }
   }
 
-  public static ECLSearch(
-    searchECLString: string
-  ): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/eclSearch", {
-      params: { searchString: searchECLString }
-    });
+  public static async getEntitySummary(iri: string): Promise<ConceptSummary> {
+    try {
+      return await axios.get(this.api + "api/entity/summary", {
+        params: { iri: iri }
+      });
+    } catch (error) {
+      return {} as ConceptSummary;
+    }
   }
 
-  public static getComplexMembers(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/complexMembers", {
-      params: { iri: iri }
-    });
+  public static async getNamespaces(): Promise<Namespace[]> {
+    try {
+      return await axios.get(this.api + "api/entity/namespaces");
+    } catch (error) {
+      return [] as Namespace[];
+    }
   }
 
-  public static getAxioms(iri: string): Promise<AxiosResponse<any>> {
-    return axios.get(this.api + "api/entity/axioms", {
-      params: { iri: iri }
-    });
+  public static async ECLSearch(searchString: string): Promise<SearchResponse> {
+    try {
+      return await axios.get(this.api + "api/entity/eclSearch", {
+        params: { searchString: searchString }
+      });
+    } catch (error) {
+      return {} as SearchResponse;
+    }
   }
 }

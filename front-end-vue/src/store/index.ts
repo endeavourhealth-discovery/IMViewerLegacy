@@ -10,48 +10,40 @@ import { CustomAlert } from "@/models/user/CustomAlert";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import axios from "axios";
 import { IM } from "@/vocabulary/IM";
+import { Namespace } from "@/models/Namespace";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 
 export default createStore({
   // update stateType.ts when adding new state!
   state: {
-    loading: new Map<string, boolean>(),
     cancelSource: axios.CancelToken.source(),
-    conceptIri: "http://endhealth.info/im#DiscoveryOntology",
+    conceptIri: IM.MODULE_ONTOLOGY,
     history: [] as HistoryItem[],
     searchResults: [] as ConceptSummary[],
     currentUser: {} as User,
     registeredUsername: "" as string,
     isLoggedIn: false as boolean,
-    snomedLicenseAccepted: localStorage.getItem(
-      "snomedLicenseAccepted"
-    ) as string,
+    snomedLicenseAccepted: localStorage.getItem("snomedLicenseAccepted") as string,
     historyCount: 0 as number,
     focusTree: false as boolean,
     treeLocked: true as boolean,
+    resetTree: false as boolean,
     sideNavHierarchyFocus: {
       name: "Ontology",
       fullName: "Ontologies",
-      iri: "http://endhealth.info/im#DiscoveryOntology",
+      iri: IM.MODULE_ONTOLOGY,
       route: "Dashboard"
     } as { name: string; iri: string; fullName: string; route: string },
     selectedEntityType: "",
     filterOptions: {
-      status: [],
-      schemes: [],
-      types: []
-    } as {
-      status: any[];
-      schemes: any[];
-      types: any[];
+      status: [] as EntityReferenceNode[],
+      schemes: [] as Namespace[],
+      types: [] as EntityReferenceNode[]
     },
     selectedFilters: {
-      status: [],
-      schemes: [],
-      types: []
-    } as {
-      status: any[];
-      schemes: any[];
-      types: any[];
+      status: [] as EntityReferenceNode[],
+      schemes: [] as Namespace[],
+      types: [] as EntityReferenceNode[]
     },
     quickFiltersStatus: new Map<string, boolean>(),
     moduleSelectedEntities: new Map([
@@ -62,7 +54,8 @@ export default createStore({
       ["Queries", IM.MODULE_QUERIES]
     ]),
     activeModule: "default",
-    conceptActivePanel: 0 as number
+    conceptActivePanel: 0,
+    focusHierarchy: false
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -89,9 +82,6 @@ export default createStore({
     updateQuickFiltersStatus(state, status) {
       state.quickFiltersStatus.set(status.key, status.value);
     },
-    updateLoading(state, loading) {
-      state.loading.set(loading.key, loading.value);
-    },
     updateCurrentUser(state, user) {
       state.currentUser = user;
     },
@@ -114,6 +104,9 @@ export default createStore({
     updateTreeLocked(state, bool) {
       state.treeLocked = bool;
     },
+    updateResetTree(state, bool) {
+      state.resetTree = bool;
+    },
     updateSideNavHierarchyFocus(state, focus) {
       state.sideNavHierarchyFocus = focus;
     },
@@ -128,30 +121,21 @@ export default createStore({
     },
     updateActiveModule(state, module) {
       state.activeModule = module;
+    },
+    updateFocusHierarchy(state, bool) {
+      state.focusHierarchy = bool;
     }
   },
   actions: {
-    async fetchSearchResults(
-      { commit },
-      data: { searchRequest: SearchRequest; cancelToken: any }
-    ) {
+    async fetchSearchResults({ commit }, data: { searchRequest: SearchRequest; cancelToken: any }) {
       let searchResults: any;
-      let success = "true";
-      await EntityService.advancedSearch(data.searchRequest, data.cancelToken)
-        .then(res => {
-          searchResults = res.data.entities;
-          commit("updateSearchResults", searchResults);
-        })
-        .catch(err => {
-          if (!err.message) {
-            success = "cancelled";
-            LoggerService.info(undefined, "axios request cancelled");
-          } else {
-            success = "false";
-            LoggerService.error(undefined, err);
-          }
-        });
-      return success;
+      const result = await EntityService.advancedSearch(data.searchRequest, data.cancelToken);
+      if (result && Object.prototype.hasOwnProperty.call(result, "entities")) {
+        searchResults = result.entities;
+        commit("updateSearchResults", searchResults);
+      } else {
+        commit("updateSearchResults", []);
+      }
     },
     async logoutCurrentUser({ commit }) {
       let result = new CustomAlert(500, "Logout (store) failed");
@@ -172,17 +156,15 @@ export default createStore({
         if (res.status === 200 && res.user) {
           commit("updateIsLoggedIn", true);
           const loggedInUser = res.user;
-          const foundAvatar = avatars.find(
-            avatar => avatar.value === loggedInUser.avatar.value
-          );
+          const foundAvatar = avatars.find(avatar => avatar === loggedInUser.avatar);
           if (!foundAvatar) {
             loggedInUser.avatar = avatars[0];
           }
           commit("updateCurrentUser", loggedInUser);
           result.authenticated = true;
         } else {
-          dispatch("logoutCurrentUser").then(res => {
-            if (res.status === 200) {
+          dispatch("logoutCurrentUser").then(resLogout => {
+            if (resLogout.status === 200) {
               LoggerService.info(undefined, "Force logout successful");
             } else {
               LoggerService.error(undefined, "Force logout failed");

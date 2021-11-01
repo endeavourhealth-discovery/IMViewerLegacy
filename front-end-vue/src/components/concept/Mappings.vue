@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container"
-    v-if="$store.state.loading.get('mappings')"
-  >
+  <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container" v-if="loading">
     <ProgressSpinner />
   </div>
   <OrganizationChart v-else :value="data">
@@ -43,10 +40,7 @@
       </table>
     </template>
     <template #simpleMapsList="slotProps">
-      <SimpleMaps
-        v-if="slotProps.node.data.mapItems.length"
-        :data="slotProps.node.data.mapItems"
-      />
+      <SimpleMaps v-if="slotProps.node.data.mapItems.length" :data="slotProps.node.data.mapItems" />
       <span v-else>None</span>
     </template>
     <template #default>
@@ -77,124 +71,71 @@
 
 <script lang="ts">
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 import { IM } from "@/vocabulary/IM";
 import { defineComponent } from "vue";
 import SimpleMaps from "@/components/concept/mapping/SimpleMaps.vue";
+import { Namespace } from "@/models/Namespace";
+import { SimpleMap } from "@/models/mappings/SimpleMap";
+import { SimpleMapIri } from "@/models/mappings/SimpleMapIri";
+import { MapItem } from "@/models/mappings/MapItem";
+import { ChartTableNode, ChartMapNode } from "@/models/mappings/MapChartTypes";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Mappings",
   components: { SimpleMaps },
-  props: ["conceptIri"],
+  props: { conceptIri: { type: String, required: true } },
   watch: {
     async conceptIri() {
-      this.$store.commit("updateLoading", {
-        key: "mappings",
-        value: true
-      });
-      await this.getMappings();
-      this.getSimpleMapsNamespaces();
-      this.data = this.createChartStructure(this.mappings);
-      this.$store.commit("updateLoading", {
-        key: "mappings",
-        value: false
-      });
+      await this.updateMappings();
     }
   },
   data() {
     return {
-      mappings: [] as any,
+      mappings: [] as any[],
       data: {} as any,
-      hoveredResult: {} as any,
-      simpleMaps: [] as any,
-      namespaces: [] as any
+      hoveredResult: {} as MapItem,
+      simpleMaps: [] as SimpleMap[],
+      namespaces: [] as Namespace[],
+      loading: false
     };
   },
   async mounted() {
-    this.$store.commit("updateLoading", {
-      key: "mappings",
-      value: true
-    });
-    await this.getMappings();
-    this.getSimpleMapsNamespaces();
-    this.data = this.createChartStructure(this.mappings);
-    this.$store.commit("updateLoading", {
-      key: "mappings",
-      value: false
-    });
+    await this.updateMappings();
   },
   methods: {
+    async updateMappings() {
+      this.loading = true;
+      await this.getMappings();
+      this.getSimpleMapsNamespaces();
+      this.data = this.createChartStructure(this.mappings);
+      this.loading = false;
+    },
     async getMappings(): Promise<void> {
-      await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP])
-        .then(res => {
-          this.mappings = res.data[IM.HAS_MAP] || [];
-          this.data = {};
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get concept complex maps from server",
-              err
-            )
-          );
-          this.mappings = [];
-          this.data = {};
-        });
+      this.mappings = (await EntityService.getPartialEntity(this.conceptIri, [IM.HAS_MAP]))[IM.HAS_MAP] || [];
+      this.data = {};
 
-      await EntityService.getNamespaces()
-        .then(res => {
-          this.namespaces = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get namespaces from server", err)
-          );
-        });
+      this.namespaces = await EntityService.getNamespaces();
 
-      await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO])
-        .then(res => {
-          this.simpleMaps = res.data[IM.MATCHED_TO] || [];
-          if (this.simpleMaps.length && this.namespaces) {
-            this.simpleMaps.forEach((mapItem: any) => {
-              const found = this.namespaces.find(
-                (namespace: any) =>
-                  namespace.iri === mapItem["@id"].split("#")[0] + "#"
-              );
-              if (found) {
-                mapItem.scheme = found.name;
-              } else {
-                mapItem.scheme = "None";
-              }
-              mapItem.code = mapItem["@id"].split("#")[1];
-            });
-          }
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get concept simple maps from server",
-              err
-            )
-          );
-          this.simpleMaps = [];
-        });
+      this.simpleMaps = (await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO]))[IM.MATCHED_TO] || [];
+      if (!this.simpleMaps.length) {
+        this.simpleMaps = (await EntityService.getMatchedFrom(this.conceptIri)) || [];
+      }
     },
 
     createChartTableNode(
-      items: {
-        assuranceLevel: string;
-        iri: string;
-        name: string;
-        priority: number;
-      }[],
+      items:
+        | {
+            assuranceLevel: string;
+            iri: string;
+            name: string;
+            priority: number;
+          }[]
+        | SimpleMapIri[],
       location: string,
       position: number,
       type: string
-    ): {
-      key: string;
-      type: string;
-      data: any;
-    } {
+    ): ChartTableNode {
       return {
         key: location + "_" + position,
         type: type,
@@ -202,52 +143,37 @@ export default defineComponent({
       };
     },
 
-    createChartMapNode(
-      item: string,
-      location: string,
-      positionInLevel: number
-    ):
-      | {
-          key: string;
-          type: string;
-          data: { label: string };
-          children: any[];
-        }
-      | undefined {
+    createChartMapNode(item: string, location: string, positionInLevel: number): ChartMapNode | undefined {
       switch (item) {
         case IM.ONE_OF:
           return {
             key: location + "_" + positionInLevel,
             type: "oneOf",
             data: { label: "One of" },
-            children: [] as any
+            children: [] as ChartMapNode[]
           };
         case IM.COMBINATION_OF:
           return {
             key: location + "_" + positionInLevel,
             type: "comboOf",
             data: { label: "Combination of" },
-            children: [] as any
+            children: [] as ChartMapNode[]
           };
         case IM.SOME_OF:
           return {
             key: location + "_" + positionInLevel,
             type: "someOf",
             data: { label: "Some of" },
-            children: [] as any
+            children: [] as ChartMapNode[]
           };
         default:
           return undefined;
       }
     },
 
-    generateChildNodes(
-      mapObject: any,
-      location: string,
-      positionInLevel: number
-    ) {
-      if (Object.keys(mapObject[0]).includes(IM.MAPPED_TO)) {
-        const mappedList = [] as any;
+    generateChildNodes(mapObject: any, location: string, positionInLevel: number): ChartMapNode[] | ChartTableNode[] {
+      if (isObjectHasKeys(mapObject[0], [IM.MAPPED_TO])) {
+        const mappedList = [] as MapItem[];
         mapObject.forEach((item: any) => {
           mappedList.push({
             name: item[IM.MAPPED_TO].name,
@@ -256,59 +182,39 @@ export default defineComponent({
             assuranceLevel: item[IM.ASSURANCE_LEVEL].name
           });
         });
-        return [
-          this.createChartTableNode(
-            mappedList.sort(this.byPriority),
-            location,
-            positionInLevel,
-            "childList"
-          )
-        ];
+        mappedList.sort(this.byPriority);
+        return [this.createChartTableNode(mappedList, location, positionInLevel, "childList")];
       } else {
-        const results = [];
+        // is array
+        const results = [] as ChartMapNode[];
         let count = 0;
         for (const item of mapObject) {
-          let mapNode = this.createChartMapNode(
-            Object.keys(item)[0],
-            location,
-            count
-          );
+          let mapNode = this.createChartMapNode(Object.keys(item)[0], location, count);
           if (mapNode) {
-            mapNode.children = this.generateChildNodes(
-              item[Object.keys(item)[0]],
-              location + "_" + count,
-              0
-            );
+            mapNode.children = this.generateChildNodes(item[Object.keys(item)[0]], location + "_" + count, 0);
+            results.push(mapNode);
           }
-          results.push(mapNode);
           count++;
         }
         return results;
       }
     },
 
-    createChartStructure(mappingObject: any): any {
+    createChartStructure(mappingObject: any): ChartMapNode | [] {
       const parentNode = {
         key: "0",
         type: "hasMap",
         data: { label: "Has map" },
-        children: [] as any
+        children: [] as ChartMapNode[] | ChartTableNode[]
       };
-      if (
-        (!mappingObject.length || !Object.keys(mappingObject).length) &&
-        !this.simpleMaps.length
-      ) {
+      if ((!isArrayHasLength(mappingObject) || !isArrayHasLength(Object.keys(mappingObject))) && !isArrayHasLength(this.simpleMaps)) {
         return [];
       }
-      if (mappingObject.length && Object.keys(mappingObject).length) {
+      if (isArrayHasLength(mappingObject) || isArrayHasLength(Object.keys(mappingObject))) {
         parentNode.children = this.generateChildNodes(mappingObject, "0", 0);
       }
-      if (this.simpleMaps.length) {
-        const simpleMapsChildren = this.generateSimpleMapsNodes(
-          this.simpleMaps,
-          "0_" + parentNode.children.length,
-          0
-        );
+      if (isArrayHasLength(this.simpleMaps)) {
+        const simpleMapsChildren = this.generateSimpleMapsNodes(this.simpleMaps, "0_" + parentNode.children.length, 0);
         parentNode.children.push({
           key: "0_" + parentNode.children.length,
           type: "simpleMaps",
@@ -319,23 +225,12 @@ export default defineComponent({
       return parentNode;
     },
 
-    generateSimpleMapsNodes(
-      simpleMaps: any,
-      location: string,
-      positionInLevel: number
-    ) {
-      if (!Array.isArray(simpleMaps) || !simpleMaps.length) {
-        return [
-          this.createChartTableNode(
-            [],
-            location,
-            positionInLevel,
-            "simpleMapsList"
-          )
-        ];
+    generateSimpleMapsNodes(simpleMaps: SimpleMap[], location: string, positionInLevel: number): ChartTableNode[] {
+      if (!isArrayHasLength(simpleMaps)) {
+        return [this.createChartTableNode([], location, positionInLevel, "simpleMapsList")];
       }
-      const simpleMapsList = [] as any;
-      simpleMaps.forEach((mapItem: any) => {
+      const simpleMapsList = [] as SimpleMapIri[];
+      simpleMaps.forEach((mapItem: SimpleMap) => {
         simpleMapsList.push({
           name: mapItem.name,
           iri: mapItem["@id"],
@@ -343,30 +238,15 @@ export default defineComponent({
           code: mapItem.code
         });
       });
-      return [
-        this.createChartTableNode(
-          simpleMapsList.sort(this.byScheme),
-          location,
-          positionInLevel,
-          "simpleMapsList"
-        )
-      ];
+      simpleMapsList.sort(this.byScheme);
+      return [this.createChartTableNode(simpleMapsList, location, positionInLevel, "simpleMapsList")];
     },
 
-    getSimpleMapsNamespaces() {
-      if (
-        this.simpleMaps &&
-        this.simpleMaps.length &&
-        this.namespaces &&
-        this.namespaces.length
-      ) {
-        this.simpleMaps.forEach((mapItem: any) => {
-          const found = this.namespaces.find(
-            (namespace: any) =>
-              namespace.iri.toLowerCase() ===
-              (mapItem["@id"].split("#")[0] + "#").toLowerCase()
-          );
-          if (found && Object.prototype.hasOwnProperty.call(found, "name")) {
+    getSimpleMapsNamespaces(): void {
+      if (isArrayHasLength(this.simpleMaps) && isArrayHasLength(this.namespaces)) {
+        this.simpleMaps.forEach((mapItem: SimpleMap) => {
+          const found = this.namespaces.find((namespace: Namespace) => namespace.iri.toLowerCase() === (mapItem["@id"].split("#")[0] + "#").toLowerCase());
+          if (found && isObjectHasKeys(found, ["name"])) {
             mapItem.scheme = found.name;
           } else {
             mapItem.scheme = "None";
@@ -376,7 +256,7 @@ export default defineComponent({
       }
     },
 
-    byPriority(a: any, b: any): number {
+    byPriority(a: MapItem, b: MapItem): number {
       if (a.priority < b.priority) {
         return -1;
       } else if (a.priority > b.priority) {
@@ -386,7 +266,7 @@ export default defineComponent({
       }
     },
 
-    byScheme(a: any, b: any): number {
+    byScheme(a: SimpleMapIri, b: SimpleMapIri): number {
       if (a.scheme < b.scheme) {
         return -1;
       } else if (a.scheme > b.scheme) {
@@ -396,7 +276,7 @@ export default defineComponent({
       }
     },
 
-    toggle(event: any, data: any, refId: string): void {
+    toggle(event: any, data: MapItem, refId: string): void {
       this.hoveredResult = data;
       const x = this.$refs[refId] as any;
       x.toggle(event);
@@ -410,11 +290,8 @@ td,
 th {
   border: 1px solid lightgray;
   padding: 0.5rem;
-}
-
-td,
-th {
   text-align: left;
+  overflow-wrap: break-word;
 }
 
 tr:nth-child(even) {
@@ -429,11 +306,6 @@ th[scope="col"] {
 table {
   border-collapse: collapse;
   border: 2px solid rgb(200, 200, 200);
-}
-
-td,
-th {
-  overflow-wrap: break-word;
 }
 
 .p-organizationchart {

@@ -6,6 +6,7 @@
       <Button
         :icon="buttonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
         class="p-button-rounded p-button-text p-button-primary p-button-sm expand-button"
+        :id="'expand-button-' + id"
         @click="setButtonExpanded"
         v-styleclass="{
           selector: '#' + id,
@@ -18,7 +19,7 @@
     </div>
     <Listbox
       :options="data"
-      listStyle="height: 12rem;"
+      listStyle="max-height: 12rem;overflow: auto;"
       v-model="selected"
       @change="navigate(selected['@id'])"
       emptyMessage="None"
@@ -38,6 +39,8 @@
 import { defineComponent, PropType } from "vue";
 import { RouteRecordName } from "node_modules/vue-router/dist/vue-router";
 import LoggerService from "@/services/LoggerService";
+import { mapState } from "vuex";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "ArrayObjectNameListboxWithLabel",
@@ -49,21 +52,9 @@ export default defineComponent({
   },
   computed: {
     isArrayObjectWithName(): boolean {
-      if (!this.data) {
-        return false;
-      }
-      if (
-        Array.isArray(this.data) &&
-        this.data.length &&
-        this.data.every(
-          item => Object.prototype.toString.call(item) === "[object Object]"
-        ) &&
-        this.data.every(item =>
-          Object.prototype.hasOwnProperty.call(item, "name")
-        )
-      ) {
-        return true;
-      } else if (Array.isArray(this.data) && this.data.length === 0) {
+      if (!this.data) return false;
+      if (!isArrayHasLength(this.data)) return false;
+      if (this.data.every(item => isObjectHasKeys(item, ["name"]))) {
         return true;
       } else {
         LoggerService.warn(
@@ -72,7 +63,11 @@ export default defineComponent({
         );
         return false;
       }
-    }
+    },
+    ...mapState(["selectedEntityType"])
+  },
+  mounted() {
+    this.expandAtStartup();
   },
   data() {
     return {
@@ -81,7 +76,7 @@ export default defineComponent({
     };
   },
   methods: {
-    navigate(iri: any) {
+    navigate(iri: string) {
       const currentRoute = this.$route.name as RouteRecordName | undefined;
       if (iri)
         this.$router.push({
@@ -91,9 +86,14 @@ export default defineComponent({
     },
 
     setButtonExpanded() {
-      this.buttonExpanded
-        ? (this.buttonExpanded = false)
-        : (this.buttonExpanded = true);
+      this.buttonExpanded = !this.buttonExpanded;
+    },
+
+    expandAtStartup() {
+      if (this.selectedEntityType === "Ontology" && this.label === "Is a") {
+        const button = document.getElementById(`expand-button-${this.id}`) as HTMLElement;
+        if (button) button.click();
+      }
     }
   }
 });

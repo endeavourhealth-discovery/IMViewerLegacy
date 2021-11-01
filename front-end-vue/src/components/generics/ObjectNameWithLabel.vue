@@ -9,6 +9,7 @@
 </template>
 
 <script lang="ts">
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "vue";
 
@@ -17,16 +18,10 @@ export default defineComponent({
   props: { label: String, data: Object, size: String },
   computed: {
     isObjectWithName(): boolean {
-      if (
-        this.data &&
-        Object.prototype.toString.call(this.data) === "[object Object]" &&
-        Object.prototype.hasOwnProperty.call(this.data, "name")
-      ) {
+      if (isObjectHasKeys(this.data, ["name"])) {
         return true;
       } else {
-        LoggerService.error(
-          "No data, data is not Object or Object has no property 'name' for use within component ObjectNameWithLabel.vue"
-        );
+        LoggerService.error(undefined, "No data, data is not Object or Object has no property 'name' for use within component ObjectNameWithLabel.vue");
         return false;
       }
     }

@@ -3,11 +3,7 @@
     <h3>Expression constraints language search</h3>
     <h5 class="info">ECL expression:</h5>
     <div class="text-copy-container">
-      <Textarea
-        v-model="queryString"
-        id="query-string-container"
-        placeholder="Enter expression here or use the ECL builder to generate your search..."
-      />
+      <Textarea v-model="queryString" id="query-string-container" placeholder="Enter expression here or use the ECL builder to generate your search..." />
       <Button
         icon="far fa-copy"
         v-tooltip.left="'Copy to clipboard'"
@@ -18,22 +14,13 @@
     </div>
     <div class="button-container">
       <Button label="ECL builder" @click="showBuilder" class="p-button-help" />
-      <Button
-        label="Search"
-        @click="search"
-        class="p-button-primary"
-        :disabled="!queryString.length"
-      />
+      <Button label="Search" @click="search" class="p-button-primary" :disabled="!queryString.length" />
     </div>
     <div class="results-container">
       <SearchResults :searchResults="searchResults" :loading="loading" />
     </div>
   </div>
-  <Builder
-    :showDialog="showDialog"
-    @ECLSubmitted="updateECL"
-    @closeDialog="showDialog = false"
-  />
+  <Builder :showDialog="showDialog" @ECLSubmitted="updateECL" @closeDialog="showDialog = false" />
 </template>
 
 <script lang="ts">
@@ -42,6 +29,7 @@ import Builder from "@/components/sidebar/expressionConstraintsSearch/Builder.vu
 import SearchResults from "@/components/sidebar/SearchResults.vue";
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
+import { SearchResponse } from "@/models/entityServiceTypes/EntityServiceTypes";
 
 export default defineComponent({
   name: "ExpressionConstraintsSearch",
@@ -71,18 +59,7 @@ export default defineComponent({
       console.log("Searching...");
       if (this.queryString) {
         this.loading = true;
-        await EntityService.ECLSearch(this.queryString)
-          .then(res => {
-            this.searchResults = res.data;
-          })
-          .catch(err => {
-            this.$toast.add(
-              LoggerService.error(
-                "ECL search failed at server. Please check the ECL query for any errors.",
-                err
-              )
-            );
-          });
+        this.searchResults = (await await EntityService.ECLSearch(this.queryString)).entities;
       }
     },
 

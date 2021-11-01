@@ -32,11 +32,7 @@
       </template>
       <Column field="name" header="Results">
         <template #body="slotProps">
-          <div
-            class="result-container"
-            @mouseenter="showDetailsOverlay($event, slotProps.data)"
-            @mouseleave="hideDetailsOverlay()"
-          >
+          <div class="result-container" @mouseenter="showDetailsOverlay($event, slotProps.data)" @mouseleave="hideDetailsOverlay()">
             <div class="result-icon-container">
               <i
                 :class="getPerspectiveByConceptType(slotProps.data.entityType)"
@@ -54,12 +50,7 @@
       </Column>
     </DataTable>
 
-    <OverlayPanel
-      ref="detailsOP"
-      id="overlay-panel"
-      style="width: 25vw"
-      :dismissable="true"
-    >
+    <OverlayPanel ref="detailsOP" id="overlay-panel" style="width: 25vw" :dismissable="true">
       <div class="result-overlay">
         <div class="left-side" v-if="hoveredResult.iri">
           <p>
@@ -114,10 +105,7 @@ import { SortBy } from "@/models/search/SortBy";
 import axios from "axios";
 import LoggerService from "@/services/LoggerService";
 import EntityService from "@/services/EntityService";
-import {
-  getColourFromType,
-  getIconFromType
-} from "@/helpers/ConceptTypeMethods";
+import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
 
 export default defineComponent({
   name: "SearchMiniOverlay",
@@ -155,9 +143,7 @@ export default defineComponent({
             code: "",
             name: "ANY",
             match: "ANY",
-            entityType: [
-              { "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }
-            ]
+            entityType: [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }]
           }
         ];
         return;
@@ -170,9 +156,7 @@ export default defineComponent({
         searchRequest.sortBy = SortBy.Usage;
         searchRequest.page = 1;
         searchRequest.size = 100;
-        searchRequest.schemeFilter = this.selectedFilters.schemes.map(
-          (scheme: any) => scheme.iri
-        );
+        searchRequest.schemeFilter = this.selectedFilters.schemes.map((scheme: any) => scheme.iri);
 
         searchRequest.statusFilter = [];
         this.selectedFilters.status.forEach((status: any) => {
@@ -194,17 +178,7 @@ export default defineComponent({
     },
 
     async fetchSearchResults(searchRequest: SearchRequest, cancelToken: any) {
-      await EntityService.advancedSearch(searchRequest, cancelToken)
-        .then(res => {
-          this.searchResults = res.data.entities;
-        })
-        .catch(err => {
-          if (!err.message) {
-            LoggerService.info(undefined, "axios request cancelled");
-          } else {
-            LoggerService.error("Search results server request failed", err);
-          }
-        });
+      this.searchResults = (await EntityService.advancedSearch(searchRequest, cancelToken)).entities;
     },
 
     getPerspectiveByConceptType(conceptType: any): any {
@@ -220,12 +194,8 @@ export default defineComponent({
     },
 
     scrollToTop(): void {
-      const resultsContainer = document.getElementById(
-        "search-results-container"
-      ) as HTMLElement;
-      const scrollBox = resultsContainer?.getElementsByClassName(
-        "p-datatable-wrapper"
-      )[0] as HTMLElement;
+      const resultsContainer = document.getElementById("search-results-container") as HTMLElement;
+      const scrollBox = resultsContainer?.getElementsByClassName("p-datatable-wrapper")[0] as HTMLElement;
       if (scrollBox) {
         scrollBox.scrollTop = 0;
       }

@@ -1,4 +1,4 @@
-import { shallowMount } from "@vue/test-utils";
+import { flushPromises, shallowMount } from "@vue/test-utils";
 import SideNav from "@/components/home/SideNav.vue";
 import Menu from "primevue/menu";
 import { User } from "@/models/user/User";
@@ -11,7 +11,7 @@ describe("SideNav.spec ___ not logged in", () => {
   let mockRouter: any;
   let mockRoute: any;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockStore = {
       state: {
         currentUser: null,
@@ -24,7 +24,8 @@ describe("SideNav.spec ___ not logged in", () => {
           ["DataModel", IM.MODULE_DATA_MODEL],
           ["Catalogue", IM.MODULE_CATALOGUE],
           ["Queries", IM.MODULE_QUERIES]
-        ])
+        ]),
+        focusHierarchy: false
       },
       commit: jest.fn()
     };
@@ -42,6 +43,10 @@ describe("SideNav.spec ___ not logged in", () => {
         mocks: { $store: mockStore, $route: mockRoute, $router: mockRouter }
       }
     });
+
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    jest.clearAllMocks();
   });
 
   it("starts with the correct data", () => {
@@ -114,18 +119,26 @@ describe("SideNav.spec ___ not logged in", () => {
   });
 
   it("can reset to home", async () => {
+    wrapper.vm.handleCenterIconClick = jest.fn();
     wrapper.vm.resetToHome();
     await wrapper.vm.$nextTick();
-    expect(mockStore.commit).toHaveBeenCalledTimes(2);
-    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSideNavHierarchyFocus", {
-      name: "InformationModel",
-      fullName: "Information Model",
-      iri: "http://endhealth.info/im#InformationModel"
+    expect(mockStore.commit).toHaveBeenCalledTimes(5);
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateModuleSelectedEntities", {
+      iri: "http://endhealth.info/im#DiscoveryOntology",
+      module: "Ontology"
     });
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateConceptIri", "http://endhealth.info/im#InformationModel");
-    expect(wrapper.emitted().hierarchyFocusSelected).toBeTruthy();
-    expect(mockRouter.push).toHaveBeenCalledTimes(1);
-    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Dashboard" });
+    expect(mockStore.commit).toHaveBeenNthCalledWith(2, "updateModuleSelectedEntities", { iri: "http://endhealth.info/im#Sets", module: "Sets" });
+    expect(mockStore.commit).toHaveBeenNthCalledWith(3, "updateModuleSelectedEntities", {
+      iri: "http://endhealth.info/im#DiscoveryCommonDataModel",
+      module: "DataModel"
+    });
+    expect(mockStore.commit).toHaveBeenNthCalledWith(4, "updateModuleSelectedEntities", {
+      iri: "http://endhealth.info/im#QT_QueryTemplates",
+      module: "Queries"
+    });
+    await flushPromises();
+    expect(wrapper.vm.handleCenterIconClick).toHaveBeenCalled();
+    expect(mockStore.commit).toHaveBeenLastCalledWith("updateResetTree", true);
   });
 
   it("can handleCenterIconClick", async () => {
@@ -142,9 +155,9 @@ describe("SideNav.spec ___ not logged in", () => {
       iri: "http://endhealth.info/im#Discoveryontology",
       route: "Dashboard"
     });
-    expect(mockStore.commit).toHaveBeenCalledWith("updateConceptIri", "http://endhealth.info/im#DiscoveryOntology");
-    expect(mockStore.commit).toHaveBeenLastCalledWith("updateActiveModule", "Ontology");
-    expect(wrapper.emitted().hierarchyFocusSelected).toBeTruthy();
+    expect(mockStore.commit).toHaveBeenNthCalledWith(2, "updateConceptIri", "http://endhealth.info/im#DiscoveryOntology");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(3, "updateActiveModule", "Ontology");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(4, "updateFocusHierarchy", true);
     expect(mockRouter.push).toHaveBeenCalledWith({ name: "Dashboard" });
   });
 
@@ -152,7 +165,6 @@ describe("SideNav.spec ___ not logged in", () => {
     wrapper.vm.handleCenterIconClick({ name: "Workflow", route: "Workflow" });
     await wrapper.vm.$nextTick();
     expect(mockStore.commit).not.toHaveBeenCalled();
-    expect(wrapper.emitted().hierarchyFocusSelected).toBeFalsy();
     expect(mockRouter.push).toHaveBeenCalledWith({ name: "Workflow" });
   });
 
@@ -202,11 +214,18 @@ describe("SideNav.spec ___ logged in", () => {
   beforeEach(() => {
     mockStore = {
       state: {
-        currentUser: new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "12345678", {
-          value: "colour/001-man.png"
-        }),
+        currentUser: new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "12345678", "colour/001-man.png"),
         isLoggedIn: true,
-        sideNavHierarchyFocus: { name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" }
+        sideNavHierarchyFocus: { name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" },
+        selectedEntityType: "Class",
+        moduleSelectedEntities: new Map([
+          ["Ontology", IM.MODULE_ONTOLOGY],
+          ["Sets", IM.MODULE_SETS],
+          ["DataModel", IM.MODULE_DATA_MODEL],
+          ["Catalogue", IM.MODULE_CATALOGUE],
+          ["Queries", IM.MODULE_QUERIES]
+        ]),
+        focusHierarchy: false
       },
       commit: jest.fn()
     };

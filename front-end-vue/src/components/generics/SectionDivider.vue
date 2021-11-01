@@ -1,5 +1,5 @@
 <template>
-  <div :style="{ width: size }">
+  <div v-if="show" :style="{ width: size }">
     <Divider />
   </div>
 </template>
@@ -10,9 +10,8 @@ import { defineComponent } from "@vue/runtime-core";
 export default defineComponent({
   name: "SectionDivider",
   props: {
-    size: { type: String }
+    size: { type: String },
+    show: { type: Boolean }
   }
 });
 </script>
-
-<style scoped></style>

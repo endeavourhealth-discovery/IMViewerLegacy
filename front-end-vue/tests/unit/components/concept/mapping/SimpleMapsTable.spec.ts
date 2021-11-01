@@ -7,8 +7,12 @@ describe("SimpleMapsTable.vue", () => {
   let wrapper: any;
   let mockRouter: any;
   let docSpy: any;
+  const SIMPLE_MAP = [
+    { name: "Amputation of right foot", iri: "http://endhealth.info/emis#^ESCTAM784250", scheme: "EMIS (inc. Read2 like) namespace" },
+    { name: "Amputation of right foot", iri: "http://endhealth.info/emis#^ESCTAM784250", scheme: "EMIS (inc. Read2 like) namespace" }
+  ];
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
     mockRouter = {
       push: jest.fn()
@@ -25,22 +29,20 @@ describe("SimpleMapsTable.vue", () => {
         components: { DataTable, Column },
         mocks: { $router: mockRouter }
       },
-      props: { data: [{"name":"Amputation of right foot","iri":"http://endhealth.info/emis#^ESCTAM784250","scheme":"EMIS (inc. Read2 like) namespace"},{"name":"Amputation of right foot","iri":"http://endhealth.info/emis#^ESCTAM784250","scheme":"EMIS (inc. Read2 like) namespace"}] }
+      props: { data: SIMPLE_MAP }
     });
 
     console.warn = warn;
-
   });
 
-  it("mounts", async() => {
-    expect(wrapper.vm.selected).toStrictEqual({});
+  it("mounts", async () => {
     expect(wrapper.vm.loading).toBe(false);
-    expect(wrapper.vm.data).toStrictEqual([{"name":"Amputation of right foot","iri":"http://endhealth.info/emis#^ESCTAM784250","scheme":"EMIS (inc. Read2 like) namespace"},{"name":"Amputation of right foot","iri":"http://endhealth.info/emis#^ESCTAM784250","scheme":"EMIS (inc. Read2 like) namespace"}]);
+    expect(wrapper.vm.data).toStrictEqual(SIMPLE_MAP);
     expect(wrapper.vm.scrollHeight).toBe("500px");
     expect(wrapper.vm.rows).toBe(25);
   });
 
-  it("adds event listener to setHeight and Scroll on resize", async() => {
+  it("adds event listener to setHeight and Scroll on resize", async () => {
     await flushPromises();
     const spy = jest.spyOn(wrapper.vm, "setTableWidth");
     window.dispatchEvent(new Event("resize"));

@@ -6,15 +6,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/runtime-core";
-import {
-  getColourFromType,
-  getIconFromType
-} from "@/helpers/ConceptTypeMethods";
+import { defineComponent, PropType } from "@vue/runtime-core";
+import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
+import { TTIriRef } from "@/models/TripleTree";
 
 export default defineComponent({
   name: "PanelHeader",
-  props: ["types", "header"],
+  props: {
+    types: { type: Array as PropType<Array<TTIriRef>> },
+    header: { type: String }
+  },
   data() {
     return {
       icon: "",
@@ -22,7 +23,7 @@ export default defineComponent({
     };
   },
   watch: {
-    types(newValue) {
+    types(newValue): void {
       if (newValue.length > 0) {
         this.color = "color: " + getColourFromType(newValue);
         this.icon = getIconFromType(newValue);
@@ -31,5 +32,3 @@ export default defineComponent({
   }
 });
 </script>
-
-<style scoped></style>

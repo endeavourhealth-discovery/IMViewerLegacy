@@ -8,30 +8,110 @@ import Button from "primevue/button";
 import EntityService from "@/services/EntityService";
 import { FilterMatchMode } from "primevue/api";
 import LoggerService from "@/services/LoggerService";
-import Swal from "sweetalert2";
+import Menu from "primevue/menu";
 
 describe("Members.vue", () => {
   let wrapper: any;
   let mockRouter: any;
   let mockToast: any;
   let docSpy: any;
+  let testMembers = {
+    valueSet: {
+      name: "CEG 16+1 Ethnic category (concept set)",
+      "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16"
+    },
+    members: [
+      {
+        entity: { name: "African American (ethnic group)", "@id": "http://snomed.info/sct#15086000" },
+        code: "15086000",
+        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+        label: 'Subset - "other Black, African or Caribbean background"',
+        type: "SUBSET",
+        directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
+      },
+      {
+        entity: { name: "African race (racial group)", "@id": "http://snomed.info/sct#413464008" },
+        code: "413464008",
+        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+        label: 'Subset - "other Black, African or Caribbean background"',
+        type: "SUBSET",
+        directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
+      },
+      {
+        entity: { name: "Abyssinians (Amharas) (ethnic group)", "@id": "http://snomed.info/sct#88790004" },
+        code: "88790004",
+        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+        label: "Subset - African",
+        type: "SUBSET",
+        directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+      },
+      {
+        entity: { name: "African - ethnic category 2001 census (finding)", "@id": "http://snomed.info/sct#92491000000104" },
+        code: "92491000000104",
+        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+        label: "Subset - African",
+        type: "SUBSET",
+        directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+      },
+      {
+        entity: { name: "African origin (finding)", "@id": "http://snomed.info/sct#160514004" },
+        code: "160514004",
+        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+        label: "Subset - African",
+        type: "SUBSET",
+        directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+      }
+    ],
+    limited: false
+  };
 
-  beforeEach(async() => {
+  let testCombinedMembers = [
+    {
+      entity: { name: "African American (ethnic group)", "@id": "http://snomed.info/sct#15086000" },
+      code: "15086000",
+      scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+      label: 'Subset - "other Black, African or Caribbean background"',
+      type: "SUBSET",
+      directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
+    },
+    {
+      entity: { name: "African race (racial group)", "@id": "http://snomed.info/sct#413464008" },
+      code: "413464008",
+      scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+      label: 'Subset - "other Black, African or Caribbean background"',
+      type: "SUBSET",
+      directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
+    },
+    {
+      entity: { name: "Abyssinians (Amharas) (ethnic group)", "@id": "http://snomed.info/sct#88790004" },
+      code: "88790004",
+      scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+      label: "Subset - African",
+      type: "SUBSET",
+      directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+    },
+    {
+      entity: { name: "African - ethnic category 2001 census (finding)", "@id": "http://snomed.info/sct#92491000000104" },
+      code: "92491000000104",
+      scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+      label: "Subset - African",
+      type: "SUBSET",
+      directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+    },
+    {
+      entity: { name: "African origin (finding)", "@id": "http://snomed.info/sct#160514004" },
+      code: "160514004",
+      scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+      label: "Subset - African",
+      type: "SUBSET",
+      directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+    }
+  ];
+
+  beforeEach(async () => {
     jest.resetAllMocks();
 
-    EntityService.getEntityMembers = jest.fn().mockResolvedValue({ data: {
-      "valueSet":{
-        "name":"CEG 16+1 Ethnic category (concept set)","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16"
-      },
-      "members":[
-        {"entity":{"name":"African American (ethnic group)","@id":"http://snomed.info/sct#15086000"},"code":"15086000","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - \"other Black, African or Caribbean background\"","type":"SUBSET","directParent":{"name":"\"other Black, African or Caribbean background\"","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_P"}},
-        {"entity":{"name":"African race (racial group)","@id":"http://snomed.info/sct#413464008"},"code":"413464008","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - \"other Black, African or Caribbean background\"","type":"SUBSET","directParent":{"name":"\"other Black, African or Caribbean background\"","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_P"}},
-        {"entity":{"name":"Abyssinians (Amharas) (ethnic group)","@id":"http://snomed.info/sct#88790004"},"code":"88790004","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}},
-        {"entity":{"name":"African - ethnic category 2001 census (finding)","@id":"http://snomed.info/sct#92491000000104"},"code":"92491000000104","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}},
-        {"entity":{"name":"African origin (finding)","@id":"http://snomed.info/sct#160514004"},"code":"160514004","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}}
-      ],
-      "limited":false
-    }});
+    EntityService.getEntityMembers = jest.fn().mockResolvedValue(testMembers);
     mockRouter = { push: jest.fn() };
     mockToast = { add: jest.fn() };
 
@@ -46,7 +126,7 @@ describe("Members.vue", () => {
 
     wrapper = shallowMount(Members, {
       global: {
-        components: { DataTable, InputText, Checkbox, Column, Button },
+        components: { DataTable, InputText, Checkbox, Column, Button, Menu },
         mocks: { $router: mockRouter, $toast: mockToast }
       },
       props: { conceptIri: "http://endhealth.info/im#VSET_EthnicCategoryCEG16" }
@@ -62,37 +142,31 @@ describe("Members.vue", () => {
 
   it("mounts", () => {
     expect(wrapper.vm.loading).toBe(false);
-    expect(wrapper.vm.members).toStrictEqual({
-      "valueSet":{
-        "name":"CEG 16+1 Ethnic category (concept set)","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16"
-      },
-      "members":[
-        {"entity":{"name":"African American (ethnic group)","@id":"http://snomed.info/sct#15086000"},"code":"15086000","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - \"other Black, African or Caribbean background\"","type":"SUBSET","directParent":{"name":"\"other Black, African or Caribbean background\"","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_P"}},
-        {"entity":{"name":"African race (racial group)","@id":"http://snomed.info/sct#413464008"},"code":"413464008","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - \"other Black, African or Caribbean background\"","type":"SUBSET","directParent":{"name":"\"other Black, African or Caribbean background\"","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_P"}},
-        {"entity":{"name":"Abyssinians (Amharas) (ethnic group)","@id":"http://snomed.info/sct#88790004"},"code":"88790004","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}},
-        {"entity":{"name":"African - ethnic category 2001 census (finding)","@id":"http://snomed.info/sct#92491000000104"},"code":"92491000000104","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}},
-        {"entity":{"name":"African origin (finding)","@id":"http://snomed.info/sct#160514004"},"code":"160514004","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}}
-      ],
-      "limited":false
-    });
-    expect(wrapper.vm.combinedMembers).toStrictEqual([
-      {"entity":{"name":"African American (ethnic group)","@id":"http://snomed.info/sct#15086000"},"code":"15086000","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - \"other Black, African or Caribbean background\"","type":"SUBSET","directParent":{"name":"\"other Black, African or Caribbean background\"","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_P"}},
-      {"entity":{"name":"African race (racial group)","@id":"http://snomed.info/sct#413464008"},"code":"413464008","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - \"other Black, African or Caribbean background\"","type":"SUBSET","directParent":{"name":"\"other Black, African or Caribbean background\"","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_P"}},
-      {"entity":{"name":"Abyssinians (Amharas) (ethnic group)","@id":"http://snomed.info/sct#88790004"},"code":"88790004","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}},
-      {"entity":{"name":"African - ethnic category 2001 census (finding)","@id":"http://snomed.info/sct#92491000000104"},"code":"92491000000104","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}},
-      {"entity":{"name":"African origin (finding)","@id":"http://snomed.info/sct#160514004"},"code":"160514004","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}}
-    ]);
+    expect(wrapper.vm.members).toStrictEqual(testMembers);
+    expect(wrapper.vm.combinedMembers).toStrictEqual(testCombinedMembers);
     expect(wrapper.vm.filters1).toStrictEqual({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS }
     });
-    expect(wrapper.vm.expandMembers).toBe(false);
-    expect(wrapper.vm.expandSubsets).toBe(false);
     expect(wrapper.vm.selected).toStrictEqual({});
-    expect(wrapper.vm.subsets).toStrictEqual(["Subset - \"other Black, African or Caribbean background\"", "Subset - African"]);
+    expect(wrapper.vm.subsets).toStrictEqual(['Subset - "other Black, African or Caribbean background"', "Subset - African"]);
     expect(wrapper.vm.expandedRowGroups).toStrictEqual(["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]);
+    expect(wrapper.vm.downloadMenu).toHaveLength(3);
+    expect(wrapper.vm.downloadMenu[0].label).toBe("Definition");
+    expect(wrapper.vm.downloadMenu[1].label).toBe("Expanded (v2)");
+    expect(wrapper.vm.downloadMenu[2].label).toBe("Expanded (v1)");
   });
 
-  it("adds event listener to setTableWidth on resize", async() => {
+  it("can run downloadMenu commands", () => {
+    wrapper.vm.download = jest.fn();
+    wrapper.vm.downloadMenu[0].command();
+    expect(wrapper.vm.download).toHaveBeenLastCalledWith(false);
+    wrapper.vm.downloadMenu[1].command();
+    expect(wrapper.vm.download).toHaveBeenLastCalledWith(true);
+    wrapper.vm.downloadMenu[2].command();
+    expect(wrapper.vm.download).toHaveBeenLastCalledWith(true, true);
+  });
+
+  it("adds event listener to setTableWidth on resize", async () => {
     console.error = jest.fn();
     await flushPromises();
     const spy = jest.spyOn(wrapper.vm, "setTableWidth");
@@ -117,24 +191,9 @@ describe("Members.vue", () => {
     expect(wrapper.vm.setTableWidth).toHaveBeenCalledTimes(1);
   });
 
-  it("can watch conceptIri", async() => {
+  it("can watch conceptIri", async () => {
     wrapper.vm.getMembers = jest.fn();
     wrapper.vm.$options.watch.conceptIri.call(wrapper.vm, "http://snomed.info/sct#92491000000104");
-    expect(wrapper.vm.expandMembers).toBe(false);
-    expect(wrapper.vm.expandSubsets).toBe(false);
-    expect(wrapper.vm.getMembers).toHaveBeenCalledTimes(1);
-  });
-
-  it("can watch expandMembers", async() => {
-    wrapper.vm.getMembers = jest.fn();
-    wrapper.vm.$options.watch.expandMembers.call(wrapper.vm, true);
-    expect(wrapper.vm.getMembers).toHaveBeenCalledTimes(1);
-  });
-
-  it("can watch expandSubsets", async() => {
-    wrapper.vm.getMembers = jest.fn();
-    wrapper.vm.$options.watch.expandSubsets.call(wrapper.vm, true);
-    expect(wrapper.vm.subsets).toStrictEqual([]);
     expect(wrapper.vm.getMembers).toHaveBeenCalledTimes(1);
   });
 
@@ -151,10 +210,10 @@ describe("Members.vue", () => {
   });
 
   it("can route onRowSelect", () => {
-    wrapper.vm.selected = { entity: { "@id": "testIri" }};
+    wrapper.vm.selected = { entity: { "@id": "testIri" } };
     wrapper.vm.onRowSelect();
     expect(mockRouter.push).toHaveBeenCalledTimes(1);
-    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Concept", params: { selectedIri: "testIri" }});
+    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Concept", params: { selectedIri: "testIri" } });
     expect(wrapper.emitted().memberClick).toBeTruthy();
   });
 
@@ -165,147 +224,54 @@ describe("Members.vue", () => {
     expect(wrapper.emitted().memberClick).toBeFalsy();
   });
 
-  it("can getMembers ___ success", async() => {
+  it("can getMembers ___ success", async () => {
     wrapper.vm.members = {};
-    wrapper.vm.expandMembersSizeCheck = jest.fn();
     wrapper.vm.setTableWidth = jest.fn();
+    wrapper.vm.sortMembers = jest.fn();
+    wrapper.vm.setSubsets = jest.fn();
     wrapper.vm.getMembers();
     expect(wrapper.vm.loading).toBe(true);
     expect(wrapper.vm.expandedRowGroups).toStrictEqual(["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]);
     expect(wrapper.vm.selected).toStrictEqual({});
     expect(wrapper.vm.subsets).toStrictEqual([]);
     expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16", false, false, undefined);
+    expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16", false, false, 2000);
     await flushPromises();
-    expect(wrapper.vm.members).toStrictEqual({
-      "valueSet":{
-        "name":"CEG 16+1 Ethnic category (concept set)","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16"
+    expect(wrapper.vm.members).toStrictEqual(testMembers);
+    expect(wrapper.vm.loading).toBe(false);
+    expect(wrapper.vm.setTableWidth).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.sortMembers).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.setSubsets).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.combinedMembers).toStrictEqual(testCombinedMembers);
+  });
+
+  it("can setSubsets", async () => {
+    wrapper.vm.combinedMembers.push({
+      entity: { name: "Gambians (ethnic group)", "@id": "http://snomed.info/sct#90822005" },
+      code: "90822005",
+      scheme: { name: "Snomed-CT code", "@id": "http://endhealth.info/im#SnomedCodeScheme" },
+      label: "Subset - African",
+      type: "MemberIncluded",
+      directParent: {
+        name: "African",
+        "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"
+      }
+    });
+    wrapper.vm.combinedMembers.push({
+      entity: {
+        name: "Advice given about severe acute respiratory syndrome coronavirus 2 infection (situation)",
+        "@id": "http://snomed.info/sct#1240721000000105"
       },
-      "members":[
-        {"entity":{"name":"African American (ethnic group)","@id":"http://snomed.info/sct#15086000"},"code":"15086000","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - \"other Black, African or Caribbean background\"","type":"SUBSET","directParent":{"name":"\"other Black, African or Caribbean background\"","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_P"}},
-        {"entity":{"name":"African race (racial group)","@id":"http://snomed.info/sct#413464008"},"code":"413464008","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - \"other Black, African or Caribbean background\"","type":"SUBSET","directParent":{"name":"\"other Black, African or Caribbean background\"","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_P"}},
-        {"entity":{"name":"Abyssinians (Amharas) (ethnic group)","@id":"http://snomed.info/sct#88790004"},"code":"88790004","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}},
-        {"entity":{"name":"African - ethnic category 2001 census (finding)","@id":"http://snomed.info/sct#92491000000104"},"code":"92491000000104","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}},
-        {"entity":{"name":"African origin (finding)","@id":"http://snomed.info/sct#160514004"},"code":"160514004","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}}
-      ],
-      "limited":false
+      code: "1240721000000105",
+      scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+      label: "a_MemberIncluded",
+      type: "INCLUDED",
+      directParent: { name: "Advice or consultation about Covid value set", "@id": "http://endhealth.info/im#CSET_Covid5" }
     });
-    expect(wrapper.vm.expandMembersSizeCheck).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.loading).toBe(false);
-    expect(wrapper.vm.setTableWidth).toHaveBeenCalledTimes(1);
-  });
-
-  it("can getMembers ___ fail", async() => {
-    EntityService.getEntityMembers = jest.fn().mockRejectedValue(false);
-    wrapper.vm.members = {};
-    wrapper.vm.expandMembersSizeCheck = jest.fn();
-    wrapper.vm.setTableWidth = jest.fn();
-    wrapper.vm.getMembers();
-    expect(wrapper.vm.loading).toBe(true);
-    expect(wrapper.vm.expandedRowGroups).toStrictEqual(["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]);
-    expect(wrapper.vm.selected).toStrictEqual({});
-    expect(wrapper.vm.subsets).toStrictEqual([]);
-    expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16", false, false, undefined);
-    await flushPromises();
-    expect(wrapper.vm.members).toStrictEqual({});
-    expect(wrapper.vm.expandMembersSizeCheck).not.toHaveBeenCalled();
-    expect(wrapper.vm.loading).toBe(false);
-    expect(wrapper.vm.setTableWidth).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to get members from server"));
-  });
-
-  it("can getMembers ___ expandMembers", async() => {
-    EntityService.getEntityMembers = jest.fn().mockRejectedValue(false);
-    wrapper.vm.members = {};
-    wrapper.vm.expandMembers = true;
-    wrapper.vm.expandMembersSizeCheck = jest.fn();
-    wrapper.vm.setTableWidth = jest.fn();
-    wrapper.vm.getMembers();
-    expect(wrapper.vm.loading).toBe(true);
-    expect(wrapper.vm.expandedRowGroups).toStrictEqual(["MemberExpanded"]);
-    expect(wrapper.vm.selected).toStrictEqual({});
-    expect(wrapper.vm.subsets).toStrictEqual([]);
-    expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16", true, false, 2000);
-  });
-
-  it("can setSubsets", () => {
-    wrapper.vm.combinedMembers.push({"entity":{"name":"Gambians (ethnic group)","@id":"http://snomed.info/sct#90822005"},"code":"90822005","scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"},"type":"MemberIncluded"});
     wrapper.vm.subsets = [];
+    await wrapper.vm.$nextTick();
     wrapper.vm.setSubsets();
-    expect(wrapper.vm.subsets).toStrictEqual(["Subset - \"other Black, African or Caribbean background\"", "Subset - African"]);
-  });
-
-  it("can setSubsets ___ none", () => {
-    wrapper.vm.combinedMembers = [{"entity":{"name":"Gambians (ethnic group)","@id":"http://snomed.info/sct#90822005"},"code":"90822005","scheme":{"name":"Snomed-CT code","@id":"http://endhealth.info/im#SnomedCodeScheme"},"label":"MemberIncluded","type":"INCLUDED"}];
-    wrapper.vm.subsets = [];
-    wrapper.vm.setSubsets();
-    expect(wrapper.vm.subsets).toStrictEqual([]);
-  });
-
-  it("can expandMembersSizeCheck ___ unlimited", async() => {
-    wrapper.vm.combinedMembers = [];
-    wrapper.vm.sortMembers = jest.fn();
-    wrapper.vm.setSubsets = jest.fn();
-    wrapper.vm.download = jest.fn();
-    wrapper.vm.expandMembersSizeCheck();
-    expect(wrapper.vm.sortMembers).toHaveBeenCalled();
-    expect(wrapper.vm.setSubsets).toHaveBeenCalled();
-    expect(wrapper.vm.download).not.toHaveBeenCalled();
-    expect(wrapper.vm.combinedMembers).toStrictEqual([
-      {"entity":{"name":"African American (ethnic group)","@id":"http://snomed.info/sct#15086000"},"code":"15086000","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - \"other Black, African or Caribbean background\"","type":"SUBSET","directParent":{"name":"\"other Black, African or Caribbean background\"","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_P"}},
-        {"entity":{"name":"African race (racial group)","@id":"http://snomed.info/sct#413464008"},"code":"413464008","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - \"other Black, African or Caribbean background\"","type":"SUBSET","directParent":{"name":"\"other Black, African or Caribbean background\"","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_P"}},
-        {"entity":{"name":"Abyssinians (Amharas) (ethnic group)","@id":"http://snomed.info/sct#88790004"},"code":"88790004","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}},
-        {"entity":{"name":"African - ethnic category 2001 census (finding)","@id":"http://snomed.info/sct#92491000000104"},"code":"92491000000104","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}},
-        {"entity":{"name":"African origin (finding)","@id":"http://snomed.info/sct#160514004"},"code":"160514004","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}}]);
-  });
-
-  it("can expandMembersSizeCheck ___ swal confirm", async() => {
-    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: true }));
-    wrapper.vm.members.limited = true;
-    wrapper.vm.sortMembers = jest.fn();
-    wrapper.vm.setSubsets = jest.fn();
-    wrapper.vm.download = jest.fn();
-    wrapper.vm.expandMembersSizeCheck();
-    expect(wrapper.vm.sortMembers).not.toHaveBeenCalled();
-    expect(wrapper.vm.setSubsets).not.toHaveBeenCalled();
-    expect(Swal.fire).toHaveBeenCalledTimes(1);
-    expect(Swal.fire).toHaveBeenCalledWith({
-      icon: "warning",
-      title: "Large data set",
-      text:
-        "Expanding this set results in a large amount of data.\n Would you like to download it instead?",
-      confirmButtonText: "Download",
-      showCancelButton: true
-    });
-    await flushPromises();
-    expect(wrapper.vm.download).toHaveBeenCalledTimes(1);
-  });
-
-  it("can expandMembersSizeCheck ___ swal cancel", async() => {
-    Swal.fire = jest.fn().mockImplementation(() => Promise.resolve({ isConfirmed: false }));
-    wrapper.vm.members.limited = true;
-    wrapper.vm.sortMembers = jest.fn();
-    wrapper.vm.setSubsets = jest.fn();
-    wrapper.vm.download = jest.fn();
-    wrapper.vm.expandMembersSizeCheck();
-    expect(wrapper.vm.sortMembers).not.toHaveBeenCalled();
-    expect(wrapper.vm.setSubsets).not.toHaveBeenCalled();
-    expect(Swal.fire).toHaveBeenCalledTimes(1);
-    expect(Swal.fire).toHaveBeenCalledWith({
-      icon: "warning",
-      title: "Large data set",
-      text:
-        "Expanding this set results in a large amount of data.\n Would you like to download it instead?",
-      confirmButtonText: "Download",
-      showCancelButton: true
-    });
-    await flushPromises();
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.warn("Member expansion cancelled as results exceeded displayable limit."));
-    expect(wrapper.vm.download).not.toHaveBeenCalled();
+    expect(wrapper.vm.subsets).toStrictEqual(['Subset - "other Black, African or Caribbean background"', "Subset - African"]);
   });
 
   it("can download ___ success", () => {
@@ -313,7 +279,22 @@ describe("Members.vue", () => {
     window.open = jest.fn().mockReturnValue(true);
     wrapper.vm.download(true);
     expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith("/test/api/entity/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&members=true&expandMembers=true&format=excel");
+    expect(window.open).toHaveBeenCalledWith(
+      "/test/api/set/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&expandMembers=true&v1=false&format=excel"
+    );
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Download will begin shortly"));
+    window.open = openStore;
+  });
+
+  it("can download ___ success ___ v1", () => {
+    const openStore = window.open;
+    window.open = jest.fn().mockReturnValue(true);
+    wrapper.vm.download(true, true);
+    expect(window.open).toHaveBeenCalledTimes(1);
+    expect(window.open).toHaveBeenCalledWith(
+      "/test/api/set/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&expandMembers=true&v1=true&format=excel"
+    );
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Download will begin shortly"));
     window.open = openStore;
@@ -324,23 +305,74 @@ describe("Members.vue", () => {
     window.open = jest.fn().mockReturnValue(false);
     wrapper.vm.download(true);
     expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith("/test/api/entity/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&members=true&expandMembers=true&format=excel");
+    expect(window.open).toHaveBeenCalledWith(
+      "/test/api/set/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&expandMembers=true&v1=false&format=excel"
+    );
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Download failed from server"));
     window.open = openStore;
   });
 
-  it("can sort members", () => {
+  it("can sort members ___ correct data", () => {
     wrapper.vm.members.members = [
-      {"entity":{"name":"Asian race (racial group)","@id":"http://snomed.info/sct#413582008"},"code":"413582008","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - any other Asian background","type":"SUBSET","directParent":{"name":"any other Asian background","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_L"}},
-      {"entity":{"name":"Mozambiquans (ethnic group)","@id":"http://snomed.info/sct#41076003"},"code":"41076003","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}},
-      {"entity":{"name":"Black, other, non-mixed origin (ethnic group)","@id":"http://snomed.info/sct#185989004"},"code":"185989004","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - \"other Black, African or Caribbean background\"","type":"SUBSET","directParent":{"name":"\"other Black, African or Caribbean background\"","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_P"}}
+      {
+        entity: { name: "Asian race (racial group)", "@id": "http://snomed.info/sct#413582008" },
+        code: "413582008",
+        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+        label: "Subset - any other Asian background",
+        type: "SUBSET",
+        directParent: { name: "any other Asian background", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_L" }
+      },
+      {
+        entity: { name: "Mozambiquans (ethnic group)", "@id": "http://snomed.info/sct#41076003" },
+        code: "41076003",
+        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+        label: "Subset - African",
+        type: "SUBSET",
+        directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+      },
+      {
+        entity: { name: "Black, other, non-mixed origin (ethnic group)", "@id": "http://snomed.info/sct#185989004" },
+        code: "185989004",
+        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+        label: 'Subset - "other Black, African or Caribbean background"',
+        type: "SUBSET",
+        directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
+      }
     ];
     wrapper.vm.sortMembers();
     expect(wrapper.vm.members.members).toStrictEqual([
-      {"entity":{"name":"Black, other, non-mixed origin (ethnic group)","@id":"http://snomed.info/sct#185989004"},"code":"185989004","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - \"other Black, African or Caribbean background\"","type":"SUBSET","directParent":{"name":"\"other Black, African or Caribbean background\"","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_P"}},
-      {"entity":{"name":"Mozambiquans (ethnic group)","@id":"http://snomed.info/sct#41076003"},"code":"41076003","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - African","type":"SUBSET","directParent":{"name":"African","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_N"}},
-      {"entity":{"name":"Asian race (racial group)","@id":"http://snomed.info/sct#413582008"},"code":"413582008","scheme":{"name":"Snomed-CT namespace","@id":"http://snomed.info/sct#"},"label":"Subset - any other Asian background","type":"SUBSET","directParent":{"name":"any other Asian background","@id":"http://endhealth.info/im#VSET_EthnicCategoryCEG16_L"}}]);
+      {
+        entity: { name: "Black, other, non-mixed origin (ethnic group)", "@id": "http://snomed.info/sct#185989004" },
+        code: "185989004",
+        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+        label: 'Subset - "other Black, African or Caribbean background"',
+        type: "SUBSET",
+        directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
+      },
+      {
+        entity: { name: "Mozambiquans (ethnic group)", "@id": "http://snomed.info/sct#41076003" },
+        code: "41076003",
+        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+        label: "Subset - African",
+        type: "SUBSET",
+        directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+      },
+      {
+        entity: { name: "Asian race (racial group)", "@id": "http://snomed.info/sct#413582008" },
+        code: "413582008",
+        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+        label: "Subset - any other Asian background",
+        type: "SUBSET",
+        directParent: { name: "any other Asian background", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_L" }
+      }
+    ]);
+  });
+
+  it("can sort members ___ incorrect data", () => {
+    wrapper.vm.members.members = [];
+    wrapper.vm.sortMembers();
+    expect(wrapper.vm.members.members).toStrictEqual([]);
   });
 
   it("resizes", () => {

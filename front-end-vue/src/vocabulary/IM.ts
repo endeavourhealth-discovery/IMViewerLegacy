@@ -2,9 +2,12 @@ export class IM {
   public static NAMESPACE = "http://endhealth.info/im#";
   public static PREFIX = "im";
   public static IRI = "@id";
+  public static CONCEPT = IM.NAMESPACE + "Concept";
+  public static CONCEPT_SET_GROUP = IM.NAMESPACE + "ConceptSetGroup";
   public static CODE = IM.NAMESPACE + "code";
   public static SCHEME = IM.NAMESPACE + "scheme";
   public static STATUS = IM.NAMESPACE + "Status";
+  public static HAS_STATUS = IM.NAMESPACE + "status";
   public static IS_A = IM.NAMESPACE + "isA";
   public static ROLE_GROUP = IM.NAMESPACE + "roleGroup";
   public static IS_CONTAINED_IN = IM.NAMESPACE + "isContainedIn";
@@ -18,11 +21,13 @@ export class IM {
   public static ONE_OF = IM.NAMESPACE + "oneOf";
   public static MAP_ADVICE = IM.NAMESPACE + "mapAdvice";
   public static MATCHED_TO = IM.NAMESPACE + "matchedTo";
+  public static MATCHED_FROM = IM.NAMESPACE + "matchedFrom";
   public static MAP_PRIORITY = IM.NAMESPACE + "mapPriority";
   public static ASSURANCE_LEVEL = IM.NAMESPACE + "assuranceLevel";
   public static COMBINATION_OF = IM.NAMESPACE + "combinationOf";
   public static SOME_OF = IM.NAMESPACE + "someOf";
   public static MAPPED_TO = IM.NAMESPACE + "mappedTo";
+  public static MAPPED_FROM = IM.NAMESPACE + "mappedFrom";
   //maps assurance levels
   public static NATIONALLY_ASSURED_UK = IM.NAMESPACE + "NationallyAssuredUK";
 
@@ -35,6 +40,9 @@ export class IM {
   public static RECORD_TYPE = IM.NAMESPACE + "RecordType";
   public static FOLDER = IM.NAMESPACE + "Folder";
   public static DATA_PROPERTY = IM.NAMESPACE + "DataProperty";
+  public static ORGANISATION = IM.NAMESPACE + "Organisation";
+  public static ADDRESS = IM.NAMESPACE + "address";
+  public static MODELLING_ENTITY_TYPE = IM.NAMESPACE + "ModellingEntityType";
 
   // code schemes
   public static CODE_SCHEME = IM.NAMESPACE + "CodeScheme";
@@ -58,4 +66,10 @@ export class IM {
   public static MODULE_CATALOGUE = IM.NAMESPACE + "Catalogue";
   public static MODULE_QUERIES = IM.NAMESPACE + "QT_QueryTemplates";
   public static MODULE_IM = IM.NAMESPACE + "InformationModel";
+
+  // Stats reports
+  public static CONCEPT_CATEGORY = IM.NAMESPACE + "ontologyOverview";
+  public static CONCEPT_TYPES = IM.NAMESPACE + "ontologyConceptTypes";
+  public static CONCEPT_SCHEMES = IM.NAMESPACE + "ontologyConceptSchemes";
+  public static CONCEPT_STATUS = IM.NAMESPACE + "ontologyConceptStatus";
 }

@@ -3,23 +3,19 @@
 // Class, Record Type
 // Everything else
 
-import { ConceptReference } from "@/models/ConceptReference";
+import { TTIriRef } from "@/models/TripleTree";
 import { IM } from "@/vocabulary/IM";
-import { OWL } from "@/vocabulary/OWL";
+import { RDF } from "@/vocabulary/RDF";
 import { SHACL } from "@/vocabulary/SHACL";
 
-export function isOfTypes(
-  conceptTypeElements: ConceptReference[],
-  ...types: string[]
-): boolean {
+export function isOfTypes(conceptTypeElements: TTIriRef[], ...types: string[]): boolean {
+  if (!conceptTypeElements || !conceptTypeElements.length) {
+    return false;
+  }
   let found = false;
   let index = 0;
   while (!found && index < types.length) {
-    if (
-      conceptTypeElements?.some(
-        (e: any) => e.iri === types[index] || e[IM.IRI] === types[index]
-      )
-    ) {
+    if (conceptTypeElements.some((e: any) => e.iri === types[index] || e[IM.IRI] === types[index])) {
       found = true;
     }
     index++;
@@ -27,22 +23,20 @@ export function isOfTypes(
   return found;
 }
 
-export function isValueSet(conceptTypes: ConceptReference[]): boolean {
-  return isOfTypes(
-    conceptTypes,
-    IM.SET,
-    IM.QUERY_SET,
-    IM.VALUE_SET,
-    IM.CONCEPT_SET
-  );
+export function isValueSet(conceptTypes: TTIriRef[]): boolean {
+  return isOfTypes(conceptTypes, IM.SET, IM.QUERY_SET, IM.VALUE_SET, IM.CONCEPT_SET, IM.CONCEPT_SET_GROUP);
 }
 
-export function getIconFromType(conceptTypes: ConceptReference[]): string {
+export function isProperty(conceptTypes: TTIriRef[]): boolean {
+  return isOfTypes(conceptTypes, RDF.PROPERTY);
+}
+
+export function getIconFromType(conceptTypes: TTIriRef[]): string {
   if (isOfTypes(conceptTypes, SHACL.NODESHAPE)) {
     return "fas fa-fw fa-project-diagram";
   }
 
-  if (isOfTypes(conceptTypes, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY)) {
+  if (isProperty(conceptTypes)) {
     return "far fa-fw fa-edit";
   }
 
@@ -62,7 +56,7 @@ export function getIconFromType(conceptTypes: ConceptReference[]): string {
 }
 
 const palette = require("../../node_modules/google-palette");
-export function getColourFromType(conceptTypes: ConceptReference[]): string {
+export function getColourFromType(conceptTypes: TTIriRef[]): string {
   const bgs = palette("tol-rainbow", 6);
   const bgsFixed = bgs.map((color: string) => "#" + color + "88");
 
@@ -70,7 +64,7 @@ export function getColourFromType(conceptTypes: ConceptReference[]): string {
     return bgsFixed[0];
   }
 
-  if (isOfTypes(conceptTypes, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY)) {
+  if (isProperty(conceptTypes)) {
     return bgsFixed[5];
   }
 

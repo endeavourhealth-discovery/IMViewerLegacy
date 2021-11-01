@@ -1,5 +1,5 @@
 <template>
-  <div id="term-codes-container" :style="{ width: size }">
+  <div v-if="hasData" id="term-codes-container" :style="{ width: size }">
     <div class="head-container">
       <strong class="label">{{ label }}</strong>
       <span>&nbsp;({{ data.length }})</span>
@@ -16,13 +16,7 @@
         }"
       />
     </div>
-    <DataTable
-      :value="data"
-      :paginator="data.length > 5 ? true : false"
-      :rows="5"
-      id="term-codes-table"
-      class="p-d-none"
-    >
+    <DataTable :value="data" :paginator="data.length > 5 ? true : false" :rows="5" id="term-codes-table" class="p-d-none">
       <template #empty>
         No records found
       </template>
@@ -46,14 +40,21 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
+import { TermCode } from "@/models/terms/TermCode";
+import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "TermsTable",
   props: {
     label: { type: String },
-    data: { type: Array as PropType<Array<unknown>> },
+    data: { type: Array as PropType<Array<TermCode>> },
     size: { type: String },
     id: { type: String }
+  },
+  computed: {
+    hasData(): boolean {
+      return isArrayHasLength(this.data)
+    }
   },
   data() {
     return {
@@ -61,10 +62,8 @@ export default defineComponent({
     };
   },
   methods: {
-    setButtonExpanded() {
-      this.buttonExpanded
-        ? (this.buttonExpanded = false)
-        : (this.buttonExpanded = true);
+    setButtonExpanded(): void {
+      this.buttonExpanded = !this.buttonExpanded;
     }
   }
 });

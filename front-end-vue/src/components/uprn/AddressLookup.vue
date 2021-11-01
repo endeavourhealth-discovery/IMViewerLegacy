@@ -2,22 +2,10 @@
   <g-map :disableUI="false" :zoom="12" mapType="roadmap" :pin="pin" />
   <div id="address-search-container">
     <div class="search-button-container">
-      <InputText
-        type="text"
-        v-model="value"
-        placeholder='Enter address, e.g. "10 Downing St,Westminster,London,SW1A2AA"'
-        @keyup.enter="search()"
-      />
+      <InputText type="text" v-model="value" placeholder='Enter address, e.g. "10 Downing St,Westminster,London,SW1A2AA"' @keyup.enter="search()" />
       <Button class="btn-search" icon="fas fa-search" @click="search()" />
     </div>
-    <Dropdown
-      v-model="selectedArea"
-      :options="postalAreas"
-      optionLabel="display"
-      optionValue="value"
-      placeholder="Postal Area"
-      style="width: 14rem;"
-    />
+    <Dropdown v-model="selectedArea" :options="postalAreas" optionLabel="display" optionValue="value" placeholder="Postal Area" style="width: 14rem;" />
   </div>
   <div class="content" ref="uprn-info" :hidden="!match.Matched">
     <h1 id="firstHeading" class="firstHeading">UPRN : {{ match.UPRN }}</h1>
@@ -147,34 +135,28 @@ export default defineComponent({
     async search() {
       this.pin = null;
       console.log("Searching [" + this.value + "]");
-      await UprnService.findUprn(this.value, this.selectedArea)
-        .then(result => {
-          this.match = result.data;
-          console.log(result);
-          if (this.match.Matched) {
-            console.log("Match found");
-            this.getUprn();
-          } else {
-            console.log("No match");
-            this.$toast.add(LoggerService.warn("No match found"));
-          }
-        })
-        .catch(error => {
-          this.$toast.add(
-            LoggerService.error("Error searching address", error)
-          );
-        });
+      this.match = await UprnService.findUprn(this.value, this.selectedArea);
+      if (this.match.Matched) {
+        console.log("Match found");
+        this.getUprn();
+      } else {
+        console.log("No match");
+        this.$toast.add(LoggerService.warn("No match found"));
+      }
     },
+
     async getUprn() {
-      const uprn = (await UprnService.getUprn(this.match.UPRN)).data;
-      this.pin = {
-        lat: +uprn.Latitude,
-        lng: +uprn.Longitude,
-        xCoor: uprn.XCoordinate,
-        yCoor: uprn.YCoordinate,
-        pointCode: uprn.Pointcode,
-        info: this.$refs["uprn-info"]
-      };
+      const uprn = await UprnService.getUprn(this.match.UPRN);
+      if (Object.keys(uprn).length) {
+        this.pin = {
+          lat: +uprn.Latitude,
+          lng: +uprn.Longitude,
+          xCoor: uprn.XCoordinate,
+          yCoor: uprn.YCoordinate,
+          pointCode: uprn.Pointcode,
+          info: this.$refs["uprn-info"]
+        };
+      }
     },
 
     setSizes(data: { width: number; left: number }) {

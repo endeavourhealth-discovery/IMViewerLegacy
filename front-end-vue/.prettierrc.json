@@ -4,10 +4,9 @@
   "useTabs": false,
   "semi": true,
   "singleQuote": false,
-  "printWidth": 80,
+  "printWidth": 160,
   "quoteProps": "as-needed",
   "bracketSpacing": true,
   "bracketSameLine": false,
-  "arrowParens": "avoid",
-  "endOfLine": "lf"
+  "arrowParens": "avoid"
 }

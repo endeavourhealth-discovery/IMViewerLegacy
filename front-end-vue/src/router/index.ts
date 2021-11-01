@@ -3,6 +3,7 @@ import Home from "../views/Home.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Datamodel from "../views/Concept.vue";
 import Workflow from "../views/Workflow.vue";
+import Catalogue from "../views/Catalogue.vue";
 import UPRN from "../views/Uprn.vue";
 import User from "../views/User.vue";
 import Editor from "../views/Editor.vue";
@@ -142,6 +143,24 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       requiresLicense: true
     }
+  },
+  {
+    path: "/catalogue",
+    name: "Catalogue",
+    component: Catalogue,
+    meta: {
+      requiresLicense: true
+    },
+    children: [
+      {
+        path: "/individual/:selectedIri",
+        name: "Individual",
+        component: Catalogue,
+        meta: {
+          requiresLicense: true
+        }
+      }
+    ]
   },
   {
     path: "/uprn",

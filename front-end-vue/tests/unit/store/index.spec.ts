@@ -6,12 +6,10 @@ import LoggerService from "@/services/LoggerService";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import AuthService from "@/services/AuthService";
 import { CustomAlert } from "@/models/user/CustomAlert";
-import axios from "axios";
+import { IM } from "@/vocabulary/IM";
 
 describe("state", () => {
   it("should start with the correct values", () => {
-    const test = new Map<string, boolean>();
-    expect(store.state.loading).toEqual(test);
     expect(store.state.conceptIri).toBe("http://endhealth.info/im#DiscoveryOntology");
     expect(store.state.history).toEqual([]);
     expect(store.state.searchResults).toEqual([]);
@@ -22,13 +20,31 @@ describe("state", () => {
     expect(store.state.historyCount).toBe(0);
     expect(store.state.focusTree).toBe(false);
     expect(store.state.treeLocked).toBe(true);
+    expect(store.state.sideNavHierarchyFocus).toStrictEqual({
+      name: "Ontology",
+      fullName: "Ontologies",
+      iri: "http://endhealth.info/im#DiscoveryOntology",
+      route: "Dashboard"
+    });
+    expect(store.state.selectedEntityType).toBe("");
     expect(store.state.selectedFilters).toEqual({
       status: [],
       schemes: [],
       types: []
     });
-    expect(store.state.filterOptions).toStrictEqual({status: [], schemes: [], types: []});
+    expect(store.state.filterOptions).toStrictEqual({ status: [], schemes: [], types: [] });
     expect(store.state.quickFiltersStatus).toEqual(new Map<string, boolean>());
+    expect(store.state.moduleSelectedEntities).toStrictEqual(
+      new Map([
+        ["Ontology", IM.MODULE_ONTOLOGY],
+        ["Sets", IM.MODULE_SETS],
+        ["DataModel", IM.MODULE_DATA_MODEL],
+        ["Catalogue", IM.MODULE_CATALOGUE],
+        ["Queries", IM.MODULE_QUERIES]
+      ])
+    );
+    expect(store.state.activeModule).toBe("default");
+    expect(store.state.conceptActivePanel).toBe(0);
   });
 });
 
@@ -79,7 +95,7 @@ describe("mutations", () => {
   });
 
   it("can updateCurrentUser", () => {
-    const testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "colour/003-man.png" });
+    const testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", "colour/003-man.png");
     store.commit("updateCurrentUser", testUser);
     expect(store.state.currentUser).toEqual(testUser);
   });
@@ -131,17 +147,10 @@ describe("mutations", () => {
   });
 
   it("can updateQuickFiltersStatus", () => {
-    const testfilters = new Map<string, boolean>()
+    const testfilters = new Map<string, boolean>();
     testfilters.set("legacy", true);
-    store.commit("updateQuickFiltersStatus", {key: "legacy", value: true});
+    store.commit("updateQuickFiltersStatus", { key: "legacy", value: true });
     expect(store.state.quickFiltersStatus).toEqual(testfilters);
-  });
-
-  it("can updateloading", () => {
-    const testLoading = new Map<string, boolean>()
-    testLoading.set("concept", true);
-    store.commit("updateLoading", {key: "concept", value: true});
-    expect(store.state.loading).toEqual(testLoading);
   });
 
   it("can updateFilterOptions", () => {
@@ -164,55 +173,58 @@ describe("mutations", () => {
     expect(store.state.selectedEntityType).toBe("class");
   });
 
-  it("can fetchSearchResults ___ pass", async() => {
-    EntityService.advancedSearch = jest.fn().mockResolvedValue({ status: 200, data: { entities: [{ iri: "testResult" }] } });
+  it("can updateModuleSelectedEntities", () => {
+    store.commit("updateModuleSelectedEntities", { module: "DataModel", iri: "testIri" });
+    expect(store.state.moduleSelectedEntities).toStrictEqual(
+      new Map([
+        ["Ontology", IM.MODULE_ONTOLOGY],
+        ["Sets", IM.MODULE_SETS],
+        ["DataModel", "testIri"],
+        ["Catalogue", IM.MODULE_CATALOGUE],
+        ["Queries", IM.MODULE_QUERIES]
+      ])
+    );
+  });
+
+  it("can updateConceptActivePanel", () => {
+    store.commit("updateConceptActivePanel", 3);
+    expect(store.state.conceptActivePanel).toBe(3);
+  });
+
+  it("can updateActiveModule", () => {
+    store.commit("updateActiveModule", "sets");
+    expect(store.state.activeModule).toBe("sets");
+  });
+
+  it("can fetchSearchResults ___ pass", async () => {
+    EntityService.advancedSearch = jest.fn().mockResolvedValue({ entities: [{ iri: "testResult" }] });
     LoggerService.info = jest.fn();
-    const testInput = { searchRequest: new SearchRequest, cancelToken: "testCancelToken" };
-    let result = false;
-    await store.dispatch("fetchSearchResults", testInput).then(res => result = res);
+    const testInput = { searchRequest: new SearchRequest(), cancelToken: "testCancelToken" };
+    await store.dispatch("fetchSearchResults", testInput);
     await flushPromises();
     expect(EntityService.advancedSearch).toBeCalledTimes(1);
     expect(EntityService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
     await flushPromises();
     expect(store.state.searchResults).toEqual([{ iri: "testResult" }]);
-    expect(result).toBe("true");
   });
 
-  it("can fetchSearchResults ___ cancelled", async() => {
-    EntityService.advancedSearch = jest.fn().mockRejectedValue({ status: 400 });
-    LoggerService.info = jest.fn();
-    const testInput = { searchRequest: new SearchRequest, cancelToken: "testCancelToken" };
-    let result = false;
-    await store.dispatch("fetchSearchResults", testInput).then(res => result = res);
-    await flushPromises();
-    expect(EntityService.advancedSearch).toBeCalledTimes(1);
-    expect(EntityService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
-    await flushPromises();
-    expect(LoggerService.info).toBeCalledTimes(1);
-    expect(LoggerService.info).toBeCalledWith(undefined, "axios request cancelled");
-    expect(result).toBe("cancelled");
-  });
-
-  it("can fetchSearchResults ___ failed", async() => {
-    EntityService.advancedSearch = jest.fn().mockRejectedValue({ status: 400, message: "test fail" });
+  it("can fetchSearchResults ___ failed", async () => {
+    EntityService.advancedSearch = jest.fn().mockResolvedValue({ status: 400, message: "test fail" });
     LoggerService.error = jest.fn();
-    const testInput = { searchRequest: new SearchRequest, cancelToken: "testCancelToken" };
-    let result = false;
-    await store.dispatch("fetchSearchResults", testInput).then(res => result = res);
+    const testInput = { searchRequest: new SearchRequest(), cancelToken: "testCancelToken" };
+    await store.dispatch("fetchSearchResults", testInput);
     await flushPromises();
     expect(EntityService.advancedSearch).toBeCalledTimes(1);
     expect(EntityService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
     await flushPromises();
-    expect(LoggerService.error).toBeCalledTimes(1);
-    expect(LoggerService.error).toBeCalledWith(undefined, { status: 400, message: "test fail" });
-    expect(result).toBe("false");
+    expect(store.state.searchResults).toStrictEqual([]);
   });
 
-  it("can logoutCurrentUser ___ 200", async() => {
+  it("can logoutCurrentUser ___ 200", async () => {
     AuthService.signOut = jest.fn().mockResolvedValue(new CustomAlert(200, "logout successful"));
     LoggerService.error = jest.fn();
     let result = false;
-    await store.dispatch("logoutCurrentUser").then(res => result = res);
+    await store.dispatch("logoutCurrentUser").then(res => (result = res));
     await flushPromises();
     expect(AuthService.signOut).toBeCalledTimes(1);
     await flushPromises();
@@ -221,23 +233,23 @@ describe("mutations", () => {
     expect(result).toEqual(new CustomAlert(200, "logout successful"));
   });
 
-  it("can logoutCurrentUser ___ 400", async() => {
+  it("can logoutCurrentUser ___ 400", async () => {
     AuthService.signOut = jest.fn().mockResolvedValue(new CustomAlert(400, "logout failed 400"));
     LoggerService.error = jest.fn();
     let result = false;
-    await store.dispatch("logoutCurrentUser").then(res => result = res);
+    await store.dispatch("logoutCurrentUser").then(res => (result = res));
     await flushPromises();
     expect(AuthService.signOut).toBeCalledTimes(1);
     await flushPromises();
     expect(result).toEqual(new CustomAlert(400, "logout failed 400"));
   });
 
-  it("can authenticateCurrentUser___ 200 ___ avatar", async() => {
-    let testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "colour/003-man.png" });
+  it("can authenticateCurrentUser___ 200 ___ avatar", async () => {
+    let testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", "colour/003-man.png");
     testUser.setId("8901-test");
     AuthService.getCurrentAuthenticatedUser = jest.fn().mockResolvedValue(new CustomAlert(200, "user authenticated", undefined, testUser));
     let result = { authenticated: false };
-    await store.dispatch("authenticateCurrentUser").then(res => result = res);
+    await store.dispatch("authenticateCurrentUser").then(res => (result = res));
     await flushPromises();
     expect(AuthService.getCurrentAuthenticatedUser).toBeCalledTimes(1);
     await flushPromises();
@@ -246,27 +258,27 @@ describe("mutations", () => {
     expect(result.authenticated).toBe(true);
   });
 
-  it("can authenticateCurrentUser___ 200 ___ no avatar", async() => {
-    let testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", { value: "http://testimage.jpg" });
+  it("can authenticateCurrentUser___ 200 ___ no avatar", async () => {
+    let testUser = new User("testUser", "John", "Doe", "john.doe@ergosoft.co.uk", "", "http://testimage.jpg");
     testUser.setId("8901-test");
     AuthService.getCurrentAuthenticatedUser = jest.fn().mockResolvedValue(new CustomAlert(200, "user authenticated", undefined, testUser));
     let result = { authenticated: false };
-    await store.dispatch("authenticateCurrentUser").then(res => result = res);
+    await store.dispatch("authenticateCurrentUser").then(res => (result = res));
     await flushPromises();
     expect(AuthService.getCurrentAuthenticatedUser).toBeCalledTimes(1);
     await flushPromises();
     expect(store.state.isLoggedIn).toBe(true);
-    testUser.avatar.value = "colour/001-man.png";
+    testUser.avatar = "colour/001-man.png";
     expect(store.state.currentUser).toEqual(testUser);
     expect(result.authenticated).toBe(true);
   });
 
-  it("can authenticateCurrentUser___ 403 ___ logout 200", async() => {
+  it("can authenticateCurrentUser___ 403 ___ logout 200", async () => {
     AuthService.getCurrentAuthenticatedUser = jest.fn().mockResolvedValue(new CustomAlert(403, "user authenticated"));
-    AuthService.signOut = jest.fn().mockResolvedValue(new CustomAlert(200, "logout successful"))
+    AuthService.signOut = jest.fn().mockResolvedValue(new CustomAlert(200, "logout successful"));
     LoggerService.info = jest.fn();
     let result = { authenticated: false };
-    await store.dispatch("authenticateCurrentUser").then(res => result = res);
+    await store.dispatch("authenticateCurrentUser").then(res => (result = res));
     await flushPromises();
     expect(AuthService.getCurrentAuthenticatedUser).toBeCalledTimes(1);
     await flushPromises();
@@ -279,12 +291,12 @@ describe("mutations", () => {
     expect(LoggerService.info).toBeCalledWith(undefined, "Force logout successful");
   });
 
-  it("can authenticateCurrentUser___ 403 ___ logout 200", async() => {
+  it("can authenticateCurrentUser___ 403 ___ logout 200", async () => {
     AuthService.getCurrentAuthenticatedUser = jest.fn().mockResolvedValue(new CustomAlert(403, "user authenticated"));
-    AuthService.signOut = jest.fn().mockResolvedValue(new CustomAlert(400, "logout failed"))
+    AuthService.signOut = jest.fn().mockResolvedValue(new CustomAlert(400, "logout failed"));
     LoggerService.error = jest.fn();
     let result = { authenticated: false };
-    await store.dispatch("authenticateCurrentUser").then(res => result = res);
+    await store.dispatch("authenticateCurrentUser").then(res => (result = res));
     await flushPromises();
     expect(AuthService.getCurrentAuthenticatedUser).toBeCalledTimes(1);
     await flushPromises();

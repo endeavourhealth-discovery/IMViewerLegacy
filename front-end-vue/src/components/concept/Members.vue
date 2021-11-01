@@ -27,45 +27,11 @@
         <div class="p-d-flex p-jc-between">
           <span class="p-input-icon-left">
             <i class="pi pi-search" aria-hidden="true" />
-            <InputText
-              v-model="filters1['global'].value"
-              placeholder="Keyword Search"
-            />
+            <InputText v-model="filters1['global'].value" placeholder="Keyword Search" />
           </span>
           <div class="checkboxes-container">
-            <div>
-              <Button
-                icon="pi pi-cloud-download"
-                label="Download definition"
-                @click="download(false)"
-              />
-            </div>
-            <div>
-              <Button
-                icon="pi pi-cloud-download"
-                label="Download expanded"
-                @click="download(true)"
-              />
-            </div>
-            <div class="checkbox-label-container" v-if="!expandMembers">
-              <label for="expandSubsets">Expand all subsets</label>
-              <Checkbox
-                :disabled="expandMembers"
-                id="expandSubsets"
-                v-model="expandSubsets"
-                :binary="true"
-              />
-            </div>
-            <div class="checkbox-label-container">
-              <label for="expandMembers">
-                Expand all members
-              </label>
-              <Checkbox
-                id="expandMembers"
-                v-model="expandMembers"
-                :binary="true"
-              />
-            </div>
+            <Button type="button" label="Download..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
+            <Menu id="overlay_menu" ref="menu" :model="downloadMenu" :popup="true" />
           </div>
         </div>
       </template>
@@ -75,21 +41,11 @@
       <template #loading>
         Loading data. Please wait...
       </template>
-      <Column
-        field="entity.name"
-        header="Name"
-        filter-field="entity.name"
-        style="flex: 0 0 60%"
-      >
+      <Column field="entity.name" header="Name" filter-field="entity.name">
         <template #body="slotProps">
-          <div v-if="slotProps.data.type === 'COMPLEX'">
-            <Button label="Show" @click="openComplexMembersDialog" />
-          </div>
-          <span v-else>{{ slotProps.data.entity.name }}</span>
+          <div class="name-container">{{ slotProps.data.entity.name }}</div>
         </template>
       </Column>
-      <Column field="code" header="Code" filter-field="code" />
-      <Column field="scheme.name" header="Scheme" filter-field="scheme.name" />
       <template #groupheader="slotProps">
         <span v-for="subSet in subsets" :key="subSet">
           <span v-if="slotProps.data.label === subSet" class="group-header">
@@ -111,49 +67,30 @@
       </template>
     </DataTable>
   </div>
-  <ComplexMembers
-    v-if="showComplexMembersDialog"
-    @closeComplexMembersDialog="closeComplexMembersDialog"
-    :showDialog="showComplexMembersDialog"
-    :conceptIri="conceptIri"
-  />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
 import { FilterMatchMode } from "primevue/api";
-import Swal from "sweetalert2";
 import LoggerService from "@/services/LoggerService";
-import ComplexMembers from "@/components/concept/members/ComplexMembers.vue";
+import { ValueSetMember } from "@/models/members/ValueSetMember";
+import { ExportValueSet } from "@/models/members/ExportValueSet";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Members",
-  components: { ComplexMembers },
   props: {
     conceptIri: { type: String, required: true }
   },
   emits: ["memberClick"],
   watch: {
     async conceptIri() {
-      this.expandMembers = false;
-      this.expandSubsets = false;
-      await this.getMembers();
-    },
-
-    async expandMembers() {
-      await this.getMembers();
-    },
-
-    async expandSubsets() {
-      this.subsets = [];
       await this.getMembers();
     }
   },
   async mounted() {
     window.addEventListener("resize", this.onResize);
-    this.expandMembers = false;
-    this.expandSubsets = false;
     await this.getMembers();
     this.onResize();
   },
@@ -163,34 +100,37 @@ export default defineComponent({
   data() {
     return {
       loading: false,
-      members: {} as any,
-      combinedMembers: [] as any,
+      members: {} as ExportValueSet,
+      combinedMembers: [] as ValueSetMember[],
       filters1: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
       },
-      expandMembers: false,
-      expandSubsets: false,
-      selected: {} as any,
-      subsets: [] as any[],
-      expandedRowGroups: [
-        "a_MemberIncluded",
-        "b_MemberExcluded",
-        "z_ComplexMember"
-      ],
-      showComplexMembersDialog: false
+      selected: {} as ValueSetMember,
+      subsets: [] as string[],
+      expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"],
+      downloadMenu: [
+        { label: "Definition", command: () => this.download(false) },
+        { label: "Expanded (v2)", command: () => this.download(true) },
+        { label: "Expanded (v1)", command: () => this.download(true, true) }
+      ]
     };
   },
   methods: {
-    async onRowGroupExpand() {
+    toggle(event: any) {
+      const x = this.$refs.menu as any;
+      x.toggle(event);
+    },
+
+    onRowGroupExpand(): void {
       this.setTableWidth();
     },
 
-    onRowGroupCollapse() {
+    onRowGroupCollapse(): void {
       this.setTableWidth();
     },
 
-    onRowSelect() {
-      if (this.selected != null && this.selected.entity != null) {
+    onRowSelect(): void {
+      if (isObjectHasKeys(this.selected, ["entity"]) && isObjectHasKeys(this.selected.entity, ["@id"]) && this.selected.entity["@id"]) {
         this.$router.push({
           name: "Concept",
           params: { selectedIri: this.selected.entity["@id"] }
@@ -199,40 +139,21 @@ export default defineComponent({
       }
     },
 
-    async getMembers() {
+    async getMembers(): Promise<void> {
       this.loading = true;
-      if (this.expandMembers) {
-        this.expandedRowGroups = ["MemberExpanded"];
-      } else {
-        this.expandedRowGroups = [
-          "a_MemberIncluded",
-          "b_MemberExcluded",
-          "z_ComplexMember"
-        ];
-      }
-      this.selected = {};
+      this.expandedRowGroups = ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"];
+      this.selected = {} as ValueSetMember;
       this.subsets = [];
-      await EntityService.getEntityMembers(
-        this.conceptIri as string,
-        this.expandMembers,
-        this.expandSubsets,
-        this.expandMembers ? 2000 : undefined
-      )
-        .then(res => {
-          this.members = res.data;
-          this.expandMembersSizeCheck();
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get members from server", err)
-          );
-        });
-      this.loading = false;
+      this.members = await EntityService.getEntityMembers(this.conceptIri, false, false, 2000);
+      this.sortMembers();
+      this.combinedMembers = this.members.members;
+      this.setSubsets();
       this.setTableWidth();
+      this.loading = false;
     },
 
-    setSubsets() {
-      this.combinedMembers.forEach((member: any) => {
+    setSubsets(): void {
+      this.combinedMembers.forEach((member: ValueSetMember) => {
         if (!this.subsets.some(e => e === member.label)) {
           if (member.type === "SUBSET") {
             this.subsets.push(member.label);
@@ -241,44 +162,10 @@ export default defineComponent({
       });
     },
 
-    async expandMembersSizeCheck() {
-      if (this.members.limited) {
-        this.expandMembers = false;
-        await Swal.fire({
-          icon: "warning",
-          title: "Large data set",
-          text:
-            "Expanding this set results in a large amount of data.\n Would you like to download it instead?",
-          confirmButtonText: "Download",
-          showCancelButton: true
-        }).then(result => {
-          if (result.isConfirmed) this.download(true);
-          else {
-            this.$toast.add(
-              LoggerService.warn(
-                "Member expansion cancelled as results exceeded displayable limit."
-              )
-            );
-          }
-        });
-      } else {
-        this.sortMembers();
-        this.combinedMembers = this.members.members;
-        this.setSubsets();
-      }
-    },
-
-    download(expanded: boolean) {
-      const modIri = (this.conceptIri as string)
-        .replace(/\//gi, "%2F")
-        .replace(/#/gi, "%23");
+    download(expanded: boolean, v1 = false): void {
+      const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
       const popup = window.open(
-        process.env.VUE_APP_API +
-          "api/entity/download?iri=" +
-          modIri +
-          "&members=true&expandMembers=" +
-          expanded +
-          "&format=excel"
+        process.env.VUE_APP_API + "api/set/download?iri=" + modIri + "&expandMembers=" + expanded + "&v1=" + (expanded && v1) + "&format=excel"
       );
       if (!popup) {
         this.$toast.add(LoggerService.error("Download failed from server"));
@@ -287,41 +174,26 @@ export default defineComponent({
       }
     },
 
-    sortMembers() {
-      this.members.members = this.members.members.sort((a: any, b: any) =>
-        a.label.localeCompare(b.label) == 0
-          ? a.entity.name.localeCompare(b.entity.name)
-          : a.label.localeCompare(b.label)
-      );
-    },
-
-    onResize() {
-      this.setTableWidth();
-    },
-
-    setTableWidth(): void {
-      const container = document.getElementById(
-        "members-table-container"
-      ) as HTMLElement;
-      const table = container?.getElementsByClassName(
-        "p-datatable-table"
-      )[0] as HTMLElement;
-      if (table) {
-        table.style.width = "100%";
-      } else {
-        LoggerService.error(
-          undefined,
-          "Failed to set members table width. Required element(s) not found."
+    sortMembers(): void {
+      if (isObjectHasKeys(this.members, ["members"]) && isArrayHasLength(this.members.members)) {
+        this.members.members.sort((a: ValueSetMember, b: ValueSetMember) =>
+          a.label.localeCompare(b.label) == 0 ? a.entity.name.localeCompare(b.entity.name) : a.label.localeCompare(b.label)
         );
       }
     },
 
-    openComplexMembersDialog() {
-      this.showComplexMembersDialog = true;
+    onResize(): void {
+      this.setTableWidth();
     },
 
-    closeComplexMembersDialog() {
-      this.showComplexMembersDialog = false;
+    setTableWidth(): void {
+      const container = document.getElementById("members-table-container") as HTMLElement;
+      const table = container?.getElementsByClassName("p-datatable-table")[0] as HTMLElement;
+      if (table) {
+        table.style.width = "100%";
+      } else {
+        LoggerService.error(undefined, "Failed to set members table width. Required element(s) not found.");
+      }
     }
   }
 });
@@ -359,5 +231,19 @@ export default defineComponent({
   flex-flow: row nowrap;
   align-items: center;
   gap: 0.5rem;
+}
+
+.complex-member-container {
+  width: 100%;
+}
+
+.name-container {
+  width: 100%;
+  padding: 1rem;
+  white-space: pre;
+}
+
+.html-container ::v-deep(p) {
+  margin-bottom: 0 !important;
 }
 </style>

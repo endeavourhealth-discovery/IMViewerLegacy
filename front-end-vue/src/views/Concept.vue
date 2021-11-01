@@ -1,45 +1,28 @@
 <template>
   <div id="concept-main-container">
-    <!-- <div v-if="loading" class="loading-container">
-      <ProgressSpinner />
-    </div> -->
     <Panel>
       <template #icons>
         <div class="icons-container">
-          <button
-            class="p-panel-header-icon p-link p-mr-2"
-            @click="focusTree"
-            v-tooltip.left="'Focus hierarchy tree to this concept'"
-          >
+          <button class="p-panel-header-icon p-link p-mr-2" @click="focusTree" v-tooltip.left="'Focus hierarchy tree to this concept'">
             <i class="fas fa-sitemap" aria-hidden="true"></i>
           </button>
-          <div
-            v-if="
-              Object.keys(concept).includes('http://endhealth.info/im#isA') &&
-                Object.keys(concept).includes('subtypes') &&
-                Object.keys(concept).includes('dataModelProperties')
-            "
-            class="copy-container"
-          >
+          <div v-if="isObjectHasKeysWrapper(concept, ['axioms'])" class="copy-container">
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
-              v-clipboard:copy="copyConceptToClipboard()"
+              v-clipboard:copy="copyConceptToClipboardVueWrapper(concept, configs)"
               v-clipboard:success="onCopy"
               v-clipboard:error="onCopyError"
-              v-tooltip="
-                'Copy concept to clipboard \n (right click to copy individual properties)'
-              "
+              v-tooltip="'Copy concept to clipboard \n (right click to copy individual properties)'"
               @contextmenu="onCopyRightClick"
             />
             <ContextMenu ref="copyMenu" :model="copyMenuItems" />
           </div>
-          <button
-            class="p-panel-header-icon p-link p-mr-2"
-            @click="openDownloadDialog"
-            v-tooltip.bottom="'Download concept'"
-          >
+          <button class="p-panel-header-icon p-link p-mr-2" @click="openDownloadDialog" v-tooltip.bottom="'Download concept'">
             <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
+          </button>
+          <button class="p-panel-header-icon p-link p-mr-2" v-tooltip.bottom="'Export concept'" @click="exportConcept">
+            <i class="fas fa-file-export" aria-hidden="true"></i>
           </button>
           <!--<button
             class="p-panel-header-icon p-link p-mr-2"
@@ -64,75 +47,46 @@
         <div id="concept-panel-container">
           <TabView v-model:activeIndex="active" :lazy="true">
             <TabPanel header="Definition">
-              <div
-                v-if="loading"
-                class="loading-container"
-                :style="contentHeight"
-              >
+              <div v-if="loading" class="loading-container" :style="contentHeight">
                 <ProgressSpinner />
               </div>
-              <div
-                v-else
-                class="concept-panel-content"
-                id="definition-container"
-                :style="contentHeight"
-              >
+              <div v-else class="concept-panel-content" id="definition-container" :style="contentHeight">
                 <Definition :concept="concept" :configs="configs" />
               </div>
             </TabPanel>
             <TabPanel header="Maps" v-if="showMappings">
-              <div
-                class="concept-panel-content"
-                id="mappings-container"
-                :style="contentHeight"
-              >
+              <div class="concept-panel-content" id="mappings-container" :style="contentHeight">
                 <Mappings :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Used in">
-              <div
-                class="concept-panel-content"
-                id="usedin-container"
-                :style="contentHeight"
-              >
+              <div class="concept-panel-content" id="usedin-container" :style="contentHeight">
                 <UsedIn :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Graph" v-if="showGraph">
-              <div
-                class="concept-panel-content"
-                id="graph-container"
-                :style="contentHeight"
-              >
+              <div class="concept-panel-content" id="graph-container" :style="contentHeight">
                 <Graph :conceptIri="conceptIri" />
               </div>
             </TabPanel>
+            <TabPanel header="Properties" v-if="isRecordModel">
+              <div class="concept-panel-content" id="properties-container" :style="contentHeight">
+                <Properties :conceptIri="conceptIri" />
+              </div>
+            </TabPanel>
             <TabPanel header="Members" v-if="isSet">
-              <div
-                class="concept-panel-content"
-                id="members-container"
-                :style="contentHeight"
-              >
+              <div class="concept-panel-content" id="members-container" :style="contentHeight">
                 <Members :conceptIri="conceptIri" @memberClick="active = 0" />
               </div>
             </TabPanel>
             <TabPanel header="Hierarchy position">
-              <div
-                class="concept-panel-content"
-                id="secondary-tree-container"
-                :style="contentHeight"
-              >
+              <div class="concept-panel-content" id="secondary-tree-container" :style="contentHeight">
                 <SecondaryTree :conceptIri="conceptIri" />
               </div>
             </TabPanel>
           </TabView>
         </div>
-        <DownloadDialog
-          v-if="showDownloadDialog"
-          @closeDownloadDialog="closeDownloadDialog"
-          :showDialog="showDownloadDialog"
-          :conceptIri="conceptIri"
-        />
+        <DownloadDialog v-if="showDownloadDialog" @closeDownloadDialog="closeDownloadDialog" :showDialog="showDownloadDialog" :conceptIri="conceptIri" />
       </div>
     </Panel>
   </div>
@@ -146,7 +100,7 @@ import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
 import Mappings from "../components/concept/Mappings.vue";
-import { isOfTypes, isValueSet } from "@/helpers/ConceptTypeMethods";
+import { isOfTypes, isValueSet, isProperty } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import EntityService from "@/services/EntityService";
@@ -157,8 +111,12 @@ import { IM } from "@/vocabulary/IM";
 import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
-import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
+import Properties from "@/components/concept/Properties.vue";
+import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
+import { TTIriRef } from "@/models/TripleTree";
+import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Concept",
@@ -170,7 +128,8 @@ export default defineComponent({
     Definition,
     DownloadDialog,
     SecondaryTree,
-    Mappings
+    Mappings,
+    Properties
   },
   computed: {
     isSet(): boolean {
@@ -178,18 +137,15 @@ export default defineComponent({
     },
 
     showGraph(): boolean {
-      return isOfTypes(this.types, OWL.CLASS, SHACL.NODESHAPE);
+      return isOfTypes(this.types, IM.CONCEPT, SHACL.NODESHAPE);
     },
 
     showMappings(): boolean {
-      return (
-        isOfTypes(this.types, OWL.CLASS) &&
-        !isOfTypes(this.types, SHACL.NODESHAPE)
-      );
+      return isOfTypes(this.types, IM.CONCEPT) && !isOfTypes(this.types, SHACL.NODESHAPE);
     },
 
-    isClass(): boolean {
-      return isOfTypes(this.types, OWL.CLASS);
+    isConcept(): boolean {
+      return isOfTypes(this.types, IM.CONCEPT);
     },
 
     isQuery(): boolean {
@@ -205,15 +161,10 @@ export default defineComponent({
     },
 
     isProperty(): boolean {
-      return isOfTypes(this.types, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY);
+      return isProperty(this.types);
     },
 
-    ...mapState([
-      "conceptIri",
-      "selectedEntityType",
-      "conceptActivePanel",
-      "activeModule"
-    ])
+    ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel", "activeModule"])
   },
   watch: {
     async conceptIri() {
@@ -222,13 +173,19 @@ export default defineComponent({
 
     selectedEntityType(newValue, oldValue) {
       this.setActivePanel(newValue, oldValue);
+    },
+
+    active(newValue) {
+      this.$store.commit("updateConceptActivePanel", newValue);
+    },
+
+    types() {
+      if (this.isFolder) this.active = 0;
     }
   },
   async mounted() {
     await this.init();
-
     window.addEventListener("resize", this.onResize);
-
     this.setContentHeight();
   },
   beforeUnmount() {
@@ -242,15 +199,14 @@ export default defineComponent({
       concept: {} as any,
       definitionText: "",
       display: false,
-      types: [],
+      types: [] as TTIriRef[],
       header: "",
       dialogHeader: "",
       active: 0,
       contentHeight: "",
       contentHeightValue: 0,
       copyMenuItems: [] as any,
-      configs: [] as any,
-      axiomObject: {} as any
+      configs: [] as DefinitionConfig[]
     };
   },
   methods: {
@@ -273,199 +229,107 @@ export default defineComponent({
       this.$router.push({ name: "Create" });
     },
 
-    async getConcept(iri: string) {
+    async getConcept(iri: string): Promise<void> {
       const predicates = this.configs
-        .filter((c: any) => c.type !== "Divider")
-        .filter((c: any) => c.predicate !== "subtypes")
-        .filter((c: any) => c.predicate !== "semanticProperties")
-        .filter((c: any) => c.predicate !== "dataModelProperties")
-        .filter((c: any) => c.predicate !== "termCodes")
-        .filter((c: any) => c.predicate !== "axioms")
-        .map((c: any) => c.predicate);
+        .filter((c: DefinitionConfig) => c.type !== "Divider")
+        .filter((c: DefinitionConfig) => c.predicate !== "subtypes")
+        .filter((c: DefinitionConfig) => c.predicate !== "inferred")
+        .filter((c: DefinitionConfig) => c.predicate !== "termCodes")
+        .filter((c: DefinitionConfig) => c.predicate !== "axioms")
+        .map((c: DefinitionConfig) => c.predicate);
 
-      await EntityService.getPartialEntity(iri, predicates)
-        .then(res => {
-          this.concept = res.data;
-          if (!Object.prototype.hasOwnProperty.call(this.concept, IM.IS_A)) {
-            this.concept[IM.IS_A] = [];
-          }
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get concept partial entity from server.",
-              err
-            )
-          );
-        });
+      this.concept = await EntityService.getPartialEntity(iri, predicates);
 
-      await EntityService.getEntityChildren(iri)
-        .then(res => {
-          this.concept["subtypes"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get subtypes from server.", err)
-          );
-        });
+      this.concept["subtypes"] = await EntityService.getEntityChildren(iri);
 
-      await EntityService.getEntityTermCodes(iri)
-        .then(res => {
-          this.concept["termCodes"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get terms from server", err)
-          );
-        });
+      this.concept["termCodes"] = await EntityService.getEntityTermCodes(iri);
     },
 
-    async getProperties(iri: string) {
-      await EntityService.getSemanticProperties(iri)
-        .then(res => {
-          this.concept["semanticProperties"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get semantic properties from server",
-              err
-            )
-          );
-        });
-
-      await EntityService.getDataModelProperties(iri)
-        .then(res => {
-          this.concept["dataModelProperties"] = res.data;
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error(
-              "Failed to get data model properties from server",
-              err
-            )
-          );
-        });
+    async getInferred(iri: string): Promise<void> {
+      const result = await EntityService.getInferredBundle(iri);
+      if (isObjectHasKeys(result, ["entity"]) && isObjectHasKeys(result.entity, [RDFS.SUBCLASS_OF, IM.ROLE_GROUP])) {
+        this.concept["inferred"] = { entity: { "http://www.w3.org/2000/01/rdf-schema#subClassOf": result.entity[RDFS.SUBCLASS_OF] }, predicates: result.predicates };
+        this.concept["inferred"].entity[RDFS.SUBCLASS_OF].push({ "http://endhealth.info/im#roleGroup": result.entity[IM.ROLE_GROUP] });
+      } else {
+        this.concept["inferred"] = result;
+      }
     },
 
-    async getAxioms(iri: string) {
-      await EntityService.getAxioms(iri)
-        .then(res => {
-          this.axiomObject = res.data;
-          if (
-            Object.prototype.hasOwnProperty.call(this.axiomObject, "entity")
-          ) {
-            const predicateCount = Object.keys(this.axiomObject.entity)
-              .filter(key => key !== RDF.TYPE)
-              .filter(key => key !== RDFS.COMMENT)
-              .filter(key => key !== RDFS.LABEL)
-              .filter(key => key !== "@id").length;
-            this.concept["axioms"] = {
-              axiomString: this.axiomToString(this.axiomObject.entity),
-              count: predicateCount
-            };
-          }
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get axioms from server", err)
-          );
+    async getConfig(name: string): Promise<void> {
+      this.configs = await ConfigService.getComponentLayout(name);
+      if (this.configs.every(config => isObjectHasKeys(config, ["order"]))) {
+        this.configs.sort((a: DefinitionConfig, b: DefinitionConfig) => {
+          return a.order - b.order;
         });
+      } else {
+        LoggerService.error(undefined, "Failed to sort config for definition component layout. One or more config items are missing 'order' property.");
+      }
     },
 
-    async getConfig(name: string) {
-      await ConfigService.getComponentLayout(name)
-        .then(res => {
-          this.configs = res.data;
-          this.configs.sort((a: any, b: any) => {
-            return a.order - b.order;
-          });
-        })
-        .catch(err => {
-          this.$toast.add(
-            LoggerService.error("Failed to get config data from server", err)
-          );
-        });
-    },
-
-    async init() {
+    async init(): Promise<void> {
       this.loading = true;
       await this.getConfig("definition");
       await this.getConcept(this.conceptIri);
-      await this.getProperties(this.conceptIri);
-      await this.getAxioms(this.conceptIri);
-      this.types = Object.prototype.hasOwnProperty.call(this.concept, RDF.TYPE)
-        ? this.concept[RDF.TYPE]
-        : [];
+      await this.getInferred(this.conceptIri);
+      this.types = isObjectHasKeys(this.concept, [RDF.TYPE]) ? this.concept[RDF.TYPE] : ([] as TTIriRef[]);
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
       this.setStoreType();
       this.loading = false;
     },
 
-    setStoreType() {
+    setStoreType(): void {
       let type;
       if (this.isSet) {
         type = "Sets";
-      } else if (this.isClass && !this.isRecordModel) {
+      } else if (this.isConcept && !this.isRecordModel) {
         type = "Ontology";
       } else if (this.isQuery) {
         type = "Queries";
       } else if (this.isRecordModel) {
         type = "DataModel";
+      } else if (this.isProperty) {
+        type = "Property";
       } else {
         type = this.activeModule;
       }
-
       this.$store.commit("updateSelectedEntityType", type);
       if (!MODULE_IRIS.includes(this.conceptIri)) {
         this.$store.commit("updateModuleSelectedEntities", {
-          module: type,
+          module: this.isProperty ? "DataModel" : type,
           iri: this.conceptIri
         });
       }
     },
 
-    setActivePanel(newType: string, oldType: string) {
+    setActivePanel(newType: string, oldType: string): void {
       if (newType === oldType) {
         this.active = this.conceptActivePanel;
       } else {
-        this.active = 0;
+        if (this.isSet) {
+          this.active = 2;
+        } else if (this.isRecordModel) {
+          this.active = 3;
+        } else {
+          this.active = 0;
+        }
       }
     },
 
     setContentHeight(): void {
-      const container = document.getElementById(
-        "concept-main-container"
-      ) as HTMLElement;
-      const header = container?.getElementsByClassName(
-        "p-panel-header"
-      )[0] as HTMLElement;
-      const nav = container?.getElementsByClassName(
-        "p-tabview-nav"
-      )[0] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
+      const container = document.getElementById("concept-main-container") as HTMLElement;
+      const header = container?.getElementsByClassName("p-panel-header")[0] as HTMLElement;
+      const nav = container?.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
+      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
       if (header && container && nav && currentFontSize) {
         const calcHeight =
-          container.getBoundingClientRect().height -
-          header.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
-          4 * currentFontSize -
-          1;
-        this.contentHeight =
-          "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
+          container.getBoundingClientRect().height - header.getBoundingClientRect().height - nav.getBoundingClientRect().height - 4 * currentFontSize - 1;
+        this.contentHeight = "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
         this.contentHeightValue = calcHeight;
       } else {
         this.contentHeight = "height: 800px; max-height: 800px;";
         this.contentHeightValue = 800;
-        LoggerService.error(
-          "Content sizing error",
-          "failed to get element(s) for concept content resizing"
-        );
+        LoggerService.error("Content sizing error", "failed to get element(s) for concept content resizing");
       }
     },
 
@@ -477,102 +341,8 @@ export default defineComponent({
       this.showDownloadDialog = false;
     },
 
-    conceptObjectToCopyString(
-      key: string,
-      value: any,
-      counter: number,
-      totalKeys: number
-    ): { label: string; value: string } | undefined {
-      let newString = "";
-      let returnString = "";
-      const label = this.configs.find(
-        (config: any) => config.predicate === key
-      );
-      if (!label) {
-        return;
-      }
-      let newKey = label.label;
-      if (Array.isArray(value)) {
-        if (value.length) {
-          if (Object.prototype.hasOwnProperty.call(value[0], "name")) {
-            newString = value.map(item => item.name).join(",\n\t");
-          } else if (
-            Object.prototype.hasOwnProperty.call(value[0], "property") &&
-            Object.prototype.hasOwnProperty.call(value[0].property, "name")
-          ) {
-            newString = value.map(item => item.property.name).join(",\n\t");
-          } else {
-            LoggerService.warn(
-              undefined,
-              "Uncovered object property or missing name found for key: " +
-                key +
-                " at conceptObjectToCopyString within Concept.vue"
-            );
-          }
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ": [\n\t" + newString + "\n]";
-          } else {
-            returnString = newKey + ": [\n\t" + newString + "\n],\n";
-          }
-        } else {
-          if (counter === totalKeys - 1) {
-            returnString = newKey + ": [\n\t\n]";
-          } else {
-            returnString = newKey + ": [\n\t\n],\n";
-          }
-        }
-      } else if (
-        Object.prototype.toString.call(value) === "[object Object]" &&
-        Object.prototype.hasOwnProperty.call(value, "name")
-      ) {
-        newString = value.name;
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ": " + newString;
-        } else {
-          returnString = newKey + ": " + newString + ",\n";
-        }
-      } else if (
-        Object.prototype.toString.call(value) === "[object Object]" &&
-        Object.prototype.hasOwnProperty.call(value, "axiomString")
-      ) {
-        newString = value.axiomString;
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ': "\n' + newString + '\n"';
-        } else {
-          returnString = newKey + ': "\n' + newString + '\n",\n';
-        }
-      } else if (typeof value === "string") {
-        newString = value
-          .replace(/\n/g, "\n\t")
-          .replace(/<p>/g, "\n\t") as string;
-        if (counter === totalKeys - 1) {
-          returnString = newKey + ": " + newString;
-        } else {
-          returnString = newKey + ": " + newString + ",\n";
-        }
-      } else {
-        returnString = JSON.stringify(value);
-      }
-      return { label: newKey, value: returnString };
-    },
-
-    copyConceptToClipboard(): string {
-      const totalKeys = Object.keys(this.concept).length;
-      let counter = 0;
-      let returnString = "";
-      let key: string;
-      let value: any;
-      for ([key, value] of Object.entries(this.concept)) {
-        const copyString = this.conceptObjectToCopyString(
-          key,
-          value,
-          counter,
-          totalKeys
-        );
-        if (copyString) returnString += copyString.value;
-        counter++;
-      }
-      return returnString;
+    copyConceptToClipboardVueWrapper(concept: any, configs: DefinitionConfig[]) {
+      return copyConceptToClipboard(concept, configs);
     },
 
     onCopy(): void {
@@ -583,12 +353,12 @@ export default defineComponent({
       this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
     },
 
-    onCopyRightClick(event: any) {
+    onCopyRightClick(event: any): void {
       const x = this.$refs.copyMenu as any;
       x.show(event);
     },
 
-    setCopyMenuItems() {
+    setCopyMenuItems(): void {
       this.copyMenuItems = [
         {
           label: "Copy",
@@ -601,19 +371,12 @@ export default defineComponent({
           label: "All",
           command: async () => {
             await navigator.clipboard
-              .writeText(this.copyConceptToClipboard())
+              .writeText(copyConceptToClipboard(this.concept, this.configs))
               .then(() => {
-                this.$toast.add(
-                  LoggerService.success("Concept copied to clipboard")
-                );
+                this.$toast.add(LoggerService.success("Concept copied to clipboard"));
               })
               .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy concept to clipboard",
-                    err
-                  )
-                );
+                this.$toast.add(LoggerService.error("Failed to copy concept to clipboard", err));
               });
           }
         }
@@ -622,8 +385,8 @@ export default defineComponent({
       let key: string;
       let value: any;
       for ([key, value] of Object.entries(this.concept)) {
-        let result = this.conceptObjectToCopyString(key, value, 0, 1);
-        if (!result) return;
+        let result = conceptObjectToCopyString(key, value, 0, 1, this.configs);
+        if (!result || !result.value) continue;
         const label = result.label;
         const text = result.value;
         this.copyMenuItems.push({
@@ -632,93 +395,29 @@ export default defineComponent({
             await navigator.clipboard
               .writeText(text)
               .then(() => {
-                this.$toast.add(
-                  LoggerService.success(label + " copied to clipboard")
-                );
+                this.$toast.add(LoggerService.success(label + " copied to clipboard"));
               })
               .catch(err => {
-                this.$toast.add(
-                  LoggerService.error(
-                    "Failed to copy " + label + " to clipboard",
-                    err
-                  )
-                );
+                this.$toast.add(LoggerService.error("Failed to copy " + label + " to clipboard", err));
               });
           }
         });
       }
     },
 
-    axiomToString(entity: any): string {
-      let axiomString = "";
-      let depth = 0;
-      if (Object.prototype.hasOwnProperty.call(entity, OWL.EQUIVALENT_CLASS)) {
-        axiomString += "Equivalent class";
-        let axiom = entity[OWL.EQUIVALENT_CLASS];
-        axiom.forEach((element: any) => {
-          axiomString += this.processAxiom(element, depth);
-        });
-      }
-      if (Object.prototype.hasOwnProperty.call(entity, RDFS.SUB_PROPERTY_OF)) {
-        axiomString += "Sub property of";
-        let axiom = entity[RDFS.SUB_PROPERTY_OF];
-        axiom.forEach((element: any) => {
-          axiomString += this.processAxiom(element, depth);
-        });
-      }
-      if (Object.prototype.hasOwnProperty.call(entity, RDFS.SUBCLASS_OF)) {
-        axiomString += "Subclass of";
-        let axiom = entity[RDFS.SUBCLASS_OF];
-        axiom.forEach((element: any) => {
-          axiomString += this.processAxiom(element, depth);
-        });
-      }
-      return axiomString;
+    isObjectHasKeysWrapper(object: any, keys: string[]) {
+      return isObjectHasKeys(object, keys);
     },
 
-    processAxiom(axiom: any, depth: number) {
-      let axiomString = "";
-      if (Array.isArray(axiom)) {
-        axiom.forEach((element: any) => {
-          axiomString += this.childToString(element, depth + 1);
-        });
+    async exportConcept() {
+      const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
+      const url = process.env.VUE_APP_API + "api/entity/exportConcept?iri=" + modIri;
+      const popup = window.open(url);
+      if (!popup) {
+        this.$toast.add(LoggerService.error("Export failed from server"));
+      } else {
+        this.$toast.add(LoggerService.success("Export will begin shortly"));
       }
-      if (Object.prototype.toString.call(axiom) === "[object Object]") {
-        axiomString += this.childToString(axiom, depth + 1);
-      }
-      return axiomString;
-    },
-
-    childToString(child: any, depth: number) {
-      let childString = "";
-      if (Object.prototype.toString.call(child) === "[object Object]") {
-        if (Object.prototype.hasOwnProperty.call(child, "name")) {
-          childString += "\n" + "    ".repeat(depth) + child.name;
-        }
-        if (Object.prototype.hasOwnProperty.call(child, OWL.INTERSECTION_OF)) {
-          childString += "\n" + "    ".repeat(depth) + "Intersection of";
-          childString += this.processAxiom(child[OWL.INTERSECTION_OF], depth);
-        }
-        if (Object.prototype.hasOwnProperty.call(child, RDF.TYPE)) {
-          childString += "\n" + "    ".repeat(depth) + "Having";
-          if (Object.prototype.hasOwnProperty.call(child, RDF.TYPE)) {
-            childString += " type " + child[RDF.TYPE].name;
-          }
-          if (Object.prototype.hasOwnProperty.call(child, OWL.ON_PROPERTY)) {
-            childString += " on property " + child[OWL.ON_PROPERTY].name;
-          }
-          if (
-            Object.prototype.hasOwnProperty.call(child, OWL.SOME_VALUES_FROM)
-          ) {
-            childString += "\n" + "    ".repeat(depth + 1) + "Some values from";
-            childString += this.processAxiom(
-              child[OWL.SOME_VALUES_FROM],
-              depth + 1
-            );
-          }
-        }
-      }
-      return childString;
     }
   }
 });

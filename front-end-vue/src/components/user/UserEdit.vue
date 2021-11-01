@@ -1,13 +1,8 @@
 <template>
   <div v-if="isLoggedIn" class="p-d-flex p-flex-row p-ai-center">
-    <Card
-      class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-edit-card"
-    >
+    <Card class="p-d-flex p-flex-column p-jc-sm-around p-ai-center user-edit-card">
       <template #header>
-        <avatar-with-selector
-          :selectedAvatar="selectedAvatar"
-          @avatarSelected="updateAvatar"
-        />
+        <avatar-with-selector :selectedAvatar="selectedAvatar" @avatarSelected="updateAvatar" />
       </template>
       <template #title>
         Edit my account
@@ -21,60 +16,29 @@
           </div>
           <div class="p-field">
             <label for="firstName">First name</label>
-            <InputText
-              id="firstName"
-              type="text"
-              v-model="firstName"
-              v-on:blur="setShowFirstNameNotice"
-            />
+            <InputText id="firstName" type="text" v-model="firstName" v-on:blur="setShowFirstNameNotice" />
             <InlineMessage v-if="showFirstNameNotice" severity="error">
-              First name contains unexpected characters. A-Z and hyphens only
-              allowed e.g."Mary-Anne".
+              First name contains unexpected characters. A-Z and hyphens only allowed e.g."Mary-Anne".
             </InlineMessage>
           </div>
           <div class="p-field">
             <label for="lastName">Last name</label>
-            <InputText
-              id="lastName"
-              type="text"
-              v-model="lastName"
-              v-on:blur="setShowLastNameNotice"
-            />
+            <InputText id="lastName" type="text" v-model="lastName" v-on:blur="setShowLastNameNotice" />
             <InlineMessage v-if="showLastNameNotice" severity="error">
-              Last name contains unexpected characters. A-Z, apostropies and
-              hyphens only allowed e.g."O'Keith-Smith".
+              Last name contains unexpected characters. A-Z, apostropies and hyphens only allowed e.g."O'Keith-Smith".
             </InlineMessage>
           </div>
           <div class="p-field">
             <label for="email1">Email address</label>
             <div class="p-d-flex p-flex-row p-ai-center">
-              <InputText
-                id="email1"
-                type="text"
-                v-model="email1"
-                v-on:focus="setShowEmail1Notice(true)"
-                v-on:blur="setShowEmail1Notice(false)"
-              />
-              <i
-                v-if="showEmail1Notice && email1Verified"
-                class="pi pi-check-circle email-check"
-                aria-hidden="true"
-              />
-              <i
-                v-if="showEmail1Notice && !email1Verified"
-                class="pi pi-times-circle email-times"
-                aria-hidden="true"
-              />
+              <InputText id="email1" type="text" v-model="email1" v-on:focus="setShowEmail1Notice(true)" v-on:blur="setShowEmail1Notice(false)" />
+              <i v-if="showEmail1Notice && email1Verified" class="pi pi-check-circle email-check" aria-hidden="true" />
+              <i v-if="showEmail1Notice && !email1Verified" class="pi pi-times-circle email-times" aria-hidden="true" />
             </div>
           </div>
           <div class="p-field">
             <label for="email2">Confirm email address</label>
-            <InputText
-              id="email2"
-              type="text"
-              v-model="email2"
-              v-on:blur="setShowEmail2Notice()"
-            />
+            <InputText id="email2" type="text" v-model="email2" v-on:blur="setShowEmail2Notice()" />
             <InlineMessage v-if="showEmail2Notice" severity="error">
               Email addresses do not match!
             </InlineMessage>
@@ -85,46 +49,27 @@
           </div>
           <div v-if="showPasswordEdit" class="p-field">
             <label for="passwordNew1">New password</label>
-            <InputText
-              id="passwordNew1"
-              type="password"
-              v-model="passwordNew1"
-            />
-            <InlineMessage
-              v-if="passwordStrength === 'strong'"
-              severity="success"
-            >
+            <InputText id="passwordNew1" type="password" v-model="passwordNew1" />
+            <InlineMessage v-if="passwordStrength === 'strong'" severity="success">
               Password strength: Strong
             </InlineMessage>
-            <InlineMessage
-              v-if="passwordStrength === 'medium'"
-              severity="success"
-            >
+            <InlineMessage v-if="passwordStrength === 'medium'" severity="success">
               Password strength: Medium
             </InlineMessage>
             <InlineMessage v-if="passwordStrength === 'weak'" severity="warn">
               Password strength: Weak
             </InlineMessage>
-            <InlineMessage
-              v-if="passwordStrength === 'fail' && passwordNew1 !== ''"
-              severity="error"
-            >
+            <InlineMessage v-if="passwordStrength === 'fail' && passwordNew1 !== ''" severity="error">
               Invalid password
             </InlineMessage>
             <small id="password-help">
-              Password must be a minimum length of 8 characters. Improve
-              password strength with a mixture of UPPERCASE, lowercase, numbers
-              and special characters [!@#$%^&*].
+              Password must be a minimum length of 8 characters. Improve password strength with a mixture of UPPERCASE, lowercase, numbers and special
+              characters [!@#$%^&*].
             </small>
           </div>
           <div v-if="showPasswordEdit" class="p-field">
             <label for="passwordNew2">Confirm new password</label>
-            <InputText
-              id="passwordNew2"
-              type="password"
-              v-model="passwordNew2"
-              v-on:blur="setShowPassword2Notice"
-            />
+            <InputText id="passwordNew2" type="password" v-model="passwordNew2" v-on:blur="setShowPassword2Notice" />
             <InlineMessage v-if="showPassword2Notice" severity="error">
               New passwords do not match
             </InlineMessage>
@@ -144,27 +89,9 @@
               label="Cancel password edit"
               v-on:click.prevent="editPasswordClicked(false)"
             />
-            <Button
-              class="form-reset p-button-warning"
-              type="button"
-              label="Reset changes"
-              v-on:click.prevent="resetForm"
-            />
-            <Button
-              v-if="setButtonDisabled()"
-              class="user-edit"
-              type="submit"
-              label="Update account"
-              disabled
-              v-on:click.prevent="handleEditSubmit"
-            />
-            <Button
-              v-else
-              class="user-edit"
-              type="submit"
-              label="Update account"
-              v-on:click.prevent="handleEditSubmit"
-            />
+            <Button class="form-reset p-button-warning" type="button" label="Reset changes" v-on:click.prevent="resetForm" />
+            <Button v-if="setButtonDisabled()" class="user-edit" type="submit" label="Update account" disabled v-on:click.prevent="handleEditSubmit" />
+            <Button v-else class="user-edit" type="submit" label="Update account" v-on:click.prevent="handleEditSubmit" />
           </div>
         </div>
       </template>
@@ -176,14 +103,8 @@
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
 import { User } from "@/models/user/User";
-import Swal from "sweetalert2";
-import {
-  verifyIsEmail,
-  verifyPasswordsMatch,
-  verifyEmailsMatch,
-  verifyIsName,
-  checkPasswordStrength
-} from "@/helpers/UserMethods";
+import Swal, { SweetAlertIcon } from "sweetalert2";
+import { verifyIsEmail, verifyPasswordsMatch, verifyEmailsMatch, verifyIsName, checkPasswordStrength } from "@/helpers/UserMethods";
 import { PasswordStrength } from "@/models/user/PasswordStrength";
 import AuthService from "@/services/AuthService";
 import { avatars } from "@/models/user/Avatars";
@@ -285,104 +206,53 @@ export default defineComponent({
       this.showLastNameNotice = this.lastNameVerified ? false : true;
     },
 
-    handleEditSubmit(): void {
-      if (this.passwordFieldsVerified() && this.userFieldsVerified()) {
-        const updatedUser = new User(
-          this.username,
-          this.firstName,
-          this.lastName,
-          this.email1,
-          "",
-          this.selectedAvatar
-        );
-        updatedUser.setId(this.currentUser.id);
-        AuthService.updateUser(updatedUser).then(res => {
-          if (res.status === 200) {
-            AuthService.changePassword(
-              this.passwordOld,
-              this.passwordNew1
-            ).then(res2 => {
-              if (res2.status === 200) {
-                Swal.fire({
-                  icon: "success",
-                  title: "Success",
-                  text: "User details and password successfully updated"
-                }).then(() => {
-                  this.$store.commit("updateCurrentUser", res.user);
-                  this.$router.push({ name: "UserDetails" });
-                });
-              } else {
-                Swal.fire({
-                  icon: "error",
-                  title: "Error",
-                  text:
-                    "Password update failed, but user details updated successfully. " +
-                    res2.message
-                });
-              }
-            });
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: res.message
-            });
-          }
-        });
-      } else if (this.showPasswordEdit) {
-        if (!this.passwordDifferentFromOriginal()) {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "New password can not be the same as the current password."
-          });
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Authentication failed. Please check your current password."
-          });
-        }
-      } else if (!this.checkForChanges()) {
-        Swal.fire({
-          icon: "warning",
-          title: "Nothing to update",
-          text: "Your account details have not been updated."
-        });
-      } else if (this.userFieldsVerified()) {
-        const updatedUser = new User(
-          this.username,
-          this.firstName,
-          this.lastName,
-          this.email1,
-          "",
-          this.selectedAvatar
-        );
-        updatedUser.setId(this.currentUser.id);
-        AuthService.updateUser(updatedUser).then(res => {
-          if (res.status === 200) {
-            Swal.fire({
-              icon: "success",
-              title: "Success",
-              text: "Account details updated successfully"
-            }).then(() => {
+    async swalert(icon: SweetAlertIcon, title: string, text: string) {
+      Swal.fire({
+        icon: icon,
+        title: title,
+        text: text
+      });
+    },
+
+    handleFieldsVerified(handlePasswordChange: boolean) {
+      const updatedUser = new User(this.username, this.firstName, this.lastName, this.email1, "", this.selectedAvatar);
+      updatedUser.setId(this.currentUser.id);
+      AuthService.updateUser(updatedUser).then(res => {
+        if (res.status === 200) {
+          if (!handlePasswordChange) {
+            this.swalert("success", "Success", "Account details updated successfully.").then(() => {
               this.$store.commit("updateCurrentUser", res.user);
               this.$router.push({ name: "UserDetails" });
             });
           } else {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: res.message
+            AuthService.changePassword(this.passwordOld, this.passwordNew1).then(res2 => {
+              res2.status === 200
+                ? this.swalert("success", "Success", "User details and password successfully updated.")
+                : this.swalert("error", "Error", "Password update failed, but user details updated successfully. " + res2.message);
+              this.$store.commit("updateCurrentUser", res.user);
+              this.$router.push({ name: "UserDetails" });
             });
           }
-        });
+        } else {
+          this.swalert("error", "Error", res.message);
+        }
+      });
+    },
+
+    handleEditSubmit(): void {
+      if (this.userFieldsVerified() && this.passwordFieldsVerified()) {
+        this.handleFieldsVerified(true);
+      } else if (this.showPasswordEdit) {
+        const message = !this.passwordDifferentFromOriginal()
+          ? "New password can not be the same as the current password."
+          : "Authentication failed. Please check your current password.";
+        this.swalert("error", "Error", message);
+      } else if (!this.checkForChanges()) {
+        this.swalert("warning", "Nothing to update", "Your account details have not been updated.");
+      } else if (this.userFieldsVerified()) {
+        this.handleFieldsVerified(false);
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Error with user form"
-        });
+        this.swalert("error", "Error", "Error with user form");
       }
     },
 
@@ -393,7 +263,7 @@ export default defineComponent({
         verifyEmailsMatch(this.email1, this.email2) &&
         verifyIsName(this.firstName) &&
         verifyIsName(this.lastName) &&
-        "value" in this.selectedAvatar
+        this.selectedAvatar
       ) {
         return true;
       } else {
@@ -423,8 +293,7 @@ export default defineComponent({
       Swal.fire({
         icon: "warning",
         title: "Warning",
-        text:
-          "Are you sure that you want to reset changes to this form? Any changes you have made will be lost.",
+        text: "Are you sure that you want to reset changes to this form? Any changes you have made will be lost.",
         showCancelButton: true,
         confirmButtonText: "Reset changes",
         reverseButtons: true
@@ -445,16 +314,12 @@ export default defineComponent({
       });
     },
 
-    updateAvatar(newValue: { value: string }): void {
+    updateAvatar(newValue: string): void {
       this.selectedAvatar = newValue;
     },
 
     setButtonDisabled(): boolean {
-      if (
-        this.userFieldsVerified() &&
-        !this.showPasswordEdit &&
-        this.checkForChanges()
-      ) {
+      if (this.userFieldsVerified() && !this.showPasswordEdit && this.checkForChanges()) {
         return false;
       } else if (this.userFieldsVerified() && this.passwordFieldsVerified()) {
         return false;
@@ -468,7 +333,7 @@ export default defineComponent({
         this.currentUser.firstName === this.firstName &&
         this.currentUser.lastName === this.lastName &&
         this.currentUser.email === this.email1 &&
-        this.currentUser.avatar.value === this.selectedAvatar.value
+        this.currentUser.avatar === this.selectedAvatar
       ) {
         return false;
       } else {

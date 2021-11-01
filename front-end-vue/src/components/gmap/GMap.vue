@@ -16,7 +16,7 @@ export default defineComponent({
       }
 
       if (newValue) {
-        let latlong = newValue || { lat: 53.6242957, lng: -1.8826361 };
+        let latlong = newValue;
         this.map.setCenter(latlong);
         this.marker = new window.google.maps.Marker({
           position: latlong,
@@ -43,15 +43,12 @@ export default defineComponent({
     });
 
     await loader.load().then(() => {
-      this.map = new window.google.maps.Map(
-        document.getElementById("uprn-map"),
-        {
-          mapTypeId: this.mapType || "hybrid",
-          center: { lat: this.pin.lat, lng: this.pin.lng },
-          zoom: this.zoom,
-          disableDefaultUI: this.disableUI
-        }
-      );
+      this.map = new window.google.maps.Map(document.getElementById("uprn-map"), {
+        mapTypeId: this.mapType || "hybrid",
+        center: { lat: this.pin.lat, lng: this.pin.lng },
+        zoom: this.zoom,
+        disableDefaultUI: this.disableUI
+      });
     });
   }
 });

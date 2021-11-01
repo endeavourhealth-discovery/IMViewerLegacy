@@ -5,11 +5,7 @@
     <Panel header="Editor">
       <TabView v-model:activeIndex="active">
         <TabPanel header="Form">
-          <div
-            class="panel-content"
-            id="form-editor-container"
-            :style="contentHeight"
-          >
+          <div class="panel-content" id="form-editor-container" :style="contentHeight">
             <FormEditor
               v-if="active === 0 && Object.keys(conceptUpdated).length > 0"
               :iri="iri"
@@ -19,11 +15,7 @@
           </div>
         </TabPanel>
         <TabPanel v-if="hasMembers" header="Members">
-          <div
-            class="panel-content"
-            id="member-editor-container"
-            :style="contentHeight"
-          >
+          <div class="panel-content" id="member-editor-container" :style="contentHeight">
             <MemberEditor
               v-if="active === 2 && Object.keys(membersUpdated).length > 0"
               :iri="iri"
@@ -36,24 +28,9 @@
       </TabView>
     </Panel>
     <div class="button-bar p-d-flex p-flex-row p-jc-end" id="editor-button-bar">
-      <Button
-        icon="pi pi-times"
-        label="Cancel"
-        class="p-button-secondary"
-        @click="$router.go(-1)"
-      />
-      <Button
-        icon="pi pi-refresh"
-        label="Reset"
-        class="p-button-warning"
-        @click="refreshEditor"
-      />
-      <Button
-        icon="pi pi-check"
-        label="Save"
-        class="save-button"
-        @click="submit"
-      />
+      <Button icon="pi pi-times" label="Cancel" class="p-button-secondary" @click="$router.go(-1)" />
+      <Button icon="pi pi-refresh" label="Reset" class="p-button-warning" @click="refreshEditor" />
+      <Button icon="pi pi-check" label="Save" class="save-button" @click="submit" />
     </div>
   </div>
 </template>
@@ -66,7 +43,6 @@ import EntityService from "@/services/EntityService";
 import ConfirmDialog from "primevue/confirmdialog";
 import MemberEditor from "@/components/edit/MemberEditor.vue";
 import { IM } from "@/vocabulary/IM";
-import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "Editor",
@@ -79,8 +55,7 @@ export default defineComponent({
   beforeRouteLeave(to, from, next) {
     if (this.checkForChanges()) {
       this.$confirm.require({
-        message:
-          "All unsaved changes will be lost. Are you sure you want to proceed?",
+        message: "All unsaved changes will be lost. Are you sure you want to proceed?",
         header: "Confirmation",
         icon: "pi pi-exclamation-triangle",
         accept: () => {
@@ -122,41 +97,21 @@ export default defineComponent({
   methods: {
     async fetchConceptData(): Promise<void> {
       if (this.iri) {
-        await EntityService.getEntity(this.iri)
-          .then(res => {
-            this.concept = res.data;
-          })
-          .catch(err => {
-            this.$toast.add(
-              LoggerService.error("Editor get concept request failed", err)
-            );
-          });
+        const entityReturn = await EntityService.getEntity(this.iri);
+        if (entityReturn) this.concept = entityReturn;
 
-        await EntityService.getEntityDefinitionDto(this.iri)
-          .then(res => {
-            this.conceptOriginal = res.data;
-            this.conceptUpdated = JSON.parse(JSON.stringify(res.data));
-          })
-          .catch(err => {
-            this.$toast.add(
-              LoggerService.error("Editor get concept request failed", err)
-            );
-          });
+        const dtoReturn = await EntityService.getEntityDefinitionDto(this.iri);
+        if (dtoReturn) {
+          this.conceptOriginal = dtoReturn;
+          this.conceptUpdated = JSON.parse(JSON.stringify(dtoReturn));
+        }
 
         if (this.hasMembers) {
-          await EntityService.getEntityMembers(this.iri, false, false)
-            .then(res => {
-              this.membersOriginal = res.data;
-              this.membersUpdated = JSON.parse(JSON.stringify(res.data));
-            })
-            .catch(err => {
-              this.$toast.add(
-                LoggerService.error(
-                  "Editor get concept members request failed",
-                  err
-                )
-              );
-            });
+          const membersReturn = await EntityService.getEntityMembers(this.iri, false, false);
+          if (membersReturn) {
+            this.membersOriginal = membersReturn;
+            this.membersUpdated = JSON.parse(JSON.stringify(membersReturn));
+          }
         }
       }
     },
@@ -175,10 +130,8 @@ export default defineComponent({
 
     checkForChanges() {
       if (
-        JSON.stringify(this.membersUpdated) ===
-          JSON.stringify(this.membersOriginal) &&
-        JSON.stringify(this.conceptUpdated) ===
-          JSON.stringify(this.conceptOriginal)
+        JSON.stringify(this.membersUpdated) === JSON.stringify(this.membersOriginal) &&
+        JSON.stringify(this.conceptUpdated) === JSON.stringify(this.conceptOriginal)
       ) {
         return false;
       } else {
@@ -192,34 +145,13 @@ export default defineComponent({
     },
 
     setContentHeight(): void {
-      const container = document.getElementById(
-        "editor-main-container"
-      ) as HTMLElement;
-      const header = container.getElementsByClassName(
-        "p-panel-header"
-      )[0] as HTMLElement;
-      const nav = container.getElementsByClassName(
-        "p-tabview-nav"
-      )[0] as HTMLElement;
-      const buttonBar = container.getElementsByClassName(
-        "button-bar"
-      )[0] as HTMLElement;
-      const content = container.getElementsByClassName(
-        "p-panel-content"
-      )[0] as HTMLElement;
-      const currentFontSize = parseFloat(
-        window
-          .getComputedStyle(document.documentElement, null)
-          .getPropertyValue("font-size")
-      );
-      if (
-        container &&
-        header &&
-        nav &&
-        currentFontSize &&
-        buttonBar &&
-        content
-      ) {
+      const container = document.getElementById("editor-main-container") as HTMLElement;
+      const header = container.getElementsByClassName("p-panel-header")[0] as HTMLElement;
+      const nav = container.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
+      const buttonBar = container.getElementsByClassName("button-bar")[0] as HTMLElement;
+      const content = container.getElementsByClassName("p-panel-content")[0] as HTMLElement;
+      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
+      if (container && header && nav && currentFontSize && buttonBar && content) {
         header.style.border = "none";
         header.style.borderBottom = "1px solid #dee2e6";
         content.style.border = "none";
