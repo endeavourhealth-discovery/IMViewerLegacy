@@ -29,7 +29,6 @@ import Builder from "@/components/sidebar/expressionConstraintsSearch/Builder.vu
 import SearchResults from "@/components/sidebar/SearchResults.vue";
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
-import { SearchResponse } from "@/models/entityServiceTypes/EntityServiceTypes";
 
 export default defineComponent({
   name: "ExpressionConstraintsSearch",
@@ -59,7 +58,9 @@ export default defineComponent({
       console.log("Searching...");
       if (this.queryString) {
         this.loading = true;
-        this.searchResults = (await await EntityService.ECLSearch(this.queryString)).entities;
+        this.searchResults = await EntityService.ECLSearch(this.queryString);
+        console.log(this.searchResults);
+        this.loading = false;
       }
     },
 

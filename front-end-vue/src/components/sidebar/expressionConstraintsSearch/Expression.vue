@@ -2,17 +2,10 @@
   <div class="query-item-container" :id="id">
     <div class="label-container">
       <span class="float-text">Expression</span>
-      <p
-        v-if="selectedResult.name === 'ANY'"
-        @click="editClicked"
-        class="label"
-        v-tooltip.bottom="'Click to change'"
-      >
+      <p v-if="selectedResult.name === 'ANY'" @click="editClicked" class="label" v-tooltip.bottom="'Click to change'">
         {{ selectedResult.name }}
       </p>
-      <p v-else @click="editClicked" class="label">
-        {{ selectedResult.code }} |{{ selectedResult.name }}|
-      </p>
+      <p v-else @click="editClicked" class="label">{{ selectedResult.code }} |{{ selectedResult.name }}|</p>
     </div>
   </div>
   <OverlayPanel class="search-op" ref="miniSearchOP">
@@ -69,7 +62,7 @@ export default defineComponent({
       if (this.selectedResult.name === "ANY") {
         label = "*";
       } else {
-        label = this.selectedResult.code + " |" + this.selectedResult.name;
+        label = this.selectedResult.code + " |" + this.selectedResult.name + "|";
       }
       return {
         value: this.selectedResult,
