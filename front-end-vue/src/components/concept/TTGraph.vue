@@ -2,7 +2,16 @@
   <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container" v-if="loading">
     <ProgressSpinner />
   </div>
-  <div id="graph"></div>
+
+  <div id="graph">
+    <svg id="svg">
+      <defs>
+        <marker id="arrow" markerUnits="strokeWidth" markerWidth="12" markerHeight="12" viewBox="0 0 12 12" refX="25" refY="6" orient="auto-start-reverse">
+          <path d="M2,2 L10,6 L2,10 L6,6 L2,2" style="fill: #781c81;"></path>
+        </marker>
+      </defs>
+    </svg>
+  </div>
 </template>
 
 <script lang="ts">
@@ -15,6 +24,7 @@ import { RDFS } from "@/vocabulary/RDFS";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import * as d3 from "d3";
 import { RDF } from "@/vocabulary/RDF";
+import svgPanZoom from "svg-pan-zoom";
 
 export default defineComponent({
   name: "TTGraph",
@@ -33,31 +43,36 @@ export default defineComponent({
     };
   },
   async mounted() {
-    this.drawGraph(this.conceptIri);
+    await this.drawGraph(this.conceptIri);
   },
   methods: {
     async getEntityBundle(iri: string) {
       const { entity, predicates } = await EntityService.getPartialEntityBundle(iri, []);
-      const firstNode = { name: entity[RDFS.LABEL], children: [] } as TTGraphData;
-      const basePredicates = [IM.HAS_STATUS, RDFS.SUBCLASS_OF, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL];
-      const keys = Object.keys(entity).filter(key => key != "@id" && !basePredicates.includes(key));
+      const firstNode = { name: entity[RDFS.LABEL], relToParent: "", children: [] } as TTGraphData;
+      const excludedPredicates = [IM.HAS_STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL, IM.PROPERTY_GROUP];
+      const keys = Object.keys(entity).filter(key => key != "@id" && !excludedPredicates.includes(key));
+      this.addNodes(entity, keys, firstNode, predicates);
+      this.data = firstNode;
+    },
+
+    addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicates: any) {
       if (isObjectHasKeys(entity)) {
         keys.forEach(key => {
-          const secondNode = { name: predicates[key], children: [] } as TTGraphData;
+          const secondNode = { name: predicates[key], relToParent: "", children: [] } as TTGraphData;
+
           if (isArrayHasLength(entity[key])) {
             entity[key].forEach((nested: any) => {
-              secondNode.children.push({ name: nested.name, children: [] });
+              secondNode.children.push({ name: nested.name, relToParent: "", children: [] });
             });
           } else if (isObjectHasKeys(entity[key])) {
-            secondNode.children.push({ name: entity[key].name, children: [] });
+            secondNode.children.push({ name: entity[key].name, relToParent: "", children: [] });
           } else {
-            secondNode.children.push({ name: entity[key], children: [] });
+            secondNode.children.push({ name: entity[key], relToParent: "", children: [] });
           }
 
           firstNode.children.push(secondNode);
         });
       }
-      this.data = firstNode;
     },
 
     async drawGraph(iri: string) {
@@ -67,9 +82,16 @@ export default defineComponent({
       const nodes = root.descendants() as any;
       const height = 400;
       const width = 600;
-      const radius = 25;
+      const radius = 16;
+
       const side = 2 * radius;
       const maxLength = radius / 2;
+      const font = { size: { node: radius / 5, path: radius / 5 + 3 }, colour: "#fff" };
+      const colour = {
+        activeNode: { fill: "#e3f2fd", stroke: "#AAAAAA" },
+        inactiveNode: { fill: "#781c81", stroke: "#AAAAAA" },
+        path: { fill: "", stroke: "#AAAAAA" }
+      };
 
       const simulation = d3
         .forceSimulation(nodes)
@@ -85,10 +107,7 @@ export default defineComponent({
         .force("x", d3.forceX())
         .force("y", d3.forceY());
 
-      const svg = d3
-        .select("#graph")
-        .append("svg")
-        .attr("viewBox", ["" + -width / 2, "" + -height / 2, "" + width, "" + height] as any);
+      const svg = d3.select("#svg").attr("viewBox", ["" + -width / 2, "" + -height / 2, "" + width, "" + height] as any);
 
       const pathLink = svg
         .selectAll(null)
@@ -96,9 +115,10 @@ export default defineComponent({
         .enter()
         .append("path")
         .attr("id", (d: any) => `${d.target.x}${d.target.y}${d.source.x}${d.source.y}`)
-        .attr("d", (d: any) => `M${d.source.x},${d.source.y} L${d.target.x},${d.target.y}`)
-        .style("fill", "none")
-        .style("stroke", "#AAAAAA");
+        .style("fill", colour.path.fill)
+        .style("stroke", colour.path.stroke)
+        .attr("marker-end", "url(#arrow)");
+      // .attr("marker-start", "url(#arrow)");
 
       svg
         .selectAll(null)
@@ -109,8 +129,10 @@ export default defineComponent({
         .attr("xlink:href", (d: any) => `#${d.target.x}${d.target.y}${d.source.x}${d.source.y}`)
         .style("text-anchor", "middle")
         .attr("startOffset", "50%")
-        .attr("font-size", () => `${radius / 5 + 3}px`)
-        .text((d: any) => d.target.data.name);
+        .attr("font-size", () => `${font.size.path}px`)
+        .text((d: any) => {
+          return d.target.data.name;
+        });
 
       const node = svg
         .append("g")
@@ -120,8 +142,8 @@ export default defineComponent({
         .selectAll("circle")
         .data(nodes)
         .join("circle")
-        .attr("fill", (d: any) => (d.children ? null : "#000"))
-        .attr("stroke", (d: any) => (d.children ? null : "#fff"))
+        .attr("fill", (d: any) => (d.children ? colour.inactiveNode.fill : colour.activeNode.fill))
+        .attr("stroke", (d: any) => (d.children ? colour.inactiveNode.stroke : colour.activeNode.stroke))
         .attr("r", radius)
         .call(this.drag(simulation) as any);
 
@@ -133,11 +155,17 @@ export default defineComponent({
         .enter()
         .append("foreignObject")
         .attr("x", () => radius - side)
-        .attr("y", (d: any) => (d.data.name?.length <= maxLength ? radius - side / 1.5 : radius - side / 1.4))
+        .attr("y", (d: any) => {
+          const quotient = Math.round(d.data.name?.length / maxLength) || 0;
+          if (quotient <= 1) {
+            return radius - side / 1.5;
+          }
+          return radius - side / (1.5 - +("0." + (quotient - 1)));
+        })
         .attr("width", side)
-        .attr("height", side / 2)
-        .attr("color", "red")
-        .style("font-size", () => `${radius / 5}px`);
+        .attr("height", side)
+        .attr("color", font.colour)
+        .style("font-size", () => `${font.size.node}px`);
 
       const nodeText = nodeTextWrapper
         .append("xhtml:p")
@@ -145,10 +173,23 @@ export default defineComponent({
         .attr("style", () => "text-align:center;padding:2px;margin:2px;");
 
       simulation.on("tick", () => {
-        pathLink.attr("d", (d: any) => `M${d.source.x},${d.source.y} L${d.target.x},${d.target.y}`);
+        pathLink.attr("d", (d: any) => {
+          return d.source.x < d.target.x
+            ? `M${d.source.x},${d.source.y} L${d.target.x},${d.target.y}`
+            : `M${d.target.x},${d.target.y} L${d.source.x},${d.source.y}`;
+        });
+
         nodeTextWrapper.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
         nodeText.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
         node.attr("cx", (d: any) => d.x).attr("cy", (d: any) => d.y);
+      });
+
+      svgPanZoom("#svg", {
+        zoomEnabled: true,
+        controlIconsEnabled: true,
+        fit: false,
+        center: true,
+        dblClickZoomEnabled: false
       });
     },
 
@@ -175,41 +216,19 @@ export default defineComponent({
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended);
+    },
+
+    calcAngleDegrees(x: number, y: number) {
+      // 𝑎𝑡𝑎𝑛2(𝑦,𝑥) Where: 𝑦=𝑦𝐵−𝑦𝐴 & 𝑥=𝑥𝐵−𝑥𝐴
+      return (Math.atan2(y, x) * 180) / Math.PI;
     }
   }
 });
 </script>
 
 <style scoped>
-td,
-th {
-  border: 1px solid lightgray;
-  padding: 0.5rem;
-  overflow-wrap: break-word;
-  text-align: left;
-}
-
-td {
-  cursor: pointer;
-}
-
-tr:nth-child(even) {
-  background-color: #f8f9fa;
-}
-
-th[scope="col"] {
-  background-color: #f8f9fa;
-  color: #495057;
-}
-
-table {
-  border-collapse: collapse;
-  border: 2px solid rgb(200, 200, 200);
-}
-
-.p-organizationchart {
-  height: 100%;
+#svg {
+  height: 1000px;
   width: 100%;
-  overflow: auto;
 }
 </style>
