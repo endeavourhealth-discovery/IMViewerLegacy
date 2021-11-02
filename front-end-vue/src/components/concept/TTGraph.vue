@@ -5,10 +5,10 @@
 
   <div id="graph">
     <svg id="svg">
-      <defs>
-        <marker id="arrow" markerUnits="strokeWidth" markerWidth="12" markerHeight="12" viewBox="0 0 12 12" refX="25" refY="6" orient="auto-start-reverse">
+      <defs id="defs">
+        <!-- <marker id="arrow" markerUnits="strokeWidth" markerWidth="12" markerHeight="12" viewBox="0 0 12 12" refX="25" refY="6" orient="auto-start-reverse">
           <path d="M2,2 L10,6 L2,10 L6,6 L2,2" style="fill: #781c81;"></path>
-        </marker>
+        </marker> -->
       </defs>
     </svg>
   </div>
@@ -16,6 +16,7 @@
 
 <script lang="ts">
 import TTGraphData from "../../models/TTGraphData";
+import { translateFromEntityBundle, translateFromTTDocument } from "../../helpers/GraphTranslator";
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
 import { RouteRecordName } from "vue-router";
@@ -25,6 +26,8 @@ import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import * as d3 from "d3";
 import { RDF } from "@/vocabulary/RDF";
 import svgPanZoom from "svg-pan-zoom";
+import { SHACL } from "@/vocabulary/SHACL";
+import { TTIriRef } from "@/models/TripleTree";
 
 export default defineComponent({
   name: "TTGraph",
@@ -47,32 +50,9 @@ export default defineComponent({
   },
   methods: {
     async getEntityBundle(iri: string) {
-      const { entity, predicates } = await EntityService.getPartialEntityBundle(iri, []);
-      const firstNode = { name: entity[RDFS.LABEL], relToParent: "", children: [] } as TTGraphData;
-      const excludedPredicates = [IM.HAS_STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL, IM.PROPERTY_GROUP];
-      const keys = Object.keys(entity).filter(key => key != "@id" && !excludedPredicates.includes(key));
-      this.addNodes(entity, keys, firstNode, predicates);
-      this.data = firstNode;
-    },
-
-    addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicates: any) {
-      if (isObjectHasKeys(entity)) {
-        keys.forEach(key => {
-          const secondNode = { name: predicates[key], relToParent: "", children: [] } as TTGraphData;
-
-          if (isArrayHasLength(entity[key])) {
-            entity[key].forEach((nested: any) => {
-              secondNode.children.push({ name: nested.name, relToParent: "", children: [] });
-            });
-          } else if (isObjectHasKeys(entity[key])) {
-            secondNode.children.push({ name: entity[key].name, relToParent: "", children: [] });
-          } else {
-            secondNode.children.push({ name: entity[key], relToParent: "", children: [] });
-          }
-
-          firstNode.children.push(secondNode);
-        });
-      }
+      const bundle = await EntityService.getPartialEntityBundle(iri, []);
+      this.data = translateFromEntityBundle(bundle);
+      // this.data = translateFromTTDocument();
     },
 
     async drawGraph(iri: string) {
@@ -82,14 +62,16 @@ export default defineComponent({
       const nodes = root.descendants() as any;
       const height = 400;
       const width = 600;
+      const force = -1500;
       const radius = 16;
 
       const side = 2 * radius;
       const maxLength = radius / 2;
-      const font = { size: { node: radius / 5, path: radius / 5 + 3 }, colour: "#fff" };
+      const font = { size: { node: radius / 5, path: radius / 5 + 3 } };
       const colour = {
         activeNode: { fill: "#e3f2fd", stroke: "#AAAAAA" },
         inactiveNode: { fill: "#781c81", stroke: "#AAAAAA" },
+        font: {},
         path: { fill: "", stroke: "#AAAAAA" }
       };
 
@@ -103,11 +85,31 @@ export default defineComponent({
             .distance(0)
             .strength(1)
         )
-        .force("charge", d3.forceManyBody().strength(-1500))
+        .force("charge", d3.forceManyBody().strength(force))
         .force("x", d3.forceX())
         .force("y", d3.forceY());
 
       const svg = d3.select("#svg").attr("viewBox", ["" + -width / 2, "" + -height / 2, "" + width, "" + height] as any);
+
+      // const markers = d3
+      //   .select("#defs")
+      //   .selectAll()
+      //   .data(links)
+      //   .enter()
+      //   .append("marker")
+      //   .attr("id", (d: any) => `${d.target.x}${d.target.y}${d.source.x}${d.source.y}`)
+      //   .attr("markerUnits", "strokeWidth")
+      //   .attr("markerWidth", "12")
+      //   .attr("markerHeight", "12")
+      //   .attr("viewBox", "0 0 12 12")
+      //   .attr("refX", "25")
+      //   .attr("refY", "6")
+      //   .attr("orient", (d: any) => this.calcAngleDegrees(d.target.x, d.target.y));
+
+      // const markerPaths = markers
+      //   .append("path")
+      //   .attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2")
+      //   .style("fill", "#781c81");
 
       const pathLink = svg
         .selectAll(null)
@@ -117,8 +119,7 @@ export default defineComponent({
         .attr("id", (d: any) => `${d.target.x}${d.target.y}${d.source.x}${d.source.y}`)
         .style("fill", colour.path.fill)
         .style("stroke", colour.path.stroke)
-        .attr("marker-end", "url(#arrow)");
-      // .attr("marker-start", "url(#arrow)");
+        .attr("marker-end", (d: any) => `url(#${d.target.x}${d.target.y}${d.source.x}${d.source.y})`);
 
       svg
         .selectAll(null)
@@ -131,7 +132,7 @@ export default defineComponent({
         .attr("startOffset", "50%")
         .attr("font-size", () => `${font.size.path}px`)
         .text((d: any) => {
-          return d.target.data.name;
+          return d.target.data.relToParent;
         });
 
       const node = svg
@@ -144,7 +145,7 @@ export default defineComponent({
         .join("circle")
         .attr("fill", (d: any) => (d.children ? colour.inactiveNode.fill : colour.activeNode.fill))
         .attr("stroke", (d: any) => (d.children ? colour.inactiveNode.stroke : colour.activeNode.stroke))
-        .attr("r", radius)
+        .attr("r", (d: any) => radius)
         .call(this.drag(simulation) as any);
 
       const nodeTextWrapper = svg
@@ -164,7 +165,7 @@ export default defineComponent({
         })
         .attr("width", side)
         .attr("height", side)
-        .attr("color", font.colour)
+        .attr("color", (d: any) => (d.children ? colour.activeNode.fill : colour.inactiveNode.fill))
         .style("font-size", () => `${font.size.node}px`);
 
       const nodeText = nodeTextWrapper
@@ -178,6 +179,10 @@ export default defineComponent({
             ? `M${d.source.x},${d.source.y} L${d.target.x},${d.target.y}`
             : `M${d.target.x},${d.target.y} L${d.source.x},${d.source.y}`;
         });
+
+        // markers.attr("orient", (d: any) => this.calcAngleDegrees(d.target.x, d.target.y));
+
+        // markerPaths.attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2");
 
         nodeTextWrapper.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
         nodeText.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
@@ -196,8 +201,8 @@ export default defineComponent({
     drag(simulation: any) {
       function dragstarted(event: any, d: any) {
         if (!event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
+        // d.fx = d.x;
+        // d.fy = d.y;
       }
 
       function dragged(event: any, d: any) {
@@ -207,8 +212,8 @@ export default defineComponent({
 
       function dragended(event: any, d: any) {
         if (!event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
+        // d.fx = null;
+        // d.fy = null;
       }
 
       return d3
@@ -226,9 +231,17 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style>
 #svg {
   height: 1000px;
   width: 100%;
+}
+
+circle:hover {
+  stroke: steelblue;
+  stroke-width: 3px;
+}
+foreignObject:hover {
+  font-weight: 600;
 }
 </style>
