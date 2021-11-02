@@ -12,6 +12,7 @@ import axios from "axios";
 import { IM } from "@/vocabulary/IM";
 import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
+import CatalogueService from "@/services/CatalogueService";
 
 export default createStore({
   // update stateType.ts when adding new state!
@@ -55,9 +56,14 @@ export default createStore({
     ]),
     activeModule: "default",
     conceptActivePanel: 0,
-    focusHierarchy: false
+    focusHierarchy: false,
+    term: sessionStorage.getItem("term") || "",
+    instanceIri: ""
   },
   mutations: {
+    updateInstanceIri(state, instanceIri) {
+      state.instanceIri = instanceIri;
+    },
     updateConceptIri(state, conceptIri) {
       state.conceptIri = conceptIri;
     },
@@ -124,6 +130,10 @@ export default createStore({
     },
     updateFocusHierarchy(state, bool) {
       state.focusHierarchy = bool;
+    },
+    updateSearchTerm(state, term) {
+      sessionStorage.setItem("term", term)
+      state.term = term;
     }
   },
   actions: {

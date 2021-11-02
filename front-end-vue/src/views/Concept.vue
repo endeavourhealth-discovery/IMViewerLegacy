@@ -46,7 +46,7 @@
       <div id="concept-content-dialogs-container">
         <div id="concept-panel-container">
           <TabView v-model:activeIndex="active" :lazy="true">
-            <TabPanel header="Definition">
+            <TabPanel header="Details">
               <div v-if="loading" class="loading-container" :style="contentHeight">
                 <ProgressSpinner />
               </div>
@@ -168,7 +168,7 @@ export default defineComponent({
   },
   watch: {
     async conceptIri() {
-      this.init();
+      await this.init();
     },
 
     selectedEntityType(newValue, oldValue) {
@@ -248,7 +248,10 @@ export default defineComponent({
     async getInferred(iri: string): Promise<void> {
       const result = await EntityService.getInferredBundle(iri);
       if (isObjectHasKeys(result, ["entity"]) && isObjectHasKeys(result.entity, [RDFS.SUBCLASS_OF, IM.ROLE_GROUP])) {
-        this.concept["inferred"] = { entity: { "http://www.w3.org/2000/01/rdf-schema#subClassOf": result.entity[RDFS.SUBCLASS_OF] }, predicates: result.predicates };
+        this.concept["inferred"] = {
+          entity: { "http://www.w3.org/2000/01/rdf-schema#subClassOf": result.entity[RDFS.SUBCLASS_OF] },
+          predicates: result.predicates
+        };
         this.concept["inferred"].entity[RDFS.SUBCLASS_OF].push({ "http://endhealth.info/im#roleGroup": result.entity[IM.ROLE_GROUP] });
       } else {
         this.concept["inferred"] = result;
