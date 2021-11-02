@@ -1,6 +1,6 @@
 <template>
   <div id="query-search-container">
-    <h3>Expression constraints language search</h3>
+    <h3 class="title">Expression constraints language search</h3>
     <h5 class="info">ECL expression:</h5>
     <div class="text-copy-container">
       <Textarea v-model="queryString" id="query-string-container" placeholder="Enter expression here or use the ECL builder to generate your search..." />
@@ -36,6 +36,14 @@ export default defineComponent({
     Builder,
     SearchResults
   },
+  async mounted() {
+    await this.$nextTick();
+    window.addEventListener("resize", this.onResize);
+    this.onResize();
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.onResize);
+  },
   data() {
     return {
       queryString: "",
@@ -45,6 +53,10 @@ export default defineComponent({
     };
   },
   methods: {
+    onResize() {
+      this.setResultsHeight();
+    },
+
     updateECL(data: string) {
       this.queryString = data;
       this.showDialog = false;
@@ -55,11 +67,9 @@ export default defineComponent({
     },
 
     async search() {
-      console.log("Searching...");
       if (this.queryString) {
         this.loading = true;
         this.searchResults = await EntityService.ECLSearch(this.queryString);
-        console.log(this.searchResults);
         this.loading = false;
       }
     },
@@ -74,6 +84,44 @@ export default defineComponent({
 
     onCopyError(): void {
       this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
+    },
+
+    setResultsHeight(): void {
+      const container = document.getElementById("query-search-container") as HTMLElement;
+      if (!container) {
+        LoggerService.error(undefined, "Failed to set ecl results table height");
+        return;
+      }
+      const html = document.documentElement;
+      const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
+      const title = container.getElementsByClassName("title")[0] as HTMLElement;
+      const subTitle = container.getElementsByClassName("info")[0] as HTMLElement;
+      const eclContainer = container.getElementsByClassName("text-copy-container")[0] as HTMLElement;
+      const buttonContainer = container.getElementsByClassName("button-container")[0] as HTMLElement;
+      const resultsContainer = container.getElementsByClassName("results-container")[0] as HTMLElement;
+      let height = container.getBoundingClientRect().height;
+      // if (currentFontSize) {
+      //   height -= currentFontSize * 2;
+      // }
+      if (title) {
+        height -= title.getBoundingClientRect().height;
+      }
+      if (subTitle) {
+        height -= subTitle.getBoundingClientRect().height;
+      }
+      if (eclContainer) {
+        height -= eclContainer.getBoundingClientRect().height;
+      }
+      if (buttonContainer) {
+        height -= buttonContainer.getBoundingClientRect().height;
+      }
+      if (currentFontSize) {
+        height -= currentFontSize * 3;
+      }
+      if (resultsContainer) {
+        resultsContainer.style.height = height + "px";
+        resultsContainer.style.maxHeight = height + "px";
+      }
     }
   }
 });
@@ -82,7 +130,7 @@ export default defineComponent({
 <style scoped>
 #query-search-container {
   height: 100%;
-  overflow: auto;
+  /* overflow: auto; */
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
@@ -133,6 +181,9 @@ export default defineComponent({
 .results-container {
   width: 100%;
   flex-grow: 10;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
 }
 
 .text-copy-container {
