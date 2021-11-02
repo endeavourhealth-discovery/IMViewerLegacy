@@ -186,6 +186,9 @@ router.beforeEach((to, from, next) => {
   if (to.name?.toString() == "Concept") {
     store.commit("updateConceptIri", to.params.selectedIri as string);
   }
+  if (to.name?.toString() == "Individual") {
+    store.commit("updateInstanceIri", to.params.selectedIri as string);
+  }
   if (to.matched.some(record => record.meta.requiresAuth)) {
     store.dispatch("authenticateCurrentUser").then(res => {
       console.log("auth guard user authenticated:" + res.authenticated);

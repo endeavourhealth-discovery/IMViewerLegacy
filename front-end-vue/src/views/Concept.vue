@@ -168,7 +168,7 @@ export default defineComponent({
   },
   watch: {
     async conceptIri() {
-      this.init();
+      await this.init();
     },
 
     selectedEntityType(newValue, oldValue) {
