@@ -110,7 +110,7 @@ describe("Concept.vue", () => {
   beforeEach(async () => {
     jest.resetAllMocks();
     clipboardSpy = jest.spyOn(navigator.clipboard, "writeText");
-    EntityService.getInferredBundle = jest.fn().mockResolvedValue(INFERRED);
+    EntityService.getDefinitionBundle = jest.fn().mockResolvedValue(INFERRED);
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
     EntityService.getEntityChildren = jest.fn().mockResolvedValue(CHILDREN);
     EntityService.getEntityTermCodes = jest.fn().mockResolvedValue(TERMS);
@@ -498,7 +498,7 @@ describe("Concept.vue", () => {
   });
 
   it("can getInferred ___ pass", async () => {
-    EntityService.getInferredBundle.mockResolvedValue({
+    EntityService.getDefinitionBundle.mockResolvedValue({
       entity: {
         "@id": "http://snomed.info/sct#298382003",
         "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
@@ -527,8 +527,8 @@ describe("Concept.vue", () => {
     wrapper.vm.getInferred("http://snomed.info/sct#298382003");
     await flushPromises();
     await wrapper.vm.$nextTick();
-    expect(EntityService.getInferredBundle).toHaveBeenCalledTimes(1);
-    expect(EntityService.getInferredBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(EntityService.getDefinitionBundle).toHaveBeenCalledTimes(1);
+    expect(EntityService.getDefinitionBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.concept.inferred).toStrictEqual({
       entity: {
         "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
@@ -559,20 +559,20 @@ describe("Concept.vue", () => {
   });
 
   it("can getInferred ___ pass ___ empty bundle", async () => {
-    EntityService.getInferredBundle.mockResolvedValue({ entity: {} });
+    EntityService.getDefinitionBundle.mockResolvedValue({ entity: {} });
     wrapper.vm.getInferred("http://snomed.info/sct#298382003");
     await flushPromises();
-    expect(EntityService.getInferredBundle).toHaveBeenCalledTimes(1);
-    expect(EntityService.getInferredBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(EntityService.getDefinitionBundle).toHaveBeenCalledTimes(1);
+    expect(EntityService.getDefinitionBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.concept.inferred).toStrictEqual({ entity: {} });
   });
 
   it("can getInferred ___ pass ___ not bundle", async () => {
-    EntityService.getInferredBundle.mockResolvedValue({});
+    EntityService.getDefinitionBundle.mockResolvedValue({});
     wrapper.vm.getInferred("http://snomed.info/sct#298382003");
     await flushPromises();
-    expect(EntityService.getInferredBundle).toHaveBeenCalledTimes(1);
-    expect(EntityService.getInferredBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(EntityService.getDefinitionBundle).toHaveBeenCalledTimes(1);
+    expect(EntityService.getDefinitionBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.concept.inferred).toStrictEqual({});
   });
 
