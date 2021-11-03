@@ -44,10 +44,3 @@ export default defineComponent({
   }
 });
 </script>
-
-<style>
-#svg {
-  height: 1000px;
-  width: 100%;
-}
-</style>
