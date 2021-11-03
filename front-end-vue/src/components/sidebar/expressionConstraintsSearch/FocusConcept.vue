@@ -2,33 +2,15 @@
   <div class="focus-concept-container" :id="id">
     <div class="switch-button-container">
       <div class="buttons-container">
-        <Button
-          icon="fas fa-minus"
-          class="p-button-rounded p-button-outlined p-button-danger"
-          @click="deleteClicked"
-        />
-        <Button
-          icon="fas fa-plus"
-          class="p-button-rounded p-button-outlined p-button-success"
-          @click="addNextClicked"
-        />
+        <Button icon="fas fa-minus" class="p-button-rounded p-button-outlined p-button-danger" @click="deleteClicked" />
+        <Button icon="fas fa-plus" class="p-button-rounded p-button-outlined p-button-success" @click="addNextClicked" />
       </div>
     </div>
     <div class="focus-concept-children-next-container">
       <span class="float-text">Focus concept</span>
-      <div
-        v-if="focusConceptBuild && focusConceptBuild.length"
-        class="focus-concept-children-container"
-      >
+      <div v-if="focusConceptBuild && focusConceptBuild.length" class="focus-concept-children-container">
         <template v-for="child in focusConceptBuild" :key="child.id">
-          <component
-            :is="child.component"
-            :value="child.value"
-            :id="child.id"
-            :position="child.position"
-            @updateClicked="updateChild"
-          >
-          </component>
+          <component :is="child.component" :value="child.value" :id="child.id" :position="child.position" @updateClicked="updateChild"> </component>
         </template>
       </div>
     </div>
@@ -59,9 +41,7 @@ export default defineComponent({
   watch: {
     focusConceptBuild: {
       handler() {
-        this.focusConceptBuild.sort(
-          (a: any, b: any) => a.position - b.position
-        );
+        this.focusConceptBuild.sort((a: any, b: any) => a.position - b.position);
         this.$emit("updateClicked", this.createFocusConcept());
       },
       deep: true
@@ -81,9 +61,7 @@ export default defineComponent({
     },
 
     updateChild(data: any) {
-      const index = this.focusConceptBuild.findIndex(
-        item => item.position === data.position
-      );
+      const index = this.focusConceptBuild.findIndex(item => item.position === data.position);
       this.focusConceptBuild[index] = data;
     },
 

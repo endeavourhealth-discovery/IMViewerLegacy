@@ -150,11 +150,11 @@ export default defineComponent({
   },
   async mounted() {
     await this.getTypesCount();
-    if(this.instanceIri) {
+    if (this.instanceIri) {
       this.displayInstance();
     }
-    if(this.term) {
-      await this.getSearchResult()
+    if (this.term) {
+      await this.getSearchResult();
     }
   },
   methods: {

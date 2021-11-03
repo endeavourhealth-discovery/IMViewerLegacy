@@ -2,23 +2,11 @@
   <div class="logic-container" :id="id">
     <div class="label-container">
       <span class="float-text">Logic</span>
-      <Dropdown
-        v-model="selected"
-        :options="options"
-        placeholder="Select logic"
-      />
+      <Dropdown v-model="selected" :options="options" placeholder="Select logic" />
     </div>
     <div class="buttons-container">
-      <Button
-        icon="fas fa-minus"
-        class="p-button-rounded p-button-outlined p-button-danger"
-        @click="deleteClicked"
-      />
-      <Button
-        icon="fas fa-plus"
-        class="p-button-rounded p-button-outlined p-button-success"
-        @click="addNextClicked"
-      />
+      <Button icon="fas fa-minus" class="p-button-rounded p-button-outlined p-button-danger" @click="deleteClicked" />
+      <Button icon="fas fa-plus" class="p-button-rounded p-button-outlined p-button-success" @click="addNextClicked" />
     </div>
   </div>
 </template>
@@ -31,12 +19,7 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "Logic",
   props: { id: String, position: Number, value: String },
-  emits: [
-    "addClicked",
-    "deleteClicked",
-    "updateClicked",
-    "addNextOptionsClicked"
-  ],
+  emits: ["addClicked", "deleteClicked", "updateClicked", "addNextOptionsClicked"],
   watch: {
     selected() {
       this.onConfirm();

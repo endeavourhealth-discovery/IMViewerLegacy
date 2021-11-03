@@ -12,7 +12,6 @@ import axios from "axios";
 import { IM } from "@/vocabulary/IM";
 import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
-import CatalogueService from "@/services/CatalogueService";
 
 export default createStore({
   // update stateType.ts when adding new state!
@@ -132,7 +131,7 @@ export default createStore({
       state.focusHierarchy = bool;
     },
     updateSearchTerm(state, term) {
-      sessionStorage.setItem("term", term)
+      sessionStorage.setItem("term", term);
       state.term = term;
     }
   },

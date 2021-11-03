@@ -2,12 +2,7 @@
   <div class="query-item-container" :id="id">
     <div class="label-container">
       <span class="float-text">Operator</span>
-      <Dropdown
-        v-model="selected"
-        :options="options"
-        optionLabel="longSyntax"
-        placeholder="Select operator"
-      >
+      <Dropdown v-model="selected" :options="options" optionLabel="longSyntax" placeholder="Select operator">
         <template #value="slotProps">
           <span>{{ slotProps.value.longSyntax }}</span>
         </template>
