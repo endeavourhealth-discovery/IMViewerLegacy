@@ -121,11 +121,11 @@ export default defineComponent({
     async instanceIri() {
       this.displayInstance();
     },
-    async term() {
+    async catalogueSearchTerm() {
       await this.getSearchResult();
     }
   },
-  computed: { ...mapState(["term", "instanceIri"]) },
+  computed: { ...mapState(["catalogueSearchTerm", "instanceIri"]) },
   data() {
     return {
       searchRequest: "",
@@ -153,7 +153,7 @@ export default defineComponent({
     if (this.instanceIri) {
       this.displayInstance();
     }
-    if (this.term) {
+    if (this.catalogueSearchTerm) {
       await this.getSearchResult();
     }
   },
@@ -164,7 +164,7 @@ export default defineComponent({
     },
 
     async getSearchResult() {
-      const result = await CatalogueService.getSearchResult(this.term, this.typesIris);
+      const result = await CatalogueService.getSearchResult(this.catalogueSearchTerm, this.typesIris);
       if (result) this.searchResults = result;
     },
 
@@ -177,7 +177,7 @@ export default defineComponent({
 
     checkKey(event: any) {
       if (this.searchRequest.length > 2 && event === "Enter") {
-        this.$store.commit("updateSearchTerm", this.searchRequest);
+        this.$store.commit("updateCatalogueSearchTerm", this.searchRequest);
         this.getSearchResult();
       }
     },

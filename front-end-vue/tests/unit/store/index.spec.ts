@@ -9,7 +9,42 @@ import { CustomAlert } from "@/models/user/CustomAlert";
 import { IM } from "@/vocabulary/IM";
 
 describe("state", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    window.sessionStorage.clear();
+  });
+
+  afterAll(() => {
+    window.sessionStorage.clear();
+  });
+
   it("should start with the correct values", () => {
+    expect(Object.keys(store.state)).toStrictEqual([
+      "cancelSource",
+      "conceptIri",
+      "history",
+      "searchResults",
+      "currentUser",
+      "registeredUsername",
+      "isLoggedIn",
+      "snomedLicenseAccepted",
+      "historyCount",
+      "focusTree",
+      "treeLocked",
+      "resetTree",
+      "sideNavHierarchyFocus",
+      "selectedEntityType",
+      "filterOptions",
+      "selectedFilters",
+      "quickFiltersStatus",
+      "moduleSelectedEntities",
+      "activeModule",
+      "conceptActivePanel",
+      "focusHierarchy",
+      "catalogueSearchTerm",
+      "instanceIri"
+    ]);
+    expect(store.state.cancelSource).toBeDefined();
     expect(store.state.conceptIri).toBe("http://endhealth.info/im#DiscoveryOntology");
     expect(store.state.history).toEqual([]);
     expect(store.state.searchResults).toEqual([]);
@@ -20,6 +55,7 @@ describe("state", () => {
     expect(store.state.historyCount).toBe(0);
     expect(store.state.focusTree).toBe(false);
     expect(store.state.treeLocked).toBe(true);
+    expect(store.state.resetTree).toBe(false);
     expect(store.state.sideNavHierarchyFocus).toStrictEqual({
       name: "Ontology",
       fullName: "Ontologies",
@@ -45,6 +81,9 @@ describe("state", () => {
     );
     expect(store.state.activeModule).toBe("default");
     expect(store.state.conceptActivePanel).toBe(0);
+    expect(store.state.focusHierarchy).toBe(false);
+    expect(store.state.catalogueSearchTerm).toBeNull();
+    expect(store.state.instanceIri).toBe("");
   });
 });
 
@@ -194,6 +233,22 @@ describe("mutations", () => {
   it("can updateActiveModule", () => {
     store.commit("updateActiveModule", "sets");
     expect(store.state.activeModule).toBe("sets");
+  });
+
+  it("can updateFocusHierarchy", () => {
+    store.commit("updateFocusHierarchy", true);
+    expect(store.state.focusHierarchy).toBe(true);
+  });
+
+  it("can updateCatalogueSearchTerm", () => {
+    store.commit("updateCatalogueSearchTerm", "testTermString");
+    expect(store.state.catalogueSearchTerm).toBe("testTermString");
+    expect(window.sessionStorage.getItem("catalogueSearchTerm")).toBe("testTermString");
+  });
+
+  it("can updateInstanceIri", () => {
+    store.commit("updateInstanceIri", "testIriString");
+    expect(store.state.instanceIri).toBe("testIriString");
   });
 
   it("can fetchSearchResults ___ pass", async () => {
