@@ -1,8 +1,4 @@
 <template>
-  <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container" v-if="loading">
-    <ProgressSpinner />
-  </div>
-
   <div id="graph">
     <svg id="svg">
       <defs id="defs">
@@ -15,57 +11,48 @@
 </template>
 
 <script lang="ts">
-import TTGraphData from "../../models/TTGraphData";
-import { translateFromEntityBundle, translateFromTTDocument, closeNodeByName, hasNodeChildrenByName } from "../../helpers/GraphTranslator";
-import { defineComponent } from "@vue/runtime-core";
-import EntityService from "@/services/EntityService";
+import TTGraphData from "../../../models/TTGraphData";
+import { closeNodeByName, hasNodeChildrenByName } from "../../../helpers/GraphTranslator";
+import { defineComponent, PropType } from "@vue/runtime-core";
 import * as d3 from "d3";
 import svgPanZoom from "svg-pan-zoom";
 import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
-  name: "TTGraph",
+  name: "GraphComponent",
   props: {
-    conceptIri: { type: String, required: true }
+    data: { type: Object as PropType<TTGraphData>, required: true }
   },
   watch: {
-    async conceptIri(newValue) {
-      await this.getEntityBundle(this.conceptIri);
-      const root = d3.hierarchy(this.data);
+    async data(newValue) {
+      const root = d3.hierarchy(newValue);
       this.stopSimulation();
       this.drawGraph(root.links(), root.descendants());
     }
   },
+  computed: {
+    side() {
+      return 2 * this.radius;
+    },
+    nodeFontSize() {
+      return this.radius / 5;
+    },
+    pathFontSize() {
+      return this.radius / 5 + 3;
+    },
+    maxLength() {
+      return this.radius / 2;
+    }
+  },
   data() {
     return {
-      loading: false,
-      data: {} as TTGraphData,
       simulation: {} as any,
-      svgPan: {} as any
-    };
-  },
-  async mounted() {
-    await this.getEntityBundle(this.conceptIri);
-    const root = d3.hierarchy(this.data);
-    this.drawGraph(root.links(), root.descendants());
-  },
-  methods: {
-    async getEntityBundle(iri: string) {
-      const bundle = await EntityService.getPartialEntityBundle(iri, []);
-      // this.data = translateFromEntityBundle(bundle);
-      this.data = translateFromTTDocument();
-    },
-
-    drawGraph(links: any, nodes: any) {
-      const height = 400;
-      const width = 400;
-      const force = -1500;
-      const radius = 16;
-
-      const side = 2 * radius;
-      const maxLength = radius / 2;
-      const font = { size: { node: radius / 5, path: radius / 5 + 3 } };
-      const colour = {
+      svgPan: {} as any,
+      height: 400,
+      width: 400,
+      force: -1500,
+      radius: 16,
+      colour: {
         activeNode: { fill: "#e3f2fd", stroke: "#AAAAAA" },
         inactiveNode: { fill: "#781c81", stroke: "#AAAAAA" },
         centerNode: {
@@ -74,8 +61,15 @@ export default defineComponent({
         },
         font: {},
         path: { fill: "", stroke: "#AAAAAA" }
-      };
-
+      }
+    };
+  },
+  async mounted() {
+    const root = d3.hierarchy(this.data);
+    this.drawGraph(root.links(), root.descendants());
+  },
+  methods: {
+    drawGraph(links: any, nodes: any) {
       this.simulation = d3
         .forceSimulation(nodes)
         .force(
@@ -86,11 +80,11 @@ export default defineComponent({
             .distance(0)
             .strength(1)
         )
-        .force("charge", d3.forceManyBody().strength(force))
+        .force("charge", d3.forceManyBody().strength(this.force))
         .force("x", d3.forceX())
         .force("y", d3.forceY());
 
-      const svg = d3.select("#svg").attr("viewBox", ["" + -width / 2, "" + -height / 2, "" + width, "" + height] as any);
+      const svg = d3.select("#svg").attr("viewBox", ["" + -this.width / 2, "" + -this.height / 2, "" + this.width, "" + this.height] as any);
 
       // const markers = d3
       //   .select("#defs")
@@ -118,8 +112,8 @@ export default defineComponent({
         .enter()
         .append("path")
         .attr("id", (d: any) => `${d.target.x}${d.target.y}${d.source.x}${d.source.y}`)
-        .style("fill", colour.path.fill)
-        .style("stroke", colour.path.stroke)
+        .style("fill", this.colour.path.fill)
+        .style("stroke", this.colour.path.stroke)
         .attr("marker-end", (d: any) => `url(#${d.target.x}${d.target.y}${d.source.x}${d.source.y})`);
 
       svg
@@ -131,7 +125,7 @@ export default defineComponent({
         .attr("xlink:href", (d: any) => `#${d.target.x}${d.target.y}${d.source.x}${d.source.y}`)
         .style("text-anchor", "middle")
         .attr("startOffset", "50%")
-        .attr("font-size", () => `${font.size.path}px`)
+        .attr("font-size", () => `${this.pathFontSize}px`)
         .text((d: any) => {
           return d.target.data.relToParent;
         });
@@ -145,11 +139,11 @@ export default defineComponent({
         .data(nodes)
         .join("circle")
         .attr("fill", (d: any) => {
-          if (d.depth === 0) return colour.centerNode.fill;
-          return hasNodeChildrenByName(this.data, d.data.name) ? colour.inactiveNode.fill : colour.activeNode.fill;
+          if (d.depth === 0) return this.colour.centerNode.fill;
+          return hasNodeChildrenByName(this.data, d.data.name) ? this.colour.inactiveNode.fill : this.colour.activeNode.fill;
         })
-        .attr("stroke", (d: any) => (hasNodeChildrenByName(this.data, d.data.name) ? colour.inactiveNode.stroke : colour.activeNode.stroke))
-        .attr("r", (d: any) => radius)
+        .attr("stroke", (d: any) => (hasNodeChildrenByName(this.data, d.data.name) ? this.colour.inactiveNode.stroke : this.colour.activeNode.stroke))
+        .attr("r", () => this.radius)
         .call(this.drag(this.simulation) as any);
 
       const nodeTextWrapper = svg
@@ -159,18 +153,18 @@ export default defineComponent({
         .data(nodes)
         .enter()
         .append("foreignObject")
-        .attr("x", () => radius - side)
+        .attr("x", () => this.radius - this.side)
         .attr("y", (d: any) => {
-          const quotient = Math.round(d.data.name?.length / maxLength) || 0;
+          const quotient = Math.round(d.data.name?.length / this.maxLength) || 0;
           if (quotient <= 1) {
-            return radius - side / 1.5;
+            return this.radius - this.side / 1.5;
           }
-          return radius - side / (1.5 - +("0." + (quotient - 1)));
+          return this.radius - this.side / (1.5 - +("0." + (quotient - 1)));
         })
-        .attr("width", side)
-        .attr("height", side)
-        .attr("color", (d: any) => (hasNodeChildrenByName(this.data, d.data.name) ? colour.activeNode.fill : colour.inactiveNode.fill))
-        .style("font-size", () => `${font.size.node}px`)
+        .attr("width", this.side)
+        .attr("height", this.side)
+        .attr("color", (d: any) => (hasNodeChildrenByName(this.data, d.data.name) ? this.colour.activeNode.fill : this.colour.inactiveNode.fill))
+        .style("font-size", () => `${this.nodeFontSize}px`)
         .on("dblclick", (d: any) => this.dblclick(d));
 
       const nodeText = nodeTextWrapper

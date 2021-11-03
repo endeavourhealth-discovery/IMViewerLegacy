@@ -97,7 +97,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Graph from "../components/concept/Graph.vue";
-import TTGraph from "../components/concept/TTGraph.vue";
+import TTGraph from "../components/concept/graph/TTGraph.vue";
 import Definition from "../components/concept/Definition.vue";
 import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
