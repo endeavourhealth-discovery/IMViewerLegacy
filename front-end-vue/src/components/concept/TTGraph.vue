@@ -16,18 +16,12 @@
 
 <script lang="ts">
 import TTGraphData from "../../models/TTGraphData";
-import { translateFromEntityBundle, translateFromTTDocument } from "../../helpers/GraphTranslator";
+import { translateFromEntityBundle, translateFromTTDocument, closeNodeByName, hasNodeChildrenByName } from "../../helpers/GraphTranslator";
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
-import { RouteRecordName } from "vue-router";
-import { IM } from "@/vocabulary/IM";
-import { RDFS } from "@/vocabulary/RDFS";
-import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import * as d3 from "d3";
-import { RDF } from "@/vocabulary/RDF";
 import svgPanZoom from "svg-pan-zoom";
-import { SHACL } from "@/vocabulary/SHACL";
-import { TTIriRef } from "@/models/TripleTree";
+import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "TTGraph",
@@ -36,32 +30,35 @@ export default defineComponent({
   },
   watch: {
     async conceptIri(newValue) {
-      await this.drawGraph(newValue);
+      await this.getEntityBundle(this.conceptIri);
+      const root = d3.hierarchy(this.data);
+      this.stopSimulation();
+      this.drawGraph(root.links(), root.descendants());
     }
   },
   data() {
     return {
       loading: false,
-      data: {} as TTGraphData
+      data: {} as TTGraphData,
+      simulation: {} as any,
+      svgPan: {} as any
     };
   },
   async mounted() {
-    await this.drawGraph(this.conceptIri);
+    await this.getEntityBundle(this.conceptIri);
+    const root = d3.hierarchy(this.data);
+    this.drawGraph(root.links(), root.descendants());
   },
   methods: {
     async getEntityBundle(iri: string) {
       const bundle = await EntityService.getPartialEntityBundle(iri, []);
-      this.data = translateFromEntityBundle(bundle);
-      // this.data = translateFromTTDocument();
+      // this.data = translateFromEntityBundle(bundle);
+      this.data = translateFromTTDocument();
     },
 
-    async drawGraph(iri: string) {
-      await this.getEntityBundle(iri);
-      const root = d3.hierarchy(this.data);
-      const links = root.links() as any;
-      const nodes = root.descendants() as any;
+    drawGraph(links: any, nodes: any) {
       const height = 400;
-      const width = 600;
+      const width = 400;
       const force = -1500;
       const radius = 16;
 
@@ -71,11 +68,15 @@ export default defineComponent({
       const colour = {
         activeNode: { fill: "#e3f2fd", stroke: "#AAAAAA" },
         inactiveNode: { fill: "#781c81", stroke: "#AAAAAA" },
+        centerNode: {
+          fill: "#e39a36",
+          stroke: "#ffffff"
+        },
         font: {},
         path: { fill: "", stroke: "#AAAAAA" }
       };
 
-      const simulation = d3
+      this.simulation = d3
         .forceSimulation(nodes)
         .force(
           "link",
@@ -143,10 +144,13 @@ export default defineComponent({
         .selectAll("circle")
         .data(nodes)
         .join("circle")
-        .attr("fill", (d: any) => (d.children ? colour.inactiveNode.fill : colour.activeNode.fill))
-        .attr("stroke", (d: any) => (d.children ? colour.inactiveNode.stroke : colour.activeNode.stroke))
+        .attr("fill", (d: any) => {
+          if (d.depth === 0) return colour.centerNode.fill;
+          return hasNodeChildrenByName(this.data, d.data.name) ? colour.inactiveNode.fill : colour.activeNode.fill;
+        })
+        .attr("stroke", (d: any) => (hasNodeChildrenByName(this.data, d.data.name) ? colour.inactiveNode.stroke : colour.activeNode.stroke))
         .attr("r", (d: any) => radius)
-        .call(this.drag(simulation) as any);
+        .call(this.drag(this.simulation) as any);
 
       const nodeTextWrapper = svg
         .append("g")
@@ -165,17 +169,18 @@ export default defineComponent({
         })
         .attr("width", side)
         .attr("height", side)
-        .attr("color", (d: any) => (d.children ? colour.activeNode.fill : colour.inactiveNode.fill))
-        .style("font-size", () => `${font.size.node}px`);
+        .attr("color", (d: any) => (hasNodeChildrenByName(this.data, d.data.name) ? colour.activeNode.fill : colour.inactiveNode.fill))
+        .style("font-size", () => `${font.size.node}px`)
+        .on("dblclick", (d: any) => this.dblclick(d));
 
       const nodeText = nodeTextWrapper
         .append("xhtml:p")
         .text((d: any) => d.data.name)
         .attr("style", () => "text-align:center;padding:2px;margin:2px;");
 
-      simulation.on("tick", () => {
+      this.simulation.on("tick", () => {
         pathLink.attr("d", (d: any) => {
-          return d.source.x < d.target.x
+          return d?.source.x < d.target.x
             ? `M${d.source.x},${d.source.y} L${d.target.x},${d.target.y}`
             : `M${d.target.x},${d.target.y} L${d.source.x},${d.source.y}`;
         });
@@ -189,13 +194,23 @@ export default defineComponent({
         node.attr("cx", (d: any) => d.x).attr("cy", (d: any) => d.y);
       });
 
-      svgPanZoom("#svg", {
+      this.svgPan = svgPanZoom("#svg", {
         zoomEnabled: true,
         controlIconsEnabled: true,
         fit: false,
         center: true,
         dblClickZoomEnabled: false
       });
+    },
+
+    dblclick(d: any) {
+      const node = d.path[0]["__data__"]["data"] as TTGraphData;
+      if (isArrayHasLength(node.children) || isArrayHasLength(node._children)) {
+        closeNodeByName(this.data, node.name);
+        this.stopSimulation();
+        const root = d3.hierarchy(this.data);
+        this.drawGraph(root.links(), root.descendants());
+      }
     },
 
     drag(simulation: any) {
@@ -221,6 +236,12 @@ export default defineComponent({
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended);
+    },
+
+    stopSimulation() {
+      this.svgPan.destroy();
+      d3.selectAll("g").remove();
+      this.simulation.stop();
     },
 
     calcAngleDegrees(x: number, y: number) {

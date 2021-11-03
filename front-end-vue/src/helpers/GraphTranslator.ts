@@ -8,7 +8,7 @@ import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
 
 export function translateFromEntityBundle(bundle: PartialBundle) {
   const { entity, predicates } = bundle;
-  const firstNode = { name: entity[RDFS.LABEL], relToParent: "", children: [] } as TTGraphData;
+  const firstNode = { name: entity[RDFS.LABEL], relToParent: "", children: [], _children: [] } as TTGraphData;
   const excludedPredicates = [IM.MATCHED_TO, IM.HAS_STATUS, IM.STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL];
   const keys = Object.keys(entity).filter(key => key != "@id" && !excludedPredicates.includes(key));
   addNodes(entity, keys, firstNode, predicates);
@@ -20,16 +20,16 @@ function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicate
     keys.forEach(key => {
       if (isArrayHasLength(entity[key]) && key === SHACL.PROPERTY) {
         entity[key].forEach((nested: any) => {
-          firstNode.children.push({ name: nested[SHACL.CLASS].name, relToParent: nested[SHACL.PATH].name, children: [] });
+          firstNode.children.push({ name: nested[SHACL.CLASS].name, relToParent: nested[SHACL.PATH].name, children: [], _children: [] });
         });
       } else if (isArrayHasLength(entity[key])) {
         entity[key].forEach((nested: any) => {
-          firstNode.children.push({ name: nested.name, relToParent: predicates[key], children: [] });
+          firstNode.children.push({ name: nested.name, relToParent: predicates[key], children: [], _children: [] });
         });
       } else if (isObjectHasKeys(entity[key])) {
-        firstNode.children.push({ name: entity[key].name, relToParent: predicates[key], children: [] });
+        firstNode.children.push({ name: entity[key].name, relToParent: predicates[key], children: [], _children: [] });
       } else {
-        firstNode.children.push({ name: entity[key], relToParent: predicates[key], children: [] });
+        firstNode.children.push({ name: entity[key], relToParent: predicates[key], children: [], _children: [] });
       }
     });
   }
@@ -37,44 +37,84 @@ function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicate
 
 export function translateFromTTDocument() {
   ttdocument["@context"];
-  const firstNode = { name: ttdocument.entities[0]["rdfs:label"], relToParent: "", children: [] } as TTGraphData;
+  const firstNode = { name: ttdocument.entities[0]["rdfs:label"], relToParent: "", children: [], _children: [] } as TTGraphData;
   const excludedPredicates = [IM.MATCHED_TO, IM.HAS_STATUS, IM.STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL];
   const predicateSet = new Set<string>();
   ttdocument.entities.forEach(entity => {
     const keys = Object.keys(entity);
     addAllPredicates(entity, keys, predicateSet, excludedPredicates);
   });
-
-  //   ttdocument.entities.forEach(entity => {
-  //     const keys = Object.keys(entity);
-  //     addNodes(entity, keys, firstNode, Array.from(predicateSet));
-  //   });
-
-  //   ttdocument.entities.forEach(entity => {
-  //     addAllNodes(firstNode, entity);
-  //   });
-
-  addAllNodes(firstNode, ttdocument.entities, predicateSet);
-  console.log(firstNode);
+  addAllNodes(firstNode, ttdocument.entities[0], predicateSet);
   return firstNode;
 }
 
 function addAllNodes(node: TTGraphData, entity: any, predicateSet: Set<string>) {
   if (isObjectHasKeys(entity)) {
-    Object.keys(entity).forEach(key => {
-      if (predicateSet.has(getFullKeyIri(key))) {
-        const child = { name: entity[key], relToParent: key, children: [] };
-        if (isObjectHasKeys(entity[key]) || isArrayHasLength(entity[key])) {
-          addAllNodes(child, entity[key], predicateSet);
-        }
-        node.children.push(child);
+    for (const key in entity) {
+      if (key === "sh:property") {
+        entity[key].forEach((property: any) => {
+          if (!Object.keys(property).includes("sh:node")) {
+            node.children.push({ name: property["sh:path"].name, relToParent: property["sh:path"]["@id"], children: [], _children: [] });
+          } else {
+            const nodeEntity = findEntityByIri(ttdocument.entities as [], property["sh:node"]["@id"]) as any;
+            const child = { name: nodeEntity["rdfs:label"], relToParent: property["sh:path"].name || property["sh:path"]["@id"], children: [], _children: [] };
+            addAllNodes(child, nodeEntity, predicateSet);
+            node.children.push(child);
+          }
+        });
       }
-    });
-  } else if (isArrayHasLength(entity)) {
-    entity.forEach((nestedEntity: any) => {
-      addAllNodes(node, nestedEntity, predicateSet);
+    }
+  }
+}
+
+export function hasNodeChildrenByName(data: TTGraphData, name: string) {
+  const nodes = [] as TTGraphData[];
+  findNodeByName(data, name, nodes);
+
+  if (isArrayHasLength(nodes) && (isArrayHasLength(nodes[0].children) || isArrayHasLength(nodes[0]._children))) {
+    return true;
+  }
+  return false;
+}
+
+function findNodeByName(data: TTGraphData, name: string, nodes: TTGraphData[]) {
+  if (data.name === name) {
+    nodes.push(data);
+  } else if (isArrayHasLength(data.children)) {
+    data.children.forEach(child => {
+      findNodeByName(child, name, nodes);
     });
   }
+}
+
+export function closeNodeByName(data: TTGraphData, name: string) {
+  if (data.name === name) {
+    if (isArrayHasLength(data.children)) {
+      data._children = data.children;
+      data.children = [];
+    } else {
+      data.children = data._children;
+      data._children = [];
+    }
+  } else if (isArrayHasLength(data.children)) {
+    data.children.forEach(child => {
+      closeNodeByName(child, name);
+    });
+  }
+}
+
+function findEntityByIri(entities: [], iri: string) {
+  let entity = {};
+  let i = 0;
+  let found = false;
+  while (!found && i < entities.length) {
+    if (entities[i]["@id"] === iri) {
+      entity = entities[i];
+      found = true;
+    }
+    i++;
+  }
+  return entity;
 }
 
 function addAllPredicates(entity: any, keys: string[], predicateSet: Set<string>, excludedPredicates: string[]) {
