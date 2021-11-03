@@ -16,7 +16,6 @@ import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 export default createStore({
   // update stateType.ts when adding new state!
   state: {
-    cancelSource: axios.CancelToken.source(),
     conceptIri: IM.MODULE_ONTOLOGY,
     history: [] as HistoryItem[],
     searchResults: [] as ConceptSummary[],
@@ -62,9 +61,6 @@ export default createStore({
   mutations: {
     updateConceptIri(state, conceptIri) {
       state.conceptIri = conceptIri;
-    },
-    updateCancelSource(state) {
-      state.cancelSource = axios.CancelToken.source();
     },
     updateHistory(state, historyItem) {
       state.history = state.history.filter(function(el) {

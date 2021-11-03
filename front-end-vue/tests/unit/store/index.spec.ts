@@ -20,7 +20,6 @@ describe("state", () => {
 
   it("should start with the correct values", () => {
     expect(Object.keys(store.state)).toStrictEqual([
-      "cancelSource",
       "conceptIri",
       "history",
       "searchResults",
@@ -44,7 +43,6 @@ describe("state", () => {
       "catalogueSearchTerm",
       "instanceIri"
     ]);
-    expect(store.state.cancelSource).toBeDefined();
     expect(store.state.conceptIri).toBe("http://endhealth.info/im#DiscoveryOntology");
     expect(store.state.history).toEqual([]);
     expect(store.state.searchResults).toEqual([]);
@@ -92,11 +90,6 @@ describe("mutations", () => {
     const testConceptIri = "http://www.endhealth.info/im#test";
     store.commit("updateConceptIri", testConceptIri);
     expect(store.state.conceptIri).toEqual(testConceptIri);
-  });
-
-  it("can updateCancelSource", () => {
-    store.commit("updateCancelSource");
-    expect(Object.keys(store.state.cancelSource)).toEqual(["token", "cancel"]);
   });
 
   it("can updateHistory", () => {
