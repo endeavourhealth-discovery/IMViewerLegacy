@@ -240,11 +240,15 @@ export default class EntityService {
     }
   }
 
-  public static async ECLSearch(searchString: string): Promise<ConceptSummary[]> {
+  public static async ECLSearch(searchString: string, includeLegacy: boolean, limit: number): Promise<SearchResponse> {
     try {
-      return await axios.post(this.api + "api/set/evaluateEcl", searchString, { headers: { "Content-Type": "text/plain" } });
+      return await axios.post(this.api + "api/set/eclSearch", searchString, {
+        headers: { "Content-Type": "text/plain" },
+        params: { includeLegacy: includeLegacy, limit: limit }
+      });
     } catch (error) {
-      return [] as ConceptSummary[];
+      console.log(error);
+      return {} as SearchResponse;
     }
   }
 }

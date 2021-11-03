@@ -3,7 +3,12 @@
     <h3 class="title">Expression constraints language search</h3>
     <h5 class="info">ECL expression:</h5>
     <div class="text-copy-container">
-      <Textarea v-model="queryString" id="query-string-container" placeholder="Enter expression here or use the ECL builder to generate your search..." />
+      <Textarea
+        v-model="queryString"
+        id="query-string-container"
+        placeholder="Enter expression here or use the ECL builder to generate your search..."
+        :class="eclError ? 'p-invalid' : ''"
+      />
       <Button
         icon="far fa-copy"
         v-tooltip.left="'Copy to clipboard'"
@@ -17,6 +22,7 @@
       <Button label="Search" @click="search" class="p-button-primary" :disabled="!queryString.length" />
     </div>
     <div class="results-container">
+      <p v-if="searchResults.length > 1000" class="result-summary">{{ totalCount }} results found. Display limited to first 1000.</p>
       <SearchResults :searchResults="searchResults" :loading="loading" />
     </div>
   </div>
@@ -29,6 +35,8 @@ import Builder from "@/components/sidebar/expressionConstraintsSearch/Builder.vu
 import SearchResults from "@/components/sidebar/SearchResults.vue";
 import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
+import { ConceptSummary } from "@/models/search/ConceptSummary";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "ExpressionConstraintsSearch",
@@ -36,10 +44,14 @@ export default defineComponent({
     Builder,
     SearchResults
   },
+  watch: {
+    queryString() {
+      this.eclError = false;
+    }
+  },
   async mounted() {
-    await this.$nextTick();
     window.addEventListener("resize", this.onResize);
-    this.onResize();
+    await this.onResize();
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
@@ -48,12 +60,15 @@ export default defineComponent({
     return {
       queryString: "",
       showDialog: false,
-      searchResults: [] as any[],
+      searchResults: [] as ConceptSummary[],
+      totalCount: 0,
+      eclError: false,
       loading: false
     };
   },
   methods: {
-    onResize() {
+    async onResize() {
+      await this.$nextTick();
       this.setResultsHeight();
     },
 
@@ -69,7 +84,14 @@ export default defineComponent({
     async search() {
       if (this.queryString) {
         this.loading = true;
-        this.searchResults = await EntityService.ECLSearch(this.queryString);
+        const result = await EntityService.ECLSearch(this.queryString, false, 1000);
+        if (isObjectHasKeys(result, ["entities", "count", "page"])) {
+          this.searchResults = result.entities;
+          this.totalCount = result.count;
+        } else {
+          this.eclError = true;
+          this.$toast.add(LoggerService.error("Invalid ecl expression. Please try again."));
+        }
         this.loading = false;
       }
     },
@@ -100,9 +122,6 @@ export default defineComponent({
       const buttonContainer = container.getElementsByClassName("button-container")[0] as HTMLElement;
       const resultsContainer = container.getElementsByClassName("results-container")[0] as HTMLElement;
       let height = container.getBoundingClientRect().height;
-      // if (currentFontSize) {
-      //   height -= currentFontSize * 2;
-      // }
       if (title) {
         height -= title.getBoundingClientRect().height;
       }
