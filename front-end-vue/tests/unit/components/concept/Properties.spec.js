@@ -9,6 +9,7 @@ import LoggerService from "@/services/LoggerService";
 describe("Properties.vue", () => {
   let wrapper;
   let mockRouter;
+  let mockRoute;
   let docSpy;
 
   beforeEach(async () => {
@@ -16,6 +17,10 @@ describe("Properties.vue", () => {
 
     mockRouter = {
       push: jest.fn()
+    };
+
+    mockRoute = {
+      name: "Concept"
     };
 
     docSpy = jest.spyOn(document, "getElementById");
@@ -111,7 +116,7 @@ describe("Properties.vue", () => {
     wrapper = shallowMount(Properties, {
       global: {
         components: { DataTable, Column, Button },
-        mocks: { $router: mockRouter }
+        mocks: { $router: mockRouter, $route: mockRoute }
       },
       props: { conceptIri: "http://endhealth.info/im#Immunisation" }
     });
@@ -168,5 +173,121 @@ describe("Properties.vue", () => {
     wrapper.vm.setScrollHeight = jest.fn();
     wrapper.vm.onResize();
     expect(wrapper.vm.setScrollHeight).toHaveBeenCalledTimes(1);
+  });
+
+  it("can getDataModelProps", async () => {
+    wrapper.vm.getDataModelProps();
+    expect(wrapper.vm.loading).toBe(true);
+    await flushPromises();
+    expect(wrapper.vm.loading).toBe(false);
+    expect(wrapper.vm.dataModelPropsData).toStrictEqual([
+      {
+        propertyId: "http://endhealth.info/im#manufacturer",
+        propertyName: "manufacturer",
+        propertyDisplay: "manufacturer",
+        typeId: "http://endhealth.info/im#Concept",
+        typeName: "Concept",
+        typeDisplay: "Concept",
+        inheritedId: undefined,
+        inheritedName: undefined,
+        inheritedDisplay: "-",
+        cardinality: "0 :\n            *"
+      },
+      {
+        propertyId: "http://endhealth.info/im#reaction",
+        propertyName: "reaction",
+        propertyDisplay: "reaction",
+        typeId: "http://endhealth.info/im#Concept",
+        typeName: "Concept",
+        typeDisplay: "Concept",
+        inheritedId: undefined,
+        inheritedName: undefined,
+        inheritedDisplay: "-",
+        cardinality: "0 :\n            *"
+      },
+      {
+        propertyId: "http://endhealth.info/im#vaccinationProcedure",
+        propertyName: "vaccination procedure",
+        propertyDisplay: "vaccination procedure",
+        typeId: "http://endhealth.info/im#VSET_Immunisations_CareConnect",
+        typeName: "Value set Immunisations - Care connect",
+        typeDisplay: "Value set Immunisations - Care connect",
+        inheritedId: undefined,
+        inheritedName: undefined,
+        inheritedDisplay: "-",
+        cardinality: "0 :\n            *"
+      },
+      {
+        propertyId: "http://endhealth.info/im#vaccineProduct",
+        propertyName: "vaccine product",
+        propertyDisplay: "vaccine product",
+        typeId: "http://endhealth.info/im#Concept",
+        typeName: "Concept",
+        typeDisplay: "Concept",
+        inheritedId: undefined,
+        inheritedName: undefined,
+        inheritedDisplay: "-",
+        cardinality: "0 :\n            *"
+      },
+      {
+        propertyId: "http://endhealth.info/im#batchNumber",
+        propertyName: "batch number",
+        propertyDisplay: "batch number",
+        typeId: "http://www.w3.org/2001/XMLSchema#string",
+        typeName: undefined,
+        typeDisplay: "http://www.w3.org/2001/XMLSchema#string",
+        inheritedId: undefined,
+        inheritedName: undefined,
+        inheritedDisplay: "-",
+        cardinality: "0 :\n            *"
+      },
+      {
+        propertyId: "http://endhealth.info/im#doseSequence",
+        propertyName: "dose sequence",
+        propertyDisplay: "dose sequence",
+        typeId: "http://www.w3.org/2001/XMLSchema#string",
+        typeName: undefined,
+        typeDisplay: "http://www.w3.org/2001/XMLSchema#string",
+        inheritedId: undefined,
+        inheritedName: undefined,
+        inheritedDisplay: "-",
+        cardinality: "0 :\n            *"
+      },
+      {
+        propertyId: "http://endhealth.info/im#dosesRequired",
+        propertyName: "doses required",
+        propertyDisplay: "doses required",
+        typeId: "http://www.w3.org/2001/XMLSchema#string",
+        typeName: undefined,
+        typeDisplay: "http://www.w3.org/2001/XMLSchema#string",
+        inheritedId: undefined,
+        inheritedName: undefined,
+        inheritedDisplay: "-",
+        cardinality: "0 :\n            *"
+      },
+      {
+        propertyId: "http://endhealth.info/im#expiryDate",
+        propertyName: "expiry date",
+        propertyDisplay: "expiry date",
+        typeId: "http://www.w3.org/2001/XMLSchema#string",
+        typeName: undefined,
+        typeDisplay: "http://www.w3.org/2001/XMLSchema#string",
+        inheritedId: undefined,
+        inheritedName: undefined,
+        inheritedDisplay: "-",
+        cardinality: "0 :\n            *"
+      }
+    ]);
+  });
+
+  it("can navigate ___ iri", () => {
+    wrapper.vm.navigate("testIri");
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Concept", params: { selectedIri: "testIri" } });
+  });
+
+  it("can navigate ___ no iri", () => {
+    wrapper.vm.navigate();
+    expect(mockRouter.push).not.toHaveBeenCalled();
   });
 });
