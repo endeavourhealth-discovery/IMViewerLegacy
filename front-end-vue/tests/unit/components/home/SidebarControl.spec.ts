@@ -161,21 +161,13 @@ describe("SidebarControl.vue", () => {
     expect(mockStore.dispatch).not.toHaveBeenCalled();
   });
 
-<<<<<<< HEAD
-  it("only searches with 3 or more characters ___ 3", async() => {
-=======
-  it("only searches with 3 or more characters ___ 2", async () => {
->>>>>>> develop
+  it("only searches with 3 or more characters ___ 3", async () => {
     wrapper.vm.searchTerm = "sco";
     wrapper.vm.search();
     expect(wrapper.vm.loading).toBe(true);
     await wrapper.vm.$nextTick();
-<<<<<<< HEAD
-    expect(wrapper.vm.active).toBe(2);
-    expect(mockStore.dispatch).toHaveBeenCalled();
-=======
     expect(wrapper.vm.active).toBe(1);
->>>>>>> develop
+    expect(mockStore.dispatch).toHaveBeenCalled();
   });
 
   it("cancels existing requests on new search", async () => {
@@ -197,32 +189,11 @@ describe("SidebarControl.vue", () => {
     await wrapper.vm.$nextTick();
     await flushPromises();
     expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-<<<<<<< HEAD
     expect(wrapper.vm.loading).toBe(false);
-    expect(mockToast.add).not.toHaveBeenCalled();
-  });
-
-  it("updated loading and fire toast on dispatch fail", async() => {
-    mockStore.dispatch = jest.fn().mockResolvedValue("false")
-    wrapper.vm.searchTerm = "sco";
-    wrapper.vm.search();
-    expect(wrapper.vm.loading).toBe(true);
-    await wrapper.vm.$nextTick();
-    await flushPromises();
-    expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.loading).toBe(false);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Search results server request failed"));
-  });
-
-  it("debounces", async() => {
-    const spy = jest.spyOn(wrapper.vm, "search")
-=======
-    expect(mockToast.add).not.toHaveBeenCalled();
   });
 
   it("debounces", async () => {
     const spy = jest.spyOn(wrapper.vm, "search");
->>>>>>> develop
     wrapper.vm.debounceForSearch();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.debounce).toBeGreaterThan(0);
