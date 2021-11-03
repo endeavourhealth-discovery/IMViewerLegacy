@@ -10,6 +10,7 @@ import { TermCode } from "@/models/terms/TermCode";
 import { DataModelProperty } from "@/models/properties/DataModelProperty";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { Namespace } from "@/models/Namespace";
+import { SearchString } from "@/models/search/SearchString";
 
 export default class EntityService {
   static api = process.env.VUE_APP_API;
@@ -236,6 +237,18 @@ export default class EntityService {
       return await axios.get(this.api + "api/entity/namespaces");
     } catch (error) {
       return [] as Namespace[];
+    }
+  }
+
+  public static async ECLSearch(searchString: string, includeLegacy: boolean, limit: number): Promise<SearchResponse> {
+    try {
+      return await axios.post(this.api + "api/set/eclSearch", searchString, {
+        headers: { "Content-Type": "text/plain" },
+        params: { includeLegacy: includeLegacy, limit: limit }
+      });
+    } catch (error) {
+      console.log(error);
+      return {} as SearchResponse;
     }
   }
 }
