@@ -1,14 +1,4 @@
 <template>
-  <InputText
-    ref="miniSearchInput"
-    type="text"
-    v-model="searchTerm"
-    @input="debounceForSearch"
-    @keydown="checkKey($event)"
-    placeholder="Search"
-    class="p-inputtext-lg search-input"
-    autoWidth="true"
-  />
   <div class="search-results-container">
     <DataTable
       :value="searchResults"
@@ -98,89 +88,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/runtime-core";
-import { mapState } from "vuex";
-import { SearchRequest } from "@/models/search/SearchRequest";
-import { SortBy } from "@/models/search/SortBy";
-import axios from "axios";
-import EntityService from "@/services/EntityService";
+import { defineComponent, PropType } from "@vue/runtime-core";
 import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
-import { IM } from "@/vocabulary/IM";
+import { ConceptSummary } from "@/models/search/ConceptSummary";
 
 export default defineComponent({
   name: "SearchMiniOverlay",
+  props: {
+    searchTerm: { type: String },
+    searchResults: { type: Array as PropType<Array<ConceptSummary>> },
+    loading: { type: Boolean }
+  },
   emits: ["searchResultSelected"],
-  computed: mapState(["filterOptions", "selectedFilters"]),
   data() {
     return {
-      searchTerm: "",
-      debounce: 0,
-      request: null as any,
-      loading: false,
-      searchResults: [] as any[],
       selectedResult: {} as any,
       hoveredResult: {} as any
     };
   },
   methods: {
-    debounceForSearch(): void {
-      clearTimeout(this.debounce);
-      this.debounce = window.setTimeout(() => {
-        this.search();
-      }, 600);
-    },
-
-    checkKey(event: any) {
-      if (event.code === "Enter") {
-        this.search();
-      }
-    },
-
-    async search(): Promise<void> {
-      if (this.searchTerm.toUpperCase() === "ANY" || this.searchTerm === "*") {
-        this.searchResults = [
-          {
-            code: "",
-            name: "ANY",
-            match: "ANY",
-            entityType: [{ "@id": IM.CONCEPT, name: "Concept" }]
-          }
-        ];
-        return;
-      }
-      if (this.searchTerm.length > 2) {
-        this.searchResults = [];
-        this.loading = true;
-        const searchRequest = new SearchRequest();
-        searchRequest.termFilter = this.searchTerm;
-        searchRequest.sortBy = SortBy.Usage;
-        searchRequest.page = 1;
-        searchRequest.size = 100;
-        searchRequest.schemeFilter = this.selectedFilters.schemes.map((scheme: any) => scheme.iri);
-
-        searchRequest.statusFilter = [];
-        this.selectedFilters.status.forEach((status: any) => {
-          searchRequest.statusFilter.push(status["@id"]);
-        });
-
-        searchRequest.typeFilter = [];
-        this.selectedFilters.types.forEach((type: any) => {
-          searchRequest.typeFilter.push(type["@id"]);
-        });
-        if (this.request) {
-          await this.request.cancel();
-        }
-        const axiosSource = axios.CancelToken.source();
-        this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
-        await this.fetchSearchResults(searchRequest, axiosSource.token);
-        this.loading = false;
-      }
-    },
-
-    async fetchSearchResults(searchRequest: SearchRequest, cancelToken: any) {
-      this.searchResults = (await EntityService.advancedSearch(searchRequest, cancelToken)).entities;
-    },
-
     getPerspectiveByConceptType(conceptType: any): any {
       return getIconFromType(conceptType);
     },
@@ -227,10 +153,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.search-input {
-  width: 15rem;
-}
-
 .add-expression-button {
   border-style: dashed !important;
 }

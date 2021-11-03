@@ -2,14 +2,22 @@
   <div class="query-item-container" :id="id">
     <div class="label-container">
       <span class="float-text">Expression</span>
-      <p v-if="selectedResult.name === 'ANY'" @click="editClicked" class="label" v-tooltip.bottom="'Click to change'">
-        {{ selectedResult.name }}
-      </p>
-      <p v-else @click="editClicked" class="label">{{ selectedResult.code }} |{{ selectedResult.name }}|</p>
+      <InputText
+        ref="miniSearchInput"
+        type="text"
+        v-model="searchTerm"
+        @input="debounceForSearch"
+        @keydown="checkKey($event)"
+        @focus="showOverlay"
+        @blur="hideOverlay"
+        placeholder="Search"
+        class="p-inputtext search-input"
+        autoWidth="true"
+      />
     </div>
   </div>
   <OverlayPanel class="search-op" ref="miniSearchOP">
-    <SearchMiniOverlay @searchResultSelected="updateSelectedResult" />
+    <SearchMiniOverlay :searchTerm="searchTerm" :searchResults="searchResults" :loading="loading" @searchResultSelected="updateSelectedResult" />
   </OverlayPanel>
 </template>
 
@@ -18,25 +26,101 @@ import { defineComponent } from "vue";
 import SearchMiniOverlay from "@/components/sidebar/expressionConstraintsSearch/SearchMiniOverlay.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
+import { ConceptSummary } from "@/models/search/ConceptSummary";
+import { SearchRequest } from "@/models/search/SearchRequest";
+import { SortBy } from "@/models/search/SortBy";
+import axios from "axios";
+import EntityService from "@/services/EntityService";
+import { IM } from "@/vocabulary/IM";
+import { TTIriRef } from "@/models/TripleTree";
+import { mapState } from "vuex";
 
 export default defineComponent({
   name: "Expression",
   props: { id: String, position: Number, value: { required: false } },
   emits: ["updateClicked"],
   components: { SearchMiniOverlay },
+  computed: mapState(["filterOptions", "selectedFilters"]),
   mounted() {
-    if (this.value) {
+    if (this.value && this.value instanceof ConceptSummary) {
       this.updateSelectedResult(this.value);
     } else {
-      this.updateSelectedResult({ name: "ANY" });
+      this.updateSelectedResult({ ...this.anyModel });
     }
   },
   data() {
     return {
-      selectedResult: {} as any
+      loading: false,
+      debounce: 0,
+      request: null as any,
+      selectedResult: {} as ConceptSummary,
+      anyModel: {
+        code: "",
+        name: "ANY",
+        iri: "",
+        isDescendentOf: [],
+        weighting: 0,
+        scheme: {} as TTIriRef,
+        status: {} as TTIriRef,
+        match: "ANY",
+        entityType: [{ "@id": IM.CONCEPT, name: "Concept" }]
+      } as ConceptSummary,
+      searchTerm: "ANY",
+      searchResults: [] as ConceptSummary[]
     };
   },
   methods: {
+    debounceForSearch(): void {
+      clearTimeout(this.debounce);
+      this.debounce = window.setTimeout(() => {
+        this.search();
+      }, 600);
+    },
+
+    checkKey(event: any) {
+      if (event.code === "Enter") {
+        this.search();
+      }
+    },
+
+    async search(): Promise<void> {
+      if (this.searchTerm.toUpperCase() === "ANY" || this.searchTerm === "*") {
+        this.searchResults = [{ ...this.anyModel }];
+        return;
+      }
+      if (this.searchTerm.length > 2) {
+        this.searchResults = [];
+        this.loading = true;
+        const searchRequest = new SearchRequest();
+        searchRequest.termFilter = this.searchTerm;
+        searchRequest.sortBy = SortBy.Usage;
+        searchRequest.page = 1;
+        searchRequest.size = 100;
+        searchRequest.schemeFilter = this.selectedFilters.schemes.map((scheme: any) => scheme.iri);
+
+        searchRequest.statusFilter = [];
+        this.selectedFilters.status.forEach((status: any) => {
+          searchRequest.statusFilter.push(status["@id"]);
+        });
+
+        searchRequest.typeFilter = [];
+        this.selectedFilters.types.forEach((type: any) => {
+          searchRequest.typeFilter.push(type["@id"]);
+        });
+        if (this.request) {
+          await this.request.cancel();
+        }
+        const axiosSource = axios.CancelToken.source();
+        this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
+        await this.fetchSearchResults(searchRequest, axiosSource.token);
+        this.loading = false;
+      }
+    },
+
+    async fetchSearchResults(searchRequest: SearchRequest, cancelToken: any) {
+      this.searchResults = (await EntityService.advancedSearch(searchRequest, cancelToken)).entities;
+    },
+
     hideOverlay(): void {
       const x = this.$refs.miniSearchOP as any;
       x.hide();
@@ -49,6 +133,7 @@ export default defineComponent({
 
     updateSelectedResult(data: any) {
       this.selectedResult = data;
+      this.searchTerm = data.name;
       this.$emit("updateClicked", this.createExpression());
       this.hideOverlay();
     },
@@ -108,5 +193,9 @@ export default defineComponent({
   top: 0;
   font-size: 0.75rem;
   color: #6c757d;
+}
+
+.search-input {
+  width: 15rem;
 }
 </style>
