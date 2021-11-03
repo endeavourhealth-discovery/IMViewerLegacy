@@ -224,7 +224,7 @@ export default defineComponent({
           .trim();
       }
       if (this.group) {
-        return (label = ":\n\t{" + label + "}");
+        return ":\n\t{" + label + "}";
       } else {
         return ":\n\t" + label;
       }
