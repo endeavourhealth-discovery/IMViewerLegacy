@@ -106,6 +106,7 @@ import axios from "axios";
 import LoggerService from "@/services/LoggerService";
 import EntityService from "@/services/EntityService";
 import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
+import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
   name: "SearchMiniOverlay",
@@ -143,7 +144,7 @@ export default defineComponent({
             code: "",
             name: "ANY",
             match: "ANY",
-            entityType: [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }]
+            entityType: [{ "@id": IM.CONCEPT, name: "Concept" }]
           }
         ];
         return;
