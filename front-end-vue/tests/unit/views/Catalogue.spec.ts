@@ -137,7 +137,7 @@ describe("Catalogue.vue", () => {
     expect(wrapper.vm.selected).toStrictEqual({ "@id": "http://org.endhealth.info/im#FM871" });
   });
   it("get tree data", async () => {
-    wrapper.vm.instanceIri = "http://org.endhealth.info/im#FQK48";
+    // wrapper.vm.instanceIri = "http://org.endhealth.info/im#FQK48";
     wrapper.vm.getPartialInstance();
     await wrapper.vm.$nextTick();
     expect(CatalogueService.getPartialInstance).toHaveBeenCalledTimes(2);

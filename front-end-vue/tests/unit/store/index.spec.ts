@@ -168,6 +168,12 @@ describe("mutations", () => {
     expect(store.state.treeLocked).toBe(false);
   });
 
+  it("can update resetTree", () => {
+    const testBool = true;
+    store.commit("updateResetTree", testBool);
+    expect(store.state.resetTree).toBe(true);
+  });
+
   it("can updateSelectedFilters", () => {
     const testFilter = {
       selectedStatus: ["testActive", "testDraft"],

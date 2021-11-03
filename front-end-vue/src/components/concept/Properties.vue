@@ -68,16 +68,18 @@ export default defineComponent({
     };
   },
   async mounted() {
-    if (this.conceptIri) {
-      window.addEventListener("resize", this.setScrollHeight);
-      this.setScrollHeight();
-      await this.getDataModelProps(this.conceptIri);
-    }
+    window.addEventListener("resize", this.onResize);
+    this.onResize();
+    await this.getDataModelProps(this.conceptIri);
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.setScrollHeight);
+    window.removeEventListener("resize", this.onResize);
   },
   methods: {
+    onResize() {
+      this.setScrollHeight();
+    },
+
     async getDataModelProps(iri: string): Promise<void> {
       this.loading = true;
       const result = await EntityService.getDataModelProperties(iri);
