@@ -55,9 +55,14 @@ export default createStore({
     ]),
     activeModule: "default",
     conceptActivePanel: 0,
-    focusHierarchy: false
+    focusHierarchy: false,
+    term: sessionStorage.getItem("term") || "",
+    instanceIri: ""
   },
   mutations: {
+    updateInstanceIri(state, instanceIri) {
+      state.instanceIri = instanceIri;
+    },
     updateConceptIri(state, conceptIri) {
       state.conceptIri = conceptIri;
     },
@@ -124,6 +129,10 @@ export default createStore({
     },
     updateFocusHierarchy(state, bool) {
       state.focusHierarchy = bool;
+    },
+    updateSearchTerm(state, term) {
+      sessionStorage.setItem("term", term);
+      state.term = term;
     }
   },
   actions: {

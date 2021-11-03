@@ -15,10 +15,19 @@ import CatalogueService from "@/services/CatalogueService";
 describe("Catalogue.vue", () => {
   let wrapper: any;
   let mockRouter: any;
+  let mockStore: any;
 
   beforeEach(() => {
     mockRouter = {
       push: jest.fn()
+    };
+
+    mockStore = {
+      state: {
+        instanceIri: "http://org.endhealth.info/im#FQK48",
+        term: "edw"
+      },
+      commit: jest.fn()
     };
 
     CatalogueService.getPartialInstance = jest.fn().mockResolvedValue({
@@ -58,9 +67,12 @@ describe("Catalogue.vue", () => {
     wrapper = shallowMount(Catalogue, {
       global: {
         components: { MultiSelect, Card, InputText, TabPanel, Listbox, TabView, Tree, Panel, CatalogueDashboard, SideNav },
-        mocks: { $router: mockRouter }
+        mocks: { $router: mockRouter, $store: mockStore }
       }
     });
+  });
+  afterAll(() => {
+    jest.clearAllMocks();
   });
 
   it("starts with empty list", () => {
@@ -70,25 +82,25 @@ describe("Catalogue.vue", () => {
   it("only searches with 3 or more characters ___ 0", async() => {
     wrapper.vm.searchRequest = "";
     wrapper.vm.checkKey("Enter");
-    expect(CatalogueService.getSearchResult).toHaveBeenCalledTimes(0);
+    expect(CatalogueService.getSearchResult).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.searchResults).toEqual([]);
   });
   it("only searches with 3 or more characters ___ 1", async() => {
     wrapper.vm.searchRequest = "e";
     wrapper.vm.checkKey("Enter");
-    expect(CatalogueService.getSearchResult).toHaveBeenCalledTimes(0);
+    expect(CatalogueService.getSearchResult).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.searchResults).toEqual([]);
   });
   it("only searches with 3 or more characters ___ 2", async() => {
     wrapper.vm.searchRequest = "ed";
     wrapper.vm.checkKey("Enter");
-    expect(CatalogueService.getSearchResult).toHaveBeenCalledTimes(0);
+    expect(CatalogueService.getSearchResult).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.searchResults).toEqual([]);
   });
   it("only searches with 3 or more characters ___ 3", async() => {
     wrapper.vm.searchRequest = "edw";
     wrapper.vm.checkKey("Enter");
-    expect(CatalogueService.getSearchResult).toHaveBeenCalledTimes(1);
+    expect(CatalogueService.getSearchResult).toHaveBeenCalledTimes(2);
     expect(CatalogueService.getSearchResult).toHaveBeenCalledWith("edw",[]);
     await flushPromises();
     expect(wrapper.vm.searchResults).toStrictEqual([
@@ -128,8 +140,7 @@ describe("Catalogue.vue", () => {
     wrapper.vm.instanceIri = "http://org.endhealth.info/im#FQK48";
     wrapper.vm.getPartialInstance();
     await wrapper.vm.$nextTick();
-    expect(mockRouter.push).toHaveBeenCalledTimes(1);
-    expect(CatalogueService.getPartialInstance).toHaveBeenCalledTimes(1);
+    expect(CatalogueService.getPartialInstance).toHaveBeenCalledTimes(2);
     expect(CatalogueService.getPartialInstance).toHaveBeenCalledWith("http://org.endhealth.info/im#FQK48",[]);
     await flushPromises();
     expect(wrapper.vm.instanceData).toStrictEqual([
@@ -165,9 +176,25 @@ describe("Catalogue.vue", () => {
       }
     ]);
   });
-  it("navigate --- name null", () => {
+  it("displayInstance on iri change", async () => {
+    wrapper.vm.displayInstance = jest.fn();
+    wrapper.vm.$options.watch.instanceIri.call(wrapper.vm, "http://org.endhealth.info/im#FQK4");
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.displayInstance).toHaveBeenCalledTimes(1);
+  });
+  it("getSearchResult on term change", async () => {
+    wrapper.vm.getSearchResult= jest.fn();
+    wrapper.vm.$options.watch.term.call(wrapper.vm, "edward");
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.getSearchResult).toHaveBeenCalledTimes(1);
+  });
+  it("navigate --- update iri",  () => {
     const instance = { "@id": "http://loc.endhealth.info/im#FQK48" };
     wrapper.vm.navigate(instance);
-    expect(wrapper.vm.instanceName).toStrictEqual("http://loc.endhealth.info/im#FQK48");
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith({
+      name: "Individual",
+      params: { selectedIri: "http://loc.endhealth.info/im#FQK48"}
+    });
   });
 });

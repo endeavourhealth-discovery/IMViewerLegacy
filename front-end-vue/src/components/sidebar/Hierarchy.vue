@@ -226,9 +226,9 @@ export default defineComponent({
 
     recursiveSearchForNode(key: string, nodes: TreeNode[], result: TreeNode[]) {
       if (nodes.length) {
-        const node = nodes.find(child => child.key === key);
-        if (node) {
-          result.push(node);
+        const foundNode = nodes.find(child => child.key === key);
+        if (foundNode) {
+          result.push(foundNode);
           return;
         }
 

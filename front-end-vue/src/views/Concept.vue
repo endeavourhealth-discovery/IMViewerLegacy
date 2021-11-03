@@ -21,6 +21,9 @@
           <button class="p-panel-header-icon p-link p-mr-2" @click="openDownloadDialog" v-tooltip.bottom="'Download concept'">
             <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
           </button>
+          <button class="p-panel-header-icon p-link p-mr-2" v-tooltip.bottom="'Export concept'" @click="exportConcept">
+            <i class="fas fa-file-export" aria-hidden="true"></i>
+          </button>
           <!--<button
             class="p-panel-header-icon p-link p-mr-2"
             @click="directToCreateRoute"
@@ -43,7 +46,7 @@
       <div id="concept-content-dialogs-container">
         <div id="concept-panel-container">
           <TabView v-model:activeIndex="active" :lazy="true">
-            <TabPanel header="Definition">
+            <TabPanel header="Details">
               <div v-if="loading" class="loading-container" :style="contentHeight">
                 <ProgressSpinner />
               </div>
@@ -103,7 +106,7 @@ import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
 import Mappings from "../components/concept/Mappings.vue";
-import { isOfTypes, isValueSet } from "@/helpers/ConceptTypeMethods";
+import { isOfTypes, isValueSet, isProperty } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import EntityService from "@/services/EntityService";
@@ -114,7 +117,6 @@ import { IM } from "@/vocabulary/IM";
 import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
-import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
 import Properties from "@/components/concept/Properties.vue";
 import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
@@ -142,15 +144,15 @@ export default defineComponent({
     },
 
     showGraph(): boolean {
-      return isOfTypes(this.types, OWL.CLASS, SHACL.NODESHAPE);
+      return isOfTypes(this.types, IM.CONCEPT, SHACL.NODESHAPE);
     },
 
     showMappings(): boolean {
-      return isOfTypes(this.types, OWL.CLASS) && !isOfTypes(this.types, SHACL.NODESHAPE);
+      return isOfTypes(this.types, IM.CONCEPT) && !isOfTypes(this.types, SHACL.NODESHAPE);
     },
 
-    isClass(): boolean {
-      return isOfTypes(this.types, OWL.CLASS);
+    isConcept(): boolean {
+      return isOfTypes(this.types, IM.CONCEPT);
     },
 
     isQuery(): boolean {
@@ -166,14 +168,14 @@ export default defineComponent({
     },
 
     isProperty(): boolean {
-      return isOfTypes(this.types, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY, OWL.DATATYPE_PROPERTY);
+      return isProperty(this.types);
     },
 
     ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel", "activeModule"])
   },
   watch: {
     async conceptIri() {
-      this.init();
+      await this.init();
     },
 
     selectedEntityType(newValue, oldValue) {
@@ -182,6 +184,10 @@ export default defineComponent({
 
     active(newValue) {
       this.$store.commit("updateConceptActivePanel", newValue);
+    },
+
+    types() {
+      if (this.isFolder) this.active = 0;
     }
   },
   async mounted() {
@@ -247,26 +253,26 @@ export default defineComponent({
     },
 
     async getInferred(iri: string): Promise<void> {
-      const result = await EntityService.getInferredBundle(iri);
-      if (isObjectHasKeys(result, ["entity"]) && isObjectHasKeys(result.entity, [IM.IS_A, IM.ROLE_GROUP])) {
-        this.concept["inferred"] = { entity: { "http://endhealth.info/im#isA": result.entity[IM.IS_A] }, predicates: result.predicates };
-        this.concept["inferred"].entity[IM.IS_A].push({ "http://endhealth.info/im#roleGroup": result.entity[IM.ROLE_GROUP] });
+      const result = await EntityService.getDefinitionBundle(iri);
+      if (isObjectHasKeys(result, ["entity"]) && isObjectHasKeys(result.entity, [RDFS.SUBCLASS_OF, IM.ROLE_GROUP])) {
+        this.concept["inferred"] = {
+          entity: { "http://www.w3.org/2000/01/rdf-schema#subClassOf": result.entity[RDFS.SUBCLASS_OF] },
+          predicates: result.predicates
+        };
+        this.concept["inferred"].entity[RDFS.SUBCLASS_OF].push({ "http://endhealth.info/im#roleGroup": result.entity[IM.ROLE_GROUP] });
       } else {
         this.concept["inferred"] = result;
       }
     },
 
-    async getStated(iri: string): Promise<void> {
-      this.concept["axioms"] = await EntityService.getAxiomBundle(iri);
-    },
-
     async getConfig(name: string): Promise<void> {
-      const configReturn = await ConfigService.getComponentLayout(name);
-      if (configReturn) {
-        this.configs = configReturn;
+      this.configs = await ConfigService.getComponentLayout(name);
+      if (this.configs.every(config => isObjectHasKeys(config, ["order"]))) {
         this.configs.sort((a: DefinitionConfig, b: DefinitionConfig) => {
           return a.order - b.order;
         });
+      } else {
+        LoggerService.error(undefined, "Failed to sort config for definition component layout. One or more config items are missing 'order' property.");
       }
     },
 
@@ -275,7 +281,6 @@ export default defineComponent({
       await this.getConfig("definition");
       await this.getConcept(this.conceptIri);
       await this.getInferred(this.conceptIri);
-      await this.getStated(this.conceptIri);
       this.types = isObjectHasKeys(this.concept, [RDF.TYPE]) ? this.concept[RDF.TYPE] : ([] as TTIriRef[]);
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
@@ -287,7 +292,7 @@ export default defineComponent({
       let type;
       if (this.isSet) {
         type = "Sets";
-      } else if (this.isClass && !this.isRecordModel) {
+      } else if (this.isConcept && !this.isRecordModel) {
         type = "Ontology";
       } else if (this.isQuery) {
         type = "Queries";
@@ -412,6 +417,17 @@ export default defineComponent({
 
     isObjectHasKeysWrapper(object: any, keys: string[]) {
       return isObjectHasKeys(object, keys);
+    },
+
+    async exportConcept() {
+      const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
+      const url = process.env.VUE_APP_API + "api/entity/exportConcept?iri=" + modIri;
+      const popup = window.open(url);
+      if (!popup) {
+        this.$toast.add(LoggerService.error("Export failed from server"));
+      } else {
+        this.$toast.add(LoggerService.success("Export will begin shortly"));
+      }
     }
   }
 });

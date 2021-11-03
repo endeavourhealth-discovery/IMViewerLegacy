@@ -22,4 +22,6 @@ export interface State {
     selectedSchemes: { iri: string; name: string }[];
     selectedTypes: string[];
   };
+  term: string;
+  instanceIri: string;
 }

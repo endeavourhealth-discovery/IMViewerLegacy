@@ -43,7 +43,7 @@
       </template>
       <Column field="entity.name" header="Name" filter-field="entity.name">
         <template #body="slotProps">
-          <div v-html="slotProps.data.entity.name" class="html-container"></div>
+          <div class="name-container">{{ slotProps.data.entity.name }}</div>
         </template>
       </Column>
       <template #groupheader="slotProps">
@@ -130,7 +130,7 @@ export default defineComponent({
     },
 
     onRowSelect(): void {
-      if (isObjectHasKeys(this.selected, ["entity"]) && isObjectHasKeys(this.selected.entity, ["@id"])) {
+      if (isObjectHasKeys(this.selected, ["entity"]) && isObjectHasKeys(this.selected.entity, ["@id"]) && this.selected.entity["@id"]) {
         this.$router.push({
           name: "Concept",
           params: { selectedIri: this.selected.entity["@id"] }
@@ -237,9 +237,10 @@ export default defineComponent({
   width: 100%;
 }
 
-.html-container {
+.name-container {
   width: 100%;
   padding: 1rem;
+  white-space: pre;
 }
 
 .html-container ::v-deep(p) {

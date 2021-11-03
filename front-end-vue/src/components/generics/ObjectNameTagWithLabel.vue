@@ -19,7 +19,7 @@ export default defineComponent({
       if (isObjectHasKeys(this.data, ["name"])) {
         return true;
       } else {
-        LoggerService.error(undefined, "No data, data is not Object or Object has no property 'name' for use within component ObjectNameWithLabel.vue");
+        LoggerService.error(undefined, "No data, data is not Object or Object has no property 'name' for use within component ObjectNameTagWithLabel.vue");
         return false;
       }
     },

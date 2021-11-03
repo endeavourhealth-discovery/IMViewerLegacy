@@ -1,4 +1,4 @@
-export function setTooltips(counts: number[]): { callbacks: { label(t: any, d: any): string } } {
+export function setTooltips(counts: number[]): { callbacks: { label(d: any): string } } {
   return {
     callbacks: {
       label: function(d: any) {
@@ -8,7 +8,7 @@ export function setTooltips(counts: number[]): { callbacks: { label(t: any, d: a
         return label + ":" + value;
       }
     }
-  } as { callbacks: { label(t: any, d: any): string } };
+  } as { callbacks: { label(d: any): string } };
 }
 
 export function rescaleData(data: number[]): number[] {

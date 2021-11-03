@@ -17,8 +17,7 @@ export default class UprnService {
     if (area) config.params.qpost = area;
 
     try {
-      const axiosReturn = await axios.get(this.api + "/getinfo", config);
-      return axiosReturn || {};
+      return await axios.get(this.api + "/getinfo", config);
     } catch (error) {
       return {};
     }
@@ -26,14 +25,13 @@ export default class UprnService {
 
   public static async getUprn(uprn: number): Promise<any> {
     try {
-      const axiosReturn = await axios.get(this.api + "/getuprn", {
+      return await axios.get(this.api + "/getuprn", {
         params: { uprn: uprn },
         auth: {
           username: this.username,
           password: this.password
         }
       });
-      return axiosReturn || {};
     } catch (error) {
       return {};
     }
@@ -41,14 +39,13 @@ export default class UprnService {
 
   public static async getActivity(): Promise<any[]> {
     try {
-      const axiosReturn = (await axios.get(this.api + "/activity", {
+      return await axios.get(this.api + "/activity", {
         params: { u: this.userId },
         auth: {
           username: this.username,
           password: this.password
         }
-      })) as [];
-      return axiosReturn || [];
+      });
     } catch (error) {
       return [];
     }
@@ -56,7 +53,7 @@ export default class UprnService {
 
   public static async download(filename: string): Promise<any> {
     try {
-      const axiosReturn = await axios.get(this.api + "/filedownload2", {
+      return await axios.get(this.api + "/filedownload2", {
         params: {
           userid: this.userId,
           filename: filename
@@ -67,7 +64,6 @@ export default class UprnService {
           password: this.password
         }
       });
-      return axiosReturn || {};
     } catch (error) {
       return {};
     }
@@ -78,7 +74,7 @@ export default class UprnService {
     formData.append("file", fileData, fileData.name);
     formData.append("userid", this.userId);
     try {
-      const axiosReturn = await axios.post(this.api + "/fileUpload2", formData, {
+      return await axios.post(this.api + "/fileUpload2", formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         },
@@ -87,7 +83,6 @@ export default class UprnService {
           password: this.password
         }
       });
-      return axiosReturn || {};
     } catch (error) {
       return {};
     }

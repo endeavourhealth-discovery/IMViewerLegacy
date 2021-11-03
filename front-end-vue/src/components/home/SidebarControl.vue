@@ -28,7 +28,7 @@
         </template>
 
         <div class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container">
-          <SearchResults :loading="loading" />
+          <SearchResults :searchResults="searchResults" :loading="loading" />
           <Filters :search="search" />
         </div>
       </TabPanel>
@@ -38,6 +38,13 @@
           <span>History</span>
         </template>
         <History />
+      </TabPanel>
+      <TabPanel>
+        <template #header>
+          <i class="fas fa-search-plus icon-header" aria-hidden="true" />
+          <span>ECL search</span>
+        </template>
+        <ExpressionConstraintsSearch />
       </TabPanel>
     </TabView>
   </div>
@@ -49,6 +56,7 @@ import Hierarchy from "@/components/sidebar/Hierarchy.vue";
 import History from "@/components/sidebar/History.vue";
 import SearchResults from "@/components/sidebar/SearchResults.vue";
 import Filters from "@/components/sidebar/Filters.vue";
+import ExpressionConstraintsSearch from "@/components/sidebar/ExpressionConstraintsSearch.vue";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
 import axios from "axios";
@@ -60,8 +68,15 @@ import { isArrayHasLength, isObject } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "SidebarControl",
-  components: { Hierarchy, History, SearchResults, Filters },
-  computed: mapState(["filterOptions", "selectedFilters", "focusHierarchy"]),
+  components: {
+    Hierarchy,
+    History,
+    SearchResults,
+    Filters,
+    ExpressionConstraintsSearch
+  },
+  computed: mapState(["filterOptions", "selectedFilters", "searchResults", "focusHierarchy"]),
+  emits: ["hierarchyFocused"],
   watch: {
     focusHierarchy(newValue) {
       if (newValue) {

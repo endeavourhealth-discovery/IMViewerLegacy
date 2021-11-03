@@ -1,6 +1,7 @@
 import { shallowMount } from "@vue/test-utils";
 import PieChartDashCard from "@/components/dashboard/PieChartDashCard.vue";
 import Card from "primevue/card";
+import LoggerService from "@/services/LoggerService";
 
 describe("PieChartDashCard.vue", () => {
   let wrapper: any;
@@ -66,5 +67,41 @@ describe("PieChartDashCard.vue", () => {
     wrapper.unmount();
     expect(spy).toHaveBeenCalled();
     spy.mockReset();
+  });
+
+  it("calls setChartSize onResize", () => {
+    wrapper.vm.setChartSize = jest.fn();
+    wrapper.vm.onResize();
+    expect(wrapper.vm.setChartSize).toHaveBeenCalled();
+  });
+
+  it("can setChartSize ___ no container", () => {
+    LoggerService.error = jest.fn();
+    wrapper.vm.setChartSize();
+    expect(LoggerService.error).toHaveBeenCalledTimes(1);
+    expect(LoggerService.error).toHaveBeenCalledWith(undefined, "Failed to set chart size for element id: Chart1");
+  });
+
+  it("can setChartSize ___ resize elements", async () => {
+    const mockElement = document.createElement("div");
+    mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 });
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([mockElement]);
+    docSpyId.mockReturnValue(mockElement);
+    docSpyClass.mockReturnValue(mockElement);
+    wrapper.vm.setChartSize();
+    await wrapper.vm.$nextTick();
+    expect(mockElement.style.height).not.toBe("");
+  });
+
+  it("can setChartSize ___ resize elements", async () => {
+    const mockElement = document.createElement("div");
+    mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 });
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([mockElement]);
+    docSpyId.mockReturnValue(mockElement);
+    docSpyClass.mockReturnValue(undefined);
+    windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue(undefined) });
+    wrapper.vm.setChartSize();
+    await wrapper.vm.$nextTick();
+    expect(mockElement.style.height).not.toBe("");
   });
 });

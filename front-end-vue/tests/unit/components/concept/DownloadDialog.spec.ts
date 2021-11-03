@@ -12,7 +12,7 @@ import { IM } from "@/vocabulary/IM";
 
 describe("DownloadDialog.vue", () => {
   const CONCEPT = { "@id": "http://snomed.info/sct#298382003", "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)" };
-  const INFERRED = {
+  const DEFINITION = {
     entity: {
       "@id": "http://snomed.info/sct#298382003",
       "http://endhealth.info/im#isA": [
@@ -32,49 +32,6 @@ describe("DownloadDialog.vue", () => {
       { name: "Associated morphology (attribute)", "@id": "http://snomed.info/sct#116676008" },
       { name: "Finding site (attribute)", "@id": "http://snomed.info/sct#363698007" },
       { name: "role group", "@id": "http://endhealth.info/im#roleGroup" }
-    ]
-  };
-  const AXIOMS = {
-    entity: {
-      "@id": "http://snomed.info/sct#298382003",
-      "http://www.w3.org/2002/07/owl#equivalentClass": [
-        {
-          "http://www.w3.org/2002/07/owl#intersectionOf": [
-            { "@id": "http://snomed.info/sct#64572001", name: "Disease (disorder)" },
-            {
-              "http://www.w3.org/2002/07/owl#someValuesFrom": {
-                "http://www.w3.org/2002/07/owl#intersectionOf": [
-                  {
-                    "http://www.w3.org/2002/07/owl#someValuesFrom": {
-                      "@id": "http://snomed.info/sct#31739005",
-                      name: "Lateral abnormal curvature (morphologic abnormality)"
-                    },
-                    "http://www.w3.org/2002/07/owl#onProperty": { "@id": "http://snomed.info/sct#116676008", name: "Associated morphology (attribute)" },
-                    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": { "@id": "http://www.w3.org/2002/07/owl#Restriction", name: "Restriction" }
-                  },
-                  {
-                    "http://www.w3.org/2002/07/owl#someValuesFrom": {
-                      "@id": "http://snomed.info/sct#289959001",
-                      name: "Musculoskeletal structure of spine (body structure)"
-                    },
-                    "http://www.w3.org/2002/07/owl#onProperty": { "@id": "http://snomed.info/sct#363698007", name: "Finding site (attribute)" },
-                    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": { "@id": "http://www.w3.org/2002/07/owl#Restriction", name: "Restriction" }
-                  }
-                ]
-              },
-              "http://www.w3.org/2002/07/owl#onProperty": { "@id": "http://endhealth.info/im#roleGroup", name: "role group" },
-              "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": { "@id": "http://www.w3.org/2002/07/owl#Restriction", name: "Restriction" }
-            }
-          ]
-        }
-      ]
-    },
-    predicates: [
-      { name: "someValuesFrom", "@id": "http://www.w3.org/2002/07/owl#someValuesFrom" },
-      { name: "onProperty", "@id": "http://www.w3.org/2002/07/owl#onProperty" },
-      { name: "type", "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" },
-      { name: "intersectionOf", "@id": "http://www.w3.org/2002/07/owl#intersectionOf" },
-      { name: "equivalentClass", "@id": "http://www.w3.org/2002/07/owl#equivalentClass" }
     ]
   };
   const CHILDREN = [
@@ -142,8 +99,7 @@ describe("DownloadDialog.vue", () => {
       add: jest.fn()
     };
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
-    EntityService.getInferredBundle = jest.fn().mockResolvedValue(INFERRED);
-    EntityService.getAxiomBundle = jest.fn().mockResolvedValue(AXIOMS);
+    EntityService.getDefinitionBundle = jest.fn().mockResolvedValue(DEFINITION);
     EntityService.getEntityChildren = jest.fn().mockResolvedValue(CHILDREN);
     EntityService.getDataModelProperties = jest.fn().mockResolvedValue(DATA_MODEL);
     EntityService.getEntityMembers = jest.fn().mockResolvedValue(MEMBERS);
@@ -167,8 +123,7 @@ describe("DownloadDialog.vue", () => {
     expect(wrapper.vm.loading).toBe(false);
     expect(wrapper.vm.isChildOf).toStrictEqual([]);
     expect(wrapper.vm.hasChildren).toStrictEqual([]);
-    expect(wrapper.vm.inferred).toStrictEqual(INFERRED);
-    expect(wrapper.vm.axioms).toStrictEqual(AXIOMS);
+    expect(wrapper.vm.definition).toStrictEqual(DEFINITION);
     expect(wrapper.vm.hasSubTypes).toStrictEqual(CHILDREN);
     expect(wrapper.vm.terms).toStrictEqual(TERMS);
     expect(wrapper.vm.dataModelProperties).toStrictEqual(DATA_MODEL);
@@ -194,7 +149,7 @@ describe("DownloadDialog.vue", () => {
     expect(wrapper.vm.closeDownloadDialog).toHaveBeenCalledTimes(1);
     expect(window.open).toHaveBeenCalledTimes(1);
     expect(window.open).toHaveBeenCalledWith(
-      "/test/api/entity/download?iri=http:%2F%2Fsnomed.info%2Fsct%23298382003&format=excel&hasSubTypes=true&dataModelProperties=true&members=true&expandMembers=false&inferred=true&axioms=true&terms=true&isChildOf=false&hasChildren=false&inactive=false"
+      "/test/api/entity/download?iri=http:%2F%2Fsnomed.info%2Fsct%23298382003&format=excel&hasSubTypes=true&dataModelProperties=true&members=true&expandMembers=false&inferred=true&terms=true&isChildOf=false&hasChildren=false&inactive=false"
     );
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Download will begin shortly"));
@@ -207,7 +162,7 @@ describe("DownloadDialog.vue", () => {
     expect(wrapper.vm.closeDownloadDialog).toHaveBeenCalledTimes(1);
     expect(window.open).toHaveBeenCalledTimes(1);
     expect(window.open).toHaveBeenCalledWith(
-      "/test/api/entity/download?iri=http:%2F%2Fsnomed.info%2Fsct%23298382003&format=excel&hasSubTypes=true&dataModelProperties=true&members=true&expandMembers=false&inferred=true&axioms=true&terms=true&isChildOf=false&hasChildren=false&inactive=false"
+      "/test/api/entity/download?iri=http:%2F%2Fsnomed.info%2Fsct%23298382003&format=excel&hasSubTypes=true&dataModelProperties=true&members=true&expandMembers=false&inferred=true&terms=true&isChildOf=false&hasChildren=false&inactive=false"
     );
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Download failed from server"));
@@ -221,10 +176,8 @@ describe("DownloadDialog.vue", () => {
     await wrapper.vm.$nextTick();
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
     expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
-    expect(EntityService.getInferredBundle).toHaveBeenCalledTimes(1);
-    expect(EntityService.getInferredBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    expect(EntityService.getAxiomBundle).toHaveBeenCalledTimes(1);
-    expect(EntityService.getAxiomBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(EntityService.getDefinitionBundle).toHaveBeenCalledTimes(1);
+    expect(EntityService.getDefinitionBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.concept).toStrictEqual(CONCEPT);
     expect(EntityService.getEntityTermCodes).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityTermCodes).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
@@ -235,8 +188,7 @@ describe("DownloadDialog.vue", () => {
     expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
     expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.dataModelProperties).toStrictEqual(DATA_MODEL);
-    expect(wrapper.vm.inferred).toStrictEqual(INFERRED);
-    expect(wrapper.vm.axioms).toStrictEqual(AXIOMS);
+    expect(wrapper.vm.definition).toStrictEqual(DEFINITION);
     expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://snomed.info/sct#298382003", false, false);
     expect(wrapper.vm.members).toStrictEqual(MEMBERS);
@@ -258,10 +210,8 @@ describe("DownloadDialog.vue", () => {
     await wrapper.vm.$nextTick();
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
     expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
-    expect(EntityService.getInferredBundle).toHaveBeenCalledTimes(1);
-    expect(EntityService.getInferredBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
-    expect(EntityService.getAxiomBundle).toHaveBeenCalledTimes(1);
-    expect(EntityService.getAxiomBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(EntityService.getDefinitionBundle).toHaveBeenCalledTimes(1);
+    expect(EntityService.getDefinitionBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.concept).toStrictEqual({
       "@id": "http://snomed.info/sct#298382003",
       "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)",
@@ -277,8 +227,7 @@ describe("DownloadDialog.vue", () => {
     expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
     expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.dataModelProperties).toStrictEqual(DATA_MODEL);
-    expect(wrapper.vm.inferred).toStrictEqual(INFERRED);
-    expect(wrapper.vm.axioms).toStrictEqual(AXIOMS);
+    expect(wrapper.vm.definition).toStrictEqual(DEFINITION);
     expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://snomed.info/sct#298382003", false, false);
     expect(wrapper.vm.members).toStrictEqual(MEMBERS);
@@ -288,8 +237,7 @@ describe("DownloadDialog.vue", () => {
 
   it("Can setIncludeBooleans ___ members", async () => {
     wrapper.vm.setIncludeBooleans();
-    expect(wrapper.vm.includeInferred).toBe(true);
-    expect(wrapper.vm.includeAxioms).toBe(true);
+    expect(wrapper.vm.includeDefinition).toBe(true);
     expect(wrapper.vm.includeHasSubTypes).toBe(true);
     expect(wrapper.vm.includeDataModelProperties).toBe(true);
     expect(wrapper.vm.includeMembers).toBe(true);
@@ -298,8 +246,7 @@ describe("DownloadDialog.vue", () => {
   it("Can setIncludeBooleans ___ no members", async () => {
     wrapper.vm.members = {};
     wrapper.vm.setIncludeBooleans();
-    expect(wrapper.vm.includeInferred).toBe(true);
-    expect(wrapper.vm.includeAxioms).toBe(true);
+    expect(wrapper.vm.includeDefinition).toBe(true);
     expect(wrapper.vm.includeHasSubTypes).toBe(true);
     expect(wrapper.vm.includeDataModelProperties).toBe(true);
     expect(wrapper.vm.includeMembers).toBe(false);
