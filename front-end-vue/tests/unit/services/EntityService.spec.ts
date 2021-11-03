@@ -92,7 +92,7 @@ describe("EntityService.ts ___ axios success", () => {
   });
 
   it("can getInferredBundle", async () => {
-    const result = await EntityService.getInferredBundle("testIri");
+    const result = await EntityService.getDefinitionBundle("testIri");
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "api/entity/inferredBundle", { params: { iri: "testIri" } });
     expect(result).toBe("axios get return");
@@ -239,7 +239,7 @@ describe("EntityService.ts ___ axios fail", () => {
   });
 
   it("can getInferredBundle", async () => {
-    const result = await EntityService.getInferredBundle("testIri");
+    const result = await EntityService.getDefinitionBundle("testIri");
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "api/entity/inferredBundle", { params: { iri: "testIri" } });
     expect(result).toStrictEqual({});

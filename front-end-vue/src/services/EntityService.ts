@@ -52,7 +52,7 @@ export default class EntityService {
     }
   }
 
-  public static async getInferredBundle(iri: string): Promise<PartialBundle> {
+  public static async getDefinitionBundle(iri: string): Promise<PartialBundle> {
     try {
       return await axios.get(this.api + "api/entity/inferredBundle", {
         params: {

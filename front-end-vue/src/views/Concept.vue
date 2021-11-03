@@ -246,7 +246,7 @@ export default defineComponent({
     },
 
     async getInferred(iri: string): Promise<void> {
-      const result = await EntityService.getInferredBundle(iri);
+      const result = await EntityService.getDefinitionBundle(iri);
       if (isObjectHasKeys(result, ["entity"]) && isObjectHasKeys(result.entity, [RDFS.SUBCLASS_OF, IM.ROLE_GROUP])) {
         this.concept["inferred"] = {
           entity: { "http://www.w3.org/2000/01/rdf-schema#subClassOf": result.entity[RDFS.SUBCLASS_OF] },

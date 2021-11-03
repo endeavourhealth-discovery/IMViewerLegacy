@@ -13,9 +13,9 @@
       <SelectButton class="format-container" v-model="format" :options="formatOptions" datakey="value" optionLabel="name" />
       <div class="options-container p-d-flex p-flex-row p-flex-wrap p-jc-around">
         <div class="checkbox-label">
-          <Checkbox :disabled="!inferred" id="inferred" :binary="true" value="Include is a" v-model="includeInferred" />
-          <label class="label" :class="includeInferred ? null : 'inactive-text'" for="inferred">
-            Include inferred
+          <Checkbox :disabled="!definition" id="definition" :binary="true" value="Include is a" v-model="includeDefinition" />
+          <label class="label" :class="includeDefinition ? null : 'inactive-text'" for="definition">
+            Include definition
           </label>
         </div>
         <div class="checkbox-label">
@@ -122,8 +122,7 @@ export default defineComponent({
   data() {
     return {
       concept: {} as any,
-      inferred: {} as PartialBundle,
-      // axioms: {} as PartialBundle,
+      definition: {} as PartialBundle,
       hasSubTypes: [] as EntityReferenceNode[],
       isChildOf: [] as TTIriRef[],
       hasChildren: [] as any[],
@@ -134,8 +133,7 @@ export default defineComponent({
       includeDataModelProperties: true,
       includeMembers: true,
       expandMembers: false,
-      includeInferred: true,
-      // includeAxioms: false,
+      includeDefinition: true,
       includeIsChildOf: false,
       includeHasChildren: false,
       includeInactive: false,
@@ -180,9 +178,7 @@ export default defineComponent({
         "&expandMembers=" +
         this.expandMembers +
         "&inferred=" +
-        this.includeInferred +
-        // "&axioms=" +
-        // this.includeAxioms +
+        this.includeDefinition +
         "&terms=" +
         this.includeTerms +
         "&isChildOf=" +
@@ -210,9 +206,7 @@ export default defineComponent({
         this.hasChildren = this.concept[IM.HAS_CHILDREN];
       }
 
-      this.inferred = await EntityService.getInferredBundle(iri);
-
-      // this.axioms = await EntityService.getAxiomBundle(iri);
+      this.definition = await EntityService.getDefinitionBundle(iri);
 
       this.hasSubTypes = await EntityService.getEntityChildren(iri);
 
@@ -227,8 +221,7 @@ export default defineComponent({
     },
 
     setIncludeBooleans(): void {
-      this.includeInferred = !!this.inferred;
-      // this.includeAxioms = !!this.axioms;
+      this.includeDefinition = !!this.definition;
       this.includeHasSubTypes = !!this.hasSubTypes.length;
       this.includeIsChildOf = !!this.isChildOf.length;
       this.includeHasChildren = !!this.hasChildren.length;

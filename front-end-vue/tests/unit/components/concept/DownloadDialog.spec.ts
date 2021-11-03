@@ -12,7 +12,7 @@ import { IM } from "@/vocabulary/IM";
 
 describe("DownloadDialog.vue", () => {
   const CONCEPT = { "@id": "http://snomed.info/sct#298382003", "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)" };
-  const INFERRED = {
+  const DEFINITION = {
     entity: {
       "@id": "http://snomed.info/sct#298382003",
       "http://endhealth.info/im#isA": [
@@ -99,7 +99,7 @@ describe("DownloadDialog.vue", () => {
       add: jest.fn()
     };
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
-    EntityService.getInferredBundle = jest.fn().mockResolvedValue(INFERRED);
+    EntityService.getDefinitionBundle = jest.fn().mockResolvedValue(DEFINITION);
     EntityService.getEntityChildren = jest.fn().mockResolvedValue(CHILDREN);
     EntityService.getDataModelProperties = jest.fn().mockResolvedValue(DATA_MODEL);
     EntityService.getEntityMembers = jest.fn().mockResolvedValue(MEMBERS);
@@ -123,7 +123,7 @@ describe("DownloadDialog.vue", () => {
     expect(wrapper.vm.loading).toBe(false);
     expect(wrapper.vm.isChildOf).toStrictEqual([]);
     expect(wrapper.vm.hasChildren).toStrictEqual([]);
-    expect(wrapper.vm.inferred).toStrictEqual(INFERRED);
+    expect(wrapper.vm.definition).toStrictEqual(DEFINITION);
     expect(wrapper.vm.hasSubTypes).toStrictEqual(CHILDREN);
     expect(wrapper.vm.terms).toStrictEqual(TERMS);
     expect(wrapper.vm.dataModelProperties).toStrictEqual(DATA_MODEL);
@@ -176,8 +176,8 @@ describe("DownloadDialog.vue", () => {
     await wrapper.vm.$nextTick();
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
     expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
-    expect(EntityService.getInferredBundle).toHaveBeenCalledTimes(1);
-    expect(EntityService.getInferredBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(EntityService.getDefinitionBundle).toHaveBeenCalledTimes(1);
+    expect(EntityService.getDefinitionBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.concept).toStrictEqual(CONCEPT);
     expect(EntityService.getEntityTermCodes).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityTermCodes).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
@@ -188,7 +188,7 @@ describe("DownloadDialog.vue", () => {
     expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
     expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.dataModelProperties).toStrictEqual(DATA_MODEL);
-    expect(wrapper.vm.inferred).toStrictEqual(INFERRED);
+    expect(wrapper.vm.definition).toStrictEqual(DEFINITION);
     expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://snomed.info/sct#298382003", false, false);
     expect(wrapper.vm.members).toStrictEqual(MEMBERS);
@@ -210,8 +210,8 @@ describe("DownloadDialog.vue", () => {
     await wrapper.vm.$nextTick();
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
     expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", [RDFS.LABEL, IM.IS_CHILD_OF, IM.HAS_CHILDREN]);
-    expect(EntityService.getInferredBundle).toHaveBeenCalledTimes(1);
-    expect(EntityService.getInferredBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(EntityService.getDefinitionBundle).toHaveBeenCalledTimes(1);
+    expect(EntityService.getDefinitionBundle).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.concept).toStrictEqual({
       "@id": "http://snomed.info/sct#298382003",
       "http://www.w3.org/2000/01/rdf-schema#label": "Scoliosis deformity of spine (disorder)",
@@ -227,7 +227,7 @@ describe("DownloadDialog.vue", () => {
     expect(EntityService.getDataModelProperties).toHaveBeenCalledTimes(1);
     expect(EntityService.getDataModelProperties).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
     expect(wrapper.vm.dataModelProperties).toStrictEqual(DATA_MODEL);
-    expect(wrapper.vm.inferred).toStrictEqual(INFERRED);
+    expect(wrapper.vm.definition).toStrictEqual(DEFINITION);
     expect(EntityService.getEntityMembers).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityMembers).toHaveBeenCalledWith("http://snomed.info/sct#298382003", false, false);
     expect(wrapper.vm.members).toStrictEqual(MEMBERS);
@@ -237,7 +237,7 @@ describe("DownloadDialog.vue", () => {
 
   it("Can setIncludeBooleans ___ members", async () => {
     wrapper.vm.setIncludeBooleans();
-    expect(wrapper.vm.includeInferred).toBe(true);
+    expect(wrapper.vm.includeDefinition).toBe(true);
     expect(wrapper.vm.includeHasSubTypes).toBe(true);
     expect(wrapper.vm.includeDataModelProperties).toBe(true);
     expect(wrapper.vm.includeMembers).toBe(true);
@@ -246,7 +246,7 @@ describe("DownloadDialog.vue", () => {
   it("Can setIncludeBooleans ___ no members", async () => {
     wrapper.vm.members = {};
     wrapper.vm.setIncludeBooleans();
-    expect(wrapper.vm.includeInferred).toBe(true);
+    expect(wrapper.vm.includeDefinition).toBe(true);
     expect(wrapper.vm.includeHasSubTypes).toBe(true);
     expect(wrapper.vm.includeDataModelProperties).toBe(true);
     expect(wrapper.vm.includeMembers).toBe(false);
