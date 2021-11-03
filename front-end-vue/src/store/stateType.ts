@@ -4,7 +4,6 @@ import { User } from "../models/user/User";
 
 export interface State {
   loading: Map<string, boolean>;
-  cancelSource: CancelTokenSource;
   conceptIri: string;
   history: HistoryItem[];
   searchResults: [];
