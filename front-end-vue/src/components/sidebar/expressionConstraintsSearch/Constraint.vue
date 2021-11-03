@@ -2,19 +2,12 @@
   <div class="query-item-container" :id="id">
     <div class="label-container">
       <span class="float-text">Constraint</span>
-      <Dropdown
-        v-model="selected"
-        :options="options"
-        optionLabel="name"
-        placeholder="Select constraint"
-      >
+      <Dropdown v-model="selected" :options="options" optionLabel="name" placeholder="Select constraint">
         <template #value="slotProps">
           <span>{{ slotProps.value.name }}</span>
         </template>
         <template #option="slotProps">
-          <span>
-            {{ slotProps.option.symbol }} {{ slotProps.option.name }}
-          </span>
+          <span> {{ slotProps.option.symbol }} {{ slotProps.option.name }} </span>
         </template>
       </Dropdown>
     </div>

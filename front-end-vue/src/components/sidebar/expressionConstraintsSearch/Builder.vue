@@ -48,18 +48,8 @@
       </div>
     </div>
     <template #footer>
-      <Button
-        label="Cancel"
-        icon="pi pi-times"
-        class="p-button-secondary"
-        @click="closeBuilderDialog"
-      />
-      <Button
-        label="OK"
-        icon="pi pi-check"
-        class="p-button-primary"
-        @click="submit"
-      />
+      <Button label="Cancel" icon="pi pi-times" class="p-button-secondary" @click="closeBuilderDialog" />
+      <Button label="OK" icon="pi pi-check" class="p-button-primary" @click="submit" />
     </template>
   </Dialog>
 </template>
@@ -112,24 +102,10 @@ export default defineComponent({
     },
 
     async addNextOptions(data: any) {
-      if (
-        this.queryBuild[data.previousPosition + 1].type === ECLType.ADD_NEXT
-      ) {
-        this.queryBuild[data.previousPosition + 1] = this.getNextOptions(
-          data.previousPosition,
-          data.previousComponent,
-          data.parentGroup
-        );
+      if (this.queryBuild[data.previousPosition + 1].type === ECLType.ADD_NEXT) {
+        this.queryBuild[data.previousPosition + 1] = this.getNextOptions(data.previousPosition, data.previousComponent, data.parentGroup);
       } else {
-        this.queryBuild.splice(
-          data.previousPosition,
-          0,
-          this.getNextOptions(
-            data.previousPosition,
-            data.previousComponent,
-            data.parentGroup
-          )
-        );
+        this.queryBuild.splice(data.previousPosition, 0, this.getNextOptions(data.previousPosition, data.previousComponent, data.parentGroup));
       }
       await this.$nextTick();
       const itemToScrollTo = document.getElementById(data.id);
@@ -137,21 +113,10 @@ export default defineComponent({
     },
 
     addItem(data: any) {
-      this.queryBuild[data.position] = this.generateNewComponent(
-        data.selectedType,
-        data.position
-      );
+      this.queryBuild[data.position] = this.generateNewComponent(data.selectedType, data.position);
       this.updatePositions(data.position);
-      if (
-        this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT
-      ) {
-        this.queryBuild.push(
-          this.getNextOptions(
-            this.queryBuild.length - 1,
-            this.queryBuild[this.queryBuild.length - 1].type,
-            "builder"
-          )
-        );
+      if (this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT) {
+        this.queryBuild.push(this.getNextOptions(this.queryBuild.length - 1, this.queryBuild[this.queryBuild.length - 1].type, "builder"));
       }
     },
 
@@ -175,36 +140,20 @@ export default defineComponent({
     },
 
     deleteItem(data: any) {
-      const index = this.queryBuild.findIndex(
-        item => item.position === data.position
-      );
+      const index = this.queryBuild.findIndex(item => item.position === data.position);
       this.queryBuild.splice(index, 1);
       if (data.position === 0) {
         this.queryBuild.unshift(this.setStartBuild()[0]);
       }
-      if (
-        this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT
-      ) {
-        this.queryBuild.push(
-          this.getNextOptions(
-            this.queryBuild.length - 1,
-            this.queryBuild[this.queryBuild.length - 1].type,
-            ""
-          )
-        );
+      if (this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT) {
+        this.queryBuild.push(this.getNextOptions(this.queryBuild.length - 1, this.queryBuild[this.queryBuild.length - 1].type, ""));
       } else {
-        this.queryBuild[this.queryBuild.length - 1] = this.getNextOptions(
-          this.queryBuild.length - 2,
-          this.queryBuild[this.queryBuild.length - 2].type,
-          ""
-        );
+        this.queryBuild[this.queryBuild.length - 1] = this.getNextOptions(this.queryBuild.length - 2, this.queryBuild[this.queryBuild.length - 2].type, "");
       }
     },
 
     updateItem(data: any) {
-      const index = this.queryBuild.findIndex(
-        item => item.position === data.position
-      );
+      const index = this.queryBuild.findIndex(item => item.position === data.position);
       this.queryBuild[index] = data;
     },
 

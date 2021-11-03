@@ -103,7 +103,6 @@ import { mapState } from "vuex";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
 import axios from "axios";
-import LoggerService from "@/services/LoggerService";
 import EntityService from "@/services/EntityService";
 import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
 import { IM } from "@/vocabulary/IM";

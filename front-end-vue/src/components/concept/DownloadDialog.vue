@@ -54,6 +54,12 @@
             Include data model properties
           </label>
         </div>
+        <!-- <div class="checkbox-label">
+         <Checkbox :disabled="!axioms" id="axioms" :binary="true" value="Include axioms" v-model="includeAxioms" />
+         <label class="label" :class="includeAxioms ? null : 'inactive-text'" for="axioms">
+           Include semantic properties
+         </label>
+       </div> -->
         <div class="checkbox-label">
           <Checkbox :disabled="!members" id="members" :binary="true" value="Include members" v-model="includeMembers" />
           <label class="label" :class="includeMembers ? null : 'inactive-text'" for="members">
