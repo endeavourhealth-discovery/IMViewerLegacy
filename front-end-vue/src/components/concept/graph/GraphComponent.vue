@@ -2,9 +2,9 @@
   <div id="graph">
     <svg id="svg">
       <defs id="defs">
-        <!-- <marker id="arrow" markerUnits="strokeWidth" markerWidth="12" markerHeight="12" viewBox="0 0 12 12" refX="25" refY="6" orient="auto-start-reverse">
+        <marker id="arrow" markerUnits="strokeWidth" markerWidth="12" markerHeight="12" viewBox="0 0 12 12" refX="25" refY="6" orient="auto-start-reverse">
           <path d="M2,2 L10,6 L2,10 L6,6 L2,2" style="fill: #781c81;"></path>
-        </marker> -->
+        </marker>
       </defs>
     </svg>
   </div>
@@ -86,26 +86,6 @@ export default defineComponent({
 
       const svg = d3.select("#svg").attr("viewBox", ["" + -this.width / 2, "" + -this.height / 2, "" + this.width, "" + this.height] as any);
 
-      // const markers = d3
-      //   .select("#defs")
-      //   .selectAll()
-      //   .data(links)
-      //   .enter()
-      //   .append("marker")
-      //   .attr("id", (d: any) => `${d.target.x}${d.target.y}${d.source.x}${d.source.y}`)
-      //   .attr("markerUnits", "strokeWidth")
-      //   .attr("markerWidth", "12")
-      //   .attr("markerHeight", "12")
-      //   .attr("viewBox", "0 0 12 12")
-      //   .attr("refX", "25")
-      //   .attr("refY", "6")
-      //   .attr("orient", (d: any) => this.calcAngleDegrees(d.target.x, d.target.y));
-
-      // const markerPaths = markers
-      //   .append("path")
-      //   .attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2")
-      //   .style("fill", "#781c81");
-
       const pathLink = svg
         .selectAll(null)
         .data(links)
@@ -114,7 +94,12 @@ export default defineComponent({
         .attr("id", (d: any) => `${d.target.x}${d.target.y}${d.source.x}${d.source.y}`)
         .style("fill", this.colour.path.fill)
         .style("stroke", this.colour.path.stroke)
-        .attr("marker-end", (d: any) => `url(#${d.target.x}${d.target.y}${d.source.x}${d.source.y})`);
+        .attr("marker-end", (d: any) => {
+          return d.target.x < d.source.x ? "url(#arrow)" : "";
+        })
+        .attr("marker-start", (d: any) => {
+          return d.target.x > d.source.x ? "url(#reverse)" : "";
+        });
 
       svg
         .selectAll(null)
@@ -173,15 +158,18 @@ export default defineComponent({
         .attr("style", () => "text-align:center;padding:2px;margin:2px;");
 
       this.simulation.on("tick", () => {
-        pathLink.attr("d", (d: any) => {
-          return d?.source.x < d.target.x
-            ? `M${d.source.x},${d.source.y} L${d.target.x},${d.target.y}`
-            : `M${d.target.x},${d.target.y} L${d.source.x},${d.source.y}`;
-        });
-
-        // markers.attr("orient", (d: any) => this.calcAngleDegrees(d.target.x, d.target.y));
-
-        // markerPaths.attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2");
+        pathLink
+          .attr("d", (d: any) => {
+            return d?.source.x < d.target.x
+              ? `M${d.source.x},${d.source.y} L${d.target.x},${d.target.y}`
+              : `M${d.target.x},${d.target.y} L${d.source.x},${d.source.y}`;
+          })
+          .attr("marker-end", (d: any) => {
+            return d.target.x > d.source.x ? "url(#arrow)" : "";
+          })
+          .attr("marker-start", (d: any) => {
+            return d.target.x < d.source.x ? "url(#arrow)" : "";
+          });
 
         nodeTextWrapper.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
         nodeText.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
@@ -210,8 +198,6 @@ export default defineComponent({
     drag(simulation: any) {
       function dragstarted(event: any, d: any) {
         if (!event.active) simulation.alphaTarget(0.3).restart();
-        // d.fx = d.x;
-        // d.fy = d.y;
       }
 
       function dragged(event: any, d: any) {
@@ -221,8 +207,6 @@ export default defineComponent({
 
       function dragended(event: any, d: any) {
         if (!event.active) simulation.alphaTarget(0);
-        // d.fx = null;
-        // d.fy = null;
       }
 
       return d3
@@ -236,11 +220,6 @@ export default defineComponent({
       this.svgPan.destroy();
       d3.selectAll("g").remove();
       this.simulation.stop();
-    },
-
-    calcAngleDegrees(x: number, y: number) {
-      // 𝑎𝑡𝑎𝑛2(𝑦,𝑥) Where: 𝑦=𝑦𝐵−𝑦𝐴 & 𝑥=𝑥𝐵−𝑥𝐴
-      return (Math.atan2(y, x) * 180) / Math.PI;
     }
   }
 });
