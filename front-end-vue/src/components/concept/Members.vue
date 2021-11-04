@@ -24,11 +24,7 @@
       @rowSelect="onRowSelect"
     >
       <template #header>
-        <div class="p-d-flex p-jc-between">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search" aria-hidden="true" />
-            <InputText v-model="filters1['global'].value" placeholder="Keyword Search" />
-          </span>
+        <div class="table-header-bar">
           <div class="checkboxes-container">
             <Button type="button" label="Download..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
             <Menu id="overlay_menu" ref="menu" :model="downloadMenu" :popup="true" />
@@ -247,5 +243,11 @@ export default defineComponent({
 
 .html-container ::v-deep(p) {
   margin-bottom: 0 !important;
+}
+
+.table-header-bar {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
 }
 </style>
