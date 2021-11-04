@@ -144,10 +144,7 @@ export default defineComponent({
         .style("font-size", () => `${this.nodeFontSize}px`)
         .on("dblclick", (d: any) => this.dblclick(d));
 
-      const nodeText = nodeTextWrapper
-        .append("xhtml:p")
-        .text((d: any) => d.data.name)
-        .attr("style", (d: any) => this.getNodeTextStyle(d));
+      const nodeText = nodeTextWrapper.append("xhtml:p").text((d: any) => d.data.name);
 
       this.simulation.on("tick", () => {
         pathLink
@@ -175,10 +172,6 @@ export default defineComponent({
         center: true,
         dblClickZoomEnabled: false
       });
-    },
-
-    getNodeTextStyle(d: any) {
-      return "text-align: center; position: relative; top: 50%; -ms-transform: translateY(-50%); -webkit-transform: translateY(-50%); transform: translateY(-50%);";
     },
 
     getFODimensions(d: any) {
@@ -241,6 +234,14 @@ circle:active {
   cursor: grabbing;
   cursor: -moz-grabbing;
   cursor: -webkit-grabbing;
+}
+foreignObject p {
+  text-align: center;
+  position: relative;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
 }
 
 foreignObject:hover {
