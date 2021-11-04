@@ -295,6 +295,7 @@ export default defineComponent({
         type = "Property";
       } else {
         type = this.activeModule;
+        this.active = 0;
       }
       this.$store.commit("updateSelectedEntityType", type);
       if (!MODULE_IRIS.includes(this.conceptIri)) {
