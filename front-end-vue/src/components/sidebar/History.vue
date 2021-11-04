@@ -12,6 +12,7 @@
 import { defineComponent } from "vue";
 import { HistoryItem } from "@/models/HistoryItem";
 import { mapState } from "vuex";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "History",
@@ -29,7 +30,7 @@ export default defineComponent({
     },
 
     navigate(): void {
-      this.$router.push(this.selectedHistoryItem.url);
+      if (isObjectHasKeys(this.selectedHistoryItem, ["url"])) this.$router.push(this.selectedHistoryItem.url);
     }
   }
 });
