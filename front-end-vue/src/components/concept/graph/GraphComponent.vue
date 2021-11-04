@@ -31,9 +31,6 @@ export default defineComponent({
     }
   },
   computed: {
-    side() {
-      return 2 * this.radius;
-    },
     nodeFontSize() {
       return this.radius / 5;
     },
@@ -42,6 +39,9 @@ export default defineComponent({
     },
     maxLength() {
       return this.radius / 2;
+    },
+    viewBox() {
+      return ["" + -this.width / 2, "" + -this.height / 2, "" + this.width, "" + this.height];
     }
   },
   data() {
@@ -84,7 +84,7 @@ export default defineComponent({
         .force("x", d3.forceX())
         .force("y", d3.forceY());
 
-      const svg = d3.select("#svg").attr("viewBox", ["" + -this.width / 2, "" + -this.height / 2, "" + this.width, "" + this.height] as any);
+      const svg = d3.select("#svg").attr("viewBox", this.viewBox as any);
 
       const pathLink = svg
         .selectAll(null)
@@ -111,9 +111,7 @@ export default defineComponent({
         .style("text-anchor", "middle")
         .attr("startOffset", "50%")
         .attr("font-size", () => `${this.pathFontSize}px`)
-        .text((d: any) => {
-          return d.target.data.relToParent;
-        });
+        .text((d: any) => d.target.data.relToParent);
 
       const node = svg
         .append("g")
@@ -138,16 +136,10 @@ export default defineComponent({
         .data(nodes)
         .enter()
         .append("foreignObject")
-        .attr("x", () => this.radius - this.side)
-        .attr("y", (d: any) => {
-          const quotient = Math.round(d.data.name?.length / this.maxLength) || 0;
-          if (quotient <= 1) {
-            return this.radius - this.side / 1.5;
-          }
-          return this.radius - this.side / (1.5 - +("0." + (quotient - 1)));
-        })
-        .attr("width", this.side)
-        .attr("height", this.side)
+        .attr("x", (d: any) => this.getFODimensions(d).x)
+        .attr("y", (d: any) => this.getFODimensions(d).y)
+        .attr("width", (d: any) => this.getFODimensions(d).width)
+        .attr("height", (d: any) => this.getFODimensions(d).height)
         .attr("color", (d: any) => (hasNodeChildrenByName(this.data, d.data.name) ? this.colour.activeNode.fill : this.colour.inactiveNode.fill))
         .style("font-size", () => `${this.nodeFontSize}px`)
         .on("dblclick", (d: any) => this.dblclick(d));
@@ -155,12 +147,12 @@ export default defineComponent({
       const nodeText = nodeTextWrapper
         .append("xhtml:p")
         .text((d: any) => d.data.name)
-        .attr("style", () => "text-align:center;padding:2px;margin:2px;");
+        .attr("style", (d: any) => this.getNodeTextStyle(d));
 
       this.simulation.on("tick", () => {
         pathLink
           .attr("d", (d: any) => {
-            return d?.source.x < d.target.x
+            return d.source.x < d.target.x
               ? `M${d.source.x},${d.source.y} L${d.target.x},${d.target.y}`
               : `M${d.target.x},${d.target.y} L${d.source.x},${d.source.y}`;
           })
@@ -183,6 +175,14 @@ export default defineComponent({
         center: true,
         dblClickZoomEnabled: false
       });
+    },
+
+    getNodeTextStyle(d: any) {
+      return "text-align: center; position: relative; top: 50%; -ms-transform: translateY(-50%); -webkit-transform: translateY(-50%); transform: translateY(-50%);";
+    },
+
+    getFODimensions(d: any) {
+      return { x: -this.radius / 1.1, y: -this.radius / 1.3, height: (2 * this.radius) / 1.3, width: (2 * this.radius) / 1.1 };
     },
 
     dblclick(d: any) {
@@ -234,8 +234,17 @@ export default defineComponent({
 circle:hover {
   stroke: steelblue;
   stroke-width: 3px;
+  cursor: grab;
 }
+
+circle:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+
 foreignObject:hover {
   font-weight: 600;
+  cursor: pointer;
 }
 </style>

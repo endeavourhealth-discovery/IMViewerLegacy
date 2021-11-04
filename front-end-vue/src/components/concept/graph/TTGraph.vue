@@ -23,7 +23,7 @@ export default defineComponent({
   },
   watch: {
     async conceptIri(newValue) {
-      await this.getEntityBundle(this.conceptIri);
+      await this.getEntityBundle(newValue);
     }
   },
   data() {
@@ -39,6 +39,8 @@ export default defineComponent({
     async getEntityBundle(iri: string) {
       const bundle = await EntityService.getPartialEntityBundle(iri, []);
       this.data = translateFromEntityBundle(bundle);
+
+      // For TTDocument graph visualisation
       // this.data = translateFromTTDocument();
     }
   }
