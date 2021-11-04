@@ -21,13 +21,7 @@ describe("ObjectNameTagWithLabel.vue", () => {
     });
 
     it("returns false if not object with name", () => {
-      LoggerService.error = jest.fn();
       expect(ObjectNameTagWithLabel.computed.isObjectWithName.call({ data: "Name" })).toBe(false);
-      expect(LoggerService.error).toHaveBeenCalledTimes(1);
-      expect(LoggerService.error).toHaveBeenCalledWith(
-        undefined,
-        "No data, data is not Object or Object has no property 'name' for use within component ObjectNameTagWithLabel.vue"
-      );
     });
   });
 
