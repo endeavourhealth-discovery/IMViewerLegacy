@@ -33,7 +33,10 @@ export default defineComponent({
   name: "TextDefinition",
   props: {
     label: { type: String },
-    data: { type: Object as () => PartialEntity, required: true },
+    data: {
+      type: Object as () => PartialEntity,
+      default: () => null
+    },
     size: { type: String },
     show: { type: Boolean }
   },

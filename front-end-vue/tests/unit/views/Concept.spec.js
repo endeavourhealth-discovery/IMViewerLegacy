@@ -256,6 +256,19 @@ describe("Concept.vue", () => {
     jest.clearAllMocks();
   });
 
+  it("sets container size ___ class element fail", async () => {
+    const mockElement = document.createElement("div");
+    mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 });
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([null]);
+    docSpy.mockReturnValue(mockElement);
+    windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue(undefined) });
+    wrapper.vm.setContentHeight();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.contentHeightValue).not.toBe(800);
+    docSpy.mockReset();
+    jest.clearAllMocks();
+  });
+
   it("can check for a set ___ false", async () => {
     expect(Concept.computed.isSet.call({ types: [{ name: "Concept", "@id": "http://endhealth.info/im#Concept" }] })).toBe(false);
   });
