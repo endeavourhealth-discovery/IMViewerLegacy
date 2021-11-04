@@ -188,11 +188,13 @@ export default defineComponent({
 
     setTableWidth(): void {
       const container = document.getElementById("members-table-container") as HTMLElement;
-      const table = container?.getElementsByClassName("p-datatable-table")[0] as HTMLElement;
+      if (!container) {
+        LoggerService.error(undefined, "Failed to set members table width. Required element(s) not found.");
+        return;
+      }
+      const table = container.getElementsByClassName("p-datatable-table")[0] as HTMLElement;
       if (table) {
         table.style.width = "100%";
-      } else {
-        LoggerService.error(undefined, "Failed to set members table width. Required element(s) not found.");
       }
     }
   }

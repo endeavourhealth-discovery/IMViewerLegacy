@@ -52,15 +52,18 @@ export default defineComponent({
 
     setContentHeight(): void {
       const container = document.getElementById("uprn-home") as HTMLElement;
-      const nav = container?.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
-      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
-      if (container && nav && currentFontSize) {
-        const calcHeight = container.getBoundingClientRect().height - nav.getBoundingClientRect().height - 2 * currentFontSize - 1;
-        this.contentHeight = "height: " + calcHeight + "px; max-height: " + calcHeight + "px;";
-      } else {
+      if (!container) {
         this.contentHeight = "height: calc(100vh - 7rem);max-height: calc(100vh - 7rem);";
         LoggerService.error("UPRN content sizing error", "Failed to get element(s) for UPRN content resizing");
+        return;
       }
+      const nav = container.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
+      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
+      let calcHeight = container.getBoundingClientRect().height - 2 * currentFontSize - 1;
+      if (nav) {
+        calcHeight -= nav.getBoundingClientRect().height;
+      }
+      this.contentHeight = "height: " + calcHeight + "px; max-height: " + calcHeight + "px;";
     }
   }
 });

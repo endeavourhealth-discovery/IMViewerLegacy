@@ -321,19 +321,24 @@ export default defineComponent({
 
     setContentHeight(): void {
       const container = document.getElementById("concept-main-container") as HTMLElement;
-      const header = container?.getElementsByClassName("p-panel-header")[0] as HTMLElement;
-      const nav = container?.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
-      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
-      if (header && container && nav && currentFontSize) {
-        const calcHeight =
-          container.getBoundingClientRect().height - header.getBoundingClientRect().height - nav.getBoundingClientRect().height - 4 * currentFontSize - 1;
-        this.contentHeight = "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
-        this.contentHeightValue = calcHeight;
-      } else {
+      if (!container) {
         this.contentHeight = "height: 800px; max-height: 800px;";
         this.contentHeightValue = 800;
         LoggerService.error("Content sizing error", "failed to get element(s) for concept content resizing");
+        return;
       }
+      const header = container.getElementsByClassName("p-panel-header")[0] as HTMLElement;
+      const nav = container.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
+      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
+      let calcHeight = container.getBoundingClientRect().height - 4 * currentFontSize - 1;
+      if (header) {
+        calcHeight -= header.getBoundingClientRect().height;
+      }
+      if (nav) {
+        calcHeight -= nav.getBoundingClientRect().height;
+      }
+      this.contentHeight = "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
+      this.contentHeightValue = calcHeight;
     },
 
     openDownloadDialog(): void {
