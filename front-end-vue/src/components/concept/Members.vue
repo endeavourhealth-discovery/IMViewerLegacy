@@ -9,9 +9,6 @@
       v-model:expandedRowGroups="expandedRowGroups"
       @rowgroupExpand="onRowGroupExpand"
       @rowgroupCollapse="onRowGroupCollapse"
-      v-model:filters="filters1"
-      filterDisplay="menu"
-      :globalFilterFields="['code', 'entity.name', 'scheme.name', 'label']"
       :scrollable="true"
       sortMode="single"
       sortField="label"
@@ -24,11 +21,7 @@
       @rowSelect="onRowSelect"
     >
       <template #header>
-        <div class="p-d-flex p-jc-between">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search" aria-hidden="true" />
-            <InputText v-model="filters1['global'].value" placeholder="Keyword Search" />
-          </span>
+        <div class="table-header-bar">
           <div class="checkboxes-container">
             <Button type="button" label="Download..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
             <Menu id="overlay_menu" ref="menu" :model="downloadMenu" :popup="true" />
@@ -41,7 +34,7 @@
       <template #loading>
         Loading data. Please wait...
       </template>
-      <Column field="entity.name" header="Name" filter-field="entity.name">
+      <Column field="entity.name" header="Name">
         <template #body="slotProps">
           <div class="name-container">{{ slotProps.data.entity.name }}</div>
         </template>
@@ -102,9 +95,6 @@ export default defineComponent({
       loading: false,
       members: {} as ExportValueSet,
       combinedMembers: [] as ValueSetMember[],
-      filters1: {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
-      },
       selected: {} as ValueSetMember,
       subsets: [] as string[],
       expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"],
@@ -247,5 +237,11 @@ export default defineComponent({
 
 .html-container ::v-deep(p) {
   margin-bottom: 0 !important;
+}
+
+.table-header-bar {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
 }
 </style>
