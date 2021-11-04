@@ -34,7 +34,7 @@
       <template #loading>
         Loading data. Please wait...
       </template>
-      <Column field="entity.name" header="Name" filter-field="entity.name">
+      <Column field="entity.name" header="Name">
         <template #body="slotProps">
           <div class="name-container">{{ slotProps.data.entity.name }}</div>
         </template>
@@ -95,9 +95,6 @@ export default defineComponent({
       loading: false,
       members: {} as ExportValueSet,
       combinedMembers: [] as ValueSetMember[],
-      filters1: {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
-      },
       selected: {} as ValueSetMember,
       subsets: [] as string[],
       expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"],
