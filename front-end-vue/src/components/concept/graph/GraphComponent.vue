@@ -12,11 +12,12 @@
 
 <script lang="ts">
 import TTGraphData from "../../../models/TTGraphData";
-import { closeNodeByName, hasNodeChildrenByName } from "../../../helpers/GraphTranslator";
+import { closeNodeByName, hasNodeChildrenByName, translateFromEntityBundle } from "../../../helpers/GraphTranslator";
 import { defineComponent, PropType } from "@vue/runtime-core";
 import * as d3 from "d3";
 import svgPanZoom from "svg-pan-zoom";
 import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
+import EntityService from "@/services/EntityService";
 
 export default defineComponent({
   name: "GraphComponent",
@@ -178,13 +179,25 @@ export default defineComponent({
       return { x: -this.radius / 1.1, y: -this.radius / 1.3, height: (2 * this.radius) / 1.3, width: (2 * this.radius) / 1.1 };
     },
 
-    dblclick(d: any) {
+    async dblclick(d: any) {
       const node = d.path[0]["__data__"]["data"] as TTGraphData;
       if (isArrayHasLength(node.children) || isArrayHasLength(node._children)) {
         closeNodeByName(this.data, node.name);
         this.stopSimulation();
         const root = d3.hierarchy(this.data);
         this.drawGraph(root.links(), root.descendants());
+      } else {
+        const bundle = await EntityService.getPartialEntityBundle(node.iri, []);
+        const data = translateFromEntityBundle(bundle);
+        if (isArrayHasLength(data.children)) {
+          data.children.forEach(child => {
+            node._children.push(child);
+          });
+          closeNodeByName(this.data, node.name);
+          this.stopSimulation();
+          const root = d3.hierarchy(this.data);
+          this.drawGraph(root.links(), root.descendants());
+        }
       }
     },
 

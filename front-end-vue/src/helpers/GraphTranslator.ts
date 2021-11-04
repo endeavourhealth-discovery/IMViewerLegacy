@@ -8,11 +8,17 @@ import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
 
 export function translateFromEntityBundle(bundle: PartialBundle) {
   const { entity, predicates } = bundle;
-  const firstNode = { name: entity[RDFS.LABEL], relToParent: "", children: [], _children: [] } as TTGraphData;
+  const firstNode = { name: entity[RDFS.LABEL], iri: entity["@id"], relToParent: "", children: [], _children: [] } as TTGraphData;
   const excludedPredicates = [IM.MATCHED_TO, IM.HAS_STATUS, IM.STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL];
   const keys = Object.keys(entity).filter(key => key != "@id" && !excludedPredicates.includes(key));
   addNodes(entity, keys, firstNode, predicates);
   return firstNode;
+}
+
+function getNameFromIri(iri: string) {
+  // http://www.w3.org/2001/XMLSchema#
+  if (iri.startsWith("http://www.w3.org/2001/XMLSchema#")) return iri.split("#")[1];
+  if (iri.startsWith("http://endhealth.info/im#im:")) return iri.substring("http://endhealth.info/im#im:".length);
 }
 
 function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicates: any) {
@@ -20,16 +26,22 @@ function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicate
     keys.forEach(key => {
       if (isArrayHasLength(entity[key]) && key === SHACL.PROPERTY) {
         entity[key].forEach((nested: any) => {
-          firstNode.children.push({ name: nested[SHACL.CLASS].name, relToParent: nested[SHACL.PATH].name, children: [], _children: [] });
+          firstNode.children.push({
+            name: nested?.[SHACL.CLASS]?.name || nested?.[SHACL.DATATYPE]?.name || getNameFromIri(nested?.[SHACL.DATATYPE]?.["@id"]),
+            iri: nested?.[SHACL.CLASS]?.["@id"] || nested?.[SHACL.DATATYPE]?.["@id"],
+            relToParent: nested[SHACL.PATH].name,
+            children: [],
+            _children: []
+          });
         });
       } else if (isArrayHasLength(entity[key])) {
         entity[key].forEach((nested: any) => {
-          firstNode.children.push({ name: nested.name, relToParent: predicates[key], children: [], _children: [] });
+          firstNode.children.push({ name: nested.name, iri: nested["@id"], relToParent: predicates[key], children: [], _children: [] });
         });
       } else if (isObjectHasKeys(entity[key])) {
-        firstNode.children.push({ name: entity[key].name, relToParent: predicates[key], children: [], _children: [] });
+        firstNode.children.push({ name: entity[key].name, iri: entity[key]["@id"], relToParent: predicates[key], children: [], _children: [] });
       } else {
-        firstNode.children.push({ name: entity[key], relToParent: predicates[key], children: [], _children: [] });
+        firstNode.children.push({ name: entity[key], iri: entity[key]["@id"], relToParent: predicates[key], children: [], _children: [] });
       }
     });
   }
@@ -37,7 +49,13 @@ function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicate
 
 export function translateFromTTDocument() {
   ttdocument["@context"];
-  const firstNode = { name: ttdocument.entities[0]["rdfs:label"], relToParent: "", children: [], _children: [] } as TTGraphData;
+  const firstNode = {
+    name: ttdocument.entities[0]["rdfs:label"],
+    iri: ttdocument.entities[0]["@id"],
+    relToParent: "",
+    children: [],
+    _children: []
+  } as TTGraphData;
   const excludedPredicates = [IM.MATCHED_TO, IM.HAS_STATUS, IM.STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL];
   const predicateSet = new Set<string>();
   ttdocument.entities.forEach(entity => {
@@ -54,10 +72,22 @@ function addAllNodes(node: TTGraphData, entity: any, predicateSet: Set<string>) 
       if (key === "sh:property") {
         entity[key].forEach((property: any) => {
           if (!Object.keys(property).includes("sh:node")) {
-            node.children.push({ name: property["sh:path"].name, relToParent: property["sh:path"]["@id"], children: [], _children: [] });
+            node.children.push({
+              name: property["sh:path"].name,
+              iri: property["sh:path"]["@id"],
+              relToParent: property["sh:path"]["@id"],
+              children: [],
+              _children: []
+            });
           } else {
             const nodeEntity = findEntityByIri(ttdocument.entities as [], property["sh:node"]["@id"]) as any;
-            const child = { name: nodeEntity["rdfs:label"], relToParent: property["sh:path"].name || property["sh:path"]["@id"], children: [], _children: [] };
+            const child = {
+              name: nodeEntity["rdfs:label"],
+              iri: nodeEntity["@id"],
+              relToParent: property["sh:path"].name || property["sh:path"]["@id"],
+              children: [],
+              _children: []
+            } as TTGraphData;
             addAllNodes(child, nodeEntity, predicateSet);
             node.children.push(child);
           }
