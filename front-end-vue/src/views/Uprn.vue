@@ -59,10 +59,9 @@ export default defineComponent({
       }
       const nav = container.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
       const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
-      let calcHeight = container.getBoundingClientRect().height - 2 * currentFontSize - 1;
-      if (nav) {
-        calcHeight -= nav.getBoundingClientRect().height;
-      }
+      let calcHeight = container.getBoundingClientRect().height - 1;
+      if (currentFontSize) calcHeight -= 2 * currentFontSize;
+      if (nav) calcHeight -= nav.getBoundingClientRect().height;
       this.contentHeight = "height: " + calcHeight + "px; max-height: " + calcHeight + "px;";
     }
   }

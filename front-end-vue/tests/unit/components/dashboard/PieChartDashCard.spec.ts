@@ -93,15 +93,15 @@ describe("PieChartDashCard.vue", () => {
     expect(mockElement.style.height).not.toBe("");
   });
 
-  it("can setChartSize ___ resize elements", async () => {
+  it("can setChartSize ___ no class elements", async () => {
     const mockElement = document.createElement("div");
     mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 });
-    mockElement.getElementsByClassName = jest.fn().mockReturnValue([mockElement]);
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([null]);
     docSpyId.mockReturnValue(mockElement);
     docSpyClass.mockReturnValue(undefined);
     windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue(undefined) });
     wrapper.vm.setChartSize();
     await wrapper.vm.$nextTick();
-    expect(mockElement.style.height).not.toBe("");
+    expect(mockElement.style.height).toBe("");
   });
 });

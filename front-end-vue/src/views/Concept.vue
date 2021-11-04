@@ -330,13 +330,10 @@ export default defineComponent({
       const header = container.getElementsByClassName("p-panel-header")[0] as HTMLElement;
       const nav = container.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
       const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
-      let calcHeight = container.getBoundingClientRect().height - 4 * currentFontSize - 1;
-      if (header) {
-        calcHeight -= header.getBoundingClientRect().height;
-      }
-      if (nav) {
-        calcHeight -= nav.getBoundingClientRect().height;
-      }
+      let calcHeight = container.getBoundingClientRect().height - 1;
+      if (currentFontSize) calcHeight -= 4 * currentFontSize;
+      if (header) calcHeight -= header.getBoundingClientRect().height;
+      if (nav) calcHeight -= nav.getBoundingClientRect().height;
       this.contentHeight = "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
       this.contentHeightValue = calcHeight;
     },
