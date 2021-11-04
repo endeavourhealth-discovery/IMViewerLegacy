@@ -112,16 +112,16 @@ export default defineComponent({
 
     setScrollHeight(): void {
       const container = document.getElementById("properties-table-container") as HTMLElement;
-      const paginator = container?.getElementsByClassName("p-paginator")[0] as HTMLElement;
-      if (container && paginator) {
-        const height = container.getBoundingClientRect().height - paginator.getBoundingClientRect().height - 1 + "px";
-        this.scrollHeight = height;
-      } else if (container && !paginator) {
-        const height = container.getBoundingClientRect().height - 1 + "px";
-        this.scrollHeight = height;
-      } else {
+      if (!container) {
         LoggerService.error(undefined, "Failed to set Properties table scroll height. Required elements not found.");
+        return;
       }
+      const paginator = container.getElementsByClassName("p-paginator")[0] as HTMLElement;
+      let height = container.getBoundingClientRect().height - 1;
+      if (paginator) {
+        height -= paginator.getBoundingClientRect().height;
+      }
+      this.scrollHeight = height + "px";
     },
 
     exportCSV(): void {
