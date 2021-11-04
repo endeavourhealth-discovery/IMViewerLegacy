@@ -199,7 +199,7 @@ export default defineComponent({
   },
   methods: {
     isActive(item: string): boolean {
-      return item === this.sideNavHierarchyFocus.name ? true : false;
+      return item === this.sideNavHierarchyFocus.name;
     },
 
     getItems(): LoginItem[] | AccountItem[] {

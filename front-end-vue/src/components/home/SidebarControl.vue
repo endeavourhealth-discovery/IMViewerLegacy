@@ -140,8 +140,6 @@ export default defineComponent({
           cancelToken: axiosSource.token
         });
         this.loading = false;
-      } else {
-        this.active = 0;
       }
     },
 
