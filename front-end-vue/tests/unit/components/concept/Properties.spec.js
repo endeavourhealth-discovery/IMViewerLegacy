@@ -162,6 +162,18 @@ describe("Properties.vue", () => {
     jest.clearAllMocks();
   });
 
+  it("sets scrollHeight ___ container no paginator", async () => {
+    const mockElement = document.createElement("div");
+    mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 });
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([null]);
+    docSpy.mockReturnValue(mockElement);
+    wrapper.vm.setScrollHeight();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.scrollHeight).not.toBe("500px");
+    docSpy.mockReset();
+    jest.clearAllMocks();
+  });
+
   it("getsDataModelProps on conceptIri change", async () => {
     wrapper.vm.getDataModelProps = jest.fn();
     wrapper.vm.$options.watch.conceptIri.call(wrapper.vm, "http://endhealth.info/im#DiscoveryOntology");
