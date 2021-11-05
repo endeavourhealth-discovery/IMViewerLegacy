@@ -85,7 +85,7 @@ export default defineComponent({
   async mounted() {
     window.addEventListener("resize", this.onResize);
     await this.getMembers();
-    this.onResize();
+    await this.onResize();
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
@@ -172,7 +172,8 @@ export default defineComponent({
       }
     },
 
-    onResize(): void {
+    async onResize(): Promise<void> {
+      // await this.$nextTick();
       this.setTableWidth();
     },
 

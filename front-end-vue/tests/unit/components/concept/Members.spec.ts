@@ -372,9 +372,10 @@ describe("Members.vue", () => {
     expect(wrapper.vm.members.members).toStrictEqual([]);
   });
 
-  it("resizes", () => {
+  it("resizes", async () => {
     wrapper.vm.setTableWidth = jest.fn();
     wrapper.vm.onResize();
+    await flushPromises();
     expect(wrapper.vm.setTableWidth).toHaveBeenCalledTimes(1);
   });
 

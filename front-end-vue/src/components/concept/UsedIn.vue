@@ -6,12 +6,12 @@
       :scrollHeight="scrollHeight"
       showGridlines
       class="p-datatable-sm"
-      :totalRecords="recordsTotal"
+      :totalRecords="recordsTotal ? recordsTotal : pageSize"
       :rowsPerPageOptions="[25, 50, 100]"
       :rows="25"
-      :paginator="recordsTotal > 25 ? true : false"
+      :paginator="true"
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-      currentPageReportTemplate="Displaying {first} to {last} of {totalRecords} concepts"
+      :currentPageReportTemplate="templateString"
       selectionMode="single"
       v-model:selection="selected"
       @click="handleSelected"
@@ -46,20 +46,13 @@ export default defineComponent({
     conceptIri: { type: String, required: true }
   },
   watch: {
-    async conceptIri(newValue) {
-      this.loading = true;
-      await this.getUsages(newValue, 0, this.pageSize);
-      await this.getRecordsSize(newValue);
-      this.loading = false;
+    async conceptIri() {
+      await this.init();
     }
   },
   async mounted() {
-    this.loading = true;
     window.addEventListener("resize", this.onResize);
-    await this.getUsages(this.conceptIri, 0, this.pageSize);
-    await this.getRecordsSize(this.conceptIri);
-    this.setScrollHeight();
-    this.loading = false;
+    await this.init();
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
@@ -70,18 +63,28 @@ export default defineComponent({
       loading: false,
       selected: {} as TTIriRef,
       recordsTotal: 0,
-      currentPage: 1,
+      currentPage: 0,
       pageSize: 25,
-      scrollHeight: "500px"
+      scrollHeight: "500px",
+      templateString: "Displaying {first} to {last} of [Loading...] concepts"
     };
   },
   methods: {
+    async init() {
+      this.loading = true;
+      await this.getUsages(this.conceptIri, this.currentPage, this.pageSize);
+      this.setScrollHeight();
+      this.loading = false;
+      await this.getRecordsSize(this.conceptIri);
+    },
+
     async getUsages(iri: string, pageIndex: number, pageSize: number): Promise<void> {
       this.usages = await EntityService.getEntityUsages(iri, pageIndex, pageSize);
     },
 
     async getRecordsSize(iri: string): Promise<void> {
       this.recordsTotal = await EntityService.getUsagesTotalRecords(iri);
+      this.templateString = "Displaying {first} to {last} of {totalRecords} concepts";
     },
 
     async handlePage(event: any): Promise<void> {
