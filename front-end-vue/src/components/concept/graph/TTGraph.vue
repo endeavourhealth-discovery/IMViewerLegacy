@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import TTGraphData from "../../../models/TTGraphData";
-import { translateFromEntityBundle, translateFromTTDocument } from "../../../helpers/GraphTranslator";
+import { translateFromEntityBundle } from "../../../helpers/GraphTranslator";
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
 import GraphComponent from "./GraphComponent.vue";

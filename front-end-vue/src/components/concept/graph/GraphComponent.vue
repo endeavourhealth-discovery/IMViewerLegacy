@@ -26,9 +26,8 @@ export default defineComponent({
   },
   watch: {
     async data(newValue) {
-      const root = d3.hierarchy(newValue);
-      this.stopSimulation();
-      this.drawGraph(root.links(), root.descendants());
+      this.root = d3.hierarchy(newValue);
+      this.drawGraph();
     }
   },
   computed: {
@@ -47,6 +46,7 @@ export default defineComponent({
   },
   data() {
     return {
+      root: {} as any,
       simulation: {} as any,
       svgPan: {} as any,
       height: 400,
@@ -66,11 +66,19 @@ export default defineComponent({
     };
   },
   async mounted() {
-    const root = d3.hierarchy(this.data);
-    this.drawGraph(root.links(), root.descendants());
+    window.addEventListener("resize", this.drawGraph);
+    this.root = d3.hierarchy(this.data);
+    this.drawGraph();
   },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.drawGraph);
+  },
+
   methods: {
-    drawGraph(links: any, nodes: any) {
+    drawGraph() {
+      this.stopSimulation();
+      const links = this.root.links();
+      const nodes = this.root.descendants();
       this.simulation = d3
         .forceSimulation(nodes)
         .force(
@@ -183,9 +191,8 @@ export default defineComponent({
       const node = d.path[0]["__data__"]["data"] as TTGraphData;
       if (isArrayHasLength(node.children) || isArrayHasLength(node._children)) {
         closeNodeByName(this.data, node.name);
-        this.stopSimulation();
-        const root = d3.hierarchy(this.data);
-        this.drawGraph(root.links(), root.descendants());
+        this.root = d3.hierarchy(this.data);
+        this.drawGraph();
       } else {
         const bundle = await EntityService.getPartialEntityBundle(node.iri, []);
         const data = translateFromEntityBundle(bundle);
@@ -194,9 +201,8 @@ export default defineComponent({
             node._children.push(child);
           });
           closeNodeByName(this.data, node.name);
-          this.stopSimulation();
-          const root = d3.hierarchy(this.data);
-          this.drawGraph(root.links(), root.descendants());
+          this.root = d3.hierarchy(this.data);
+          this.drawGraph();
         }
       }
     },
@@ -223,9 +229,13 @@ export default defineComponent({
     },
 
     stopSimulation() {
-      this.svgPan.destroy();
-      d3.selectAll("g").remove();
-      this.simulation.stop();
+      try {
+        this.svgPan.destroy();
+        d3.selectAll("g").remove();
+        this.simulation.stop();
+      } catch (_error) {
+        //
+      }
     }
   }
 });
