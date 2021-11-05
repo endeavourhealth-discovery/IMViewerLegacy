@@ -9,6 +9,7 @@
 <script lang="ts">
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { TTIriRef } from "@/models/TripleTree";
+import LoggerService from "@/services/LoggerService";
 import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
@@ -41,7 +42,7 @@ export default defineComponent({
             result = "danger";
             break;
           default:
-            console.log("TagWithLabel missing case for severity");
+            LoggerService.warn("TagWithLabel missing case for severity");
         }
       }
       return result;

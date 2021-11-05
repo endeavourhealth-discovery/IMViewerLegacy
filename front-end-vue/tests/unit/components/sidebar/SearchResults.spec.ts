@@ -344,4 +344,25 @@ describe("SearchResults.vue", () => {
     wrapper.vm.scrollToTop();
     expect(mockElement.scrollTop).toBe(100);
   });
+
+  it("can wrap copyCOnceptToClipboard", () => {
+    const testData = {
+      name: "Scoliosis deformity of spine",
+      iri: "http://snomed.info/sct#298382003",
+      code: "298382003",
+      description: "Scoliosis deformity of spine (disorder)",
+      status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
+      scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+      entityType: [
+        { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+        { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
+      ],
+      isDescendentOf: [],
+      weighting: 2,
+      match: "Scoliosis"
+    };
+    expect(wrapper.vm.copyConceptToClipboardVueWrapper(testData)).toStrictEqual(
+      "name: Scoliosis deformity of spine,\niri: http://snomed.info/sct#298382003,\ncode: 298382003,\ndescription: Scoliosis deformity of spine (disorder),\nstatus: Active,\nscheme: Snomed-CT namespace,\nentityType: [\n\tAddress (record type),\n\tConcept\n]"
+    );
+  });
 });

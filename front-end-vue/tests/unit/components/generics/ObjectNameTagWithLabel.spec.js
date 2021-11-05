@@ -41,5 +41,12 @@ describe("ObjectNameTagWithLabel.vue", () => {
     it("returns correct severity ___ none", () => {
       expect(ObjectNameTagWithLabel.computed.getSeverity.call({ data: null })).toBe("info");
     });
+
+    it("returns correct severity ___ unknown name", () => {
+      LoggerService.warn = jest.fn();
+      expect(ObjectNameTagWithLabel.computed.getSeverity.call({ data: { name: "Discontinued" } })).toBe("info");
+      expect(LoggerService.warn).toHaveBeenCalledTimes(1);
+      expect(LoggerService.warn).toHaveBeenCalledWith("TagWithLabel missing case for severity");
+    });
   });
 });
