@@ -65,7 +65,6 @@
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
-import { FilterMatchMode } from "primevue/api";
 import LoggerService from "@/services/LoggerService";
 import { ValueSetMember } from "@/models/members/ValueSetMember";
 import { ExportValueSet } from "@/models/members/ExportValueSet";
@@ -85,7 +84,7 @@ export default defineComponent({
   async mounted() {
     window.addEventListener("resize", this.onResize);
     await this.getMembers();
-    await this.onResize();
+    this.onResize();
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
@@ -172,8 +171,7 @@ export default defineComponent({
       }
     },
 
-    async onResize(): Promise<void> {
-      // await this.$nextTick();
+    onResize(): void {
       this.setTableWidth();
     },
 

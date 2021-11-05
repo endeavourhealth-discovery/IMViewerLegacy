@@ -8,7 +8,6 @@ import { avatars } from "@/models/user/Avatars";
 import LoggerService from "@/services/LoggerService";
 import { CustomAlert } from "@/models/user/CustomAlert";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
-import axios from "axios";
 import { IM } from "@/vocabulary/IM";
 import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
