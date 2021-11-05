@@ -173,7 +173,7 @@ export default defineComponent({
     },
 
     async onResize(): Promise<void> {
-      await this.$nextTick();
+      // await this.$nextTick();
       this.setTableWidth();
     },
 
