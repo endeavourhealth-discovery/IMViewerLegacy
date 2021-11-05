@@ -113,6 +113,9 @@ describe("Properties.vue", () => {
       }
     ]);
 
+    const error = console.error;
+    console.error = jest.fn();
+
     wrapper = shallowMount(Properties, {
       global: {
         components: { DataTable, Column, Button },
@@ -124,14 +127,15 @@ describe("Properties.vue", () => {
     await flushPromises();
     await wrapper.vm.$nextTick();
     jest.clearAllMocks();
+
+    console.error = error;
   });
 
   it("adds event listener to setScrollHeight on resize", async () => {
-    const spy = jest.spyOn(wrapper.vm, "setScrollHeight");
+    wrapper.vm.setScrollHeight = jest.fn();
     window.dispatchEvent(new Event("resize"));
     await wrapper.vm.$nextTick();
-    expect(spy).toHaveBeenCalledTimes(1);
-    spy.mockReset();
+    expect(wrapper.vm.setScrollHeight).toHaveBeenCalledTimes(1);
   });
 
   it("can remove eventListener", () => {
