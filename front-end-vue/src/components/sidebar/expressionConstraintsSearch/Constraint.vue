@@ -21,7 +21,7 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "Constraint",
-  props: { id: String, position: Number, value: { required: false } },
+  props: { id: String, position: Number, value: { type: Object as () => { name: string; symbol: string }, required: false } },
   emits: ["updateClicked"],
   watch: {
     selected() {
@@ -48,12 +48,12 @@ export default defineComponent({
         { name: "Parent of", symbol: ">!" },
         { name: "Parent or self of", symbol: ">>!" },
         { name: "Member of", symbol: "^" }
-      ],
-      selected: {} as any
+      ] as { name: string; symbol: string }[],
+      selected: {} as { name: string; symbol: string }
     };
   },
   methods: {
-    onConfirm() {
+    onConfirm(): void {
       this.$emit("updateClicked", {
         id: this.id,
         value: this.selected,
