@@ -7,11 +7,15 @@ describe("Operator.vue ___prop value", () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    const warn = console.warn;
+    console.warn = jest.fn();
 
     wrapper = shallowMount(Operator, {
       global: { components: { Dropdown } },
       props: { id: "focusConcept_0operator", position: 0, value: { name: "Equals", symbol: "=" } }
     });
+
+    console.warn = warn;
   });
 
   it("sets selected on mount", () => {
@@ -48,11 +52,15 @@ describe("Operator.vue ___ null prop value", () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    const warn = console.warn;
+    console.warn = jest.fn();
 
     wrapper = shallowMount(Operator, {
       global: { components: { Dropdown } },
       props: { id: "focusConcept_0operator", position: 0, value: null }
     });
+
+    console.warn = warn;
   });
 
   it("sets selected on mount", () => {

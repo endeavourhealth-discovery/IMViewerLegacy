@@ -3,15 +3,19 @@ import { shallowMount } from "@vue/test-utils";
 import Dropdown from "primevue/dropdown";
 
 describe("Constraint.vue ___prop value", () => {
-  let wrapper: any;
+  let wrapper;
 
   beforeEach(() => {
     jest.resetAllMocks();
+    const warn = console.warn;
+    console.warn = jest.fn();
 
     wrapper = shallowMount(Constraint, {
       global: { components: { Dropdown } },
       props: { id: "focusConcept_0constraint", position: 0, value: { name: "Descendant or self of", symbol: "<<" } }
     });
+
+    console.warn = warn;
   });
 
   it("sets selected on mount", () => {
@@ -54,15 +58,19 @@ describe("Constraint.vue ___prop value", () => {
 });
 
 describe("Constraint.vue ___ null prop value", () => {
-  let wrapper: any;
+  let wrapper;
 
   beforeEach(() => {
     jest.resetAllMocks();
+    const warn = console.warn;
+    console.warn = jest.fn();
 
     wrapper = shallowMount(Constraint, {
       global: { components: { Dropdown } },
       props: { id: "focusConcept_0constraint", position: 0, value: null }
     });
+
+    console.warn = warn;
   });
 
   it("sets selected on mount", () => {
