@@ -13,7 +13,7 @@
       />
     </span>
 
-    <TabView class="p-d-flex p-flex-column p-jc-start" id="side-menu" v-model:activeIndex="active">
+    <TabView class="p-d-flex p-flex-column p-jc-start" id="side-menu" v-model:activeIndex="active" @tab-click = tabChange($event)>
       <TabPanel>
         <template #header>
           <i class="fas fa-sitemap icon-header" aria-hidden="true" />
@@ -75,14 +75,16 @@ export default defineComponent({
     Filters,
     ExpressionConstraintsSearch
   },
-  computed: mapState(["filterOptions", "selectedFilters", "searchResults", "focusHierarchy"]),
+  computed: mapState(["filterOptions", "selectedFilters", "searchResults", "focusHierarchy", "sidebarControlActivePanel"]),
   emits: ["hierarchyFocused"],
   watch: {
     focusHierarchy(newValue) {
       if (newValue) {
-        this.active = 0;
         this.$store.commit("updateFocusHierarchy", false);
       }
+    },
+    sidebarControlActivePanel() {
+      this.active = this.sidebarControlActivePanel;
     }
   },
   data() {
@@ -105,6 +107,9 @@ export default defineComponent({
     window.removeEventListener("resize", this.onResize);
   },
   methods: {
+    tabChange(event: any): void {
+      this.$store.commit("updateSidebarControlActivePanel", event.index);
+    },
     onResize(): void {
       this.setContainerHeights();
     },
@@ -112,7 +117,7 @@ export default defineComponent({
     async search(): Promise<void> {
       if (this.searchTerm.length > 2) {
         this.loading = true;
-        this.active = 1;
+        this.$store.commit("updateSidebarControlActivePanel", 1);
         const searchRequest = new SearchRequest();
         searchRequest.termFilter = this.searchTerm;
         searchRequest.sortBy = SortBy.Usage;

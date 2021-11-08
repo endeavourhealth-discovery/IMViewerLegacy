@@ -55,7 +55,8 @@ export default createStore({
     conceptActivePanel: 0,
     focusHierarchy: false,
     catalogueSearchTerm: sessionStorage.getItem("catalogueSearchTerm"),
-    instanceIri: ""
+    instanceIri: "",
+    sidebarControlActivePanel: 0
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
@@ -128,6 +129,9 @@ export default createStore({
     },
     updateInstanceIri(state, instanceIri) {
       state.instanceIri = instanceIri;
+    },
+    updateSidebarControlActivePanel(state, number) {
+      state.sidebarControlActivePanel = number;
     }
   },
   actions: {

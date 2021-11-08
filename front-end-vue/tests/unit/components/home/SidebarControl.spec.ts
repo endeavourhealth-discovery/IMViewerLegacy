@@ -166,7 +166,7 @@ describe("SidebarControl.vue", () => {
     wrapper.vm.search();
     expect(wrapper.vm.loading).toBe(true);
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.active).toBe(1);
+    expect(mockStore.commit).toHaveBeenCalled();
     expect(mockStore.dispatch).toHaveBeenCalled();
   });
 

@@ -41,7 +41,8 @@ describe("state", () => {
       "conceptActivePanel",
       "focusHierarchy",
       "catalogueSearchTerm",
-      "instanceIri"
+      "instanceIri",
+      "sidebarControlActivePanel"
     ]);
     expect(store.state.conceptIri).toBe("http://endhealth.info/im#DiscoveryOntology");
     expect(store.state.history).toEqual([]);

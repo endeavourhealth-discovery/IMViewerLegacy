@@ -22,4 +22,5 @@ export interface State {
   };
   term: string;
   instanceIri: string;
+  sidebarControlActivePanel: number;
 }

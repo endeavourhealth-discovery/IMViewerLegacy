@@ -12,7 +12,7 @@
             :key="item.route"
             class="center-icon-container"
             v-bind:class="{ active: isActive(item.name) }"
-            @click="handleCenterIconClick(item)"
+            @click="iconClick(item)"
           >
             <font-awesome-icon class="sidebutton center-icon" :icon="item.icon" style="padding: 5px" fixed-width />
             <div class="center-icon-text">{{ item.name }}</div>
@@ -48,7 +48,7 @@ import { LoginItem, AccountItem, ModuleItem } from "@/models/sideNav/MenuItems";
 
 export default defineComponent({
   name: "SideNav",
-  computed: mapState(["currentUser", "isLoggedIn", "sideNavHierarchyFocus", "selectedEntityType", "moduleSelectedEntities", "conceptIri", "focusHierarchy"]),
+  computed: mapState(["currentUser", "isLoggedIn", "sideNavHierarchyFocus", "selectedEntityType", "moduleSelectedEntities", "conceptIri", "focusHierarchy", "sidebarControlActivePanel"]),
   watch: {
     selectedEntityType(newValue) {
       switch (newValue) {
@@ -228,7 +228,10 @@ export default defineComponent({
       this.handleCenterIconClick(this.menuItems[0]);
       this.$store.commit("updateResetTree", true);
     },
-
+    iconClick(item: ModuleItem): void{
+      this.$store.commit("updateSidebarControlActivePanel", 0);
+      this.handleCenterIconClick(item);
+    },
     handleCenterIconClick(item: ModuleItem): void {
       let route = item.route;
       let moduleIri = "";
