@@ -1,11 +1,6 @@
 <template>
   <div class="focus-concept-container" :id="id">
-    <div class="switch-button-container">
-      <div class="buttons-container">
-        <Button icon="fas fa-minus" class="p-button-rounded p-button-outlined p-button-danger" @click="deleteClicked" />
-        <Button icon="fas fa-plus" class="p-button-rounded p-button-outlined p-button-success" @click="addNextClicked" />
-      </div>
-    </div>
+    <AddDeleteButtons :last="last" :position="position" @deleteClicked="deleteClicked" @addNextClicked="addNextClicked" />
     <div class="focus-concept-children-next-container">
       <span class="float-text">Focus concept</span>
       <div v-if="focusConceptBuild && focusConceptBuild.length" class="focus-concept-children-container">
@@ -21,6 +16,7 @@
 import { defineComponent, PropType } from "@vue/runtime-core";
 import Expression from "@/components/sidebar/expressionConstraintsSearch/Expression.vue";
 import Constraint from "@/components/sidebar/expressionConstraintsSearch/Constraint.vue";
+import AddDeleteButtons from "@/components/sidebar/expressionConstraintsSearch/AddDeleteButtons.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 
@@ -34,10 +30,11 @@ export default defineComponent({
         children: any[];
       }>,
       required: false
-    }
+    },
+    last: Boolean
   },
   emits: ["addNextOptionsClicked", "deleteClicked", "updateClicked"],
-  components: { Expression, Constraint },
+  components: { Expression, Constraint, AddDeleteButtons },
   watch: {
     focusConceptBuild: {
       handler() {
@@ -145,20 +142,6 @@ export default defineComponent({
   border-style: dashed !important;
 }
 
-.switch-button-container {
-  order: 2;
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: center;
-  align-items: center;
-}
-
-.switch-container {
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: flex-start;
-}
-
 .focus-concept-children-next-container {
   display: flex;
   flex-flow: column nowrap;
@@ -176,13 +159,6 @@ export default defineComponent({
   flex-flow: row wrap;
   justify-content: center;
   align-items: center;
-}
-
-.buttons-container {
-  display: flex;
-  flex-flow: row;
-  justify-content: flex-end;
-  gap: 0.5rem;
 }
 
 .float-text {
