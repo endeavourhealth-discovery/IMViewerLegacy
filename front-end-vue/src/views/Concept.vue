@@ -64,7 +64,7 @@
                 <UsedIn :conceptIri="conceptIri" />
               </div>
             </TabPanel>
-            <TabPanel header="Graph" v-if="showGraph">
+            <TabPanel header="Entity chart" v-if="showGraph">
               <div class="concept-panel-content" id="graph-container" :style="contentHeight">
                 <Graph :conceptIri="conceptIri" />
               </div>
@@ -79,7 +79,7 @@
                 <Members :conceptIri="conceptIri" @memberClick="active = 0" />
               </div>
             </TabPanel>
-            <TabPanel header="TTGraph">
+            <TabPanel header="Graph">
               <div class="concept-panel-content" id="ttgraph-container" :style="contentHeight">
                 <TTGraph :conceptIri="conceptIri" />
               </div>

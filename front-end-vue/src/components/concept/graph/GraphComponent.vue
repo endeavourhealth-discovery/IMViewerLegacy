@@ -1,6 +1,6 @@
 <template>
-  <div id="graph">
-    <svg id="svg">
+  <div id="force-layout-graph">
+    <svg id="force-layout-svg">
       <defs id="defs">
         <marker id="arrow" markerUnits="strokeWidth" markerWidth="12" markerHeight="12" viewBox="0 0 12 12" refX="25" refY="6" orient="auto-start-reverse">
           <path d="M2,2 L10,6 L2,10 L6,6 L2,2" style="fill: #781c81;"></path>
@@ -16,16 +16,16 @@ import { closeNodeByName, hasNodeChildrenByName, translateFromEntityBundle } fro
 import { defineComponent, PropType } from "@vue/runtime-core";
 import * as d3 from "d3";
 import svgPanZoom from "svg-pan-zoom";
-import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import EntityService from "@/services/EntityService";
 
 export default defineComponent({
   name: "GraphComponent",
   props: {
-    data: { type: Object as PropType<TTGraphData>, required: true }
+    data: { type: Object as PropType<TTGraphData>, required: true, default: {} as TTGraphData }
   },
   watch: {
-    async data(newValue) {
+    data(newValue) {
       this.root = d3.hierarchy(newValue);
       this.drawGraph();
     }
@@ -65,16 +65,20 @@ export default defineComponent({
       }
     };
   },
-  async mounted() {
-    window.addEventListener("resize", this.drawGraph);
+  mounted() {
+    window.addEventListener("resize", this.onResize);
     this.root = d3.hierarchy(this.data);
     this.drawGraph();
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.drawGraph);
+    window.removeEventListener("resize", this.onResize);
   },
 
   methods: {
+    onResize() {
+      this.drawGraph();
+    },
+
     drawGraph() {
       this.stopSimulation();
       const links = this.root.links();
@@ -93,7 +97,7 @@ export default defineComponent({
         .force("x", d3.forceX())
         .force("y", d3.forceY());
 
-      const svg = d3.select("#svg").attr("viewBox", this.viewBox as any);
+      const svg = d3.select("#force-layout-svg").attr("viewBox", this.viewBox as any);
 
       const pathLink = svg
         .selectAll(null)
@@ -174,7 +178,7 @@ export default defineComponent({
         node.attr("cx", (d: any) => d.x).attr("cy", (d: any) => d.y);
       });
 
-      this.svgPan = svgPanZoom("#svg", {
+      this.svgPan = svgPanZoom("#force-layout-svg", {
         zoomEnabled: true,
         controlIconsEnabled: true,
         fit: false,
@@ -229,12 +233,10 @@ export default defineComponent({
     },
 
     stopSimulation() {
-      try {
+      if (isObjectHasKeys(this.svgPan, ["destroy"])) {
         this.svgPan.destroy();
         d3.selectAll("g").remove();
         this.simulation.stop();
-      } catch (_error) {
-        //
       }
     }
   }
@@ -242,7 +244,7 @@ export default defineComponent({
 </script>
 
 <style>
-#svg {
+#force-layout-svg {
   height: 1000px;
   width: 100%;
 }

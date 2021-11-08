@@ -6,20 +6,46 @@ import { RDFS } from "@/vocabulary/RDFS";
 import { SHACL } from "@/vocabulary/SHACL";
 import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
 
+const excludedPredicates = [IM.MATCHED_TO, IM.HAS_STATUS, IM.STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL];
+
 export function translateFromEntityBundle(bundle: PartialBundle): TTGraphData {
   const { entity, predicates } = bundle;
-  const firstNode = { name: entity[RDFS.LABEL], iri: entity["@id"], relToParent: "", children: [], _children: [] } as TTGraphData;
-  const excludedPredicates = [IM.MATCHED_TO, IM.HAS_STATUS, IM.STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL];
+  const firstNode = { name: entity?.[RDFS.LABEL], iri: entity["@id"], relToParent: "", children: [], _children: [] } as TTGraphData;
   const keys = Object.keys(entity).filter(key => key != "@id" && !excludedPredicates.includes(key));
   addNodes(entity, keys, firstNode, predicates);
   return firstNode;
 }
 
-function getNameFromIri(iri: string): string | undefined {
+function getPropertyIri(nested: any): string {
+  if (isObjectHasKeys(nested, [SHACL.CLASS])) {
+    return nested[SHACL.CLASS]["@id"];
+  }
+  if (isObjectHasKeys(nested, [SHACL.DATATYPE])) {
+    return nested[SHACL.DATATYPE]["@id"];
+  }
+
+  return "undefined";
+}
+
+function getPropertyName(nested: any): string {
+  if (isObjectHasKeys(nested, [SHACL.CLASS])) {
+    return nested[SHACL.CLASS]?.["name"] || getNameFromIri(nested[SHACL.CLASS]?.["@id"]);
+  }
+
+  if (isObjectHasKeys(nested, [SHACL.DATATYPE])) {
+    return nested?.[SHACL.DATATYPE]?.name || getNameFromIri(nested?.[SHACL.DATATYPE]?.["@id"]);
+  }
+
+  return "undefined";
+}
+
+function getNameFromIri(iri: string): string {
   // http://www.w3.org/2001/XMLSchema#
   if (!iri) return iri;
   if (iri.startsWith("http://www.w3.org/2001/XMLSchema#") || iri.startsWith("http://snomed.info/sct#")) return iri.split("#")[1];
   if (iri.startsWith("http://endhealth.info/im#im:")) return iri.substring("http://endhealth.info/im#im:".length);
+
+  return "undefined";
 }
 
 function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicates: any): void {
@@ -28,12 +54,8 @@ function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicate
       if (isArrayHasLength(entity[key]) && key === SHACL.PROPERTY) {
         entity[key].forEach((nested: any) => {
           firstNode.children.push({
-            name:
-              nested?.[SHACL.CLASS]?.name ||
-              getNameFromIri(nested?.[SHACL.CLASS]?.["@id"]) ||
-              nested?.[SHACL.DATATYPE]?.name ||
-              getNameFromIri(nested?.[SHACL.DATATYPE]?.["@id"]),
-            iri: nested?.[SHACL.CLASS]?.["@id"] || nested?.[SHACL.DATATYPE]?.["@id"],
+            name: getPropertyName(nested),
+            iri: getPropertyIri(nested),
             relToParent: nested[SHACL.PATH].name,
             children: [],
             _children: []
@@ -61,11 +83,10 @@ export function translateFromTTDocument(ttdocument: any): TTGraphData {
     children: [],
     _children: []
   } as TTGraphData;
-  const excludedPredicates = [IM.MATCHED_TO, IM.HAS_STATUS, IM.STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL];
   const predicateSet = new Set<string>();
   ttdocument.entities.forEach((entity: any) => {
     const keys = Object.keys(entity);
-    addAllPredicates(entity, keys, predicateSet, excludedPredicates, ttdocument);
+    addAllPredicates(entity, keys, predicateSet, ttdocument);
   });
   addAllNodes(firstNode, ttdocument.entities[0], predicateSet, ttdocument);
   return firstNode;
@@ -152,7 +173,7 @@ function findEntityByIri(entities: [], iri: string) {
   return entity;
 }
 
-function addAllPredicates(entity: any, keys: string[], predicateSet: Set<string>, excludedPredicates: string[], ttdocument: any) {
+function addAllPredicates(entity: any, keys: string[], predicateSet: Set<string>, ttdocument: any) {
   if (isObjectHasKeys(entity)) {
     keys.forEach(key => {
       const fullKey = getFullKeyIri(key, ttdocument);
@@ -161,11 +182,11 @@ function addAllPredicates(entity: any, keys: string[], predicateSet: Set<string>
       }
       if (isArrayHasLength(entity[key])) {
         entity[key].forEach((nestedEntity: any) => {
-          addAllPredicates(nestedEntity, keys, predicateSet, excludedPredicates, ttdocument);
+          addAllPredicates(nestedEntity, keys, predicateSet, ttdocument);
         });
       }
       if (isObjectHasKeys(entity[key])) {
-        addAllPredicates(entity[key], keys, predicateSet, excludedPredicates, ttdocument);
+        addAllPredicates(entity[key], keys, predicateSet, ttdocument);
       }
     });
   }

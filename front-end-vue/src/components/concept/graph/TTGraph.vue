@@ -1,9 +1,9 @@
 <template>
-  <div class="p-d-flex p-flex-row p-jc-center p-ai-center loading -container" v-if="loading">
+  <div class="loading-container" v-if="loading">
     <ProgressSpinner />
   </div>
 
-  <GraphComponent :data="data" />
+  <GraphComponent v-else :data="data" />
 </template>
 
 <script lang="ts">
@@ -37,8 +37,10 @@ export default defineComponent({
   },
   methods: {
     async getEntityBundle(iri: string) {
+      this.loading = true;
       const bundle = await EntityService.getPartialEntityBundle(iri, []);
       this.data = translateFromEntityBundle(bundle);
+      this.loading = false;
 
       // For TTDocument graph visualisation
       // this.data = translateFromTTDocument();
@@ -46,3 +48,14 @@ export default defineComponent({
   }
 });
 </script>
+
+<style scoped>
+.loading-container {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+</style>
