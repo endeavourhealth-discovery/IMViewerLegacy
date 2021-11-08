@@ -12,7 +12,7 @@ import ProgressSpinner from "primevue/progressspinner";
 import Definition from "@/components/concept/Definition.vue";
 import Mappings from "@/components/concept/Mappings.vue";
 import UsedIn from "@/components/concept/UsedIn.vue";
-import Graph from "@/components/concept/Graph.vue";
+import EntityChart from "@/components/concept/EntityChart.vue";
 import Members from "@/components/concept/Members.vue";
 import SecondaryTree from "@/components/concept/SecondaryTree.vue";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
@@ -151,7 +151,7 @@ describe("Concept.vue", () => {
           SecondaryTree,
           UsedIn,
           Members,
-          Graph,
+          EntityChart,
           PanelHeader,
           Panel,
           DownloadDialog,

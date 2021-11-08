@@ -14,7 +14,7 @@ import EntityService from "@/services/EntityService";
 import GraphComponent from "./GraphComponent.vue";
 
 export default defineComponent({
-  name: "TTGraph",
+  name: "Graph",
   components: {
     GraphComponent
   },
