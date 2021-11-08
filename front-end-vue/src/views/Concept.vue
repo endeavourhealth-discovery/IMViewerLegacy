@@ -64,7 +64,7 @@
                 <UsedIn :conceptIri="conceptIri" />
               </div>
             </TabPanel>
-            <TabPanel header="Graph" v-if="showGraph">
+            <TabPanel header="Entity chart" v-if="showGraph">
               <div class="concept-panel-content" id="graph-container" :style="contentHeight">
                 <Graph :conceptIri="conceptIri" />
               </div>
@@ -77,6 +77,11 @@
             <TabPanel header="Members" v-if="isSet">
               <div class="concept-panel-content" id="members-container" :style="contentHeight">
                 <Members :conceptIri="conceptIri" @memberClick="active = 0" />
+              </div>
+            </TabPanel>
+            <TabPanel header="Graph">
+              <div class="concept-panel-content" id="ttgraph-container" :style="contentHeight">
+                <TTGraph :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Hierarchy position">
@@ -95,6 +100,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Graph from "../components/concept/Graph.vue";
+import TTGraph from "../components/concept/graph/TTGraph.vue";
 import Definition from "../components/concept/Definition.vue";
 import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
@@ -123,6 +129,7 @@ export default defineComponent({
   components: {
     PanelHeader,
     Graph,
+    TTGraph,
     UsedIn,
     Members,
     Definition,
