@@ -54,14 +54,18 @@ export default defineComponent({
   },
   methods: {
     onConfirm(): void {
-      this.$emit("updateClicked", {
+      this.$emit("updateClicked", this.createConstraint());
+    },
+
+    createConstraint() {
+      return {
         id: this.id,
         value: this.selected,
         position: this.position,
         type: ECLType.CONSTRAINT,
         label: this.selected.symbol,
         component: ECLComponent.CONSTRAINT
-      });
+      };
     }
   }
 });

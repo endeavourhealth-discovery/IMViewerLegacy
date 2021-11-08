@@ -2,12 +2,12 @@
   <div class="query-item-container" :id="id">
     <div class="label-container">
       <span class="float-text">Operator</span>
-      <Dropdown v-model="selected" :options="options" optionLabel="longSyntax" placeholder="Select operator">
+      <Dropdown v-model="selected" :options="options" optionLabel="name" placeholder="Select operator">
         <template #value="slotProps">
-          <span>{{ slotProps.value.longSyntax }}</span>
+          <span>{{ slotProps.value.name }}</span>
         </template>
         <template #option="slotProps">
-          <span>{{ slotProps.option.longSyntax }}</span>
+          <span>{{ slotProps.option.name }}</span>
         </template>
       </Dropdown>
     </div>
@@ -27,7 +27,7 @@ export default defineComponent({
     value: {
       type: Object as PropType<{
         symbol: string;
-        longSyntax: string;
+        name: string;
       }>,
       required: false
     }
@@ -48,10 +48,10 @@ export default defineComponent({
   data() {
     return {
       options: [
-        { symbol: "=", longSyntax: "Equals" },
-        { symbol: "!=", longSyntax: "Not equals" }
+        { symbol: "=", name: "Equals" },
+        { symbol: "!=", name: "Not equals" }
       ],
-      selected: { symbol: "=", longSyntax: "Equals" },
+      selected: { symbol: "=", name: "Equals" },
       edit: false
     };
   },

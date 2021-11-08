@@ -40,6 +40,17 @@ describe("Constraint.vue ___prop value", () => {
     ]);
     console.warn = warn;
   });
+
+  it("can createConstraint", () => {
+    expect(wrapper.vm.createConstraint()).toStrictEqual({
+      component: "Constraint",
+      id: "focusConcept_0constraint",
+      label: "<<",
+      position: 0,
+      type: "constraint",
+      value: { name: "Descendant or self of", symbol: "<<" }
+    });
+  });
 });
 
 describe("Constraint.vue ___ null prop value", () => {
