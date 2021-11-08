@@ -24,7 +24,7 @@
             :value="item.value"
             :id="item.id"
             :position="item.position"
-            :last="queryBuild.length - 1 === item.position ? true : false"
+            :last="queryBuild.length - 2 <= item.position ? true : false"
             @deleteClicked="deleteItem"
             @addClicked="addItem"
             @updateClicked="updateItem"
@@ -114,7 +114,7 @@ export default defineComponent({
 
     addItem(data: any) {
       this.queryBuild[data.position] = this.generateNewComponent(data.selectedType, data.position);
-      this.updatePositions(data.position);
+      this.updatePositions();
       if (this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT) {
         this.queryBuild.push(this.getNextOptions(this.queryBuild.length - 1, this.queryBuild[this.queryBuild.length - 1].type, "builder"));
       }
@@ -150,6 +150,7 @@ export default defineComponent({
       } else {
         this.queryBuild[this.queryBuild.length - 1] = this.getNextOptions(this.queryBuild.length - 2, this.queryBuild[this.queryBuild.length - 2].type, "");
       }
+      this.updatePositions();
     },
 
     updateItem(data: any) {
@@ -235,11 +236,9 @@ export default defineComponent({
       ];
     },
 
-    updatePositions(startPosition: number) {
-      this.queryBuild.forEach((item: any) => {
-        if (item.position > startPosition) {
-          item.position = item.position + 1;
-        }
+    updatePositions() {
+      this.queryBuild.forEach((item: any, index: number) => {
+        item.position = index;
       });
     },
 

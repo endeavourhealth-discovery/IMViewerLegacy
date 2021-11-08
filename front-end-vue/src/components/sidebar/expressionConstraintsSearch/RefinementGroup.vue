@@ -5,10 +5,7 @@
         <label for="switch">Group</label>
         <InputSwitch v-model="group" />
       </div>
-      <div class="buttons-container">
-        <Button icon="fas fa-minus" class="p-button-rounded p-button-outlined p-button-danger" @click="deleteClicked" />
-        <Button icon="fas fa-plus" class="p-button-rounded p-button-outlined p-button-success" @click="addNextClicked" />
-      </div>
+      <AddDeleteButtons :last="last" :position="position" @deleteClicked="deleteClicked" @addNextClicked="addNextClicked" />
     </div>
     <div class="refinement-group-children-next-container">
       <span class="float-text">Refinement group</span>
@@ -19,7 +16,7 @@
             :value="item.value"
             :id="item.id"
             :position="item.position"
-            :last="refinementGroupBuild.length - 1 === item.position ? true : false"
+            :last="refinementGroupBuild.length - 2 <= item.position ? true : false"
             @deleteClicked="deleteItem"
             @addClicked="addItem"
             @updateClicked="updateItem"
@@ -37,6 +34,7 @@ import { defineComponent, PropType } from "@vue/runtime-core";
 import Refinement from "@/components/sidebar/expressionConstraintsSearch/Refinement.vue";
 import AddNext from "@/components/sidebar/expressionConstraintsSearch/AddNext.vue";
 import Logic from "@/components/sidebar/expressionConstraintsSearch/Logic.vue";
+import AddDeleteButtons from "@/components/sidebar/expressionConstraintsSearch/AddDeleteButtons.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 
@@ -51,10 +49,11 @@ export default defineComponent({
         group: boolean;
       }>,
       required: false
-    }
+    },
+    last: Boolean
   },
   emits: ["addNextOptionsClicked", "addClicked", "deleteClicked", "updateClicked"],
-  components: { Refinement, AddNext, Logic },
+  components: { Refinement, AddNext, Logic, AddDeleteButtons },
   watch: {
     refinementGroupBuild: {
       handler() {
@@ -306,13 +305,6 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   gap: 1rem;
-}
-
-.buttons-container {
-  display: flex;
-  flex-flow: row;
-  justify-content: flex-end;
-  gap: 0.5rem;
 }
 
 .float-text {

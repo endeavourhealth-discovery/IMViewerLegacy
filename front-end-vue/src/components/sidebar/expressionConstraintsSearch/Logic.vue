@@ -4,10 +4,7 @@
       <span class="float-text">Logic</span>
       <Dropdown v-model="selected" :options="options" placeholder="Select logic" />
     </div>
-    <div class="buttons-container">
-      <Button icon="fas fa-minus" class="p-button-rounded p-button-outlined p-button-danger" @click="deleteClicked" />
-      <Button icon="fas fa-plus" class="p-button-rounded p-button-outlined p-button-success" @click="addNextClicked" />
-    </div>
+    <AddDeleteButtons :last="last" :position="position" @deleteClicked="deleteClicked" @addNextClicked="addNextClicked" />
   </div>
 </template>
 
@@ -15,10 +12,12 @@
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { defineComponent } from "vue";
+import AddDeleteButtons from "@/components/sidebar/expressionConstraintsSearch/AddDeleteButtons.vue";
 
 export default defineComponent({
   name: "Logic",
-  props: { id: String, position: Number, value: String },
+  props: { id: String, position: Number, value: String, last: Boolean },
+  components: { AddDeleteButtons },
   emits: ["addClicked", "deleteClicked", "updateClicked", "addNextOptionsClicked"],
   watch: {
     selected() {
@@ -96,13 +95,6 @@ export default defineComponent({
   border: 1px solid #34314c;
   border-radius: 3px;
   position: relative;
-}
-
-.buttons-container {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
 }
 
 .p-dropdown {
