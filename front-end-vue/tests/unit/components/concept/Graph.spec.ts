@@ -1,5 +1,5 @@
 import { flushPromises, shallowMount } from "@vue/test-utils";
-import Graph from "@/components/concept/Graph.vue";
+import EntityChart from "@/components/concept/EntityChart.vue";
 import ProgressSpinner from "primevue/progressspinner";
 import OrganizationChart from "primevue/organizationchart";
 import EntityService from "@/services/EntityService";
@@ -241,7 +241,7 @@ describe("Graph.vue", () => {
       add: jest.fn()
     };
 
-    wrapper = shallowMount(Graph, {
+    wrapper = shallowMount(EntityChart, {
       global: {
         components: { ProgressSpinner, OrganizationChart },
         mocks: { $route: mockRoute, $router: mockRouter, $toast: mockToast }

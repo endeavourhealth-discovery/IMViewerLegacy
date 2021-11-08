@@ -65,21 +65,17 @@ describe("UsedIn.vue", () => {
     expect(wrapper.vm.usages).toStrictEqual(USAGES);
     expect(wrapper.vm.loading).toBe(false);
     expect(wrapper.vm.recordsTotal).toBe(50);
-    expect(wrapper.vm.currentPage).toBe(1);
+    expect(wrapper.vm.currentPage).toBe(0);
     expect(wrapper.vm.pageSize).toBe(25);
     expect(wrapper.vm.scrollHeight).toBe("500px");
+    expect(wrapper.vm.templateString).toBe("Displaying {first} to {last} of {totalRecords} concepts");
   });
 
-  it("getsUsages and recordSize on iri change", async () => {
-    wrapper.vm.getUsages = jest.fn();
-    wrapper.vm.getRecordsSize = jest.fn();
+  it("inits on iri change", async () => {
+    wrapper.vm.init = jest.fn();
     wrapper.vm.$options.watch.conceptIri.call(wrapper.vm, "http://endhealth.info/im#DiscoveryOntology");
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.loading).toBe(true);
-    expect(wrapper.vm.getUsages).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.getRecordsSize).toHaveBeenCalledTimes(1);
-    await flushPromises();
-    expect(wrapper.vm.loading).toBe(false);
+    expect(wrapper.vm.init).toHaveBeenCalledTimes(1);
   });
 
   it("adds event listener to setHeight and Scroll on resize", async () => {

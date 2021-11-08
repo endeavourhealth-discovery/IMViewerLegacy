@@ -122,9 +122,20 @@ describe("ArrayObjectNameListboxWithLabel.vue ___ ontology", () => {
     wrapper.vm.setButtonExpanded();
     expect(wrapper.vm.buttonExpanded).toBe(false);
   });
+
+  it("expandAtStartup ___ true", () => {
+    wrapper.vm.expandAtStartup();
+    expect(mockButton.click).toHaveBeenCalled();
+  });
+
+  it("expandAtStartup ___ no button", () => {
+    docSpy.mockReturnValue(null);
+    wrapper.vm.expandAtStartup();
+    expect(mockButton.click).not.toHaveBeenCalled();
+  });
 });
 
-describe("ArrayObjectNameListboxWithLabel.vue ___ ontology", () => {
+describe("ArrayObjectNameListboxWithLabel.vue ___ sets", () => {
   let wrapper;
   let mockRoute;
   let mockRouter;
@@ -170,12 +181,6 @@ describe("ArrayObjectNameListboxWithLabel.vue ___ ontology", () => {
   });
 
   it("expandAtStartup ___ false", () => {
-    wrapper.vm.expandAtStartup();
-    expect(mockButton.click).not.toHaveBeenCalled();
-  });
-
-  it("expandAtStartup ___ no button", () => {
-    docSpy.mockReturnValue(false);
     wrapper.vm.expandAtStartup();
     expect(mockButton.click).not.toHaveBeenCalled();
   });

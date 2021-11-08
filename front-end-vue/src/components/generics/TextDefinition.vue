@@ -17,7 +17,7 @@
         }"
       />
     </div>
-    <pre :class="'p-d-none tgl-' + label">{{ getDefinition() }}</pre>
+    <pre :class="'p-d-none tgl-' + label">{{ definition }}</pre>
   </div>
 </template>
 
@@ -33,7 +33,10 @@ export default defineComponent({
   name: "TextDefinition",
   props: {
     label: { type: String },
-    data: { type: Object as () => PartialEntity, required: true },
+    data: {
+      type: Object as () => PartialEntity,
+      default: () => null
+    },
     size: { type: String },
     show: { type: Boolean }
   },
@@ -47,7 +50,11 @@ export default defineComponent({
     },
     ...mapState(["selectedEntityType"])
   },
-  mounted() {
+  async mounted() {
+    this.loading = true;
+    await this.getDefinition();
+    this.loading = false;
+    await this.$nextTick();
     if (this.label === "Inferred") {
       const button = document.getElementById(`expand-button-${this.label}`) as HTMLElement;
       if (button) button.click();
@@ -56,15 +63,17 @@ export default defineComponent({
   data() {
     return {
       buttonExpanded: false,
-      count: 0
+      count: 0,
+      definition: "",
+      loading: false
     };
   },
   methods: {
     setButtonExpanded(): void {
       this.buttonExpanded = !this.buttonExpanded;
     },
-    getDefinition(): string {
-      return bundleToText(this.data as TTBundle);
+    async getDefinition(): Promise<void> {
+      this.definition = await bundleToText(this.data as TTBundle);
     },
     getCount(): number {
       let count = 0;
@@ -78,6 +87,15 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.loading-container {
+  height: 100%;
+  widows: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
 pre {
   border: 1px solid #dee2e6;
   border-radius: 3px;

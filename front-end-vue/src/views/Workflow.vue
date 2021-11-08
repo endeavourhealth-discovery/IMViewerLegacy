@@ -198,7 +198,7 @@ export default defineComponent({
         .data(links)
         .join("path")
         .attr("stroke", (d: any) => color(d.name))
-        .attr("marker-end", (d: any) => `url(${new URL(`#arrow-${d.name}`, location as any)})`);
+        .attr("marker-end", (d: any) => "url(" + new URL(`#arrow-${d.name}`, location as any) + ")");
       const node = svg
         .append("g")
         .attr("fill", "currentColor")

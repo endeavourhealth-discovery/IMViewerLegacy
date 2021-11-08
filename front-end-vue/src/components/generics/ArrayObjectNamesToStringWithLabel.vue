@@ -15,15 +15,12 @@ export default defineComponent({
   name: "ArrayObjectNamesToStringWithLabel",
   props: {
     label: { type: String },
-    data: { type: Array as PropType<Array<string>>, required: true },
+    data: { type: Array as PropType<Array<string>>, default: () => [] },
     size: { type: String }
   },
   computed: {
     arrayToString(): string | undefined {
-      if (
-        isArrayHasLength(this.data) &&
-        this.data.every(item => isObjectHasKeys(item, ["name"])
-      )) {
+      if (isArrayHasLength(this.data) && this.data.every(item => isObjectHasKeys(item, ["name"]))) {
         return this.data
           .map(function(item: any) {
             return item.name;

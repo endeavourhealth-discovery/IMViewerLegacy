@@ -108,6 +108,8 @@ import SideNav from "@/components/home/SideNav.vue";
 import CatalogueService from "@/services/CatalogueService";
 import CatalogueDashboard from "@/components/catalogue/CatalogueDashboard.vue";
 import { IM } from "@/vocabulary/IM";
+import { mapState } from "vuex";
+import { RDFS } from "@/vocabulary/RDFS";
 
 export default defineComponent({
   name: "Catalogue",
@@ -115,11 +117,19 @@ export default defineComponent({
     CatalogueDashboard,
     SideNav
   },
+  watch: {
+    async instanceIri() {
+      this.displayInstance();
+    },
+    async catalogueSearchTerm() {
+      await this.getSearchResult();
+    }
+  },
+  computed: { ...mapState(["catalogueSearchTerm", "instanceIri"]) },
   data() {
     return {
       searchRequest: "",
       searchResults: [] as any[],
-      instanceIri: "",
       instanceName: "",
       instance: {} as any,
       predicate: [] as string[],
@@ -133,11 +143,19 @@ export default defineComponent({
       types: [] as any[],
       selectedType: [] as any[],
       typesIris: [] as string[],
-      dash: true
+      dash: true,
+      loading: false,
+      isEditing: false
     };
   },
   async mounted() {
     await this.getTypesCount();
+    if (this.instanceIri) {
+      this.displayInstance();
+    }
+    if (this.catalogueSearchTerm) {
+      await this.getSearchResult();
+    }
   },
   methods: {
     async getTypesCount() {
@@ -146,7 +164,7 @@ export default defineComponent({
     },
 
     async getSearchResult() {
-      const result = await CatalogueService.getSearchResult(this.searchRequest, this.typesIris);
+      const result = await CatalogueService.getSearchResult(this.catalogueSearchTerm, this.typesIris);
       if (result) this.searchResults = result;
     },
 
@@ -159,6 +177,7 @@ export default defineComponent({
 
     checkKey(event: any) {
       if (this.searchRequest.length > 2 && event === "Enter") {
+        this.$store.commit("updateCatalogueSearchTerm", this.searchRequest);
         this.getSearchResult();
       }
     },
@@ -167,11 +186,10 @@ export default defineComponent({
       if (this.selected == null) {
         this.selected = this.currentSelected;
       }
-      this.instanceIri = this.selected["@id"];
-      this.instanceName = this.selected.name;
-      if (this.instanceIri) {
-        this.displayInstance();
-      }
+      this.$router.push({
+        name: "Individual",
+        params: { selectedIri: this.selected["@id"] }
+      });
       this.currentSelected = this.selected;
     },
     displayInstance() {
@@ -185,14 +203,11 @@ export default defineComponent({
       }
     },
     async getPartialInstance() {
-      await this.$router.push({
-        name: "Individual",
-        params: { selectedIri: this.instanceIri }
-      });
       const result = await CatalogueService.getPartialInstance(this.instanceIri, this.predicate);
       if (result) this.instance = result;
       this.instanceData = [];
       let level = 0;
+      this.instanceName = this.instance.entity[RDFS.LABEL];
       Object.keys(this.instance.entity).forEach((predicate: any) => {
         if (predicate === "@id") {
           this.instanceData.push({
@@ -236,9 +251,10 @@ export default defineComponent({
     },
 
     navigate(instance: any) {
-      this.instanceIri = instance["@id"];
-      this.instanceName = instance.name ? instance.name : instance["@id"];
-      this.displayInstance();
+      this.$router.push({
+        name: "Individual",
+        params: { selectedIri: instance["@id"] }
+      });
     },
 
     getPredicateName(iri: string) {

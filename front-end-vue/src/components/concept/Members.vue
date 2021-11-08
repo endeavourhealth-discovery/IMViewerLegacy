@@ -9,9 +9,6 @@
       v-model:expandedRowGroups="expandedRowGroups"
       @rowgroupExpand="onRowGroupExpand"
       @rowgroupCollapse="onRowGroupCollapse"
-      v-model:filters="filters1"
-      filterDisplay="menu"
-      :globalFilterFields="['code', 'entity.name', 'scheme.name', 'label']"
       :scrollable="true"
       sortMode="single"
       sortField="label"
@@ -24,11 +21,7 @@
       @rowSelect="onRowSelect"
     >
       <template #header>
-        <div class="p-d-flex p-jc-between">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search" aria-hidden="true" />
-            <InputText v-model="filters1['global'].value" placeholder="Keyword Search" />
-          </span>
+        <div class="table-header-bar">
           <div class="checkboxes-container">
             <Button type="button" label="Download..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
             <Menu id="overlay_menu" ref="menu" :model="downloadMenu" :popup="true" />
@@ -41,9 +34,9 @@
       <template #loading>
         Loading data. Please wait...
       </template>
-      <Column field="entity.name" header="Name" filter-field="entity.name">
+      <Column field="entity.name" header="Name">
         <template #body="slotProps">
-          <div v-html="slotProps.data.entity.name" class="html-container"></div>
+          <div class="name-container">{{ slotProps.data.entity.name }}</div>
         </template>
       </Column>
       <template #groupheader="slotProps">
@@ -72,7 +65,6 @@
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
-import { FilterMatchMode } from "primevue/api";
 import LoggerService from "@/services/LoggerService";
 import { ValueSetMember } from "@/models/members/ValueSetMember";
 import { ExportValueSet } from "@/models/members/ExportValueSet";
@@ -102,9 +94,6 @@ export default defineComponent({
       loading: false,
       members: {} as ExportValueSet,
       combinedMembers: [] as ValueSetMember[],
-      filters1: {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
-      },
       selected: {} as ValueSetMember,
       subsets: [] as string[],
       expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"],
@@ -130,7 +119,7 @@ export default defineComponent({
     },
 
     onRowSelect(): void {
-      if (isObjectHasKeys(this.selected, ["entity"]) && isObjectHasKeys(this.selected.entity, ["@id"])) {
+      if (isObjectHasKeys(this.selected, ["entity"]) && isObjectHasKeys(this.selected.entity, ["@id"]) && this.selected.entity["@id"]) {
         this.$router.push({
           name: "Concept",
           params: { selectedIri: this.selected.entity["@id"] }
@@ -188,11 +177,13 @@ export default defineComponent({
 
     setTableWidth(): void {
       const container = document.getElementById("members-table-container") as HTMLElement;
-      const table = container?.getElementsByClassName("p-datatable-table")[0] as HTMLElement;
+      if (!container) {
+        LoggerService.error(undefined, "Failed to set members table width. Required element(s) not found.");
+        return;
+      }
+      const table = container.getElementsByClassName("p-datatable-table")[0] as HTMLElement;
       if (table) {
         table.style.width = "100%";
-      } else {
-        LoggerService.error(undefined, "Failed to set members table width. Required element(s) not found.");
       }
     }
   }
@@ -237,12 +228,19 @@ export default defineComponent({
   width: 100%;
 }
 
-.html-container {
+.name-container {
   width: 100%;
   padding: 1rem;
+  white-space: pre;
 }
 
 .html-container ::v-deep(p) {
   margin-bottom: 0 !important;
+}
+
+.table-header-bar {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
 }
 </style>

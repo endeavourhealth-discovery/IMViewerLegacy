@@ -1,10 +1,8 @@
-import { CancelTokenSource } from "axios";
 import { HistoryItem } from "../models/HistoryItem";
 import { User } from "../models/user/User";
 
 export interface State {
   loading: Map<string, boolean>;
-  cancelSource: CancelTokenSource;
   conceptIri: string;
   history: HistoryItem[];
   searchResults: [];
@@ -22,4 +20,6 @@ export interface State {
     selectedSchemes: { iri: string; name: string }[];
     selectedTypes: string[];
   };
+  term: string;
+  instanceIri: string;
 }

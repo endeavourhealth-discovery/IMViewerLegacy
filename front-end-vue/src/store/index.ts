@@ -8,7 +8,6 @@ import { avatars } from "@/models/user/Avatars";
 import LoggerService from "@/services/LoggerService";
 import { CustomAlert } from "@/models/user/CustomAlert";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
-import axios from "axios";
 import { IM } from "@/vocabulary/IM";
 import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
@@ -16,7 +15,6 @@ import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 export default createStore({
   // update stateType.ts when adding new state!
   state: {
-    cancelSource: axios.CancelToken.source(),
     conceptIri: IM.MODULE_ONTOLOGY,
     history: [] as HistoryItem[],
     searchResults: [] as ConceptSummary[],
@@ -55,14 +53,13 @@ export default createStore({
     ]),
     activeModule: "default",
     conceptActivePanel: 0,
-    focusHierarchy: false
+    focusHierarchy: false,
+    catalogueSearchTerm: sessionStorage.getItem("catalogueSearchTerm"),
+    instanceIri: ""
   },
   mutations: {
     updateConceptIri(state, conceptIri) {
       state.conceptIri = conceptIri;
-    },
-    updateCancelSource(state) {
-      state.cancelSource = axios.CancelToken.source();
     },
     updateHistory(state, historyItem) {
       state.history = state.history.filter(function(el) {
@@ -124,6 +121,13 @@ export default createStore({
     },
     updateFocusHierarchy(state, bool) {
       state.focusHierarchy = bool;
+    },
+    updateCatalogueSearchTerm(state, term) {
+      sessionStorage.setItem("catalogueSearchTerm", term);
+      state.catalogueSearchTerm = term;
+    },
+    updateInstanceIri(state, instanceIri) {
+      state.instanceIri = instanceIri;
     }
   },
   actions: {

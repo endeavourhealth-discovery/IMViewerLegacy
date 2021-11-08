@@ -21,6 +21,9 @@
           <button class="p-panel-header-icon p-link p-mr-2" @click="openDownloadDialog" v-tooltip.bottom="'Download concept'">
             <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
           </button>
+          <button class="p-panel-header-icon p-link p-mr-2" v-tooltip.bottom="'Export concept'" @click="exportConcept">
+            <i class="fas fa-file-export" aria-hidden="true"></i>
+          </button>
           <!--<button
             class="p-panel-header-icon p-link p-mr-2"
             @click="directToCreateRoute"
@@ -43,7 +46,7 @@
       <div id="concept-content-dialogs-container">
         <div id="concept-panel-container">
           <TabView v-model:activeIndex="active" :lazy="true">
-            <TabPanel header="Definition">
+            <TabPanel header="Details">
               <div v-if="loading" class="loading-container" :style="contentHeight">
                 <ProgressSpinner />
               </div>
@@ -61,9 +64,9 @@
                 <UsedIn :conceptIri="conceptIri" />
               </div>
             </TabPanel>
-            <TabPanel header="Graph" v-if="showGraph">
+            <TabPanel header="Entity chart" v-if="showGraph">
               <div class="concept-panel-content" id="graph-container" :style="contentHeight">
-                <Graph :conceptIri="conceptIri" />
+                <EntityChart :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Properties" v-if="isRecordModel">
@@ -74,6 +77,11 @@
             <TabPanel header="Members" v-if="isSet">
               <div class="concept-panel-content" id="members-container" :style="contentHeight">
                 <Members :conceptIri="conceptIri" @memberClick="active = 0" />
+              </div>
+            </TabPanel>
+            <TabPanel header="Graph">
+              <div class="concept-panel-content" id="ttgraph-container" :style="contentHeight">
+                <Graph :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Hierarchy position">
@@ -91,13 +99,14 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Graph from "../components/concept/Graph.vue";
+import EntityChart from "../components/concept/EntityChart.vue";
+import Graph from "../components/concept/graph/Graph.vue";
 import Definition from "../components/concept/Definition.vue";
 import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
 import Mappings from "../components/concept/Mappings.vue";
-import { isOfTypes, isValueSet } from "@/helpers/ConceptTypeMethods";
+import { isOfTypes, isValueSet, isProperty } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
 import EntityService from "@/services/EntityService";
@@ -108,7 +117,6 @@ import { IM } from "@/vocabulary/IM";
 import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
-import { OWL } from "@/vocabulary/OWL";
 import { SHACL } from "@/vocabulary/SHACL";
 import Properties from "@/components/concept/Properties.vue";
 import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
@@ -120,6 +128,7 @@ export default defineComponent({
   name: "Concept",
   components: {
     PanelHeader,
+    EntityChart,
     Graph,
     UsedIn,
     Members,
@@ -135,15 +144,15 @@ export default defineComponent({
     },
 
     showGraph(): boolean {
-      return isOfTypes(this.types, OWL.CLASS, SHACL.NODESHAPE);
+      return isOfTypes(this.types, IM.CONCEPT, SHACL.NODESHAPE);
     },
 
     showMappings(): boolean {
-      return isOfTypes(this.types, OWL.CLASS) && !isOfTypes(this.types, SHACL.NODESHAPE);
+      return isOfTypes(this.types, IM.CONCEPT) && !isOfTypes(this.types, SHACL.NODESHAPE);
     },
 
-    isClass(): boolean {
-      return isOfTypes(this.types, OWL.CLASS);
+    isConcept(): boolean {
+      return isOfTypes(this.types, IM.CONCEPT);
     },
 
     isQuery(): boolean {
@@ -159,14 +168,14 @@ export default defineComponent({
     },
 
     isProperty(): boolean {
-      return isOfTypes(this.types, OWL.OBJECT_PROPERTY, IM.DATA_PROPERTY, OWL.DATATYPE_PROPERTY);
+      return isProperty(this.types);
     },
 
     ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel", "activeModule"])
   },
   watch: {
     async conceptIri() {
-      this.init();
+      await this.init();
     },
 
     selectedEntityType(newValue, oldValue) {
@@ -175,6 +184,10 @@ export default defineComponent({
 
     active(newValue) {
       this.$store.commit("updateConceptActivePanel", newValue);
+    },
+
+    types() {
+      if (this.isFolder) this.active = 0;
     }
   },
   async mounted() {
@@ -240,26 +253,26 @@ export default defineComponent({
     },
 
     async getInferred(iri: string): Promise<void> {
-      const result = await EntityService.getInferredBundle(iri);
-      if (isObjectHasKeys(result, ["entity"]) && isObjectHasKeys(result.entity, [IM.IS_A, IM.ROLE_GROUP])) {
-        this.concept["inferred"] = { entity: { "http://endhealth.info/im#isA": result.entity[IM.IS_A] }, predicates: result.predicates };
-        this.concept["inferred"].entity[IM.IS_A].push({ "http://endhealth.info/im#roleGroup": result.entity[IM.ROLE_GROUP] });
+      const result = await EntityService.getDefinitionBundle(iri);
+      if (isObjectHasKeys(result, ["entity"]) && isObjectHasKeys(result.entity, [RDFS.SUBCLASS_OF, IM.ROLE_GROUP])) {
+        this.concept["inferred"] = {
+          entity: { "http://www.w3.org/2000/01/rdf-schema#subClassOf": result.entity[RDFS.SUBCLASS_OF] },
+          predicates: result.predicates
+        };
+        this.concept["inferred"].entity[RDFS.SUBCLASS_OF].push({ "http://endhealth.info/im#roleGroup": result.entity[IM.ROLE_GROUP] });
       } else {
         this.concept["inferred"] = result;
       }
     },
 
-    async getStated(iri: string): Promise<void> {
-      this.concept["axioms"] = await EntityService.getAxiomBundle(iri);
-    },
-
     async getConfig(name: string): Promise<void> {
-      const configReturn = await ConfigService.getComponentLayout(name);
-      if (configReturn) {
-        this.configs = configReturn;
+      this.configs = await ConfigService.getComponentLayout(name);
+      if (this.configs.every(config => isObjectHasKeys(config, ["order"]))) {
         this.configs.sort((a: DefinitionConfig, b: DefinitionConfig) => {
           return a.order - b.order;
         });
+      } else {
+        LoggerService.error(undefined, "Failed to sort config for definition component layout. One or more config items are missing 'order' property.");
       }
     },
 
@@ -268,7 +281,6 @@ export default defineComponent({
       await this.getConfig("definition");
       await this.getConcept(this.conceptIri);
       await this.getInferred(this.conceptIri);
-      await this.getStated(this.conceptIri);
       this.types = isObjectHasKeys(this.concept, [RDF.TYPE]) ? this.concept[RDF.TYPE] : ([] as TTIriRef[]);
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
@@ -280,7 +292,7 @@ export default defineComponent({
       let type;
       if (this.isSet) {
         type = "Sets";
-      } else if (this.isClass && !this.isRecordModel) {
+      } else if (this.isConcept && !this.isRecordModel) {
         type = "Ontology";
       } else if (this.isQuery) {
         type = "Queries";
@@ -290,6 +302,7 @@ export default defineComponent({
         type = "Property";
       } else {
         type = this.activeModule;
+        this.active = 0;
       }
       this.$store.commit("updateSelectedEntityType", type);
       if (!MODULE_IRIS.includes(this.conceptIri)) {
@@ -316,19 +329,21 @@ export default defineComponent({
 
     setContentHeight(): void {
       const container = document.getElementById("concept-main-container") as HTMLElement;
-      const header = container?.getElementsByClassName("p-panel-header")[0] as HTMLElement;
-      const nav = container?.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
-      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
-      if (header && container && nav && currentFontSize) {
-        const calcHeight =
-          container.getBoundingClientRect().height - header.getBoundingClientRect().height - nav.getBoundingClientRect().height - 4 * currentFontSize - 1;
-        this.contentHeight = "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
-        this.contentHeightValue = calcHeight;
-      } else {
+      if (!container) {
         this.contentHeight = "height: 800px; max-height: 800px;";
         this.contentHeightValue = 800;
         LoggerService.error("Content sizing error", "failed to get element(s) for concept content resizing");
+        return;
       }
+      const header = container.getElementsByClassName("p-panel-header")[0] as HTMLElement;
+      const nav = container.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
+      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
+      let calcHeight = container.getBoundingClientRect().height - 1;
+      if (currentFontSize) calcHeight -= 4 * currentFontSize;
+      if (header) calcHeight -= header.getBoundingClientRect().height;
+      if (nav) calcHeight -= nav.getBoundingClientRect().height;
+      this.contentHeight = "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
+      this.contentHeightValue = calcHeight;
     },
 
     openDownloadDialog(): void {
@@ -405,6 +420,17 @@ export default defineComponent({
 
     isObjectHasKeysWrapper(object: any, keys: string[]) {
       return isObjectHasKeys(object, keys);
+    },
+
+    async exportConcept() {
+      const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
+      const url = process.env.VUE_APP_API + "api/entity/exportConcept?iri=" + modIri;
+      const popup = window.open(url);
+      if (!popup) {
+        this.$toast.add(LoggerService.error("Export failed from server"));
+      } else {
+        this.$toast.add(LoggerService.success("Export will begin shortly"));
+      }
     }
   }
 });

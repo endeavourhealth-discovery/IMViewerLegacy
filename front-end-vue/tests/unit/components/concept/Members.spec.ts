@@ -144,9 +144,6 @@ describe("Members.vue", () => {
     expect(wrapper.vm.loading).toBe(false);
     expect(wrapper.vm.members).toStrictEqual(testMembers);
     expect(wrapper.vm.combinedMembers).toStrictEqual(testCombinedMembers);
-    expect(wrapper.vm.filters1).toStrictEqual({
-      global: { value: null, matchMode: FilterMatchMode.CONTAINS }
-    });
     expect(wrapper.vm.selected).toStrictEqual({});
     expect(wrapper.vm.subsets).toStrictEqual(['Subset - "other Black, African or Caribbean background"', "Subset - African"]);
     expect(wrapper.vm.expandedRowGroups).toStrictEqual(["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"]);
@@ -375,9 +372,10 @@ describe("Members.vue", () => {
     expect(wrapper.vm.members.members).toStrictEqual([]);
   });
 
-  it("resizes", () => {
+  it("resizes", async () => {
     wrapper.vm.setTableWidth = jest.fn();
     wrapper.vm.onResize();
+    await flushPromises();
     expect(wrapper.vm.setTableWidth).toHaveBeenCalledTimes(1);
   });
 
