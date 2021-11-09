@@ -1,3 +1,5 @@
+import { SearchResponse } from "@/models/uprn/SearchResponse";
+import { UPRN } from "@/models/uprn/UPRN";
 import axios from "axios";
 
 export default class UprnService {
@@ -6,7 +8,7 @@ export default class UprnService {
   static password = process.env.VUE_APP_UPRN_PASSWORD || "";
   static userId = process.env.VUE_APP_UPRN_USERID || "";
 
-  public static async findUprn(address: string, area?: string): Promise<any> {
+  public static async findUprn(address: string, area?: string): Promise<SearchResponse> {
     const config = {
       params: { adrec: address },
       auth: {
@@ -19,11 +21,11 @@ export default class UprnService {
     try {
       return await axios.get(this.api + "/getinfo", config);
     } catch (error) {
-      return {};
+      return {} as SearchResponse;
     }
   }
 
-  public static async getUprn(uprn: number): Promise<any> {
+  public static async getUprn(uprn: string): Promise<UPRN> {
     try {
       return await axios.get(this.api + "/getuprn", {
         params: { uprn: uprn },
@@ -33,11 +35,11 @@ export default class UprnService {
         }
       });
     } catch (error) {
-      return {};
+      return {} as UPRN;
     }
   }
 
-  public static async getActivity(): Promise<any[]> {
+  public static async getActivity(): Promise<{ DT: string; A: string }[]> {
     try {
       return await axios.get(this.api + "/activity", {
         params: { u: this.userId },
@@ -47,7 +49,7 @@ export default class UprnService {
         }
       });
     } catch (error) {
-      return [];
+      return [] as { DT: string; A: string }[];
     }
   }
 

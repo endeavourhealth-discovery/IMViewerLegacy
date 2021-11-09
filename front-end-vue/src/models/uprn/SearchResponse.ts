@@ -1,7 +1,7 @@
 import { Address } from "@/models/uprn/Address";
 import { MatchPattern } from "./MatchPattern";
 
-export interface UPRNResponse {
+export interface SearchResponse {
   ABPAddress: Address;
   Address_format: string;
   Algorithm: string;

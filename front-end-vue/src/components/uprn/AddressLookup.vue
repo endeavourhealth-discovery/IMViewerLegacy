@@ -84,6 +84,7 @@ import UprnService from "@/services/UprnService";
 import LoggerService from "@/services/LoggerService";
 import GMap from "@/components/gmap/GMap.vue";
 import { MapPin } from "@/models/uprn/MapPin";
+import { SearchResponse } from "@/models/uprn/SearchResponse";
 
 export default defineComponent({
   name: "AddressLookup",
@@ -94,8 +95,8 @@ export default defineComponent({
     return {
       value: "10 Downing St,Westminster,London,SW1A2AA",
       pin: { lat: 51.503541, lng: -0.12767 } as MapPin,
-      match: {} as any,
-      selectedArea: null as any,
+      match: {} as SearchResponse,
+      selectedArea: "",
       postalAreas: [
         { value: "", display: "None" },
         { value: "EC", display: "EC district" },
@@ -126,7 +127,7 @@ export default defineComponent({
     };
   },
   methods: {
-    async search() {
+    async search(): Promise<void> {
       console.log("Searching [" + this.value + "]");
       this.match = await UprnService.findUprn(this.value, this.selectedArea);
       if (this.match.Matched) {
@@ -138,7 +139,7 @@ export default defineComponent({
       }
     },
 
-    async getUprn() {
+    async getUprn(): Promise<void> {
       const uprn = await UprnService.getUprn(this.match.UPRN);
       if (Object.keys(uprn).length) {
         this.pin = {
