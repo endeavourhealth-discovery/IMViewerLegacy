@@ -191,8 +191,9 @@ export default defineComponent({
     }
   },
   async mounted() {
-    await this.init();
+    this.setContentHeight();
     window.addEventListener("resize", this.onResize);
+    await this.init();
     this.setContentHeight();
   },
   beforeUnmount() {
