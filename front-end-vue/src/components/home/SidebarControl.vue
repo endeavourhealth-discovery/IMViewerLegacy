@@ -13,7 +13,7 @@
       />
     </span>
 
-    <TabView class="p-d-flex p-flex-column p-jc-start" id="side-menu" v-model:activeIndex="active" @tab-click = tabChange($event)>
+    <TabView class="p-d-flex p-flex-column p-jc-start" id="side-menu" v-model:activeIndex="active" @tab-click="tabChange($event)">
       <TabPanel>
         <template #header>
           <i class="fas fa-sitemap icon-header" aria-hidden="true" />
@@ -76,7 +76,6 @@ export default defineComponent({
     ExpressionConstraintsSearch
   },
   computed: mapState(["filterOptions", "selectedFilters", "searchResults", "focusHierarchy", "sidebarControlActivePanel"]),
-  emits: ["hierarchyFocused"],
   watch: {
     focusHierarchy(newValue) {
       if (newValue) {

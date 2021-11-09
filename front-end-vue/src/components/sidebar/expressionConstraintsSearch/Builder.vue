@@ -63,6 +63,7 @@ import AddNext from "@/components/sidebar/expressionConstraintsSearch/AddNext.vu
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 import LoggerService from "@/services/LoggerService";
+import { ComponentDetails } from "@/models/ecl/ComponentDetails";
 
 export default defineComponent({
   name: "Builder",
@@ -73,7 +74,10 @@ export default defineComponent({
     AddNext
   },
   props: { showDialog: Boolean },
-  emits: ["ECLSubmitted", "closeDialog"],
+  emits: {
+    ECLSubmitted: (payload: string) => true,
+    closeDialog: () => true
+  },
   watch: {
     queryBuild: {
       handler() {
@@ -89,7 +93,7 @@ export default defineComponent({
   data() {
     return {
       queryString: "",
-      queryBuild: [] as any[]
+      queryBuild: [] as ComponentDetails[]
     };
   },
   methods: {
@@ -113,10 +117,13 @@ export default defineComponent({
     },
 
     addItem(data: any) {
-      this.queryBuild[data.position] = this.generateNewComponent(data.selectedType, data.position);
-      this.updatePositions();
-      if (this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT) {
-        this.queryBuild.push(this.getNextOptions(this.queryBuild.length - 1, this.queryBuild[this.queryBuild.length - 1].type, "builder"));
+      const newComponent = this.generateNewComponent(data.selectedType, data.position);
+      if (newComponent) {
+        this.queryBuild[data.position] = newComponent;
+        this.updatePositions();
+        if (this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT) {
+          this.queryBuild.push(this.getNextOptions(this.queryBuild.length - 1, this.queryBuild[this.queryBuild.length - 1].type, "builder"));
+        }
       }
     },
 

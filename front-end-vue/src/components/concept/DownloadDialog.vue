@@ -109,7 +109,9 @@ export default defineComponent({
     conceptIri: { type: String, required: true },
     showDialog: { type: Boolean, required: true }
   },
-  emits: ["closeDownloadDialog"],
+  emits: {
+    closeDownloadDialog: () => true
+  },
   watch: {
     async conceptIri(newValue) {
       await this.init(newValue);

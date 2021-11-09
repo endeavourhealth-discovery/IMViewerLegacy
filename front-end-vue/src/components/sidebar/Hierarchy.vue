@@ -64,7 +64,7 @@ import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
 export default defineComponent({
   name: "Hierarchy",
   props: { active: { type: Number, required: true } },
-  emits: ["showTree"],
+  emits: { showTree: () => true },
   computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus", "history", "resetTree"]),
   watch: {
     async conceptIri(newValue) {

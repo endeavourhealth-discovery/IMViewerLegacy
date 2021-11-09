@@ -58,12 +58,13 @@ import { defineComponent } from "@vue/runtime-core";
 import Dropdown from "primevue/dropdown";
 import Card from "primevue/card";
 import { IM } from "@/vocabulary/IM";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "FormEditor",
   components: { Dropdown, Card },
   props: ["iri", "updatedConcept"],
-  emits: ["concept-updated"],
+  emits: { "concept-updated": (payload: any) => isObjectHasKeys(payload) },
   watch: {
     conceptDto: {
       handler(newValue) {

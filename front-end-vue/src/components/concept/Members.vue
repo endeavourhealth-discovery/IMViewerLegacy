@@ -75,7 +75,7 @@ export default defineComponent({
   props: {
     conceptIri: { type: String, required: true }
   },
-  emits: ["memberClick"],
+  emits: { memberClick: () => true },
   watch: {
     async conceptIri() {
       await this.getMembers();

@@ -33,7 +33,7 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "MemberEditor",
   props: ["iri", "contentHeight", "updatedMembers"],
-  emits: ["members-updated"],
+  emits: { "members-updated": (payload: any) => true },
   watch: {
     contentHeight() {
       this.setListHeight();
