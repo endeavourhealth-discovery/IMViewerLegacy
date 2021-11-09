@@ -55,7 +55,7 @@ export default defineComponent({
     await this.getDefinition();
     this.loading = false;
     await this.$nextTick();
-    if (this.label === "Inferred") {
+    if (this.label === "Definition") {
       const button = document.getElementById(`expand-button-${this.label}`) as HTMLElement;
       if (button) button.click();
     }
