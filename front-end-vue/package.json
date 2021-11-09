@@ -34,6 +34,7 @@
     "svg-pan-zoom": "^3.6.1",
     "sweetalert2": "^10.16.9",
     "vue": "^3.1.1",
+    "vue-json-pretty": "^2.0.4",
     "vue-router": "^4.0.9",
     "vue3-clipboard": "^1.0.0",
     "vuex": "^4.0.1"

@@ -4,6 +4,9 @@ import Dashboard from "../views/Dashboard.vue";
 import Datamodel from "../views/Concept.vue";
 import Workflow from "../views/Workflow.vue";
 import Catalogue from "../views/Catalogue.vue";
+import Transform from "../views/Transform.vue";
+import TransformUpload from "../components/transform/TransformUpload.vue";
+import TransformMapping from "../components/transform/TransformMapping.vue";
 import UPRN from "../views/Uprn.vue";
 import User from "../views/User.vue";
 import Editor from "../views/Editor.vue";
@@ -162,6 +165,42 @@ const routes: Array<RouteRecordRaw> = [
       }
     ]
   },
+  {
+    path: "/transform",
+    name: "Transform",
+    component: Transform,
+    meta: {
+      requiresLicense: true
+    },
+    children: [
+      {
+        path: "",
+        name: "UploadContent",
+        component: TransformUpload
+      },
+      {
+        path: "mapping",
+        name: "TransformMapping",
+        component: TransformMapping
+      }
+      // {
+      //   path: "validation/document",
+      //   name: "DocumentValidation",
+      //   component: DocumentValidation
+      // },
+      // {
+      //   path: "validation/predicate",
+      //   name: "PredicateValidation",
+      //   component: PredicateValidation
+      // },
+      // {
+      //   path: "confirmation",
+      //   name: "Confirmation",
+      //   component: Confirmation
+      // }
+    ]
+  },
+
   {
     path: "/uprn",
     name: "UPRN",

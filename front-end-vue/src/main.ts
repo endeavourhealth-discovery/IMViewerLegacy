@@ -75,6 +75,8 @@ import ConfirmPopup from "primevue/confirmpopup";
 import InputSwitch from "primevue/inputswitch";
 import StyleClass from "primevue/styleclass";
 import Tag from "primevue/tag";
+import Steps from "primevue/steps";
+import Chip from "primevue/chip";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
@@ -144,6 +146,8 @@ const app = createApp(App)
   .component("RadioButton", RadioButton)
   .component("ConfirmPopup", ConfirmPopup)
   .component("InputSwitch", InputSwitch)
+  .component("Steps", Steps)
+  .component("Chip", Chip)
   .component("Tag", Tag);
 
 const vm = app.mount("#app");
