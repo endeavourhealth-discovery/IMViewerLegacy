@@ -182,7 +182,7 @@ export default defineComponent({
           fullName: "Query templates",
           route: "Dashboard",
           iri: IM.MODULE_QUERIES
-        }
+        },
         // {
         //   icon: ["fas", "fax"],
         //   name: "Catalogue",
@@ -198,11 +198,11 @@ export default defineComponent({
         //   icon: ["fas", "map"],
         //   name: "Maps"
         // },
-        // {
-        //   icon: ["fas", "map-marked-alt"],
-        //   name: "Assign",
-        //   route: "UPRN"
-        // }
+        {
+          icon: ["fas", "map-marked-alt"],
+          name: "Assign",
+          route: "UPRN"
+        }
       ] as ModuleItem[]
     };
   },
