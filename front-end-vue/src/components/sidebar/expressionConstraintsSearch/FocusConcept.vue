@@ -55,15 +55,15 @@ export default defineComponent({
   },
   data() {
     return {
-      focusConceptBuild: [] as any[]
+      focusConceptBuild: [] as ComponentDetails[]
     };
   },
   methods: {
-    deleteClicked() {
+    deleteClicked(): void {
       this.$emit("deleteClicked", this.createFocusConcept());
     },
 
-    updateChild(data: any) {
+    updateChild(data: any): void {
       const index = this.focusConceptBuild.findIndex(item => item.position === data.position);
       this.focusConceptBuild[index] = data;
     },
@@ -107,7 +107,7 @@ export default defineComponent({
       return label;
     },
 
-    setStartBuild() {
+    setStartBuild(): void {
       if (this.value && this.value.children) {
         this.focusConceptBuild = [...this.value.children];
       } else {
