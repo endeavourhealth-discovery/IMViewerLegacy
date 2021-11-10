@@ -19,7 +19,7 @@
             <i style="padding: 1px" class="fas fa-search icon-header" aria-hidden="true" />
             <span>Search Results</span>
           </template>
-          <CatalogueSearchResults :loading="loading" :searchResults="searchResults" />
+          <CatalogueSearchResults :loading="loading" :searchResults="searchResults" @searchResultSelected="updateHistory" />
           <CatalogueFilters v-if="typeOptions.length" :typeOptions="typeOptions" @typesSelected="updateTypes" />
         </TabPanel>
         <TabPanel>
@@ -48,6 +48,7 @@ export default defineComponent({
   name: "CatalogueSideBar",
   props: { history: { type: Object as any, required: false }, typeOptions: { type: Array as PropType<any[]>, required: true } },
   components: { CatalogueSearchResults, CatalogueFilters, CatalogueHistory },
+  emits: { updateHistory: (payload: any) => true },
   computed: { ...mapState(["catalogueSearchTerm"]) },
   // watch: {
   //   async catalogueSearchTerm() {
@@ -100,6 +101,10 @@ export default defineComponent({
         this.$store.commit("updateCatalogueSearchTerm", this.searchRequest);
         this.getSearchResult();
       }
+    },
+
+    updateHistory(historyItem: any) {
+      this.$emit("updateHistory", historyItem);
     }
   }
 });

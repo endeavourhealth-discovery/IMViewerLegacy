@@ -3,7 +3,7 @@
   <div class="layout-main">
     <div class="_container">
       <div class="p-grid _container">
-        <CatalogueSideBar :typeOptions="types" :history="history" />
+        <CatalogueSideBar :typeOptions="types" :history="history" @updateHistory="updateHistory" />
         <div class="p-col-9 full_height">
           <div v-if="!instanceIri" class="full_height">
             <CatalogueDashboard v-if="types.length" :types="types" class="full_height" />
@@ -45,7 +45,6 @@ export default defineComponent({
     return {
       instance: {} as any,
       history: [] as any[],
-      selectedHistory: "",
       location: "",
       types: [] as any[],
       dash: true,
@@ -71,6 +70,12 @@ export default defineComponent({
 
     isObjectHasKeysWrapper(object: any) {
       return isObjectHasKeys(object);
+    },
+
+    updateHistory(historyItem: any) {
+      if (!this.history.includes(historyItem)) {
+        this.history.push(historyItem);
+      }
     }
   }
 });

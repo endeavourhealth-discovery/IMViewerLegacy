@@ -3,7 +3,7 @@
     <DataTable
       v-model:selection="selected"
       :value="searchResults"
-      @row-select="setSelectedInstance()"
+      @row-select="setSelectedInstance"
       selectionMode="single"
       class="p-datatable-sm"
       :scrollable="true"
@@ -38,6 +38,7 @@ import { defineComponent, PropType } from "@vue/runtime-core";
 export default defineComponent({
   name: "CatalogueSearchResults",
   props: { searchResults: { type: Array as PropType<any[]> }, loading: { type: Boolean, required: true } },
+  emits: { searchResultSelected: (payload: any) => true },
   data() {
     return {
       selected: {} as any,
@@ -46,14 +47,13 @@ export default defineComponent({
   },
   methods: {
     setSelectedInstance() {
-      if (!isObjectHasKeys(this.selected, ["@id"])) {
-        this.selected = this.currentSelected;
+      if (isObjectHasKeys(this.selected, ["@id"])) {
+        this.$emit("searchResultSelected", this.selected);
+        this.$router.push({
+          name: "Individual",
+          params: { selectedIri: this.selected["@id"] }
+        });
       }
-      this.$router.push({
-        name: "Individual",
-        params: { selectedIri: this.selected["@id"] }
-      });
-      this.currentSelected = this.selected;
     },
 
     scrollToTop(): void {
