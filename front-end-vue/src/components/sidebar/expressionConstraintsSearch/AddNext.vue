@@ -60,7 +60,7 @@ export default defineComponent({
     },
 
     generateOptions() {
-      switch (this.value?.previousComponent) {
+      switch (this.value.previousComponent) {
         case ECLType.FOCUS_CONCEPT:
           this.options = [ECLType.LOGIC, ECLType.REFINEMENT_GROUP];
           break;
