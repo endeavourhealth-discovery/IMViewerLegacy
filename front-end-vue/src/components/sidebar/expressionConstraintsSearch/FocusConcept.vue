@@ -19,12 +19,14 @@ import Constraint from "@/components/sidebar/expressionConstraintsSearch/Constra
 import AddDeleteButtons from "@/components/sidebar/expressionConstraintsSearch/AddDeleteButtons.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
+import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
+import { ComponentDetails } from "@/models/ecl/ComponentDetails";
 
 export default defineComponent({
   name: "FocusConcept",
   props: {
-    id: String,
-    position: Number,
+    id: { type: String, required: true },
+    position: { type: Number, required: true },
     value: {
       type: Object as PropType<{
         children: any[];
@@ -33,7 +35,11 @@ export default defineComponent({
     },
     last: Boolean
   },
-  emits: ["addNextOptionsClicked", "deleteClicked", "updateClicked"],
+  emits: {
+    addNextOptionsClicked: (payload: NextComponentSummary) => true,
+    deleteClicked: (payload: ComponentDetails) => true,
+    updateClicked: (payload: ComponentDetails) => true
+  },
   components: { Expression, Constraint, AddDeleteButtons },
   watch: {
     focusConceptBuild: {
@@ -49,20 +55,20 @@ export default defineComponent({
   },
   data() {
     return {
-      focusConceptBuild: [] as any[]
+      focusConceptBuild: [] as ComponentDetails[]
     };
   },
   methods: {
-    deleteClicked() {
+    deleteClicked(): void {
       this.$emit("deleteClicked", this.createFocusConcept());
     },
 
-    updateChild(data: any) {
+    updateChild(data: any): void {
       const index = this.focusConceptBuild.findIndex(item => item.position === data.position);
       this.focusConceptBuild[index] = data;
     },
 
-    addNextClicked() {
+    addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
         previousComponent: ECLType.FOCUS_CONCEPT,
         previousPosition: this.position,
@@ -70,7 +76,7 @@ export default defineComponent({
       });
     },
 
-    createFocusConcept() {
+    createFocusConcept(): ComponentDetails {
       return {
         id: this.id,
         value: {
@@ -79,8 +85,7 @@ export default defineComponent({
         position: this.position,
         type: ECLType.FOCUS_CONCEPT,
         label: this.generateFocusConceptLabel(),
-        component: ECLComponent.FOCUS_CONCEPT,
-        edit: false
+        component: ECLComponent.FOCUS_CONCEPT
       };
     },
 
@@ -102,7 +107,7 @@ export default defineComponent({
       return label;
     },
 
-    setStartBuild() {
+    setStartBuild(): void {
       if (this.value && this.value.children) {
         this.focusConceptBuild = [...this.value.children];
       } else {

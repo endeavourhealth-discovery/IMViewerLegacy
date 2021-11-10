@@ -91,27 +91,28 @@
 import { defineComponent, PropType } from "@vue/runtime-core";
 import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
+import { TTIriRef } from "@/models/TripleTree";
 
 export default defineComponent({
   name: "SearchMiniOverlay",
   props: {
-    searchTerm: { type: String },
-    searchResults: { type: Array as PropType<Array<ConceptSummary>> },
-    loading: { type: Boolean }
+    searchTerm: { type: String, required: false },
+    searchResults: { type: Array as PropType<Array<ConceptSummary>>, required: false },
+    loading: { type: Boolean, required: true }
   },
-  emits: ["searchResultSelected"],
+  emits: { searchResultSelected: (payload: ConceptSummary) => true },
   data() {
     return {
-      selectedResult: {} as any,
-      hoveredResult: {} as any
+      selectedResult: {} as ConceptSummary,
+      hoveredResult: {} as ConceptSummary
     };
   },
   methods: {
-    getPerspectiveByConceptType(conceptType: any): any {
+    getPerspectiveByConceptType(conceptType: TTIriRef[]): string {
       return getIconFromType(conceptType);
     },
 
-    getColorByConceptType(conceptType: any): any {
+    getColorByConceptType(conceptType: TTIriRef[]): string {
       return "color:" + getColourFromType(conceptType);
     },
 
@@ -132,7 +133,7 @@ export default defineComponent({
       x.hide();
     },
 
-    showDetailsOverlay(event: any, data: any) {
+    showDetailsOverlay(event: any, data: ConceptSummary) {
       this.hoveredResult = data;
       if (this.hoveredResult.name === "ANY") {
         return;
@@ -141,7 +142,7 @@ export default defineComponent({
       x.show(event, event.target);
     },
 
-    getConceptTypes(concept: any): any {
+    getConceptTypes(concept: ConceptSummary): any {
       return concept.entityType
         .map(function(type: any) {
           return type.name;

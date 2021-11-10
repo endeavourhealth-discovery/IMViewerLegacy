@@ -16,7 +16,10 @@ export default defineComponent({
     position: Number,
     last: Boolean
   },
-  emits: ["addNextClicked", "deleteClicked"],
+  emits: {
+    addNextClicked: () => true,
+    deleteClicked: () => true
+  },
   methods: {
     addNextClicked() {
       this.$emit("addNextClicked");

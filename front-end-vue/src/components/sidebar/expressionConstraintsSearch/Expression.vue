@@ -34,11 +34,12 @@ import EntityService from "@/services/EntityService";
 import { IM } from "@/vocabulary/IM";
 import { TTIriRef } from "@/models/TripleTree";
 import { mapState } from "vuex";
+import { ComponentDetails } from "@/models/ecl/ComponentDetails";
 
 export default defineComponent({
   name: "Expression",
-  props: { id: String, position: Number, value: { required: false } },
-  emits: ["updateClicked"],
+  props: { id: { type: String, required: true }, position: { type: Number, required: true }, value: { required: false } },
+  emits: { updateClicked: (payload: ComponentDetails) => true },
   components: { SearchMiniOverlay },
   computed: mapState(["filterOptions", "selectedFilters"]),
   mounted() {
@@ -142,7 +143,7 @@ export default defineComponent({
       this.showOverlay(event);
     },
 
-    createExpression() {
+    createExpression(): ComponentDetails {
       let label;
       if (this.selectedResult.name === "ANY") {
         label = "*";

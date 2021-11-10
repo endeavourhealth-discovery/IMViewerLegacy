@@ -15,6 +15,7 @@
 </template>
 
 <script lang="ts">
+import { ComponentDetails } from "@/models/ecl/ComponentDetails";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { defineComponent, PropType } from "@vue/runtime-core";
@@ -22,8 +23,8 @@ import { defineComponent, PropType } from "@vue/runtime-core";
 export default defineComponent({
   name: "Operator",
   props: {
-    id: String,
-    position: Number,
+    id: { type: String, required: true },
+    position: { type: Number, required: true },
     value: {
       type: Object as PropType<{
         symbol: string;
@@ -32,7 +33,7 @@ export default defineComponent({
       required: false
     }
   },
-  emits: ["updateClicked"],
+  emits: { updateClicked: (payload: ComponentDetails) => true },
   watch: {
     selected() {
       this.onConfirm();
@@ -50,8 +51,8 @@ export default defineComponent({
       options: [
         { symbol: "=", name: "Equals" },
         { symbol: "!=", name: "Not equals" }
-      ],
-      selected: { symbol: "=", name: "Equals" },
+      ] as { symbol: string; name: string }[],
+      selected: { symbol: "=", name: "Equals" } as { symbol: string; name: string },
       edit: false
     };
   },
@@ -60,15 +61,14 @@ export default defineComponent({
       this.$emit("updateClicked", this.createOperator());
     },
 
-    createOperator() {
+    createOperator(): ComponentDetails {
       return {
         id: this.id,
         value: this.selected,
         position: this.position,
         type: ECLType.OPERATOR,
         component: ECLComponent.OPERATOR,
-        label: this.selected.symbol,
-        edit: false
+        label: this.selected.symbol
       };
     }
   }

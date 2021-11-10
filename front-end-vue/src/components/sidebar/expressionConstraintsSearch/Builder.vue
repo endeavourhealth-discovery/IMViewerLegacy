@@ -63,6 +63,8 @@ import AddNext from "@/components/sidebar/expressionConstraintsSearch/AddNext.vu
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 import LoggerService from "@/services/LoggerService";
+import { ComponentDetails } from "@/models/ecl/ComponentDetails";
+import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
 
 export default defineComponent({
   name: "Builder",
@@ -73,7 +75,10 @@ export default defineComponent({
     AddNext
   },
   props: { showDialog: Boolean },
-  emits: ["ECLSubmitted", "closeDialog"],
+  emits: {
+    ECLSubmitted: (payload: string) => true,
+    closeDialog: () => true
+  },
   watch: {
     queryBuild: {
       handler() {
@@ -89,38 +94,43 @@ export default defineComponent({
   data() {
     return {
       queryString: "",
-      queryBuild: [] as any[]
+      queryBuild: [] as ComponentDetails[]
     };
   },
   methods: {
-    submit() {
+    submit(): void {
       this.$emit("ECLSubmitted", this.queryString);
     },
 
-    closeBuilderDialog() {
+    closeBuilderDialog(): void {
       this.$emit("closeDialog");
     },
 
-    async addNextOptions(data: any) {
+    async addNextOptions(data: NextComponentSummary): Promise<void> {
+      const nextOptionsComponent = this.getNextOptions(data.previousPosition, data.previousComponent, data.parentGroup);
       if (this.queryBuild[data.previousPosition + 1].type === ECLType.ADD_NEXT) {
-        this.queryBuild[data.previousPosition + 1] = this.getNextOptions(data.previousPosition, data.previousComponent, data.parentGroup);
+        this.queryBuild[data.previousPosition + 1] = nextOptionsComponent;
       } else {
-        this.queryBuild.splice(data.previousPosition, 0, this.getNextOptions(data.previousPosition, data.previousComponent, data.parentGroup));
+        this.queryBuild.splice(data.previousPosition + 1, 0, nextOptionsComponent);
       }
+      this.updatePositions();
       await this.$nextTick();
-      const itemToScrollTo = document.getElementById(data.id);
+      const itemToScrollTo = document.getElementById(nextOptionsComponent.id);
       itemToScrollTo?.scrollIntoView();
     },
 
-    addItem(data: any) {
-      this.queryBuild[data.position] = this.generateNewComponent(data.selectedType, data.position);
-      this.updatePositions();
-      if (this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT) {
-        this.queryBuild.push(this.getNextOptions(this.queryBuild.length - 1, this.queryBuild[this.queryBuild.length - 1].type, "builder"));
+    addItem(data: { selectedType: ECLType; position: number }): void {
+      const newComponent = this.generateNewComponent(data.selectedType, data.position);
+      if (newComponent) {
+        this.queryBuild[data.position] = newComponent;
+        if (this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT) {
+          this.queryBuild.push(this.getNextOptions(this.queryBuild.length - 1, this.queryBuild[this.queryBuild.length - 1].type, undefined));
+        }
+        this.updatePositions();
       }
     },
 
-    generateQueryString() {
+    generateQueryString(): void {
       let primaryRefinementSet = false;
       this.queryString = this.queryBuild
         .map(item => {
@@ -139,26 +149,30 @@ export default defineComponent({
         .replaceAll("\n ", "\n");
     },
 
-    deleteItem(data: any) {
+    deleteItem(data: ComponentDetails): void {
       const index = this.queryBuild.findIndex(item => item.position === data.position);
       this.queryBuild.splice(index, 1);
       if (data.position === 0) {
         this.queryBuild.unshift(this.setStartBuild()[0]);
       }
       if (this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT) {
-        this.queryBuild.push(this.getNextOptions(this.queryBuild.length - 1, this.queryBuild[this.queryBuild.length - 1].type, ""));
+        this.queryBuild.push(this.getNextOptions(this.queryBuild.length - 1, this.queryBuild[this.queryBuild.length - 1].type, undefined));
       } else {
-        this.queryBuild[this.queryBuild.length - 1] = this.getNextOptions(this.queryBuild.length - 2, this.queryBuild[this.queryBuild.length - 2].type, "");
+        this.queryBuild[this.queryBuild.length - 1] = this.getNextOptions(
+          this.queryBuild.length - 2,
+          this.queryBuild[this.queryBuild.length - 2].type,
+          undefined
+        );
       }
       this.updatePositions();
     },
 
-    updateItem(data: any) {
+    updateItem(data: ComponentDetails): void {
       const index = this.queryBuild.findIndex(item => item.position === data.position);
       this.queryBuild[index] = data;
     },
 
-    getNextOptions(position: number, previous: string, group: string) {
+    getNextOptions(position: number, previous: ECLType, group: ECLType | undefined): ComponentDetails {
       return {
         id: "addNext" + "_" + (position + 1),
         value: {
@@ -173,7 +187,7 @@ export default defineComponent({
       };
     },
 
-    generateNewComponent(type: string, position: number) {
+    generateNewComponent(type: ECLType, position: number): ComponentDetails | undefined {
       let result;
       switch (type) {
         case ECLType.LOGIC:
@@ -212,7 +226,7 @@ export default defineComponent({
       return result;
     },
 
-    setStartBuild() {
+    setStartBuild(): ComponentDetails[] {
       return [
         {
           component: ECLComponent.FOCUS_CONCEPT,
@@ -236,8 +250,8 @@ export default defineComponent({
       ];
     },
 
-    updatePositions() {
-      this.queryBuild.forEach((item: any, index: number) => {
+    updatePositions(): void {
+      this.queryBuild.forEach((item: ComponentDetails, index: number) => {
         item.position = index;
       });
     },

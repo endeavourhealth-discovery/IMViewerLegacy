@@ -6,7 +6,7 @@
           <button class="p-panel-header-icon p-link p-mr-2" @click="focusTree" v-tooltip.left="'Focus hierarchy tree to this concept'">
             <i class="fas fa-sitemap" aria-hidden="true"></i>
           </button>
-          <div v-if="isObjectHasKeysWrapper(concept, ['axioms'])" class="copy-container">
+          <div v-if="isObjectHasKeysWrapper(concept, ['inferred'])" class="copy-container">
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
@@ -21,7 +21,7 @@
           <button class="p-panel-header-icon p-link p-mr-2" @click="openDownloadDialog" v-tooltip.bottom="'Download concept'">
             <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
           </button>
-          <button class="p-panel-header-icon p-link p-mr-2" v-tooltip.bottom="'Export concept'" @click="exportConcept">
+          <button class="p-panel-header-icon p-link p-mr-2" v-tooltip="'Export concept'" @click="exportConcept">
             <i class="fas fa-file-export" aria-hidden="true"></i>
           </button>
           <!--<button
@@ -76,7 +76,7 @@
             </TabPanel>
             <TabPanel header="Members" v-if="isSet">
               <div class="concept-panel-content" id="members-container" :style="contentHeight">
-                <Members :conceptIri="conceptIri" @memberClick="active = 0" />
+                <Members :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Graph">

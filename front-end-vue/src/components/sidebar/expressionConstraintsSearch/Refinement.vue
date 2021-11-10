@@ -22,31 +22,37 @@ import Operator from "@/components/sidebar/expressionConstraintsSearch/Operator.
 import AddDeleteButtons from "@/components/sidebar/expressionConstraintsSearch/AddDeleteButtons.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
+import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
+import { ComponentDetails } from "@/models/ecl/ComponentDetails";
 
 export default defineComponent({
   name: "Refinement",
   props: {
-    id: String,
-    position: Number,
+    id: { type: String, required: true },
+    position: { type: Number, required: true },
     value: {
       type: Object as PropType<{
         children: any[];
       }>,
       required: false
     },
-    last: Boolean
+    last: { type: Boolean, required: true }
   },
-  emits: ["addNextOptionsClicked", "deleteClicked", "updateClicked"],
+  emits: {
+    addNextOptionsClicked: (payload: NextComponentSummary) => true,
+    deleteClicked: (payload: ComponentDetails) => true,
+    updateClicked: (payload: ComponentDetails) => true
+  },
   components: { Expression, Constraint, Operator, AddDeleteButtons },
   watch: {
     refinementBuild: {
-      handler() {
+      handler(): void {
         this.refinementBuild.sort((a: any, b: any) => a.position - b.position);
         this.$emit("updateClicked", this.createRefinement());
       },
       deep: true
     },
-    group() {
+    group(): void {
       this.$emit("updateClicked", this.createRefinement());
     }
   },
@@ -55,20 +61,20 @@ export default defineComponent({
   },
   data() {
     return {
-      refinementBuild: [] as any[]
+      refinementBuild: [] as ComponentDetails[]
     };
   },
   methods: {
-    deleteClicked() {
+    deleteClicked(): void {
       this.$emit("deleteClicked", this.createRefinement());
     },
 
-    updateChild(data: any) {
+    updateChild(data: any): void {
       const index = this.refinementBuild.findIndex(item => item.position === data.position);
       this.refinementBuild[index] = data;
     },
 
-    addNextClicked() {
+    addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
         previousComponent: ECLType.REFINEMENT,
         previousPosition: this.position,
@@ -76,7 +82,7 @@ export default defineComponent({
       });
     },
 
-    createRefinement() {
+    createRefinement(): ComponentDetails {
       return {
         id: this.id,
         value: {
@@ -85,8 +91,7 @@ export default defineComponent({
         position: this.position,
         type: ECLType.REFINEMENT,
         label: this.generateRefinementLabel(),
-        component: ECLComponent.REFINEMENT,
-        edit: false
+        component: ECLComponent.REFINEMENT
       };
     },
 
@@ -103,7 +108,7 @@ export default defineComponent({
       return label;
     },
 
-    setStartBuild() {
+    setStartBuild(): void {
       if (this.value && this.value.children) {
         this.refinementBuild = [...this.value.children];
       } else {
