@@ -48,7 +48,16 @@ import { LoginItem, AccountItem, ModuleItem } from "@/models/sideNav/MenuItems";
 
 export default defineComponent({
   name: "SideNav",
-  computed: mapState(["currentUser", "isLoggedIn", "sideNavHierarchyFocus", "selectedEntityType", "moduleSelectedEntities", "conceptIri", "focusHierarchy", "sidebarControlActivePanel"]),
+  computed: mapState([
+    "currentUser",
+    "isLoggedIn",
+    "sideNavHierarchyFocus",
+    "selectedEntityType",
+    "moduleSelectedEntities",
+    "conceptIri",
+    "focusHierarchy",
+    "sidebarControlActivePanel"
+  ]),
   watch: {
     selectedEntityType(newValue) {
       switch (newValue) {
@@ -228,7 +237,7 @@ export default defineComponent({
       this.handleCenterIconClick(this.menuItems[0]);
       this.$store.commit("updateResetTree", true);
     },
-    iconClick(item: ModuleItem): void{
+    iconClick(item: ModuleItem): void {
       this.$store.commit("updateSidebarControlActivePanel", 0);
       this.handleCenterIconClick(item);
     },

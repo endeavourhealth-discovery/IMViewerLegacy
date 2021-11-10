@@ -10,7 +10,7 @@ const excludedPredicates = [IM.MATCHED_TO, IM.HAS_STATUS, IM.STATUS, RDFS.COMMEN
 
 export function translateFromEntityBundle(bundle: PartialBundle): TTGraphData {
   const { entity, predicates } = bundle;
-  const firstNode = { name: entity?.[RDFS.LABEL], iri: entity["@id"], relToParent: "", children: [], _children: [] } as TTGraphData;
+  const firstNode = { name: entity[RDFS.LABEL], iri: entity["@id"], relToParent: "", children: [], _children: [] } as TTGraphData;
   const keys = Object.keys(entity).filter(key => key != "@id" && !excludedPredicates.includes(key));
   addNodes(entity, keys, firstNode, predicates);
   return firstNode;
@@ -29,11 +29,11 @@ function getPropertyIri(nested: any): string {
 
 function getPropertyName(nested: any): string {
   if (isObjectHasKeys(nested, [SHACL.CLASS])) {
-    return nested[SHACL.CLASS]?.["name"] || getNameFromIri(nested[SHACL.CLASS]?.["@id"]);
+    return nested[SHACL.CLASS].name || getNameFromIri(nested[SHACL.CLASS]["@id"]);
   }
 
   if (isObjectHasKeys(nested, [SHACL.DATATYPE])) {
-    return nested?.[SHACL.DATATYPE]?.name || getNameFromIri(nested?.[SHACL.DATATYPE]?.["@id"]);
+    return nested[SHACL.DATATYPE].name || getNameFromIri(nested[SHACL.DATATYPE]["@id"]);
   }
 
   return "undefined";

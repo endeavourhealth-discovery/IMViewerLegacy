@@ -1,10 +1,7 @@
 <template>
   <div class="refinement-container" :id="id">
     <div class="switch-button-container">
-      <div class="buttons-container">
-        <Button icon="fas fa-minus" class="p-button-rounded p-button-outlined p-button-danger" @click="deleteClicked" />
-        <Button icon="fas fa-plus" class="p-button-rounded p-button-outlined p-button-success" @click="addNextClicked" />
-      </div>
+      <AddDeleteButtons :last="last" :position="position" @deleteClicked="deleteClicked" @addNextClicked="addNextClicked" />
     </div>
     <div class="refinement-children-next-container">
       <span class="float-text">Refinement</span>
@@ -22,6 +19,7 @@ import { defineComponent, PropType } from "@vue/runtime-core";
 import Expression from "@/components/sidebar/expressionConstraintsSearch/Expression.vue";
 import Constraint from "@/components/sidebar/expressionConstraintsSearch/Constraint.vue";
 import Operator from "@/components/sidebar/expressionConstraintsSearch/Operator.vue";
+import AddDeleteButtons from "@/components/sidebar/expressionConstraintsSearch/AddDeleteButtons.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 
@@ -35,10 +33,11 @@ export default defineComponent({
         children: any[];
       }>,
       required: false
-    }
+    },
+    last: Boolean
   },
   emits: ["addNextOptionsClicked", "deleteClicked", "updateClicked"],
-  components: { Expression, Constraint, Operator },
+  components: { Expression, Constraint, Operator, AddDeleteButtons },
   watch: {
     refinementBuild: {
       handler() {
