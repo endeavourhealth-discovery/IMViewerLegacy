@@ -15,10 +15,7 @@
       :sortOrder="1"
       class="p-datatable-sm"
       scrollHeight="flex"
-      v-model:selection="selected"
-      selectionMode="single"
       :loading="loading"
-      @rowSelect="onRowSelect"
     >
       <template #header>
         <div class="table-header-bar">
@@ -75,7 +72,6 @@ export default defineComponent({
   props: {
     conceptIri: { type: String, required: true }
   },
-  emits: { memberClick: () => true },
   watch: {
     async conceptIri() {
       await this.getMembers();
@@ -116,16 +112,6 @@ export default defineComponent({
 
     onRowGroupCollapse(): void {
       this.setTableWidth();
-    },
-
-    onRowSelect(): void {
-      if (isObjectHasKeys(this.selected, ["entity"]) && isObjectHasKeys(this.selected.entity, ["@id"]) && this.selected.entity["@id"]) {
-        this.$router.push({
-          name: "Concept",
-          params: { selectedIri: this.selected.entity["@id"] }
-        });
-        this.$emit("memberClick");
-      }
     },
 
     async getMembers(): Promise<void> {

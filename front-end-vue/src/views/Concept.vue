@@ -76,7 +76,7 @@
             </TabPanel>
             <TabPanel header="Members" v-if="isSet">
               <div class="concept-panel-content" id="members-container" :style="contentHeight">
-                <Members :conceptIri="conceptIri" @memberClick="active = 0" />
+                <Members :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Graph">
