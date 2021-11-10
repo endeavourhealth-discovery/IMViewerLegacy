@@ -65,7 +65,7 @@
               </div>
             </TabPanel>
             <TabPanel header="Entity chart" v-if="showGraph">
-              <div class="concept-panel-content" id="graph-container" :style="contentHeight">
+              <div class="concept-panel-content" id="entity-chart-container" :style="contentHeight">
                 <EntityChart :conceptIri="conceptIri" />
               </div>
             </TabPanel>
@@ -80,7 +80,7 @@
               </div>
             </TabPanel>
             <TabPanel header="Graph">
-              <div class="concept-panel-content" id="ttgraph-container" :style="contentHeight">
+              <div class="concept-panel-content" id="graph-container" :style="contentHeight">
                 <Graph :conceptIri="conceptIri" />
               </div>
             </TabPanel>
