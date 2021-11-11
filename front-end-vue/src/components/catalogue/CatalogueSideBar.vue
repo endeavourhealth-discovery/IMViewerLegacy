@@ -4,7 +4,7 @@
       <i class="pi pi-search" aria-hidden="true" />
       <InputText
         type="text"
-        v-model="searchRequest"
+        v-model="searchTerm"
         @keydown="checkKey($event.code)"
         @input="debounceForSearch"
         placeholder="Search"
@@ -37,19 +37,19 @@
 <script lang="ts">
 import CatalogueService from "@/services/CatalogueService";
 import { defineComponent, PropType } from "@vue/runtime-core";
-import { mapState } from "vuex";
 import CatalogueSearchResults from "@/components/catalogue/catalogueSideBar/CatalogueSearchResults.vue";
 import CatalogueFilters from "@/components/catalogue/catalogueSideBar/CatalogueFilters.vue";
 import CatalogueHistory from "@/components/catalogue/catalogueSideBar/CatalogueHistory.vue";
 import { isArrayHasLength, isObject } from "@/helpers/DataTypeCheckers";
 import axios from "axios";
+import { mapState } from "vuex";
 
 export default defineComponent({
   name: "CatalogueSideBar",
   props: { history: { type: Object as any, required: false }, typeOptions: { type: Array as PropType<any[]>, required: true } },
   components: { CatalogueSearchResults, CatalogueFilters, CatalogueHistory },
   emits: { updateHistory: (payload: any) => true },
-  computed: { ...mapState(["catalogueSearchTerm"]) },
+  computed: { ...mapState(["catalogueSearchResults"]) },
   // watch: {
   //   async catalogueSearchTerm() {
   //     await this.getSearchResult();
@@ -57,9 +57,7 @@ export default defineComponent({
   // },
   async mounted() {
     window.addEventListener("resize", this.onResize);
-    if (this.catalogueSearchTerm) {
-      await this.getSearchResult();
-    }
+    if (isArrayHasLength(this.catalogueSearchResults)) this.searchResults = this.catalogueSearchResults;
     this.setContainerHeights();
   },
   beforeUnmount() {
@@ -67,7 +65,7 @@ export default defineComponent({
   },
   data() {
     return {
-      searchRequest: "",
+      searchTerm: "",
       searchResults: [] as any[],
       selectedTypes: [] as any[],
       active: 0,
@@ -83,6 +81,7 @@ export default defineComponent({
     },
 
     async getSearchResult() {
+      if (this.searchTerm.length < 2) return;
       this.loading = true;
       if (isObject(this.request) && isArrayHasLength(Object.keys(this.request))) {
         await this.request.cancel({ status: 499, message: "Search cancelled by user" });
@@ -90,14 +89,15 @@ export default defineComponent({
       const axiosSource = axios.CancelToken.source();
       this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
       const selectedTypeIris = this.selectedTypes.map(type => type.iri);
-      this.searchResults = await CatalogueService.getSearchResult(this.catalogueSearchTerm, selectedTypeIris, axiosSource.token);
+      this.searchResults = await CatalogueService.getSearchResult(this.searchTerm, selectedTypeIris, axiosSource.token);
+      this.$store.commit("updateCatalogueSearchResults", this.searchResults);
       this.loading = false;
     },
 
     debounceForSearch(): void {
       clearTimeout(this.debounce);
       this.debounce = window.setTimeout(() => {
-        this.getSearchResult;
+        this.getSearchResult();
       }, 600);
     },
 
@@ -106,8 +106,7 @@ export default defineComponent({
     },
 
     checkKey(event: any) {
-      if (this.searchRequest.length > 2 && event === "Enter") {
-        this.$store.commit("updateCatalogueSearchTerm", this.searchRequest);
+      if (event === "Enter") {
         this.getSearchResult();
       }
     },

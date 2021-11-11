@@ -2,7 +2,14 @@
   <div id="instance-details-container">
     <Panel>
       <template #header>
-        {{ instanceName ? instanceName : instanceIri }}
+        <span>{{ instanceName ? instanceName : instanceIri }}</span>
+      </template>
+      <template #icons>
+        <div class="icons-container">
+          <Button class="p-panel-header-icon p-link p-mr-2" @click="showDashboard" label="Dashboard" v-tooltip="'Show dashboard'">
+            <i class="fas fa-chart-line" aria-hidden="true" />
+          </Button>
+        </div>
       </template>
       <Tree :value="instanceData">
         <template #default="slotProps"> {{ slotProps.node.label }} {{ slotProps.node.data }} </template>
@@ -104,6 +111,10 @@ export default defineComponent({
     },
     getChildren(predicate: string) {
       console.log("?");
+    },
+
+    showDashboard() {
+      this.$store.commit("updateInstanceIri", "");
     }
   }
 });

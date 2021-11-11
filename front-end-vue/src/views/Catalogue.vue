@@ -15,6 +15,7 @@ import CatalogueService from "@/services/CatalogueService";
 import CatalogueSideBar from "@/components/catalogue/CatalogueSideBar.vue";
 import { mapState } from "vuex";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
   name: "Catalogue",
@@ -24,7 +25,7 @@ export default defineComponent({
   },
   watch: {
     async instanceIri() {
-      this.getInstance();
+      this.init();
     }
   },
   computed: { ...mapState(["catalogueSearchTerm", "instanceIri"]) },
@@ -40,22 +41,34 @@ export default defineComponent({
     };
   },
   async mounted() {
-    await this.getTypesCount();
-    if (this.instanceIri) {
-      this.getInstance();
-      this.$router.push({ name: "Individual", params: this.instanceIri });
-    } else {
-      this.$router.push({ name: "CatalogueDashboard" });
-    }
+    this.$store.commit("updateSideNavHierarchyFocus", {
+      name: "Catalogue",
+      fullName: "Catalogue",
+      route: "Catalogue",
+      iri: IM.MODULE_CATALOGUE
+    });
+    await this.init();
   },
   methods: {
+    async init() {
+      await this.getTypesCount();
+      if (this.instanceIri.length) {
+        this.getInstance();
+        this.$router.push({ name: "Individual", params: { selectedIri: this.instanceIri } });
+      } else {
+        this.$router.push({ name: "CatalogueDashboard" });
+      }
+    },
+
     async getTypesCount() {
       const result = await CatalogueService.getTypesCount();
       this.types = result;
     },
 
     async getInstance() {
-      this.instance = await CatalogueService.getPartialInstance(this.instanceIri);
+      const result = await CatalogueService.getPartialInstance(this.instanceIri);
+      if (result) this.instance = result;
+      else this.instance = {} as any;
     },
 
     isObjectHasKeysWrapper(object: any) {
