@@ -9,9 +9,9 @@
       :scrollable="true"
       :paginator="true"
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-      :rowsPerPageOptions="[15, 25, 50]"
+      :rowsPerPageOptions="[25, 50, 75]"
       currentPageReportTemplate="Displaying {first} to {last} of {totalRecords}"
-      :rows="15"
+      :rows="25"
       @page="scrollToTop"
       :loading="loading"
     >

@@ -1,7 +1,10 @@
 <template>
   <SideNav />
   <div class="layout-main">
-    <div class="catalogue-grid">
+    <div v-if="loading" class="loading-container">
+      <ProgressSpinner />
+    </div>
+    <div v-else class="catalogue-grid">
       <CatalogueSideBar :typeOptions="types" :history="history" @updateHistory="updateHistory" />
       <router-view :instanceIri="instanceIri" :instance="instance" :history="history" :types="types" @updateHistory="updateHistory" />
     </div>
@@ -28,29 +31,22 @@ export default defineComponent({
       this.init();
     }
   },
-  computed: { ...mapState(["catalogueSearchTerm", "instanceIri"]) },
+  computed: { ...mapState(["instanceIri"]) },
   data() {
     return {
       instance: {} as any,
       history: [] as any[],
-      location: "",
       types: [] as any[],
-      dash: true,
-      loading: false,
-      isEditing: false
+      loading: false
     };
   },
   async mounted() {
-    this.$store.commit("updateSideNavHierarchyFocus", {
-      name: "Catalogue",
-      fullName: "Catalogue",
-      route: "Catalogue",
-      iri: IM.MODULE_CATALOGUE
-    });
+    this.updateSideNav();
     await this.init();
   },
   methods: {
     async init() {
+      this.loading = true;
       await this.getTypesCount();
       if (this.instanceIri.length) {
         this.getInstance();
@@ -58,6 +54,16 @@ export default defineComponent({
       } else {
         this.$router.push({ name: "CatalogueDashboard" });
       }
+      this.loading = false;
+    },
+
+    updateSideNav() {
+      this.$store.commit("updateSideNavHierarchyFocus", {
+        name: "Catalogue",
+        fullName: "Catalogue",
+        route: "Catalogue",
+        iri: IM.MODULE_CATALOGUE
+      });
     },
 
     async getTypesCount() {
@@ -91,5 +97,15 @@ export default defineComponent({
   grid-template-columns: auto 1fr;
   grid-template-areas: "sidebar content";
   column-gap: 7px;
+}
+
+.loading-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
 }
 </style>

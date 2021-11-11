@@ -23,7 +23,7 @@
             <p style="margin-bottom: 1em; margin-top: 2em; text-align: center">
               <strong>Pie Chart</strong>
             </p>
-            <div class="pie-chart-container">
+            <div v-if="types.length" class="pie-chart-container">
               <ResizeablePieChart :inputData="types" id="catalogue-pie-chart" labelKey="label" dataKey="count" />
             </div>
           </div>

@@ -156,7 +156,7 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: "/dashboard",
+        path: "dashboard",
         name: "CatalogueDashboard",
         component: CatalogueDashboard,
         meta: {
@@ -164,7 +164,7 @@ const routes: Array<RouteRecordRaw> = [
         }
       },
       {
-        path: "/individual/:selectedIri",
+        path: "individual/:selectedIri",
         name: "Individual",
         component: InstanceDetails,
         meta: {
