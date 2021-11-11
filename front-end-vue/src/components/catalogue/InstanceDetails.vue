@@ -1,19 +1,22 @@
 <template>
-  <Panel>
-    <template #header>
-      {{ instanceName ? instanceName : instanceIri }}
-    </template>
-    <Tree :value="instanceData">
-      <template #default="slotProps"> {{ slotProps.node.label }} {{ slotProps.node.data }} </template>
-      <template #address="slotProps">
-        {{ slotProps.node.label }}
-        <a href="javascript:void(0)" @click="navigate(slotProps.node.data)">{{ slotProps.node.data["@id"] }}</a>
+  <div id="instance-details-container">
+    <Panel>
+      <template #header>
+        {{ instanceName ? instanceName : instanceIri }}
       </template>
-    </Tree>
-  </Panel>
+      <Tree :value="instanceData">
+        <template #default="slotProps"> {{ slotProps.node.label }} {{ slotProps.node.data }} </template>
+        <template #address="slotProps">
+          {{ slotProps.node.label }}
+          <a href="javascript:void(0)" @click="navigate(slotProps.node.data)">{{ slotProps.node.data["@id"] }}</a>
+        </template>
+      </Tree>
+    </Panel>
+  </div>
 </template>
 
 <script lang="ts">
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 import { defineComponent } from "@vue/runtime-core";
@@ -21,6 +24,11 @@ import { defineComponent } from "@vue/runtime-core";
 export default defineComponent({
   name: "InstanceDetails",
   props: { instance: { type: Object as any, required: true }, instanceIri: { type: String, required: true } },
+  watch: {
+    instance() {
+      this.processInstance();
+    }
+  },
   mounted() {
     this.processInstance();
   },
@@ -32,6 +40,7 @@ export default defineComponent({
   },
   methods: {
     processInstance() {
+      if (!isObjectHasKeys(this.instance, ["entity"])) return;
       this.instanceData = [];
       let level = 0;
       this.instanceName = this.instance.entity[RDFS.LABEL];
@@ -100,4 +109,12 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+#instance-details-container {
+  grid-area: content;
+  height: calc(100vh - 2rem);
+  width: 100%;
+  overflow-y: auto;
+  background-color: #ffffff;
+}
+</style>

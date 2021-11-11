@@ -52,4 +52,8 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.catalogue-dashboard-container {
+  grid-area: content;
+}
+</style>

@@ -1,16 +1,10 @@
 <template>
-  <p style="margin-bottom: 1em; font-size: 14px">Select Type</p>
-  <MultiSelect
-    id="type"
-    v-model="selected"
-    :options="typeOptions"
-    optionLabel="label"
-    placeholder="Select"
-    display="chip"
-    style="width: 100%; margin-bottom: 2em"
-    class="p-inputtext-lg"
-    @change="updateSelectedTypes()"
-  />
+  <div class="p-field">
+    <span class="p-float-label">
+      <MultiSelect id="type" v-model="selected" :options="typeOptions" optionLabel="label" display="chip" @change="updateSelectedTypes()" />
+      <label for="type">Filter by type:</label>
+    </span>
+  </div>
 </template>
 
 <script lang="ts">
@@ -37,4 +31,12 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+label {
+  font-size: 1rem !important;
+}
+
+.p-field {
+  margin-top: 2rem;
+}
+</style>

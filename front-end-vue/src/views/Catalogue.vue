@@ -1,18 +1,9 @@
 <template>
-  <side-nav />
+  <SideNav />
   <div class="layout-main">
-    <div class="_container">
-      <div class="p-grid _container">
-        <CatalogueSideBar :typeOptions="types" :history="history" @updateHistory="updateHistory" />
-        <div class="p-col-9 full_height">
-          <div v-if="!instanceIri" class="full_height">
-            <CatalogueDashboard v-if="types.length" :types="types" class="full_height" />
-          </div>
-          <div v-else id="panel-container">
-            <InstanceDetails v-if="isObjectHasKeysWrapper(instance)" :instance="instance" :instanceIri="instanceIri" />
-          </div>
-        </div>
-      </div>
+    <div class="catalogue-grid">
+      <CatalogueSideBar :typeOptions="types" :history="history" @updateHistory="updateHistory" />
+      <router-view :instanceIri="instanceIri" :instance="instance" :history="history" :types="types" @updateHistory="updateHistory" />
     </div>
   </div>
 </template>
@@ -21,19 +12,15 @@
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import CatalogueService from "@/services/CatalogueService";
-import CatalogueDashboard from "@/components/catalogue/CatalogueDashboard.vue";
 import CatalogueSideBar from "@/components/catalogue/CatalogueSideBar.vue";
-import InstanceDetails from "@/components/catalogue/InstanceDetails.vue";
 import { mapState } from "vuex";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Catalogue",
   components: {
-    CatalogueDashboard,
     SideNav,
-    CatalogueSideBar,
-    InstanceDetails
+    CatalogueSideBar
   },
   watch: {
     async instanceIri() {
@@ -56,6 +43,9 @@ export default defineComponent({
     await this.getTypesCount();
     if (this.instanceIri) {
       this.getInstance();
+      this.$router.push({ name: "Individual", params: this.instanceIri });
+    } else {
+      this.$router.push({ name: "CatalogueDashboard" });
     }
   },
   methods: {
@@ -81,47 +71,12 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-#search-bar {
-  width: 100%;
-}
-.search-input {
-  width: 100%;
-}
-._container {
-  position: relative;
-  width: 100%;
+.catalogue-grid {
   height: 100%;
-}
-
-.full_height {
-  height: 100%;
-}
-
-#side-menu {
-  flex-grow: 100;
-}
-
-#side-menu ::v-deep(.p-tabview-panels) {
-  flex-grow: 6;
-  overflow-y: auto;
-}
-
-#side-menu ::v-deep(.p-tabview-panel) {
-  height: 100%;
-}
-
-#panel-container {
   width: 100%;
   display: grid;
-  gap: 1rem 1rem;
-  align-items: start;
-  overflow: auto;
-  background-color: #ffffff;
-  height: 100%;
-}
-
-#tab {
-  height: 100%;
-  background-color: #ffffff;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "sidebar content";
+  column-gap: 7px;
 }
 </style>

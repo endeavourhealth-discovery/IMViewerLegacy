@@ -67,4 +67,20 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+#catalogue-search-results-container {
+  flex-grow: 5;
+  overflow-y: auto;
+}
+
+#catalogue-search-results-container ::v-deep(.p-datatable) {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+}
+
+#catalogue-search-results-container ::v-deep(.p-datatable-wrapper) {
+  flex-grow: 6;
+}
+</style>
