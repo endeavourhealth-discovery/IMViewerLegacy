@@ -1,6 +1,8 @@
 export default interface TransformMappingObject {
-  property: string;
-  transformType: string;
-  transformValue: string;
   destinationPath: string;
+  transformType: string;
+  transformValue: string | string[];
+  property: string | undefined;
+  example: string | undefined;
+  exampleTransformed: string | undefined;
 }
