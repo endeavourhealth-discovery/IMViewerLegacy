@@ -46,5 +46,6 @@ describe("CatalogueDashboard.vue", () => {
         label: "Address (record type)"
       }
     ]);
+    expect(wrapper.vm.loading).toBe(false);
   });
 });
