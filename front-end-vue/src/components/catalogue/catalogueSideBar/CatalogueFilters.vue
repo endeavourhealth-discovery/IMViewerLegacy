@@ -8,23 +8,24 @@
 </template>
 
 <script lang="ts">
+import { SimpleCount } from "@/models/SimpleCount";
 import { defineComponent, PropType } from "@vue/runtime-core";
 
 export default defineComponent({
   name: "CatalogueFilters",
-  props: { typeOptions: { type: Array as PropType<any[]>, required: true } },
-  emits: { typesSelected: (payload: any[]) => true },
+  props: { typeOptions: { type: Array as PropType<SimpleCount[]>, required: true } },
+  emits: { typesSelected: (payload: SimpleCount[]) => true },
   mounted() {
     this.selected = this.typeOptions;
     this.updateSelectedTypes();
   },
   data() {
     return {
-      selected: [] as any[]
+      selected: [] as SimpleCount[]
     };
   },
   methods: {
-    updateSelectedTypes() {
+    updateSelectedTypes(): void {
       this.$emit("typesSelected", this.selected);
     }
   }

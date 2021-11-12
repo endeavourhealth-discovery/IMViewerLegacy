@@ -33,20 +33,21 @@
 
 <script lang="ts">
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { InstanceSearchResult } from "@/models/catalogue/InstanceSearchResult";
 import { defineComponent, PropType } from "@vue/runtime-core";
 
 export default defineComponent({
   name: "CatalogueSearchResults",
-  props: { searchResults: { type: Array as PropType<any[]> }, loading: { type: Boolean, required: true } },
-  emits: { searchResultSelected: (payload: any) => true },
+  props: { searchResults: { type: Array as PropType<InstanceSearchResult[]> }, loading: { type: Boolean, required: true } },
+  emits: { searchResultSelected: (payload: InstanceSearchResult) => true },
   data() {
     return {
-      selected: {} as any,
+      selected: {} as InstanceSearchResult,
       currentSelected: ""
     };
   },
   methods: {
-    setSelectedInstance() {
+    setSelectedInstance(): void {
       if (isObjectHasKeys(this.selected, ["@id"])) {
         this.$emit("searchResultSelected", this.selected);
         this.$router.push({

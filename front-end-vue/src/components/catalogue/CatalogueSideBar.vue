@@ -43,10 +43,16 @@ import CatalogueHistory from "@/components/catalogue/catalogueSideBar/CatalogueH
 import { isArrayHasLength, isObject } from "@/helpers/DataTypeCheckers";
 import axios from "axios";
 import { mapState } from "vuex";
+import { InstanceHistoryItem } from "@/models/catalogue/InstanceHistoryItem";
+import { SimpleCount } from "@/models/SimpleCount";
+import { InstanceSearchResult } from "@/models/catalogue/InstanceSearchResult";
 
 export default defineComponent({
   name: "CatalogueSideBar",
-  props: { history: { type: Object as any, required: false }, typeOptions: { type: Array as PropType<any[]>, required: true } },
+  props: {
+    history: { type: Array as PropType<InstanceHistoryItem[]>, required: false },
+    typeOptions: { type: Array as PropType<SimpleCount[]>, required: true }
+  },
   components: { CatalogueSearchResults, CatalogueFilters, CatalogueHistory },
   emits: { updateHistory: (payload: any) => true },
   computed: { ...mapState(["catalogueSearchResults"]) },
@@ -61,10 +67,9 @@ export default defineComponent({
   data() {
     return {
       searchTerm: "",
-      searchResults: [] as any[],
-      selectedTypes: [] as any[],
+      searchResults: [] as InstanceSearchResult[],
+      selectedTypes: [] as SimpleCount[],
       active: 0,
-      selected: {} as any,
       debounce: 0,
       loading: false,
       request: {} as { cancel: any; msg: string }
@@ -75,7 +80,7 @@ export default defineComponent({
       this.setContainerHeights();
     },
 
-    async getSearchResult() {
+    async getSearchResult(): Promise<void> {
       if (this.searchTerm.length < 2) return;
       this.loading = true;
       if (isObject(this.request) && isArrayHasLength(Object.keys(this.request))) {
@@ -96,17 +101,17 @@ export default defineComponent({
       }, 600);
     },
 
-    updateTypes(types: string[]) {
+    updateTypes(types: SimpleCount[]): void {
       this.selectedTypes = types;
     },
 
-    checkKey(event: any) {
+    checkKey(event: any): void {
       if (event === "Enter") {
         this.getSearchResult();
       }
     },
 
-    updateHistory(historyItem: any) {
+    updateHistory(historyItem: InstanceHistoryItem): void {
       this.$emit("updateHistory", historyItem);
     },
 

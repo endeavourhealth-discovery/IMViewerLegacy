@@ -17,7 +17,7 @@
       <Tree :value="instanceData">
         <template #default="slotProps"> {{ slotProps.node.label }} {{ slotProps.node.data }} </template>
         <template #address="slotProps">
-          {{ slotProps.node.label }}
+          <span>{{ slotProps.node.label }}</span>
           <a href="javascript:void(0)" @click="navigate(slotProps.node.data)">{{ slotProps.node.data["@id"] }}</a>
         </template>
       </Tree>
@@ -27,15 +27,21 @@
 
 <script lang="ts">
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { TTBundle } from "@/models/TripleTree";
 import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
-import { defineComponent } from "@vue/runtime-core";
+import { defineComponent, PropType } from "@vue/runtime-core";
+import { InstanceTreeItem } from "@/models/catalogue/InstanceTreeItem";
 
 export default defineComponent({
   name: "InstanceDetails",
-  props: { instance: { type: Object as any, required: true }, instanceIri: { type: String, required: true }, loading: { type: Boolean, required: true } },
+  props: {
+    instance: { type: Object as PropType<TTBundle>, required: true },
+    instanceIri: { type: String, required: true },
+    loading: { type: Boolean, required: true }
+  },
   watch: {
-    instance() {
+    instance(): void {
       this.processInstance();
     }
   },
@@ -45,11 +51,11 @@ export default defineComponent({
   data() {
     return {
       instanceName: "",
-      instanceData: [] as any[]
+      instanceData: [] as InstanceTreeItem[]
     };
   },
   methods: {
-    processInstance() {
+    processInstance(): void {
       if (!isObjectHasKeys(this.instance, ["entity"])) return;
       this.instanceData = [];
       let level = 0;
@@ -96,14 +102,14 @@ export default defineComponent({
       });
     },
 
-    navigate(instance: any) {
+    navigate(instance: any): void {
       this.$router.push({
         name: "Individual",
         params: { selectedIri: instance["@id"] }
       });
     },
 
-    getPredicateName(iri: string) {
+    getPredicateName(iri: string): string {
       let name = "";
       this.instance.predicates.forEach((pre: any) => {
         if (pre["@id"] === iri) {
@@ -112,11 +118,13 @@ export default defineComponent({
       });
       return name;
     },
-    getChildren(predicate: string) {
+
+    getChildren(predicate: string): InstanceTreeItem[] {
       console.log("?");
+      return [] as InstanceTreeItem[];
     },
 
-    showDashboard() {
+    showDashboard(): void {
       this.$store.commit("updateInstanceIri", "");
     }
   }

@@ -1,14 +1,6 @@
 <template>
   <div id="catalogue-history">
-    <Listbox
-      v-model="selected"
-      :options="history"
-      class="history-listbox"
-      @click="navigate"
-      :virtualScrollerOptions="{ itemSize: 31 }"
-      style="width:100%"
-      listStyle="height:700px"
-    >
+    <Listbox v-model="selected" :options="history" class="history-listbox" @click="navigate" :virtualScrollerOptions="{ itemSize: 31 }">
       <template #option="slotProps">
         <div v-if="slotProps.option.name">
           <span>{{ slotProps.option.name }}</span>
@@ -23,18 +15,19 @@
 
 <script lang="ts">
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
-import { defineComponent } from "@vue/runtime-core";
+import { InstanceHistoryItem } from "@/models/catalogue/InstanceHistoryItem";
+import { defineComponent, PropType } from "@vue/runtime-core";
 
 export default defineComponent({
   name: "CatalogueHistory",
-  props: { history: { type: Object as any, required: true } },
+  props: { history: { type: Array as PropType<InstanceHistoryItem[]>, required: true } },
   data() {
     return {
-      selected: {} as any
+      selected: {} as InstanceHistoryItem
     };
   },
   methods: {
-    navigate() {
+    navigate(): void {
       if (isObjectHasKeys(this.selected, ["@id"])) {
         this.$router.push({
           name: "Individual",
@@ -46,4 +39,13 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+#catalogue-history {
+  height: 100%;
+  width: 100%;
+}
+.history-listbox {
+  height: 100%;
+  overflow: auto;
+}
+</style>
