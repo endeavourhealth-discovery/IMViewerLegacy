@@ -17,7 +17,7 @@
           :name="'Catalogue instance types'"
           :description="'A brief overview of the types of instance data stored in the Catalogue'"
           :inputData="types"
-          id="catalogue-pie-chart"
+          id="catalogue-pie-chart-1"
           labelKey="label"
           dataKey="count"
         />
@@ -29,7 +29,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { PropType } from "@vue/runtime-core";
-import ResizeablePieChart from "@/components/generics/ResizeablePieChart.vue";
 import PieChartDashCard from "@/components/dashboard/PieChartDashCard.vue";
 import ReportTable from "@/components/dashboard/ReportTable.vue";
 import { SimpleCount } from "@/models/SimpleCount";
@@ -44,7 +43,6 @@ export default defineComponent({
     loading: { type: Boolean, required: true }
   },
   components: {
-    // ResizeablePieChart,
     ReportTable,
     PieChartDashCard
   }
@@ -87,11 +85,11 @@ export default defineComponent({
 
 .dash-table {
   width: calc(50% - 7px);
-  height: calc(100%);
+  height: calc(50% - 7px);
 }
 
 .dash-chart {
   width: calc(50%);
-  height: calc(100%);
+  height: calc(50% - 7px);
 }
 </style>
