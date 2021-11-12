@@ -55,7 +55,8 @@ describe("Catalogue.vue", () => {
     wrapper = shallowMount(Catalogue, {
       global: {
         components: {},
-        mocks: { $router: mockRouter, $store: mockStore }
+        mocks: { $router: mockRouter, $store: mockStore },
+        stubs: ["router-view"]
       }
     });
 
