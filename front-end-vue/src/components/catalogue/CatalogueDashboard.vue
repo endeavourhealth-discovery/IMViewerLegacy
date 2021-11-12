@@ -53,6 +53,7 @@ export default defineComponent({
 .catalogue-dashboard-container {
   grid-area: content;
   height: 100%;
+  overflow-y: auto;
   background-color: #ffffff;
 }
 
@@ -85,11 +86,13 @@ export default defineComponent({
 
 .dash-table {
   width: calc(50% - 7px);
-  height: calc(50% - 7px);
+  /* height: calc(50% - 7px); */
+  height: 100%;
 }
 
 .dash-chart {
   width: calc(50%);
-  height: calc(50% - 7px);
+  /* height: calc(50% - 7px); */
+  height: 100%;
 }
 </style>
