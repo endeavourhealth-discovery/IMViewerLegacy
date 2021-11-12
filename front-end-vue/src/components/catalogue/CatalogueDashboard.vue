@@ -1,12 +1,15 @@
 <template>
   <div class="catalogue-dashboard-container">
-    <Card class="dashboard-card" style="height: 100%">
+    <Card class="dashboard-card">
       <template #title> Catalogue instance types overview </template>
       <template #subtitle>
         A brief overview of the types of data stored in the Catalogue
       </template>
       <template #content>
-        <div class="p-grid">
+        <div v-if="loading" class="loading-container">
+          <ProgressSpinner />
+        </div>
+        <div v-else class="p-grid">
           <div class="p-col-6">
             <p style="margin-bottom: 1em; margin-top: 2em; text-align: center">
               <strong>Data Table</strong>
@@ -44,7 +47,8 @@ export default defineComponent({
     types: {
       type: Array as PropType<Array<unknown>>,
       required: true
-    }
+    },
+    loading: { type: Boolean, required: true }
   },
   components: {
     ResizeablePieChart
@@ -55,5 +59,19 @@ export default defineComponent({
 <style scoped>
 .catalogue-dashboard-container {
   grid-area: content;
+}
+
+.dashboard-card {
+  height: 100%;
+}
+
+.loading-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
 }
 </style>

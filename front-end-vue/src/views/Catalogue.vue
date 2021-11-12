@@ -1,12 +1,9 @@
 <template>
   <SideNav />
   <div class="layout-main">
-    <div v-if="loading" class="loading-container">
-      <ProgressSpinner />
-    </div>
-    <div v-else class="catalogue-grid">
+    <div class="catalogue-grid">
       <CatalogueSideBar :typeOptions="types" :history="history" @updateHistory="updateHistory" />
-      <router-view :instanceIri="instanceIri" :instance="instance" :history="history" :types="types" @updateHistory="updateHistory" />
+      <router-view :instanceIri="instanceIri" :instance="instance" :history="history" :types="types" :loading="loading" @updateHistory="updateHistory" />
     </div>
   </div>
 </template>
@@ -19,6 +16,9 @@ import CatalogueSideBar from "@/components/catalogue/CatalogueSideBar.vue";
 import { mapState } from "vuex";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { IM } from "@/vocabulary/IM";
+import { TTBundle } from "@/models/TripleTree";
+import { InstanceHistoryItem } from "@/models/catalogue/InstanceHistoryItem";
+import { SimpleCount } from "@/models/SimpleCount";
 
 export default defineComponent({
   name: "Catalogue",
@@ -27,16 +27,16 @@ export default defineComponent({
     CatalogueSideBar
   },
   watch: {
-    async instanceIri() {
+    async instanceIri(): Promise<void> {
       this.init();
     }
   },
   computed: { ...mapState(["instanceIri"]) },
   data() {
     return {
-      instance: {} as any,
-      history: [] as any[],
-      types: [] as any[],
+      instance: {} as TTBundle,
+      history: [] as InstanceHistoryItem[],
+      types: [] as SimpleCount[],
       loading: false
     };
   },
@@ -45,7 +45,7 @@ export default defineComponent({
     await this.init();
   },
   methods: {
-    async init() {
+    async init(): Promise<void> {
       this.loading = true;
       await this.getTypesCount();
       if (this.instanceIri.length) {
@@ -57,7 +57,7 @@ export default defineComponent({
       this.loading = false;
     },
 
-    updateSideNav() {
+    updateSideNav(): void {
       this.$store.commit("updateSideNavHierarchyFocus", {
         name: "Catalogue",
         fullName: "Catalogue",
@@ -66,22 +66,22 @@ export default defineComponent({
       });
     },
 
-    async getTypesCount() {
+    async getTypesCount(): Promise<void> {
       const result = await CatalogueService.getTypesCount();
       this.types = result;
     },
 
-    async getInstance() {
+    async getInstance(): Promise<void> {
       const result = await CatalogueService.getPartialInstance(this.instanceIri);
       if (result) this.instance = result;
-      else this.instance = {} as any;
+      else this.instance = {} as TTBundle;
     },
 
-    isObjectHasKeysWrapper(object: any) {
+    isObjectHasKeysWrapper(object: any): boolean {
       return isObjectHasKeys(object);
     },
 
-    updateHistory(historyItem: any) {
+    updateHistory(historyItem: InstanceHistoryItem): void {
       if (!this.history.includes(historyItem)) {
         this.history.push(historyItem);
       }
@@ -97,15 +97,5 @@ export default defineComponent({
   grid-template-columns: auto 1fr;
   grid-template-areas: "sidebar content";
   column-gap: 7px;
-}
-
-.loading-container {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-flow: row;
-  justify-content: center;
-  align-items: center;
-  background-color: #ffffff;
 }
 </style>

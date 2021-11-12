@@ -1,5 +1,8 @@
 <template>
   <div id="instance-details-container">
+    <div v-if="loading" class="loading-container">
+      <ProgressSpinner />
+    </div>
     <Panel>
       <template #header>
         <span>{{ instanceName ? instanceName : instanceIri }}</span>
@@ -30,7 +33,7 @@ import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
   name: "InstanceDetails",
-  props: { instance: { type: Object as any, required: true }, instanceIri: { type: String, required: true } },
+  props: { instance: { type: Object as any, required: true }, instanceIri: { type: String, required: true }, loading: { type: Boolean, required: true } },
   watch: {
     instance() {
       this.processInstance();
@@ -126,6 +129,16 @@ export default defineComponent({
   height: calc(100vh - 2rem);
   width: 100%;
   overflow-y: auto;
+  background-color: #ffffff;
+}
+
+.loading-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
   background-color: #ffffff;
 }
 </style>

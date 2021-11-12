@@ -50,11 +50,6 @@ export default defineComponent({
   components: { CatalogueSearchResults, CatalogueFilters, CatalogueHistory },
   emits: { updateHistory: (payload: any) => true },
   computed: { ...mapState(["catalogueSearchResults"]) },
-  // watch: {
-  //   async catalogueSearchTerm() {
-  //     await this.getSearchResult();
-  //   }
-  // },
   async mounted() {
     window.addEventListener("resize", this.onResize);
     if (isArrayHasLength(this.catalogueSearchResults)) this.searchResults = this.catalogueSearchResults;
