@@ -39,8 +39,7 @@ describe("Operator.vue ___prop value", () => {
         label: "=",
         position: 0,
         type: "operator",
-        value: { name: "Equals", symbol: "=" },
-        edit: false
+        value: { name: "Equals", symbol: "=" }
       }
     ]);
     console.warn = warn;

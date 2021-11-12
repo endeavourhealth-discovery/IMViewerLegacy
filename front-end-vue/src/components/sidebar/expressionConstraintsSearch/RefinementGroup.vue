@@ -37,32 +37,39 @@ import Logic from "@/components/sidebar/expressionConstraintsSearch/Logic.vue";
 import AddDeleteButtons from "@/components/sidebar/expressionConstraintsSearch/AddDeleteButtons.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
+import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
+import { ComponentDetails } from "@/models/ecl/ComponentDetails";
 
 export default defineComponent({
   name: "RefinementGroup",
   props: {
-    id: String,
-    position: Number,
+    id: { type: String, required: true },
+    position: { type: Number, required: true },
     value: {
       type: Object as PropType<{
-        children: any[];
+        children: ComponentDetails[];
         group: boolean;
       }>,
       required: false
     },
-    last: Boolean
+    last: { type: Boolean, required: true }
   },
-  emits: ["addNextOptionsClicked", "addClicked", "deleteClicked", "updateClicked"],
+  emits: {
+    addNextOptionsClicked: (payload: NextComponentSummary) => true,
+    addClicked: (payload: ComponentDetails) => true,
+    deleteClicked: (payload: ComponentDetails) => true,
+    updateClicked: (payload: ComponentDetails) => true
+  },
   components: { Refinement, AddNext, Logic, AddDeleteButtons },
   watch: {
     refinementGroupBuild: {
-      handler() {
+      handler(): void {
         this.refinementGroupBuild.sort((a: any, b: any) => a.position - b.position);
         this.$emit("updateClicked", this.createRefinementGroup());
       },
       deep: true
     },
-    group() {
+    group(): void {
       this.$emit("updateClicked", this.createRefinementGroup());
     }
   },
@@ -71,40 +78,62 @@ export default defineComponent({
   },
   data() {
     return {
-      refinementGroupBuild: [] as any[],
+      refinementGroupBuild: [] as ComponentDetails[],
       group: false
     };
   },
   methods: {
-    onConfirm() {
+    onConfirm(): void {
       this.$emit("addClicked", this.createRefinementGroup());
     },
 
-    deleteClicked() {
+    deleteClicked(): void {
       this.$emit("deleteClicked", this.createRefinementGroup());
     },
 
-    async addNextOptions(data: any) {
+    async addNextOptions(data: NextComponentSummary): Promise<void> {
+      const nextOptionsComponent = this.getNextOptions(data.previousPosition, data.previousComponent, ECLType.REFINEMENT_GROUP);
       if (this.refinementGroupBuild[data.previousPosition + 1].type === ECLType.ADD_NEXT) {
-        this.refinementGroupBuild[data.previousPosition + 1] = this.getNextOptions(data.previousPosition, data.previousComponent, data.parentGroup);
+        this.refinementGroupBuild[data.previousPosition + 1] = nextOptionsComponent;
       } else {
-        this.refinementGroupBuild.splice(data.previousPosition, 0, this.getNextOptions(data.previousPosition, data.previousComponent, data.parentGroup));
+        this.refinementGroupBuild.splice(data.previousPosition + 1, 0, nextOptionsComponent);
       }
+      this.updatePositions();
       await this.$nextTick();
-      const itemToScrollTo = document.getElementById(data.id);
+      const itemToScrollTo = document.getElementById(nextOptionsComponent.id);
       itemToScrollTo?.scrollIntoView();
     },
 
-    addNextClicked() {
+    addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
         previousComponent: ECLType.REFINEMENT_GROUP,
         previousPosition: this.position
       });
     },
 
-    async addItem(data: any) {
-      this.refinementGroupBuild[data.position] = this.generateNewComponent(data.selectedType, data.position);
-      this.updatePositions(data.position);
+    addItem(data: { selectedType: ECLType; position: number }): void {
+      const newComponent = this.generateNewComponent(data.selectedType, data.position);
+      if (newComponent) {
+        this.refinementGroupBuild[data.position] = newComponent;
+        if (this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type !== ECLType.ADD_NEXT) {
+          this.refinementGroupBuild.push(
+            this.getNextOptions(
+              this.refinementGroupBuild.length - 1,
+              this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type,
+              ECLType.REFINEMENT_GROUP
+            )
+          );
+        }
+        this.updatePositions();
+      }
+    },
+
+    deleteItem(data: ComponentDetails): void {
+      const index = this.refinementGroupBuild.findIndex(child => child.position === data.position);
+      this.refinementGroupBuild.splice(index, 1);
+      if (data.position === 0) {
+        this.refinementGroupBuild.unshift(this.setStartBuild()[0]);
+      }
       if (this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type !== ECLType.ADD_NEXT) {
         this.refinementGroupBuild.push(
           this.getNextOptions(
@@ -113,34 +142,22 @@ export default defineComponent({
             ECLType.REFINEMENT_GROUP
           )
         );
-      }
-    },
-
-    deleteItem(data: any) {
-      const index = this.refinementGroupBuild.findIndex(child => child.position === data.position);
-      this.refinementGroupBuild.splice(index, 1);
-      if (data.position === 0) {
-        this.refinementGroupBuild.unshift(this.setStartBuild()[0]);
-      }
-      if (this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type !== ECLType.ADD_NEXT) {
-        this.refinementGroupBuild.push(
-          this.getNextOptions(this.refinementGroupBuild.length - 1, this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type, "")
-        );
       } else {
         this.refinementGroupBuild[this.refinementGroupBuild.length - 1] = this.getNextOptions(
           this.refinementGroupBuild.length - 2,
           this.refinementGroupBuild[this.refinementGroupBuild.length - 2].type,
-          ""
+          ECLType.REFINEMENT_GROUP
         );
       }
+      this.updatePositions();
     },
 
-    updateItem(data: any) {
+    updateItem(data: ComponentDetails): void {
       const index = this.refinementGroupBuild.findIndex(item => item.position === data.position);
       this.refinementGroupBuild[index] = data;
     },
 
-    getNextOptions(position: number, previous: string, group: string) {
+    getNextOptions(position: number, previous: ECLType, group: ECLType | undefined): ComponentDetails {
       return {
         id: "addNext" + "_" + (position + 1),
         value: {
@@ -155,15 +172,13 @@ export default defineComponent({
       };
     },
 
-    updatePositions(startPosition: number) {
-      this.refinementGroupBuild.forEach((item: any) => {
-        if (item.position > startPosition) {
-          item.position = item.position + 1;
-        }
+    updatePositions(): void {
+      this.refinementGroupBuild.forEach((item: ComponentDetails, index: number) => {
+        item.position = index;
       });
     },
 
-    generateNewComponent(type: string, position: number) {
+    generateNewComponent(type: ECLType, position: number): ComponentDetails | undefined {
       let result;
       switch (type) {
         case ECLType.REFINEMENT:
@@ -192,7 +207,7 @@ export default defineComponent({
       return result;
     },
 
-    createRefinementGroup() {
+    createRefinementGroup(): ComponentDetails {
       return {
         id: this.id,
         value: {
@@ -202,8 +217,7 @@ export default defineComponent({
         position: this.position,
         type: ECLType.REFINEMENT_GROUP,
         label: this.generateRefinementLabel(),
-        component: ECLComponent.REFINEMENT_GROUP,
-        edit: false
+        component: ECLComponent.REFINEMENT_GROUP
       };
     },
 
@@ -229,7 +243,7 @@ export default defineComponent({
       }
     },
 
-    setStartBuild() {
+    setStartBuild(): ComponentDetails[] {
       if (this.value && this.value.children) {
         return [...this.value.children];
       } else {

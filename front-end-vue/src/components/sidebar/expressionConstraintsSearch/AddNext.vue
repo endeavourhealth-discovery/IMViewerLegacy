@@ -11,12 +11,13 @@
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { defineComponent, PropType } from "@vue/runtime-core";
+import { ComponentDetails } from "@/models/ecl/ComponentDetails";
 
 export default defineComponent({
   name: "AddNext",
   props: {
-    id: String,
-    position: Number,
+    id: { type: String, required: true },
+    position: { type: Number, required: true },
     last: Boolean,
     value: {
       type: Object as PropType<{
@@ -27,13 +28,16 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ["addClicked", "deleteClicked"],
+  emits: {
+    addClicked: (payload: { selectedType: string; position: number }) => true,
+    deleteClicked: (payload: ComponentDetails) => true
+  },
   mounted() {
     this.generateOptions();
   },
   data() {
     return {
-      options: [] as any[]
+      options: [] as string[]
     };
   },
   methods: {
@@ -56,7 +60,7 @@ export default defineComponent({
     },
 
     generateOptions() {
-      switch (this.value?.previousComponent) {
+      switch (this.value.previousComponent) {
         case ECLType.FOCUS_CONCEPT:
           this.options = [ECLType.LOGIC, ECLType.REFINEMENT_GROUP];
           break;

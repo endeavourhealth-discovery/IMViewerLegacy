@@ -13,14 +13,25 @@ import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponen
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { defineComponent } from "vue";
 import AddDeleteButtons from "@/components/sidebar/expressionConstraintsSearch/AddDeleteButtons.vue";
+import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
+import { ComponentDetails } from "@/models/ecl/ComponentDetails";
 
 export default defineComponent({
   name: "Logic",
-  props: { id: String, position: Number, value: String, last: Boolean },
+  props: {
+    id: { type: String, required: true },
+    position: { type: Number, required: true },
+    value: { type: String, required: false },
+    last: { type: Boolean, required: true }
+  },
   components: { AddDeleteButtons },
-  emits: ["addClicked", "deleteClicked", "updateClicked", "addNextOptionsClicked"],
+  emits: {
+    addNextOptionsClicked: (payload: NextComponentSummary) => true,
+    deleteClicked: (payload: ComponentDetails) => true,
+    updateClicked: (payload: ComponentDetails) => true
+  },
   watch: {
-    selected() {
+    selected(): void {
       this.onConfirm();
     }
   },
@@ -33,12 +44,12 @@ export default defineComponent({
   },
   data() {
     return {
-      options: ["AND", "OR", "MINUS"],
+      options: ["AND", "OR", "MINUS"] as string[],
       selected: ""
     };
   },
   methods: {
-    onConfirm() {
+    onConfirm(): void {
       this.$emit("updateClicked", {
         id: this.id,
         value: this.selected,
@@ -49,7 +60,7 @@ export default defineComponent({
       });
     },
 
-    deleteClicked() {
+    deleteClicked(): void {
       this.$emit("deleteClicked", {
         id: this.id,
         value: this.selected,
@@ -60,7 +71,7 @@ export default defineComponent({
       });
     },
 
-    addNextClicked() {
+    addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
         previousComponent: ECLType.LOGIC,
         previousPosition: this.position
