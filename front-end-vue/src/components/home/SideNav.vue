@@ -189,7 +189,7 @@ export default defineComponent({
         //   fullName: "Catalogue",
         //   route: "Catalogue",
         //   iri: IM.MODULE_CATALOGUE
-        // },
+        // }
         // {
         //   icon: ["fas", "tasks"],
         //   name: "Workflow"

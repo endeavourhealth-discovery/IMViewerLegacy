@@ -2,6 +2,7 @@ import { shallowMount } from "@vue/test-utils";
 import Card from "primevue/card";
 import DataTable from "primevue/datatable";
 import Chart from "primevue/chart";
+import ProgressSpinner from "primevue/progressspinner";
 import CatalogueDashboard from "@/components/catalogue/CatalogueDashboard.vue";
 import Column from "primevue/column";
 import PieChartDashCard from "@/components/dashboard/PieChartDashCard.vue";
@@ -12,7 +13,7 @@ describe("CatalogueDashboard.vue", () => {
   beforeEach(() => {
     wrapper = shallowMount(CatalogueDashboard, {
       global: {
-        components: { Card, DataTable, Chart, Column, PieChartDashCard }
+        components: { Card, DataTable, Chart, Column, PieChartDashCard, ProgressSpinner }
       },
       props: {
         types: [
@@ -26,7 +27,8 @@ describe("CatalogueDashboard.vue", () => {
             iri: "http://endhealth.info/im#Address",
             label: "Address (record type)"
           }
-        ]
+        ],
+        loading: false
       }
     });
   });
@@ -44,5 +46,6 @@ describe("CatalogueDashboard.vue", () => {
         label: "Address (record type)"
       }
     ]);
+    expect(wrapper.vm.loading).toBe(false);
   });
 });

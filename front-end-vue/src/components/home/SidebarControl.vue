@@ -1,5 +1,5 @@
 <template>
-  <div class="p-d-flex p-flex-column p-jc-start" id="side-bar">
+  <div id="side-bar">
     <span class="p-input-icon-left" id="search-bar">
       <i class="pi pi-search" aria-hidden="true" />
       <InputText
@@ -13,7 +13,7 @@
       />
     </span>
 
-    <TabView class="p-d-flex p-flex-column p-jc-start" id="side-menu" v-model:activeIndex="active" @tab-click="tabChange($event)">
+    <TabView id="side-menu" v-model:activeIndex="active" @tab-click="tabChange($event)">
       <TabPanel>
         <template #header>
           <i class="fas fa-sitemap icon-header" aria-hidden="true" />
@@ -27,7 +27,7 @@
           <span>Search results</span>
         </template>
 
-        <div class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container">
+        <div class="p-fluid results-filter-container">
           <SearchResults :searchResults="searchResults" :loading="loading" />
           <Filters :search="search" />
         </div>
@@ -92,9 +92,7 @@ export default defineComponent({
       searchTerm: "",
       active: 0,
       debounce: 0,
-      request: {} as { cancel: any; msg: string },
-      windowHeight: 0,
-      windowWidth: 0
+      request: {} as { cancel: any; msg: string }
     };
   },
   mounted() {
@@ -155,13 +153,12 @@ export default defineComponent({
     },
 
     setContainerHeights(): void {
-      this.windowHeight = window.innerHeight;
-      this.windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
       const html = document.documentElement;
       const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
       const sidebar = document.getElementById("side-bar") as HTMLElement;
       if (sidebar) {
-        sidebar.style.maxHeight = this.windowHeight - currentFontSize * 2 + "px";
+        sidebar.style.maxHeight = windowHeight - currentFontSize * 2 + "px";
       }
       const fixedSidebar = document.getElementById("side-bar") as HTMLElement;
       const searchBar = document.getElementById("search-bar") as HTMLElement;
@@ -177,6 +174,9 @@ export default defineComponent({
 <style scoped>
 #side-bar {
   /* padding: 7px; */
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
   max-height: 100%;
   grid-area: sidebar;
   height: 100%;
@@ -185,6 +185,9 @@ export default defineComponent({
 
 #side-menu {
   /* max-height: calc(100% - 41px); */
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
   flex-grow: 100;
 }
 
@@ -199,6 +202,9 @@ export default defineComponent({
 }
 
 .results-filter-container {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
   height: 100%;
 }
 

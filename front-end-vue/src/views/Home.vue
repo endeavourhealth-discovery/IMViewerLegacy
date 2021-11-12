@@ -23,8 +23,6 @@ export default defineComponent({
   },
   computed: mapState(["sideNavHierarchyFocus"]),
   async mounted() {
-    // check for user and log them in if found or logout if not
-    await this.$store.dispatch("authenticateCurrentUser");
     this.updateRoute();
   },
   methods: {

@@ -1,103 +1,9 @@
 <template>
-  <side-nav />
+  <SideNav />
   <div class="layout-main">
-    <div class="_container">
-      <div class="p-grid _container">
-        <div class="p-col-3" id="side-menu">
-          <div id="tab">
-            <span class="p-input-icon-left" id="search-bar" style="margin-bottom: 0.2em">
-              <i class="pi pi-search" aria-hidden="true" />
-              <InputText
-                type="text"
-                v-model="searchRequest"
-                @keydown="checkKey($event.code)"
-                placeholder="Search"
-                class="p-inputtext-lg search-input"
-                autoWidth="false"
-              />
-            </span>
-            <TabView v-model:activeIndex="active">
-              <TabPanel>
-                <template #header>
-                  <i style="padding: 1px" class="fas fa-search icon-header" aria-hidden="true" />
-                  <span>Search Results</span>
-                </template>
-                <Listbox
-                  v-model="selected"
-                  :options="searchResults"
-                  @click="setSelectedInstance()"
-                  :virtualScrollerOptions="{ itemSize: 31 }"
-                  style="width:100%; margin-bottom:2em"
-                  listStyle="height:550px"
-                >
-                  <template #option="slotProps">
-                    <div v-if="slotProps.option.name">
-                      <span>{{ slotProps.option.name }}</span>
-                    </div>
-                    <div v-else>
-                      <span>{{ slotProps.option["@id"] }}</span>
-                    </div>
-                  </template>
-                </Listbox>
-                <p style="margin-bottom: 1em; font-size: 14px">Select Type</p>
-                <MultiSelect
-                  id="type"
-                  v-model="selectedType"
-                  :options="types"
-                  optionLabel="label"
-                  placeholder="Select"
-                  display="chip"
-                  style="width: 100%; margin-bottom: 2em"
-                  class="p-inputtext-lg"
-                  @change="setIris()"
-                />
-              </TabPanel>
-              <TabPanel>
-                <template #header>
-                  <i class="fas fa-history icon-header" aria-hidden="true" />
-                  <span>History</span>
-                </template>
-                <Listbox
-                  v-model="selected"
-                  :options="history"
-                  class="history-listbox"
-                  @click="setSelectedInstance()"
-                  :virtualScrollerOptions="{ itemSize: 31 }"
-                  style="width:100%"
-                  listStyle="height:700px"
-                >
-                  <template #option="slotProps">
-                    <div v-if="slotProps.option.name">
-                      <span>{{ slotProps.option.name }}</span>
-                    </div>
-                    <div v-else>
-                      <span>{{ slotProps.option["@id"] }}</span>
-                    </div>
-                  </template>
-                </Listbox>
-              </TabPanel>
-            </TabView>
-          </div>
-        </div>
-        <div class="p-col-9 full_height">
-          <div v-if="this.dash" class="full_height">
-            <CatalogueDashboard v-if="types.length" :types="types" class="full_height" />
-          </div>
-          <div v-else id="panel-container">
-            <Panel>
-              <template #header v-if="instanceName"> {{ instanceName }}</template>
-              <template #header v-else> {{ instanceIri }}</template>
-              <Tree :value="instanceData">
-                <template #default="slotProps"> {{ slotProps.node.label }} {{ slotProps.node.data }} </template>
-                <template #address="slotProps">
-                  {{ slotProps.node.label }}
-                  <a href="javascript:void(0)" @click="navigate(slotProps.node.data)">{{ slotProps.node.data["@id"] }}</a>
-                </template>
-              </Tree>
-            </Panel>
-          </div>
-        </div>
-      </div>
+    <div class="catalogue-grid">
+      <CatalogueSideBar :typeOptions="types" :history="history" @updateHistory="updateHistory" />
+      <router-view :instanceIri="instanceIri" :instance="instance" :history="history" :types="types" :loading="loading" @updateHistory="updateHistory" />
     </div>
   </div>
 </template>
@@ -106,214 +12,90 @@
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import CatalogueService from "@/services/CatalogueService";
-import CatalogueDashboard from "@/components/catalogue/CatalogueDashboard.vue";
-import { IM } from "@/vocabulary/IM";
+import CatalogueSideBar from "@/components/catalogue/CatalogueSideBar.vue";
 import { mapState } from "vuex";
-import { RDFS } from "@/vocabulary/RDFS";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { IM } from "@/vocabulary/IM";
+import { TTBundle } from "@/models/TripleTree";
+import { InstanceHistoryItem } from "@/models/catalogue/InstanceHistoryItem";
+import { SimpleCount } from "@/models/SimpleCount";
 
 export default defineComponent({
   name: "Catalogue",
   components: {
-    CatalogueDashboard,
-    SideNav
+    SideNav,
+    CatalogueSideBar
   },
   watch: {
-    async instanceIri() {
-      this.displayInstance();
-    },
-    async catalogueSearchTerm() {
-      await this.getSearchResult();
+    async instanceIri(): Promise<void> {
+      this.init();
     }
   },
-  computed: { ...mapState(["catalogueSearchTerm", "instanceIri"]) },
+  computed: { ...mapState(["instanceIri"]) },
   data() {
     return {
-      searchRequest: "",
-      searchResults: [] as any[],
-      instanceName: "",
-      instance: {} as any,
-      predicate: [] as string[],
-      active: 0,
-      currentSelected: "",
-      history: [] as any[],
-      selectedHistory: "",
-      instanceData: [] as any[],
-      selected: {} as any,
-      location: "",
-      types: [] as any[],
-      selectedType: [] as any[],
-      typesIris: [] as string[],
-      dash: true,
-      loading: false,
-      isEditing: false
+      instance: {} as TTBundle,
+      history: [] as InstanceHistoryItem[],
+      types: [] as SimpleCount[],
+      loading: false
     };
   },
   async mounted() {
-    await this.getTypesCount();
-    if (this.instanceIri) {
-      this.displayInstance();
-    }
-    if (this.catalogueSearchTerm) {
-      await this.getSearchResult();
-    }
+    this.updateSideNav();
+    await this.init();
   },
   methods: {
-    async getTypesCount() {
+    async init(): Promise<void> {
+      this.loading = true;
+      await this.getTypesCount();
+      if (this.instanceIri.length) {
+        this.getInstance();
+        this.$router.push({ name: "Individual", params: { selectedIri: this.instanceIri } });
+      } else {
+        this.$router.push({ name: "CatalogueDashboard" });
+      }
+      this.loading = false;
+    },
+
+    updateSideNav(): void {
+      this.$store.commit("updateSideNavHierarchyFocus", {
+        name: "Catalogue",
+        fullName: "Catalogue",
+        route: "Catalogue",
+        iri: IM.MODULE_CATALOGUE
+      });
+    },
+
+    async getTypesCount(): Promise<void> {
       const result = await CatalogueService.getTypesCount();
-      if (result) this.types = result;
+      this.types = result;
     },
 
-    async getSearchResult() {
-      const result = await CatalogueService.getSearchResult(this.catalogueSearchTerm, this.typesIris);
-      if (result) this.searchResults = result;
-    },
-
-    setIris() {
-      this.typesIris = [];
-      this.selectedType.forEach((type: any) => {
-        this.typesIris.push(type.iri);
-      });
-    },
-
-    checkKey(event: any) {
-      if (this.searchRequest.length > 2 && event === "Enter") {
-        this.$store.commit("updateCatalogueSearchTerm", this.searchRequest);
-        this.getSearchResult();
-      }
-    },
-
-    setSelectedInstance() {
-      if (this.selected == null) {
-        this.selected = this.currentSelected;
-      }
-      this.$router.push({
-        name: "Individual",
-        params: { selectedIri: this.selected["@id"] }
-      });
-      this.currentSelected = this.selected;
-    },
-    displayInstance() {
-      this.dash = false;
-      this.getPartialInstance();
-      if (!this.history.some((instance: any) => instance["@id"] === this.instanceIri)) {
-        this.history.push({
-          "@id": this.instanceIri,
-          name: this.instanceName
-        });
-      }
-    },
-    async getPartialInstance() {
-      const result = await CatalogueService.getPartialInstance(this.instanceIri, this.predicate);
+    async getInstance(): Promise<void> {
+      const result = await CatalogueService.getPartialInstance(this.instanceIri);
       if (result) this.instance = result;
-      this.instanceData = [];
-      let level = 0;
-      this.instanceName = this.instance.entity[RDFS.LABEL];
-      Object.keys(this.instance.entity).forEach((predicate: any) => {
-        if (predicate === "@id") {
-          this.instanceData.push({
-            key: level,
-            label: this.instance.entity[predicate],
-            children: []
-          });
-        } else if (predicate === IM.ADDRESS) {
-          this.instanceData.push({
-            key: level,
-            label: this.getPredicateName(predicate) + " : ",
-            data: this.instance.entity[predicate],
-            type: "address",
-            children: []
-          });
-        } else {
-          if (Array.isArray(this.instance.entity[predicate])) {
-            this.instanceData.push({
-              key: level,
-              label: this.getPredicateName(predicate) + " : ",
-              children: this.getChildren(predicate)
-            });
-          } else if (typeof this.instance.entity[predicate] === "object") {
-            this.instanceData.push({
-              key: level,
-              label: this.getPredicateName(predicate) + " : ",
-              data: this.instance.entity[predicate].name ? this.instance.entity[predicate].name : this.instance.entity[predicate]["@id"],
-              children: []
-            });
-          } else {
-            this.instanceData.push({
-              key: level,
-              label: this.getPredicateName(predicate) + " : ",
-              data: this.instance.entity[predicate],
-              children: []
-            });
-          }
-        }
-        level = level + 1;
-      });
+      else this.instance = {} as TTBundle;
     },
 
-    navigate(instance: any) {
-      this.$router.push({
-        name: "Individual",
-        params: { selectedIri: instance["@id"] }
-      });
+    isObjectHasKeysWrapper(object: any): boolean {
+      return isObjectHasKeys(object);
     },
 
-    getPredicateName(iri: string) {
-      let name = "";
-      this.instance.predicates.forEach((pre: any) => {
-        if (pre["@id"] === iri) {
-          name = pre.name ? pre.name : pre["@id"];
-        }
-      });
-      return name;
-    },
-    getChildren(predicate: string) {
-      console.log("?");
+    updateHistory(historyItem: InstanceHistoryItem): void {
+      if (!this.history.includes(historyItem)) {
+        this.history.push(historyItem);
+      }
     }
   }
 });
 </script>
 <style scoped>
-#search-bar {
-  width: 100%;
-}
-.search-input {
-  width: 100%;
-}
-._container {
-  position: relative;
-  width: 100%;
+.catalogue-grid {
   height: 100%;
-}
-
-.full_height {
-  height: 100%;
-}
-
-#side-menu {
-  flex-grow: 100;
-}
-
-#side-menu ::v-deep(.p-tabview-panels) {
-  flex-grow: 6;
-  overflow-y: auto;
-}
-
-#side-menu ::v-deep(.p-tabview-panel) {
-  height: 100%;
-}
-
-#panel-container {
   width: 100%;
   display: grid;
-  gap: 1rem 1rem;
-  align-items: start;
-  overflow: auto;
-  background-color: #ffffff;
-  height: 100%;
-}
-
-#tab {
-  height: 100%;
-  background-color: #ffffff;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "sidebar content";
+  column-gap: 7px;
 }
 </style>

@@ -21,6 +21,14 @@ export default defineComponent({
     labelKey: { type: String, required: true },
     dataKey: { type: String, required: true }
   },
+  watch: {
+    inputData: {
+      handler() {
+        this.setChartData();
+      },
+      deep: true
+    }
+  },
   mounted() {
     this.$nextTick(() => {
       window.addEventListener("resize", this.onResize);
