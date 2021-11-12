@@ -77,6 +77,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.dashcard-container {
+  height: 100%;
+  width: 100%;
+}
+
 .dashcard-container ::v-deep(.p-card-body) {
   height: 100%;
   width: 100%;

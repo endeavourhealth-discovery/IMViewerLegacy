@@ -27,6 +27,7 @@ import { DashboardLayout } from "@/models/configs/DashboardLayout";
 import EntityService from "@/services/EntityService";
 import { RDFS } from "@/vocabulary/RDFS";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { IriCount } from "@/models/IriCount";
 
 export default defineComponent({
   name: "Dashboard",
@@ -41,7 +42,7 @@ export default defineComponent({
     return {
       loading: false,
       configs: [] as DashboardLayout[],
-      cardsData: [] as { name: string; description: string; inputData: any; component: string }[]
+      cardsData: [] as { name: string; description: string; inputData: IriCount; component: string }[]
     };
   },
   methods: {
