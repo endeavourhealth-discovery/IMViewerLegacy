@@ -182,14 +182,14 @@ export default defineComponent({
           fullName: "Query templates",
           route: "Dashboard",
           iri: IM.MODULE_QUERIES
-        },
-        {
-          icon: ["fas", "fax"],
-          name: "Catalogue",
-          fullName: "Catalogue",
-          route: "Catalogue",
-          iri: IM.MODULE_CATALOGUE
         }
+        // {
+        //   icon: ["fas", "fax"],
+        //   name: "Catalogue",
+        //   fullName: "Catalogue",
+        //   route: "Catalogue",
+        //   iri: IM.MODULE_CATALOGUE
+        // }
         // {
         //   icon: ["fas", "tasks"],
         //   name: "Workflow"
