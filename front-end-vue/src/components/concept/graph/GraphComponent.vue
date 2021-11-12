@@ -238,7 +238,7 @@ export default defineComponent({
       }
       d3.selectAll("g").remove();
       if (isObjectHasKeys(this.simulation, ["stop"])) {
-        this.svgPan.destroy();
+        this.simulation.stop();
       }
     }
   }
