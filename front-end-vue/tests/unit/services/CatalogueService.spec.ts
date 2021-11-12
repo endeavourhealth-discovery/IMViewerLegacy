@@ -10,10 +10,12 @@ describe("CatalogueService.ts ___ axios success", () => {
   });
 
   it("can get search results", async () => {
-    const result = await CatalogueService.getSearchResult("testTerm", ["testType"]);
+    const cancelToken = axios.CancelToken.source().token;
+    const result = await CatalogueService.getSearchResult("testTerm", ["testType"], cancelToken);
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "instance/search", {
-      params: { request: "testTerm", typesIris: ["testType"].join(",") }
+      params: { request: "testTerm", typesIris: ["testType"].join(",") },
+      cancelToken: cancelToken
     });
     expect(result).toBe("axios get return");
   });
@@ -44,10 +46,12 @@ describe("CatalogueService.ts ___ axios fail", () => {
   });
 
   it("can get search results", async () => {
-    const result = await CatalogueService.getSearchResult("testTerm", ["testType"]);
+    const cancelToken = axios.CancelToken.source().token;
+    const result = await CatalogueService.getSearchResult("testTerm", ["testType"], cancelToken);
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "instance/search", {
-      params: { request: "testTerm", typesIris: ["testType"].join(",") }
+      params: { request: "testTerm", typesIris: ["testType"].join(",") },
+      cancelToken: cancelToken
     });
     expect(result).toStrictEqual([]);
   });
