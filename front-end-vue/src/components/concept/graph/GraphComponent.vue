@@ -51,7 +51,7 @@ export default defineComponent({
       svgPan: {} as any,
       height: 400,
       width: 400,
-      force: -1500,
+      force: -5000,
       radius: 16,
       colour: {
         activeNode: { fill: "#e3f2fd", stroke: "#AAAAAA" },
