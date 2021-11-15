@@ -17,7 +17,6 @@ async function getDefaultPredicates(predicates?: any) {
   for (const [key, value] of Object.entries(defaults)) {
     predicates[key] = value;
   }
-  // predicates["http://endhealth.info/im#definition"] = "Definition";
   return predicates;
 }
 
