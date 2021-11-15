@@ -68,17 +68,16 @@ export async function ttNodeToString(node: any, previousType: string, indent: nu
         suffix = " )\n";
       }
     }
-    result = await processObject(key, value, result, previousType, indent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group });
+    result = await processNode(key, value, result, previousType, indent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group });
     count++;
   }
   return result;
 }
 
-async function processObject(key: string, value: any, result: string, previousType: string, indent: number, iriMap: any, stringAdditions: any) {
+async function processNode(key: string, value: any, result: string, previousType: string, indent: number, iriMap: any, stringAdditions: any) {
   const pad = stringAdditions.pad;
   const prefix = stringAdditions.prefix;
   const suffix = stringAdditions.suffix;
-  const group = stringAdditions.group;
   if (isObjectHasKeys(value, ["@id"])) {
     if (iriMap[key]) {
       result += pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
@@ -88,21 +87,37 @@ async function processObject(key: string, value: any, result: string, previousTy
       result += ttIriToString(value as TTIriRef, "object", indent, false);
     }
   } else {
-    if (iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + ":\n";
-    else result += pad + prefix + key + ":\n";
-    if (previousType === "array") {
-      if (group) {
-        result += await ttValueToString(value, "object", indent + 1, iriMap);
-      } else {
-        result += await ttValueToString(value, "object", indent, iriMap);
-      }
+    result += await processObject(key, value, result, previousType, indent, iriMap, stringAdditions);
+  }
+  return result;
+}
+
+async function processObject(
+  key: string,
+  value: any,
+  result: string,
+  previousType: string,
+  indent: number,
+  iriMap: any,
+  stringAdditions: any
+): Promise<string> {
+  const pad = stringAdditions.pad;
+  const prefix = stringAdditions.prefix;
+  const group = stringAdditions.group;
+  if (iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + ":\n";
+  else result += pad + prefix + key + ":\n";
+  if (previousType === "array") {
+    if (group) {
+      result += await ttValueToString(value, "object", indent + 1, iriMap);
+    } else {
+      result += await ttValueToString(value, "object", indent, iriMap);
     }
-    if (previousType === "object") {
-      if (isArrayHasLength(value)) {
-        result += await ttValueToString(value, "object", indent, iriMap);
-      } else {
-        result += await ttValueToString(value, "object", indent + 1, iriMap);
-      }
+  }
+  if (previousType === "object") {
+    if (isArrayHasLength(value)) {
+      result += await ttValueToString(value, "object", indent, iriMap);
+    } else {
+      result += await ttValueToString(value, "object", indent + 1, iriMap);
     }
   }
   return result;
