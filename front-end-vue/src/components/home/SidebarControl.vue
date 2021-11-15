@@ -1,6 +1,6 @@
 <template>
   <div id="side-bar">
-    <span class="p-input-icon-left" id="search-bar">
+    <span class="p-input-icon-left search-bar">
       <i class="pi pi-search" aria-hidden="true" />
       <InputText
         type="text"
@@ -13,7 +13,7 @@
       />
     </span>
 
-    <TabView id="side-menu" v-model:activeIndex="active" @tab-click="tabChange($event)">
+    <TabView class="side-menu" :style="'maxHeight: ' + sideMenuHeight + ';'" v-model:activeIndex="active" @tab-click="tabChange($event)">
       <TabPanel>
         <template #header>
           <i class="fas fa-sitemap icon-header" aria-hidden="true" />
@@ -65,6 +65,7 @@ import { TTIriRef } from "@/models/TripleTree";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { Namespace } from "@/models/Namespace";
 import { isArrayHasLength, isObject } from "@/helpers/DataTypeCheckers";
+import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
 
 export default defineComponent({
   name: "SidebarControl",
@@ -92,7 +93,8 @@ export default defineComponent({
       searchTerm: "",
       active: 0,
       debounce: 0,
-      request: {} as { cancel: any; msg: string }
+      request: {} as { cancel: any; msg: string },
+      sideMenuHeight: ""
     };
   },
   mounted() {
@@ -153,19 +155,7 @@ export default defineComponent({
     },
 
     setContainerHeights(): void {
-      const windowHeight = window.innerHeight;
-      const html = document.documentElement;
-      const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
-      const sidebar = document.getElementById("side-bar") as HTMLElement;
-      if (sidebar) {
-        sidebar.style.maxHeight = windowHeight - currentFontSize * 2 + "px";
-      }
-      const fixedSidebar = document.getElementById("side-bar") as HTMLElement;
-      const searchBar = document.getElementById("search-bar") as HTMLElement;
-      const sideMenu = document.getElementById("side-menu") as HTMLElement;
-      if (searchBar && fixedSidebar && sideMenu) {
-        sideMenu.style.maxHeight = fixedSidebar.getBoundingClientRect().height - searchBar.getBoundingClientRect().height + "px";
-      }
+      this.sideMenuHeight = getContainerElementOptimalHeight("side-bar", ["search-bar"], false);
     }
   }
 });
@@ -173,32 +163,29 @@ export default defineComponent({
 
 <style scoped>
 #side-bar {
-  /* padding: 7px; */
   display: flex;
   flex-flow: column;
   justify-content: flex-start;
-  max-height: 100%;
+  max-height: calc(100vh - 2rem);
   grid-area: sidebar;
-  height: 100%;
+  height: calc(100vh - 2rem);
   width: 30vw;
 }
 
-#side-menu {
-  /* max-height: calc(100% - 41px); */
+.side-menu {
   display: flex;
   flex-flow: column;
   justify-content: flex-start;
   flex-grow: 100;
 }
 
-#side-menu ::v-deep(.p-tabview-panels) {
+.side-menu ::v-deep(.p-tabview-panels) {
   flex-grow: 6;
   overflow-y: auto;
 }
 
-#side-menu ::v-deep(.p-tabview-panel) {
+.side-menu ::v-deep(.p-tabview-panel) {
   height: 100%;
-  /* overflow-y: auto; */
 }
 
 .results-filter-container {
@@ -208,7 +195,7 @@ export default defineComponent({
   height: 100%;
 }
 
-#search-bar {
+.search-bar {
   width: 100%;
 }
 
