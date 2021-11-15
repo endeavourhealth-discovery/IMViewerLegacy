@@ -89,6 +89,7 @@ async function processObject(key: string, value: any, result: string, previousTy
     }
   } else {
     if (iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + ":\n";
+    else result += pad + prefix + key + ":\n";
     if (previousType === "array") {
       if (group) {
         result += await ttValueToString(value, "object", indent + 1, iriMap);
@@ -97,7 +98,11 @@ async function processObject(key: string, value: any, result: string, previousTy
       }
     }
     if (previousType === "object") {
-      result += await ttValueToString(value, "object", indent, iriMap);
+      if (isArrayHasLength(value)) {
+        result += await ttValueToString(value, "object", indent, iriMap);
+      } else {
+        result += await ttValueToString(value, "object", indent + 1, iriMap);
+      }
     }
   }
   return result;
@@ -114,6 +119,8 @@ export async function ttArrayToString(arr: any[], indent: number, iriMap?: any):
 
 function removeEndBrackets(str: string): string {
   const lastBracketStart = str.lastIndexOf("(");
-  if (lastBracketStart > 0) return str.substring(0, lastBracketStart - 1);
+  const bracketText = str.substring(lastBracketStart);
+  const lastBracketEnd = bracketText.indexOf(")");
+  if (lastBracketStart > 0) return str.substring(0, lastBracketStart) + str.substring(lastBracketEnd + lastBracketStart);
   else return str;
 }
