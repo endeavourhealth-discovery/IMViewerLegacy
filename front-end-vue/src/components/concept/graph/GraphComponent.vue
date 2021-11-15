@@ -157,7 +157,17 @@ export default defineComponent({
         .style("font-size", () => `${this.nodeFontSize}px`)
         .on("dblclick", (d: any) => this.dblclick(d));
 
-      const nodeText = nodeTextWrapper.append("xhtml:p").text((d: any) => d.data.name);
+      const nodeText = nodeTextWrapper.append("xhtml:p").text((d: any) => {
+        if (!d.data.name) {
+          return "undefined";
+        }
+
+        if (d.data.name.length <= 63) {
+          return d.data.name;
+        }
+
+        return d.data.name.toString().substring(0, 61) + "...";
+      });
 
       this.simulation.on("tick", () => {
         pathLink
