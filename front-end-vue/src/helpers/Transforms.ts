@@ -121,6 +121,6 @@ function removeEndBrackets(str: string): string {
   const lastBracketStart = str.lastIndexOf("(");
   const bracketText = str.substring(lastBracketStart);
   const lastBracketEnd = bracketText.indexOf(")");
-  if (lastBracketStart > 0) return str.substring(0, lastBracketStart) + str.substring(lastBracketEnd + lastBracketStart);
+  if (lastBracketStart > 0 && lastBracketEnd > 0) return str.substring(0, lastBracketStart).trimEnd() + str.substring(lastBracketEnd + lastBracketStart + 1);
   else return str;
 }
