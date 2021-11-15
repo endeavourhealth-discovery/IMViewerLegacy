@@ -36,7 +36,7 @@ export default defineComponent({
   },
   data() {
     return {
-      avatarOptions: avatars as string[],
+      avatarOptions: avatars,
       newAvatar: this.selectedAvatar
     };
   },

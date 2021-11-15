@@ -36,7 +36,7 @@ export function ttIriToString(iri: TTIriRef, previous: string, indent: number, i
   const pad = "  ".repeat(indent);
   let result = "";
   if (!inline) result += pad;
-  if (iri.name) result += iri.name.replace(/ *\([^)]*\) */g, "");
+  if (iri.name) result += removeEndBrackets(iri.name);
   else result += iri["@id"];
   if (previous === "array") result += "\n";
   return result;
@@ -81,14 +81,14 @@ async function processObject(key: string, value: any, result: string, previousTy
   const group = stringAdditions.group;
   if (isObjectHasKeys(value, ["@id"])) {
     if (iriMap[key]) {
-      result += pad + prefix + iriMap[key].replace(/ *\([^)]*\) */g, "") + " : ";
+      result += pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
       result += ttIriToString(value as TTIriRef, "object", indent, true);
       result += suffix;
     } else {
       result += ttIriToString(value as TTIriRef, "object", indent, false);
     }
   } else {
-    if (iriMap[key]) result += pad + prefix + iriMap[key].replace(/ *\([^)]*\) */g, "") + ":\n";
+    if (iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + ":\n";
     if (previousType === "array") {
       if (group) {
         result += await ttValueToString(value, "object", indent + 1, iriMap);
@@ -110,4 +110,10 @@ export async function ttArrayToString(arr: any[], indent: number, iriMap?: any):
     result += await ttValueToString(item, "array", indent + 1, iriMap);
   }
   return result;
+}
+
+function removeEndBrackets(str: string): string {
+  const lastBracketStart = str.lastIndexOf("(");
+  if (lastBracketStart > 0) return str.substring(0, lastBracketStart - 1);
+  else return str;
 }

@@ -75,7 +75,7 @@ function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicate
 }
 
 export function translateFromTTDocument(ttdocument: any): TTGraphData {
-  ttdocument["@context"];
+  // ttdocument["@context"];
   const firstNode = {
     name: ttdocument.entities[0]["rdfs:label"],
     iri: ttdocument.entities[0]["@id"],
@@ -197,5 +197,5 @@ function getFullKeyIri(shortcutKey: string, ttdocument: any) {
     return shortcutKey;
   }
   const parts = shortcutKey.split(":");
-  return (ttdocument["@context"] as any)[parts[0]] + parts[1];
+  return ttdocument["@context"][parts[0]] + parts[1];
 }
