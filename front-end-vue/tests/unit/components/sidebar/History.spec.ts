@@ -33,13 +33,20 @@ describe("History.vue", () => {
     expect(wrapper.vm.getHistory()).toStrictEqual(mockStore.state.history);
   });
 
-  it("can navigate", async() => {
+  it("can navigate ___ url", async () => {
     wrapper.vm.selectedHistoryItem = { url: "Test url" };
     wrapper.vm.navigate();
     await wrapper.vm.$nextTick();
     expect(mockRouter.push).toHaveBeenCalledTimes(1);
     expect(mockRouter.push).toHaveBeenLastCalledWith("Test url");
-  })
+  });
+
+  it("can navigate ___ no url", async () => {
+    wrapper.vm.selectedHistoryItem = { usp: "Test url" };
+    wrapper.vm.navigate();
+    await wrapper.vm.$nextTick();
+    expect(mockRouter.push).not.toHaveBeenCalled();
+  });
 });
 
 describe("History.vue ___ missing name store", () => {
