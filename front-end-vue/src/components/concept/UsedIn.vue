@@ -35,7 +35,6 @@
 </template>
 <script lang="ts">
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 import { TTIriRef } from "@/models/TripleTree";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
