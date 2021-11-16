@@ -51,11 +51,12 @@ export default defineComponent({
       loading: false
     };
   },
-  async mounted() {
-    if (this.isCorrectInputData) await this.getReportTableData();
+  mounted() {
+    this.getReportTableData();
   },
   methods: {
-    async getReportTableData(): Promise<void> {
+    getReportTableData(): void {
+      if (!this.isCorrectInputData) return;
       this.loading = true;
       for (const entry of this.inputData) {
         if (isObjectHasKeys(entry, [RDFS.LABEL, OWL.HAS_VALUE])) {
