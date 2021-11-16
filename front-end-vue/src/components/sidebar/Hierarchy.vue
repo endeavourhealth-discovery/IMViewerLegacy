@@ -212,7 +212,7 @@ export default defineComponent({
       }
     },
 
-    getSelectedNodeRecursevily() {
+    getSelectedNodeRecursively() {
       const selectedKey = Object.keys(this.selectedKey)[0];
       let result = [] as TreeNode[];
       this.recursiveSearchForNode(selectedKey, this.root, result);
@@ -245,7 +245,7 @@ export default defineComponent({
     },
 
     async expandParents(): Promise<void> {
-      const selected = this.getSelectedNodeRecursevily();
+      const selected = this.getSelectedNodeRecursively();
       const nodeToExpand = this.getNodeToExpand();
       if (!MODULE_IRIS.includes(nodeToExpand.data)) {
         const parentsNodes = [] as TreeNode[];

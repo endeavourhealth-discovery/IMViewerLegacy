@@ -5,6 +5,7 @@ import Tree from "primevue/tree";
 import ProgressSpinner from "primevue/progressspinner";
 import EntityService from "@/services/EntityService";
 import Tooltip from "primevue/tooltip";
+import { IM } from "@/vocabulary/IM";
 
 describe("Hierarchy.vue ___ DiscoveryOntology", () => {
   let wrapper: any;
@@ -485,6 +486,220 @@ describe("Hierarchy.vue ___ Concept", () => {
     }
   ];
 
+  const ROOT = [
+    {
+      children: [
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#111266001",
+          key: "Acquired scoliosis (disorder)",
+          label: "Acquired scoliosis (disorder)",
+          leaf: false,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#773773006",
+          key: "Acrodysplasia scoliosis (disorder)",
+          label: "Acrodysplasia scoliosis (disorder)",
+          leaf: true,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#205045003",
+          key: "Congenital scoliosis due to bony malformation (disorder)",
+          label: "Congenital scoliosis due to bony malformation (disorder)",
+          leaf: true,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#715575001",
+          key: "Distal arthrogryposis type 4 (disorder)",
+          label: "Distal arthrogryposis type 4 (disorder)",
+          leaf: true,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#722432000",
+          key: "Duane anomaly, myopathy, scoliosis syndrome (disorder)",
+          label: "Duane anomaly, myopathy, scoliosis syndrome (disorder)",
+          leaf: true,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#702381007",
+          key: "Horizontal gaze palsy with progressive scoliosis (disorder)",
+          label: "Horizontal gaze palsy with progressive scoliosis (disorder)",
+          leaf: true,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#203639008",
+          key: "Idiopathic scoliosis (disorder)",
+          label: "Idiopathic scoliosis (disorder)",
+          leaf: false,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#30611007",
+          key: "Idiopathic scoliosis AND/OR kyphoscoliosis (disorder)",
+          label: "Idiopathic scoliosis AND/OR kyphoscoliosis (disorder)",
+          leaf: true,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#203638000",
+          key: "Kyphoscoliosis and scoliosis (disorder)",
+          label: "Kyphoscoliosis and scoliosis (disorder)",
+          leaf: true,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#405773007",
+          key: "Kyphoscoliosis deformity of spine (disorder)",
+          label: "Kyphoscoliosis deformity of spine (disorder)",
+          leaf: false,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#111268000",
+          key: "Lordoscoliosis (disorder)",
+          label: "Lordoscoliosis (disorder)",
+          leaf: true,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#203662005",
+          key: "Neuromuscular scoliosis (disorder)",
+          label: "Neuromuscular scoliosis (disorder)",
+          leaf: false,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#203645000",
+          key: "Postural scoliosis (disorder)",
+          label: "Postural scoliosis (disorder)",
+          leaf: false,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#719162001",
+          key: "Radioulnar synostosis with microcephaly and scoliosis syndrome (disorder)",
+          label: "Radioulnar synostosis with microcephaly and scoliosis syndrome (disorder)",
+          leaf: true,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#203664006",
+          key: "Scoliosis in connective tissue anomalies (disorder)",
+          label: "Scoliosis in connective tissue anomalies (disorder)",
+          leaf: true,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#203663000",
+          key: "Scoliosis in neurofibromatosis (disorder)",
+          label: "Scoliosis in neurofibromatosis (disorder)",
+          leaf: true,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#203661003",
+          key: "Scoliosis in skeletal dysplasia (disorder)",
+          label: "Scoliosis in skeletal dysplasia (disorder)",
+          leaf: true,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#298392006",
+          key: "Scoliosis of cervical spine (disorder)",
+          label: "Scoliosis of cervical spine (disorder)",
+          leaf: false,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#298591003",
+          key: "Scoliosis of lumbar spine (disorder)",
+          label: "Scoliosis of lumbar spine (disorder)",
+          leaf: false,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#298494008",
+          key: "Scoliosis of thoracic spine (disorder)",
+          label: "Scoliosis of thoracic spine (disorder)",
+          leaf: false,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        }
+      ],
+      color: "#e39a3688",
+      data: "http://snomed.info/sct#298382003",
+      key: "Scoliosis deformity of spine (disorder)",
+      label: "Scoliosis deformity of spine (disorder)",
+      leaf: true,
+      loading: false,
+      typeIcon: "far fa-fw fa-lightbulb"
+    }
+  ];
+
   beforeEach(async () => {
     jest.resetAllMocks();
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
@@ -539,219 +754,7 @@ describe("Hierarchy.vue ___ Concept", () => {
       parents: PARENTS
     });
     expect(wrapper.vm.searchResult).toBe("");
-    expect(wrapper.vm.root).toStrictEqual([
-      {
-        children: [
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#111266001",
-            key: "Acquired scoliosis (disorder)",
-            label: "Acquired scoliosis (disorder)",
-            leaf: false,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#773773006",
-            key: "Acrodysplasia scoliosis (disorder)",
-            label: "Acrodysplasia scoliosis (disorder)",
-            leaf: true,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#205045003",
-            key: "Congenital scoliosis due to bony malformation (disorder)",
-            label: "Congenital scoliosis due to bony malformation (disorder)",
-            leaf: true,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#715575001",
-            key: "Distal arthrogryposis type 4 (disorder)",
-            label: "Distal arthrogryposis type 4 (disorder)",
-            leaf: true,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#722432000",
-            key: "Duane anomaly, myopathy, scoliosis syndrome (disorder)",
-            label: "Duane anomaly, myopathy, scoliosis syndrome (disorder)",
-            leaf: true,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#702381007",
-            key: "Horizontal gaze palsy with progressive scoliosis (disorder)",
-            label: "Horizontal gaze palsy with progressive scoliosis (disorder)",
-            leaf: true,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#203639008",
-            key: "Idiopathic scoliosis (disorder)",
-            label: "Idiopathic scoliosis (disorder)",
-            leaf: false,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#30611007",
-            key: "Idiopathic scoliosis AND/OR kyphoscoliosis (disorder)",
-            label: "Idiopathic scoliosis AND/OR kyphoscoliosis (disorder)",
-            leaf: true,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#203638000",
-            key: "Kyphoscoliosis and scoliosis (disorder)",
-            label: "Kyphoscoliosis and scoliosis (disorder)",
-            leaf: true,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#405773007",
-            key: "Kyphoscoliosis deformity of spine (disorder)",
-            label: "Kyphoscoliosis deformity of spine (disorder)",
-            leaf: false,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#111268000",
-            key: "Lordoscoliosis (disorder)",
-            label: "Lordoscoliosis (disorder)",
-            leaf: true,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#203662005",
-            key: "Neuromuscular scoliosis (disorder)",
-            label: "Neuromuscular scoliosis (disorder)",
-            leaf: false,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#203645000",
-            key: "Postural scoliosis (disorder)",
-            label: "Postural scoliosis (disorder)",
-            leaf: false,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#719162001",
-            key: "Radioulnar synostosis with microcephaly and scoliosis syndrome (disorder)",
-            label: "Radioulnar synostosis with microcephaly and scoliosis syndrome (disorder)",
-            leaf: true,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#203664006",
-            key: "Scoliosis in connective tissue anomalies (disorder)",
-            label: "Scoliosis in connective tissue anomalies (disorder)",
-            leaf: true,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#203663000",
-            key: "Scoliosis in neurofibromatosis (disorder)",
-            label: "Scoliosis in neurofibromatosis (disorder)",
-            leaf: true,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#203661003",
-            key: "Scoliosis in skeletal dysplasia (disorder)",
-            label: "Scoliosis in skeletal dysplasia (disorder)",
-            leaf: true,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#298392006",
-            key: "Scoliosis of cervical spine (disorder)",
-            label: "Scoliosis of cervical spine (disorder)",
-            leaf: false,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#298591003",
-            key: "Scoliosis of lumbar spine (disorder)",
-            label: "Scoliosis of lumbar spine (disorder)",
-            leaf: false,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          },
-          {
-            children: [],
-            color: "#e39a3688",
-            data: "http://snomed.info/sct#298494008",
-            key: "Scoliosis of thoracic spine (disorder)",
-            label: "Scoliosis of thoracic spine (disorder)",
-            leaf: false,
-            loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
-          }
-        ],
-        color: "#e39a3688",
-        data: "http://snomed.info/sct#298382003",
-        key: "Scoliosis deformity of spine (disorder)",
-        label: "Scoliosis deformity of spine (disorder)",
-        leaf: true,
-        loading: false,
-        typeIcon: "far fa-fw fa-lightbulb"
-      }
-    ]);
+    expect(wrapper.vm.root).toStrictEqual(ROOT);
     expect(wrapper.vm.expandedKeys).toStrictEqual({ "Scoliosis deformity of spine (disorder)": true });
     expect(wrapper.vm.selectedKey).toStrictEqual({ "Scoliosis deformity of spine (disorder)": true });
     expect(wrapper.vm.parentLabel).toBe("Curvature of spine (disorder)");
@@ -822,6 +825,31 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(wrapper.vm.getConceptAggregate).not.toHaveBeenCalled();
   });
 
+  it("handles resetTree ___ true", async () => {
+    wrapper.vm.getConceptAggregate = jest.fn();
+    wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.$options.watch.resetTree.call(wrapper.vm, true);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.getConceptAggregate).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.getConceptAggregate).toHaveBeenCalledWith(IM.MODULE_ONTOLOGY);
+    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.selectedKey).toStrictEqual({});
+    expect(wrapper.vm.parentLabel).toBe("");
+    expect(wrapper.vm.expandedKeys).toStrictEqual({});
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateResetTree", false);
+  });
+
+  it("handles resetTree ___ false", async () => {
+    wrapper.vm.getConceptAggregate = jest.fn();
+    wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.$options.watch.resetTree.call(wrapper.vm, false);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.getConceptAggregate).not.toHaveBeenCalled();
+    expect(wrapper.vm.refreshTree).not.toHaveBeenCalled();
+    expect(mockStore.commit).not.toHaveBeenCalled();
+  });
+
   it("createsTree ___ no root", () => {
     wrapper.vm.refreshTree = jest.fn();
     wrapper.vm.refreshTree(EntityService.getPartialEntity, EntityService.getEntityParents, EntityService.getEntityChildren);
@@ -841,6 +869,14 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(mockRouter.push).toHaveBeenCalledWith({
       name: "Concept",
       params: { selectedIri: "http://endhealth.info/im#TestConcept" }
+    });
+  });
+
+  it("routes onNodeSelect ___ MODULE_IRI", () => {
+    wrapper.vm.onNodeSelect({ data: IM.MODULE_DATA_MODEL });
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith({
+      name: "Dashboard"
     });
   });
 
@@ -874,6 +910,113 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept");
     expect(testNode.children).toHaveLength(20);
+  });
+
+  it("can getSelectedNodeRecursively ___ result", () => {
+    wrapper.vm.selectedKey = { "Acquired scoliosis (disorder)": true };
+    expect(wrapper.vm.getSelectedNodeRecursively()).toStrictEqual({
+      children: [],
+      color: "#e39a3688",
+      data: "http://snomed.info/sct#111266001",
+      key: "Acquired scoliosis (disorder)",
+      label: "Acquired scoliosis (disorder)",
+      leaf: false,
+      loading: false,
+      typeIcon: "far fa-fw fa-lightbulb"
+    });
+  });
+
+  it("can getSelectedNodeRecursively ___ no result", () => {
+    wrapper.vm.recursiveSearchForNode = jest.fn().mockReturnValue(false);
+    expect(wrapper.vm.getSelectedNodeRecursively()).toStrictEqual(ROOT[0]);
+  });
+
+  it("can getNodeToExpand ___ found", () => {
+    wrapper.vm.selectedKey = { "Scoliosis deformity of spine (disorder)": true };
+    expect(wrapper.vm.getNodeToExpand()).toStrictEqual(ROOT[0]);
+  });
+
+  it("can getNodeToExpand ___ not found", () => {
+    expect(wrapper.vm.getNodeToExpand()).toStrictEqual(ROOT[0]);
+  });
+
+  it("can recursiveSearchForNode", () => {
+    let expandedRoot = [
+      {
+        key: "Scoliosis deformity of spine",
+        label: "Scoliosis deformity of spine",
+        typeIcon: "far fa-fw fa-lightbulb",
+        color: "#e39a3688",
+        data: "http://snomed.info/sct#298382003",
+        leaf: true,
+        loading: false,
+        children: [
+          {
+            key: "Acquired scoliosis",
+            label: "Acquired scoliosis",
+            typeIcon: "far fa-fw fa-lightbulb",
+            color: "#e39a3688",
+            data: "http://snomed.info/sct#111266001",
+            leaf: false,
+            loading: false,
+            children: [
+              {
+                key: "Acquired kyphoscoliosis (disorder)",
+                label: "Acquired kyphoscoliosis (disorder)",
+                typeIcon: "far fa-fw fa-lightbulb",
+                color: "#e39a3688",
+                data: "http://snomed.info/sct#405771009",
+                leaf: false,
+                loading: false,
+                children: []
+              },
+              {
+                key: "Adolescent idiopathic scoliosis",
+                label: "Adolescent idiopathic scoliosis",
+                typeIcon: "far fa-fw fa-lightbulb",
+                color: "#e39a3688",
+                data: "http://snomed.info/sct#203646004",
+                leaf: false,
+                loading: false,
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ];
+    let result = [] as any[];
+    wrapper.vm.recursiveSearchForNode("Adolescent idiopathic scoliosis", expandedRoot, result);
+    expect(result).toStrictEqual([
+      {
+        key: "Adolescent idiopathic scoliosis",
+        label: "Adolescent idiopathic scoliosis",
+        typeIcon: "far fa-fw fa-lightbulb",
+        color: "#e39a3688",
+        data: "http://snomed.info/sct#203646004",
+        leaf: false,
+        loading: false,
+        children: []
+      }
+    ]);
+  });
+
+  it("can check nodeIsChildOf ___ true", () => {
+    expect(
+      wrapper.vm.nodeIsChildOf(
+        {
+          children: [],
+          color: "#e39a3688",
+          data: "http://snomed.info/sct#719162001",
+          key: "Radioulnar synostosis with microcephaly and scoliosis syndrome (disorder)",
+          label: "Radioulnar synostosis with microcephaly and scoliosis syndrome (disorder)",
+          leaf: true,
+          loading: false,
+          typeIcon: "far fa-fw fa-lightbulb"
+        },
+        ROOT[0]
+      )
+    ).toBe(true);
   });
 
   it("can expand parents __ api pass", async () => {

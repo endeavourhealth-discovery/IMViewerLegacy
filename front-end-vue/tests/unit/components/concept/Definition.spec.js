@@ -225,11 +225,17 @@ describe("Definition.vue ___ no headers", () => {
     expect(wrapper.vm.hasData({})).toBe(false);
   });
 
+  it("sets hasData ___ number ___ true", () => {
+    expect(wrapper.vm.hasData(3)).toBe(true);
+  });
+
   it("sets hasData ___ unknown ___ false", () => {
     const log = console.log;
     console.log = jest.fn();
-    wrapper.vm.hasData(3);
-    expect(console.log).toHaveBeenCalledWith(`Unexpected data type encountered for function hasData in definition. Data: 3`);
+    wrapper.vm.hasData(function testFunction() {
+      return true;
+    });
+    expect(console.log).toHaveBeenCalledWith(`Unexpected data type encountered for function hasData in definition. Data: undefined`);
     console.log = log;
   });
 
