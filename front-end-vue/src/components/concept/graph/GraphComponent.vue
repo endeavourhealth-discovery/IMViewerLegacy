@@ -51,7 +51,7 @@ export default defineComponent({
       svgPan: {} as any,
       height: 400,
       width: 400,
-      force: -1500,
+      force: -5000,
       radius: 16,
       colour: {
         activeNode: { fill: "#e3f2fd", stroke: "#AAAAAA" },
@@ -142,6 +142,12 @@ export default defineComponent({
         .attr("r", () => this.radius)
         .call(this.drag(this.simulation) as any);
 
+      const div = d3
+        .select("body")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
       const nodeTextWrapper = svg
         .append("g")
         .attr("class", "labels")
@@ -155,9 +161,35 @@ export default defineComponent({
         .attr("height", (d: any) => this.getFODimensions(d).height)
         .attr("color", (d: any) => (hasNodeChildrenByName(this.data, d.data.name) ? this.colour.activeNode.fill : this.colour.inactiveNode.fill))
         .style("font-size", () => `${this.nodeFontSize}px`)
-        .on("dblclick", (d: any) => this.dblclick(d));
+        .on("dblclick", (d: any) => this.dblclick(d))
+        .on("mouseover", (d: any) => {
+          div
+            .transition()
+            .duration(200)
+            .style("opacity", 0.9);
+          div
+            .html(d.path[0]["__data__"]["data"]["name"])
+            .style("left", d.x + "px")
+            .style("top", d.y + 10 + "px");
+        })
+        .on("mouseout", (d: any) => {
+          div
+            .transition()
+            .duration(500)
+            .style("opacity", 0);
+        });
 
-      const nodeText = nodeTextWrapper.append("xhtml:p").text((d: any) => d.data.name);
+      const nodeText = nodeTextWrapper.append("xhtml:p").text((d: any) => {
+        if (!d.data.name) {
+          return "undefined";
+        }
+
+        if (d.data.name.length <= 63) {
+          return d.data.name;
+        }
+
+        return d.data.name.toString().substring(0, 61) + "...";
+      });
 
       this.simulation.on("tick", () => {
         pathLink
@@ -274,5 +306,18 @@ foreignObject p {
 foreignObject:hover {
   font-weight: 600;
   cursor: pointer;
+}
+
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 120px;
+  padding: 2px;
+  font: 12px sans-serif;
+  background-color: black;
+  color: #fff;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
 }
 </style>
