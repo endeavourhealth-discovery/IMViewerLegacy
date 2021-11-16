@@ -72,17 +72,11 @@ export default defineComponent({
     },
 
     async getInstance(): Promise<void> {
-      const result = await CatalogueService.getPartialInstance(this.instanceIri);
-      if (result) this.instance = result;
-      else this.instance = {} as TTBundle;
-    },
-
-    isObjectHasKeysWrapper(object: any): boolean {
-      return isObjectHasKeys(object);
+      this.instance = await CatalogueService.getPartialInstance(this.instanceIri);
     },
 
     updateHistory(historyItem: InstanceHistoryItem): void {
-      if (!this.history.includes(historyItem)) {
+      if (this.history.findIndex(item => item["@id"] === historyItem["@id"]) === -1) {
         this.history.push(historyItem);
       }
     }
