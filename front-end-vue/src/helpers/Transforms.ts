@@ -79,13 +79,10 @@ async function processNode(key: string, value: any, result: string, previousType
   const prefix = stringAdditions.prefix;
   const suffix = stringAdditions.suffix;
   if (isObjectHasKeys(value, ["@id"])) {
-    if (iriMap[key]) {
-      result += pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
-      result += ttIriToString(value as TTIriRef, "object", indent, true);
-      result += suffix;
-    } else {
-      result += ttIriToString(value as TTIriRef, "object", indent, false);
-    }
+    if (iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
+    else result += pad + prefix + removeEndBrackets(key) + " : ";
+    result += ttIriToString(value as TTIriRef, "object", indent, true);
+    result += suffix;
   } else {
     result += await processObject(key, value, result, previousType, indent, iriMap, stringAdditions);
   }
