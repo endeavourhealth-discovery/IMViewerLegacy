@@ -142,8 +142,6 @@ export default defineComponent({
         .attr("r", () => this.radius)
         .call(this.drag(this.simulation) as any);
 
-      const self = this; // eslint-disable-line
-
       const div = d3
         .select("body")
         .append("div")
@@ -174,14 +172,12 @@ export default defineComponent({
             .style("left", d.x + "px")
             .style("top", d.y + 10 + "px");
         })
-        .on("mouseout", function(d) {
+        .on("mouseout", (d: any) => {
           div
             .transition()
             .duration(500)
             .style("opacity", 0);
         });
-
-      nodeTextWrapper;
 
       const nodeText = nodeTextWrapper.append("xhtml:p").text((d: any) => {
         if (!d.data.name) {
@@ -316,7 +312,6 @@ div.tooltip {
   position: absolute;
   text-align: center;
   width: 120px;
-  /* height: 28px; */
   padding: 2px;
   font: 12px sans-serif;
   background-color: black;
