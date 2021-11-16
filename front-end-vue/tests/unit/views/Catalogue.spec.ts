@@ -108,6 +108,32 @@ describe("Catalogue.vue ___ instanceIri", () => {
       iri: IM.MODULE_CATALOGUE
     });
   });
+
+  it("can getTypesCount", async () => {
+    wrapper.vm.getTypesCount();
+    expect(CatalogueService.getTypesCount).toHaveBeenCalledTimes(1);
+    await flushPromises();
+    expect(wrapper.vm.types).toStrictEqual(TYPES);
+  });
+
+  it("can get instance", async () => {
+    wrapper.vm.getInstance();
+    expect(CatalogueService.getPartialInstance).toHaveBeenCalledTimes(1);
+    expect(CatalogueService.getPartialInstance).toHaveBeenCalledWith("http://org.endhealth.info/im#FQK48");
+    await flushPromises();
+    expect(wrapper.vm.instance).toStrictEqual(INSTANCE);
+  });
+
+  it("can updateHistory ___ new item", () => {
+    wrapper.vm.updateHistory({ "@id": "testIri", iriType: { "@id": "testType" }, name: "testName" });
+    expect(wrapper.vm.history).toStrictEqual([{ "@id": "testIri", iriType: { "@id": "testType" }, name: "testName" }]);
+  });
+
+  it("can updateHistory ___ existing item", () => {
+    wrapper.vm.history = [{ "@id": "testIri", iriType: { "@id": "testType" }, name: "testName" }];
+    wrapper.vm.updateHistory({ "@id": "testIri", iriType: { "@id": "testType" }, name: "testName" });
+    expect(wrapper.vm.history).toStrictEqual([{ "@id": "testIri", iriType: { "@id": "testType" }, name: "testName" }]);
+  });
 });
 
 describe("Catalogue.vue ___ no instanceIri", () => {
