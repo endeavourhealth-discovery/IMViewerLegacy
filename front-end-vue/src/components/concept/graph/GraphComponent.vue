@@ -143,7 +143,7 @@ export default defineComponent({
         .call(this.drag(this.simulation) as any);
 
       const div = d3
-        .select("body")
+        .selectAll("#force-layout-graph")
         .append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
@@ -268,6 +268,9 @@ export default defineComponent({
       if (isObjectHasKeys(this.svgPan, ["destroy"])) {
         this.svgPan.destroy();
       }
+      d3.select("#force-layout-graph")
+        .selectAll("div")
+        .remove();
       d3.selectAll("g").remove();
       if (isObjectHasKeys(this.simulation, ["stop"])) {
         this.simulation.stop();
