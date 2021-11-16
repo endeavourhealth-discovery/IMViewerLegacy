@@ -27,6 +27,7 @@ import TextSectionHeader from "@/components/generics/TextSectionHeader.vue";
 import SectionDivider from "@/components/generics/SectionDivider.vue";
 import TextDefinition from "@/components/generics/TextDefinition.vue";
 import ObjectNameTagWithLabel from "@/components/generics/ObjectNameTagWithLabel.vue";
+import NumberWithLabel from "@/components/generics/NumberWithLabel.vue";
 import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
 import { isArrayHasLength, isObject, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
@@ -42,7 +43,8 @@ export default defineComponent({
     TextSectionHeader,
     SectionDivider,
     TextDefinition,
-    ObjectNameTagWithLabel
+    ObjectNameTagWithLabel,
+    NumberWithLabel
   },
   props: {
     concept: { type: Object, required: true },
@@ -84,7 +86,9 @@ export default defineComponent({
       } else if (Array.isArray(data)) {
         return isArrayHasLength(data) ? true : false;
       } else if (typeof data === "string") {
-        return true;
+        return data.length ? true : false;
+      } else if (typeof data === "number") {
+        return data ? true : false;
       } else if (isObjectHasKeys(data, ["count"])) {
         return data.count ? true : false;
       } else if (isObjectHasKeys(data, ["entity", "predicates"])) {
