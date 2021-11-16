@@ -44,7 +44,6 @@
 </template>
 <script lang="ts">
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 import { RouteRecordName } from "vue-router";
 import { DataModelProperty, ProcessedDataModelProperty } from "@/models/properties/DataModelProperty";
