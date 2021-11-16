@@ -250,6 +250,11 @@ describe("mutations", () => {
     expect(store.state.instanceIri).toBe("testIriString");
   });
 
+  it("can updateSidebarControlActivePanel", () => {
+    store.commit("updateSidebarControlActivePanel", 4);
+    expect(store.state.sidebarControlActivePanel).toBe(4);
+  });
+
   it("can fetchSearchResults ___ pass", async () => {
     EntityService.advancedSearch = jest.fn().mockResolvedValue({ entities: [{ iri: "testResult" }] });
     LoggerService.info = jest.fn();

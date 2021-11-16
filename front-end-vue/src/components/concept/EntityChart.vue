@@ -65,7 +65,7 @@ import EntityService from "@/services/EntityService";
 import { RouteRecordName } from "vue-router";
 
 export default defineComponent({
-  name: "Graph",
+  name: "EntityChart",
   props: {
     conceptIri: { type: String, required: true }
   },

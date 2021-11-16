@@ -103,7 +103,8 @@ describe("SidebarControl.vue", () => {
             { "@id": "http://endhealth.info/im#ValueSet", name: "Value set" }
           ]
         },
-        focusHierarchy: false
+        focusHierarchy: false,
+        sidebarControlActivePanel: 0
       },
       commit: jest.fn(),
       dispatch: jest.fn().mockResolvedValue("true")
@@ -135,12 +136,19 @@ describe("SidebarControl.vue", () => {
   it("can update on focusHierarchy", async () => {
     wrapper.vm.$options.watch.focusHierarchy.call(wrapper.vm, true);
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.active).toBe(0);
     expect(mockStore.commit).toHaveBeenCalledWith("updateFocusHierarchy", false);
-    wrapper.vm.active = 3;
-    wrapper.vm.$options.watch.focusHierarchy.call(wrapper.vm, false);
+  });
+
+  it("can update active on sidebarControlActivePanel change", async () => {
+    wrapper.vm.$options.watch.sidebarControlActivePanel.call(wrapper.vm, 3);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.active).toBe(3);
+  });
+
+  it("can tabChange", () => {
+    wrapper.vm.tabChange({ index: 4 });
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateSidebarControlActivePanel", 4);
   });
 
   it("only searches with 3 or more characters ___ 0", async () => {

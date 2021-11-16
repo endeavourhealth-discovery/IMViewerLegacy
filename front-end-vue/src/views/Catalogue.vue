@@ -14,7 +14,6 @@ import SideNav from "@/components/home/SideNav.vue";
 import CatalogueService from "@/services/CatalogueService";
 import CatalogueSideBar from "@/components/catalogue/CatalogueSideBar.vue";
 import { mapState } from "vuex";
-import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { IM } from "@/vocabulary/IM";
 import { TTBundle } from "@/models/TripleTree";
 import { InstanceHistoryItem } from "@/models/catalogue/InstanceHistoryItem";

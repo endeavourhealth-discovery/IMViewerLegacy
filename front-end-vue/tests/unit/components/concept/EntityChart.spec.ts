@@ -3,7 +3,6 @@ import EntityChart from "@/components/concept/EntityChart.vue";
 import ProgressSpinner from "primevue/progressspinner";
 import OrganizationChart from "primevue/organizationchart";
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 
 describe("Graph.vue", () => {
   let wrapper: any;
@@ -266,6 +265,18 @@ describe("Graph.vue", () => {
   it("calls getGraph on mounted", () => {
     expect(EntityService.getEntityGraph).toHaveBeenCalledTimes(1);
     expect(EntityService.getEntityGraph).toHaveBeenCalledWith("http://endhealth.info/im#AccidentAndEmergencyEncounter");
+  });
+
+  it("can getTypeFromIri ___ no #", () => {
+    expect(wrapper.vm.getTypeFromIri("http://endhealth.info/im%badiri")).toBe("http://endhealth.info/im%badiri");
+  });
+
+  it("can getTypeFromIri ___ #", () => {
+    expect(wrapper.vm.getTypeFromIri("http://endhealth.info/im#testIri")).toBe("TestIri");
+  });
+
+  it("can getTypeFromIri ___ # and :", () => {
+    expect(wrapper.vm.getTypeFromIri("http://endhealth.info/im#test:Iri")).toBe("Iri");
   });
 
   it("can getGraph", async () => {
