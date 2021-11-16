@@ -7,6 +7,7 @@ import Catalogue from "../views/Catalogue.vue";
 import Transform from "../views/Transform.vue";
 import TransformUpload from "../components/transform/TransformUpload.vue";
 import TransformMapping from "../components/transform/TransformMapping.vue";
+import TransformInputProcessing from "../components/transform/TransformInputProcessing.vue";
 import UPRN from "../views/Uprn.vue";
 import User from "../views/User.vue";
 import Editor from "../views/Editor.vue";
@@ -175,8 +176,8 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "UploadContent",
-        component: TransformUpload
+        name: "TransformInputProcessing",
+        component: TransformInputProcessing
       },
       {
         path: "mapping",
