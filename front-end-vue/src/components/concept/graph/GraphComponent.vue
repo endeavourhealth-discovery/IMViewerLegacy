@@ -315,7 +315,7 @@ foreignObject:hover {
 div.tooltip {
   position: absolute;
   text-align: center;
-  width: 100px;
+  width: 120px;
   /* height: 28px; */
   padding: 2px;
   font: 12px sans-serif;
