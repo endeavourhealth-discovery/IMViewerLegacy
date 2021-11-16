@@ -18,6 +18,7 @@ import * as d3 from "d3";
 import svgPanZoom from "svg-pan-zoom";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import EntityService from "@/services/EntityService";
+import { RouteRecordName } from "vue-router";
 
 export default defineComponent({
   name: "GraphComponent",
@@ -162,6 +163,7 @@ export default defineComponent({
         .attr("color", (d: any) => (hasNodeChildrenByName(this.data, d.data.name) ? this.colour.activeNode.fill : this.colour.inactiveNode.fill))
         .style("font-size", () => `${this.nodeFontSize}px`)
         .on("dblclick", (d: any) => this.dblclick(d))
+        .on("click", (d: any) => this.click(d))
         .on("mouseover", (d: any) => {
           div
             .transition()
@@ -221,6 +223,22 @@ export default defineComponent({
 
     getFODimensions(d: any) {
       return { x: -this.radius / 1.1, y: -this.radius / 1.3, height: (2 * this.radius) / 1.3, width: (2 * this.radius) / 1.1 };
+    },
+
+    async click(d: any) {
+      if (d.metaKey || d.ctrlKey) {
+        const node = d.path[0]["__data__"]["data"] as TTGraphData;
+        this.navigate(node.iri);
+      }
+    },
+
+    navigate(iri: string) {
+      const currentRoute = this.$route.name as RouteRecordName | undefined;
+      if (iri)
+        this.$router.push({
+          name: currentRoute,
+          params: { selectedIri: iri }
+        });
     },
 
     async dblclick(d: any) {
