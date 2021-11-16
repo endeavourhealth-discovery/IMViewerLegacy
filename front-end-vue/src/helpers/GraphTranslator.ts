@@ -75,7 +75,6 @@ function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicate
 }
 
 export function translateFromTTDocument(ttdocument: any): TTGraphData {
-  // ttdocument["@context"];
   const firstNode = {
     name: ttdocument.entities[0]["rdfs:label"],
     iri: ttdocument.entities[0]["@id"],

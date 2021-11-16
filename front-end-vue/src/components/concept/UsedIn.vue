@@ -35,10 +35,10 @@
 </template>
 <script lang="ts">
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 import { TTIriRef } from "@/models/TripleTree";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
 
 export default defineComponent({
   name: "UsedIn",
@@ -118,17 +118,7 @@ export default defineComponent({
     },
 
     setScrollHeight(): void {
-      const container = document.getElementById("usedin-table-container") as HTMLElement;
-      if (!container) {
-        LoggerService.error(undefined, "Failed to set usedIn table scroll height. Required elements not found.");
-        return;
-      }
-      const paginator = container.getElementsByClassName("p-paginator")[0] as HTMLElement;
-      let height = container.getBoundingClientRect().height - 1;
-      if (paginator) {
-        height -= paginator.getBoundingClientRect().height;
-      }
-      this.scrollHeight = height + "px";
+      this.scrollHeight = getContainerElementOptimalHeight("usedin-table-container", ["p-paginator"], false, undefined, 1);
     }
   }
 });

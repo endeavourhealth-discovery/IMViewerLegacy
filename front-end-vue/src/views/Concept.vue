@@ -123,6 +123,7 @@ import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
 import { TTIriRef } from "@/models/TripleTree";
 import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
 
 export default defineComponent({
   name: "Concept",
@@ -328,22 +329,14 @@ export default defineComponent({
     },
 
     setContentHeight(): void {
-      const container = document.getElementById("concept-main-container") as HTMLElement;
-      if (!container) {
+      const calcHeight = getContainerElementOptimalHeight("concept-main-container", ["p-panel-header", "p-tabview-nav"], true, 4, 1);
+      if (!calcHeight.length) {
         this.contentHeight = "height: 800px; max-height: 800px;";
         this.contentHeightValue = 800;
-        LoggerService.error("Content sizing error", "failed to get element(s) for concept content resizing");
-        return;
+      } else {
+        this.contentHeight = "height: " + calcHeight + ";" + "max-height: " + calcHeight + ";";
+        this.contentHeightValue = parseInt(calcHeight, 10);
       }
-      const header = container.getElementsByClassName("p-panel-header")[0] as HTMLElement;
-      const nav = container.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
-      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
-      let calcHeight = container.getBoundingClientRect().height - 1;
-      if (currentFontSize) calcHeight -= 4 * currentFontSize;
-      if (header) calcHeight -= header.getBoundingClientRect().height;
-      if (nav) calcHeight -= nav.getBoundingClientRect().height;
-      this.contentHeight = "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
-      this.contentHeightValue = calcHeight;
     },
 
     openDownloadDialog(): void {

@@ -48,6 +48,7 @@ import LoggerService from "@/services/LoggerService";
 import { defineComponent } from "@vue/runtime-core";
 import { RouteRecordName } from "vue-router";
 import { DataModelProperty, ProcessedDataModelProperty } from "@/models/properties/DataModelProperty";
+import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
 
 export default defineComponent({
   name: "Properties",
@@ -111,17 +112,7 @@ export default defineComponent({
     },
 
     setScrollHeight(): void {
-      const container = document.getElementById("properties-table-container") as HTMLElement;
-      if (!container) {
-        LoggerService.error(undefined, "Failed to set Properties table scroll height. Required elements not found.");
-        return;
-      }
-      const paginator = container.getElementsByClassName("p-paginator")[0] as HTMLElement;
-      let height = container.getBoundingClientRect().height - 1;
-      if (paginator) {
-        height -= paginator.getBoundingClientRect().height;
-      }
-      this.scrollHeight = height + "px";
+      this.scrollHeight = getContainerElementOptimalHeight("properties-table-container", ["p-paginator"], false, undefined, 1);
     },
 
     exportCSV(): void {

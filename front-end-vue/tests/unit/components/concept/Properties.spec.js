@@ -146,12 +146,9 @@ describe("Properties.vue", () => {
   });
 
   it("sets scrollHeight ___ container fail", async () => {
-    LoggerService.error = jest.fn();
     wrapper.vm.setScrollHeight();
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.scrollHeight).toBe("500px");
-    expect(LoggerService.error).toHaveBeenCalledTimes(1);
-    expect(LoggerService.error).toHaveBeenCalledWith(undefined, "Failed to set Properties table scroll height. Required elements not found.");
+    expect(wrapper.vm.scrollHeight).toBe("");
   });
 
   it("sets scrollHeight ___ container success", async () => {

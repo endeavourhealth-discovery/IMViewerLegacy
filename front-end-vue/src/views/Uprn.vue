@@ -23,7 +23,7 @@ import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
 import AddressLookup from "@/components/uprn/AddressLookup.vue";
 import FileWorkflow from "@/components/uprn/FileWorkflow.vue";
-import LoggerService from "@/services/LoggerService";
+import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
 
 export default defineComponent({
   name: "Uprn",
@@ -51,18 +51,8 @@ export default defineComponent({
     },
 
     setContentHeight(): void {
-      const container = document.getElementById("uprn-home") as HTMLElement;
-      if (!container) {
-        this.contentHeight = "height: calc(100vh - 7rem);max-height: calc(100vh - 7rem);";
-        LoggerService.error("UPRN content sizing error", "Failed to get element(s) for UPRN content resizing");
-        return;
-      }
-      const nav = container.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
-      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
-      let calcHeight = container.getBoundingClientRect().height - 1;
-      if (currentFontSize) calcHeight -= 2 * currentFontSize;
-      if (nav) calcHeight -= nav.getBoundingClientRect().height;
-      this.contentHeight = "height: " + calcHeight + "px; max-height: " + calcHeight + "px;";
+      const calcHeight = getContainerElementOptimalHeight("uprn-home", ["p-tabview-nav"], true, 2, 1);
+      this.contentHeight = "height: " + calcHeight + "; max-height: " + calcHeight + ";";
     }
   }
 });

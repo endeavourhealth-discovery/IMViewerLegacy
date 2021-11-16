@@ -1,11 +1,8 @@
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import UsedIn from "@/components/concept/UsedIn.vue";
-import ProgressSpinner from "primevue/progressspinner";
-import Listbox from "primevue/listbox";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import EntityService from "@/services/EntityService";
-import LoggerService from "@/services/LoggerService";
 
 describe("UsedIn.vue", () => {
   let wrapper: any;
@@ -47,7 +44,7 @@ describe("UsedIn.vue", () => {
 
     wrapper = shallowMount(UsedIn, {
       global: {
-        components: { ProgressSpinner, Listbox, DataTable, Column },
+        components: { DataTable, Column },
         mocks: { $router: mockRouter, $toast: mockToast }
       },
       props: { conceptIri: "http://snomed.info/sct#298382003" }
@@ -67,7 +64,7 @@ describe("UsedIn.vue", () => {
     expect(wrapper.vm.recordsTotal).toBe(50);
     expect(wrapper.vm.currentPage).toBe(0);
     expect(wrapper.vm.pageSize).toBe(25);
-    expect(wrapper.vm.scrollHeight).toBe("500px");
+    expect(wrapper.vm.scrollHeight).toBe("");
     expect(wrapper.vm.templateString).toBe("Displaying {first} to {last} of {totalRecords} concepts");
   });
 
@@ -181,9 +178,8 @@ describe("UsedIn.vue", () => {
     mockElement.scrollTop = 100;
     mockElement.getElementsByClassName = jest.fn().mockReturnValue([mockElement]);
     docSpy.mockReturnValue(mockElement);
-    console.warn = jest.fn();
     wrapper.vm.setScrollHeight();
-    expect(wrapper.vm.scrollHeight).not.toBe("500px");
+    expect(wrapper.vm.scrollHeight).not.toBe("");
   });
 
   it("can setScrollHeight ___ paginator fail", () => {
@@ -192,17 +188,12 @@ describe("UsedIn.vue", () => {
     mockElement.scrollTop = 100;
     mockElement.getElementsByClassName = jest.fn().mockReturnValue([undefined]);
     docSpy.mockReturnValue(mockElement);
-    console.warn = jest.fn();
     wrapper.vm.setScrollHeight();
     expect(wrapper.vm.scrollHeight).not.toBe("500px");
   });
 
   it("can setScrollHeight ___ container fail", () => {
-    LoggerService.error = jest.fn();
-    console.warn = jest.fn();
     wrapper.vm.setScrollHeight();
-    expect(wrapper.vm.scrollHeight).toBe("500px");
-    expect(LoggerService.error).toHaveBeenCalledTimes(1);
-    expect(LoggerService.error).toHaveBeenCalledWith(undefined, "Failed to set usedIn table scroll height. Required elements not found.");
+    expect(wrapper.vm.scrollHeight).toBe("");
   });
 });

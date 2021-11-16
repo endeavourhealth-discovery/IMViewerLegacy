@@ -203,17 +203,15 @@ describe("SidebarControl.vue", () => {
   });
 
   it("sets container size", async () => {
-    Element.prototype.getBoundingClientRect = jest.fn(() => {
-      return { height: 100, width: 0, top: 0, bottom: 0, right: 0, x: 0, y: 0, left: 0, toJSON: jest.fn() };
-    });
     let docSpy: any;
     const mockElement = document.createElement("div");
-    mockElement.style.height = 100 + "px";
+    mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ height: 100 });
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([undefined]);
     docSpy = jest.spyOn(document, "getElementById");
     docSpy.mockReturnValue(mockElement);
     wrapper.vm.setContainerHeights();
     await wrapper.vm.$nextTick();
-    expect(mockElement.style.maxHeight).toBeTruthy();
+    expect(wrapper.vm.sideMenuHeight).not.toBe("");
   });
 
   it("can remove eventListener", () => {
