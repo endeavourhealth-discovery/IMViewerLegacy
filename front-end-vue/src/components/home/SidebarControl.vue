@@ -83,8 +83,8 @@ export default defineComponent({
         this.$store.commit("updateFocusHierarchy", false);
       }
     },
-    sidebarControlActivePanel() {
-      this.active = this.sidebarControlActivePanel;
+    sidebarControlActivePanel(newValue) {
+      this.active = newValue;
     }
   },
   data() {
