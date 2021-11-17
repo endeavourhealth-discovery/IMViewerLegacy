@@ -1,28 +1,47 @@
 <template>
   <Card id="container">
     <template #content>
+      <Dialog header="Header" v-model:visible="joinDialog" :breakpoints="{ '960px': '75vw' }" :style="{ width: '50vw' }">
+        <div>
+          <p v-if="!selectedInputs.length">
+            No input selected.
+          </p>
+          <div class="p-fluid p-formgrid p-grid" v-else>
+            <div class="p-col">{{ selectedInputs?.[0]?.input?.name }}</div>
+            <div class="p-col">{{ selectedInputs?.[1]?.input?.name }}</div>
+          </div>
+        </div>
+        <template #footer>
+          <Button label="Cancel" class="p-button-text" icon="pi pi-times" @click="toggleJoinDialog" />
+          <Button label="Join" icon="pi pi-check" @click="toggleJoinDialog" />
+        </template>
+      </Dialog>
       <div class="p-fluid p-formgrid p-grid">
         <div class="p-field p-col-6 p-md-6">
           <div class="p-col">
-            <DataTable :value="inputs" v-model:selection="selected" selectionMode="single" responsiveLayout="scroll">
+            <DataTable :value="inputs" v-model:selection="selectedInputs" responsiveLayout="scroll">
               <template #header>
                 <div class="p-d-flex p-jc-between p-ai-center">
                   <h5 class="p-m-0">Input upload</h5>
-                  <span>
-                    <FileUpload
-                      mode="basic"
-                      ref="input"
-                      name="demo[]"
-                      :customUpload="true"
-                      :auto="true"
-                      @uploader="uploadInputs"
-                      @clear="resetInputs"
-                      @remove="resetInputs"
-                      accept=".txt, .csv, .tsv, .json"
-                      chooseLabel="Upload"
-                      :multiple="true"
-                    />
-                  </span>
+                  <div class="p-fluid p-formgrid p-grid">
+                    <div class="p-col"><Button label="Join..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" /></div>
+                    <Menu id="overlay_menu" ref="menu" :model="actionMenu" :popup="true" />
+                    <div class="p-col">
+                      <FileUpload
+                        mode="basic"
+                        ref="input"
+                        name="demo[]"
+                        :customUpload="true"
+                        :auto="true"
+                        @uploader="uploadInputs"
+                        @clear="resetInputs"
+                        @remove="resetInputs"
+                        accept=".txt, .csv, .tsv, .json"
+                        chooseLabel="Upload"
+                        :multiple="true"
+                      />
+                    </div>
+                  </div>
                 </div>
               </template>
               <template #empty>
@@ -31,6 +50,7 @@
               <template #loading>
                 Loading files. Please wait.
               </template>
+              <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
               <Column field="file" header="File">
                 <template #body="slotProps">
                   {{ slotProps.data.input.name }}
@@ -43,21 +63,12 @@
               </Column>
               <Column field="lastModified" header="Updated">
                 <template #body="slotProps">
-                  {{ getDate(slotProps.data.input.lastModified) }}
+                  {{ slotProps.data.input.lastModified }}
                 </template>
               </Column>
               <Column field="preview-save-delete">
                 <template #body="slotProps">
-                  <!-- <Button type="button" label="Download..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" /> -->
-
-                  <Button
-                    icon="pi pi-pencil"
-                    class="p-button-rounded p-button-success p-mr-2"
-                    @click="toggle"
-                    aria-haspopup="true"
-                    aria-controls="overlay_menu"
-                  />
-                  <Menu id="overlay_menu" ref="menu" :model="actionMenu" :popup="true" />
+                  <Button icon="pi pi-eye" class="p-button-rounded p-button-info p-mr-2" @click="preview(slotProps.data)" />
                   <Button icon="pi pi-trash" class="p-button-rounded p-button-danger" @click="removeInput(slotProps.data)" />
                 </template>
               </Column>
@@ -102,17 +113,32 @@ export default defineComponent({
     return {
       pageIndex: 0,
       inputs: [] as TransformInputUpload[],
+      selectedInputs: [] as TransformInputUpload[],
       selected: {} as TransformInputUpload,
-      actionMenu: [{ label: "Join", command: () => console.log("Hello") }]
+      joinDialog: false,
+      actionMenu: [
+        {
+          label: "Join",
+          command: () => {
+            this.toggleJoinDialog();
+          }
+        },
+        { label: "Auto Join", command: () => console.log("Auto Join") }
+      ]
     };
   },
   methods: {
-    getDate(ms: number) {
-      return ms;
-    },
     toggle(event: any) {
       const x = this.$refs.menu as any;
       x.toggle(event);
+    },
+
+    toggleJoinDialog() {
+      this.joinDialog = !this.joinDialog;
+    },
+
+    preview(file: TransformInputUpload) {
+      this.selected = file;
     },
     async convertFileToString(file: any) {
       return await (file as Blob).text();
@@ -137,7 +163,6 @@ export default defineComponent({
     },
     async uploadInputs(event: any) {
       event.files.forEach(async (input: any) => {
-        console.log(input);
         const inputJson = this.getJsonFromCsv(await this.convertFileToString(input));
         const inputDisplayJson = inputJson;
         inputDisplayJson.length = 10;
