@@ -42,8 +42,7 @@ export default defineComponent({
   emits: { searchResultSelected: (payload: InstanceSearchResult) => true },
   data() {
     return {
-      selected: {} as InstanceSearchResult,
-      currentSelected: ""
+      selected: {} as InstanceSearchResult
     };
   },
   methods: {
