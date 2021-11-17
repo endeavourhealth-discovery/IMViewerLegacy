@@ -76,7 +76,7 @@ export default defineComponent({
 
     addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
-        previousComponent: ECLType.REFINEMENT,
+        previousComponentType: ECLType.REFINEMENT,
         previousPosition: this.position,
         parentGroup: ECLType.REFINEMENT_GROUP
       });

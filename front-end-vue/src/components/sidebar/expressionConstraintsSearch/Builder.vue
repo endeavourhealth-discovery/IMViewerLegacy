@@ -107,7 +107,7 @@ export default defineComponent({
     },
 
     async addNextOptions(data: NextComponentSummary): Promise<void> {
-      const nextOptionsComponent = this.getNextOptions(data.previousPosition, data.previousComponent, data.parentGroup);
+      const nextOptionsComponent = this.getNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
       if (this.queryBuild[data.previousPosition + 1].type === ECLType.ADD_NEXT) {
         this.queryBuild[data.previousPosition + 1] = nextOptionsComponent;
       } else {
@@ -177,7 +177,7 @@ export default defineComponent({
         id: "addNext" + "_" + (position + 1),
         value: {
           previousPosition: position,
-          previousComponent: previous,
+          previousComponentType: previous,
           parentGroup: group
         },
         position: position + 1,
@@ -240,7 +240,7 @@ export default defineComponent({
           id: ECLType.ADD_NEXT + "_" + 1,
           value: {
             previousPosition: 0,
-            previousComponent: ECLType.FOCUS_CONCEPT
+            previousComponentType: ECLType.FOCUS_CONCEPT
           },
           position: 1,
           type: ECLType.ADD_NEXT,
