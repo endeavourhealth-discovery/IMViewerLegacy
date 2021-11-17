@@ -146,7 +146,7 @@ function findNodeByName(data: TTGraphData, name: string, nodes: TTGraphData[]): 
   }
 }
 
-export function closeNodeByName(data: TTGraphData, name: string): void {
+export function toggleNodeByName(data: TTGraphData, name: string): void {
   if (data.name === name) {
     if (isArrayHasLength(data.children)) {
       data._children = data.children;
@@ -157,7 +157,7 @@ export function closeNodeByName(data: TTGraphData, name: string): void {
     }
   } else if (isArrayHasLength(data.children)) {
     data.children.forEach(child => {
-      closeNodeByName(child, name);
+      toggleNodeByName(child, name);
     });
   }
 }

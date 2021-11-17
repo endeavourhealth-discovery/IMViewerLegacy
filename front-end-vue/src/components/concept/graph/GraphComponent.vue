@@ -12,13 +12,14 @@
 
 <script lang="ts">
 import TTGraphData from "../../../models/TTGraphData";
-import { closeNodeByName, hasNodeChildrenByName, translateFromEntityBundle } from "../../../helpers/GraphTranslator";
+import { toggleNodeByName, hasNodeChildrenByName, translateFromEntityBundle } from "../../../helpers/GraphTranslator";
 import { defineComponent, PropType } from "@vue/runtime-core";
 import * as d3 from "d3";
 import svgPanZoom from "svg-pan-zoom";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import EntityService from "@/services/EntityService";
 import { RouteRecordName } from "vue-router";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "GraphComponent",
@@ -170,7 +171,7 @@ export default defineComponent({
             .duration(200)
             .style("opacity", 0.9);
           div
-            .html(d.path[0]["__data__"]["data"]["name"])
+            .html(d.path[0]["__data__"]["data"]["name"] + "<div/> Press ctr+click to navigate")
             .style("left", d.x + "px")
             .style("top", d.y + 10 + "px");
         })
@@ -241,22 +242,29 @@ export default defineComponent({
         });
     },
 
+    redrawGraph() {
+      this.root = d3.hierarchy(this.data);
+      this.drawGraph();
+    },
+
     async dblclick(d: any) {
       const node = d.path[0]["__data__"]["data"] as TTGraphData;
       if (isArrayHasLength(node.children) || isArrayHasLength(node._children)) {
-        closeNodeByName(this.data, node.name);
-        this.root = d3.hierarchy(this.data);
-        this.drawGraph();
+        toggleNodeByName(this.data, node.name);
+        this.redrawGraph();
       } else {
-        const bundle = await EntityService.getPartialEntityBundle(node.iri, []);
-        const data = translateFromEntityBundle(bundle);
-        if (isArrayHasLength(data.children)) {
-          data.children.forEach(child => {
-            node._children.push(child);
-          });
-          closeNodeByName(this.data, node.name);
-          this.root = d3.hierarchy(this.data);
-          this.drawGraph();
+        if (node.iri) {
+          const bundle = await EntityService.getPartialEntityBundle(node.iri, []);
+          const data = translateFromEntityBundle(bundle);
+          if (isArrayHasLength(data.children)) {
+            data.children.forEach(child => {
+              node._children.push(child);
+            });
+            toggleNodeByName(this.data, node.name);
+            this.redrawGraph();
+          }
+        } else {
+          this.$toast.add(LoggerService.warn("Node can not be expanded."));
         }
       }
     },
