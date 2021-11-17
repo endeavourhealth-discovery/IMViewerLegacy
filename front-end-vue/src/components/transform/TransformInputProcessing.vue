@@ -1,42 +1,72 @@
 <template>
   <Card id="container">
-    <template #title> Input upload </template>
     <template #content>
       <div class="p-fluid p-formgrid p-grid">
         <div class="p-field p-col-6 p-md-6">
-          <label for="input">Input File</label>
-          <FileUpload
-            ref="input"
-            name="demo[]"
-            :customUpload="true"
-            :auto="true"
-            @uploader="uploadInputs"
-            @clear="resetInputs"
-            :preview-width="0"
-            @remove="resetInputs"
-            accept=".txt, .csv, .tsv, .json"
-            chooseLabel="Select"
-          >
-            <template #empty>
-              <p>Drag and drop files here to upload.</p>
-            </template>
-          </FileUpload>
-          <Divider />
-          <div class="p-fluid p-formgrid p-grid">
-            <div class="p-col">
-              <DataTable :value="products" responsiveLayout="scroll">
-                <Column field="file" header="File"></Column>
-                <Column field="operation" header="Operation"></Column>
-                <Column field="value" header="Value"></Column>
-                <Column field="preview-save-delete"></Column>
-              </DataTable>
-            </div>
+          <div class="p-col">
+            <DataTable :value="inputs" v-model:selection="selected" selectionMode="single" responsiveLayout="scroll">
+              <template #header>
+                <div class="p-d-flex p-jc-between p-ai-center">
+                  <h5 class="p-m-0">Input upload</h5>
+                  <span>
+                    <FileUpload
+                      mode="basic"
+                      ref="input"
+                      name="demo[]"
+                      :customUpload="true"
+                      :auto="true"
+                      @uploader="uploadInputs"
+                      @clear="resetInputs"
+                      @remove="resetInputs"
+                      accept=".txt, .csv, .tsv, .json"
+                      chooseLabel="Upload"
+                      :multiple="true"
+                    />
+                  </span>
+                </div>
+              </template>
+              <template #empty>
+                No files uploaded.
+              </template>
+              <template #loading>
+                Loading files. Please wait.
+              </template>
+              <Column field="file" header="File">
+                <template #body="slotProps">
+                  {{ slotProps.data.input.name }}
+                </template>
+              </Column>
+              <Column field="size" header="Size">
+                <template #body="slotProps">
+                  {{ slotProps.data.input.size }}
+                </template>
+              </Column>
+              <Column field="lastModified" header="Updated">
+                <template #body="slotProps">
+                  {{ getDate(slotProps.data.input.lastModified) }}
+                </template>
+              </Column>
+              <Column field="preview-save-delete">
+                <template #body="slotProps">
+                  <!-- <Button type="button" label="Download..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" /> -->
+
+                  <Button
+                    icon="pi pi-pencil"
+                    class="p-button-rounded p-button-success p-mr-2"
+                    @click="toggle"
+                    aria-haspopup="true"
+                    aria-controls="overlay_menu"
+                  />
+                  <Menu id="overlay_menu" ref="menu" :model="actionMenu" :popup="true" />
+                  <Button icon="pi pi-trash" class="p-button-rounded p-button-danger" @click="removeInput(slotProps.data)" />
+                </template>
+              </Column>
+            </DataTable>
           </div>
         </div>
 
         <div class="p-col-6 p-md-6">
-          <div id="preview-label">Preview</div>
-          <vue-json-pretty id="json-viewer" :path="'res'" :data="inputDisplayJson"> </vue-json-pretty>
+          <vue-json-pretty id="json-viewer" :path="'res'" :data="selected.inputDisplayJson"> </vue-json-pretty>
         </div>
       </div>
     </template>
@@ -50,6 +80,7 @@
 
 <script lang="ts">
 import TransformFormObject from "../../models/transform/TransformFormObject";
+import TransformInputUpload from "../../models/transform/TransformInputUpload";
 import { defineComponent, PropType } from "vue";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
@@ -70,18 +101,19 @@ export default defineComponent({
   data() {
     return {
       pageIndex: 0,
-      input: {} as File,
-      inputJson: [] as any[],
-      inputDisplayJson: [] as any[],
-      dataModel: {} as File,
-      dataModelJson: {}
+      inputs: [] as TransformInputUpload[],
+      selected: {} as TransformInputUpload,
+      actionMenu: [{ label: "Join", command: () => console.log("Hello") }]
     };
   },
-  mounted() {
-    this.input = this.formObject.input;
-    this.dataModel = this.formObject.dataModel;
-  },
   methods: {
+    getDate(ms: number) {
+      return ms;
+    },
+    toggle(event: any) {
+      const x = this.$refs.menu as any;
+      x.toggle(event);
+    },
     async convertFileToString(file: any) {
       return await (file as Blob).text();
     },
@@ -104,31 +136,32 @@ export default defineComponent({
       return jsonArray;
     },
     async uploadInputs(event: any) {
-      this.input = event.files[0];
-      this.inputJson = this.getJsonFromCsv(await this.convertFileToString(this.input));
-      this.inputDisplayJson = this.inputJson;
-      this.inputDisplayJson.length = 10;
+      event.files.forEach(async (input: any) => {
+        console.log(input);
+        const inputJson = this.getJsonFromCsv(await this.convertFileToString(input));
+        const inputDisplayJson = inputJson;
+        inputDisplayJson.length = 10;
+        this.inputs.push({
+          input: input,
+          inputJson: inputJson,
+          inputDisplayJson: inputDisplayJson
+        });
+      });
+      this.resetInputs();
     },
-    async uploadDataModel(event: any) {
-      this.dataModel = event.files[0];
-      this.dataModelJson = JSON.parse(await this.convertFileToString(this.dataModel));
-    },
-    resetDataModel() {
-      const x = this.$refs.dataModel as any;
-      x.uploadedFileCount = 0;
+    removeInput(input: TransformInputUpload) {
+      this.inputs = this.inputs.filter(upload => input.input.name !== upload.input.name);
     },
     resetInputs() {
       const x = this.$refs.input as any;
-      x.uploadedFileCount = 0;
+      x.files = [];
     },
     nextPage() {
       this.$emit("next-page", {
         formData: {
-          input: this.input,
-          inputJson: this.inputJson,
-          inputDisplayJson: this.inputDisplayJson,
-          dataModel: this.dataModel,
-          dataModelJson: this.dataModelJson
+          input: this.selected.input,
+          inputJson: this.selected.inputJson,
+          inputDisplayJson: this.selected.inputDisplayJson
         },
         pageIndex: this.pageIndex
       });
@@ -153,7 +186,7 @@ export default defineComponent({
 }
 
 #json-viewer {
-  height: calc(100vh - 29rem);
+  height: calc(100vh - 25rem);
   width: 100%;
   overflow-y: auto;
   background-color: #ffffff;
@@ -170,16 +203,5 @@ export default defineComponent({
 #button-bar {
   padding: 0 2rem 1rem 0;
   gap: 0.5rem;
-}
-
-#preview-label {
-  box-sizing: border-box;
-  display: inline-block;
-  background: #ffffff;
-  color: #495057;
-  margin-bottom: 0.5rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-size: 1rem;
-  font-weight: normal;
 }
 </style>
