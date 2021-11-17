@@ -92,7 +92,7 @@ export default defineComponent({
     },
 
     async addNextOptions(data: NextComponentSummary): Promise<void> {
-      const nextOptionsComponent = this.getNextOptions(data.previousPosition, data.previousComponent, ECLType.REFINEMENT_GROUP);
+      const nextOptionsComponent = this.getNextOptions(data.previousPosition, data.previousComponentType, ECLType.REFINEMENT_GROUP);
       if (this.refinementGroupBuild[data.previousPosition + 1].type === ECLType.ADD_NEXT) {
         this.refinementGroupBuild[data.previousPosition + 1] = nextOptionsComponent;
       } else {
@@ -106,7 +106,7 @@ export default defineComponent({
 
     addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
-        previousComponent: ECLType.REFINEMENT_GROUP,
+        previousComponentType: ECLType.REFINEMENT_GROUP,
         previousPosition: this.position
       });
     },
@@ -162,7 +162,7 @@ export default defineComponent({
         id: "addNext" + "_" + (position + 1),
         value: {
           previousPosition: position,
-          previousComponent: previous,
+          previousComponentType: previous,
           parentGroup: group
         },
         position: position + 1,
@@ -261,7 +261,7 @@ export default defineComponent({
             id: this.id + ECLType.ADD_NEXT,
             value: {
               previousPosition: 0,
-              previousComponent: ECLType.REFINEMENT
+              previousComponentType: ECLType.REFINEMENT
             },
             position: 1,
             type: ECLType.ADD_NEXT,

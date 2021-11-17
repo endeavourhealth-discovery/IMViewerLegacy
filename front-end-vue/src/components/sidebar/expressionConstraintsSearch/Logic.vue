@@ -73,7 +73,7 @@ export default defineComponent({
 
     addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
-        previousComponent: ECLType.LOGIC,
+        previousComponentType: ECLType.LOGIC,
         previousPosition: this.position
       });
     }

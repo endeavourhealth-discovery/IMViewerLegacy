@@ -70,7 +70,7 @@ export default defineComponent({
 
     addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
-        previousComponent: ECLType.FOCUS_CONCEPT,
+        previousComponentType: ECLType.FOCUS_CONCEPT,
         previousPosition: this.position,
         parentGroup: ECLType.FOCUS_CONCEPT
       });

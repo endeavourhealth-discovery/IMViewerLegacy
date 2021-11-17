@@ -1,7 +1,7 @@
 import { ECLType } from "../expressionConstraintsLanguage/ECLType";
 
 export interface NextComponentSummary {
-  previousComponent: ECLType;
+  previousComponentType: ECLType;
   previousPosition: number;
   parentGroup?: ECLType;
 }
