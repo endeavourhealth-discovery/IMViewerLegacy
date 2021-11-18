@@ -24,6 +24,7 @@ import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
 import { ComponentDetails } from "@/models/ecl/ComponentDetails";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Refinement",
@@ -51,9 +52,6 @@ export default defineComponent({
         this.$emit("updateClicked", this.createRefinement());
       },
       deep: true
-    },
-    group(): void {
-      this.$emit("updateClicked", this.createRefinement());
     }
   },
   mounted() {
@@ -69,7 +67,7 @@ export default defineComponent({
       this.$emit("deleteClicked", this.createRefinement());
     },
 
-    updateChild(data: any): void {
+    updateChild(data: ComponentDetails): void {
       const index = this.refinementBuild.findIndex(item => item.position === data.position);
       this.refinementBuild[index] = data;
     },
@@ -97,26 +95,26 @@ export default defineComponent({
 
     generateRefinementLabel(): string {
       let label = "";
-      if (this.refinementBuild.length) {
+      if (isArrayHasLength(this.refinementBuild) && this.refinementBuild.every(item => typeof item.label === "string")) {
         const labels = this.refinementBuild.map(item => item.label);
         label = labels
           .join(" ")
-          .replaceAll("\n ", "\n")
-          .replaceAll("  ", " ")
+          .replace("/\n /g", "\n")
+          .replace("/  /g", " ")
           .trim();
       }
       return label;
     },
 
     setStartBuild(): void {
-      if (this.value && this.value.children) {
+      if (this.value && isObjectHasKeys(this.value, ["children"]) && isArrayHasLength(this.value.children)) {
         this.refinementBuild = [...this.value.children];
       } else {
         this.refinementBuild = [
           {
             component: ECLComponent.CONSTRAINT,
             id: this.id + ECLType.CONSTRAINT,
-            label: null,
+            label: "",
             position: 0,
             type: ECLType.CONSTRAINT,
             value: null
@@ -124,7 +122,7 @@ export default defineComponent({
           {
             component: ECLComponent.EXPRESSION,
             id: this.id + ECLType.EXPRESSION,
-            label: null,
+            label: "",
             position: 1,
             type: ECLType.EXPRESSION,
             value: null
@@ -132,7 +130,7 @@ export default defineComponent({
           {
             component: ECLComponent.OPERATOR,
             id: this.id + ECLType.OPERATOR,
-            label: null,
+            label: "",
             position: 2,
             type: ECLType.OPERATOR,
             value: null
@@ -140,7 +138,7 @@ export default defineComponent({
           {
             component: ECLComponent.CONSTRAINT,
             id: this.id + ECLType.CONSTRAINT,
-            label: null,
+            label: "",
             position: 3,
             type: ECLType.CONSTRAINT,
             value: null
@@ -148,9 +146,9 @@ export default defineComponent({
           {
             component: ECLComponent.EXPRESSION,
             id: this.id + ECLType.EXPRESSION,
-            label: null,
+            label: "",
             position: 4,
-            type: ECLType.OPERATOR,
+            type: ECLType.EXPRESSION,
             value: null
           }
         ];
