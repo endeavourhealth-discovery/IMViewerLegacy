@@ -6,7 +6,7 @@
       :scrollHeight="scrollHeight"
       showGridlines
       class="p-datatable-sm"
-      :totalRecords="recordsTotal ? recordsTotal : pageSize"
+      :totalRecords="recordsTotal ? recordsTotal : usages.length"
       :rowsPerPageOptions="[25, 50, 100]"
       :rows="25"
       :paginator="true"

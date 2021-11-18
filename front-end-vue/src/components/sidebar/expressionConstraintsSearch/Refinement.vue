@@ -32,7 +32,7 @@ export default defineComponent({
     position: { type: Number, required: true },
     value: {
       type: Object as PropType<{
-        children: any[];
+        children: ComponentDetails[];
       }>,
       required: false
     },
@@ -47,7 +47,7 @@ export default defineComponent({
   watch: {
     refinementBuild: {
       handler(): void {
-        this.refinementBuild.sort((a: any, b: any) => a.position - b.position);
+        this.refinementBuild.sort((a: ComponentDetails, b: ComponentDetails) => a.position - b.position);
         this.$emit("updateClicked", this.createRefinement());
       },
       deep: true
