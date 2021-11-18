@@ -110,7 +110,6 @@ async function processObject(
   const pad = stringAdditions.pad;
   const prefix = stringAdditions.prefix;
   const group = stringAdditions.group;
-  const suffix = stringAdditions.suffix;
   if (iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + ":\n";
   else result += pad + prefix + key + ":\n";
   if (previousType === "array") {
