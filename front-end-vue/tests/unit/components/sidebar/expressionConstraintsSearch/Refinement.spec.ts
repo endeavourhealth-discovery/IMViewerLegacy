@@ -77,5 +77,9 @@ describe("Refinement.vue ___ value", () => {
 
   it("mounts", () => {
     expect(wrapper.vm.refinementBuild).toStrictEqual(REFINEMENT_BUILD);
+    expect(wrapper.vm.id).toBe("refinementGroup_1refinement");
+    expect(wrapper.vm.last).toBe(true);
+    expect(wrapper.vm.position).toBe(0);
+    expect(wrapper.vm.value).toStrictEqual({ children: REFINEMENT_BUILD });
   });
 });

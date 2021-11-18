@@ -33,6 +33,7 @@
     "sass-loader": "^8.0.2",
     "svg-pan-zoom": "^3.6.1",
     "sweetalert2": "^10.16.9",
+    "tslib": "^2.3.1",
     "vue": "^3.1.1",
     "vue-router": "^4.0.9",
     "vue3-clipboard": "^1.0.0",
