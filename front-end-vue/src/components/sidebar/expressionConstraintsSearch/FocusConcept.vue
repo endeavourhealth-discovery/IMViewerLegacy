@@ -21,6 +21,7 @@ import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
 import { ComponentDetails } from "@/models/ecl/ComponentDetails";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "FocusConcept",
@@ -29,7 +30,7 @@ export default defineComponent({
     position: { type: Number, required: true },
     value: {
       type: Object as PropType<{
-        children: any[];
+        children: ComponentDetails[];
       }>,
       required: false
     },
@@ -44,7 +45,7 @@ export default defineComponent({
   watch: {
     focusConceptBuild: {
       handler() {
-        this.focusConceptBuild.sort((a: any, b: any) => a.position - b.position);
+        this.focusConceptBuild.sort((a: ComponentDetails, b: ComponentDetails) => a.position - b.position);
         this.$emit("updateClicked", this.createFocusConcept());
       },
       deep: true
@@ -91,7 +92,7 @@ export default defineComponent({
 
     generateFocusConceptLabel(): string {
       let label = "";
-      if (this.focusConceptBuild.length) {
+      if (this.focusConceptBuild.length && this.focusConceptBuild.every(item => typeof item.label === "string")) {
         const labels = this.focusConceptBuild.map(item => {
           if (item.type === ECLType.LOGIC) {
             return item.label + "\n\t";
@@ -101,14 +102,14 @@ export default defineComponent({
         });
         label = labels
           .join(" ")
-          .replaceAll("\n ", "\n")
+          .replace("/\n /g", "\n")
           .trim();
       }
       return label;
     },
 
     setStartBuild(): void {
-      if (this.value && this.value.children) {
+      if (this.value && isObjectHasKeys(this.value, ["children"]) && isArrayHasLength(this.value.children)) {
         this.focusConceptBuild = [...this.value.children];
       } else {
         this.focusConceptBuild = [
