@@ -83,6 +83,15 @@ async function processNode(key: string, value: any, result: string, previousType
     else result += pad + prefix + removeEndBrackets(key) + " : ";
     result += ttIriToString(value as TTIriRef, "object", indent, true);
     result += suffix;
+  } else if (isArrayHasLength(value) && value.length === 1) {
+    if (isObjectHasKeys(value[0], ["@id"])) {
+      if (iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
+      else result += pad + prefix + removeEndBrackets(key) + " : ";
+      result += ttIriToString(value[0] as TTIriRef, "object", indent, true);
+      result += suffix;
+    } else {
+      result += await processObject(key, value, result, previousType, indent, iriMap, stringAdditions);
+    }
   } else {
     result += await processObject(key, value, result, previousType, indent, iriMap, stringAdditions);
   }
@@ -101,6 +110,7 @@ async function processObject(
   const pad = stringAdditions.pad;
   const prefix = stringAdditions.prefix;
   const group = stringAdditions.group;
+  const suffix = stringAdditions.suffix;
   if (iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + ":\n";
   else result += pad + prefix + key + ":\n";
   if (previousType === "array") {
