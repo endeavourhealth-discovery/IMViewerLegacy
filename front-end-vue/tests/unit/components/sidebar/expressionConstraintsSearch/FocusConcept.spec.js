@@ -1,7 +1,7 @@
 import FocusConcept from "@/components/sidebar/expressionConstraintsSearch/FocusConcept.vue";
 import { shallowMount } from "@vue/test-utils";
 
-describe("FocusConcept.vue", () => {
+describe("FocusConcept.vue ___ value", () => {
   let wrapper;
 
   const FOCUS_CONCEPT_BUILD = [
@@ -182,8 +182,47 @@ describe("FocusConcept.vue", () => {
     expect(wrapper.vm.generateFocusConceptLabel()).toBe("<< *");
   });
 
+  it("can generateFocusConceptLabel ___ empty build", () => {
+    wrapper.vm.focusConceptBuild = [];
+    expect(wrapper.vm.generateFocusConceptLabel()).toBe("");
+  });
+
   it("can setStartBuild", () => {
     wrapper.vm.setStartBuild();
     expect(wrapper.vm.focusConceptBuild).toStrictEqual(FOCUS_CONCEPT_BUILD);
+  });
+});
+
+describe("FocusConcept.vue ___ no value", () => {
+  let wrapper;
+
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    wrapper = shallowMount(FocusConcept, { props: { id: "focusConcept_0", last: false, position: 0, value: { children: [] } } });
+
+    await wrapper.vm.$nextTick();
+  });
+
+  it("can setStartBuild", () => {
+    wrapper.vm.setStartBuild();
+    expect(wrapper.vm.focusConceptBuild).toStrictEqual([
+      {
+        component: "Constraint",
+        id: "focusConcept_0constraint",
+        label: "",
+        position: 0,
+        type: "constraint",
+        value: null
+      },
+      {
+        component: "Expression",
+        id: "focusConcept_0expression",
+        label: "",
+        position: 1,
+        type: "expression",
+        value: null
+      }
+    ]);
   });
 });

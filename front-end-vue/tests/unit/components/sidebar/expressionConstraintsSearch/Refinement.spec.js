@@ -290,6 +290,11 @@ describe("Refinement.vue ___ value", () => {
     expect(wrapper.vm.generateRefinementLabel()).toBe("<< * = << *");
   });
 
+  it("can generateRefinementLabel ___ empty build", () => {
+    wrapper.vm.refinementBuild = [];
+    expect(wrapper.vm.generateRefinementLabel()).toBe("");
+  });
+
   it("can setStartBuild", () => {
     wrapper.vm.setStartBuild();
     expect(wrapper.vm.refinementBuild).toStrictEqual(REFINEMENT_BUILD);

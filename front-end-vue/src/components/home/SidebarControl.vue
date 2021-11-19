@@ -64,7 +64,7 @@ import { mapState } from "vuex";
 import { TTIriRef } from "@/models/TripleTree";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { Namespace } from "@/models/Namespace";
-import { isArrayHasLength, isObject, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
 
 export default defineComponent({
