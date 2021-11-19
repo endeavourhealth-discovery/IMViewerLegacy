@@ -1,19 +1,33 @@
 <template>
   <Card id="container">
     <template #content>
-      <Dialog header="Header" v-model:visible="joinDialog" :breakpoints="{ '960px': '75vw' }" :style="{ width: '50vw' }">
+      <Dialog header="Join on properties" v-model:visible="joinDialog" :breakpoints="{ '960px': '75vw' }" :style="{ width: '50vw' }">
         <div>
           <p v-if="!selectedInputs.length">
             No input selected.
           </p>
-          <div class="p-fluid p-formgrid p-grid" v-else>
-            <div class="p-col">{{ selectedInputs?.[0]?.input?.name }}</div>
-            <div class="p-col">{{ selectedInputs?.[1]?.input?.name }}</div>
+          <div class="p-fluid p-formgrid p-grid" v-else v-for="joinInstruction in joinInstructions" :key="joinInstruction">
+            <div class="p-col">
+              Data A
+              <Dropdown :options="getInputOptions()" optionLabel="name" optionValue="id" v-model="joinInstruction.dataA" placeholder="Choose join property" />
+            </div>
+            <div class="p-col">
+              Data B
+              <Dropdown :options="getInputOptions()" optionLabel="name" optionValue="id" v-model="joinInstruction.dataB" placeholder="Choose join property" />
+            </div>
+            <div class="p-col">
+              Join on property A
+              <Dropdown :options="getJoinPropertyOptions(joinInstruction.dataA)" v-model="joinInstruction.propertyA" placeholder="Choose join property" />
+            </div>
+            <div class="p-col">
+              Join on property B
+              <Dropdown :options="getJoinPropertyOptions(joinInstruction.dataB)" v-model="joinInstruction.propertyB" placeholder="Choose join property" />
+            </div>
           </div>
         </div>
         <template #footer>
           <Button label="Cancel" class="p-button-text" icon="pi pi-times" @click="toggleJoinDialog" />
-          <Button label="Join" icon="pi pi-check" @click="toggleJoinDialog" />
+          <Button label="Join" icon="pi pi-check" @click="joinInput" />
         </template>
       </Dialog>
       <div class="p-fluid p-formgrid p-grid">
@@ -53,17 +67,17 @@
               <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
               <Column field="file" header="File">
                 <template #body="slotProps">
-                  {{ slotProps.data.input.name }}
+                  {{ slotProps.data.inputFile.name }}
                 </template>
               </Column>
               <Column field="size" header="Size">
                 <template #body="slotProps">
-                  {{ slotProps.data.input.size }}
+                  {{ slotProps.data.inputFile.size }}
                 </template>
               </Column>
               <Column field="lastModified" header="Updated">
                 <template #body="slotProps">
-                  {{ slotProps.data.input.lastModified }}
+                  {{ slotProps.data.inputFile.lastModified }}
                 </template>
               </Column>
               <Column field="preview-save-delete">
@@ -91,10 +105,12 @@
 
 <script lang="ts">
 import TransformFormObject from "../../models/transform/TransformFormObject";
-import TransformInputUpload from "../../models/transform/TransformInputUpload";
+import { TransformInputUpload, JoinInstruction } from "../../models/transform/TransformInputUpload";
+import TransformService from "../../services/TransformService";
 import { defineComponent, PropType } from "vue";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "TransformInputProcessing",
@@ -115,6 +131,7 @@ export default defineComponent({
       inputs: [] as TransformInputUpload[],
       selectedInputs: [] as TransformInputUpload[],
       selected: {} as TransformInputUpload,
+      joinInstructions: [{}] as JoinInstruction[],
       joinDialog: false,
       actionMenu: [
         {
@@ -128,6 +145,12 @@ export default defineComponent({
     };
   },
   methods: {
+    async joinInput() {
+      console.log(this.selectedInputs);
+      const response = await TransformService.join(this.selectedInputs, this.joinInstructions);
+      console.log(JSON.stringify(response));
+      console.log(response);
+    },
     toggle(event: any) {
       const x = this.$refs.menu as any;
       x.toggle(event);
@@ -135,6 +158,23 @@ export default defineComponent({
 
     toggleJoinDialog() {
       this.joinDialog = !this.joinDialog;
+    },
+
+    getInputOptions() {
+      return this.selectedInputs.map(input => {
+        return { name: input.inputFile.name, id: input.id };
+      });
+    },
+
+    getJoinPropertyOptions(id: string) {
+      console.log(id);
+      console.log(this.selectedInputs);
+      const found = this.selectedInputs.filter(selectedInput => selectedInput.id !== id);
+      console.log(found);
+      if (!isArrayHasLength(found) || !isObjectHasKeys(found[0]) || !isArrayHasLength(found[0].inputDisplayJson)) {
+        return [];
+      }
+      return Object.keys(found[0].inputDisplayJson[0]);
     },
 
     preview(file: TransformInputUpload) {
@@ -162,12 +202,17 @@ export default defineComponent({
       return jsonArray;
     },
     async uploadInputs(event: any) {
-      event.files.forEach(async (input: any) => {
-        const inputJson = this.getJsonFromCsv(await this.convertFileToString(input));
+      event.files.forEach(async (input: File) => {
+        console.log(input.type);
+        const inputJson =
+          input.type === "text/csv"
+            ? this.getJsonFromCsv(await this.convertFileToString(input))
+            : JSON.parse(await this.convertFileToString(input))["Relationships"];
         const inputDisplayJson = inputJson;
         inputDisplayJson.length = 10;
         this.inputs.push({
-          input: input,
+          id: input.name + input.lastModified,
+          inputFile: input,
           inputJson: inputJson,
           inputDisplayJson: inputDisplayJson
         });
@@ -175,7 +220,7 @@ export default defineComponent({
       this.resetInputs();
     },
     removeInput(input: TransformInputUpload) {
-      this.inputs = this.inputs.filter(upload => input.input.name !== upload.input.name);
+      this.inputs = this.inputs.filter(upload => input.inputFile.name !== upload.inputFile.name);
     },
     resetInputs() {
       const x = this.$refs.input as any;
@@ -184,7 +229,7 @@ export default defineComponent({
     nextPage() {
       this.$emit("next-page", {
         formData: {
-          input: this.selected.input,
+          input: this.selected.inputFile,
           inputJson: this.selected.inputJson,
           inputDisplayJson: this.selected.inputDisplayJson
         },
