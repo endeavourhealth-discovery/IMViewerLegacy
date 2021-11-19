@@ -48,7 +48,7 @@ export default defineComponent({
   components: { SearchMiniOverlay },
   computed: mapState(["filterOptions", "selectedFilters"]),
   mounted() {
-    if (this.value && this.value instanceof ConceptSummary) {
+    if (this.value && isObjectHasKeys(this.value, ["name", "iri"])) {
       this.updateSelectedResult(this.value);
     } else {
       this.updateSelectedResult({ ...this.anyModel });
