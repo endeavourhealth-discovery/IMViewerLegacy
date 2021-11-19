@@ -40,7 +40,7 @@
       </table>
     </template>
     <template #simpleMapsList="slotProps">
-      <SimpleMaps v-if="slotProps.node.data.mapItems.length" :data="slotProps.node.data.mapItems" />
+      <SimpleMaps v-if="slotProps.node.data.mapItems.length" :data="slotProps.node.data.mapItems" @toggleOverlay="handleSimpleMapsToggle" />
       <span v-else>None</span>
     </template>
     <template #default>
@@ -64,7 +64,8 @@
     <div class="p-d-flex p-flex-column p-jc-start simple-maps-overlay">
       <p><strong>Name: </strong>{{ hoveredResult.name }}</p>
       <p><strong>Iri: </strong>{{ hoveredResult.iri }}</p>
-      <p><strong>Namespace: </strong>{{ hoveredResult.namespace }}</p>
+      <p><strong>Namespace: </strong>{{ hoveredResult.scheme }}</p>
+      <p><strong>Code: </strong>{{ hoveredResult.code }}</p>
     </div>
   </OverlayPanel>
 </template>
@@ -94,7 +95,7 @@ export default defineComponent({
     return {
       mappings: [] as any[],
       data: {} as any,
-      hoveredResult: {} as MapItem,
+      hoveredResult: {} as any,
       simpleMaps: [] as SimpleMap[],
       namespaces: [] as Namespace[],
       loading: false
@@ -280,6 +281,10 @@ export default defineComponent({
       this.hoveredResult = data;
       const x = this.$refs[refId] as any;
       x.toggle(event);
+    },
+
+    handleSimpleMapsToggle(event: any, data: any) {
+      this.toggle(event, data, "opSimpleMaps");
     }
   }
 });
