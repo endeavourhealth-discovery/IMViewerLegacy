@@ -22,32 +22,36 @@ import Operator from "@/components/sidebar/expressionConstraintsSearch/Operator.
 import AddDeleteButtons from "@/components/sidebar/expressionConstraintsSearch/AddDeleteButtons.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
+import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
+import { ComponentDetails } from "@/models/ecl/ComponentDetails";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Refinement",
   props: {
-    id: String,
-    position: Number,
+    id: { type: String, required: true },
+    position: { type: Number, required: true },
     value: {
       type: Object as PropType<{
-        children: any[];
+        children: ComponentDetails[];
       }>,
       required: false
     },
-    last: Boolean
+    last: { type: Boolean, required: true }
   },
-  emits: ["addNextOptionsClicked", "deleteClicked", "updateClicked"],
+  emits: {
+    addNextOptionsClicked: (payload: NextComponentSummary) => true,
+    deleteClicked: (payload: ComponentDetails) => true,
+    updateClicked: (payload: ComponentDetails) => true
+  },
   components: { Expression, Constraint, Operator, AddDeleteButtons },
   watch: {
     refinementBuild: {
-      handler() {
-        this.refinementBuild.sort((a: any, b: any) => a.position - b.position);
+      handler(): void {
+        this.refinementBuild.sort((a: ComponentDetails, b: ComponentDetails) => a.position - b.position);
         this.$emit("updateClicked", this.createRefinement());
       },
       deep: true
-    },
-    group() {
-      this.$emit("updateClicked", this.createRefinement());
     }
   },
   mounted() {
@@ -55,28 +59,28 @@ export default defineComponent({
   },
   data() {
     return {
-      refinementBuild: [] as any[]
+      refinementBuild: [] as ComponentDetails[]
     };
   },
   methods: {
-    deleteClicked() {
+    deleteClicked(): void {
       this.$emit("deleteClicked", this.createRefinement());
     },
 
-    updateChild(data: any) {
+    updateChild(data: ComponentDetails): void {
       const index = this.refinementBuild.findIndex(item => item.position === data.position);
       this.refinementBuild[index] = data;
     },
 
-    addNextClicked() {
+    addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
-        previousComponent: ECLType.REFINEMENT,
+        previousComponentType: ECLType.REFINEMENT,
         previousPosition: this.position,
         parentGroup: ECLType.REFINEMENT_GROUP
       });
     },
 
-    createRefinement() {
+    createRefinement(): ComponentDetails {
       return {
         id: this.id,
         value: {
@@ -85,33 +89,32 @@ export default defineComponent({
         position: this.position,
         type: ECLType.REFINEMENT,
         label: this.generateRefinementLabel(),
-        component: ECLComponent.REFINEMENT,
-        edit: false
+        component: ECLComponent.REFINEMENT
       };
     },
 
     generateRefinementLabel(): string {
       let label = "";
-      if (this.refinementBuild.length) {
+      if (isArrayHasLength(this.refinementBuild) && this.refinementBuild.every(item => typeof item.label === "string")) {
         const labels = this.refinementBuild.map(item => item.label);
         label = labels
           .join(" ")
-          .replaceAll("\n ", "\n")
-          .replaceAll("  ", " ")
+          .replace("/\n /g", "\n")
+          .replace("/  /g", " ")
           .trim();
       }
       return label;
     },
 
-    setStartBuild() {
-      if (this.value && this.value.children) {
+    setStartBuild(): void {
+      if (this.value && isObjectHasKeys(this.value, ["children"]) && isArrayHasLength(this.value.children)) {
         this.refinementBuild = [...this.value.children];
       } else {
         this.refinementBuild = [
           {
             component: ECLComponent.CONSTRAINT,
             id: this.id + ECLType.CONSTRAINT,
-            label: null,
+            label: "",
             position: 0,
             type: ECLType.CONSTRAINT,
             value: null
@@ -119,7 +122,7 @@ export default defineComponent({
           {
             component: ECLComponent.EXPRESSION,
             id: this.id + ECLType.EXPRESSION,
-            label: null,
+            label: "",
             position: 1,
             type: ECLType.EXPRESSION,
             value: null
@@ -127,7 +130,7 @@ export default defineComponent({
           {
             component: ECLComponent.OPERATOR,
             id: this.id + ECLType.OPERATOR,
-            label: null,
+            label: "",
             position: 2,
             type: ECLType.OPERATOR,
             value: null
@@ -135,7 +138,7 @@ export default defineComponent({
           {
             component: ECLComponent.CONSTRAINT,
             id: this.id + ECLType.CONSTRAINT,
-            label: null,
+            label: "",
             position: 3,
             type: ECLType.CONSTRAINT,
             value: null
@@ -143,9 +146,9 @@ export default defineComponent({
           {
             component: ECLComponent.EXPRESSION,
             id: this.id + ECLType.EXPRESSION,
-            label: null,
+            label: "",
             position: 4,
-            type: ECLType.OPERATOR,
+            type: ECLType.EXPRESSION,
             value: null
           }
         ];

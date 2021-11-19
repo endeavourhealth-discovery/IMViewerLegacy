@@ -78,18 +78,18 @@ export default defineComponent({
   name: "FileWorkflow",
   data() {
     return {
-      activity: [] as any[]
+      activity: [] as { DT: string; A: string }[]
     };
   },
   mounted() {
     this.refreshActivity();
   },
   methods: {
-    async refreshActivity() {
+    async refreshActivity(): Promise<void> {
       this.activity = await UprnService.getActivity();
     },
 
-    async download(filename: string) {
+    async download(filename: string): Promise<void> {
       const result = await UprnService.download(filename);
       const url = window.URL.createObjectURL(new Blob([result]));
       const link = document.createElement("a");
@@ -99,7 +99,7 @@ export default defineComponent({
       link.click();
     },
 
-    async onUpload(event: any) {
+    async onUpload(event: any): Promise<void> {
       console.log(event.files[0]);
       await UprnService.upload(event.files[0]).then(() => {
         this.$toast.add(LoggerService.success("fileUploaded"));
@@ -108,12 +108,12 @@ export default defineComponent({
       console.log("upload" + event.files[0].name);
     },
 
-    async clearUpload() {
+    clearUpload(): void {
       const x = this.$refs.fileUpload as any;
       x.uploadedFileCount = 0;
       console.log("Clear upload");
     },
-    async onPaste(event: any) {
+    onPaste(event: any): void {
       const x = this.$refs.fileUpload as any;
       x.files.push(event.clipboardData.files[0]);
       console.log(event.clipboardData.files[0]);

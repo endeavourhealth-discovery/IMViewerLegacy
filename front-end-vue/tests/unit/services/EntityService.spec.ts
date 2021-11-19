@@ -147,6 +147,16 @@ describe("EntityService.ts ___ axios success", () => {
     expect(axios.get).toHaveBeenCalledWith(api + "api/entity/namespaces");
     expect(result).toBe("axios get return");
   });
+
+  it("can get ECLSearch", async () => {
+    const result = await EntityService.ECLSearch("testString", false, 1000);
+    expect(axios.post).toBeCalledTimes(1);
+    expect(axios.post).toHaveBeenCalledWith(api + "api/set/eclSearch", "testString", {
+      headers: { "Content-Type": "text/plain" },
+      params: { includeLegacy: false, limit: 1000 }
+    });
+    expect(result).toBe("axios post return");
+  });
 });
 
 describe("EntityService.ts ___ axios fail", () => {
@@ -293,5 +303,15 @@ describe("EntityService.ts ___ axios fail", () => {
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "api/entity/namespaces");
     expect(result).toStrictEqual([]);
+  });
+
+  it("can get ECLSearch", async () => {
+    const result = await EntityService.ECLSearch("testString", false, 1000);
+    expect(axios.post).toBeCalledTimes(1);
+    expect(axios.post).toHaveBeenCalledWith(api + "api/set/eclSearch", "testString", {
+      headers: { "Content-Type": "text/plain" },
+      params: { includeLegacy: false, limit: 1000 }
+    });
+    expect(result).toStrictEqual({});
   });
 });

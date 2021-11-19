@@ -20,6 +20,8 @@ import ConfirmCode from "../components/user/ConfirmCode.vue";
 import Logout from "../components/user/Logout.vue";
 import ForgotPassword from "../components/user/ForgotPassword.vue";
 import ForgotPasswordSubmit from "../components/user/ForgotPasswordSubmit.vue";
+import CatalogueDashboard from "@/components/catalogue/CatalogueDashboard.vue";
+import InstanceDetails from "@/components/catalogue/InstanceDetails.vue";
 import SnomedLicense from "../views/SnomedLicense.vue";
 import store from "@/store/index";
 import { nextTick } from "vue";
@@ -152,14 +154,23 @@ const routes: Array<RouteRecordRaw> = [
     path: "/catalogue",
     name: "Catalogue",
     component: Catalogue,
+    redirect: { name: "CatalogueDashboard" },
     meta: {
       requiresLicense: true
     },
     children: [
       {
-        path: "/individual/:selectedIri",
+        path: "dashboard",
+        name: "CatalogueDashboard",
+        component: CatalogueDashboard,
+        meta: {
+          requiresLicense: true
+        }
+      },
+      {
+        path: "individual/:selectedIri",
         name: "Individual",
-        component: Catalogue,
+        component: InstanceDetails,
         meta: {
           requiresLicense: true
         }
@@ -223,6 +234,10 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  const iri = to.params.selectedIri as string;
+  if (iri && store.state.blockedIris.includes(iri)) {
+    return;
+  }
   if (to.name?.toString() == "Concept") {
     store.commit("updateConceptIri", to.params.selectedIri as string);
   }

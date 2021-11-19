@@ -6,7 +6,7 @@ import ProgressSpinner from "primevue/progressspinner";
 
 import { PieChartData } from "@/models/charts/PieChartData";
 
-describe("PieChartDashCard.vue", () => {
+describe("ResizablePieChart.vue", () => {
   let wrapper: any;
   let docSpyId: any;
   let docSpyClass: any;

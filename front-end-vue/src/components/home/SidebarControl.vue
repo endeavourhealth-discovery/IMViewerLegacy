@@ -1,6 +1,6 @@
 <template>
-  <div class="p-d-flex p-flex-column p-jc-start" id="side-bar">
-    <span class="p-input-icon-left" id="search-bar">
+  <div id="side-bar">
+    <span class="p-input-icon-left search-bar">
       <i class="pi pi-search" aria-hidden="true" />
       <InputText
         type="text"
@@ -13,7 +13,7 @@
       />
     </span>
 
-    <TabView class="p-d-flex p-flex-column p-jc-start" id="side-menu" v-model:activeIndex="active" @tab-click = tabChange($event)>
+    <TabView class="side-menu" :style="'maxHeight: ' + sideMenuHeight + ';'" v-model:activeIndex="active" @tab-click="tabChange($event)">
       <TabPanel>
         <template #header>
           <i class="fas fa-sitemap icon-header" aria-hidden="true" />
@@ -27,7 +27,7 @@
           <span>Search results</span>
         </template>
 
-        <div class="p-fluid p-d-flex p-flex-column p-jc-between results-filter-container">
+        <div class="p-fluid results-filter-container">
           <SearchResults :searchResults="searchResults" :loading="loading" />
           <Filters :search="search" />
         </div>
@@ -65,6 +65,7 @@ import { TTIriRef } from "@/models/TripleTree";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { Namespace } from "@/models/Namespace";
 import { isArrayHasLength, isObject } from "@/helpers/DataTypeCheckers";
+import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
 
 export default defineComponent({
   name: "SidebarControl",
@@ -76,15 +77,14 @@ export default defineComponent({
     ExpressionConstraintsSearch
   },
   computed: mapState(["filterOptions", "selectedFilters", "searchResults", "focusHierarchy", "sidebarControlActivePanel"]),
-  emits: ["hierarchyFocused"],
   watch: {
     focusHierarchy(newValue) {
       if (newValue) {
         this.$store.commit("updateFocusHierarchy", false);
       }
     },
-    sidebarControlActivePanel() {
-      this.active = this.sidebarControlActivePanel;
+    sidebarControlActivePanel(newValue) {
+      this.active = newValue;
     }
   },
   data() {
@@ -94,8 +94,7 @@ export default defineComponent({
       active: 0,
       debounce: 0,
       request: {} as { cancel: any; msg: string },
-      windowHeight: 0,
-      windowWidth: 0
+      sideMenuHeight: ""
     };
   },
   mounted() {
@@ -156,20 +155,7 @@ export default defineComponent({
     },
 
     setContainerHeights(): void {
-      this.windowHeight = window.innerHeight;
-      this.windowWidth = window.innerWidth;
-      const html = document.documentElement;
-      const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
-      const sidebar = document.getElementById("side-bar") as HTMLElement;
-      if (sidebar) {
-        sidebar.style.maxHeight = this.windowHeight - currentFontSize * 2 + "px";
-      }
-      const fixedSidebar = document.getElementById("side-bar") as HTMLElement;
-      const searchBar = document.getElementById("search-bar") as HTMLElement;
-      const sideMenu = document.getElementById("side-menu") as HTMLElement;
-      if (searchBar && fixedSidebar && sideMenu) {
-        sideMenu.style.maxHeight = fixedSidebar.getBoundingClientRect().height - searchBar.getBoundingClientRect().height + "px";
-      }
+      this.sideMenuHeight = getContainerElementOptimalHeight("side-bar", ["search-bar"], false);
     }
   }
 });
@@ -177,33 +163,39 @@ export default defineComponent({
 
 <style scoped>
 #side-bar {
-  /* padding: 7px; */
-  max-height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+  max-height: calc(100vh - 2rem);
   grid-area: sidebar;
-  height: 100%;
+  height: calc(100vh - 2rem);
   width: 30vw;
 }
 
-#side-menu {
-  /* max-height: calc(100% - 41px); */
+.side-menu {
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
   flex-grow: 100;
 }
 
-#side-menu ::v-deep(.p-tabview-panels) {
+.side-menu ::v-deep(.p-tabview-panels) {
   flex-grow: 6;
   overflow-y: auto;
 }
 
-#side-menu ::v-deep(.p-tabview-panel) {
+.side-menu ::v-deep(.p-tabview-panel) {
   height: 100%;
-  /* overflow-y: auto; */
 }
 
 .results-filter-container {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
   height: 100%;
 }
 
-#search-bar {
+.search-bar {
   width: 100%;
 }
 

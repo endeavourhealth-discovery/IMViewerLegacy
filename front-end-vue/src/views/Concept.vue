@@ -6,7 +6,7 @@
           <button class="p-panel-header-icon p-link p-mr-2" @click="focusTree" v-tooltip.left="'Focus hierarchy tree to this concept'">
             <i class="fas fa-sitemap" aria-hidden="true"></i>
           </button>
-          <div v-if="isObjectHasKeysWrapper(concept, ['axioms'])" class="copy-container">
+          <div v-if="isObjectHasKeysWrapper(concept, ['inferred'])" class="copy-container">
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
@@ -21,7 +21,7 @@
           <button class="p-panel-header-icon p-link p-mr-2" @click="openDownloadDialog" v-tooltip.bottom="'Download concept'">
             <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
           </button>
-          <button class="p-panel-header-icon p-link p-mr-2" v-tooltip.bottom="'Export concept'" @click="exportConcept">
+          <button class="p-panel-header-icon p-link p-mr-2" v-tooltip="'Export concept'" @click="exportConcept">
             <i class="fas fa-file-export" aria-hidden="true"></i>
           </button>
           <!--<button
@@ -76,7 +76,7 @@
             </TabPanel>
             <TabPanel header="Members" v-if="isSet">
               <div class="concept-panel-content" id="members-container" :style="contentHeight">
-                <Members :conceptIri="conceptIri" @memberClick="active = 0" />
+                <Members :conceptIri="conceptIri" />
               </div>
             </TabPanel>
             <TabPanel header="Graph">
@@ -123,6 +123,7 @@ import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
 import { TTIriRef } from "@/models/TripleTree";
 import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
 
 export default defineComponent({
   name: "Concept",
@@ -243,7 +244,6 @@ export default defineComponent({
         .filter((c: DefinitionConfig) => c.predicate !== "subtypes")
         .filter((c: DefinitionConfig) => c.predicate !== "inferred")
         .filter((c: DefinitionConfig) => c.predicate !== "termCodes")
-        .filter((c: DefinitionConfig) => c.predicate !== "axioms")
         .map((c: DefinitionConfig) => c.predicate);
 
       this.concept = await EntityService.getPartialEntity(iri, predicates);
@@ -329,22 +329,14 @@ export default defineComponent({
     },
 
     setContentHeight(): void {
-      const container = document.getElementById("concept-main-container") as HTMLElement;
-      if (!container) {
+      const calcHeight = getContainerElementOptimalHeight("concept-main-container", ["p-panel-header", "p-tabview-nav"], true, 4, 1);
+      if (!calcHeight.length) {
         this.contentHeight = "height: 800px; max-height: 800px;";
         this.contentHeightValue = 800;
-        LoggerService.error("Content sizing error", "failed to get element(s) for concept content resizing");
-        return;
+      } else {
+        this.contentHeight = "height: " + calcHeight + ";" + "max-height: " + calcHeight + ";";
+        this.contentHeightValue = parseInt(calcHeight, 10);
       }
-      const header = container.getElementsByClassName("p-panel-header")[0] as HTMLElement;
-      const nav = container.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
-      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
-      let calcHeight = container.getBoundingClientRect().height - 1;
-      if (currentFontSize) calcHeight -= 4 * currentFontSize;
-      if (header) calcHeight -= header.getBoundingClientRect().height;
-      if (nav) calcHeight -= nav.getBoundingClientRect().height;
-      this.contentHeight = "height: " + calcHeight + "px;max-height: " + calcHeight + "px;";
-      this.contentHeightValue = calcHeight;
     },
 
     openDownloadDialog(): void {

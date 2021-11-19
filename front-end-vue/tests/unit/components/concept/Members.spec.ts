@@ -206,21 +206,6 @@ describe("Members.vue", () => {
     expect(wrapper.vm.setTableWidth).toHaveBeenCalledTimes(1);
   });
 
-  it("can route onRowSelect", () => {
-    wrapper.vm.selected = { entity: { "@id": "testIri" } };
-    wrapper.vm.onRowSelect();
-    expect(mockRouter.push).toHaveBeenCalledTimes(1);
-    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Concept", params: { selectedIri: "testIri" } });
-    expect(wrapper.emitted().memberClick).toBeTruthy();
-  });
-
-  it("can route onRowSelect ___ selected error", () => {
-    wrapper.vm.selected = { "@id": "testIri" };
-    wrapper.vm.onRowSelect();
-    expect(mockRouter.push).not.toHaveBeenCalled();
-    expect(wrapper.emitted().memberClick).toBeFalsy();
-  });
-
   it("can getMembers ___ success", async () => {
     wrapper.vm.members = {};
     wrapper.vm.setTableWidth = jest.fn();

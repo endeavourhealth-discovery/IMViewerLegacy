@@ -18,33 +18,25 @@ describe("Home.vue ___ route = Home", () => {
       },
       commit: jest.fn(),
       dispatch: jest.fn().mockResolvedValue(true)
-    }
+    };
     mockRoute = {
-      params: {selectedIri: "test Iri" },
+      params: { selectedIri: "test Iri" },
       name: "Home"
     };
     wrapper = shallowMount(Home, {
       global: {
         components: { SidebarControl, SideNav },
         mocks: { $route: mockRoute, $store: mockStore },
-        stubs: ["router-link", "router-view"],
-      },
+        stubs: ["router-link", "router-view"]
+      }
     });
   });
 
-  it("should dispatch store authenticated user on mount", () => {
-    expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
-    expect(mockStore.dispatch).toBeCalledWith("authenticateCurrentUser");
-  });
-
-  it("should updateRoute ___ Home ___ Ontology", async() => {
+  it("should updateRoute ___ Home ___ Ontology", async () => {
     wrapper.vm.updateRoute();
     await wrapper.vm.$nextTick();
     expect(mockStore.commit).toBeCalledTimes(2);
-    expect(mockStore.commit).toBeCalledWith(
-      "updateConceptIri",
-      "http://endhealth.info/im#DiscoveryOntology"
-    );
+    expect(mockStore.commit).toBeCalledWith("updateConceptIri", "http://endhealth.info/im#DiscoveryOntology");
   });
 });
 
@@ -55,32 +47,28 @@ describe("Home.vue ___ route = Concept", () => {
 
   beforeEach(() => {
     mockStore = {
-      state: { sideNavHierarchyFocus: {name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" } },
+      state: { sideNavHierarchyFocus: { name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" } },
       commit: jest.fn(),
       dispatch: jest.fn().mockResolvedValue(true)
     };
     mockRoute = {
-      params: {selectedIri: "test concept Iri" },
+      params: { selectedIri: "test concept Iri" },
       name: "Concept"
     };
     wrapper = shallowMount(Home, {
       global: {
         components: { SidebarControl, SideNav },
         mocks: { $route: mockRoute, $store: mockStore },
-        stubs: ["router-link", "router-view"],
-      },
+        stubs: ["router-link", "router-view"]
+      }
     });
   });
 
-  it("should updateRoute ___ Concept", async() => {
+  it("should updateRoute ___ Concept", async () => {
     wrapper.vm.updateRoute();
     await wrapper.vm.$nextTick();
     expect(mockStore.commit).toBeCalledTimes(2);
-    expect(mockStore.commit).toBeCalledWith(
-      "updateConceptIri",
-      "test concept Iri"
-    );
-    expect(mockStore.dispatch).toBeCalledTimes(1);
+    expect(mockStore.commit).toBeCalledWith("updateConceptIri", "test concept Iri");
   });
 });
 
@@ -92,32 +80,29 @@ describe("Home.vue ___ route = Home ___ InformationModel", () => {
   beforeEach(() => {
     mockStore = {
       state: {
-        sideNavHierarchyFocus: { name: "InformationModel", iri: "http://endhealth.info/im#InformationModel"}
+        sideNavHierarchyFocus: { name: "InformationModel", iri: "http://endhealth.info/im#InformationModel" }
       },
       commit: jest.fn(),
       dispatch: jest.fn().mockResolvedValue(true)
-    }
+    };
     mockRoute = {
-      params: {selectedIri: "test Iri" },
+      params: { selectedIri: "test Iri" },
       name: "Home"
     };
     wrapper = shallowMount(Home, {
       global: {
         components: { SidebarControl, SideNav },
         mocks: { $route: mockRoute, $store: mockStore },
-        stubs: ["router-link", "router-view"],
-      },
+        stubs: ["router-link", "router-view"]
+      }
     });
   });
 
-  it("should updateRoute ___ Home ___ InformationModel", async() => {
+  it("should updateRoute ___ Home ___ InformationModel", async () => {
     wrapper.vm.updateRoute();
     await wrapper.vm.$nextTick();
     expect(mockStore.commit).toBeCalledTimes(2);
-    expect(mockStore.commit).toBeCalledWith(
-      "updateConceptIri",
-      "http://endhealth.info/im#InformationModel"
-    );
+    expect(mockStore.commit).toBeCalledWith("updateConceptIri", "http://endhealth.info/im#InformationModel");
   });
 });
 
@@ -129,32 +114,29 @@ describe("Home.vue ___ route = Home ___ ValueSets", () => {
   beforeEach(() => {
     mockStore = {
       state: {
-        sideNavHierarchyFocus: { name: "ValueSets", iri: "http://endhealth.info/im#Sets"}
+        sideNavHierarchyFocus: { name: "ValueSets", iri: "http://endhealth.info/im#Sets" }
       },
       commit: jest.fn(),
       dispatch: jest.fn().mockResolvedValue(true)
     };
     mockRoute = {
-      params: {selectedIri: "test Iri" },
+      params: { selectedIri: "test Iri" },
       name: "Home"
     };
     wrapper = shallowMount(Home, {
       global: {
         components: { SidebarControl, SideNav },
         mocks: { $route: mockRoute, $store: mockStore },
-        stubs: ["router-link", "router-view"],
-      },
+        stubs: ["router-link", "router-view"]
+      }
     });
   });
 
-  it("should updateRoute ___ Home ___ ValueSets", async() => {
+  it("should updateRoute ___ Home ___ ValueSets", async () => {
     wrapper.vm.updateRoute();
     await wrapper.vm.$nextTick();
     expect(mockStore.commit).toBeCalledTimes(2);
-    expect(mockStore.commit).toBeCalledWith(
-      "updateConceptIri",
-      "http://endhealth.info/im#Sets"
-    );
+    expect(mockStore.commit).toBeCalledWith("updateConceptIri", "http://endhealth.info/im#Sets");
   });
 });
 
@@ -166,32 +148,29 @@ describe("Home.vue ___ route = Home ___ Queries", () => {
   beforeEach(() => {
     mockStore = {
       state: {
-        sideNavHierarchyFocus: { name: "Queries", iri: "http://endhealth.info/im#QT_QueryTemplates"}
+        sideNavHierarchyFocus: { name: "Queries", iri: "http://endhealth.info/im#QT_QueryTemplates" }
       },
       commit: jest.fn(),
       dispatch: jest.fn().mockResolvedValue(true)
     };
     mockRoute = {
-      params: {selectedIri: "test Iri" },
+      params: { selectedIri: "test Iri" },
       name: "Home"
     };
     wrapper = shallowMount(Home, {
       global: {
         components: { SidebarControl, SideNav },
         mocks: { $route: mockRoute, $store: mockStore },
-        stubs: ["router-link", "router-view"],
-      },
+        stubs: ["router-link", "router-view"]
+      }
     });
   });
 
-  it("should updateRoute ___ Home ___ Queries", async() => {
+  it("should updateRoute ___ Home ___ Queries", async () => {
     wrapper.vm.updateRoute();
     await wrapper.vm.$nextTick();
     expect(mockStore.commit).toBeCalledTimes(2);
-    expect(mockStore.commit).toBeCalledWith(
-      "updateConceptIri",
-      "http://endhealth.info/im#QT_QueryTemplates"
-    );
+    expect(mockStore.commit).toBeCalledWith("updateConceptIri", "http://endhealth.info/im#QT_QueryTemplates");
   });
 });
 
@@ -202,27 +181,26 @@ describe("Home.vue ___ route = Other", () => {
 
   beforeEach(() => {
     mockStore = {
-      state: { sideNavHierarchyFocus: {name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" } },
+      state: { sideNavHierarchyFocus: { name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" } },
       commit: jest.fn(),
       dispatch: jest.fn().mockResolvedValue(true)
     };
     mockRoute = {
-      params: {selectedIri: "test concept Iri" },
+      params: { selectedIri: "test concept Iri" },
       name: "Workflow"
     };
     wrapper = shallowMount(Home, {
       global: {
         components: { SidebarControl, SideNav },
         mocks: { $route: mockRoute, $store: mockStore },
-        stubs: ["router-link", "router-view"],
-      },
+        stubs: ["router-link", "router-view"]
+      }
     });
   });
 
-  it("updateRoute does nothing on other routes", async() => {
+  it("updateRoute does nothing on other routes", async () => {
     wrapper.vm.updateRoute();
     await wrapper.vm.$nextTick();
     expect(mockStore.commit).toBeCalledTimes(0);
-    expect(mockStore.dispatch).toBeCalledTimes(1);
   });
 });

@@ -44,7 +44,7 @@ function getNameFromIri(iri: string): string {
   if (!iri) return iri;
   if (iri.startsWith("http://www.w3.org/2001/XMLSchema#") || iri.startsWith("http://snomed.info/sct#")) return iri.split("#")[1];
   if (iri.startsWith("http://endhealth.info/im#im:")) return iri.substring("http://endhealth.info/im#im:".length);
-
+  if (iri.startsWith("http://endhealth.info/im#")) return iri.substring("http://endhealth.info/im#".length);
   return "undefined";
 }
 
@@ -63,7 +63,11 @@ function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicate
         });
       } else if (isArrayHasLength(entity[key])) {
         entity[key].forEach((nested: any) => {
-          firstNode.children.push({ name: nested.name, iri: nested["@id"], relToParent: predicates[key], children: [], _children: [] });
+          if (isObjectHasKeys(nested)) {
+            firstNode.children.push({ name: nested.name, iri: nested["@id"], relToParent: predicates[key], children: [], _children: [] });
+          } else {
+            firstNode.children.push({ name: nested, iri: "", relToParent: getNameFromIri(key), children: [], _children: [] });
+          }
         });
       } else if (isObjectHasKeys(entity[key])) {
         firstNode.children.push({ name: entity[key].name, iri: entity[key]["@id"], relToParent: predicates[key], children: [], _children: [] });
@@ -75,7 +79,6 @@ function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicate
 }
 
 export function translateFromTTDocument(ttdocument: any): TTGraphData {
-  ttdocument["@context"];
   const firstNode = {
     name: ttdocument.entities[0]["rdfs:label"],
     iri: ttdocument.entities[0]["@id"],
@@ -143,7 +146,7 @@ function findNodeByName(data: TTGraphData, name: string, nodes: TTGraphData[]): 
   }
 }
 
-export function closeNodeByName(data: TTGraphData, name: string): void {
+export function toggleNodeByName(data: TTGraphData, name: string): void {
   if (data.name === name) {
     if (isArrayHasLength(data.children)) {
       data._children = data.children;
@@ -154,7 +157,7 @@ export function closeNodeByName(data: TTGraphData, name: string): void {
     }
   } else if (isArrayHasLength(data.children)) {
     data.children.forEach(child => {
-      closeNodeByName(child, name);
+      toggleNodeByName(child, name);
     });
   }
 }
@@ -197,5 +200,5 @@ function getFullKeyIri(shortcutKey: string, ttdocument: any) {
     return shortcutKey;
   }
   const parts = shortcutKey.split(":");
-  return (ttdocument["@context"] as any)[parts[0]] + parts[1];
+  return ttdocument["@context"][parts[0]] + parts[1];
 }

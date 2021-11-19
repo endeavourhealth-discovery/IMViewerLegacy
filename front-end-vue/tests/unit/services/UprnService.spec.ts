@@ -31,9 +31,9 @@ describe("UprnService.ts ___ axios success", () => {
   });
 
   it("can get uprn", async () => {
-    const result = await UprnService.getUprn(123456);
+    const result = await UprnService.getUprn("123456");
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "/getuprn", { params: { uprn: 123456 }, auth: { username: username, password: password } });
+    expect(axios.get).toHaveBeenCalledWith(api + "/getuprn", { params: { uprn: "123456" }, auth: { username: username, password: password } });
     expect(result).toBe("axios get return");
   });
 
@@ -100,9 +100,9 @@ describe("UprnService.ts ___ axios fail", () => {
   });
 
   it("can get uprn", async () => {
-    const result = await UprnService.getUprn(123456);
+    const result = await UprnService.getUprn("123456");
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "/getuprn", { params: { uprn: 123456 }, auth: { username: username, password: password } });
+    expect(axios.get).toHaveBeenCalledWith(api + "/getuprn", { params: { uprn: "123456" }, auth: { username: username, password: password } });
     expect(result).toStrictEqual({});
   });
 

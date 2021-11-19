@@ -80,9 +80,7 @@ import Chip from "primevue/chip";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
-import LoggerService from "./services/LoggerService";
 import axios from "axios";
-import APIError from "./models/errors/APIError";
 import { isObjectHasKeys } from "./helpers/DataTypeCheckers";
 
 Amplify.configure(awsconfig);
@@ -157,11 +155,20 @@ axios.interceptors.response.use(
     return isObjectHasKeys(response, ["data"]) ? response.data : undefined;
   },
   error => {
-    vm.$toast.add({
-      severity: "error",
-      summary: "Request error",
-      detail: "Request for " + error.config.url.substring(error.config.url.lastIndexOf("/") + 1) + " was unsuccessful. " + error.message + ".",
-      life: 4000
-    });
+    if (error.response.status === 400) {
+      vm.$toast.add({
+        severity: "warn",
+        summary: "Warning",
+        detail: error.response.data,
+        life: 4000
+      });
+    } else {
+      vm.$toast.add({
+        severity: "error",
+        summary: "Request error",
+        detail: "Request for " + error.config.url.substring(error.config.url.lastIndexOf("/") + 1) + " was unsuccessful. " + error.message + ".",
+        life: 4000
+      });
+    }
   }
 );

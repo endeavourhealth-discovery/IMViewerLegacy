@@ -90,7 +90,6 @@ export default defineComponent({
           this.totalCount = result.count;
         } else {
           this.eclError = true;
-          this.$toast.add(LoggerService.error("Invalid ecl expression. Please try again."));
         }
         this.loading = false;
       }

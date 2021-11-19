@@ -11,6 +11,7 @@ import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { IM } from "@/vocabulary/IM";
 import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
+import ConfigService from "@/services/ConfigService";
 
 export default createStore({
   // update stateType.ts when adding new state!
@@ -26,6 +27,7 @@ export default createStore({
     focusTree: false as boolean,
     treeLocked: true as boolean,
     resetTree: false as boolean,
+    blockedIris: [] as string[],
     sideNavHierarchyFocus: {
       name: "Ontology",
       fullName: "Ontologies",
@@ -54,11 +56,14 @@ export default createStore({
     activeModule: "default",
     conceptActivePanel: 0,
     focusHierarchy: false,
-    catalogueSearchTerm: sessionStorage.getItem("catalogueSearchTerm"),
     instanceIri: "",
-    sidebarControlActivePanel: 0
+    sidebarControlActivePanel: 0,
+    catalogueSearchResults: [] as string[]
   },
   mutations: {
+    updateBlockedIris(state, blockedIris) {
+      state.blockedIris = blockedIris;
+    },
     updateConceptIri(state, conceptIri) {
       state.conceptIri = conceptIri;
     },
@@ -123,18 +128,21 @@ export default createStore({
     updateFocusHierarchy(state, bool) {
       state.focusHierarchy = bool;
     },
-    updateCatalogueSearchTerm(state, term) {
-      sessionStorage.setItem("catalogueSearchTerm", term);
-      state.catalogueSearchTerm = term;
-    },
     updateInstanceIri(state, instanceIri) {
       state.instanceIri = instanceIri;
+    },
+    updateCatalogueSearchResults(state, results) {
+      state.catalogueSearchResults = results;
     },
     updateSidebarControlActivePanel(state, number) {
       state.sidebarControlActivePanel = number;
     }
   },
   actions: {
+    async fetchBlockedIris({ commit }) {
+      const blockedIris = await ConfigService.getXmlSchemaDataTypes();
+      commit("updateBlockedIris", blockedIris);
+    },
     async fetchSearchResults({ commit }, data: { searchRequest: SearchRequest; cancelToken: any }) {
       let searchResults: any;
       const result = await EntityService.advancedSearch(data.searchRequest, data.cancelToken);

@@ -54,12 +54,6 @@
             Include data model properties
           </label>
         </div>
-        <!-- <div class="checkbox-label">
-         <Checkbox :disabled="!axioms" id="axioms" :binary="true" value="Include axioms" v-model="includeAxioms" />
-         <label class="label" :class="includeAxioms ? null : 'inactive-text'" for="axioms">
-           Include semantic properties
-         </label>
-       </div> -->
         <div class="checkbox-label">
           <Checkbox :disabled="!members" id="members" :binary="true" value="Include members" v-model="includeMembers" />
           <label class="label" :class="includeMembers ? null : 'inactive-text'" for="members">
@@ -109,7 +103,9 @@ export default defineComponent({
     conceptIri: { type: String, required: true },
     showDialog: { type: Boolean, required: true }
   },
-  emits: ["closeDownloadDialog"],
+  emits: {
+    closeDownloadDialog: () => true
+  },
   watch: {
     async conceptIri(newValue) {
       await this.init(newValue);

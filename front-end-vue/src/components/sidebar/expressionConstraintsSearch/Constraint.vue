@@ -15,14 +15,19 @@
 </template>
 
 <script lang="ts">
+import { ComponentDetails } from "@/models/ecl/ComponentDetails";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "Constraint",
-  props: { id: String, position: Number, value: { type: Object as () => { name: string; symbol: string }, required: false } },
-  emits: ["updateClicked"],
+  props: {
+    id: { type: String, required: true },
+    position: { type: Number, required: true },
+    value: { type: Object as () => { name: string; symbol: string }, required: false }
+  },
+  emits: { updateClicked: (payload: ComponentDetails) => true },
   watch: {
     selected() {
       this.onConfirm();
@@ -57,7 +62,7 @@ export default defineComponent({
       this.$emit("updateClicked", this.createConstraint());
     },
 
-    createConstraint() {
+    createConstraint(): ComponentDetails {
       return {
         id: this.id,
         value: this.selected,

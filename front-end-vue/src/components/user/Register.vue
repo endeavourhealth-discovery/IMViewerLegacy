@@ -108,7 +108,7 @@ export default defineComponent({
   components: {
     "avatar-with-selector": AvatarWithSelector
   },
-  emits: ["userCreated"],
+  emits: { userCreated: (payload: User) => true },
   watch: {
     username(newValue) {
       this.usernameVerified = verifyIsUsername(newValue);

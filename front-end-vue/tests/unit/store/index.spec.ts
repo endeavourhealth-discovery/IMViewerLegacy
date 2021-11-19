@@ -31,6 +31,7 @@ describe("state", () => {
       "focusTree",
       "treeLocked",
       "resetTree",
+      "blockedIris",
       "sideNavHierarchyFocus",
       "selectedEntityType",
       "filterOptions",
@@ -40,9 +41,9 @@ describe("state", () => {
       "activeModule",
       "conceptActivePanel",
       "focusHierarchy",
-      "catalogueSearchTerm",
       "instanceIri",
-      "sidebarControlActivePanel"
+      "sidebarControlActivePanel",
+      "catalogueSearchResults"
     ]);
     expect(store.state.conceptIri).toBe("http://endhealth.info/im#DiscoveryOntology");
     expect(store.state.history).toEqual([]);
@@ -81,7 +82,7 @@ describe("state", () => {
     expect(store.state.activeModule).toBe("default");
     expect(store.state.conceptActivePanel).toBe(0);
     expect(store.state.focusHierarchy).toBe(false);
-    expect(store.state.catalogueSearchTerm).toBeNull();
+    expect(store.state.catalogueSearchResults).toStrictEqual([]);
     expect(store.state.instanceIri).toBe("");
   });
 });
@@ -240,15 +241,19 @@ describe("mutations", () => {
     expect(store.state.focusHierarchy).toBe(true);
   });
 
-  it("can updateCatalogueSearchTerm", () => {
-    store.commit("updateCatalogueSearchTerm", "testTermString");
-    expect(store.state.catalogueSearchTerm).toBe("testTermString");
-    expect(window.sessionStorage.getItem("catalogueSearchTerm")).toBe("testTermString");
+  it("can updateCatalogueSearchResults", () => {
+    store.commit("updateCatalogueSearchResults", ["testTermString"]);
+    expect(store.state.catalogueSearchResults).toStrictEqual(["testTermString"]);
   });
 
   it("can updateInstanceIri", () => {
     store.commit("updateInstanceIri", "testIriString");
     expect(store.state.instanceIri).toBe("testIriString");
+  });
+
+  it("can updateSidebarControlActivePanel", () => {
+    store.commit("updateSidebarControlActivePanel", 4);
+    expect(store.state.sidebarControlActivePanel).toBe(4);
   });
 
   it("can fetchSearchResults ___ pass", async () => {

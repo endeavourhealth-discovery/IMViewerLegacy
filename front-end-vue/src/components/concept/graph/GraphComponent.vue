@@ -12,12 +12,14 @@
 
 <script lang="ts">
 import TTGraphData from "../../../models/TTGraphData";
-import { closeNodeByName, hasNodeChildrenByName, translateFromEntityBundle } from "../../../helpers/GraphTranslator";
+import { toggleNodeByName, hasNodeChildrenByName, translateFromEntityBundle } from "../../../helpers/GraphTranslator";
 import { defineComponent, PropType } from "@vue/runtime-core";
 import * as d3 from "d3";
 import svgPanZoom from "svg-pan-zoom";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import EntityService from "@/services/EntityService";
+import { RouteRecordName } from "vue-router";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "GraphComponent",
@@ -51,7 +53,7 @@ export default defineComponent({
       svgPan: {} as any,
       height: 400,
       width: 400,
-      force: -1500,
+      force: -5000,
       radius: 16,
       colour: {
         activeNode: { fill: "#e3f2fd", stroke: "#AAAAAA" },
@@ -142,6 +144,12 @@ export default defineComponent({
         .attr("r", () => this.radius)
         .call(this.drag(this.simulation) as any);
 
+      const div = d3
+        .selectAll("#force-layout-graph")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
       const nodeTextWrapper = svg
         .append("g")
         .attr("class", "labels")
@@ -155,9 +163,36 @@ export default defineComponent({
         .attr("height", (d: any) => this.getFODimensions(d).height)
         .attr("color", (d: any) => (hasNodeChildrenByName(this.data, d.data.name) ? this.colour.activeNode.fill : this.colour.inactiveNode.fill))
         .style("font-size", () => `${this.nodeFontSize}px`)
-        .on("dblclick", (d: any) => this.dblclick(d));
+        .on("dblclick", (d: any) => this.dblclick(d))
+        .on("click", (d: any) => this.click(d))
+        .on("mouseover", (d: any) => {
+          div
+            .transition()
+            .duration(200)
+            .style("opacity", 0.9);
+          div
+            .html(d.path[0]["__data__"]["data"]["name"] + "<div/> Press ctr+click to navigate")
+            .style("left", d.x + "px")
+            .style("top", d.y + 10 + "px");
+        })
+        .on("mouseout", (d: any) => {
+          div
+            .transition()
+            .duration(500)
+            .style("opacity", 0);
+        });
 
-      const nodeText = nodeTextWrapper.append("xhtml:p").text((d: any) => d.data.name);
+      const nodeText = nodeTextWrapper.append("xhtml:p").text((d: any) => {
+        if (!d.data.name) {
+          return "undefined";
+        }
+
+        if (d.data.name.length <= 63) {
+          return d.data.name;
+        }
+
+        return d.data.name.toString().substring(0, 61) + "...";
+      });
 
       this.simulation.on("tick", () => {
         pathLink
@@ -191,22 +226,45 @@ export default defineComponent({
       return { x: -this.radius / 1.1, y: -this.radius / 1.3, height: (2 * this.radius) / 1.3, width: (2 * this.radius) / 1.1 };
     },
 
+    async click(d: any) {
+      if (d.metaKey || d.ctrlKey) {
+        const node = d.path[0]["__data__"]["data"] as TTGraphData;
+        this.navigate(node.iri);
+      }
+    },
+
+    navigate(iri: string) {
+      const currentRoute = this.$route.name as RouteRecordName | undefined;
+      if (iri)
+        this.$router.push({
+          name: currentRoute,
+          params: { selectedIri: iri }
+        });
+    },
+
+    redrawGraph() {
+      this.root = d3.hierarchy(this.data);
+      this.drawGraph();
+    },
+
     async dblclick(d: any) {
       const node = d.path[0]["__data__"]["data"] as TTGraphData;
       if (isArrayHasLength(node.children) || isArrayHasLength(node._children)) {
-        closeNodeByName(this.data, node.name);
-        this.root = d3.hierarchy(this.data);
-        this.drawGraph();
+        toggleNodeByName(this.data, node.name);
+        this.redrawGraph();
       } else {
-        const bundle = await EntityService.getPartialEntityBundle(node.iri, []);
-        const data = translateFromEntityBundle(bundle);
-        if (isArrayHasLength(data.children)) {
-          data.children.forEach(child => {
-            node._children.push(child);
-          });
-          closeNodeByName(this.data, node.name);
-          this.root = d3.hierarchy(this.data);
-          this.drawGraph();
+        if (node.iri) {
+          const bundle = await EntityService.getPartialEntityBundle(node.iri, []);
+          const data = translateFromEntityBundle(bundle);
+          if (isArrayHasLength(data.children)) {
+            data.children.forEach(child => {
+              node._children.push(child);
+            });
+            toggleNodeByName(this.data, node.name);
+            this.redrawGraph();
+          }
+        } else {
+          this.$toast.add(LoggerService.warn("Node can not be expanded."));
         }
       }
     },
@@ -236,9 +294,12 @@ export default defineComponent({
       if (isObjectHasKeys(this.svgPan, ["destroy"])) {
         this.svgPan.destroy();
       }
+      d3.select("#force-layout-graph")
+        .selectAll("div")
+        .remove();
       d3.selectAll("g").remove();
       if (isObjectHasKeys(this.simulation, ["stop"])) {
-        this.svgPan.destroy();
+        this.simulation.stop();
       }
     }
   }
@@ -274,5 +335,18 @@ foreignObject p {
 foreignObject:hover {
   font-weight: 600;
   cursor: pointer;
+}
+
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 120px;
+  padding: 2px;
+  font: 12px sans-serif;
+  background-color: black;
+  color: #fff;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
 }
 </style>

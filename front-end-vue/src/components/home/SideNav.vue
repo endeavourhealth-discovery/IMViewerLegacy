@@ -45,6 +45,7 @@ import { defineComponent } from "vue";
 import { mapState } from "vuex";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
 import { LoginItem, AccountItem, ModuleItem } from "@/models/sideNav/MenuItems";
+import LoggerService from "@/services/LoggerService";
 
 export default defineComponent({
   name: "SideNav",
@@ -93,19 +94,11 @@ export default defineComponent({
             route: this.menuItems[3].route
           });
           break;
-        case "Catalogue":
-          this.$store.commit("updateSideNavHierarchyFocus", {
-            name: this.menuItems[4].name,
-            fullName: this.menuItems[4].fullName,
-            iri: this.menuItems[4].iri,
-            route: this.menuItems[4].route
-          });
-          break;
         case "Folder":
           this.handleCenterIconClick(this.sideNavHierarchyFocus);
           break;
         default:
-          console.log("unknown selectedEntityType detected in sidenav watcher");
+          LoggerService.warn(undefined, `Unknown selectedEntityType detected in sidenav watcher. Type: "${newValue}"`);
           break;
       }
     },
@@ -117,7 +110,6 @@ export default defineComponent({
   },
   data() {
     return {
-      userPopupBottom: 0,
       loginItems: [
         {
           label: "Login",
@@ -135,7 +127,7 @@ export default defineComponent({
         {
           label: "My account",
           icon: "fa fa-fw fa-user",
-          to: "/user/my-account" //+ this.user.id
+          to: "/user/my-account"
         },
         {
           label: "Edit account",
@@ -150,7 +142,7 @@ export default defineComponent({
         {
           label: "Logout",
           icon: "fa fa-fw fa-sign-out-alt",
-          to: "/user/logout" //+ this.user.id
+          to: "/user/logout"
         }
       ] as AccountItem[],
 
@@ -189,7 +181,7 @@ export default defineComponent({
         //   fullName: "Catalogue",
         //   route: "Catalogue",
         //   iri: IM.MODULE_CATALOGUE
-        // },
+        // }
         // {
         //   icon: ["fas", "tasks"],
         //   name: "Workflow"
@@ -237,10 +229,12 @@ export default defineComponent({
       this.handleCenterIconClick(this.menuItems[0]);
       this.$store.commit("updateResetTree", true);
     },
+
     iconClick(item: ModuleItem): void {
       this.$store.commit("updateSidebarControlActivePanel", 0);
       this.handleCenterIconClick(item);
     },
+
     handleCenterIconClick(item: ModuleItem): void {
       let route = item.route;
       let moduleIri = "";
@@ -258,8 +252,7 @@ export default defineComponent({
           moduleIri = this.moduleSelectedEntities.get(item.name);
         }
         this.$store.commit("updateFocusHierarchy", true);
-      }
-      if (item.name === "Catalogue") {
+      } else {
         this.$store.commit("updateSideNavHierarchyFocus", {
           name: item.name,
           fullName: item.fullName,

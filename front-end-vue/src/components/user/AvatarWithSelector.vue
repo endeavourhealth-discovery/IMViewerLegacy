@@ -25,12 +25,12 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "AvatarWithSelector",
   props: { selectedAvatar: { type: String } },
-  emits: ["avatarSelected"],
+  emits: { avatarSelected: (payload: string) => avatars.includes(payload) },
   watch: {
-    selectedAvatar(newValue) {
+    selectedAvatar(newValue): void {
       this.newAvatar = newValue;
     },
-    newAvatar(newValue) {
+    newAvatar(newValue): void {
       this.$emit("avatarSelected", newValue);
     }
   },

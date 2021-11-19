@@ -4,6 +4,6 @@ export interface TTBundle {
 }
 
 export interface TTIriRef {
-  '@id' : string;
+  "@id": string;
   name: string;
 }

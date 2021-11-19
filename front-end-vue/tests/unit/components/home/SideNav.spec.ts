@@ -4,6 +4,74 @@ import Menu from "primevue/menu";
 import { User } from "@/models/user/User";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { IM } from "@/vocabulary/IM";
+import LoggerService from "@/services/LoggerService";
+
+const LOGIN_ITEMS = [
+  {
+    label: "Login",
+    icon: "fa fa-fw fa-user",
+    to: "/user/login"
+  },
+  {
+    label: "Register",
+    icon: "fa fa-fw fa-user-plus",
+    to: "/user/register"
+  }
+];
+
+const ACCOUNT_ITEMS = [
+  {
+    label: "My account",
+    icon: "fa fa-fw fa-user",
+    to: "/user/my-account"
+  },
+  {
+    label: "Edit account",
+    icon: "fa fa-fw fa-user-edit",
+    to: "/user/my-account/edit"
+  },
+  {
+    label: "Change password",
+    icon: "fa fa-fw fa-user-lock",
+    to: "/user/my-account/password-edit"
+  },
+  {
+    label: "Logout",
+    icon: "fa fa-fw fa-sign-out-alt",
+    to: "/user/logout"
+  }
+];
+
+const MENU_ITEMS = [
+  {
+    icon: ["fas", "book"],
+    name: "Ontology",
+    fullName: "Ontologies",
+    route: "Dashboard",
+    iri: IM.MODULE_ONTOLOGY
+  },
+  {
+    icon: ["fas", "layer-group"],
+    name: "Sets",
+    fullName: "Concept sets and value sets",
+    route: "Dashboard",
+    iri: IM.MODULE_SETS
+  },
+  {
+    icon: ["fas", "archive"],
+    name: "DataModel",
+    fullName: "Data model",
+    route: "Dashboard",
+    iri: IM.MODULE_DATA_MODEL
+  },
+  {
+    icon: ["fas", "search"],
+    name: "Queries",
+    fullName: "Query templates",
+    route: "Dashboard",
+    iri: IM.MODULE_QUERIES
+  }
+];
 
 describe("SideNav.spec ___ not logged in", () => {
   let wrapper: any;
@@ -16,7 +84,7 @@ describe("SideNav.spec ___ not logged in", () => {
       state: {
         currentUser: null,
         isLoggedIn: false,
-        sideNavHierarchyFocus: { name: "Ontology", iri: "http://endhealth.info/im#DiscoveryOntology" },
+        sideNavHierarchyFocus: { name: "Ontology", fullName: "Ontologies", route: "Dashboard", iri: "http://endhealth.info/im#DiscoveryOntology" },
         selectedEntityType: "Class",
         moduleSelectedEntities: new Map([
           ["Ontology", IM.MODULE_ONTOLOGY],
@@ -50,41 +118,9 @@ describe("SideNav.spec ___ not logged in", () => {
   });
 
   it("starts with the correct data", () => {
-    expect(wrapper.vm.userPopupBottom).toBe(0);
-    expect(wrapper.vm.loginItems).toStrictEqual([
-      {
-        label: "Login",
-        icon: "fa fa-fw fa-user",
-        to: "/user/login"
-      },
-      {
-        label: "Register",
-        icon: "fa fa-fw fa-user-plus",
-        to: "/user/register"
-      }
-    ]);
-    expect(wrapper.vm.accountItems).toStrictEqual([
-      {
-        label: "My account",
-        icon: "fa fa-fw fa-user",
-        to: "/user/my-account" //+ this.user.id
-      },
-      {
-        label: "Edit account",
-        icon: "fa fa-fw fa-user-edit",
-        to: "/user/my-account/edit"
-      },
-      {
-        label: "Change password",
-        icon: "fa fa-fw fa-user-lock",
-        to: "/user/my-account/password-edit"
-      },
-      {
-        label: "Logout",
-        icon: "fa fa-fw fa-sign-out-alt",
-        to: "/user/logout" //+ this.user.id
-      }
-    ]);
+    expect(wrapper.vm.loginItems).toStrictEqual(LOGIN_ITEMS);
+    expect(wrapper.vm.accountItems).toStrictEqual(ACCOUNT_ITEMS);
+    expect(wrapper.vm.menuItems).toStrictEqual(MENU_ITEMS);
   });
 
   it("can determine isActive ___ true", () => {
@@ -141,6 +177,15 @@ describe("SideNav.spec ___ not logged in", () => {
     expect(mockStore.commit).toHaveBeenLastCalledWith("updateResetTree", true);
   });
 
+  it("can iconClick", () => {
+    wrapper.vm.handleCenterIconClick = jest.fn();
+    wrapper.vm.iconClick(MENU_ITEMS[1]);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateSidebarControlActivePanel", 0);
+    expect(wrapper.vm.handleCenterIconClick).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.handleCenterIconClick).toHaveBeenLastCalledWith(MENU_ITEMS[1]);
+  });
+
   it("can handleCenterIconClick", async () => {
     wrapper.vm.handleCenterIconClick({
       name: "Ontology",
@@ -162,9 +207,15 @@ describe("SideNav.spec ___ not logged in", () => {
   });
 
   it("can handleCenterIconClick ___ not entityFocus", async () => {
-    wrapper.vm.handleCenterIconClick({ name: "Workflow", route: "Workflow" });
+    wrapper.vm.handleCenterIconClick({ name: "Workflow", fullName: "Workflow", iri: "http://endhealth.info/im#Workflow", route: "Workflow" });
     await wrapper.vm.$nextTick();
-    expect(mockStore.commit).not.toHaveBeenCalled();
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateSideNavHierarchyFocus", {
+      name: "Workflow",
+      fullName: "Workflow",
+      iri: "http://endhealth.info/im#Workflow",
+      route: "Workflow"
+    });
     expect(mockRouter.push).toHaveBeenCalledWith({ name: "Workflow" });
   });
 
@@ -192,6 +243,18 @@ describe("SideNav.spec ___ not logged in", () => {
     });
   });
 
+  it("can watch selectedEntityType ___ DataModel", async () => {
+    wrapper.vm.$options.watch.selectedEntityType.call(wrapper.vm, "DataModel");
+    await wrapper.vm.$nextTick();
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateSideNavHierarchyFocus", {
+      fullName: "Data model",
+      iri: "http://endhealth.info/im#DiscoveryCommonDataModel",
+      name: "DataModel",
+      route: "Dashboard"
+    });
+  });
+
   it("can watch selectedEntityType ___ Queries", async () => {
     wrapper.vm.$options.watch.selectedEntityType.call(wrapper.vm, "Queries");
     await wrapper.vm.$nextTick();
@@ -202,6 +265,44 @@ describe("SideNav.spec ___ not logged in", () => {
       name: "Queries",
       route: "Dashboard"
     });
+  });
+
+  it("can watch selectedEntityType ___ folder", async () => {
+    wrapper.vm.handleCenterIconClick = jest.fn();
+    wrapper.vm.$options.watch.selectedEntityType.call(wrapper.vm, "Folder");
+    await wrapper.vm.$nextTick();
+    expect(mockStore.commit).not.toHaveBeenCalled();
+    expect(wrapper.vm.handleCenterIconClick).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.handleCenterIconClick).toHaveBeenCalledWith({
+      fullName: "Ontologies",
+      iri: "http://endhealth.info/im#DiscoveryOntology",
+      name: "Ontology",
+      route: "Dashboard"
+    });
+  });
+
+  it("can watch selectedEntityType ___ unknown", async () => {
+    LoggerService.warn = jest.fn();
+    wrapper.vm.handleCenterIconClick = jest.fn();
+    wrapper.vm.$options.watch.selectedEntityType.call(wrapper.vm, "Test");
+    await wrapper.vm.$nextTick();
+    expect(mockStore.commit).not.toHaveBeenCalled();
+    expect(wrapper.vm.handleCenterIconClick).not.toHaveBeenCalled();
+    expect(LoggerService.warn).toHaveBeenCalledTimes(1);
+    expect(LoggerService.warn).toHaveBeenCalledWith(undefined, 'Unknown selectedEntityType detected in sidenav watcher. Type: "Test"');
+  });
+
+  it("can watch sideNavHierarchyFocus ___ not equal", () => {
+    wrapper.vm.handleCenterIconClick = jest.fn();
+    wrapper.vm.$options.watch.sideNavHierarchyFocus.call(wrapper.vm, { name: "test1" }, { name: "test2" });
+    expect(wrapper.vm.handleCenterIconClick).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.handleCenterIconClick).toHaveBeenCalledWith({ name: "test1" });
+  });
+
+  it("can watch sideNavHierarchyFocus ___ equal", () => {
+    wrapper.vm.handleCenterIconClick = jest.fn();
+    wrapper.vm.$options.watch.sideNavHierarchyFocus.call(wrapper.vm, { name: "test1" }, { name: "test1" });
+    expect(wrapper.vm.handleCenterIconClick).not.toHaveBeenCalled();
   });
 });
 
@@ -268,5 +369,70 @@ describe("SideNav.spec ___ logged in", () => {
         to: "/user/logout" //+ this.user.id
       }
     ]);
+  });
+});
+
+describe("SideNav.spec ___ not module iris", () => {
+  let wrapper: any;
+  let mockStore: any;
+  let mockRouter: any;
+  let mockRoute: any;
+
+  beforeEach(async () => {
+    mockStore = {
+      state: {
+        currentUser: null,
+        isLoggedIn: false,
+        sideNavHierarchyFocus: { name: "Ontology", fullName: "Ontologies", route: "Dashboard", iri: "http://endhealth.info/im#DiscoveryOntology" },
+        selectedEntityType: "Class",
+        moduleSelectedEntities: new Map([
+          ["Ontology", "http://snomed.info/sct#298382003"],
+          ["Sets", "http://endhealth.info/im#CSET_Covid5"],
+          ["DataModel", "http://endhealth.info/im#StatsReport"],
+          ["Catalogue", IM.MODULE_CATALOGUE],
+          ["Queries", "http://endhealth.info/im#1000051000252106"]
+        ]),
+        focusHierarchy: false
+      },
+      commit: jest.fn()
+    };
+    mockRouter = {
+      push: jest.fn(),
+      go: jest.fn()
+    };
+    mockRoute = {
+      params: { selectedIri: "test Iri" },
+      name: "Home"
+    };
+    wrapper = shallowMount(SideNav, {
+      global: {
+        components: { Menu, FontAwesomeIcon },
+        mocks: { $store: mockStore, $route: mockRoute, $router: mockRouter }
+      }
+    });
+
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    jest.clearAllMocks();
+  });
+
+  it("can handleCenterIconClick", async () => {
+    wrapper.vm.handleCenterIconClick({
+      name: "Ontology",
+      iri: "http://endhealth.info/im#Discoveryontology",
+      fullName: "Ontologies",
+      route: "Dashboard"
+    });
+    await wrapper.vm.$nextTick();
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSideNavHierarchyFocus", {
+      name: "Ontology",
+      fullName: "Ontologies",
+      iri: "http://endhealth.info/im#Discoveryontology",
+      route: "Dashboard"
+    });
+    expect(mockStore.commit).toHaveBeenNthCalledWith(2, "updateConceptIri", "http://snomed.info/sct#298382003");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(3, "updateActiveModule", "Ontology");
+    expect(mockStore.commit).toHaveBeenNthCalledWith(4, "updateFocusHierarchy", true);
+    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Concept", params: { selectedIri: "http://snomed.info/sct#298382003" } });
   });
 });

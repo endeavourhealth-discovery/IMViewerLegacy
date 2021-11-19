@@ -11,33 +11,34 @@
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { defineComponent, PropType } from "@vue/runtime-core";
+import { ComponentDetails } from "@/models/ecl/ComponentDetails";
+import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
 
 export default defineComponent({
   name: "AddNext",
   props: {
-    id: String,
-    position: Number,
+    id: { type: String, required: true },
+    position: { type: Number, required: true },
     last: Boolean,
     value: {
-      type: Object as PropType<{
-        previousComponent: string;
-        previousPosition: number;
-        parentGroup: string;
-      }>,
+      type: Object as PropType<NextComponentSummary>,
       required: true
     }
   },
-  emits: ["addClicked", "deleteClicked"],
+  emits: {
+    addClicked: (payload: { selectedType: ECLType; position: number }) => true,
+    deleteClicked: (payload: ComponentDetails) => true
+  },
   mounted() {
-    this.generateOptions();
+    this.generateOptions(this.value);
   },
   data() {
     return {
-      options: [] as any[]
+      options: [] as ECLType[]
     };
   },
   methods: {
-    addItem(selectedOption: string) {
+    addItem(selectedOption: ECLType) {
       this.$emit("addClicked", {
         selectedType: selectedOption,
         position: this.value.previousPosition + 1
@@ -55,13 +56,13 @@ export default defineComponent({
       });
     },
 
-    generateOptions() {
-      switch (this.value?.previousComponent) {
+    generateOptions(value: NextComponentSummary) {
+      switch (value.previousComponentType) {
         case ECLType.FOCUS_CONCEPT:
           this.options = [ECLType.LOGIC, ECLType.REFINEMENT_GROUP];
           break;
         case ECLType.LOGIC:
-          if (this.value.parentGroup === ECLType.REFINEMENT_GROUP) {
+          if (value.parentGroup === ECLType.REFINEMENT_GROUP) {
             this.options = [ECLType.REFINEMENT];
           } else {
             this.options = [ECLType.FOCUS_CONCEPT];

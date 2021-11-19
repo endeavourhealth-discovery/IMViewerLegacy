@@ -19,26 +19,33 @@ import Constraint from "@/components/sidebar/expressionConstraintsSearch/Constra
 import AddDeleteButtons from "@/components/sidebar/expressionConstraintsSearch/AddDeleteButtons.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
+import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
+import { ComponentDetails } from "@/models/ecl/ComponentDetails";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "FocusConcept",
   props: {
-    id: String,
-    position: Number,
+    id: { type: String, required: true },
+    position: { type: Number, required: true },
     value: {
       type: Object as PropType<{
-        children: any[];
+        children: ComponentDetails[];
       }>,
       required: false
     },
     last: Boolean
   },
-  emits: ["addNextOptionsClicked", "deleteClicked", "updateClicked"],
+  emits: {
+    addNextOptionsClicked: (payload: NextComponentSummary) => true,
+    deleteClicked: (payload: ComponentDetails) => true,
+    updateClicked: (payload: ComponentDetails) => true
+  },
   components: { Expression, Constraint, AddDeleteButtons },
   watch: {
     focusConceptBuild: {
       handler() {
-        this.focusConceptBuild.sort((a: any, b: any) => a.position - b.position);
+        this.focusConceptBuild.sort((a: ComponentDetails, b: ComponentDetails) => a.position - b.position);
         this.$emit("updateClicked", this.createFocusConcept());
       },
       deep: true
@@ -49,28 +56,28 @@ export default defineComponent({
   },
   data() {
     return {
-      focusConceptBuild: [] as any[]
+      focusConceptBuild: [] as ComponentDetails[]
     };
   },
   methods: {
-    deleteClicked() {
+    deleteClicked(): void {
       this.$emit("deleteClicked", this.createFocusConcept());
     },
 
-    updateChild(data: any) {
+    updateChild(data: any): void {
       const index = this.focusConceptBuild.findIndex(item => item.position === data.position);
       this.focusConceptBuild[index] = data;
     },
 
-    addNextClicked() {
+    addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
-        previousComponent: ECLType.FOCUS_CONCEPT,
+        previousComponentType: ECLType.FOCUS_CONCEPT,
         previousPosition: this.position,
         parentGroup: ECLType.FOCUS_CONCEPT
       });
     },
 
-    createFocusConcept() {
+    createFocusConcept(): ComponentDetails {
       return {
         id: this.id,
         value: {
@@ -79,14 +86,13 @@ export default defineComponent({
         position: this.position,
         type: ECLType.FOCUS_CONCEPT,
         label: this.generateFocusConceptLabel(),
-        component: ECLComponent.FOCUS_CONCEPT,
-        edit: false
+        component: ECLComponent.FOCUS_CONCEPT
       };
     },
 
     generateFocusConceptLabel(): string {
       let label = "";
-      if (this.focusConceptBuild.length) {
+      if (this.focusConceptBuild.length && this.focusConceptBuild.every(item => typeof item.label === "string")) {
         const labels = this.focusConceptBuild.map(item => {
           if (item.type === ECLType.LOGIC) {
             return item.label + "\n\t";
@@ -96,14 +102,14 @@ export default defineComponent({
         });
         label = labels
           .join(" ")
-          .replaceAll("\n ", "\n")
+          .replace("/\n /g", "\n")
           .trim();
       }
       return label;
     },
 
-    setStartBuild() {
-      if (this.value && this.value.children) {
+    setStartBuild(): void {
+      if (this.value && isObjectHasKeys(this.value, ["children"]) && isArrayHasLength(this.value.children)) {
         this.focusConceptBuild = [...this.value.children];
       } else {
         this.focusConceptBuild = [
