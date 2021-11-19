@@ -11,6 +11,7 @@ import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { IM } from "@/vocabulary/IM";
 import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
+import ConfigService from "@/services/ConfigService";
 
 export default createStore({
   // update stateType.ts when adding new state!
@@ -26,6 +27,7 @@ export default createStore({
     focusTree: false as boolean,
     treeLocked: true as boolean,
     resetTree: false as boolean,
+    blockedIris: [] as string[],
     sideNavHierarchyFocus: {
       name: "Ontology",
       fullName: "Ontologies",
@@ -59,6 +61,9 @@ export default createStore({
     catalogueSearchResults: [] as string[]
   },
   mutations: {
+    updateBlockedIris(state, blockedIris) {
+      state.blockedIris = blockedIris;
+    },
     updateConceptIri(state, conceptIri) {
       state.conceptIri = conceptIri;
     },
@@ -134,6 +139,10 @@ export default createStore({
     }
   },
   actions: {
+    async fetchBlockedIris({ commit }) {
+      const blockedIris = await ConfigService.getXmlSchemaDataTypes();
+      commit("updateBlockedIris", blockedIris);
+    },
     async fetchSearchResults({ commit }, data: { searchRequest: SearchRequest; cancelToken: any }) {
       let searchResults: any;
       const result = await EntityService.advancedSearch(data.searchRequest, data.cancelToken);

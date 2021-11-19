@@ -194,6 +194,10 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  const iri = to.params.selectedIri as string;
+  if (iri && store.state.blockedIris.includes(iri)) {
+    return;
+  }
   if (to.name?.toString() == "Concept") {
     store.commit("updateConceptIri", to.params.selectedIri as string);
   }

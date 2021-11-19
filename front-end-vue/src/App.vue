@@ -14,6 +14,7 @@ export default defineComponent({
     // check for user and log them in if found or logout if not
     await this.$store.dispatch("authenticateCurrentUser");
     this.$store.commit("updateHistoryCount", window.history.length);
+    await this.$store.dispatch("fetchBlockedIris");
   }
 });
 </script>
