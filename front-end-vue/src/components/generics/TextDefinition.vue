@@ -28,6 +28,7 @@ import { TTBundle } from "@/models/TripleTree";
 import { mapState } from "vuex";
 import { PartialEntity } from "@/models/PartialEntity";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import ConfigService from "@/services/ConfigService";
 
 export default defineComponent({
   name: "TextDefinition",
@@ -73,7 +74,8 @@ export default defineComponent({
       this.buttonExpanded = !this.buttonExpanded;
     },
     async getDefinition(): Promise<void> {
-      this.definition = await bundleToText(this.data as TTBundle);
+      const defaults = await ConfigService.getDefaultPredicatenames();
+      this.definition = bundleToText(this.data as TTBundle, defaults, 0);
     },
     getCount(): number {
       let count = 0;

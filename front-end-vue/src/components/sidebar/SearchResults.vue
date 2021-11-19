@@ -114,6 +114,7 @@ import LoggerService from "@/services/LoggerService";
 import { defineComponent, PropType } from "vue";
 import { getColourFromType, getIconFromType } from "../../helpers/ConceptTypeMethods";
 import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
+import ConfigService from "@/services/ConfigService";
 
 export default defineComponent({
   name: "SearchResults",
@@ -127,12 +128,16 @@ export default defineComponent({
       this.results = newValue;
     }
   },
+  async mounted() {
+    this.defaultPredicates = await ConfigService.getDefaultPredicatenames();
+  },
   data() {
     return {
       results: new SearchResponse(),
       selectedResult: {} as ConceptSummary,
       hoveredResult: {} as ConceptSummary,
-      copyMenuItems: [] as any[]
+      copyMenuItems: [] as any[],
+      defaultPredicates: {} as any
     };
   },
   methods: {
@@ -197,10 +202,10 @@ export default defineComponent({
       delete filteredData.match;
       delete filteredData.weighting;
       delete filteredData.isDescendantOf;
-      return copyConceptToClipboard(filteredData);
+      return copyConceptToClipboard(filteredData, undefined, this.defaultPredicates);
     },
 
-    setCopyMenuItems(): void {
+    async setCopyMenuItems(): Promise<void> {
       this.copyMenuItems = [
         {
           label: "Copy",
@@ -213,7 +218,7 @@ export default defineComponent({
           label: "All",
           command: async () => {
             await navigator.clipboard
-              .writeText(copyConceptToClipboard(this.hoveredResult))
+              .writeText(copyConceptToClipboard(this.hoveredResult, undefined, this.defaultPredicates))
               .then(() => {
                 this.$toast.add(LoggerService.success("Concept copied to clipboard"));
               })
@@ -227,7 +232,7 @@ export default defineComponent({
       let key: string;
       let value: any;
       for ([key, value] of Object.entries(this.hoveredResult)) {
-        let result = conceptObjectToCopyString(key, value, 0, 1);
+        let result = conceptObjectToCopyString(key, value, 0, 1, undefined, this.defaultPredicates);
         if (!result) continue;
         const label = result.label;
         const text = result.value;

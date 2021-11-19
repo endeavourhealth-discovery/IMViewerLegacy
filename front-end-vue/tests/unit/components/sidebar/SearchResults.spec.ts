@@ -9,6 +9,7 @@ import ContextMenu from "primevue/contextmenu";
 import VueClipboard from "vue3-clipboard";
 import Button from "primevue/button";
 import LoggerService from "@/services/LoggerService";
+import ConfigService from "@/services/ConfigService";
 
 Object.assign(navigator, {
   clipboard: {
@@ -55,6 +56,15 @@ describe("SearchResults.vue", () => {
     };
     docSpy = jest.spyOn(document, "getElementById");
     docSpy.mockReturnValue(undefined);
+
+    ConfigService.getDefaultPredicatenames = jest.fn().mockResolvedValue({
+      "http://endhealth.info/im#roleGroup": "Where",
+      "http://www.w3.org/2002/07/owl#onProperty": "On property",
+      "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
+      "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
+      "http://www.w3.org/2002/07/owl#equivalentClass": "Is equivalent to",
+      "http://www.w3.org/2000/01/rdf-schema#subClassOf": "Is subclass of"
+    });
 
     wrapper = shallowMount(SearchResults, {
       global: {
@@ -345,7 +355,7 @@ describe("SearchResults.vue", () => {
     expect(mockElement.scrollTop).toBe(100);
   });
 
-  it("can wrap copyCOnceptToClipboard", () => {
+  it("can wrap copyConceptToClipboard", () => {
     const testData = {
       name: "Scoliosis deformity of spine",
       iri: "http://snomed.info/sct#298382003",

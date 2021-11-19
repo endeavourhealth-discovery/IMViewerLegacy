@@ -10,7 +10,7 @@
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
-              v-clipboard:copy="copyConceptToClipboardVueWrapper(concept, configs)"
+              v-clipboard:copy="conceptAsString"
               v-clipboard:success="onCopy"
               v-clipboard:error="onCopyError"
               v-tooltip="'Copy concept to clipboard \n (right click to copy individual properties)'"
@@ -215,7 +215,8 @@ export default defineComponent({
       contentHeight: "",
       contentHeightValue: 0,
       copyMenuItems: [] as any,
-      configs: [] as DefinitionConfig[]
+      configs: [] as DefinitionConfig[],
+      conceptAsString: ""
     };
   },
   methods: {
@@ -286,6 +287,7 @@ export default defineComponent({
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
       this.setStoreType();
+      this.conceptAsString = await copyConceptToClipboard(this.concept, this.configs);
       this.loading = false;
     },
 
@@ -347,10 +349,6 @@ export default defineComponent({
       this.showDownloadDialog = false;
     },
 
-    copyConceptToClipboardVueWrapper(concept: any, configs: DefinitionConfig[]) {
-      return copyConceptToClipboard(concept, configs);
-    },
-
     onCopy(): void {
       this.$toast.add(LoggerService.success("Value copied to clipboard"));
     },
@@ -364,7 +362,7 @@ export default defineComponent({
       x.show(event);
     },
 
-    setCopyMenuItems(): void {
+    async setCopyMenuItems(): Promise<void> {
       this.copyMenuItems = [
         {
           label: "Copy",
