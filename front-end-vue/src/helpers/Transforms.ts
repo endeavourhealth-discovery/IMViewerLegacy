@@ -1,26 +1,25 @@
 import { TTBundle, TTIriRef } from "@/models/TripleTree";
 import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
-import ConfigService from "@/services/ConfigService";
 
-export async function bundleToText(bundle: TTBundle): Promise<string> {
+export function bundleToText(bundle: TTBundle, defaultPredicatenames: any, indent: number): string {
   let predicates = bundle.predicates;
-  predicates = await getDefaultPredicates(predicates);
+  predicates = addDefaultPredicates(predicates, defaultPredicatenames);
   delete bundle.entity["@id"];
   let result = "";
-  result += await ttValueToString(bundle.entity, "object", 0, predicates);
+  result += ttValueToString(bundle.entity, "object", indent, predicates);
   return result;
 }
 
-async function getDefaultPredicates(predicates?: any) {
+function addDefaultPredicates(predicates?: any, defaults?: any) {
   if (!isObjectHasKeys(predicates)) predicates = {} as any;
-  const defaults = await ConfigService.getDefaultPredicatenames();
+  if (!isObjectHasKeys(defaults)) return predicates;
   for (const [key, value] of Object.entries(defaults)) {
     predicates[key] = value;
   }
   return predicates;
 }
 
-export async function ttValueToString(node: any, previousType: string, indent: number, iriMap?: any): Promise<string> {
+export function ttValueToString(node: any, previousType: string, indent: number, iriMap?: any): string {
   if (isObjectHasKeys(node, ["@id"])) {
     return ttIriToString(node, previousType, indent, false);
   } else if (isObjectHasKeys(node)) {
@@ -42,8 +41,7 @@ export function ttIriToString(iri: TTIriRef, previous: string, indent: number, i
   return result;
 }
 
-export async function ttNodeToString(node: any, previousType: string, indent: number, iriMap?: any): Promise<string> {
-  if (!iriMap) iriMap = await getDefaultPredicates();
+export function ttNodeToString(node: any, previousType: string, indent: number, iriMap?: any): string {
   const pad = "  ".repeat(indent);
   let result = "";
   let first = true;
@@ -68,45 +66,37 @@ export async function ttNodeToString(node: any, previousType: string, indent: nu
         suffix = " )\n";
       }
     }
-    result = await processNode(key, value, result, previousType, indent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group });
+    result = processNode(key, value, result, previousType, indent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group });
     count++;
   }
   return result;
 }
 
-async function processNode(key: string, value: any, result: string, previousType: string, indent: number, iriMap: any, stringAdditions: any) {
+function processNode(key: string, value: any, result: string, previousType: string, indent: number, iriMap: any, stringAdditions: any): string {
   const pad = stringAdditions.pad;
   const prefix = stringAdditions.prefix;
   const suffix = stringAdditions.suffix;
   if (isObjectHasKeys(value, ["@id"])) {
-    if (iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
+    if (iriMap && iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
     else result += pad + prefix + removeEndBrackets(key) + " : ";
     result += ttIriToString(value as TTIriRef, "object", indent, true);
     result += suffix;
   } else if (isArrayHasLength(value) && value.length === 1) {
     if (isObjectHasKeys(value[0], ["@id"])) {
-      if (iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
+      if (iriMap && iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
       else result += pad + prefix + removeEndBrackets(key) + " : ";
       result += ttIriToString(value[0] as TTIriRef, "object", indent, true);
       result += suffix;
     } else {
-      result += await processObject(key, value, result, previousType, indent, iriMap, stringAdditions);
+      result += processObject(key, value, result, previousType, indent, iriMap, stringAdditions);
     }
   } else {
-    result += await processObject(key, value, result, previousType, indent, iriMap, stringAdditions);
+    result += processObject(key, value, result, previousType, indent, iriMap, stringAdditions);
   }
   return result;
 }
 
-async function processObject(
-  key: string,
-  value: any,
-  result: string,
-  previousType: string,
-  indent: number,
-  iriMap: any,
-  stringAdditions: any
-): Promise<string> {
+function processObject(key: string, value: any, result: string, previousType: string, indent: number, iriMap: any, stringAdditions: any): string {
   const pad = stringAdditions.pad;
   const prefix = stringAdditions.prefix;
   const group = stringAdditions.group;
@@ -114,26 +104,25 @@ async function processObject(
   else result += pad + prefix + key + ":\n";
   if (previousType === "array") {
     if (group) {
-      result += await ttValueToString(value, "object", indent + 1, iriMap);
+      result += ttValueToString(value, "object", indent + 1, iriMap);
     } else {
-      result += await ttValueToString(value, "object", indent, iriMap);
+      result += ttValueToString(value, "object", indent, iriMap);
     }
   }
   if (previousType === "object") {
     if (isArrayHasLength(value)) {
-      result += await ttValueToString(value, "object", indent, iriMap);
+      result += ttValueToString(value, "object", indent, iriMap);
     } else {
-      result += await ttValueToString(value, "object", indent + 1, iriMap);
+      result += ttValueToString(value, "object", indent + 1, iriMap);
     }
   }
   return result;
 }
 
-export async function ttArrayToString(arr: any[], indent: number, iriMap?: any): Promise<string> {
-  if (!iriMap) iriMap = await getDefaultPredicates();
+export function ttArrayToString(arr: any[], indent: number, iriMap?: any): string {
   let result = "";
   for (const item of arr) {
-    result += await ttValueToString(item, "array", indent + 1, iriMap);
+    result += ttValueToString(item, "array", indent + 1, iriMap);
   }
   return result;
 }

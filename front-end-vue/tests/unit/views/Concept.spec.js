@@ -131,7 +131,6 @@ describe("Concept.vue", () => {
     mockToast = {
       add: jest.fn()
     };
-    console.error = jest.fn();
 
     windowSpy = jest.spyOn(window, "getComputedStyle");
     windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue("16px") });
@@ -852,6 +851,7 @@ describe("Concept.vue", () => {
       ]
     };
     wrapper.vm.setCopyMenuItems();
+    await flushPromises();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.copyMenuItems).toHaveLength(9);
     expect(wrapper.vm.copyMenuItems[0]).toStrictEqual({
@@ -890,6 +890,7 @@ describe("Concept.vue", () => {
       dataModelProperties: []
     };
     wrapper.vm.setCopyMenuItems();
+    await flushPromises();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.copyMenuItems).toHaveLength(7);
     expect(wrapper.vm.copyMenuItems[0]).toStrictEqual({
@@ -1082,4 +1083,11 @@ describe("Concept.vue", () => {
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Export failed from server"));
   });
+
+  // it("can onCopyRightClick", async () => {
+  //   wrapper.vm.onCopyRightClick("testEvent");
+  //   await flushPromises();
+  //   expect(mockRef.methods.show).toHaveBeenCalledTimes(1);
+  //   expect(mockRef.methods.show).toHaveBeenCalledWith("testEvent");
+  // });
 });

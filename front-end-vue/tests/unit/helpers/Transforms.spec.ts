@@ -1,5 +1,4 @@
 import { ttValueToString, ttArrayToString, ttIriToString, ttNodeToString, bundleToText } from "@/helpers/Transforms";
-import ConfigService from "@/services/ConfigService";
 
 describe("bundleToText", () => {
   const testBundle = {
@@ -66,6 +65,16 @@ describe("bundleToText", () => {
       "http://www.w3.org/2002/07/owl#equivalentClass": "Is equivalent to"
     }
   };
+
+  const PREDICATES = {
+    "http://endhealth.info/im#isA": "Is a",
+    "http://endhealth.info/im#roleGroup": "Where",
+    "http://www.w3.org/2002/07/owl#onProperty": "On property",
+    "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
+    "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
+    "http://www.w3.org/2002/07/owl#equivalentClass": "Is equivalent to"
+  };
+
   const expected =
     "Is a:\n" +
     "  Multiple system malformation syndrome\n" +
@@ -94,39 +103,31 @@ describe("bundleToText", () => {
     "      Associated morphology : Morphologically abnormal structure\n" +
     "      Finding site : Structure of eye proper\n" +
     "      Occurrence : Congenital )\n";
+
   beforeEach(() => {
     jest.resetAllMocks();
-
-    ConfigService.getDefaultPredicatenames = jest.fn().mockResolvedValue({
-      "http://endhealth.info/im#isA": "Is a",
-      "http://endhealth.info/im#roleGroup": "Where",
-      "http://www.w3.org/2002/07/owl#onProperty": "On property",
-      "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
-      "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
-      "http://www.w3.org/2002/07/owl#equivalentClass": "Is equivalent to"
-    });
   });
 
   it("can convert a bundle to text", async () => {
-    expect(await bundleToText(testBundle)).toBe(expected);
+    expect(bundleToText(testBundle, PREDICATES, 0)).toBe(expected);
   });
 });
 
 describe("ttValueToString", () => {
   it("handles ttIri", async () => {
-    expect(await ttValueToString({ "@id": "testIri", name: "testName" }, "object", 0)).toBe("testName");
+    expect(ttValueToString({ "@id": "testIri", name: "testName" }, "object", 0)).toBe("testName");
   });
 
   it("handles array", async () => {
-    expect(await ttValueToString([{ "@id": "testItem" }], "object", 0)).toBe("  testItem\n");
+    expect(ttValueToString([{ "@id": "testItem" }], "object", 0)).toBe("  testItem\n");
   });
 
   it("handles ttNode", async () => {
-    expect(await ttValueToString({ nodeIri: { "@id": "testName" } }, "object", 0)).toStrictEqual("nodeIri : testName\n");
+    expect(ttValueToString({ nodeIri: { "@id": "testName" } }, "object", 0)).toStrictEqual("nodeIri : testName\n");
   });
 
   it("handles undefined", async () => {
-    expect(await ttValueToString(undefined, "object", 0)).toBe("");
+    expect(ttValueToString(undefined, "object", 0)).toBe("");
   });
 });
 
@@ -222,31 +223,30 @@ describe("ttNodeToString", () => {
     "      Associated morphology : Morphologically abnormal structure\n" +
     "      Finding site : Structure of eye proper\n" +
     "      Occurrence : Congenital )\n";
+
+  const PREDICATES = {
+    "http://endhealth.info/im#roleGroup": "Where",
+    "http://snomed.info/sct#116676008": "Associated morphology",
+    "http://snomed.info/sct#363698007": "Finding site",
+    "http://endhealth.info/im#mapAdvice": "mapping advice",
+    "http://endhealth.info/im#hasMap": "has map",
+    "http://endhealth.info/im#mapPriority": "mapPriority",
+    "http://endhealth.info/im#matchedTo": "matched To",
+    "http://endhealth.info/im#assuranceLevel": "assurance level",
+    "http://snomed.info/sct#246454002": "Occurrence",
+    "http://snomed.info/sct#370135005": "Pathological process (attribute)",
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": "Is subclass of",
+    "http://endhealth.info/im#someOf": "some of",
+    "http://www.w3.org/2002/07/owl#onProperty": "On property",
+    "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
+    "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
+    "http://www.w3.org/2002/07/owl#equivalentClass": "Is equivalent to"
+  };
   beforeEach(() => {
     jest.resetAllMocks();
-
-    ConfigService.getDefaultPredicatenames = jest.fn().mockResolvedValue({
-      "http://endhealth.info/im#roleGroup": "Where",
-      "http://snomed.info/sct#116676008": "Associated morphology",
-      "http://snomed.info/sct#363698007": "Finding site",
-      "http://endhealth.info/im#mapAdvice": "mapping advice",
-      "http://endhealth.info/im#hasMap": "has map",
-      "http://endhealth.info/im#mapPriority": "mapPriority",
-      "http://endhealth.info/im#matchedTo": "matched To",
-      "http://endhealth.info/im#assuranceLevel": "assurance level",
-      "http://snomed.info/sct#246454002": "Occurrence",
-      "http://snomed.info/sct#370135005": "Pathological process (attribute)",
-      "http://www.w3.org/2000/01/rdf-schema#subClassOf": "Is subclass of",
-      "http://endhealth.info/im#someOf": "some of",
-      "http://www.w3.org/2002/07/owl#onProperty": "On property",
-      "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
-      "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
-      "http://www.w3.org/2002/07/owl#equivalentClass": "Is equivalent to"
-    });
   });
 
   it("handles node ___ missing iriMap", async () => {
-    expect(await ttNodeToString(NODE, "object", 0)).toBe(EXPECTED);
-    expect(ConfigService.getDefaultPredicatenames).toHaveBeenCalledTimes(1);
+    expect(ttNodeToString(NODE, "object", 0, PREDICATES)).toBe(EXPECTED);
   });
 });

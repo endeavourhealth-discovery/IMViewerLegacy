@@ -3,14 +3,14 @@ import LoggerService from "@/services/LoggerService";
 import { bundleToText } from "@/helpers/Transforms";
 import { isArrayHasLength, isObject, isObjectHasKeys } from "./DataTypeCheckers";
 
-export function copyConceptToClipboard(concept: any, configs?: DefinitionConfig[]): string {
+export function copyConceptToClipboard(concept: any, configs?: DefinitionConfig[], defaults?: any): string {
   const totalKeys = Object.keys(concept).length;
   let counter = 0;
   let returnString = "";
   let key: string;
   let value: any;
   for ([key, value] of Object.entries(concept)) {
-    const copyString = conceptObjectToCopyString(key, value, counter, totalKeys, configs);
+    const copyString = conceptObjectToCopyString(key, value, counter, totalKeys, configs, defaults);
     if (copyString) returnString += copyString.value;
     counter++;
   }
@@ -46,7 +46,8 @@ export function conceptObjectToCopyString(
   value: any,
   counter: number,
   totalKeys: number,
-  configs?: DefinitionConfig[]
+  configs?: DefinitionConfig[],
+  defaults?: any
 ): { label: string; value: string } | undefined {
   if (isArrayWithoutLengthAndIsObjectWithoutKeys(value)) {
     return;
@@ -68,7 +69,7 @@ export function conceptObjectToCopyString(
   } else if (isObjectHasKeys(value, ["name"])) {
     returnString = newKey + ": " + value.name;
   } else if (isObjectHasKeys(value, ["entity", "predicates"])) {
-    returnString = newKey + ': "\n' + bundleToText(value) + '\n"';
+    returnString = newKey + ': "\n' + bundleToText(value, defaults, 1) + '\n"';
   } else if (typeof value === "string") {
     newString = value.replace(/\n/g, "\n\t").replace(/<p>/g, "\n\t");
     returnString = newKey + ": " + newString;

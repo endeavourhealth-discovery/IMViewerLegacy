@@ -78,6 +78,7 @@ describe("SideNav.spec ___ not logged in", () => {
   let mockStore: any;
   let mockRouter: any;
   let mockRoute: any;
+  let mockRef: any;
 
   beforeEach(async () => {
     mockStore = {
@@ -105,10 +106,12 @@ describe("SideNav.spec ___ not logged in", () => {
       params: { selectedIri: "test Iri" },
       name: "Home"
     };
+    mockRef = { render: () => {}, methods: { toggle: jest.fn() } };
     wrapper = shallowMount(SideNav, {
       global: {
         components: { Menu, FontAwesomeIcon },
-        mocks: { $store: mockStore, $route: mockRoute, $router: mockRouter }
+        mocks: { $store: mockStore, $route: mockRoute, $router: mockRouter },
+        stubs: { Menu: mockRef }
       }
     });
 
@@ -303,6 +306,12 @@ describe("SideNav.spec ___ not logged in", () => {
     wrapper.vm.handleCenterIconClick = jest.fn();
     wrapper.vm.$options.watch.sideNavHierarchyFocus.call(wrapper.vm, { name: "test1" }, { name: "test1" });
     expect(wrapper.vm.handleCenterIconClick).not.toHaveBeenCalled();
+  });
+
+  it("can toggle", () => {
+    wrapper.vm.toggle("testEvent");
+    expect(mockRef.methods.toggle).toHaveBeenCalledTimes(1);
+    expect(mockRef.methods.toggle).toHaveBeenCalledWith("testEvent");
   });
 });
 
