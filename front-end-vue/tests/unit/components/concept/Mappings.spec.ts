@@ -11,6 +11,7 @@ describe("Mappings.vue", () => {
   let wrapper: any;
   let mockStore: any;
   let mockToast: any;
+  let mockRef: any;
 
   const HAS_MAPS = {
     "http://endhealth.info/im#hasMap": [
@@ -81,6 +82,8 @@ describe("Mappings.vue", () => {
 
     mockToast = { add: jest.fn() };
 
+    mockRef = { render: () => {}, methods: { toggle: jest.fn() } };
+
     EntityService.getPartialEntity = jest
       .fn()
       .mockResolvedValueOnce(HAS_MAPS)
@@ -91,7 +94,8 @@ describe("Mappings.vue", () => {
     wrapper = shallowMount(Mappings, {
       global: {
         components: { ProgressSpinner, OrganizationChart, OverlayPanel, SimpleMaps },
-        mocks: { $store: mockStore, $toast: mockToast }
+        mocks: { $store: mockStore, $toast: mockToast },
+        stubs: { OverlayPanel: mockRef }
       },
       props: { conceptIri: "http://snomed.info/sct#723312009" }
     });
@@ -571,4 +575,10 @@ describe("Mappings.vue", () => {
   it("can get byScheme ___ 0", () => {
     expect(wrapper.vm.byScheme({ scheme: 2 }, { scheme: 2 })).toBe(0);
   });
+
+  // it("can toggle", () => {
+  //   wrapper.vm.toggle("testEvent");
+  //   expect(mockRef.methods.toggle).toHaveBeenCalledTimes(1);
+  //   expect(mockRef.methods.toggle).toHaveBeenCalledWith("testEvent");
+  // });
 });
