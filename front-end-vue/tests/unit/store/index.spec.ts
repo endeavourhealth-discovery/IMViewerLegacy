@@ -31,6 +31,7 @@ describe("state", () => {
       "focusTree",
       "treeLocked",
       "resetTree",
+      "blockedIris",
       "sideNavHierarchyFocus",
       "selectedEntityType",
       "filterOptions",
