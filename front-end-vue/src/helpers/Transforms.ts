@@ -35,8 +35,11 @@ export function ttIriToString(iri: TTIriRef, previous: string, indent: number, i
   const pad = "  ".repeat(indent);
   let result = "";
   if (!inline) result += pad;
+  const escapedUrl = iri["@id"].replace(/\//gi, "%2F").replace(/#/gi, "%23");
+  result += `<a href="${window.location.origin}/#/concept/${escapedUrl}">`;
   if (iri.name) result += removeEndBrackets(iri.name);
   else result += iri["@id"];
+  result += "</a>";
   if (previous === "array") result += "\n";
   return result;
 }

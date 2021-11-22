@@ -17,7 +17,7 @@
         }"
       />
     </div>
-    <pre :class="'p-d-none tgl-' + label">{{ definition }}</pre>
+    <div v-html="definition" :class="'p-d-none text-definition tgl-' + label"></div>
   </div>
 </template>
 
@@ -98,12 +98,13 @@ export default defineComponent({
   align-items: center;
 }
 
-pre {
+.text-definition {
   border: 1px solid #dee2e6;
   border-radius: 3px;
   padding: 0.5rem;
   margin: 0.5rem 0 0 0;
   overflow: auto;
+  white-space: pre;
 }
 
 .head-container {
