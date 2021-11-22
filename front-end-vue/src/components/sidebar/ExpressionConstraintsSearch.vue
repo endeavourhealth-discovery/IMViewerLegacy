@@ -84,13 +84,32 @@ export default defineComponent({
     async search() {
       if (this.queryString) {
         this.loading = true;
-        const result = await EntityService.ECLSearch(this.queryString, false, 1000);
-        if (isObjectHasKeys(result, ["entities", "count", "page"])) {
-          this.searchResults = result.entities;
-          this.totalCount = result.count;
-        } else {
-          this.eclError = true;
-        }
+        EntityService.ECLSearch(this.queryString, false, 1000)
+            .then(result => {
+              if (isObjectHasKeys(result, ["entities", "count", "page"])) {
+                this.searchResults = result.entities;
+                this.totalCount = result.count;
+              } else {
+                this.eclError = true;
+              }
+            })
+            .catch(error => {
+              if (error.response!.status === 400) {
+                this.$toast.add({
+                  severity: "error",
+                  summary: "Invalid ECL",
+                  detail: "Search query string is in unrecognised ECL format.",
+                  life: 4000
+                });
+              } else {
+                this.$toast.add({
+                  severity: "error",
+                  summary: "Request error",
+                  detail: "Request for " + error.config.url.substring(error.config.url.lastIndexOf("/") + 1) + " was unsuccessful. " + error.message + ".",
+                  life: 4000
+                });
+              }
+            });
         this.loading = false;
       }
     },
