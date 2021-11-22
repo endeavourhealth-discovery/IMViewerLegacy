@@ -77,14 +77,12 @@ function processNode(key: string, value: any, result: string, previousType: stri
   const prefix = stringAdditions.prefix;
   const suffix = stringAdditions.suffix;
   if (isObjectHasKeys(value, ["@id"])) {
-    if (iriMap && iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
-    else result += pad + prefix + removeEndBrackets(key) + " : ";
+    result += getObjectName(key, iriMap, pad, prefix);
     result += ttIriToString(value as TTIriRef, "object", indent, true);
     result += suffix;
   } else if (isArrayHasLength(value) && value.length === 1) {
     if (isObjectHasKeys(value[0], ["@id"])) {
-      if (iriMap && iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
-      else result += pad + prefix + removeEndBrackets(key) + " : ";
+      result += getObjectName(key, iriMap, pad, prefix);
       result += ttIriToString(value[0] as TTIriRef, "object", indent, true);
       result += suffix;
     } else {
@@ -94,6 +92,11 @@ function processNode(key: string, value: any, result: string, previousType: stri
     result += processObject(key, value, result, previousType, indent, iriMap, stringAdditions);
   }
   return result;
+}
+
+function getObjectName(key: string, iriMap: any, pad: string, prefix: string) {
+  if (iriMap && iriMap[key]) return pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
+  else return pad + prefix + removeEndBrackets(key) + " : ";
 }
 
 function processObject(key: string, value: any, result: string, previousType: string, indent: number, iriMap: any, stringAdditions: any): string {

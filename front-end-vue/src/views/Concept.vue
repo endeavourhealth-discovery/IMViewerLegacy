@@ -287,7 +287,7 @@ export default defineComponent({
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
       this.setStoreType();
-      this.conceptAsString = await copyConceptToClipboard(this.concept, this.configs);
+      this.conceptAsString = copyConceptToClipboard(this.concept, this.configs);
       this.loading = false;
     },
 
