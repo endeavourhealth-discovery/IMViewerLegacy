@@ -113,13 +113,12 @@ export default defineComponent({
         LoggerService.error(undefined, "Failed to set ecl results table height");
         return;
       }
-      const html = document.documentElement;
-      const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
       const title = container.getElementsByClassName("title")[0] as HTMLElement;
       const subTitle = container.getElementsByClassName("info")[0] as HTMLElement;
       const eclContainer = container.getElementsByClassName("text-copy-container")[0] as HTMLElement;
       const buttonContainer = container.getElementsByClassName("button-container")[0] as HTMLElement;
       const resultsContainer = container.getElementsByClassName("results-container")[0] as HTMLElement;
+      const paginator = container.getElementsByClassName("p-paginator")[0] as HTMLElement;
       let height = container.getBoundingClientRect().height;
       if (title) {
         height -= title.getBoundingClientRect().height;
@@ -133,8 +132,8 @@ export default defineComponent({
       if (buttonContainer) {
         height -= buttonContainer.getBoundingClientRect().height;
       }
-      if (currentFontSize) {
-        height -= currentFontSize * 3;
+      if (paginator) {
+        height -= paginator.getBoundingClientRect().height;
       }
       if (resultsContainer) {
         resultsContainer.style.height = height + "px";
@@ -202,6 +201,7 @@ export default defineComponent({
   display: flex;
   flex-flow: column nowrap;
   justify-content: space-between;
+  height: 100%;
 }
 
 .text-copy-container {
