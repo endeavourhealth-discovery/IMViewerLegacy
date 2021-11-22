@@ -56,6 +56,7 @@ describe("state", () => {
     expect(store.state.focusTree).toBe(false);
     expect(store.state.treeLocked).toBe(true);
     expect(store.state.resetTree).toBe(false);
+    expect(store.state.blockedIris).toStrictEqual([]);
     expect(store.state.sideNavHierarchyFocus).toStrictEqual({
       name: "Ontology",
       fullName: "Ontologies",
@@ -174,6 +175,12 @@ describe("mutations", () => {
     const testBool = true;
     store.commit("updateResetTree", testBool);
     expect(store.state.resetTree).toBe(true);
+  });
+
+  it("can update blockedIris", () => {
+    const testIris = ["iri1", "iri2", "iri3"];
+    store.commit("updateBlockedIris", testIris);
+    expect(store.state.blockedIris).toStrictEqual(testIris);
   });
 
   it("can updateSelectedFilters", () => {
