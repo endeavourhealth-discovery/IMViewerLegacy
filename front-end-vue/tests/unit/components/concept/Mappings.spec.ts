@@ -91,6 +91,12 @@ describe("Mappings.vue", () => {
 
     EntityService.getNamespaces = jest.fn().mockResolvedValue(NAMESPACES);
 
+    EntityService.getMatchedFrom = jest
+      .fn()
+      .mockResolvedValue([
+        { "@id": "http://endhealth.info/emis#Nyu55", name: "Scoliosis deformity of spine", scheme: "EMIS (inc. Read2 like) namespace", code: "Nyu55" }
+      ]);
+
     wrapper = shallowMount(Mappings, {
       global: {
         components: { ProgressSpinner, OrganizationChart, OverlayPanel, SimpleMaps },
@@ -133,6 +139,19 @@ describe("Mappings.vue", () => {
     await flushPromises();
     expect(wrapper.vm.mappings).toStrictEqual([]);
     expect(wrapper.vm.data).toStrictEqual({});
+  });
+
+  it("can get mappings ___ no simpleMaps", async () => {
+    EntityService.getPartialEntity = jest.fn().mockResolvedValue({});
+    wrapper.vm.getMappings();
+    await flushPromises();
+    await flushPromises();
+    await flushPromises();
+    await flushPromises();
+    expect(wrapper.vm.simpleMaps).toStrictEqual([
+      { "@id": "http://endhealth.info/emis#Nyu55", code: "Nyu55", name: "Scoliosis deformity of spine", scheme: "EMIS (inc. Read2 like) namespace" }
+    ]);
+    expect(EntityService.getMatchedFrom).toHaveBeenCalledTimes(1);
   });
 
   it("can create chartTableNode", () => {
@@ -576,9 +595,29 @@ describe("Mappings.vue", () => {
     expect(wrapper.vm.byScheme({ scheme: 2 }, { scheme: 2 })).toBe(0);
   });
 
-  // it("can toggle", () => {
-  //   wrapper.vm.toggle("testEvent");
-  //   expect(mockRef.methods.toggle).toHaveBeenCalledTimes(1);
-  //   expect(mockRef.methods.toggle).toHaveBeenCalledWith("testEvent");
-  // });
+  it("can toggle", () => {
+    wrapper.vm.toggle(
+      "testEvent",
+      { name: "Scoliosis deformity of spine", iri: "http://endhealth.info/tpp#Xa6vS", scheme: "TPP (inc.CTV3) namespace", code: "Xa6vS" },
+      "opSimpleMaps"
+    );
+    expect(mockRef.methods.toggle).toHaveBeenCalledTimes(1);
+    expect(mockRef.methods.toggle).toHaveBeenCalledWith("testEvent");
+  });
+
+  it("can handleSimpleMapsToggle", () => {
+    wrapper.vm.toggle = jest.fn();
+    wrapper.vm.handleSimpleMapsToggle("testEvent", {
+      name: "Scoliosis deformity of spine",
+      iri: "http://endhealth.info/tpp#Xa6vS",
+      scheme: "TPP (inc.CTV3) namespace",
+      code: "Xa6vS"
+    });
+    expect(wrapper.vm.toggle).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.toggle).toHaveBeenCalledWith(
+      "testEvent",
+      { name: "Scoliosis deformity of spine", iri: "http://endhealth.info/tpp#Xa6vS", scheme: "TPP (inc.CTV3) namespace", code: "Xa6vS" },
+      "opSimpleMaps"
+    );
+  });
 });
