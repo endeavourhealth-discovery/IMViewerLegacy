@@ -3,7 +3,7 @@ import { flushPromises, shallowMount } from "@vue/test-utils";
 import Textarea from "primevue/textarea";
 import Button from "primevue/button";
 import EntityService from "@/services/EntityService";
-import Tooltip from "primevue/tooltip";
+import axios from "axios";
 
 describe("ExpressionConstraintsSearch.vue", () => {
   let wrapper;
@@ -12,21 +12,29 @@ describe("ExpressionConstraintsSearch.vue", () => {
   let docSpy;
   let windowSpy;
 
-  beforeEach(async () => {
-    jest.resetAllMocks();
-
-    mockStore = { state: { sidebarControlActivePanel: 0 } };
-    mockToast = { add: jest.fn() };
-
-    EntityService.ECLSearch = jest.fn().mockResolvedValue([
+  const SEARCH_RESULTS = {
+    page: 1,
+    count: 3,
+    entities: [
       {
         name: "Arthrotec 50 gastro-resistant tablets (Pfizer Ltd) 60 tablet 6 x 10 tablets",
         iri: "http://snomed.info/sct#3160311000001101",
         code: "3160311000001101",
         description: "Arthrotec 50 gastro-resistant tablets (Pfizer Ltd) 60 tablet 6 x 10 tablets (product)",
-        status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
-        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-        entityType: [{ name: "Concept", "@id": "http://endhealth.info/im#Concept" }],
+        status: {
+          name: "Active",
+          "@id": "http://endhealth.info/im#Active"
+        },
+        scheme: {
+          name: "Snomed-CT namespace",
+          "@id": "http://snomed.info/sct#"
+        },
+        entityType: [
+          {
+            name: "Concept",
+            "@id": "http://endhealth.info/im#Concept"
+          }
+        ],
         isDescendentOf: [],
         match: "25663601000001112"
       },
@@ -35,9 +43,20 @@ describe("ExpressionConstraintsSearch.vue", () => {
         iri: "http://snomed.info/sct#9557811000001109",
         code: "9557811000001109",
         description: "Gabapentin 100mg capsules (Zentiva Pharma UK Ltd) 100 capsule (product)",
-        status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
-        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-        entityType: [{ name: "Concept", "@id": "http://endhealth.info/im#Concept" }],
+        status: {
+          name: "Active",
+          "@id": "http://endhealth.info/im#Active"
+        },
+        scheme: {
+          name: "Snomed-CT namespace",
+          "@id": "http://snomed.info/sct#"
+        },
+        entityType: [
+          {
+            name: "Concept",
+            "@id": "http://endhealth.info/im#Concept"
+          }
+        ],
         isDescendentOf: [],
         match: "1762201000001114"
       },
@@ -46,13 +65,33 @@ describe("ExpressionConstraintsSearch.vue", () => {
         iri: "http://snomed.info/sct#10222311000001109",
         code: "10222311000001109",
         description: "Dermablend cover creme B12 (Vichy) (product)",
-        status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
-        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-        entityType: [{ name: "Concept", "@id": "http://endhealth.info/im#Concept" }],
+        status: {
+          name: "Active",
+          "@id": "http://endhealth.info/im#Active"
+        },
+        scheme: {
+          name: "Snomed-CT namespace",
+          "@id": "http://snomed.info/sct#"
+        },
+        entityType: [
+          {
+            name: "Concept",
+            "@id": "http://endhealth.info/im#Concept"
+          }
+        ],
         isDescendentOf: [],
         match: "66209001000001114"
       }
-    ]);
+    ]
+  };
+
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    mockStore = { state: { sidebarControlActivePanel: 0 } };
+    mockToast = { add: jest.fn() };
+
+    EntityService.ECLSearch = jest.fn().mockResolvedValue(SEARCH_RESULTS);
 
     windowSpy = jest.spyOn(window, "getComputedStyle");
     windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue("16px") });
@@ -124,13 +163,32 @@ describe("ExpressionConstraintsSearch.vue", () => {
   });
 
   it("can updateECL", () => {
-    wrapper.vm.updateECL("<< Scoliosis");
-    expect(wrapper.vm.queryString).toBe("<< Scoliosis");
+    wrapper.vm.updateECL("<< 10363601000001109 |UK product| ");
+    expect(wrapper.vm.queryString).toBe("<< 10363601000001109 |UK product| ");
     expect(wrapper.vm.showDialog).toBe(false);
   });
 
   it("can showBuilder", () => {
     wrapper.vm.showBuilder();
     expect(wrapper.vm.showDialog).toBe(true);
+  });
+
+  it("can search ___ no querystring", async () => {
+    wrapper.vm.search();
+    await flushPromises();
+    expect(EntityService.ECLSearch).not.toHaveBeenCalled();
+  });
+
+  it("can search ___ querystring ___ success", async () => {
+    wrapper.vm.queryString = "<< 10363601000001109 |UK product| ";
+    const token = axios.CancelToken.source().token;
+    wrapper.vm.search();
+    expect(wrapper.vm.loading).toBe(true);
+    await flushPromises();
+    expect(EntityService.ECLSearch).toHaveBeenCalledTimes(1);
+    expect(EntityService.ECLSearch).toHaveBeenCalledWith("<< 10363601000001109 |UK product| ", false, 1000, token);
+    expect(wrapper.vm.loading).toBe(false);
+    expect(wrapper.vm.searchResults).toStrictEqual(SEARCH_RESULTS.entities);
+    expect(wrapper.vm.totalCount).toBe(3);
   });
 });
