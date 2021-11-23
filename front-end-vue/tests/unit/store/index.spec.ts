@@ -7,6 +7,7 @@ import { SearchRequest } from "@/models/search/SearchRequest";
 import AuthService from "@/services/AuthService";
 import { CustomAlert } from "@/models/user/CustomAlert";
 import { IM } from "@/vocabulary/IM";
+import ConfigService from "@/services/ConfigService";
 
 describe("state", () => {
   beforeEach(() => {
@@ -261,6 +262,15 @@ describe("mutations", () => {
   it("can updateSidebarControlActivePanel", () => {
     store.commit("updateSidebarControlActivePanel", 4);
     expect(store.state.sidebarControlActivePanel).toBe(4);
+  });
+
+  it("can fetchBlockedIris", async () => {
+    const iris = ["http://www.w3.org/2001/XMLSchema#string", "http://www.w3.org/2001/XMLSchema#boolean"];
+    ConfigService.getXmlSchemaDataTypes = jest.fn().mockResolvedValue(iris);
+    store.dispatch("fetchBlockedIris");
+    await flushPromises();
+    expect(ConfigService.getXmlSchemaDataTypes).toHaveBeenCalledTimes(1);
+    expect(store.state.blockedIris).toStrictEqual(iris);
   });
 
   it("can fetchSearchResults ___ pass", async () => {

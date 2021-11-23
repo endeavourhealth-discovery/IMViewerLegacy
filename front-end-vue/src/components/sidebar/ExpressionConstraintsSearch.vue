@@ -10,6 +10,7 @@
         :class="eclError ? 'p-invalid' : ''"
       />
       <Button
+        :disabled="!queryString.length"
         icon="far fa-copy"
         v-tooltip.left="'Copy to clipboard'"
         v-clipboard:copy="copyToClipboard()"
@@ -74,21 +75,21 @@ export default defineComponent({
     };
   },
   methods: {
-    async onResize() {
+    async onResize(): Promise<void> {
       await this.$nextTick();
       this.setResultsHeight();
     },
 
-    updateECL(data: string) {
+    updateECL(data: string): void {
       this.queryString = data;
       this.showDialog = false;
     },
 
-    showBuilder() {
+    showBuilder(): void {
       this.showDialog = true;
     },
 
-    async search() {
+    async search(): Promise<void> {
       if (this.queryString) {
         this.loading = true;
         const result = await EntityService.ECLSearch(this.queryString, false, 1000);

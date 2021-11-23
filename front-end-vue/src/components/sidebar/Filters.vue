@@ -90,9 +90,9 @@ export default defineComponent({
 
     setDefaults(): void {
       if (!isArrayHasLength(this.selectedFilters.status) && !isArrayHasLength(this.selectedFilters.schemes) && !isArrayHasLength(this.selectedFilters.types)) {
-        this.selectedStatus = this.statusOptions.filter(item => this.configs.statusOptions.includes(item.name));
-        this.selectedSchemes = this.schemeOptions.filter(item => this.configs.schemeOptions.includes(item.name));
-        this.selectedTypes = this.typeOptions.filter(item => this.configs.typeOptions.includes(item.name));
+        this.selectedStatus = this.statusOptions.filter(item => this.configs.statusOptions.includes(item["@id"]));
+        this.selectedSchemes = this.schemeOptions.filter(item => this.configs.schemeOptions.includes(item.iri));
+        this.selectedTypes = this.typeOptions.filter(item => this.configs.typeOptions.includes(item["@id"]));
         this.updateStoreSelectedFilters();
       } else {
         this.selectedStatus = this.selectedFilters.status;

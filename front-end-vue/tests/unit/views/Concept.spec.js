@@ -1,8 +1,6 @@
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import Concept from "@/views/Concept.vue";
-import Tooltip from "primevue/tooltip";
 import ContextMenu from "primevue/contextmenu";
-import VueClipboard from "vue3-clipboard";
 import Button from "primevue/button";
 import LoggerService from "@/services/LoggerService";
 import PanelHeader from "@/components/concept/PanelHeader.vue";
@@ -157,7 +155,7 @@ describe("Concept.vue", () => {
           ProgressSpinner
         },
         mocks: { $store: mockStore, $router: mockRouter, $toast: mockToast },
-        directives: { tooltip: Tooltip, clipboard: VueClipboard }
+        directives: { tooltip: jest.fn(), clipboard: { copy: jest.fn(), success: jest.fn(), error: jest.fn() } }
       }
     });
 
