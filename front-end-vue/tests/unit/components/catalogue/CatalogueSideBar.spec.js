@@ -174,3 +174,58 @@ describe("CatalogueSideBar.vue ___ no catalogueSearchResults", () => {
     expect(wrapper.vm.sideMenuHeight).not.toBe("");
   });
 });
+
+describe("CatalogueSideBar.vue ___ catalogueSearchResults", () => {
+  let wrapper;
+  let mockStore;
+  let docSpy;
+  let windowSpy;
+
+  const SEARCH_RESULTS = [
+    { iriType: { "@id": "Address (record type)" }, "@id": "http://loc.endhealth.info/im#8F779" },
+    { name: "BARTS AND THE LONDON NHS TRUST", iriType: { "@id": "Organisation  (record type)" }, "@id": "http://org.endhealth.info/im#RNJ" },
+    { name: "BARTS AND THE LONDON NHS TRUST", iriType: { "@id": "Organisation  (record type)" }, "@id": "http://org.endhealth.info/im#RNJ00" },
+    { name: "BARTS AND THE LONDON OUTREACH CLINICS", iriType: { "@id": "Organisation  (record type)" }, "@id": "http://org.endhealth.info/im#R1H65" }
+  ];
+
+  const TYPE_OPTIONS = [
+    { iri: "http://endhealth.info/im#Address", label: "Address (record type)", count: 267904 },
+    { iri: "http://endhealth.info/im#Organisation", label: "Organisation  (record type)", count: 267904 }
+  ];
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+
+    jest.useFakeTimers();
+
+    mockStore = { state: { catalogueSearchResults: SEARCH_RESULTS }, commit: jest.fn() };
+
+    CatalogueService.getSearchResult = jest.fn().mockResolvedValue(SEARCH_RESULTS);
+
+    windowSpy = jest.spyOn(window, "getComputedStyle");
+    windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue("16px") });
+
+    docSpy = jest.spyOn(document, "getElementById");
+    docSpy.mockReturnValue(undefined);
+
+    wrapper = shallowMount(CatalogueSideBar, {
+      global: { components: { InputText, TabPanel, TabView }, mocks: { $store: mockStore } },
+      props: { history: [], typeOptions: TYPE_OPTIONS }
+    });
+
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    jest.clearAllMocks();
+  });
+
+  it("mounts", () => {
+    expect(wrapper.vm.searchTerm).toBe("");
+    expect(wrapper.vm.searchResults).toStrictEqual(SEARCH_RESULTS);
+    expect(wrapper.vm.selectedTypes).toStrictEqual([]);
+    expect(wrapper.vm.active).toBe(0);
+    expect(wrapper.vm.debounce).toBe(0);
+    expect(wrapper.vm.loading).toBe(false);
+    expect(wrapper.vm.request).toBeTruthy();
+    expect(wrapper.vm.sideMenuHeight).toBe("");
+  });
+});
