@@ -21,7 +21,7 @@
       <Button label="ECL builder" @click="showBuilder" class="p-button-help" />
       <Button label="Search" @click="search" class="p-button-primary" :disabled="!queryString.length" />
     </div>
-    <div class="results-container">
+    <div class="results-container" :style="'height: ' + resultsHeight + ';maxHeight: ' + resultsHeight + ';'">
       <p v-if="searchResults.length > 1000" class="result-summary">{{ totalCount }} results found. Display limited to first 1000.</p>
       <SearchResults :searchResults="searchResults" :loading="loading" />
     </div>
@@ -37,6 +37,8 @@ import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
+import { mapState } from "vuex";
 
 export default defineComponent({
   name: "ExpressionConstraintsSearch",
@@ -44,9 +46,13 @@ export default defineComponent({
     Builder,
     SearchResults
   },
+  computed: mapState(["sidebarControlActivePanel"]),
   watch: {
     queryString() {
       this.eclError = false;
+    },
+    sidebarControlActivePanel(newValue) {
+      if (newValue === 3) this.setResultsHeight();
     }
   },
   async mounted() {
@@ -63,7 +69,8 @@ export default defineComponent({
       searchResults: [] as ConceptSummary[],
       totalCount: 0,
       eclError: false,
-      loading: false
+      loading: false,
+      resultsHeight: ""
     };
   },
   methods: {
@@ -108,37 +115,11 @@ export default defineComponent({
     },
 
     setResultsHeight(): void {
-      const container = document.getElementById("query-search-container") as HTMLElement;
-      if (!container) {
-        LoggerService.error(undefined, "Failed to set ecl results table height");
-        return;
-      }
-      const title = container.getElementsByClassName("title")[0] as HTMLElement;
-      const subTitle = container.getElementsByClassName("info")[0] as HTMLElement;
-      const eclContainer = container.getElementsByClassName("text-copy-container")[0] as HTMLElement;
-      const buttonContainer = container.getElementsByClassName("button-container")[0] as HTMLElement;
-      const resultsContainer = container.getElementsByClassName("results-container")[0] as HTMLElement;
-      const paginator = container.getElementsByClassName("p-paginator")[0] as HTMLElement;
-      let height = container.getBoundingClientRect().height;
-      if (title) {
-        height -= title.getBoundingClientRect().height;
-      }
-      if (subTitle) {
-        height -= subTitle.getBoundingClientRect().height;
-      }
-      if (eclContainer) {
-        height -= eclContainer.getBoundingClientRect().height;
-      }
-      if (buttonContainer) {
-        height -= buttonContainer.getBoundingClientRect().height;
-      }
-      if (paginator) {
-        height -= paginator.getBoundingClientRect().height;
-      }
-      if (resultsContainer) {
-        resultsContainer.style.height = height + "px";
-        resultsContainer.style.maxHeight = height + "px";
-      }
+      this.resultsHeight = getContainerElementOptimalHeight(
+        "query-search-container",
+        ["title", "info", "text-copy-container", "button-container", "p-paginator"],
+        false
+      );
     }
   }
 });

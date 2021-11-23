@@ -1,6 +1,6 @@
 export function getContainerElementOptimalHeight(
   containerId: string,
-  subClasses: string[],
+  siblingClasses: string[],
   includeRemPadding: boolean,
   remPaddingQuantity?: number,
   additionalPixels?: number
@@ -9,7 +9,7 @@ export function getContainerElementOptimalHeight(
   const container = document.getElementById(containerId) as HTMLElement;
   if (!container) return "";
   height += container.getBoundingClientRect().height;
-  for (const subClass of subClasses) {
+  for (const subClass of siblingClasses) {
     const classElement = container.getElementsByClassName(subClass)[0] as HTMLElement;
     if (classElement) height -= classElement.getBoundingClientRect().height;
   }
