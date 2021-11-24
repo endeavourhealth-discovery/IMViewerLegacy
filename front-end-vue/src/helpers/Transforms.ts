@@ -55,6 +55,7 @@ export function ttNodeToString(node: any, previousType: string, indent: number, 
   let result = "";
   let first = true;
   let last = false;
+  let nodeIndent = indent;
   const totalKeys = Object.keys(node).length;
   let count = 1;
   let group = false;
@@ -66,6 +67,7 @@ export function ttNodeToString(node: any, previousType: string, indent: number, 
     let suffix = "\n";
 
     if (group) {
+      nodeIndent = indent + 1;
       prefix = indentSize;
       if (first) {
         prefix = "( ";
@@ -75,31 +77,13 @@ export function ttNodeToString(node: any, previousType: string, indent: number, 
         suffix = " )\n";
       }
     }
-    result = processNode(
-      key,
-      value,
-      result,
-      previousType,
-      group ? indent + 1 : indent,
-      iriMap,
-      { pad: pad, prefix: prefix, suffix: suffix, group: group },
-      blockedUrlIris
-    );
+    result = processNode(key, value, result, nodeIndent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group }, blockedUrlIris);
     count++;
   }
   return result;
 }
 
-function processNode(
-  key: string,
-  value: any,
-  result: string,
-  previousType: string,
-  indent: number,
-  iriMap: any,
-  stringAdditions: any,
-  blockedUrlIris?: string[]
-): string {
+function processNode(key: string, value: any, result: string, indent: number, iriMap: any, stringAdditions: any, blockedUrlIris?: string[]): string {
   const pad = stringAdditions.pad;
   const prefix = stringAdditions.prefix;
   const suffix = stringAdditions.suffix;

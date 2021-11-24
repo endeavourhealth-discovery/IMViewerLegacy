@@ -124,7 +124,6 @@ import { TTIriRef } from "@/models/TripleTree";
 import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
-import { OWL } from "@/vocabulary/OWL";
 
 export default defineComponent({
   name: "Concept",
