@@ -10,4 +10,6 @@ export interface JoinInstruction {
   dataB: string;
   propertyA: string;
   propertyB: string;
+  joinType: string;
+  nestedPropertyName: string;
 }
