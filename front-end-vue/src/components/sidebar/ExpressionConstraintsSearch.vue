@@ -105,6 +105,8 @@ export default defineComponent({
           this.totalCount = result.count;
         } else {
           this.eclError = true;
+          this.searchResults = [];
+          this.totalCount = 0;
         }
         this.loading = false;
       }

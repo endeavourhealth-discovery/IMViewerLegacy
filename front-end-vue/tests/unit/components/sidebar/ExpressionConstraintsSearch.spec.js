@@ -191,4 +191,35 @@ describe("ExpressionConstraintsSearch.vue", () => {
     expect(wrapper.vm.searchResults).toStrictEqual(SEARCH_RESULTS.entities);
     expect(wrapper.vm.totalCount).toBe(3);
   });
+
+  it("cancels existing requests on new search", async () => {
+    wrapper.vm.queryString = "sco";
+    wrapper.vm.search();
+    await wrapper.vm.$nextTick();
+    const spy = jest.spyOn(wrapper.vm.request, "cancel");
+    wrapper.vm.queryString = "pul";
+    wrapper.vm.search();
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.mockReset();
+  });
+
+  it("can search ___ empty result", async () => {
+    wrapper.vm.queryString = "sco";
+    EntityService.ECLSearch = jest.fn().mockResolvedValue({});
+    wrapper.vm.search();
+    await flushPromises();
+    expect(wrapper.vm.eclError).toBe(true);
+  });
+
+  it("can toast onCopy", () => {
+    wrapper.vm.onCopy();
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+  });
+
+  it("can toast onCopyError", () => {
+    wrapper.vm.onCopyError();
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+  });
 });
