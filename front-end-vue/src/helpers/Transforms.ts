@@ -83,16 +83,21 @@ function processNode(key: string, value: any, result: string, previousType: stri
     result += getObjectName(key, iriMap, pad, prefix);
     result += ttIriToString(value as TTIriRef, "object", indent, true);
     result += suffix;
-  } else if (isArrayHasLength(value) && value.length === 1) {
-    if (isObjectHasKeys(value[0], ["@id"])) {
+  } else if (isArrayHasLength(value)) {
+    if (value.length === 1 && isObjectHasKeys(value[0], ["@id"])) {
       result += getObjectName(key, iriMap, pad, prefix);
       result += ttIriToString(value[0] as TTIriRef, "object", indent, true);
       result += suffix;
     } else {
-      result += processObject(key, value, result, previousType, indent, iriMap, stringAdditions);
+      result += getObjectName(key, iriMap, pad, prefix);
+      result += "\n";
+      result += ttValueToString(value, "object", indent + 1, iriMap);
+      result += suffix;
     }
   } else {
-    result += processObject(key, value, result, previousType, indent, iriMap, stringAdditions);
+    result += getObjectName(key, iriMap, pad, prefix);
+    result += ttValueToString(value, "object", indent, iriMap);
+    result += suffix;
   }
   return result;
 }
