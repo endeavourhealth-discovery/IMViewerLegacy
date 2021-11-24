@@ -75,7 +75,16 @@ export function ttNodeToString(node: any, previousType: string, indent: number, 
         suffix = " )\n";
       }
     }
-    result = processNode(key, value, result, previousType, indent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group }, blockedUrlIris);
+    result = processNode(
+      key,
+      value,
+      result,
+      previousType,
+      group ? indent + 1 : indent,
+      iriMap,
+      { pad: pad, prefix: prefix, suffix: suffix, group: group },
+      blockedUrlIris
+    );
     count++;
   }
   return result;
@@ -111,7 +120,8 @@ function processNode(
     }
   } else {
     result += getObjectName(key, iriMap, pad, prefix);
-    result += ttValueToString(value, "object", indent, iriMap, blockedUrlIris);
+    result += "\n";
+    result += ttValueToString(value, "object", indent + 1, iriMap, blockedUrlIris);
     result += suffix;
   }
   return result;
