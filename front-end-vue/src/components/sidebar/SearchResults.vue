@@ -115,6 +115,7 @@ import { defineComponent, PropType } from "vue";
 import { getColourFromType, getIconFromType } from "../../helpers/ConceptTypeMethods";
 import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
 import ConfigService from "@/services/ConfigService";
+import { mapState } from "vuex";
 
 export default defineComponent({
   name: "SearchResults",
@@ -128,6 +129,7 @@ export default defineComponent({
       this.results = newValue;
     }
   },
+  computed: mapState(["blockedIris"]),
   async mounted() {
     this.defaultPredicates = await ConfigService.getDefaultPredicatenames();
   },
@@ -202,7 +204,7 @@ export default defineComponent({
       delete filteredData.match;
       delete filteredData.weighting;
       delete filteredData.isDescendantOf;
-      return copyConceptToClipboard(filteredData, undefined, this.defaultPredicates);
+      return copyConceptToClipboard(filteredData, undefined, this.defaultPredicates, this.blockedIris);
     },
 
     async setCopyMenuItems(): Promise<void> {
@@ -218,7 +220,7 @@ export default defineComponent({
           label: "All",
           command: async () => {
             await navigator.clipboard
-              .writeText(copyConceptToClipboard(this.hoveredResult, undefined, this.defaultPredicates))
+              .writeText(copyConceptToClipboard(this.hoveredResult, undefined, this.defaultPredicates, this.blockedIris))
               .then(() => {
                 this.$toast.add(LoggerService.success("Concept copied to clipboard"));
               })
