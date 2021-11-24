@@ -40,6 +40,7 @@ import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
 import { mapState } from "vuex";
+import axios from "axios";
 
 export default defineComponent({
   name: "ExpressionConstraintsSearch",
@@ -71,7 +72,8 @@ export default defineComponent({
       totalCount: 0,
       eclError: false,
       loading: false,
-      resultsHeight: ""
+      resultsHeight: "",
+      request: {} as { cancel: any; msg: string }
     };
   },
   methods: {
@@ -92,12 +94,19 @@ export default defineComponent({
     async search(): Promise<void> {
       if (this.queryString) {
         this.loading = true;
-        const result = await EntityService.ECLSearch(this.queryString, false, 1000);
+        if (isObjectHasKeys(this.request, ["cancel", "msg"])) {
+          await this.request.cancel({ status: 499, message: "Search cancelled by user" });
+        }
+        const axiosSource = axios.CancelToken.source();
+        this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
+        const result = await EntityService.ECLSearch(this.queryString, false, 1000, axiosSource.token);
         if (isObjectHasKeys(result, ["entities", "count", "page"])) {
           this.searchResults = result.entities;
           this.totalCount = result.count;
         } else {
           this.eclError = true;
+          this.searchResults = [];
+          this.totalCount = 0;
         }
         this.loading = false;
       }
