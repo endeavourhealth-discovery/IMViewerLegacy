@@ -5,4 +5,5 @@ export class RDFS {
   public static COMMENT = RDFS.NAMESPACE + "comment";
   public static SUBCLASS_OF = RDFS.NAMESPACE + "subClassOf";
   public static SUB_PROPERTY_OF = RDFS.NAMESPACE + "subPropertyOf";
+  public static CLASS = RDFS.NAMESPACE + "Class";
 }
