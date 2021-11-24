@@ -78,7 +78,7 @@ describe("bundleToText", () => {
   };
 
   const expected =
-    "Is a:\n" +
+    "Is a : \n" +
     '  <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2382354003">Multiple system malformation syndrome</a>\n' +
@@ -109,7 +109,7 @@ describe("bundleToText", () => {
     '  <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23363070008">Developmental hereditary disorder</a>\n' +
-    "  Where:\n" +
+    "  Where : \n" +
     '    ( Pathological process : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23308490002">Pathological developmental process</a>\n' +
@@ -154,7 +154,7 @@ describe("bundleToText", () => {
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2381745001">Structure of eye proper</a>\n' +
     '      Occurrence : <a href="' +
     url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n';
+    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n\n\n';
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -171,7 +171,7 @@ describe("ttValueToString", () => {
   });
 
   it("handles array", async () => {
-    expect(ttValueToString([{ "@id": "testIri" }], "object", 0)).toBe('  <a href="http://localhost/#/concept/testIri">testIri</a>\n');
+    expect(ttValueToString([{ "@id": "testIri" }], "object", 0)).toBe('<a href="http://localhost/#/concept/testIri">testIri</a>\n');
   });
 
   it("handles ttNode", async () => {
@@ -250,7 +250,7 @@ describe("ttNodeToString", () => {
     ]
   };
   const EXPECTED =
-    "http://endhealth.info/im#isA:\n" +
+    "http://endhealth.info/im#isA : \n" +
     '  <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2382354003">Multiple system malformation syndrome</a>\n' +
@@ -281,7 +281,7 @@ describe("ttNodeToString", () => {
     '  <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23363070008">Developmental hereditary disorder</a>\n' +
-    "  Where:\n" +
+    "  Where : \n" +
     '    ( Pathological process : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23308490002">Pathological developmental process</a>\n' +
@@ -326,7 +326,7 @@ describe("ttNodeToString", () => {
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2381745001">Structure of eye proper</a>\n' +
     '      Occurrence : <a href="' +
     url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n';
+    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n\n\n';
 
   const PREDICATES = {
     "http://endhealth.info/im#roleGroup": "Where",

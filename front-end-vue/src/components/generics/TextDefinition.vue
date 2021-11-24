@@ -49,7 +49,7 @@ export default defineComponent({
         return false;
       }
     },
-    ...mapState(["selectedEntityType"])
+    ...mapState(["selectedEntityType", "blockedIris"])
   },
   async mounted() {
     this.loading = true;
@@ -75,7 +75,7 @@ export default defineComponent({
     },
     async getDefinition(): Promise<void> {
       const defaults = await ConfigService.getDefaultPredicatenames();
-      this.definition = bundleToText(this.data as TTBundle, defaults, 0);
+      this.definition = bundleToText(this.data as TTBundle, defaults, 0, this.blockedIris);
     },
     getCount(): number {
       let count = 0;

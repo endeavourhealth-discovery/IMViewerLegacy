@@ -173,7 +173,7 @@ export default defineComponent({
       return isProperty(this.types);
     },
 
-    ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel", "activeModule"])
+    ...mapState(["conceptIri", "selectedEntityType", "conceptActivePanel", "activeModule", "blockedIris"])
   },
   watch: {
     async conceptIri() {
@@ -288,7 +288,7 @@ export default defineComponent({
       this.header = this.concept[RDFS.LABEL];
       this.setCopyMenuItems();
       this.setStoreType();
-      this.conceptAsString = copyConceptToClipboard(this.concept, this.configs);
+      this.conceptAsString = copyConceptToClipboard(this.concept, this.configs, undefined, this.blockedIris);
       this.loading = false;
     },
 
@@ -376,7 +376,7 @@ export default defineComponent({
           label: "All",
           command: async () => {
             await navigator.clipboard
-              .writeText(copyConceptToClipboard(this.concept, this.configs))
+              .writeText(copyConceptToClipboard(this.concept, this.configs, undefined, this.blockedIris))
               .then(() => {
                 this.$toast.add(LoggerService.success("Concept copied to clipboard"));
               })
