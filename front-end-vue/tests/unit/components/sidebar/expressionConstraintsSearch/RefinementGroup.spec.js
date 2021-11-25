@@ -247,4 +247,166 @@ describe("RefinementGroup.vue ___ no value", () => {
     expect(wrapper.emitted().addNextOptionsClicked).toBeTruthy();
     expect(wrapper.emitted().addNextOptionsClicked[0]).toStrictEqual([{ previousComponentType: "refinementGroup", previousPosition: 1 }]);
   });
+
+  it("can addItem ___ end", () => {
+    wrapper.vm.updatePositions = jest.fn();
+    wrapper.vm.generateNewComponent = jest.fn().mockReturnValue({
+      id: "refinementGroup_1logic_1",
+      value: null,
+      position: 1,
+      type: "logic",
+      label: "",
+      component: "Logic"
+    });
+    wrapper.vm.getNextOptions = jest.fn().mockReturnValue({
+      id: "refinementGroup_1addNext_1",
+      value: {
+        previousPosition: 1,
+        previousComponentType: "logic",
+        parentGroup: "refinementGroup"
+      },
+      position: 2,
+      type: "addNext",
+      label: "",
+      component: "AddNext"
+    });
+    wrapper.vm.addItem({ selectedType: "logic", position: 1 });
+    expect(wrapper.vm.refinementGroupBuild).toStrictEqual([
+      {
+        component: "Refinement",
+        id: "refinementGroup_1refinement_0",
+        label: "",
+        position: 0,
+        type: "refinement",
+        value: null
+      },
+      {
+        component: "Logic",
+        id: "refinementGroup_1logic_1",
+        label: "",
+        position: 1,
+        type: "logic",
+        value: null
+      },
+      {
+        component: "AddNext",
+        id: "refinementGroup_1addNext_1",
+        label: "",
+        position: 2,
+        type: "addNext",
+        value: {
+          parentGroup: "refinementGroup",
+          previousComponentType: "logic",
+          previousPosition: 1
+        }
+      }
+    ]);
+    expect(wrapper.vm.updatePositions).toHaveBeenCalledTimes(1);
+  });
+
+  it("can addItem ___ no end", () => {
+    wrapper.vm.refinementGroupBuild = [
+      {
+        component: "Refinement",
+        id: "refinementGroup_1refinement_0",
+        label: "",
+        position: 0,
+        type: "refinement",
+        value: null
+      },
+      {
+        component: "AddNext",
+        id: "refinementGroup_1addNext_1",
+        label: "",
+        position: 1,
+        type: "addNext",
+        value: {
+          parentGroup: "refinementGroup",
+          previousComponentType: "refinement",
+          previousPosition: 1
+        }
+      },
+      {
+        component: "Logic",
+        id: "refinementGroup_1logic_2",
+        label: "",
+        position: 2,
+        type: "logic",
+        value: null
+      },
+      {
+        component: "AddNext",
+        id: "refinementGroup_1addNext_3",
+        label: "",
+        position: 3,
+        type: "addNext",
+        value: {
+          parentGroup: "refinementGroup",
+          previousComponentType: "logic",
+          previousPosition: 1
+        }
+      }
+    ];
+    wrapper.vm.updatePositions = jest.fn();
+    wrapper.vm.generateNewComponent = jest.fn().mockReturnValue({
+      id: "refinementGroup_1logic_1",
+      value: null,
+      position: 1,
+      type: "logic",
+      label: "",
+      component: "Logic"
+    });
+    wrapper.vm.getNextOptions = jest.fn().mockReturnValue({
+      id: "refinementGroup_1addNext_1",
+      value: {
+        previousPosition: 1,
+        previousComponentType: "logic",
+        parentGroup: "refinementGroup"
+      },
+      position: 2,
+      type: "addNext",
+      label: "",
+      component: "AddNext"
+    });
+    wrapper.vm.addItem({ selectedType: "logic", position: 1 });
+    expect(wrapper.vm.refinementGroupBuild).toStrictEqual([
+      {
+        component: "Refinement",
+        id: "refinementGroup_1refinement_0",
+        label: "",
+        position: 0,
+        type: "refinement",
+        value: null
+      },
+      {
+        component: "Logic",
+        id: "refinementGroup_1logic_1",
+        label: "",
+        position: 1,
+        type: "logic",
+        value: null
+      },
+      {
+        component: "Logic",
+        id: "refinementGroup_1logic_2",
+        label: "",
+        position: 2,
+        type: "logic",
+        value: null
+      },
+      {
+        component: "AddNext",
+        id: "refinementGroup_1addNext_3",
+        label: "",
+        position: 3,
+        type: "addNext",
+        value: {
+          parentGroup: "refinementGroup",
+          previousComponentType: "logic",
+          previousPosition: 1
+        }
+      }
+    ]);
+    expect(wrapper.vm.updatePositions).toHaveBeenCalledTimes(1);
+  });
 });
