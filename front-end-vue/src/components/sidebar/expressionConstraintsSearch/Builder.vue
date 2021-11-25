@@ -146,7 +146,7 @@ export default defineComponent({
           }
         })
         .join(" ")
-        .replaceAll("\n ", "\n");
+        .replace(/\n +/g, "\n");
     },
 
     deleteItem(data: ComponentDetails): void {

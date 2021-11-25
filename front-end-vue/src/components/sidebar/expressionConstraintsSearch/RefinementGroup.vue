@@ -39,6 +39,7 @@ import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
 import { ComponentDetails } from "@/models/ecl/ComponentDetails";
+import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "RefinementGroup",
@@ -134,7 +135,7 @@ export default defineComponent({
       if (data.position === 0) {
         this.refinementGroupBuild.unshift(this.setStartBuild()[0]);
       }
-      if (this.refinementGroupBuild[index].type === ECLType.ADD_NEXT) {
+      if (index < this.refinementGroupBuild.length - 1 && this.refinementGroupBuild[index].type === ECLType.ADD_NEXT) {
         this.refinementGroupBuild[index] = this.getNextOptions(index - 1, this.refinementGroupBuild[index - 1].type, ECLType.REFINEMENT_GROUP);
       }
       if (this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type !== ECLType.ADD_NEXT) {
@@ -226,19 +227,18 @@ export default defineComponent({
 
     generateRefinementLabel(): string {
       let label = "";
-      if (this.refinementGroupBuild.length) {
-        const labels = this.refinementGroupBuild.map(item => {
-          if (item.type === ECLType.LOGIC) {
-            return item.label + "\n\t";
-          } else {
-            return item.label;
-          }
-        });
-        label = labels
-          .join(" ")
-          .replace("/\n /g", "\n")
-          .trim();
-      }
+      if (!isArrayHasLength(this.refinementGroupBuild)) return label;
+      const labels = this.refinementGroupBuild.map(item => {
+        if (item.type === ECLType.LOGIC) {
+          return item.label + "\n\t";
+        } else {
+          return item.label;
+        }
+      });
+      label = labels
+        .join(" ")
+        .trim()
+        .replace(/\n\t +/, "\n\t");
       if (this.group) {
         return ":\n\t{" + label + "}";
       } else {
