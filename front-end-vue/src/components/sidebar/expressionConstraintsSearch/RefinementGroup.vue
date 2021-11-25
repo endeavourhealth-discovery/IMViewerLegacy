@@ -134,6 +134,9 @@ export default defineComponent({
       if (data.position === 0) {
         this.refinementGroupBuild.unshift(this.setStartBuild()[0]);
       }
+      if (this.refinementGroupBuild[index].type === ECLType.ADD_NEXT) {
+        this.refinementGroupBuild[index] = this.getNextOptions(index - 1, this.refinementGroupBuild[index - 1].type, ECLType.REFINEMENT_GROUP);
+      }
       if (this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type !== ECLType.ADD_NEXT) {
         this.refinementGroupBuild.push(
           this.getNextOptions(
