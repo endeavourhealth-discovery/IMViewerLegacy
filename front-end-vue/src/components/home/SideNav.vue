@@ -86,6 +86,14 @@ export default defineComponent({
             route: this.menuItems[2].route
           });
           break;
+        case "Property":
+          this.$store.commit("updateSideNavHierarchyFocus", {
+            name: this.menuItems[2].name,
+            fullName: this.menuItems[2].fullName,
+            iri: this.menuItems[2].iri,
+            route: this.menuItems[2].route
+          });
+          break;
         case "Queries":
           this.$store.commit("updateSideNavHierarchyFocus", {
             name: this.menuItems[3].name,

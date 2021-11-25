@@ -58,4 +58,19 @@ describe("RefinementGroup.vue ___ no value", () => {
     expect(wrapper.emitted().updateClicked).toBeTruthy();
     expect(wrapper.emitted().updateClicked[1]).toStrictEqual([testData]);
   });
+
+  it("can update on group change", () => {
+    const testData = {
+      id: "refinementGroup_1",
+      value: { children: REFINEMENT_BUILD, group: false },
+      position: 1,
+      type: "refinementGroup",
+      label: "",
+      component: "RefinementGroup"
+    };
+    wrapper.vm.createRefinementGroup = jest.fn().mockReturnValue(testData);
+    wrapper.vm.$options.watch.group.call(wrapper.vm, true);
+    expect(wrapper.emitted().updateClicked).toBeTruthy();
+    expect(wrapper.emitted().updateClicked[1]).toStrictEqual([testData]);
+  });
 });

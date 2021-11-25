@@ -161,7 +161,7 @@ export default defineComponent({
     },
 
     isRecordModel(): boolean {
-      return isOfTypes(this.types, SHACL.NODESHAPE) || isOfTypes(this.types, RDF.PROPERTY);
+      return isOfTypes(this.types, SHACL.NODESHAPE);
     },
 
     isFolder(): boolean {
