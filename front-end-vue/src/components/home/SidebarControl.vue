@@ -5,7 +5,7 @@
       <InputText
         type="text"
         v-model="searchTerm"
-        @input="search"
+        @input="debounceForSearch"
         @keyup.enter="search"
         placeholder="Search"
         class="p-inputtext-lg search-input"
@@ -114,7 +114,7 @@ export default defineComponent({
     },
 
     async search(): Promise<void> {
-      // if (this.searchTerm.length > 2) {
+      if (this.searchTerm.length > 2) {
         this.loading = true;
         this.$store.commit("updateSidebarControlActivePanel", 1);
         const searchRequest = new SearchRequest();
@@ -143,7 +143,7 @@ export default defineComponent({
           cancelToken: axiosSource.token
         });
         this.loading = false;
-      // }
+      }
     },
 
     debounceForSearch(): void {
