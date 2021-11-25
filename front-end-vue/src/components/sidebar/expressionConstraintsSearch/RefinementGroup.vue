@@ -159,7 +159,7 @@ export default defineComponent({
 
     getNextOptions(position: number, previous: ECLType, group: ECLType | undefined): ComponentDetails {
       return {
-        id: "addNext" + "_" + (position + 1),
+        id: this.id + "addNext" + "_" + (position + 1),
         value: {
           previousPosition: position,
           previousComponentType: previous,
@@ -167,7 +167,7 @@ export default defineComponent({
         },
         position: position + 1,
         type: ECLType.ADD_NEXT,
-        label: null,
+        label: "",
         component: ECLComponent.ADD_NEXT
       };
     },
@@ -183,21 +183,21 @@ export default defineComponent({
       switch (type) {
         case ECLType.REFINEMENT:
           result = {
-            id: ECLType.REFINEMENT + "_" + position,
+            id: this.id + ECLType.REFINEMENT + "_" + position,
             value: null,
             position: position,
             type: ECLType.REFINEMENT,
-            label: null,
+            label: "",
             component: ECLComponent.REFINEMENT
           };
           break;
         case ECLType.LOGIC:
           result = {
-            id: ECLType.LOGIC + "_" + position,
+            id: this.id + ECLType.LOGIC + "_" + position,
             value: null,
             position: position,
             type: ECLType.LOGIC,
-            label: null,
+            label: "",
             component: ECLComponent.LOGIC
           };
           break;
@@ -233,7 +233,7 @@ export default defineComponent({
         });
         label = labels
           .join(" ")
-          .replaceAll("\n ", "\n")
+          .replace("/\n /g", "\n")
           .trim();
       }
       if (this.group) {
@@ -250,22 +250,23 @@ export default defineComponent({
         return [
           {
             component: ECLComponent.REFINEMENT,
-            id: this.id + ECLType.REFINEMENT,
-            label: null,
+            id: this.id + ECLType.REFINEMENT + "_0",
+            label: "",
             position: 0,
             type: ECLType.REFINEMENT,
             value: null
           },
           {
             component: ECLComponent.ADD_NEXT,
-            id: this.id + ECLType.ADD_NEXT,
+            id: this.id + ECLType.ADD_NEXT + "_1",
             value: {
               previousPosition: 0,
-              previousComponentType: ECLType.REFINEMENT
+              previousComponentType: ECLType.REFINEMENT,
+              parentGroup: ECLType.REFINEMENT_GROUP
             },
             position: 1,
             type: ECLType.ADD_NEXT,
-            label: null
+            label: ""
           }
         ];
       }
