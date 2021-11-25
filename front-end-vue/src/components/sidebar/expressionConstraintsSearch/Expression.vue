@@ -125,7 +125,7 @@ export default defineComponent({
     },
 
     async fetchSearchResults(searchRequest: SearchRequest, cancelToken: any) {
-      this.searchResults = (await EntityService.advancedSearch(searchRequest, cancelToken)).entities;
+      this.searchResults = (await EntityService.advancedSearch(searchRequest, cancelToken)).hits;
     },
 
     hideOverlay(): void {
