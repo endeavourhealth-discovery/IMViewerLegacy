@@ -10,6 +10,7 @@
         @keydown="checkKey($event)"
         @focus="showOverlay"
         @blur="hideOverlay"
+        @change="showOverlay"
         placeholder="Search"
         class="p-inputtext search-input"
         autoWidth="true"

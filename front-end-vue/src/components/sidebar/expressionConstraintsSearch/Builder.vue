@@ -5,8 +5,8 @@
     :closable="false"
     :maximizable="true"
     :style="{
-      width: '80vw',
-      height: '80vh',
+      minWidth: '80vw',
+      minHeight: '80vh',
       display: 'flex',
       flexFlow: 'column nowrap'
     }"

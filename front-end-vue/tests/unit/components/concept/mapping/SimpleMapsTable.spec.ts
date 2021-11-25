@@ -108,4 +108,11 @@ describe("SimpleMapsTable.vue", () => {
     wrapper.vm.scrollToTop();
     expect(mockElement.scrollTop).toBe(100);
   });
+
+  it("can toggle", async () => {
+    wrapper.vm.toggle("testEvent", "testData");
+    await wrapper.vm.$nextTick();
+    expect(wrapper.emitted().toggleOverlay).toBeTruthy();
+    expect(wrapper.emitted().toggleOverlay[0]).toStrictEqual(["testEvent", "testData"]);
+  });
 });

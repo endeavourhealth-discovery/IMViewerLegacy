@@ -11,9 +11,19 @@ describe("Filters.vue ___ empty store", () => {
   let mockToast: any;
 
   const CONFIG = {
-    schemeOptions: ["Discovery namespace", "Snomed-CT namespace"],
-    statusOptions: ["Active", "Draft"],
-    typeOptions: ["Class", "Concept Set", "Folder", "Node shape", "ObjectProperty", "Property", "Query template", "Record type", "Value set"]
+    schemeOptions: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+    statusOptions: ["http://endhealth.info/im#Active", "http://endhealth.info/im#Draft"],
+    typeOptions: [
+      "http://endhealth.info/im#Concept",
+      "http://endhealth.info/im#ConceptSet",
+      "http://endhealth.info/im#ConceptSetGroup",
+      "http://endhealth.info/im#Folder",
+      "http://www.w3.org/ns/shacl#NodeShape",
+      "http://www.w3.org/2002/07/owl#ObjectProperty",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property",
+      "http://endhealth.info/im#QueryTemplate",
+      "http://endhealth.info/im#ValueSet"
+    ]
   };
   const NAMESPACES = [
     { iri: "http://endhealth.info/bc#", prefix: "bc", name: "Barts Cerner namespace" },
@@ -60,59 +70,112 @@ describe("Filters.vue ___ empty store", () => {
       "@id": "http://endhealth.info/im#Inactive"
     }
   ];
+
+  const SCHEMES = [
+    { iri: "http://endhealth.info/bc#", prefix: "bc", name: "Barts Cerner namespace" },
+    { iri: "http://endhealth.info/ceg16#", prefix: "ceg13", name: "CEG ethnicity 16+ category" },
+    { iri: "http://endhealth.info/im#", prefix: "im", name: "Discovery namespace" },
+    { iri: "http://endhealth.info/imq#", prefix: "imq", name: "Discovery query namespace" },
+    { iri: "http://endhealth.info/emis#", prefix: "emis", name: "EMIS (inc. Read2 like) namespace" },
+    { iri: "http://endhealth.info/icd10#", prefix: "icd10", name: "ICD10 namespace" },
+    { iri: "http://endhealth.info/reports#", prefix: "reports", name: "IM internal reports" },
+    { iri: "http://endhealth.info/kchapex#", prefix: "kchapex", name: "KCH Apex codes" },
+    { iri: "http://endhealth.info/kchwinpath#", prefix: "kchwinpath", name: "KCH Winpath codes" },
+    { iri: "http://endhealth.info/nhsethnic2001#", prefix: "nhse2001", name: "NHS Ethnicitity categories 2001 census" },
+    { iri: "http://endhealth.info/ods#", prefix: "ods", name: "ODS code scheme" },
+    { iri: "http://endhealth.info/opcs4#", prefix: "opcs4", name: "OPCS4 namespace" },
+    { iri: "https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1#", prefix: "orole", name: "OPS roles namespace" },
+    { iri: "http://www.w3.org/2002/07/owl#", prefix: "owl", name: "OWL2 namespace" },
+    { iri: "http://www.w3.org/ns/prov#", prefix: "prov", name: "PROV namespace" },
+    { iri: "http://endhealth.info/prsb#", prefix: "prsb", name: "PRSB namespace" },
+    { iri: "http://www.w3.org/1999/02/22-rdf-syntax-ns#", prefix: "rdf", name: "RDF namespace" },
+    { iri: "http://www.w3.org/2000/01/rdf-schema#", prefix: "rdfs", name: "RDFS namespace" },
+    { iri: "http://www.w3.org/ns/shacl#", prefix: "sh", name: "SHACL namespace" },
+    { iri: "http://snomed.info/sct#", prefix: "sn", name: "Snomed-CT namespace" },
+    { iri: "http://endhealth.info/tpp#", prefix: "tpp", name: "TPP (inc.CTV3) namespace" },
+    { iri: "http://endhealth.info/vision#", prefix: "vis", name: "Vision (incl. Read2) namespace" },
+    { iri: "http://www.w3.org/2001/XMLSchema#", prefix: "xsd", name: "xsd namespace" }
+  ];
   const TYPES = [
     {
-      name: "Class",
+      name: "Concept",
       hasChildren: true,
-      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-      "@id": "http://www.w3.org/2002/07/owl#Class"
+      type: [
+        { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+        { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+      ],
+      "@id": "http://endhealth.info/im#Concept"
     },
     {
       name: "Concept Set",
       hasChildren: false,
-      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      type: [
+        { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+        { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+      ],
       "@id": "http://endhealth.info/im#ConceptSet"
+    },
+    {
+      name: "Concept set group",
+      hasChildren: false,
+      type: [
+        { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+        { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+      ],
+      "@id": "http://endhealth.info/im#ConceptSetGroup"
     },
     {
       name: "Folder",
       hasChildren: false,
-      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      type: [
+        { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+        { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
+      ],
       "@id": "http://endhealth.info/im#Folder"
     },
     {
       name: "Node shape",
-      hasChildren: true,
-      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      hasChildren: false,
+      type: [
+        { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+        { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+      ],
       "@id": "http://www.w3.org/ns/shacl#NodeShape"
     },
     {
       name: "ObjectProperty",
       hasChildren: true,
-      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      type: [
+        { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+        { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+      ],
       "@id": "http://www.w3.org/2002/07/owl#ObjectProperty"
     },
     {
       name: "Property",
       hasChildren: true,
-      type: [{ name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }],
+      type: [
+        { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+        { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+      ],
       "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
     },
     {
       name: "Query template",
       hasChildren: false,
-      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      type: [
+        { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+        { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
+      ],
       "@id": "http://endhealth.info/im#QueryTemplate"
-    },
-    {
-      name: "Record type",
-      hasChildren: false,
-      type: [{ name: "Node shape", "@id": "http://www.w3.org/ns/shacl#NodeShape" }],
-      "@id": "http://endhealth.info/im#RecordType"
     },
     {
       name: "Value set",
       hasChildren: false,
-      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      type: [
+        { name: "Concept", "@id": "http://endhealth.info/im#Concept" },
+        { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+      ],
       "@id": "http://endhealth.info/im#ValueSet"
     }
   ];
@@ -257,98 +320,85 @@ describe("Filters.vue ___ empty store", () => {
     ]);
     expect(wrapper.vm.selectedTypes).toStrictEqual([
       {
-        "@id": "http://www.w3.org/2002/07/owl#Class",
+        name: "Concept",
         hasChildren: true,
-        name: "Class",
         type: [
-          {
-            "@id": "http://www.w3.org/2002/07/owl#Class",
-            name: "Class"
-          }
-        ]
+          { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+          { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+        ],
+        "@id": "http://endhealth.info/im#Concept"
       },
       {
-        "@id": "http://endhealth.info/im#ConceptSet",
-        hasChildren: false,
         name: "Concept Set",
+        hasChildren: false,
         type: [
-          {
-            "@id": "http://www.w3.org/2002/07/owl#Class",
-            name: "Class"
-          }
-        ]
+          { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+          { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+        ],
+        "@id": "http://endhealth.info/im#ConceptSet"
       },
       {
-        "@id": "http://endhealth.info/im#Folder",
+        name: "Concept set group",
         hasChildren: false,
+        type: [
+          { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+          { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+        ],
+        "@id": "http://endhealth.info/im#ConceptSetGroup"
+      },
+      {
         name: "Folder",
-        type: [{ "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" }]
+        hasChildren: false,
+        type: [
+          { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+          { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
+        ],
+        "@id": "http://endhealth.info/im#Folder"
       },
       {
-        "@id": "http://www.w3.org/ns/shacl#NodeShape",
-        hasChildren: true,
         name: "Node shape",
+        hasChildren: false,
         type: [
-          {
-            "@id": "http://www.w3.org/2002/07/owl#Class",
-            name: "Class"
-          }
-        ]
+          { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+          { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+        ],
+        "@id": "http://www.w3.org/ns/shacl#NodeShape"
       },
       {
-        "@id": "http://www.w3.org/2002/07/owl#ObjectProperty",
-        hasChildren: true,
         name: "ObjectProperty",
-        type: [
-          {
-            "@id": "http://www.w3.org/2002/07/owl#Class",
-            name: "Class"
-          }
-        ]
-      },
-      {
-        "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property",
         hasChildren: true,
+        type: [
+          { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+          { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+        ],
+        "@id": "http://www.w3.org/2002/07/owl#ObjectProperty"
+      },
+      {
         name: "Property",
+        hasChildren: true,
         type: [
-          {
-            "@id": "http://www.w3.org/2000/01/rdf-schema#Class",
-            name: "Class"
-          }
-        ]
+          { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+          { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+        ],
+        "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
       },
       {
-        "@id": "http://endhealth.info/im#QueryTemplate",
-        hasChildren: false,
         name: "Query template",
+        hasChildren: false,
         type: [
-          {
-            "@id": "http://www.w3.org/2002/07/owl#Class",
-            name: "Class"
-          }
-        ]
+          { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+          { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
+        ],
+        "@id": "http://endhealth.info/im#QueryTemplate"
       },
       {
-        "@id": "http://endhealth.info/im#RecordType",
-        hasChildren: false,
-        name: "Record type",
-        type: [
-          {
-            "@id": "http://www.w3.org/ns/shacl#NodeShape",
-            name: "Node shape"
-          }
-        ]
-      },
-      {
-        "@id": "http://endhealth.info/im#ValueSet",
-        hasChildren: false,
         name: "Value set",
+        hasChildren: false,
         type: [
-          {
-            "@id": "http://www.w3.org/2002/07/owl#Class",
-            name: "Class"
-          }
-        ]
+          { name: "Concept", "@id": "http://endhealth.info/im#Concept" },
+          { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+        ],
+        "@id": "http://endhealth.info/im#ValueSet"
       }
     ]);
   });
@@ -405,103 +455,85 @@ describe("Filters.vue ___ empty store", () => {
       ],
       types: [
         {
-          "@id": "http://www.w3.org/2002/07/owl#Class",
+          name: "Concept",
           hasChildren: true,
-          name: "Class",
           type: [
-            {
-              "@id": "http://www.w3.org/2002/07/owl#Class",
-              name: "Class"
-            }
-          ]
+            { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+            { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+          ],
+          "@id": "http://endhealth.info/im#Concept"
         },
         {
-          "@id": "http://endhealth.info/im#ConceptSet",
-          hasChildren: false,
           name: "Concept Set",
+          hasChildren: false,
           type: [
-            {
-              "@id": "http://www.w3.org/2002/07/owl#Class",
-              name: "Class"
-            }
-          ]
+            { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+            { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+          ],
+          "@id": "http://endhealth.info/im#ConceptSet"
         },
         {
-          "@id": "http://endhealth.info/im#Folder",
+          name: "Concept set group",
           hasChildren: false,
+          type: [
+            { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+            { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+          ],
+          "@id": "http://endhealth.info/im#ConceptSetGroup"
+        },
+        {
           name: "Folder",
+          hasChildren: false,
           type: [
-            {
-              "@id": "http://www.w3.org/2002/07/owl#Class",
-              name: "Class"
-            }
-          ]
+            { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+            { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
+          ],
+          "@id": "http://endhealth.info/im#Folder"
         },
         {
-          "@id": "http://www.w3.org/ns/shacl#NodeShape",
-          hasChildren: true,
           name: "Node shape",
+          hasChildren: false,
           type: [
-            {
-              "@id": "http://www.w3.org/2002/07/owl#Class",
-              name: "Class"
-            }
-          ]
+            { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+            { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+          ],
+          "@id": "http://www.w3.org/ns/shacl#NodeShape"
         },
         {
-          "@id": "http://www.w3.org/2002/07/owl#ObjectProperty",
-          hasChildren: true,
           name: "ObjectProperty",
-          type: [
-            {
-              "@id": "http://www.w3.org/2002/07/owl#Class",
-              name: "Class"
-            }
-          ]
-        },
-        {
-          "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property",
           hasChildren: true,
+          type: [
+            { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+            { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+          ],
+          "@id": "http://www.w3.org/2002/07/owl#ObjectProperty"
+        },
+        {
           name: "Property",
+          hasChildren: true,
           type: [
-            {
-              "@id": "http://www.w3.org/2000/01/rdf-schema#Class",
-              name: "Class"
-            }
-          ]
+            { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+            { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+          ],
+          "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
         },
         {
-          "@id": "http://endhealth.info/im#QueryTemplate",
-          hasChildren: false,
           name: "Query template",
+          hasChildren: false,
           type: [
-            {
-              "@id": "http://www.w3.org/2002/07/owl#Class",
-              name: "Class"
-            }
-          ]
+            { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+            { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
+          ],
+          "@id": "http://endhealth.info/im#QueryTemplate"
         },
         {
-          "@id": "http://endhealth.info/im#RecordType",
-          hasChildren: false,
-          name: "Record type",
-          type: [
-            {
-              "@id": "http://www.w3.org/ns/shacl#NodeShape",
-              name: "Node shape"
-            }
-          ]
-        },
-        {
-          "@id": "http://endhealth.info/im#ValueSet",
-          hasChildren: false,
           name: "Value set",
+          hasChildren: false,
           type: [
-            {
-              "@id": "http://www.w3.org/2002/07/owl#Class",
-              name: "Class"
-            }
-          ]
+            { name: "Concept", "@id": "http://endhealth.info/im#Concept" },
+            { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+          ],
+          "@id": "http://endhealth.info/im#ValueSet"
         }
       ]
     });
