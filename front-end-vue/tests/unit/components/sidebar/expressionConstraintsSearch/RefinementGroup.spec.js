@@ -412,6 +412,13 @@ describe("RefinementGroup.vue ___ no value", () => {
     expect(wrapper.vm.updatePositions).toHaveBeenCalledTimes(1);
   });
 
+  it("can addItem ___ no newComponent", () => {
+    wrapper.vm.updatePositions = jest.fn();
+    wrapper.vm.generateNewComponent = jest.fn().mockReturnValue(undefined);
+    wrapper.vm.addItem({ selectedType: "logic", position: 1 });
+    expect(wrapper.vm.updatePositions).not.toHaveBeenCalled();
+  });
+
   it("can deleteItem ___ position 0", () => {
     wrapper.vm.refinementGroupBuild = [
       {
@@ -650,6 +657,218 @@ describe("RefinementGroup.vue ___ no value", () => {
         value: {
           parentGroup: "refinementGroup",
           previousComponentType: "logic",
+          previousPosition: 1
+        }
+      }
+    ]);
+    expect(wrapper.vm.updatePositions).toHaveBeenCalledTimes(1);
+  });
+
+  it("can deleteItem ___ middle ___ addNext followed", () => {
+    wrapper.vm.refinementGroupBuild = [
+      {
+        component: "Refinement",
+        id: "refinementGroup_1refinement_0",
+        label: "testLabel",
+        position: 0,
+        type: "refinement",
+        value: null
+      },
+      {
+        component: "Logic",
+        id: "refinementGroup_1logic_1",
+        label: "",
+        position: 1,
+        type: "logic",
+        value: null
+      },
+      {
+        component: "AddNext",
+        id: "refinementGroup_1addNext_2",
+        label: "",
+        position: 2,
+        type: "addNext",
+        value: {
+          parentGroup: "refinementGroup",
+          previousComponentType: "logic",
+          previousPosition: 1
+        }
+      },
+      {
+        component: "Refinement",
+        id: "refinementGroup_1refinement_3",
+        label: "testLabel",
+        position: 3,
+        type: "refinement",
+        value: null
+      },
+      {
+        component: "AddNext",
+        id: "refinementGroup_1addNext_4",
+        label: "",
+        position: 4,
+        type: "addNext",
+        value: {
+          parentGroup: "refinementGroup",
+          previousComponentType: "logic",
+          previousPosition: 1
+        }
+      }
+    ];
+    wrapper.vm.updatePositions = jest.fn();
+    wrapper.vm.setStartBuild = jest.fn();
+    wrapper.vm.getNextOptions = jest.fn().mockReturnValue({
+      id: "refinementGroup_1addNext_1",
+      value: {
+        previousPosition: 1,
+        previousComponentType: "refinement",
+        parentGroup: "refinementGroup"
+      },
+      position: 1,
+      type: "addNext",
+      label: "",
+      component: "AddNext"
+    });
+    wrapper.vm.deleteItem({
+      component: "Logic",
+      id: "refinementGroup_1logic_1",
+      label: "",
+      position: 1,
+      type: "logic",
+      value: null
+    });
+    expect(wrapper.vm.refinementGroupBuild).toStrictEqual([
+      {
+        component: "Refinement",
+        id: "refinementGroup_1refinement_0",
+        label: "testLabel",
+        position: 0,
+        type: "refinement",
+        value: null
+      },
+      {
+        component: "AddNext",
+        id: "refinementGroup_1addNext_1",
+        label: "",
+        position: 1,
+        type: "addNext",
+        value: {
+          parentGroup: "refinementGroup",
+          previousComponentType: "refinement",
+          previousPosition: 1
+        }
+      },
+      {
+        component: "Refinement",
+        id: "refinementGroup_1refinement_3",
+        label: "testLabel",
+        position: 3,
+        type: "refinement",
+        value: null
+      },
+      {
+        component: "AddNext",
+        id: "refinementGroup_1addNext_1",
+        label: "",
+        position: 1,
+        type: "addNext",
+        value: {
+          parentGroup: "refinementGroup",
+          previousComponentType: "refinement",
+          previousPosition: 1
+        }
+      }
+    ]);
+    expect(wrapper.vm.updatePositions).toHaveBeenCalledTimes(1);
+  });
+
+  it("can deleteItem ___ middle ___ other", () => {
+    wrapper.vm.refinementGroupBuild = [
+      {
+        component: "Refinement",
+        id: "refinementGroup_1refinement_0",
+        label: "testLabel",
+        position: 0,
+        type: "refinement",
+        value: null
+      },
+      {
+        component: "Logic",
+        id: "refinementGroup_1logic_1",
+        label: "",
+        position: 1,
+        type: "logic",
+        value: null
+      },
+      {
+        component: "Refinement",
+        id: "refinementGroup_1refinement_2",
+        label: "testLabel",
+        position: 2,
+        type: "refinement",
+        value: null
+      },
+      {
+        component: "AddNext",
+        id: "refinementGroup_1addNext_3",
+        label: "",
+        position: 3,
+        type: "addNext",
+        value: {
+          parentGroup: "refinementGroup",
+          previousComponentType: "refinement",
+          previousPosition: 1
+        }
+      }
+    ];
+    wrapper.vm.updatePositions = jest.fn();
+    wrapper.vm.setStartBuild = jest.fn();
+    wrapper.vm.getNextOptions = jest.fn().mockReturnValue({
+      id: "refinementGroup_1addNext_1",
+      value: {
+        previousPosition: 1,
+        previousComponentType: "refinement",
+        parentGroup: "refinementGroup"
+      },
+      position: 1,
+      type: "addNext",
+      label: "",
+      component: "AddNext"
+    });
+    wrapper.vm.deleteItem({
+      component: "Logic",
+      id: "refinementGroup_1logic_1",
+      label: "",
+      position: 1,
+      type: "logic",
+      value: null
+    });
+    expect(wrapper.vm.refinementGroupBuild).toStrictEqual([
+      {
+        component: "Refinement",
+        id: "refinementGroup_1refinement_0",
+        label: "testLabel",
+        position: 0,
+        type: "refinement",
+        value: null
+      },
+      {
+        component: "Refinement",
+        id: "refinementGroup_1refinement_2",
+        label: "testLabel",
+        position: 2,
+        type: "refinement",
+        value: null
+      },
+      {
+        component: "AddNext",
+        id: "refinementGroup_1addNext_1",
+        label: "",
+        position: 1,
+        type: "addNext",
+        value: {
+          parentGroup: "refinementGroup",
+          previousComponentType: "refinement",
           previousPosition: 1
         }
       }
