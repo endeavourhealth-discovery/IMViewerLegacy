@@ -131,7 +131,7 @@ export default defineComponent({
   },
   computed: mapState(["blockedIris"]),
   async mounted() {
-    this.defaultPredicates = await ConfigService.getDefaultPredicatenames();
+    this.defaultPredicates = await ConfigService.getDefaultPredicateNames();
   },
   data() {
     return {
