@@ -208,7 +208,6 @@ describe("TextDefinition.vue ___ data", () => {
     wrapper = shallowMount(TextDefinition, {
       global: { components: { Button }, mocks: { $store: mockStore }, directives: { styleclass: StyleClass } },
       props: {
-        data: {},
         label: "Bundle",
         show: true,
         size: "100%"
@@ -228,5 +227,6 @@ describe("TextDefinition.vue ___ data", () => {
     expect(wrapper.vm.getDefinition).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.loading).toBe(false);
     expect(mockButton.click).not.toHaveBeenCalled();
+    expect(wrapper.vm.data).toBe(null);
   });
 });
