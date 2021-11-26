@@ -181,7 +181,7 @@ describe("ttValueToString", () => {
   });
 
   it("handles undefined", async () => {
-    expect(ttValueToString(undefined, "object", 0)).toBe("");
+    expect(ttValueToString(undefined, "object", 0)).toBe("undefined");
   });
 });
 
