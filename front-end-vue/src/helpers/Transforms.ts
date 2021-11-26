@@ -29,7 +29,7 @@ export function ttValueToString(node: any, previousType: string, indent: number,
   } else if (isArrayHasLength(node)) {
     return ttArrayToString(node, indent, iriMap, blockedUrlIris);
   } else {
-    return "";
+    return String(node);
   }
 }
 
@@ -95,6 +95,10 @@ function processNode(key: string, value: any, result: string, indent: number, ir
     if (value.length === 1 && isObjectHasKeys(value[0], ["@id"])) {
       result += getObjectName(key, iriMap, pad, prefix);
       result += ttIriToString(value[0] as TTIriRef, "object", indent, true, blockedUrlIris);
+      result += suffix;
+    } else if ((value.length === 1 && typeof value[0] === "string") || typeof value[0] === "number") {
+      result += getObjectName(key, iriMap, pad, prefix);
+      result += String(value[0]);
       result += suffix;
     } else {
       result += getObjectName(key, iriMap, pad, prefix);
