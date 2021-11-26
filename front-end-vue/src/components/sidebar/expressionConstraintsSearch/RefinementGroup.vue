@@ -114,19 +114,18 @@ export default defineComponent({
 
     addItem(data: { selectedType: ECLType; position: number }): void {
       const newComponent = this.generateNewComponent(data.selectedType, data.position);
-      if (newComponent) {
-        this.refinementGroupBuild[data.position] = newComponent;
-        if (this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type !== ECLType.ADD_NEXT) {
-          this.refinementGroupBuild.push(
-            this.getNextOptions(
-              this.refinementGroupBuild.length - 1,
-              this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type,
-              ECLType.REFINEMENT_GROUP
-            )
-          );
-        }
-        this.updatePositions();
+      if (!newComponent) return;
+      this.refinementGroupBuild[data.position] = newComponent;
+      if (this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type !== ECLType.ADD_NEXT) {
+        this.refinementGroupBuild.push(
+          this.getNextOptions(
+            this.refinementGroupBuild.length - 1,
+            this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type,
+            ECLType.REFINEMENT_GROUP
+          )
+        );
       }
+      this.updatePositions();
     },
 
     deleteItem(data: ComponentDetails): void {
