@@ -49,17 +49,10 @@ export default defineComponent({
         return false;
       }
     },
-    ...mapState(["selectedEntityType", "blockedIris"])
+    ...mapState(["blockedIris"])
   },
   async mounted() {
-    this.loading = true;
-    await this.getDefinition();
-    this.loading = false;
-    await this.$nextTick();
-    if (this.label === "Definition") {
-      const button = document.getElementById(`expand-button-${this.label}`) as HTMLElement;
-      if (button) button.click();
-    }
+    await this.init();
   },
   data() {
     return {
@@ -70,13 +63,27 @@ export default defineComponent({
     };
   },
   methods: {
+    async init(): Promise<void> {
+      this.loading = true;
+      await this.getDefinition();
+      this.loading = false;
+      await this.$nextTick();
+      if (this.label === "Definition") {
+        const button = document.getElementById(`expand-button-${this.label}`) as HTMLElement;
+        if (button) button.click();
+      }
+    },
+
     setButtonExpanded(): void {
       this.buttonExpanded = !this.buttonExpanded;
     },
+
     async getDefinition(): Promise<void> {
-      const defaults = await ConfigService.getDefaultPredicatenames();
+      if (!this.hasData) return;
+      const defaults = await ConfigService.getDefaultPredicateNames();
       this.definition = bundleToText(this.data as TTBundle, defaults, 0, this.blockedIris);
     },
+
     getCount(): number {
       let count = 0;
       Object.keys(this.data.entity).forEach(key => {

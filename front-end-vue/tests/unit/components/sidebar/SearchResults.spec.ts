@@ -57,7 +57,7 @@ describe("SearchResults.vue", () => {
     docSpy = jest.spyOn(document, "getElementById");
     docSpy.mockReturnValue(undefined);
 
-    ConfigService.getDefaultPredicatenames = jest.fn().mockResolvedValue({
+    ConfigService.getDefaultPredicateNames = jest.fn().mockResolvedValue({
       "http://endhealth.info/im#roleGroup": "Where",
       "http://www.w3.org/2002/07/owl#onProperty": "On property",
       "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
