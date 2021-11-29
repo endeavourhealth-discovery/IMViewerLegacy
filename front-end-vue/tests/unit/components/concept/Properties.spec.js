@@ -10,6 +10,7 @@ describe("Properties.vue", () => {
   let wrapper;
   let mockRouter;
   let mockRoute;
+  let mockRef;
   let docSpy;
 
   beforeEach(async () => {
@@ -22,6 +23,8 @@ describe("Properties.vue", () => {
     mockRoute = {
       name: "Concept"
     };
+
+    mockRef = { render: () => {}, methods: { exportCSV: jest.fn() } };
 
     docSpy = jest.spyOn(document, "getElementById");
     docSpy.mockReturnValue(undefined);
@@ -47,7 +50,8 @@ describe("Properties.vue", () => {
           name: "Concept",
           "@id": "http://endhealth.info/im#Concept"
         },
-        inheritedFrom: {}
+        inheritedFrom: { name: "InheritedParent" },
+        minExclusive: 1
       },
       {
         property: {
@@ -58,7 +62,8 @@ describe("Properties.vue", () => {
           name: "Value set Immunisations - Care connect",
           "@id": "http://endhealth.info/im#VSET_Immunisations_CareConnect"
         },
-        inheritedFrom: {}
+        inheritedFrom: {},
+        minInclusive: 2
       },
       {
         property: {
@@ -69,7 +74,8 @@ describe("Properties.vue", () => {
           name: "Concept",
           "@id": "http://endhealth.info/im#Concept"
         },
-        inheritedFrom: {}
+        inheritedFrom: {},
+        maxInclusive: 3
       },
       {
         property: {
@@ -79,7 +85,8 @@ describe("Properties.vue", () => {
         type: {
           "@id": "http://www.w3.org/2001/XMLSchema#string"
         },
-        inheritedFrom: {}
+        inheritedFrom: {},
+        maxExclusive: 4
       },
       {
         property: {
@@ -119,7 +126,8 @@ describe("Properties.vue", () => {
     wrapper = shallowMount(Properties, {
       global: {
         components: { DataTable, Column, Button },
-        mocks: { $router: mockRouter, $route: mockRoute }
+        mocks: { $router: mockRouter, $route: mockRoute },
+        stubs: { DataTable: mockRef }
       },
       props: { conceptIri: "http://endhealth.info/im#Immunisation" }
     });
@@ -204,7 +212,7 @@ describe("Properties.vue", () => {
         inheritedId: undefined,
         inheritedName: undefined,
         inheritedDisplay: "-",
-        cardinality: "0 :\n            *"
+        cardinality: "0 : *"
       },
       {
         propertyId: "http://endhealth.info/im#reaction",
@@ -214,9 +222,9 @@ describe("Properties.vue", () => {
         typeName: "Concept",
         typeDisplay: "Concept",
         inheritedId: undefined,
-        inheritedName: undefined,
-        inheritedDisplay: "-",
-        cardinality: "0 :\n            *"
+        inheritedName: "InheritedParent",
+        inheritedDisplay: "InheritedParent",
+        cardinality: "1 : *"
       },
       {
         propertyId: "http://endhealth.info/im#vaccinationProcedure",
@@ -228,7 +236,7 @@ describe("Properties.vue", () => {
         inheritedId: undefined,
         inheritedName: undefined,
         inheritedDisplay: "-",
-        cardinality: "0 :\n            *"
+        cardinality: "2 : *"
       },
       {
         propertyId: "http://endhealth.info/im#vaccineProduct",
@@ -240,7 +248,7 @@ describe("Properties.vue", () => {
         inheritedId: undefined,
         inheritedName: undefined,
         inheritedDisplay: "-",
-        cardinality: "0 :\n            *"
+        cardinality: "0 : 3"
       },
       {
         propertyId: "http://endhealth.info/im#batchNumber",
@@ -252,7 +260,7 @@ describe("Properties.vue", () => {
         inheritedId: undefined,
         inheritedName: undefined,
         inheritedDisplay: "-",
-        cardinality: "0 :\n            *"
+        cardinality: "0 : 4"
       },
       {
         propertyId: "http://endhealth.info/im#doseSequence",
@@ -264,7 +272,7 @@ describe("Properties.vue", () => {
         inheritedId: undefined,
         inheritedName: undefined,
         inheritedDisplay: "-",
-        cardinality: "0 :\n            *"
+        cardinality: "0 : *"
       },
       {
         propertyId: "http://endhealth.info/im#dosesRequired",
@@ -276,7 +284,7 @@ describe("Properties.vue", () => {
         inheritedId: undefined,
         inheritedName: undefined,
         inheritedDisplay: "-",
-        cardinality: "0 :\n            *"
+        cardinality: "0 : *"
       },
       {
         propertyId: "http://endhealth.info/im#expiryDate",
@@ -288,7 +296,7 @@ describe("Properties.vue", () => {
         inheritedId: undefined,
         inheritedName: undefined,
         inheritedDisplay: "-",
-        cardinality: "0 :\n            *"
+        cardinality: "0 : *"
       }
     ]);
   });
@@ -302,5 +310,10 @@ describe("Properties.vue", () => {
   it("can navigate ___ no iri", () => {
     wrapper.vm.navigate();
     expect(mockRouter.push).not.toHaveBeenCalled();
+  });
+
+  it("can exportCSV", () => {
+    wrapper.vm.exportCSV();
+    expect(mockRef.methods.exportCSV).toBeCalledTimes(1);
   });
 });
