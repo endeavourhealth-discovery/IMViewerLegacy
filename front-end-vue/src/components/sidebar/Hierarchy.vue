@@ -60,12 +60,14 @@ import { ConceptAggregate } from "@/models/ConceptAggregate";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { TTIriRef } from "@/models/TripleTree";
 import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
+import { Namespace } from "@/models/Namespace";
+import { FiltersAsIris } from "@/models/FiltersAsIris";
 
 export default defineComponent({
   name: "Hierarchy",
   props: { active: { type: Number, required: true } },
   emits: { showTree: () => true },
-  computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus", "history", "resetTree"]),
+  computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus", "history", "resetTree", "hierarchySelectedFilters"]),
   watch: {
     async conceptIri(newValue) {
       await this.getConceptAggregate(newValue);
@@ -74,6 +76,17 @@ export default defineComponent({
         this.refreshTree();
       }
       this.updateHistory();
+    },
+    hierarchySelectedFilters: {
+      async handler() {
+        await this.getConceptAggregate(this.conceptIri);
+        if (!this.treeLocked) {
+          this.selectedKey = {};
+          this.refreshTree();
+        }
+        this.updateHistory();
+      },
+      deep: true
     },
     async sideNavHierarchyFocus(newValue, oldValue) {
       if (newValue.iri !== oldValue.iri) {
@@ -120,7 +133,8 @@ export default defineComponent({
       root: [] as TreeNode[],
       expandedKeys: {} as any,
       selectedKey: {} as any,
-      parentLabel: ""
+      parentLabel: "",
+      filters: {} as FiltersAsIris
     };
   },
   async mounted() {
@@ -141,9 +155,10 @@ export default defineComponent({
     async getConceptAggregate(iri: string): Promise<void> {
       this.conceptAggregate.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]);
 
-      this.conceptAggregate.parents = await EntityService.getEntityParents(iri);
+      this.setFilters();
+      this.conceptAggregate.parents = await EntityService.getEntityParents(iri, this.filters);
 
-      this.conceptAggregate.children = await EntityService.getEntityChildren(iri);
+      this.conceptAggregate.children = await EntityService.getEntityChildren(iri, this.filters);
     },
 
     refreshTree(): void {
@@ -195,7 +210,7 @@ export default defineComponent({
       this.resetExpandedKeys(node.children);
       this.expandedKeys = { ...this.expandedKeys };
       this.expandedKeys[node.key] = true;
-      const children = await EntityService.getEntityChildren(node.data);
+      const children = await EntityService.getEntityChildren(node.data, this.filters);
       node.children = [];
       children.forEach((child: EntityReferenceNode) => {
         node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
@@ -249,7 +264,7 @@ export default defineComponent({
       const nodeToExpand = this.getNodeToExpand();
       if (!MODULE_IRIS.includes(nodeToExpand.data)) {
         const parentsNodes = [] as TreeNode[];
-        const parents = await EntityService.getEntityParents(nodeToExpand.data);
+        const parents = await EntityService.getEntityParents(nodeToExpand.data, this.filters);
         parents.forEach((parent: EntityReferenceNode) => {
           parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, true));
         });
@@ -268,7 +283,7 @@ export default defineComponent({
     },
 
     async getFirstParent(node: TreeNode): Promise<void> {
-      const parentsReturn = await EntityService.getEntityParents(node.data);
+      const parentsReturn = await EntityService.getEntityParents(node.data, this.filters);
       this.parentLabel = parentsReturn[0] ? parentsReturn[0].name : "";
     },
 
@@ -283,6 +298,14 @@ export default defineComponent({
 
     toggleTreeLocked(value: boolean): void {
       this.$store.commit("updateTreeLocked", value);
+    },
+
+    setFilters(): void {
+      this.filters = {
+        types: this.hierarchySelectedFilters.types.map((type: EntityReferenceNode) => type["@id"]),
+        status: this.hierarchySelectedFilters.status.map((status: EntityReferenceNode) => status["@id"]),
+        schemes: this.hierarchySelectedFilters.schemes.map((scheme: Namespace) => scheme.iri)
+      };
     }
   }
 });

@@ -58,7 +58,8 @@ export default createStore({
     focusHierarchy: false,
     instanceIri: "",
     sidebarControlActivePanel: 0,
-    catalogueSearchResults: [] as string[]
+    catalogueSearchResults: [] as string[],
+    hierarchySelectedFilters: { status: [] as EntityReferenceNode[], schemes: [] as Namespace[], types: [] as EntityReferenceNode[] }
   },
   mutations: {
     updateBlockedIris(state, blockedIris) {
@@ -136,6 +137,9 @@ export default createStore({
     },
     updateSidebarControlActivePanel(state, number) {
       state.sidebarControlActivePanel = number;
+    },
+    updateHierarchySelectedFilters(state, filters) {
+      state.hierarchySelectedFilters = filters;
     }
   },
   actions: {

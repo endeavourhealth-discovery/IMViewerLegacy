@@ -19,7 +19,10 @@
           <i class="fas fa-sitemap icon-header" aria-hidden="true" />
           <span>Hierarchy</span>
         </template>
-        <Hierarchy @showTree="active = 0" :active="active" />
+        <div class="p-fluid hierarchy-filter-container">
+          <Hierarchy @showTree="active = 0" :active="active" />
+          <HierarchyFilter />
+        </div>
       </TabPanel>
       <TabPanel>
         <template #header>
@@ -57,6 +60,7 @@ import History from "@/components/sidebar/History.vue";
 import SearchResults from "@/components/sidebar/SearchResults.vue";
 import Filters from "@/components/sidebar/Filters.vue";
 import ExpressionConstraintsSearch from "@/components/sidebar/ExpressionConstraintsSearch.vue";
+import HierarchyFilter from "@/components/sidebar/HierarchyFilter.vue";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
 import axios from "axios";
@@ -74,7 +78,8 @@ export default defineComponent({
     History,
     SearchResults,
     Filters,
-    ExpressionConstraintsSearch
+    ExpressionConstraintsSearch,
+    HierarchyFilter
   },
   computed: mapState(["filterOptions", "selectedFilters", "searchResults", "focusHierarchy", "sidebarControlActivePanel"]),
   watch: {
@@ -188,6 +193,13 @@ export default defineComponent({
 }
 
 .results-filter-container {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.hierarchy-filter-container {
   display: flex;
   flex-flow: column;
   justify-content: space-between;
