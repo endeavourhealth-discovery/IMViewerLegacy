@@ -258,6 +258,18 @@ describe("SideNav.spec ___ not logged in", () => {
     });
   });
 
+  it("can watch selectedEntityType ___ Property", async () => {
+    wrapper.vm.$options.watch.selectedEntityType.call(wrapper.vm, "Property");
+    await wrapper.vm.$nextTick();
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateSideNavHierarchyFocus", {
+      fullName: "Data model",
+      iri: "http://endhealth.info/im#DiscoveryCommonDataModel",
+      name: "DataModel",
+      route: "Dashboard"
+    });
+  });
+
   it("can watch selectedEntityType ___ Queries", async () => {
     wrapper.vm.$options.watch.selectedEntityType.call(wrapper.vm, "Queries");
     await wrapper.vm.$nextTick();
