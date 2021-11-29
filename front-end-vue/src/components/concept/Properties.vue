@@ -90,12 +90,11 @@ export default defineComponent({
           propertyDisplay: prop.property.name,
           typeId: prop.type["@id"],
           typeName: prop.type.name,
-          typeDisplay: prop.type?.name || prop.type?.["@id"],
-          inheritedId: prop.inheritedFrom?.["@id"],
-          inheritedName: prop.inheritedFrom?.name,
-          inheritedDisplay: prop.inheritedFrom?.name || "-",
-          cardinality: `${prop.minExclusive || prop.minInclusive || 0} :
-            ${prop.maxExclusive || prop.maxInclusive || "*"}`
+          typeDisplay: prop.type.name || prop.type["@id"],
+          inheritedId: prop.inheritedFrom["@id"],
+          inheritedName: prop.inheritedFrom.name,
+          inheritedDisplay: prop.inheritedFrom.name || "-",
+          cardinality: `${prop.minExclusive || prop.minInclusive || 0} : ${prop.maxExclusive || prop.maxInclusive || "*"}`
         };
       });
       this.loading = false;

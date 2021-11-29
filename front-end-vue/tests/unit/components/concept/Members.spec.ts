@@ -6,7 +6,6 @@ import Checkbox from "primevue/checkbox";
 import Column from "primevue/column";
 import Button from "primevue/button";
 import EntityService from "@/services/EntityService";
-import { FilterMatchMode } from "primevue/api";
 import LoggerService from "@/services/LoggerService";
 import Menu from "primevue/menu";
 
@@ -14,6 +13,7 @@ describe("Members.vue", () => {
   let wrapper: any;
   let mockRouter: any;
   let mockToast: any;
+  let mockRef: any;
   let docSpy: any;
   let testMembers = {
     valueSet: {
@@ -114,6 +114,7 @@ describe("Members.vue", () => {
     EntityService.getEntityMembers = jest.fn().mockResolvedValue(testMembers);
     mockRouter = { push: jest.fn() };
     mockToast = { add: jest.fn() };
+    mockRef = { render: () => {}, methods: { toggle: jest.fn() } };
 
     docSpy = jest.spyOn(document, "getElementById");
     docSpy.mockReturnValue(undefined);
@@ -127,7 +128,8 @@ describe("Members.vue", () => {
     wrapper = shallowMount(Members, {
       global: {
         components: { DataTable, InputText, Checkbox, Column, Button, Menu },
-        mocks: { $router: mockRouter, $toast: mockToast }
+        mocks: { $router: mockRouter, $toast: mockToast },
+        stubs: { DataTable: DataTable, Menu: mockRef }
       },
       props: { conceptIri: "http://endhealth.info/im#VSET_EthnicCategoryCEG16" }
     });
@@ -380,5 +382,11 @@ describe("Members.vue", () => {
     wrapper.vm.setTableWidth();
     expect(LoggerService.error).toHaveBeenCalledTimes(1);
     expect(LoggerService.error).toHaveBeenCalledWith(undefined, "Failed to set members table width. Required element(s) not found.");
+  });
+
+  it("can toggle", () => {
+    wrapper.vm.toggle("testEvent");
+    expect(mockRef.methods.toggle).toHaveBeenCalledTimes(1);
+    expect(mockRef.methods.toggle).toHaveBeenCalledWith("testEvent");
   });
 });

@@ -9,6 +9,7 @@ import EntityService from "@/services/EntityService";
 describe("SecondaryTree.vue", () => {
   let wrapper: any;
   let mockToast: any;
+  let mockRef: any;
 
   const CONCEPT = {
     "@id": "http://snomed.info/sct#298382003",
@@ -61,15 +62,31 @@ describe("SecondaryTree.vue", () => {
     mockToast = {
       add: jest.fn()
     };
+    mockRef = { render: () => {}, methods: { show: jest.fn(), hide: jest.fn() } };
 
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
     EntityService.getEntityParents = jest.fn().mockResolvedValue(PARENTS);
     EntityService.getEntityChildren = jest.fn().mockResolvedValue(CHILDREN);
+    EntityService.getEntitySummary = jest.fn().mockResolvedValue({
+      name: "Acquired scoliosis",
+      iri: "http://snomed.info/sct#111266001",
+      code: "111266001",
+      description: "Acquired scoliosis (disorder)",
+      status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
+      scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+      entityType: [
+        { name: "Ontological Concept", "@id": "http://endhealth.info/im#Concept" },
+        { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+      ],
+      isDescendentOf: [],
+      match: "629792015"
+    });
 
     wrapper = shallowMount(SecondaryTree, {
       global: {
         components: { Button, Tree, ProgressSpinner, OverlayPanel },
-        mocks: { $toast: mockToast }
+        mocks: { $toast: mockToast },
+        stubs: { OverlayPanel: mockRef }
       },
       props: { conceptIri: "http://snomed.info/sct#298382003" }
     });
@@ -1149,5 +1166,45 @@ describe("SecondaryTree.vue", () => {
         { name: "NodeShape", "@id": "hppt://www.w3.org/2002/07/owl#NodeShape" }
       ])
     ).toBe("Class, NodeShape");
+  });
+
+  it("can showPopup", async () => {
+    wrapper.vm.showPopup("testEvent", {
+      children: [],
+      color: "#e39a3688",
+      data: "http://snomed.info/sct#111266001",
+      key: "Acquired scoliosis (disorder)",
+      label: "Acquired scoliosis (disorder)",
+      leaf: false,
+      loading: false,
+      typeIcon: "far fa-fw fa-lightbulb"
+    });
+    await flushPromises();
+    expect(mockRef.methods.show).toHaveBeenCalledTimes(1);
+    expect(mockRef.methods.show).toHaveBeenCalledWith("testEvent");
+    expect(wrapper.vm.overlayLocation).toBe("testEvent");
+    expect(wrapper.vm.hoveredResult).toStrictEqual({
+      name: "Acquired scoliosis",
+      iri: "http://snomed.info/sct#111266001",
+      code: "111266001",
+      description: "Acquired scoliosis (disorder)",
+      status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
+      scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+      entityType: [
+        { name: "Ontological Concept", "@id": "http://endhealth.info/im#Concept" },
+        { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+      ],
+      isDescendentOf: [],
+      match: "629792015"
+    });
+    expect(EntityService.getEntitySummary).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntitySummary).toHaveBeenCalledWith("http://snomed.info/sct#111266001");
+  });
+
+  it("can hidePopup", () => {
+    wrapper.vm.hidePopup("testEvent");
+    expect(mockRef.methods.hide).toHaveBeenCalledTimes(1);
+    expect(mockRef.methods.hide).toHaveBeenCalledWith("testEvent");
+    expect(wrapper.vm.overlayLocation).toStrictEqual({});
   });
 });
