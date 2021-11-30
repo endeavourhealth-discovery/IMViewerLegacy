@@ -135,7 +135,7 @@ export default class EntityService {
   public static async getEntityParents(iri: string, filters?: FiltersAsIris): Promise<EntityReferenceNode[]> {
     try {
       return await axios.get(this.api + "api/entity/parents", {
-        params: { iri: iri }
+        params: { iri: iri, schemeIris: filters?.schemes }
       });
     } catch (error) {
       return [] as EntityReferenceNode[];
@@ -145,7 +145,7 @@ export default class EntityService {
   public static async getEntityChildren(iri: string, filters?: FiltersAsIris, cancelToken?: CancelToken): Promise<EntityReferenceNode[]> {
     try {
       return await axios.get(this.api + "api/entity/children", {
-        params: { iri: iri },
+        params: { iri: iri, schemeIris: filters?.schemes },
         cancelToken: cancelToken
       });
     } catch (error) {
