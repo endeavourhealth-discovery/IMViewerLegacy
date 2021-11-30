@@ -64,7 +64,7 @@ import { mapState } from "vuex";
 import { TTIriRef } from "@/models/TripleTree";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { Namespace } from "@/models/Namespace";
-import { isArrayHasLength, isObject } from "@/helpers/DataTypeCheckers";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
 
 export default defineComponent({
@@ -133,9 +133,8 @@ export default defineComponent({
         this.selectedFilters.types.forEach((type: TTIriRef) => {
           searchRequest.typeFilter.push(type["@id"]);
         });
-        if (isObject(this.request) && isArrayHasLength(Object.keys(this.request))) {
+        if (isObjectHasKeys(this.request, ["cancel", "msg"])) {
           await this.request.cancel({ status: 499, message: "Search cancelled by user" });
-          this.loading = true;
         }
         const axiosSource = axios.CancelToken.source();
         this.request = { cancel: axiosSource.cancel, msg: "Loading..." };

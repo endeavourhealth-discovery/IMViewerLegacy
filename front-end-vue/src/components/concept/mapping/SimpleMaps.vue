@@ -21,7 +21,16 @@
       :loading="loading"
     >
       <Column field="scheme" header="Scheme" />
-      <Column field="name" header="Name" style="flex: 0 0 65%" />
+      <Column field="name" header="Name" style="flex: 0 0 65%">
+        <template #body="slotProps">
+          <span
+            style="width: 100%; height: 100%; display: flex; align-items: center;"
+            @mouseenter="toggle($event, slotProps.data)"
+            @mouseleave="toggle($event, slotProps.data)"
+            >{{ slotProps.data.name }}</span
+          >
+        </template>
+      </Column>
       <Column field="code" header="Code" style="flex: 0 0 35%; word-break: break-all;" />
       <template #groupheader="slotProps">
         <span style="font-weight: 700; color:rgba(51,153,255,0.8)">
@@ -49,6 +58,7 @@ export default defineComponent({
       required: true
     }
   },
+  emits: ["toggleOverlay"],
   async mounted() {
     window.addEventListener("resize", this.onResize);
     this.onResize();
@@ -82,6 +92,10 @@ export default defineComponent({
       if (scrollBox) {
         scrollBox.scrollTop = 0;
       }
+    },
+
+    toggle(event: any, data: any) {
+      this.$emit("toggleOverlay", event, data);
     }
   }
 });

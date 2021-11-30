@@ -17,7 +17,7 @@
         }"
       />
     </div>
-    <pre :class="'p-d-none tgl-' + label">{{ definition }}</pre>
+    <div v-html="definition" :class="'p-d-none text-definition tgl-' + label"></div>
   </div>
 </template>
 
@@ -28,6 +28,7 @@ import { TTBundle } from "@/models/TripleTree";
 import { mapState } from "vuex";
 import { PartialEntity } from "@/models/PartialEntity";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import ConfigService from "@/services/ConfigService";
 
 export default defineComponent({
   name: "TextDefinition",
@@ -42,23 +43,16 @@ export default defineComponent({
   },
   computed: {
     hasData(): boolean {
-      if (isObjectHasKeys(this.data, ["entity", "predicates"]) && isObjectHasKeys(this.data.predicates) && isObjectHasKeys(this.data.entity)) {
+      if (isObjectHasKeys(this.data, ["entity", "predicates"]) && isObjectHasKeys(this.data.entity)) {
         return true;
       } else {
         return false;
       }
     },
-    ...mapState(["selectedEntityType"])
+    ...mapState(["blockedIris"])
   },
   async mounted() {
-    this.loading = true;
-    await this.getDefinition();
-    this.loading = false;
-    await this.$nextTick();
-    if (this.label === "Definition") {
-      const button = document.getElementById(`expand-button-${this.label}`) as HTMLElement;
-      if (button) button.click();
-    }
+    await this.init();
   },
   data() {
     return {
@@ -69,12 +63,27 @@ export default defineComponent({
     };
   },
   methods: {
+    async init(): Promise<void> {
+      this.loading = true;
+      await this.getDefinition();
+      this.loading = false;
+      await this.$nextTick();
+      if (this.label === "Definition") {
+        const button = document.getElementById(`expand-button-${this.label}`) as HTMLElement;
+        if (button) button.click();
+      }
+    },
+
     setButtonExpanded(): void {
       this.buttonExpanded = !this.buttonExpanded;
     },
+
     async getDefinition(): Promise<void> {
-      this.definition = await bundleToText(this.data as TTBundle);
+      if (!this.hasData) return;
+      const defaults = await ConfigService.getDefaultPredicateNames();
+      this.definition = bundleToText(this.data as TTBundle, defaults, 0, this.blockedIris);
     },
+
     getCount(): number {
       let count = 0;
       Object.keys(this.data.entity).forEach(key => {
@@ -96,12 +105,13 @@ export default defineComponent({
   align-items: center;
 }
 
-pre {
+.text-definition {
   border: 1px solid #dee2e6;
   border-radius: 3px;
   padding: 0.5rem;
   margin: 0.5rem 0 0 0;
   overflow: auto;
+  white-space: pre;
 }
 
 .head-container {

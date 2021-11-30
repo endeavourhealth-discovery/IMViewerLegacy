@@ -133,10 +133,16 @@ describe("SidebarControl.vue", () => {
     spy1.mockReset();
   });
 
-  it("can update on focusHierarchy", async () => {
+  it("can update on focusHierarchy ___ true", async () => {
     wrapper.vm.$options.watch.focusHierarchy.call(wrapper.vm, true);
     await wrapper.vm.$nextTick();
     expect(mockStore.commit).toHaveBeenCalledWith("updateFocusHierarchy", false);
+  });
+
+  it("can update on focusHierarchy ___ false", async () => {
+    wrapper.vm.$options.watch.focusHierarchy.call(wrapper.vm, false);
+    await wrapper.vm.$nextTick();
+    expect(mockStore.commit).not.toHaveBeenCalled();
   });
 
   it("can update active on sidebarControlActivePanel change", async () => {

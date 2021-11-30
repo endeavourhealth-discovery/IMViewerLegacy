@@ -10,6 +10,7 @@
         :class="eclError ? 'p-invalid' : ''"
       />
       <Button
+        :disabled="!queryString.length"
         icon="far fa-copy"
         v-tooltip.left="'Copy to clipboard'"
         v-clipboard:copy="copyToClipboard()"
@@ -21,7 +22,7 @@
       <Button label="ECL builder" @click="showBuilder" class="p-button-help" />
       <Button label="Search" @click="search" class="p-button-primary" :disabled="!queryString.length" />
     </div>
-    <div class="results-container">
+    <div class="results-container" :style="'height: ' + resultsHeight + ';maxHeight: ' + resultsHeight + ';'">
       <p v-if="searchResults.length > 1000" class="result-summary">{{ totalCount }} results found. Display limited to first 1000.</p>
       <SearchResults :searchResults="searchResults" :loading="loading" />
     </div>
@@ -37,6 +38,9 @@ import EntityService from "@/services/EntityService";
 import LoggerService from "@/services/LoggerService";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
+import { mapState } from "vuex";
+import axios from "axios";
 
 export default defineComponent({
   name: "ExpressionConstraintsSearch",
@@ -44,9 +48,13 @@ export default defineComponent({
     Builder,
     SearchResults
   },
+  computed: mapState(["sidebarControlActivePanel"]),
   watch: {
     queryString() {
       this.eclError = false;
+    },
+    sidebarControlActivePanel(newValue) {
+      if (newValue === 3) this.setResultsHeight();
     }
   },
   async mounted() {
@@ -63,33 +71,42 @@ export default defineComponent({
       searchResults: [] as ConceptSummary[],
       totalCount: 0,
       eclError: false,
-      loading: false
+      loading: false,
+      resultsHeight: "",
+      request: {} as { cancel: any; msg: string }
     };
   },
   methods: {
-    async onResize() {
+    async onResize(): Promise<void> {
       await this.$nextTick();
       this.setResultsHeight();
     },
 
-    updateECL(data: string) {
+    updateECL(data: string): void {
       this.queryString = data;
       this.showDialog = false;
     },
 
-    showBuilder() {
+    showBuilder(): void {
       this.showDialog = true;
     },
 
-    async search() {
+    async search(): Promise<void> {
       if (this.queryString) {
         this.loading = true;
-        const result = await EntityService.ECLSearch(this.queryString, false, 1000);
+        if (isObjectHasKeys(this.request, ["cancel", "msg"])) {
+          await this.request.cancel({ status: 499, message: "Search cancelled by user" });
+        }
+        const axiosSource = axios.CancelToken.source();
+        this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
+        const result = await EntityService.ECLSearch(this.queryString, false, 1000, axiosSource.token);
         if (isObjectHasKeys(result, ["entities", "count", "page"])) {
           this.searchResults = result.entities;
           this.totalCount = result.count;
         } else {
           this.eclError = true;
+          this.searchResults = [];
+          this.totalCount = 0;
         }
         this.loading = false;
       }
@@ -108,38 +125,11 @@ export default defineComponent({
     },
 
     setResultsHeight(): void {
-      const container = document.getElementById("query-search-container") as HTMLElement;
-      if (!container) {
-        LoggerService.error(undefined, "Failed to set ecl results table height");
-        return;
-      }
-      const html = document.documentElement;
-      const currentFontSize = parseFloat(window.getComputedStyle(html, null).getPropertyValue("font-size"));
-      const title = container.getElementsByClassName("title")[0] as HTMLElement;
-      const subTitle = container.getElementsByClassName("info")[0] as HTMLElement;
-      const eclContainer = container.getElementsByClassName("text-copy-container")[0] as HTMLElement;
-      const buttonContainer = container.getElementsByClassName("button-container")[0] as HTMLElement;
-      const resultsContainer = container.getElementsByClassName("results-container")[0] as HTMLElement;
-      let height = container.getBoundingClientRect().height;
-      if (title) {
-        height -= title.getBoundingClientRect().height;
-      }
-      if (subTitle) {
-        height -= subTitle.getBoundingClientRect().height;
-      }
-      if (eclContainer) {
-        height -= eclContainer.getBoundingClientRect().height;
-      }
-      if (buttonContainer) {
-        height -= buttonContainer.getBoundingClientRect().height;
-      }
-      if (currentFontSize) {
-        height -= currentFontSize * 3;
-      }
-      if (resultsContainer) {
-        resultsContainer.style.height = height + "px";
-        resultsContainer.style.maxHeight = height + "px";
-      }
+      this.resultsHeight = getContainerElementOptimalHeight(
+        "query-search-container",
+        ["title", "info", "text-copy-container", "button-container", "p-paginator"],
+        false
+      );
     }
   }
 });
@@ -202,6 +192,7 @@ export default defineComponent({
   display: flex;
   flex-flow: column nowrap;
   justify-content: space-between;
+  height: 100%;
 }
 
 .text-copy-container {

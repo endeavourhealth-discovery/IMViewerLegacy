@@ -9,15 +9,17 @@ import EntityService from "@/services/EntityService";
 describe("Dashboard.vue", () => {
   let wrapper: any;
 
+  const CONFIGS = [
+    { size: "100%", type: "ReportTable", order: 100, iri: "http://endhealth.info/im#ontologyOverview" },
+    { size: "50%", type: "ReportPieChart", order: 200, iri: "http://endhealth.info/im#ontologyConceptTypes" },
+    { size: "50%", type: "ReportPieChart", order: 300, iri: "http://endhealth.info/im#ontologyConceptSchemes" },
+    { size: "50%", type: "ReportPieChart", order: 400, iri: "http://endhealth.info/im#ontologyConceptStatus" }
+  ];
+
   beforeEach(async () => {
     jest.resetAllMocks();
 
-    ConfigService.getDashboardLayout = jest.fn().mockResolvedValue([
-      { size: "100%", type: "ReportTable", order: 100, iri: "http://endhealth.info/im#ontologyOverview" },
-      { size: "50%", type: "ReportPieChart", order: 200, iri: "http://endhealth.info/im#ontologyConceptTypes" },
-      { size: "50%", type: "ReportPieChart", order: 300, iri: "http://endhealth.info/im#ontologyConceptSchemes" },
-      { size: "50%", type: "ReportPieChart", order: 400, iri: "http://endhealth.info/im#ontologyConceptStatus" }
-    ]);
+    ConfigService.getDashboardLayout = jest.fn().mockResolvedValue(CONFIGS);
 
     EntityService.getPartialEntity = jest.fn().mockResolvedValue({
       "@id": "http://endhealth.info/im#ontologyConceptStatus",
@@ -130,32 +132,32 @@ describe("Dashboard.vue", () => {
       }
     ]);
     expect(wrapper.vm.loading).toBe(false);
-    expect(wrapper.vm.configs).toStrictEqual([
-      {
-        iri: "http://endhealth.info/im#ontologyOverview",
-        order: 100,
-        size: "100%",
-        type: "ReportTable"
-      },
-      {
-        iri: "http://endhealth.info/im#ontologyConceptTypes",
-        order: 200,
-        size: "50%",
-        type: "ReportPieChart"
-      },
-      {
-        iri: "http://endhealth.info/im#ontologyConceptSchemes",
-        order: 300,
-        size: "50%",
-        type: "ReportPieChart"
-      },
-      {
-        iri: "http://endhealth.info/im#ontologyConceptStatus",
-        order: 400,
-        size: "50%",
-        type: "ReportPieChart"
-      }
-    ]);
+    expect(wrapper.vm.configs).toStrictEqual(CONFIGS);
+  });
+
+  it("inits", async () => {
+    wrapper.vm.getConfigs = jest.fn();
+    wrapper.vm.getCardsData = jest.fn();
+    wrapper.vm.init();
+    expect(wrapper.vm.loading).toBe(true);
+    await flushPromises();
+    expect(wrapper.vm.getConfigs).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.getCardsData).toHaveBeenCalledTimes(1);
+  });
+
+  it("can getConfigs ___ data", async () => {
+    wrapper.vm.configs = [];
+    wrapper.vm.getConfigs();
+    await flushPromises();
+    expect(wrapper.vm.configs).toStrictEqual(CONFIGS);
+  });
+
+  it("can getConfigs ___ no data", async () => {
+    wrapper.vm.configs = [];
+    ConfigService.getDashboardLayout = jest.fn().mockResolvedValue([]);
+    wrapper.vm.getConfigs();
+    await flushPromises();
+    expect(wrapper.vm.configs).toStrictEqual([]);
   });
 
   it("can getCardsData ___ servic error", async () => {

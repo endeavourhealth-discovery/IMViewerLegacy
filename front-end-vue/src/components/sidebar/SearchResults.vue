@@ -52,12 +52,13 @@
                 v-tooltip.right="'Copy concept summary to clipboard \n (right click to copy individual properties)'"
                 @contextmenu="onCopyRightClick"
               />
-              <ContextMenu ref="copyMenu" :model="copyMenuItems" />
             </div>
           </div>
         </template>
       </Column>
     </DataTable>
+
+    <ContextMenu ref="copyMenu" :model="copyMenuItems" />
 
     <OverlayPanel ref="op" id="overlay-panel" style="width: 25vw" :dismissable="true">
       <div class="result-overlay">
@@ -114,6 +115,8 @@ import LoggerService from "@/services/LoggerService";
 import { defineComponent, PropType } from "vue";
 import { getColourFromType, getIconFromType } from "../../helpers/ConceptTypeMethods";
 import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
+import ConfigService from "@/services/ConfigService";
+import { mapState } from "vuex";
 
 export default defineComponent({
   name: "SearchResults",
@@ -127,12 +130,17 @@ export default defineComponent({
       this.results = newValue;
     }
   },
+  computed: mapState(["blockedIris"]),
+  async mounted() {
+    this.defaultPredicates = await ConfigService.getDefaultPredicateNames();
+  },
   data() {
     return {
       results: new SearchResponse(),
       selectedResult: {} as ConceptSummary,
       hoveredResult: {} as ConceptSummary,
-      copyMenuItems: [] as any[]
+      copyMenuItems: [] as any[],
+      defaultPredicates: {} as any
     };
   },
   methods: {
@@ -197,10 +205,10 @@ export default defineComponent({
       delete filteredData.match;
       delete filteredData.weighting;
       delete filteredData.isDescendantOf;
-      return copyConceptToClipboard(filteredData);
+      return copyConceptToClipboard(filteredData, undefined, this.defaultPredicates, this.blockedIris);
     },
 
-    setCopyMenuItems(): void {
+    async setCopyMenuItems(): Promise<void> {
       this.copyMenuItems = [
         {
           label: "Copy",
@@ -213,7 +221,7 @@ export default defineComponent({
           label: "All",
           command: async () => {
             await navigator.clipboard
-              .writeText(copyConceptToClipboard(this.hoveredResult))
+              .writeText(copyConceptToClipboard(this.hoveredResult, undefined, this.defaultPredicates, this.blockedIris))
               .then(() => {
                 this.$toast.add(LoggerService.success("Concept copied to clipboard"));
               })
@@ -227,7 +235,7 @@ export default defineComponent({
       let key: string;
       let value: any;
       for ([key, value] of Object.entries(this.hoveredResult)) {
-        let result = conceptObjectToCopyString(key, value, 0, 1);
+        let result = conceptObjectToCopyString(key, value, 0, 1, undefined, this.defaultPredicates);
         if (!result) continue;
         const label = result.label;
         const text = result.value;

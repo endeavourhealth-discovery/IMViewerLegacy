@@ -10,6 +10,7 @@
         @keydown="checkKey($event)"
         @focus="showOverlay"
         @blur="hideOverlay"
+        @change="showOverlay"
         placeholder="Search"
         class="p-inputtext search-input"
         autoWidth="true"
@@ -22,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
 import SearchMiniOverlay from "@/components/sidebar/expressionConstraintsSearch/SearchMiniOverlay.vue";
 import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
@@ -35,15 +36,20 @@ import { IM } from "@/vocabulary/IM";
 import { TTIriRef } from "@/models/TripleTree";
 import { mapState } from "vuex";
 import { ComponentDetails } from "@/models/ecl/ComponentDetails";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Expression",
-  props: { id: { type: String, required: true }, position: { type: Number, required: true }, value: { required: false } },
+  props: {
+    id: { type: String, required: true },
+    position: { type: Number, required: true },
+    value: { type: Object as PropType<ConceptSummary>, required: false }
+  },
   emits: { updateClicked: (payload: ComponentDetails) => true },
   components: { SearchMiniOverlay },
   computed: mapState(["filterOptions", "selectedFilters"]),
   mounted() {
-    if (this.value && this.value instanceof ConceptSummary) {
+    if (this.value && isObjectHasKeys(this.value, ["name", "iri"])) {
       this.updateSelectedResult(this.value);
     } else {
       this.updateSelectedResult({ ...this.anyModel });
@@ -53,7 +59,7 @@ export default defineComponent({
     return {
       loading: false,
       debounce: 0,
-      request: null as any,
+      request: {} as { cancel: any; msg: string },
       selectedResult: {} as ConceptSummary,
       anyModel: {
         code: "",
@@ -108,8 +114,8 @@ export default defineComponent({
         this.selectedFilters.types.forEach((type: any) => {
           searchRequest.typeFilter.push(type["@id"]);
         });
-        if (this.request) {
-          await this.request.cancel();
+        if (isObjectHasKeys(this.request, ["cancel", "msg"])) {
+          await this.request.cancel({ status: 499, message: "Search cancelled by user" });
         }
         const axiosSource = axios.CancelToken.source();
         this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
@@ -132,7 +138,7 @@ export default defineComponent({
       x.show(event, event.target);
     },
 
-    updateSelectedResult(data: any) {
+    updateSelectedResult(data: ConceptSummary) {
       this.selectedResult = data;
       this.searchTerm = data.name;
       this.$emit("updateClicked", this.createExpression());

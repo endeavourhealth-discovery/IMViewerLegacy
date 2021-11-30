@@ -60,7 +60,7 @@ export default defineComponent({
   async mounted() {
     window.addEventListener("resize", this.onResize);
     if (isArrayHasLength(this.catalogueSearchResults)) this.searchResults = this.catalogueSearchResults;
-    this.setContainerHeights();
+    this.setContainerHeight();
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
@@ -79,11 +79,11 @@ export default defineComponent({
   },
   methods: {
     onResize(): void {
-      this.setContainerHeights();
+      this.setContainerHeight();
     },
 
     async getSearchResult(): Promise<void> {
-      if (this.searchTerm.length < 2) return;
+      if (this.searchTerm.length < 3) return;
       this.loading = true;
       if (isObject(this.request) && isArrayHasLength(Object.keys(this.request))) {
         await this.request.cancel({ status: 499, message: "Search cancelled by user" });
@@ -117,7 +117,7 @@ export default defineComponent({
       this.$emit("updateHistory", historyItem);
     },
 
-    setContainerHeights(): void {
+    setContainerHeight(): void {
       this.sideMenuHeight = getContainerElementOptimalHeight("side-bar", ["search-bar"], false);
     }
   }

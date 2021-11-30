@@ -239,11 +239,12 @@ export default class EntityService {
     }
   }
 
-  public static async ECLSearch(searchString: string, includeLegacy: boolean, limit: number): Promise<SearchResponse> {
+  public static async ECLSearch(searchString: string, includeLegacy: boolean, limit: number, cancelToken: CancelToken): Promise<SearchResponse> {
     try {
       return await axios.post(this.api + "api/set/eclSearch", searchString, {
         headers: { "Content-Type": "text/plain" },
-        params: { includeLegacy: includeLegacy, limit: limit }
+        params: { includeLegacy: includeLegacy, limit: limit },
+        cancelToken: cancelToken
       });
     } catch (error) {
       return {} as SearchResponse;

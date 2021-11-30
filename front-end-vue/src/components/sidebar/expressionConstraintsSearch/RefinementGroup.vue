@@ -39,6 +39,7 @@ import { ECLType } from "@/models/expressionConstraintsLanguage/ECLType";
 import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponent";
 import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
 import { ComponentDetails } from "@/models/ecl/ComponentDetails";
+import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "RefinementGroup",
@@ -113,19 +114,18 @@ export default defineComponent({
 
     addItem(data: { selectedType: ECLType; position: number }): void {
       const newComponent = this.generateNewComponent(data.selectedType, data.position);
-      if (newComponent) {
-        this.refinementGroupBuild[data.position] = newComponent;
-        if (this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type !== ECLType.ADD_NEXT) {
-          this.refinementGroupBuild.push(
-            this.getNextOptions(
-              this.refinementGroupBuild.length - 1,
-              this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type,
-              ECLType.REFINEMENT_GROUP
-            )
-          );
-        }
-        this.updatePositions();
+      if (!newComponent) return;
+      this.refinementGroupBuild[data.position] = newComponent;
+      if (this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type !== ECLType.ADD_NEXT) {
+        this.refinementGroupBuild.push(
+          this.getNextOptions(
+            this.refinementGroupBuild.length - 1,
+            this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type,
+            ECLType.REFINEMENT_GROUP
+          )
+        );
       }
+      this.updatePositions();
     },
 
     deleteItem(data: ComponentDetails): void {
@@ -133,6 +133,9 @@ export default defineComponent({
       this.refinementGroupBuild.splice(index, 1);
       if (data.position === 0) {
         this.refinementGroupBuild.unshift(this.setStartBuild()[0]);
+      }
+      if (index < this.refinementGroupBuild.length - 1 && this.refinementGroupBuild[index].type === ECLType.ADD_NEXT) {
+        this.refinementGroupBuild[index] = this.getNextOptions(index - 1, this.refinementGroupBuild[index - 1].type, ECLType.REFINEMENT_GROUP);
       }
       if (this.refinementGroupBuild[this.refinementGroupBuild.length - 1].type !== ECLType.ADD_NEXT) {
         this.refinementGroupBuild.push(
@@ -159,7 +162,7 @@ export default defineComponent({
 
     getNextOptions(position: number, previous: ECLType, group: ECLType | undefined): ComponentDetails {
       return {
-        id: "addNext" + "_" + (position + 1),
+        id: this.id + "addNext" + "_" + (position + 1),
         value: {
           previousPosition: position,
           previousComponentType: previous,
@@ -167,7 +170,7 @@ export default defineComponent({
         },
         position: position + 1,
         type: ECLType.ADD_NEXT,
-        label: null,
+        label: "",
         component: ECLComponent.ADD_NEXT
       };
     },
@@ -183,21 +186,21 @@ export default defineComponent({
       switch (type) {
         case ECLType.REFINEMENT:
           result = {
-            id: ECLType.REFINEMENT + "_" + position,
+            id: this.id + ECLType.REFINEMENT + "_" + position,
             value: null,
             position: position,
             type: ECLType.REFINEMENT,
-            label: null,
+            label: "",
             component: ECLComponent.REFINEMENT
           };
           break;
         case ECLType.LOGIC:
           result = {
-            id: ECLType.LOGIC + "_" + position,
+            id: this.id + ECLType.LOGIC + "_" + position,
             value: null,
             position: position,
             type: ECLType.LOGIC,
-            label: null,
+            label: "",
             component: ECLComponent.LOGIC
           };
           break;
@@ -223,19 +226,18 @@ export default defineComponent({
 
     generateRefinementLabel(): string {
       let label = "";
-      if (this.refinementGroupBuild.length) {
-        const labels = this.refinementGroupBuild.map(item => {
-          if (item.type === ECLType.LOGIC) {
-            return item.label + "\n\t";
-          } else {
-            return item.label;
-          }
-        });
-        label = labels
-          .join(" ")
-          .replaceAll("\n ", "\n")
-          .trim();
-      }
+      if (!isArrayHasLength(this.refinementGroupBuild)) return label;
+      const labels = this.refinementGroupBuild.map(item => {
+        if (item.type === ECLType.LOGIC) {
+          return item.label + "\n\t";
+        } else {
+          return item.label;
+        }
+      });
+      label = labels
+        .join(" ")
+        .trim()
+        .replace(/\n\t +/, "\n\t");
       if (this.group) {
         return ":\n\t{" + label + "}";
       } else {
@@ -250,22 +252,23 @@ export default defineComponent({
         return [
           {
             component: ECLComponent.REFINEMENT,
-            id: this.id + ECLType.REFINEMENT,
-            label: null,
+            id: this.id + ECLType.REFINEMENT + "_0",
+            label: "",
             position: 0,
             type: ECLType.REFINEMENT,
             value: null
           },
           {
             component: ECLComponent.ADD_NEXT,
-            id: this.id + ECLType.ADD_NEXT,
+            id: this.id + ECLType.ADD_NEXT + "_1",
             value: {
               previousPosition: 0,
-              previousComponentType: ECLType.REFINEMENT
+              previousComponentType: ECLType.REFINEMENT,
+              parentGroup: ECLType.REFINEMENT_GROUP
             },
             position: 1,
             type: ECLType.ADD_NEXT,
-            label: null
+            label: ""
           }
         ];
       }

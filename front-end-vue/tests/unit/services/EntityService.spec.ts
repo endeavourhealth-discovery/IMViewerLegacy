@@ -149,13 +149,22 @@ describe("EntityService.ts ___ axios success", () => {
   });
 
   it("can get ECLSearch", async () => {
-    const result = await EntityService.ECLSearch("testString", false, 1000);
+    const cancelToken = axios.CancelToken.source().token;
+    const result = await EntityService.ECLSearch("testString", false, 1000, cancelToken);
     expect(axios.post).toBeCalledTimes(1);
     expect(axios.post).toHaveBeenCalledWith(api + "api/set/eclSearch", "testString", {
       headers: { "Content-Type": "text/plain" },
-      params: { includeLegacy: false, limit: 1000 }
+      params: { includeLegacy: false, limit: 1000 },
+      cancelToken: cancelToken
     });
     expect(result).toBe("axios post return");
+  });
+
+  it("can getMatchedFrom", async () => {
+    const result = await EntityService.getMatchedFrom("testString");
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(api + "api/entity/matchedFrom", { params: { iri: "testString" } });
+    expect(result).toBe("axios get return");
   });
 });
 
@@ -306,12 +315,21 @@ describe("EntityService.ts ___ axios fail", () => {
   });
 
   it("can get ECLSearch", async () => {
-    const result = await EntityService.ECLSearch("testString", false, 1000);
+    const cancelToken = axios.CancelToken.source().token;
+    const result = await EntityService.ECLSearch("testString", false, 1000, cancelToken);
     expect(axios.post).toBeCalledTimes(1);
     expect(axios.post).toHaveBeenCalledWith(api + "api/set/eclSearch", "testString", {
       headers: { "Content-Type": "text/plain" },
-      params: { includeLegacy: false, limit: 1000 }
+      params: { includeLegacy: false, limit: 1000 },
+      cancelToken: cancelToken
     });
     expect(result).toStrictEqual({});
+  });
+
+  it("can getMatchedFrom", async () => {
+    const result = await EntityService.getMatchedFrom("testString");
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(api + "api/entity/matchedFrom", { params: { iri: "testString" } });
+    expect(result).toStrictEqual([]);
   });
 });

@@ -5,8 +5,8 @@
     :closable="false"
     :maximizable="true"
     :style="{
-      width: '80vw',
-      height: '80vh',
+      minWidth: '80vw',
+      minHeight: '80vh',
       display: 'flex',
       flexFlow: 'column nowrap'
     }"
@@ -82,7 +82,7 @@ export default defineComponent({
   watch: {
     queryBuild: {
       handler() {
-        this.queryBuild.sort((a: any, b: any) => a.position - b.position);
+        this.queryBuild.sort((a: ComponentDetails, b: ComponentDetails) => a.position - b.position);
         this.generateQueryString();
       },
       deep: true
@@ -121,32 +121,25 @@ export default defineComponent({
 
     addItem(data: { selectedType: ECLType; position: number }): void {
       const newComponent = this.generateNewComponent(data.selectedType, data.position);
-      if (newComponent) {
-        this.queryBuild[data.position] = newComponent;
-        if (this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT) {
-          this.queryBuild.push(this.getNextOptions(this.queryBuild.length - 1, this.queryBuild[this.queryBuild.length - 1].type, undefined));
-        }
-        this.updatePositions();
+      if (!newComponent) return;
+      this.queryBuild[data.position] = newComponent;
+      if (this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT) {
+        this.queryBuild.push(this.getNextOptions(this.queryBuild.length - 1, this.queryBuild[this.queryBuild.length - 1].type, undefined));
       }
+      this.updatePositions();
     },
 
     generateQueryString(): void {
-      let primaryRefinementSet = false;
       this.queryString = this.queryBuild
         .map(item => {
-          if (item.type === ECLType.REFINEMENT && !primaryRefinementSet) {
-            primaryRefinementSet = true;
-            return ":\n\t" + item.label;
-          } else if (item.type === ECLType.REFINEMENT && primaryRefinementSet) {
-            return "\t" + item.label;
-          } else if (item.type === ECLType.LOGIC) {
+          if (item.type === ECLType.LOGIC) {
             return item.label + "\n";
           } else {
             return item.label;
           }
         })
         .join(" ")
-        .replaceAll("\n ", "\n");
+        .replace(/\n +/g, "\n");
     },
 
     deleteItem(data: ComponentDetails): void {
@@ -154,6 +147,9 @@ export default defineComponent({
       this.queryBuild.splice(index, 1);
       if (data.position === 0) {
         this.queryBuild.unshift(this.setStartBuild()[0]);
+      }
+      if (index < this.queryBuild.length - 1 && this.queryBuild[index].type === ECLType.ADD_NEXT) {
+        this.queryBuild[index] = this.getNextOptions(index - 1, this.queryBuild[index - 1].type, undefined);
       }
       if (this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT) {
         this.queryBuild.push(this.getNextOptions(this.queryBuild.length - 1, this.queryBuild[this.queryBuild.length - 1].type, undefined));
@@ -182,7 +178,7 @@ export default defineComponent({
         },
         position: position + 1,
         type: ECLType.ADD_NEXT,
-        label: null,
+        label: "",
         component: ECLComponent.ADD_NEXT
       };
     },
@@ -196,7 +192,7 @@ export default defineComponent({
             value: null,
             position: position,
             type: ECLType.LOGIC,
-            label: null,
+            label: "",
             component: ECLComponent.LOGIC
           };
           break;
@@ -206,7 +202,7 @@ export default defineComponent({
             value: null,
             position: position,
             type: ECLType.REFINEMENT_GROUP,
-            label: null,
+            label: "",
             component: ECLComponent.REFINEMENT_GROUP
           };
           break;
@@ -216,7 +212,7 @@ export default defineComponent({
             value: null,
             position: position,
             type: ECLType.FOCUS_CONCEPT,
-            label: null,
+            label: "",
             component: ECLComponent.FOCUS_CONCEPT
           };
           break;
@@ -234,17 +230,18 @@ export default defineComponent({
           value: null,
           position: 0,
           type: ECLType.FOCUS_CONCEPT,
-          label: null
+          label: ""
         },
         {
           id: ECLType.ADD_NEXT + "_" + 1,
           value: {
             previousPosition: 0,
-            previousComponentType: ECLType.FOCUS_CONCEPT
+            previousComponentType: ECLType.FOCUS_CONCEPT,
+            parentGroup: undefined
           },
           position: 1,
           type: ECLType.ADD_NEXT,
-          label: null,
+          label: "",
           component: ECLComponent.ADD_NEXT
         }
       ];
@@ -304,6 +301,10 @@ export default defineComponent({
   flex-basis: 100%;
 }
 
+#query-build ::v-deep(.refinement-group-container) {
+  flex-basis: 100%;
+}
+
 #next-option-container {
   width: 100%;
   display: flex;
@@ -326,6 +327,7 @@ export default defineComponent({
   height: 100%;
   flex-grow: 100;
   overflow-y: auto;
+  tab-size: 4;
 }
 
 .string-copy-container {

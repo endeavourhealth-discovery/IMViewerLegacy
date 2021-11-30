@@ -93,13 +93,7 @@ export default defineComponent({
     generateFocusConceptLabel(): string {
       let label = "";
       if (this.focusConceptBuild.length && this.focusConceptBuild.every(item => typeof item.label === "string")) {
-        const labels = this.focusConceptBuild.map(item => {
-          if (item.type === ECLType.LOGIC) {
-            return item.label + "\n\t";
-          } else {
-            return item.label;
-          }
-        });
+        const labels = this.focusConceptBuild.map(item => item.label);
         label = labels
           .join(" ")
           .replace("/\n /g", "\n")
@@ -116,7 +110,7 @@ export default defineComponent({
           {
             component: ECLComponent.CONSTRAINT,
             id: this.id + ECLType.CONSTRAINT,
-            label: null,
+            label: "",
             position: 0,
             type: ECLType.CONSTRAINT,
             value: null
@@ -124,7 +118,7 @@ export default defineComponent({
           {
             component: ECLComponent.EXPRESSION,
             id: this.id + ECLType.EXPRESSION,
-            label: null,
+            label: "",
             position: 1,
             type: ECLType.EXPRESSION,
             value: null

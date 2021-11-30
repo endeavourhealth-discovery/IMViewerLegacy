@@ -1,53 +1,61 @@
 import { TTBundle, TTIriRef } from "@/models/TripleTree";
 import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
-import ConfigService from "@/services/ConfigService";
 
-export async function bundleToText(bundle: TTBundle): Promise<string> {
+const indentSize = "  ";
+
+export function bundleToText(bundle: TTBundle, defaultPredicatenames: any, indent: number, blockedUrlIris?: string[]): string {
   let predicates = bundle.predicates;
-  predicates = await getDefaultPredicates(predicates);
+  predicates = addDefaultPredicates(predicates, defaultPredicatenames);
   delete bundle.entity["@id"];
   let result = "";
-  result += await ttValueToString(bundle.entity, "object", 0, predicates);
+  result += ttValueToString(bundle.entity, "object", indent, predicates, blockedUrlIris);
   return result;
 }
 
-async function getDefaultPredicates(predicates?: any) {
+function addDefaultPredicates(predicates?: any, defaults?: any) {
   if (!isObjectHasKeys(predicates)) predicates = {} as any;
-  const defaults = await ConfigService.getDefaultPredicatenames();
+  if (!isObjectHasKeys(defaults)) return predicates;
   for (const [key, value] of Object.entries(defaults)) {
     predicates[key] = value;
   }
   return predicates;
 }
 
-export async function ttValueToString(node: any, previousType: string, indent: number, iriMap?: any): Promise<string> {
+export function ttValueToString(node: any, previousType: string, indent: number, iriMap?: any, blockedUrlIris?: string[]): string {
   if (isObjectHasKeys(node, ["@id"])) {
-    return ttIriToString(node, previousType, indent, false);
+    return ttIriToString(node, previousType, indent, false, blockedUrlIris);
   } else if (isObjectHasKeys(node)) {
-    return ttNodeToString(node, previousType, indent, iriMap);
+    return ttNodeToString(node, previousType, indent, iriMap, blockedUrlIris);
   } else if (isArrayHasLength(node)) {
-    return ttArrayToString(node, indent, iriMap);
+    return ttArrayToString(node, indent, iriMap, blockedUrlIris);
   } else {
-    return "";
+    return String(node);
   }
 }
 
-export function ttIriToString(iri: TTIriRef, previous: string, indent: number, inline: boolean): string {
-  const pad = "  ".repeat(indent);
+export function ttIriToString(iri: TTIriRef, previous: string, indent: number, inline: boolean, blockedUrlIris?: string[]): string {
+  const pad = indentSize.repeat(indent);
   let result = "";
   if (!inline) result += pad;
+  if (!blockedUrlIris || !blockedUrlIris.includes(iri["@id"])) {
+    const escapedUrl = iri["@id"].replace(/\//gi, "%2F").replace(/#/gi, "%23");
+    result += `<a href="${window.location.origin}/#/concept/${escapedUrl}">`;
+  }
   if (iri.name) result += removeEndBrackets(iri.name);
   else result += iri["@id"];
+  if (!blockedUrlIris || !blockedUrlIris.includes(iri["@id"])) {
+    result += "</a>";
+  }
   if (previous === "array") result += "\n";
   return result;
 }
 
-export async function ttNodeToString(node: any, previousType: string, indent: number, iriMap?: any): Promise<string> {
-  if (!iriMap) iriMap = await getDefaultPredicates();
-  const pad = "  ".repeat(indent);
+export function ttNodeToString(node: any, previousType: string, indent: number, iriMap?: any, blockedUrlIris?: string[]): string {
+  const pad = indentSize.repeat(indent);
   let result = "";
   let first = true;
   let last = false;
+  let nodeIndent = indent;
   const totalKeys = Object.keys(node).length;
   let count = 1;
   let group = false;
@@ -59,7 +67,8 @@ export async function ttNodeToString(node: any, previousType: string, indent: nu
     let suffix = "\n";
 
     if (group) {
-      prefix = "  ";
+      nodeIndent = indent + 1;
+      prefix = indentSize;
       if (first) {
         prefix = "( ";
         first = false;
@@ -68,72 +77,53 @@ export async function ttNodeToString(node: any, previousType: string, indent: nu
         suffix = " )\n";
       }
     }
-    result = await processNode(key, value, result, previousType, indent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group });
+    result = processNode(key, value, result, nodeIndent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group }, blockedUrlIris);
     count++;
   }
   return result;
 }
 
-async function processNode(key: string, value: any, result: string, previousType: string, indent: number, iriMap: any, stringAdditions: any) {
+function processNode(key: string, value: any, result: string, indent: number, iriMap: any, stringAdditions: any, blockedUrlIris?: string[]): string {
   const pad = stringAdditions.pad;
   const prefix = stringAdditions.prefix;
   const suffix = stringAdditions.suffix;
   if (isObjectHasKeys(value, ["@id"])) {
-    if (iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
-    else result += pad + prefix + removeEndBrackets(key) + " : ";
-    result += ttIriToString(value as TTIriRef, "object", indent, true);
+    result += getObjectName(key, iriMap, pad, prefix);
+    result += ttIriToString(value as TTIriRef, "object", indent, true, blockedUrlIris);
     result += suffix;
-  } else if (isArrayHasLength(value) && value.length === 1) {
-    if (isObjectHasKeys(value[0], ["@id"])) {
-      if (iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
-      else result += pad + prefix + removeEndBrackets(key) + " : ";
-      result += ttIriToString(value[0] as TTIriRef, "object", indent, true);
+  } else if (isArrayHasLength(value)) {
+    if (value.length === 1 && isObjectHasKeys(value[0], ["@id"])) {
+      result += getObjectName(key, iriMap, pad, prefix);
+      result += ttIriToString(value[0] as TTIriRef, "object", indent, true, blockedUrlIris);
+      result += suffix;
+    } else if ((value.length === 1 && typeof value[0] === "string") || typeof value[0] === "number") {
+      result += getObjectName(key, iriMap, pad, prefix);
+      result += String(value[0]);
       result += suffix;
     } else {
-      result += await processObject(key, value, result, previousType, indent, iriMap, stringAdditions);
+      result += getObjectName(key, iriMap, pad, prefix);
+      result += "\n";
+      result += ttValueToString(value, "object", indent + 1, iriMap, blockedUrlIris);
+      result += suffix;
     }
   } else {
-    result += await processObject(key, value, result, previousType, indent, iriMap, stringAdditions);
+    result += getObjectName(key, iriMap, pad, prefix);
+    result += "\n";
+    result += ttValueToString(value, "object", indent + 1, iriMap, blockedUrlIris);
+    result += suffix;
   }
   return result;
 }
 
-async function processObject(
-  key: string,
-  value: any,
-  result: string,
-  previousType: string,
-  indent: number,
-  iriMap: any,
-  stringAdditions: any
-): Promise<string> {
-  const pad = stringAdditions.pad;
-  const prefix = stringAdditions.prefix;
-  const group = stringAdditions.group;
-  if (iriMap[key]) result += pad + prefix + removeEndBrackets(iriMap[key]) + ":\n";
-  else result += pad + prefix + key + ":\n";
-  if (previousType === "array") {
-    if (group) {
-      result += await ttValueToString(value, "object", indent + 1, iriMap);
-    } else {
-      result += await ttValueToString(value, "object", indent, iriMap);
-    }
-  }
-  if (previousType === "object") {
-    if (isArrayHasLength(value)) {
-      result += await ttValueToString(value, "object", indent, iriMap);
-    } else {
-      result += await ttValueToString(value, "object", indent + 1, iriMap);
-    }
-  }
-  return result;
+function getObjectName(key: string, iriMap: any, pad: string, prefix: string) {
+  if (iriMap && iriMap[key]) return pad + prefix + removeEndBrackets(iriMap[key]) + " : ";
+  else return pad + prefix + removeEndBrackets(key) + " : ";
 }
 
-export async function ttArrayToString(arr: any[], indent: number, iriMap?: any): Promise<string> {
-  if (!iriMap) iriMap = await getDefaultPredicates();
+export function ttArrayToString(arr: any[], indent: number, iriMap?: any, blockedUrlIris?: string[]): string {
   let result = "";
   for (const item of arr) {
-    result += await ttValueToString(item, "array", indent + 1, iriMap);
+    result += ttValueToString(item, "array", indent, iriMap, blockedUrlIris);
   }
   return result;
 }
