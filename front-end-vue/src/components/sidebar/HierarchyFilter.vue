@@ -112,19 +112,4 @@ label {
   margin-top: 1rem;
   width: 100%;
 }
-
-.quick-filters-container {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: flex-start;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.quick-filter-container {
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: flex-start;
-  align-items: flex-start;
-}
 </style>

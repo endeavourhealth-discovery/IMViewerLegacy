@@ -25,5 +25,5 @@ export interface State {
   term: string;
   instanceIri: string;
   sidebarControlActivePanel: number;
-  hierarchySelectedFilters: { status: EntityReferenceNode[]; schemes: Namespace[]; types: EntityReferenceNode[] };
+  hierarchySelectedFilters: Namespace[];
 }
