@@ -83,8 +83,8 @@ export default defineComponent({
     setFilters(): void {
       this.$store.commit("updateFilterOptions", {
         status: this.statusOptions,
-        scheme: this.schemeOptions,
-        type: this.typeOptions
+        schemes: this.schemeOptions,
+        types: this.typeOptions
       });
     },
 

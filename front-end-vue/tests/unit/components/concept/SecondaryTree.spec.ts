@@ -1169,16 +1169,7 @@ describe("SecondaryTree.vue", () => {
   });
 
   it("can showPopup", async () => {
-    wrapper.vm.showPopup("testEvent", {
-      children: [],
-      color: "#e39a3688",
-      data: "http://snomed.info/sct#111266001",
-      key: "Acquired scoliosis (disorder)",
-      label: "Acquired scoliosis (disorder)",
-      leaf: false,
-      loading: false,
-      typeIcon: "far fa-fw fa-lightbulb"
-    });
+    wrapper.vm.showPopup("testEvent", "http://snomed.info/sct#111266001");
     await flushPromises();
     expect(mockRef.methods.show).toHaveBeenCalledTimes(1);
     expect(mockRef.methods.show).toHaveBeenCalledWith("testEvent");

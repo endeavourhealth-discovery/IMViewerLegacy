@@ -48,6 +48,9 @@ export default defineComponent({
       if (!isArrayHasLength(this.filterOptions.schemes)) {
         await this.getFilterOptions();
         this.setFilters();
+      } else {
+        await this.getConfigs();
+        this.schemeOptions = this.filterOptions.schemes;
       }
       this.setDefaults();
     },
@@ -55,16 +58,16 @@ export default defineComponent({
     setFilters(): void {
       this.$store.commit("updateFilterOptions", {
         status: this.statusOptions,
-        scheme: this.schemeOptions,
-        type: this.typeOptions
+        schemes: this.schemeOptions,
+        types: this.typeOptions
       });
     },
 
     setDefaults(): void {
-      if (!isArrayHasLength(this.hierarchySelectedFilters.schemes)) {
+      if (!isArrayHasLength(this.hierarchySelectedFilters)) {
         this.resetFilters();
       } else {
-        this.selectedSchemes = this.hierarchySelectedFilters.schemes;
+        this.selectedSchemes = this.hierarchySelectedFilters;
       }
     },
 
@@ -72,8 +75,12 @@ export default defineComponent({
       this.$store.commit("updateHierarchySelectedFilters", this.selectedSchemes);
     },
 
-    async getFilterOptions(): Promise<void> {
+    async getConfigs(): Promise<void> {
       this.configs = await ConfigService.getFilterDefaults();
+    },
+
+    async getFilterOptions(): Promise<void> {
+      await this.getConfigs();
 
       this.schemeOptions = await EntityService.getNamespaces();
 

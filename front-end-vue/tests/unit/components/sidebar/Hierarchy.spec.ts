@@ -45,6 +45,11 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
     }
   ];
 
+  const HIERARCHY_SELECTED_FILTERS = [
+    { iri: "http://endhealth.info/im#", prefix: "im", name: "Discovery namespace" },
+    { iri: "http://snomed.info/sct#", prefix: "sn", name: "Snomed-CT namespace" }
+  ];
+
   beforeEach(async () => {
     jest.resetAllMocks();
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
@@ -58,7 +63,9 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
         sideNavHierarchyFocus: {
           name: "Ontology",
           iri: "http://endhealth.info/im#DiscoveryOntology"
-        }
+        },
+        resetTree: false,
+        hierarchySelectedFilters: HIERARCHY_SELECTED_FILTERS
       },
       commit: jest.fn(),
       dispatch: jest.fn()
@@ -700,6 +707,11 @@ describe("Hierarchy.vue ___ Concept", () => {
     }
   ];
 
+  const HIERARCHY_SELECTED_FILTERS = [
+    { iri: "http://endhealth.info/im#", prefix: "im", name: "Discovery namespace" },
+    { iri: "http://snomed.info/sct#", prefix: "sn", name: "Snomed-CT namespace" }
+  ];
+
   beforeEach(async () => {
     jest.resetAllMocks();
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
@@ -713,7 +725,9 @@ describe("Hierarchy.vue ___ Concept", () => {
         sideNavHierarchyFocus: {
           name: "Ontology",
           iri: "http://endhealth.info/im#DiscoveryOntology"
-        }
+        },
+        resetTree: false,
+        hierarchySelectedFilters: HIERARCHY_SELECTED_FILTERS
       },
       commit: jest.fn(),
       dispatch: jest.fn()
@@ -892,7 +906,11 @@ describe("Hierarchy.vue ___ Concept", () => {
     await flushPromises();
     await wrapper.vm.$nextTick();
     expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept");
+    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept", {
+      schemes: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+      status: [],
+      types: []
+    });
     expect(testNode.children).toHaveLength(20);
   });
 
@@ -908,7 +926,11 @@ describe("Hierarchy.vue ___ Concept", () => {
     await flushPromises();
     await wrapper.vm.$nextTick();
     expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept");
+    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept", {
+      schemes: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+      status: [],
+      types: []
+    });
     expect(testNode.children).toHaveLength(20);
   });
 
@@ -1028,8 +1050,16 @@ describe("Hierarchy.vue ___ Concept", () => {
     ];
     await wrapper.vm.expandParents();
     expect(EntityService.getEntityParents).toHaveBeenCalledTimes(2);
-    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003");
-    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#64217002");
+    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003", {
+      schemes: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+      status: [],
+      types: []
+    });
+    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#64217002", {
+      schemes: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+      status: [],
+      types: []
+    });
   });
 
   it("can expand parents __ api 2 no data", async () => {
@@ -1066,8 +1096,16 @@ describe("Hierarchy.vue ___ Concept", () => {
     await wrapper.vm.$nextTick();
     await flushPromises();
     expect(EntityService.getEntityParents).toHaveBeenCalledTimes(2);
-    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003");
-    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#64217002");
+    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003", {
+      schemes: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+      status: [],
+      types: []
+    });
+    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#64217002", {
+      schemes: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+      status: [],
+      types: []
+    });
     expect(wrapper.vm.parentLabel).toBe("");
   });
 });

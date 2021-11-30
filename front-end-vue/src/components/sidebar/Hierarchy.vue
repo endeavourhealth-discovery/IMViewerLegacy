@@ -67,7 +67,7 @@ export default defineComponent({
   name: "Hierarchy",
   props: { active: { type: Number, required: true } },
   emits: { showTree: () => true },
-  computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus", "history", "resetTree", "hierarchySelectedFilters"]),
+  computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus", "resetTree", "hierarchySelectedFilters"]),
   watch: {
     async conceptIri(newValue) {
       await this.getConceptAggregate(newValue);
