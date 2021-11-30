@@ -302,9 +302,9 @@ export default defineComponent({
 
     setFilters(): void {
       this.filters = {
-        types: this.hierarchySelectedFilters.types.map((type: EntityReferenceNode) => type["@id"]),
-        status: this.hierarchySelectedFilters.status.map((status: EntityReferenceNode) => status["@id"]),
-        schemes: this.hierarchySelectedFilters.schemes.map((scheme: Namespace) => scheme.iri)
+        types: [],
+        status: [],
+        schemes: this.hierarchySelectedFilters.map((scheme: Namespace) => scheme.iri)
       };
     }
   }

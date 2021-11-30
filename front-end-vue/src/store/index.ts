@@ -59,7 +59,7 @@ export default createStore({
     instanceIri: "",
     sidebarControlActivePanel: 0,
     catalogueSearchResults: [] as string[],
-    hierarchySelectedFilters: { status: [] as EntityReferenceNode[], schemes: [] as Namespace[], types: [] as EntityReferenceNode[] }
+    hierarchySelectedFilters: [] as Namespace[]
   },
   mutations: {
     updateBlockedIris(state, blockedIris) {
