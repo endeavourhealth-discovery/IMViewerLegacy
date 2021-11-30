@@ -1,26 +1,34 @@
 <template>
   <div class="p-d-flex p-flex-column p-jc-start" id="hierarchy-tree-bar-container">
-    <div class="p-d-flex p-flex-row p-jc-start p-ai-center" id="hierarchy-selected-bar">
-      <Button :label="parentLabel" :disabled="parentLabel === ''" icon="pi pi-chevron-up" @click="expandParents" class="p-button-text p-button-plain" />
-      <Button icon="pi pi-home" @click="resetConcept" class="p-button-rounded p-button-text p-button-plain">
-        <i class="fas fa-home" aria-hidden="true"></i>
-      </Button>
+    <div id="parent-button-bar">
       <Button
-        v-if="$store.state.treeLocked"
-        class="p-button-rounded p-button-text p-button-plain"
-        @click="toggleTreeLocked(false)"
-        v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
-      >
-        <i class="fas fa-link" aria-hidden="true"></i>
-      </Button>
-      <Button
-        v-else
-        class="p-button-rounded p-button-text p-button-plain"
-        @click="toggleTreeLocked(true)"
-        v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
-      >
-        <i class="fas fa-unlink" aria-hidden="true"></i>
-      </Button>
+        :label="parentLabel"
+        :disabled="parentLabel === ''"
+        icon="pi pi-chevron-up"
+        @click="expandParents"
+        class="p-button-text p-button-plain next-parent-button"
+      />
+      <div class="toggle-buttons-container">
+        <Button icon="pi pi-home" @click="resetConcept" class="p-button-rounded p-button-text p-button-plain home-button">
+          <i class="fas fa-home" aria-hidden="true"></i>
+        </Button>
+        <Button
+          v-if="$store.state.treeLocked"
+          class="p-button-rounded p-button-text p-button-plain tree-locked-button"
+          @click="toggleTreeLocked(false)"
+          v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
+        >
+          <i class="fas fa-link" aria-hidden="true"></i>
+        </Button>
+        <Button
+          v-else
+          class="p-button-rounded p-button-text p-button-plain tree-lock-button"
+          @click="toggleTreeLocked(true)"
+          v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
+        >
+          <i class="fas fa-unlink" aria-hidden="true"></i>
+        </Button>
+      </div>
     </div>
 
     <Tree
@@ -313,7 +321,7 @@ export default defineComponent({
 
 <style scoped>
 #hierarchy-tree-bar-container {
-  height: 100%;
+  height: calc(100% - 7.75rem);
 }
 
 .p-tree .p-tree-container .p-treenode .p-treenode-content {
@@ -344,5 +352,25 @@ export default defineComponent({
   justify-content: flex-start;
   align-items: flex-start;
   gap: 0.25rem;
+}
+
+#parent-button-bar {
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.toggle-buttons-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.tree-locked-button,
+.home-button,
+.next-parent-button {
+  width: fit-content !important;
 }
 </style>
