@@ -88,10 +88,8 @@ export default defineComponent({
     hierarchySelectedFilters: {
       async handler() {
         await this.getConceptAggregate(this.conceptIri);
-        if (!this.treeLocked) {
-          this.selectedKey = {};
-          this.refreshTree();
-        }
+        this.selectedKey = {};
+        this.refreshTree();
         this.updateHistory();
       },
       deep: true
@@ -164,6 +162,7 @@ export default defineComponent({
       this.conceptAggregate.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]);
 
       this.setFilters();
+      console.log(this.filters);
       this.conceptAggregate.parents = await EntityService.getEntityParents(iri, this.filters);
 
       this.conceptAggregate.children = await EntityService.getEntityChildren(iri, this.filters);

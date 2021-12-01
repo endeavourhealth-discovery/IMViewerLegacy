@@ -1,7 +1,7 @@
 import router from "@/router/index";
 import { shallowMount } from "@vue/test-utils";
 
-describe("router", () => {
+xdescribe("router", () => {
   let wrapper;
   let mockStore;
 
