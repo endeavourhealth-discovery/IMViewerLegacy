@@ -5,7 +5,14 @@
     </div>
     <div class="p-field">
       <span class="p-float-label">
-        <MultiSelect id="scheme" v-model="selectedSchemes" @change="updateStoreSelectedFilters" :options="schemeOptions" optionLabel="name" display="chip" />
+        <MultiSelect
+          id="scheme"
+          v-model="selectedSchemes"
+          @change="updateStoreSelectedFilters"
+          :options="filterOptions.schemes"
+          optionLabel="name"
+          display="chip"
+        />
         <label for="scheme">Select scheme:</label>
       </span>
     </div>
@@ -13,56 +20,28 @@
 </template>
 
 <script lang="ts">
-import ConfigService from "@/services/ConfigService";
-import EntityService from "@/services/EntityService";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
 import { Namespace } from "@/models/Namespace";
-import { EntityReferenceNode } from "@/models/EntityReferenceNode";
-import { FilterDefaultsConfig } from "@/models/configs/FilterDefaultsConfig";
 import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
-import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
   name: "HierarchyFilters",
-  computed: mapState(["filterOptions", "hierarchySelectedFilters"]),
+  computed: mapState(["filterOptions", "hierarchySelectedFilters", "filterDefaults"]),
   watch: {
     selectedSchemes() {
       this.updateStoreSelectedFilters();
     }
   },
-  async mounted() {
-    await this.init();
+  mounted() {
+    this.setDefaults();
   },
   data() {
     return {
-      statusOptions: [] as EntityReferenceNode[],
-      schemeOptions: [] as Namespace[],
-      typeOptions: [] as EntityReferenceNode[],
-      selectedSchemes: [] as Namespace[],
-      configs: {} as FilterDefaultsConfig
+      selectedSchemes: [] as Namespace[]
     };
   },
   methods: {
-    async init(): Promise<void> {
-      if (!isArrayHasLength(this.filterOptions.schemes)) {
-        await this.getFilterOptions();
-        this.setFilters();
-      } else {
-        await this.getConfigs();
-        this.schemeOptions = this.filterOptions.schemes;
-      }
-      this.setDefaults();
-    },
-
-    setFilters(): void {
-      this.$store.commit("updateFilterOptions", {
-        status: this.statusOptions,
-        schemes: this.schemeOptions,
-        types: this.typeOptions
-      });
-    },
-
     setDefaults(): void {
       if (!isArrayHasLength(this.hierarchySelectedFilters)) {
         this.resetFilters();
@@ -75,22 +54,8 @@ export default defineComponent({
       this.$store.commit("updateHierarchySelectedFilters", this.selectedSchemes);
     },
 
-    async getConfigs(): Promise<void> {
-      this.configs = await ConfigService.getFilterDefaults();
-    },
-
-    async getFilterOptions(): Promise<void> {
-      await this.getConfigs();
-
-      this.schemeOptions = await EntityService.getNamespaces();
-
-      this.statusOptions = await EntityService.getEntityChildren(IM.STATUS);
-
-      this.typeOptions = await EntityService.getEntityChildren(IM.MODELLING_ENTITY_TYPE);
-    },
-
     resetFilters(): void {
-      this.selectedSchemes = this.schemeOptions.filter(item => this.configs.schemeOptions.includes(item.iri));
+      this.selectedSchemes = this.filterOptions.schemes.filter((item: Namespace) => this.filterDefaults.schemeOptions.includes(item.iri));
       this.updateStoreSelectedFilters();
     }
   }
