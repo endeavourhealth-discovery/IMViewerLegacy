@@ -53,8 +53,8 @@ export default defineComponent({
       this.updateStoreSelectedFilters();
     }
   },
-  async mounted() {
-    await this.init();
+  mounted() {
+    this.init();
   },
   data() {
     return {
@@ -65,7 +65,7 @@ export default defineComponent({
     };
   },
   methods: {
-    async init() {
+    init() {
       this.setDefaults();
     },
 

@@ -4,23 +4,8 @@ import MultiSelect from "primevue/multiselect";
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import EntityService from "@/services/EntityService";
 import ConfigService from "@/services/ConfigService";
-import { IM } from "@/vocabulary/IM";
 
-const CONFIG = {
-  schemeOptions: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
-  statusOptions: ["http://endhealth.info/im#Active", "http://endhealth.info/im#Draft"],
-  typeOptions: [
-    "http://endhealth.info/im#Concept",
-    "http://endhealth.info/im#ConceptSet",
-    "http://endhealth.info/im#ConceptSetGroup",
-    "http://endhealth.info/im#Folder",
-    "http://www.w3.org/ns/shacl#NodeShape",
-    "http://www.w3.org/2002/07/owl#ObjectProperty",
-    "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property",
-    "http://endhealth.info/im#QueryTemplate",
-    "http://endhealth.info/im#ValueSet"
-  ]
-};
+const SCHEME_DEFAULTS = ["http://endhealth.info/im#", "http://snomed.info/sct#"];
 const NAMESPACES = [
   { iri: "http://endhealth.info/bc#", prefix: "bc", name: "Barts Cerner namespace" },
   { iri: "http://endhealth.info/ceg16#", prefix: "ceg13", name: "CEG ethnicity 16+ category" },
@@ -46,111 +31,6 @@ const NAMESPACES = [
   { iri: "http://www.w3.org/2001/XMLSchema#", prefix: "xsd", name: "xsd namespace" }
 ];
 
-const STATUS = [
-  {
-    name: "Active",
-    hasChildren: false,
-    type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-    "@id": "http://endhealth.info/im#Active"
-  },
-  {
-    name: "Draft",
-    hasChildren: false,
-    type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-    "@id": "http://endhealth.info/im#Draft"
-  },
-  {
-    name: "Inactive",
-    hasChildren: false,
-    type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-    "@id": "http://endhealth.info/im#Inactive"
-  }
-];
-
-const TYPES = [
-  {
-    name: "Concept",
-    hasChildren: true,
-    type: [
-      { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
-      { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
-    ],
-    "@id": "http://endhealth.info/im#Concept"
-  },
-  {
-    name: "Concept Set",
-    hasChildren: false,
-    type: [
-      { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
-      { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
-    ],
-    "@id": "http://endhealth.info/im#ConceptSet"
-  },
-  {
-    name: "Concept set group",
-    hasChildren: false,
-    type: [
-      { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
-      { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
-    ],
-    "@id": "http://endhealth.info/im#ConceptSetGroup"
-  },
-  {
-    name: "Folder",
-    hasChildren: false,
-    type: [
-      { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
-      { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
-    ],
-    "@id": "http://endhealth.info/im#Folder"
-  },
-  {
-    name: "Node shape",
-    hasChildren: false,
-    type: [
-      { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
-      { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
-    ],
-    "@id": "http://www.w3.org/ns/shacl#NodeShape"
-  },
-  {
-    name: "ObjectProperty",
-    hasChildren: true,
-    type: [
-      { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
-      { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
-    ],
-    "@id": "http://www.w3.org/2002/07/owl#ObjectProperty"
-  },
-  {
-    name: "Property",
-    hasChildren: true,
-    type: [
-      { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
-      { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
-    ],
-    "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
-  },
-  {
-    name: "Query template",
-    hasChildren: false,
-    type: [
-      { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
-      { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
-    ],
-    "@id": "http://endhealth.info/im#QueryTemplate"
-  },
-  {
-    name: "Value set",
-    hasChildren: false,
-    type: [
-      { name: "Concept", "@id": "http://endhealth.info/im#Concept" },
-      { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
-    ],
-    "@id": "http://endhealth.info/im#ValueSet"
-  }
-];
-
 describe("HierarchyFilter.vue ___ empty store", () => {
   let wrapper;
   let mockStore;
@@ -158,16 +38,10 @@ describe("HierarchyFilter.vue ___ empty store", () => {
   beforeEach(async () => {
     jest.resetAllMocks();
 
-    mockStore = { state: { filterOptions: {}, hierarchySelectedFilters: [] }, commit: jest.fn() };
-
-    ConfigService.getFilterDefaults = jest.fn().mockResolvedValue(CONFIG);
-
-    EntityService.getNamespaces = jest.fn().mockResolvedValue(NAMESPACES);
-
-    EntityService.getEntityChildren = jest
-      .fn()
-      .mockResolvedValueOnce(STATUS)
-      .mockResolvedValueOnce(TYPES);
+    mockStore = {
+      state: { filterOptions: { schemes: NAMESPACES }, hierarchySelectedFilters: [], filterDefaults: { schemeOptions: SCHEME_DEFAULTS } },
+      commit: jest.fn()
+    };
 
     const warn = console.warn;
     console.warn = jest.fn();
@@ -181,31 +55,10 @@ describe("HierarchyFilter.vue ___ empty store", () => {
   });
 
   it("mounts", () => {
-    expect(wrapper.vm.statusOptions).toStrictEqual(STATUS);
-    expect(wrapper.vm.schemeOptions).toStrictEqual(NAMESPACES);
-    expect(wrapper.vm.typeOptions).toStrictEqual(TYPES);
     expect(wrapper.vm.selectedSchemes).toStrictEqual([
       { iri: "http://endhealth.info/im#", prefix: "im", name: "Discovery namespace" },
       { iri: "http://snomed.info/sct#", prefix: "sn", name: "Snomed-CT namespace" }
     ]);
-    expect(wrapper.vm.configs).toStrictEqual(CONFIG);
-  });
-
-  it("inits", async () => {
-    wrapper.vm.setDefaults = jest.fn();
-    wrapper.vm.getFilterOptions = jest.fn();
-    wrapper.vm.setFilters = jest.fn();
-    wrapper.vm.init();
-    await flushPromises();
-    expect(wrapper.vm.getFilterOptions).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.setFilters).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.setDefaults).toHaveBeenCalledTimes(1);
-  });
-
-  it("can setFilters", () => {
-    wrapper.vm.setFilters();
-    expect(mockStore.commit).toHaveBeenCalledTimes(1);
-    expect(mockStore.commit).toHaveBeenCalledWith("updateFilterOptions", { schemes: NAMESPACES, types: TYPES, status: STATUS });
   });
 
   it("can setDefaults", () => {
@@ -221,31 +74,6 @@ describe("HierarchyFilter.vue ___ empty store", () => {
       { iri: "http://endhealth.info/im#", name: "Discovery namespace", prefix: "im" },
       { iri: "http://snomed.info/sct#", name: "Snomed-CT namespace", prefix: "sn" }
     ]);
-  });
-
-  it("can getConfigs", async () => {
-    wrapper.vm.getConfigs();
-    await flushPromises();
-    expect(ConfigService.getFilterDefaults).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.configs).toStrictEqual(CONFIG);
-  });
-
-  it("can getFilterOptions", async () => {
-    EntityService.getEntityChildren = jest
-      .fn()
-      .mockResolvedValueOnce(STATUS)
-      .mockResolvedValueOnce(TYPES);
-    wrapper.vm.getConfigs = jest.fn();
-    wrapper.vm.getFilterOptions();
-    await flushPromises();
-    expect(wrapper.vm.getConfigs).toHaveBeenCalledTimes(1);
-    expect(EntityService.getNamespaces).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(2);
-    expect(EntityService.getEntityChildren).toHaveBeenNthCalledWith(1, IM.STATUS);
-    expect(EntityService.getEntityChildren).toHaveBeenLastCalledWith(IM.MODELLING_ENTITY_TYPE);
-    expect(wrapper.vm.schemeOptions).toStrictEqual(NAMESPACES);
-    expect(wrapper.vm.statusOptions).toStrictEqual(STATUS);
-    expect(wrapper.vm.typeOptions).toStrictEqual(TYPES);
   });
 
   it("can resetFilters", () => {
@@ -277,26 +105,18 @@ describe("HierarchyFilter.vue ___ full store", () => {
 
     mockStore = {
       state: {
-        filterOptions: { status: STATUS, types: TYPES, schemes: NAMESPACES },
+        filterOptions: { schemes: NAMESPACES },
         hierarchySelectedFilters: [
           {
             iri: "http://endhealth.info/im#",
             name: "Discovery namespace",
             prefix: "im"
           }
-        ]
+        ],
+        filterDefaults: { schemeOptions: SCHEME_DEFAULTS }
       },
       commit: jest.fn()
     };
-
-    ConfigService.getFilterDefaults = jest.fn().mockResolvedValue(CONFIG);
-
-    EntityService.getNamespaces = jest.fn().mockResolvedValue(NAMESPACES);
-
-    EntityService.getEntityChildren = jest
-      .fn()
-      .mockResolvedValueOnce(STATUS)
-      .mockResolvedValueOnce(TYPES);
 
     const warn = console.warn;
     console.warn = jest.fn();
@@ -310,25 +130,7 @@ describe("HierarchyFilter.vue ___ full store", () => {
   });
 
   it("mounts", () => {
-    expect(wrapper.vm.statusOptions).toStrictEqual([]);
-    expect(wrapper.vm.schemeOptions).toStrictEqual(NAMESPACES);
-    expect(wrapper.vm.typeOptions).toStrictEqual([]);
     expect(wrapper.vm.selectedSchemes).toStrictEqual([{ iri: "http://endhealth.info/im#", prefix: "im", name: "Discovery namespace" }]);
-    expect(wrapper.vm.configs).toStrictEqual(CONFIG);
-  });
-
-  it("inits", async () => {
-    wrapper.vm.setDefaults = jest.fn();
-    wrapper.vm.getFilterOptions = jest.fn();
-    wrapper.vm.setFilters = jest.fn();
-    wrapper.vm.getConfigs = jest.fn();
-    wrapper.vm.init();
-    await flushPromises();
-    expect(wrapper.vm.getFilterOptions).not.toHaveBeenCalled();
-    expect(wrapper.vm.setFilters).not.toHaveBeenCalled();
-    expect(wrapper.vm.getConfigs).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.schemeOptions).toStrictEqual(NAMESPACES);
-    expect(wrapper.vm.setDefaults).toHaveBeenCalledTimes(1);
   });
 
   it("can setDefaults", () => {

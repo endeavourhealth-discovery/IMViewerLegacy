@@ -45,7 +45,8 @@ describe("state", () => {
       "instanceIri",
       "sidebarControlActivePanel",
       "catalogueSearchResults",
-      "hierarchySelectedFilters"
+      "hierarchySelectedFilters",
+      "filterDefaults"
     ]);
     expect(store.state.conceptIri).toBe("http://endhealth.info/im#DiscoveryOntology");
     expect(store.state.history).toEqual([]);
@@ -88,6 +89,7 @@ describe("state", () => {
     expect(store.state.catalogueSearchResults).toStrictEqual([]);
     expect(store.state.instanceIri).toBe("");
     expect(store.state.hierarchySelectedFilters).toStrictEqual([]);
+    expect(store.state.filterDefaults).toStrictEqual({});
   });
 });
 
@@ -269,6 +271,11 @@ describe("mutations", () => {
   it("can update hierarchySelectedFilters", () => {
     store.commit("updateHierarchySelectedFilters", ["testIri"]);
     expect(store.state.hierarchySelectedFilters).toStrictEqual(["testIri"]);
+  });
+
+  it("can updateFilterDefaults", () => {
+    store.commit("updateFilterDefaults", { schemeOptions: ["testScheme"], statusOptions: ["testStatus"], typeOptions: ["testType"] });
+    expect(store.state.filterDefaults).toStrictEqual({ schemeOptions: ["testScheme"], statusOptions: ["testStatus"], typeOptions: ["testType"] });
   });
 
   it("can fetchBlockedIris", async () => {
