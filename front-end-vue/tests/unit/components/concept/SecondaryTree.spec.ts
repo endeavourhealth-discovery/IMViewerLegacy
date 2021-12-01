@@ -57,6 +57,21 @@ describe("SecondaryTree.vue", () => {
     }
   ];
 
+  const SUMMARY = {
+    name: "Acquired scoliosis",
+    iri: "http://snomed.info/sct#111266001",
+    code: "111266001",
+    description: "Acquired scoliosis (disorder)",
+    status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
+    scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+    entityType: [
+      { name: "Ontological Concept", "@id": "http://endhealth.info/im#Concept" },
+      { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+    ],
+    isDescendentOf: [],
+    match: "629792015"
+  };
+
   beforeEach(async () => {
     jest.resetAllMocks();
     mockToast = {
@@ -67,20 +82,7 @@ describe("SecondaryTree.vue", () => {
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
     EntityService.getEntityParents = jest.fn().mockResolvedValue(PARENTS);
     EntityService.getEntityChildren = jest.fn().mockResolvedValue(CHILDREN);
-    EntityService.getEntitySummary = jest.fn().mockResolvedValue({
-      name: "Acquired scoliosis",
-      iri: "http://snomed.info/sct#111266001",
-      code: "111266001",
-      description: "Acquired scoliosis (disorder)",
-      status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
-      scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-      entityType: [
-        { name: "Ontological Concept", "@id": "http://endhealth.info/im#Concept" },
-        { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
-      ],
-      isDescendentOf: [],
-      match: "629792015"
-    });
+    EntityService.getEntitySummary = jest.fn().mockResolvedValue(SUMMARY);
 
     wrapper = shallowMount(SecondaryTree, {
       global: {
