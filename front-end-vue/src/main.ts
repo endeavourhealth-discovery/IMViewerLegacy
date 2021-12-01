@@ -77,6 +77,7 @@ import StyleClass from "primevue/styleclass";
 import Tag from "primevue/tag";
 import Steps from "primevue/steps";
 import Chip from "primevue/chip";
+import TreeSelect from "primevue/treeselect";
 
 import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports";
@@ -146,6 +147,7 @@ const app = createApp(App)
   .component("InputSwitch", InputSwitch)
   .component("Steps", Steps)
   .component("Chip", Chip)
+  .component("TreeSelect", TreeSelect)
   .component("Tag", Tag);
 
 const vm = app.mount("#app");

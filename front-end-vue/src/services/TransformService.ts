@@ -11,4 +11,28 @@ export default class TransformService {
       return [] as TransformInputUpload[];
     }
   }
+
+  public static async getTransformInputUploadFromFile(fileString: string): Promise<any[]> {
+    try {
+      return await axios.post(this.api + "api/transform/transformInputUpload", { fileString });
+    } catch (error) {
+      return [] as any[];
+    }
+  }
+
+  public static async getInputFromJpath(input: TransformInputUpload, jpath: string) {
+    try {
+      return await axios.post(this.api + "api/transform/inputFromJpath", { input, jpath });
+    } catch (error) {
+      return {} as TransformInputUpload;
+    }
+  }
+
+  public static async getJpaths(input: TransformInputUpload) {
+    try {
+      return await axios.post(this.api + "api/transform/jpathsFromInput", input);
+    } catch (error) {
+      return {} as TransformInputUpload;
+    }
+  }
 }

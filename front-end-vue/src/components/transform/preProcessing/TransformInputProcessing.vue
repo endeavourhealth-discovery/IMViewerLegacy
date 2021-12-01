@@ -2,17 +2,17 @@
   <Card id="container">
     <template #content>
       <JsonPathSelectionDialog
-        :input="selected"
-        :jsonSelectDialog="jsonSelectDialog"
+        :input="display"
+        :jsonSelectDialog="jpathDialog"
         @jsonSelect="jsonSelect($event)"
-        @closeJsonSelectDialog="closeJsonSelectDialog($event)"
+        @closeJsonSelectDialog="toggleJpathDialog($event)"
       />
 
       <JoinInstructionsDialog
         :selectedInputs="selectedInputs"
         :joinDialog="joinDialog"
         @updateJoinInstructions="updateJoinInstructions($event)"
-        @closeJoinDialog="closeJoinDialog($event)"
+        @closeJoinDialog="toggleJoinDialog($event)"
       />
       <div class="p-fluid p-formgrid p-grid">
         <div class="p-field p-col-6 p-md-6">
@@ -62,7 +62,7 @@
               <Column field="preview-save-delete">
                 <template #body="slotProps">
                   <Button icon="pi pi-download" class="p-button-rounded p-button-info p-mr-2" @click="preview(slotProps.data)" />
-                  <Button icon="pi pi-cog" class="p-button-rounded p-button-info p-mr-2" @click="openJsonSelectDialog(slotProps.data)" />
+                  <Button icon="pi pi-cog" class="p-button-rounded p-button-info p-mr-2" @click="toggleJpathDialog(slotProps.data)" />
                   <Button icon="pi pi-eye" class="p-button-rounded p-button-info p-mr-2" @click="preview(slotProps.data)" />
                   <Button icon="pi pi-trash" class="p-button-rounded p-button-danger" @click="removeInput(slotProps.data)" />
                 </template>
@@ -74,10 +74,10 @@
         <div class="p-col-6 p-md-6">
           <TabView>
             <TabPanel header="File display">
-              <vue-json-pretty id="json-viewer" :path="'res'" :data="selected.inputDisplayJson"> </vue-json-pretty>
+              <vue-json-pretty id="json-viewer" :path="'res'" :data="display.inputDisplayJson"> </vue-json-pretty>
             </TabPanel>
             <TabPanel header="Data model">
-              <vue-json-pretty id="json-viewer" :path="'res'" :data="selected.inputDisplayJson"> </vue-json-pretty>
+              <vue-json-pretty id="json-viewer" :path="'res'" :data="display.inputDisplayJson"> </vue-json-pretty>
             </TabPanel>
           </TabView>
         </div>
@@ -122,11 +122,10 @@ export default defineComponent({
       pageIndex: 0,
       inputs: [] as TransformInputUpload[],
       selectedInputs: [] as TransformInputUpload[],
-      selected: {} as TransformInputUpload,
+      display: {} as TransformInputUpload,
       joinInstructions: [{}] as JoinInstruction[],
-      nestedOptions: ["flat", "nested"],
       joinDialog: false,
-      jsonSelectDialog: false,
+      jpathDialog: false,
       actionMenu: [
         {
           label: "Join",
@@ -139,42 +138,22 @@ export default defineComponent({
     };
   },
   methods: {
-    openJsonSelectDialog(input: TransformInputUpload) {
-      this.selected = input;
-      this.jsonSelectDialog = true;
-    },
-    closeJsonSelectDialog() {
-      this.jsonSelectDialog = false;
-    },
-    closeJoinDialog() {
-      this.joinDialog = !this.joinDialog;
-    },
-    jsonSelect(newInput: TransformInputUpload) {
-      this.selected = newInput;
-    },
-    updateJoinInstructions(newInput: TransformInputUpload[]) {
-      this.inputs.push(newInput[0]);
-    },
     getDateFromMillis(millis: number) {
       const date = new Date(millis);
       return date.toLocaleString();
     },
-    removeJoin(removedJoin: JoinInstruction) {
-      this.joinInstructions = this.joinInstructions.filter(
-        join =>
-          join.dataA !== removedJoin.dataA &&
-          join.dataB !== removedJoin.dataB &&
-          join.propertyA !== removedJoin.propertyA &&
-          join.propertyB !== removedJoin.propertyB &&
-          join.joinType !== removedJoin.joinType
-      );
+
+    updateJoinInstructions(newInput: TransformInputUpload[]) {
+      this.inputs.push(newInput[0]);
     },
-    addJoin() {
-      this.joinInstructions.push({} as JoinInstruction);
-    },
+
     toggle(event: any) {
       const x = this.$refs.menu as any;
       x.toggle(event);
+    },
+
+    toggleJpathDialog() {
+      this.jpathDialog = !this.jpathDialog;
     },
 
     toggleJoinDialog() {
@@ -182,49 +161,18 @@ export default defineComponent({
     },
 
     preview(file: TransformInputUpload) {
-      this.selected = file;
+      this.display = file;
     },
 
-    //move to nodets
-    async convertFileToString(file: any) {
-      return await (file as Blob).text();
-    },
-
-    //move to nodets
-    getJsonFromCsv(csv: string): any[] {
-      const lines = csv.split("\n");
-      const jsonArray = [] as any[];
-      const headers = lines[0].split(",").map(header => header.replaceAll('"', ""));
-
-      for (var i = 1; i < lines.length; i++) {
-        const obj = {} as any;
-        const currentline = lines[i].split(",");
-
-        for (var j = 0; j < headers.length; j++) {
-          obj[headers[j]] = currentline[j] ? currentline[j].replaceAll('"', "") : "";
-        }
-
-        jsonArray.push(obj);
-      }
-
-      return jsonArray;
-    },
     async uploadInputs(event: any) {
       event.files.forEach(async (input: File) => {
-        const inputJson =
-          input.type === "text/csv"
-            ? this.getJsonFromCsv(await this.convertFileToString(input))
-            : JSON.parse(await this.convertFileToString(input))["Relationships"];
-        const inputDisplayJson = inputJson;
-        if (inputDisplayJson.length > 10) {
-          inputDisplayJson.length = 10;
-        }
-
+        const fileString = await (input as Blob).text();
+        const json = input.type !== "application/json" ? await TransformService.getTransformInputUploadFromFile(fileString) : JSON.parse(fileString);
         this.inputs.push({
           id: input.name + input.lastModified,
           inputFile: input,
-          inputJson: inputJson,
-          inputDisplayJson: inputDisplayJson
+          inputJson: json,
+          inputDisplayJson: isArrayHasLength(json) ? json.slice(0, 10) : json
         });
       });
       this.resetInputs();
@@ -243,11 +191,6 @@ export default defineComponent({
           inputJson: this.selectedInputs[0].inputJson,
           inputDisplayJson: this.selectedInputs[0].inputDisplayJson
         },
-        pageIndex: this.pageIndex
-      });
-    },
-    prevPage() {
-      this.$emit("prev-page", {
         pageIndex: this.pageIndex
       });
     }

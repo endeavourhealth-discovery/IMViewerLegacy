@@ -1,5 +1,5 @@
 <template>
-  <Dialog header="Join on properties" v-model:visible="joinDialog" :breakpoints="{ '960px': '75vw' }" :style="{ width: '75vw' }">
+  <Dialog header="Join on properties" :visible="joinDialog" :breakpoints="{ '960px': '75vw' }" :style="{ width: '75vw' }">
     <div>
       <p v-if="!selectedInputs.length">
         No input selected.
