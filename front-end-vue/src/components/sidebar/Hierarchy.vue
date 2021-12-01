@@ -162,7 +162,6 @@ export default defineComponent({
       this.conceptAggregate.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]);
 
       this.setFilters();
-      console.log(this.filters);
       this.conceptAggregate.parents = await EntityService.getEntityParents(iri, this.filters);
 
       this.conceptAggregate.children = await EntityService.getEntityChildren(iri, this.filters);
