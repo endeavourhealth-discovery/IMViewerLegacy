@@ -43,7 +43,7 @@ describe("EntityService.ts ___ axios success", () => {
 
   it("can get entity children", async () => {
     const cancelToken = axios.CancelToken.source().token;
-    const result = await EntityService.getEntityChildren("testIri", cancelToken);
+    const result = await EntityService.getEntityChildren("testIri", undefined, cancelToken);
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "api/entity/children", { params: { iri: "testIri" }, cancelToken: cancelToken });
     expect(result).toBe("axios get return");
@@ -209,7 +209,7 @@ describe("EntityService.ts ___ axios fail", () => {
 
   it("can get entity children", async () => {
     const cancelToken = axios.CancelToken.source().token;
-    const result = await EntityService.getEntityChildren("testIri", cancelToken);
+    const result = await EntityService.getEntityChildren("testIri", undefined, cancelToken);
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "api/entity/children", { params: { iri: "testIri" }, cancelToken: cancelToken });
     expect(result).toStrictEqual([]);

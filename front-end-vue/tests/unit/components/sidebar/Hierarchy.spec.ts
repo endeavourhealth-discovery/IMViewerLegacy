@@ -3,6 +3,7 @@ import Hierarchy from "@/components/sidebar/Hierarchy.vue";
 import Button from "primevue/button";
 import Tree from "primevue/tree";
 import ProgressSpinner from "primevue/progressspinner";
+import OverlayPanel from "primevue/overlaypanel";
 import EntityService from "@/services/EntityService";
 import Tooltip from "primevue/tooltip";
 import { IM } from "@/vocabulary/IM";
@@ -13,6 +14,8 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
   let mockRouter: any;
   let mockRoute: any;
   let mockToast: any;
+  let mockRef: any;
+
   const CONCEPT = {
     "@id": "http://endhealth.info/im#DiscoveryOntology",
     "http://www.w3.org/2000/01/rdf-schema#comment": "A folder of ontologies including information models, value sets, query sets and maps",
@@ -45,11 +48,33 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
     }
   ];
 
+  const HIERARCHY_SELECTED_FILTERS = [
+    { iri: "http://endhealth.info/im#", prefix: "im", name: "Discovery namespace" },
+    { iri: "http://snomed.info/sct#", prefix: "sn", name: "Snomed-CT namespace" }
+  ];
+
+  const SUMMARY = {
+    name: "Acquired scoliosis",
+    iri: "http://snomed.info/sct#111266001",
+    code: "111266001",
+    description: "Acquired scoliosis (disorder)",
+    status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
+    scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+    entityType: [
+      { name: "Ontological Concept", "@id": "http://endhealth.info/im#Concept" },
+      { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+    ],
+    isDescendentOf: [],
+    match: "629792015"
+  };
+
   beforeEach(async () => {
     jest.resetAllMocks();
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
     EntityService.getEntityParents = jest.fn().mockResolvedValue([]);
     EntityService.getEntityChildren = jest.fn().mockResolvedValue(CHILDREN);
+    EntityService.getEntitySummary = jest.fn().mockResolvedValue(SUMMARY);
+
     mockStore = {
       state: {
         conceptIri: "http://endhealth.info/im#DiscoveryOntology",
@@ -58,7 +83,9 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
         sideNavHierarchyFocus: {
           name: "Ontology",
           iri: "http://endhealth.info/im#DiscoveryOntology"
-        }
+        },
+        resetTree: false,
+        hierarchySelectedFilters: HIERARCHY_SELECTED_FILTERS
       },
       commit: jest.fn(),
       dispatch: jest.fn()
@@ -73,23 +100,40 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
     mockToast = {
       add: jest.fn()
     };
+    mockRef = { render: () => {}, methods: { show: jest.fn(), hide: jest.fn() } };
 
     wrapper = mount(Hierarchy, {
       props: { active: 5 },
       global: {
-        components: { Button, Tree, ProgressSpinner },
+        components: { Button, Tree, ProgressSpinner, OverlayPanel },
         mocks: {
           $store: mockStore,
           $route: mockRoute,
           $router: mockRouter,
           $toast: mockToast
         },
-        directives: { tooltip: Tooltip }
+        directives: { tooltip: Tooltip },
+        stubs: { OverlayPanel: mockRef }
       }
     });
 
     await flushPromises();
     jest.clearAllMocks();
+  });
+
+  it("hidesPopup on unMount", () => {
+    wrapper.vm.hidePopup = jest.fn();
+    wrapper.vm.overlayLocation = { 1: 1, 2: 2, 3: 3 };
+    wrapper.unmount();
+    expect(wrapper.vm.hidePopup).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.hidePopup).toHaveBeenCalledWith({ 1: 1, 2: 2, 3: 3 });
+  });
+
+  it("hidesPopup on unMount ___ no keys", () => {
+    wrapper.vm.hidePopup = jest.fn();
+    wrapper.vm.overlayLocation = {};
+    wrapper.unmount();
+    expect(wrapper.vm.hidePopup).not.toHaveBeenCalled();
   });
 
   it("handles conceptIri changes ___ tree locked ___ false", async () => {
@@ -191,6 +235,7 @@ describe("Hierarchy.vue ___ Concept", () => {
   let mockRouter: any;
   let mockRoute: any;
   let mockToast: any;
+  let mockRef: any;
 
   const CONCEPT = {
     "@id": "http://snomed.info/sct#298382003",
@@ -700,11 +745,33 @@ describe("Hierarchy.vue ___ Concept", () => {
     }
   ];
 
+  const HIERARCHY_SELECTED_FILTERS = [
+    { iri: "http://endhealth.info/im#", prefix: "im", name: "Discovery namespace" },
+    { iri: "http://snomed.info/sct#", prefix: "sn", name: "Snomed-CT namespace" }
+  ];
+
+  const SUMMARY = {
+    name: "Acquired scoliosis",
+    iri: "http://snomed.info/sct#111266001",
+    code: "111266001",
+    description: "Acquired scoliosis (disorder)",
+    status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
+    scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+    entityType: [
+      { name: "Ontological Concept", "@id": "http://endhealth.info/im#Concept" },
+      { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+    ],
+    isDescendentOf: [],
+    match: "629792015"
+  };
+
   beforeEach(async () => {
     jest.resetAllMocks();
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
     EntityService.getEntityParents = jest.fn().mockResolvedValue(PARENTS);
     EntityService.getEntityChildren = jest.fn().mockResolvedValue(CHILDREN);
+    EntityService.getEntitySummary = jest.fn().mockResolvedValue(SUMMARY);
+
     mockStore = {
       state: {
         conceptIri: "http://snomed.info/sct#298382003",
@@ -713,7 +780,9 @@ describe("Hierarchy.vue ___ Concept", () => {
         sideNavHierarchyFocus: {
           name: "Ontology",
           iri: "http://endhealth.info/im#DiscoveryOntology"
-        }
+        },
+        resetTree: false,
+        hierarchySelectedFilters: HIERARCHY_SELECTED_FILTERS
       },
       commit: jest.fn(),
       dispatch: jest.fn()
@@ -728,18 +797,20 @@ describe("Hierarchy.vue ___ Concept", () => {
     mockToast = {
       add: jest.fn()
     };
+    mockRef = { render: () => {}, methods: { show: jest.fn(), hide: jest.fn() } };
 
     wrapper = mount(Hierarchy, {
       props: { active: 5 },
       global: {
-        components: { Button, Tree, ProgressSpinner },
+        components: { Button, Tree, ProgressSpinner, OverlayPanel },
         mocks: {
           $store: mockStore,
           $route: mockRoute,
           $router: mockRouter,
           $toast: mockToast
         },
-        directives: { tooltip: Tooltip }
+        directives: { tooltip: Tooltip },
+        stubs: { OverlayPanel: mockRef }
       }
     });
 
@@ -892,7 +963,11 @@ describe("Hierarchy.vue ___ Concept", () => {
     await flushPromises();
     await wrapper.vm.$nextTick();
     expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept");
+    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept", {
+      schemes: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+      status: [],
+      types: []
+    });
     expect(testNode.children).toHaveLength(20);
   });
 
@@ -908,7 +983,11 @@ describe("Hierarchy.vue ___ Concept", () => {
     await flushPromises();
     await wrapper.vm.$nextTick();
     expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(1);
-    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept");
+    expect(EntityService.getEntityChildren).toHaveBeenCalledWith("http://endhealth.info/im#TestConcept", {
+      schemes: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+      status: [],
+      types: []
+    });
     expect(testNode.children).toHaveLength(20);
   });
 
@@ -1028,8 +1107,16 @@ describe("Hierarchy.vue ___ Concept", () => {
     ];
     await wrapper.vm.expandParents();
     expect(EntityService.getEntityParents).toHaveBeenCalledTimes(2);
-    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003");
-    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#64217002");
+    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003", {
+      schemes: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+      status: [],
+      types: []
+    });
+    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#64217002", {
+      schemes: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+      status: [],
+      types: []
+    });
   });
 
   it("can expand parents __ api 2 no data", async () => {
@@ -1066,8 +1153,56 @@ describe("Hierarchy.vue ___ Concept", () => {
     await wrapper.vm.$nextTick();
     await flushPromises();
     expect(EntityService.getEntityParents).toHaveBeenCalledTimes(2);
-    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003");
-    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#64217002");
+    expect(EntityService.getEntityParents).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#298382003", {
+      schemes: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+      status: [],
+      types: []
+    });
+    expect(EntityService.getEntityParents).toHaveBeenLastCalledWith("http://snomed.info/sct#64217002", {
+      schemes: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+      status: [],
+      types: []
+    });
     expect(wrapper.vm.parentLabel).toBe("");
+  });
+
+  it("can get concept types", () => {
+    expect(
+      wrapper.vm.getConceptTypes([
+        { name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" },
+        { name: "NodeShape", "@id": "hppt://www.w3.org/2002/07/owl#NodeShape" }
+      ])
+    ).toBe("Class, NodeShape");
+  });
+
+  it("can showPopup", async () => {
+    wrapper.vm.showPopup("testEvent", "http://snomed.info/sct#111266001");
+    await flushPromises();
+    expect(mockRef.methods.show).toHaveBeenCalledTimes(1);
+    expect(mockRef.methods.show).toHaveBeenCalledWith("testEvent");
+    expect(wrapper.vm.overlayLocation).toBe("testEvent");
+    expect(wrapper.vm.hoveredResult).toStrictEqual({
+      name: "Acquired scoliosis",
+      iri: "http://snomed.info/sct#111266001",
+      code: "111266001",
+      description: "Acquired scoliosis (disorder)",
+      status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
+      scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+      entityType: [
+        { name: "Ontological Concept", "@id": "http://endhealth.info/im#Concept" },
+        { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+      ],
+      isDescendentOf: [],
+      match: "629792015"
+    });
+    expect(EntityService.getEntitySummary).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntitySummary).toHaveBeenCalledWith("http://snomed.info/sct#111266001");
+  });
+
+  it("can hidePopup", () => {
+    wrapper.vm.hidePopup("testEvent");
+    expect(mockRef.methods.hide).toHaveBeenCalledTimes(1);
+    expect(mockRef.methods.hide).toHaveBeenCalledWith("testEvent");
+    expect(wrapper.vm.overlayLocation).toStrictEqual({});
   });
 });

@@ -12,6 +12,7 @@ import { IM } from "@/vocabulary/IM";
 import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import ConfigService from "@/services/ConfigService";
+import { FilterDefaultsConfig } from "@/models/configs/FilterDefaultsConfig";
 
 export default createStore({
   // update stateType.ts when adding new state!
@@ -58,7 +59,9 @@ export default createStore({
     focusHierarchy: false,
     instanceIri: "",
     sidebarControlActivePanel: 0,
-    catalogueSearchResults: [] as string[]
+    catalogueSearchResults: [] as string[],
+    hierarchySelectedFilters: [] as Namespace[],
+    filterDefaults: {} as FilterDefaultsConfig
   },
   mutations: {
     updateBlockedIris(state, blockedIris) {
@@ -136,6 +139,12 @@ export default createStore({
     },
     updateSidebarControlActivePanel(state, number) {
       state.sidebarControlActivePanel = number;
+    },
+    updateHierarchySelectedFilters(state, filters) {
+      state.hierarchySelectedFilters = filters;
+    },
+    updateFilterDefaults(state, defaults) {
+      state.filterDefaults = defaults;
     }
   },
   actions: {

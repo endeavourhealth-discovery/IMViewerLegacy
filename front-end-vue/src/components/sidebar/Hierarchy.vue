@@ -1,26 +1,34 @@
 <template>
   <div class="p-d-flex p-flex-column p-jc-start" id="hierarchy-tree-bar-container">
-    <div class="p-d-flex p-flex-row p-jc-start p-ai-center" id="hierarchy-selected-bar">
-      <Button :label="parentLabel" :disabled="parentLabel === ''" icon="pi pi-chevron-up" @click="expandParents" class="p-button-text p-button-plain" />
-      <Button icon="pi pi-home" @click="resetConcept" class="p-button-rounded p-button-text p-button-plain">
-        <i class="fas fa-home" aria-hidden="true"></i>
-      </Button>
+    <div id="parent-button-bar">
       <Button
-        v-if="$store.state.treeLocked"
-        class="p-button-rounded p-button-text p-button-plain"
-        @click="toggleTreeLocked(false)"
-        v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
-      >
-        <i class="fas fa-link" aria-hidden="true"></i>
-      </Button>
-      <Button
-        v-else
-        class="p-button-rounded p-button-text p-button-plain"
-        @click="toggleTreeLocked(true)"
-        v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
-      >
-        <i class="fas fa-unlink" aria-hidden="true"></i>
-      </Button>
+        :label="parentLabel"
+        :disabled="parentLabel === ''"
+        icon="pi pi-chevron-up"
+        @click="expandParents"
+        class="p-button-text p-button-plain next-parent-button"
+      />
+      <div class="toggle-buttons-container">
+        <Button icon="pi pi-home" @click="resetConcept" class="p-button-rounded p-button-text p-button-plain home-button">
+          <i class="fas fa-home" aria-hidden="true"></i>
+        </Button>
+        <Button
+          v-if="$store.state.treeLocked"
+          class="p-button-rounded p-button-text p-button-plain tree-locked-button"
+          @click="toggleTreeLocked(false)"
+          v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
+        >
+          <i class="fas fa-link" aria-hidden="true"></i>
+        </Button>
+        <Button
+          v-else
+          class="p-button-rounded p-button-text p-button-plain tree-lock-button"
+          @click="toggleTreeLocked(true)"
+          v-tooltip.right="'Toggle hierarchy tree to update on concept search'"
+        >
+          <i class="fas fa-unlink" aria-hidden="true"></i>
+        </Button>
+      </div>
     </div>
 
     <Tree
@@ -33,7 +41,7 @@
       class="tree-root"
     >
       <template #default="slotProps">
-        <div class="tree-row">
+        <div class="tree-row" @mouseover="showPopup($event, slotProps.node.data)" @mouseleave="hidePopup($event)">
           <span v-if="!slotProps.node.loading">
             <i :class="'fas fa-fw ' + slotProps.node.typeIcon" :style="'color:' + slotProps.node.color" aria-hidden="true" />
           </span>
@@ -42,6 +50,39 @@
         </div>
       </template>
     </Tree>
+
+    <OverlayPanel ref="hierarchyTreeOP" id="hierarchy_tree_overlay_panel" style="width: 700px" :breakpoints="{ '960px': '75vw' }">
+      <div v-if="hoveredResult.name" class="p-d-flex p-flex-row p-jc-start result-overlay" style="width: 100%; gap: 7px;">
+        <div class="left-side" style="width: 50%;">
+          <p>
+            <strong>Name: </strong>
+            <span>{{ hoveredResult.name }}</span>
+          </p>
+          <p>
+            <strong>Iri: </strong>
+            <span>{{ hoveredResult.iri }}</span>
+          </p>
+          <p v-if="hoveredResult.code">
+            <strong>Code: </strong>
+            <span>{{ hoveredResult.code }}</span>
+          </p>
+        </div>
+        <div class="right-side" style="width: 50%;">
+          <p v-if="hoveredResult.status">
+            <strong>Status: </strong>
+            <span>{{ hoveredResult.status.name }}</span>
+          </p>
+          <p v-if="hoveredResult.scheme">
+            <strong>Scheme: </strong>
+            <span>{{ hoveredResult.scheme.name }}</span>
+          </p>
+          <p v-if="hoveredResult.entityType">
+            <strong>Type: </strong>
+            <span>{{ getConceptTypes(hoveredResult.entityType) }}</span>
+          </p>
+        </div>
+      </div>
+    </OverlayPanel>
   </div>
 </template>
 
@@ -59,13 +100,16 @@ import { MODULE_IRIS } from "@/helpers/ModuleIris";
 import { ConceptAggregate } from "@/models/ConceptAggregate";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { TTIriRef } from "@/models/TripleTree";
-import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
+import { isArrayHasLength, isObject } from "@/helpers/DataTypeCheckers";
+import { Namespace } from "@/models/Namespace";
+import { FiltersAsIris } from "@/models/FiltersAsIris";
+import { ConceptSummary } from "@/models/search/ConceptSummary";
 
 export default defineComponent({
   name: "Hierarchy",
   props: { active: { type: Number, required: true } },
   emits: { showTree: () => true },
-  computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus", "history", "resetTree"]),
+  computed: mapState(["conceptIri", "focusTree", "treeLocked", "sideNavHierarchyFocus", "resetTree", "hierarchySelectedFilters"]),
   watch: {
     async conceptIri(newValue) {
       await this.getConceptAggregate(newValue);
@@ -74,6 +118,15 @@ export default defineComponent({
         this.refreshTree();
       }
       this.updateHistory();
+    },
+    hierarchySelectedFilters: {
+      async handler() {
+        await this.getConceptAggregate(this.conceptIri);
+        this.selectedKey = {};
+        this.refreshTree();
+        this.updateHistory();
+      },
+      deep: true
     },
     async sideNavHierarchyFocus(newValue, oldValue) {
       if (newValue.iri !== oldValue.iri) {
@@ -120,13 +173,21 @@ export default defineComponent({
       root: [] as TreeNode[],
       expandedKeys: {} as any,
       selectedKey: {} as any,
-      parentLabel: ""
+      parentLabel: "",
+      filters: {} as FiltersAsIris,
+      hoveredResult: {} as ConceptSummary | any,
+      overlayLocation: {} as any
     };
   },
   async mounted() {
     await this.getConceptAggregate(this.conceptIri);
     this.refreshTree();
     this.updateHistory();
+  },
+  beforeUnmount() {
+    if (isObject(this.overlayLocation) && isArrayHasLength(Object.keys(this.overlayLocation))) {
+      this.hidePopup(this.overlayLocation);
+    }
   },
   methods: {
     updateHistory(): void {
@@ -141,9 +202,10 @@ export default defineComponent({
     async getConceptAggregate(iri: string): Promise<void> {
       this.conceptAggregate.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]);
 
-      this.conceptAggregate.parents = await EntityService.getEntityParents(iri);
+      this.setFilters();
+      this.conceptAggregate.parents = await EntityService.getEntityParents(iri, this.filters);
 
-      this.conceptAggregate.children = await EntityService.getEntityChildren(iri);
+      this.conceptAggregate.children = await EntityService.getEntityChildren(iri, this.filters);
     },
 
     refreshTree(): void {
@@ -195,7 +257,7 @@ export default defineComponent({
       this.resetExpandedKeys(node.children);
       this.expandedKeys = { ...this.expandedKeys };
       this.expandedKeys[node.key] = true;
-      const children = await EntityService.getEntityChildren(node.data);
+      const children = await EntityService.getEntityChildren(node.data, this.filters);
       node.children = [];
       children.forEach((child: EntityReferenceNode) => {
         node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
@@ -249,7 +311,7 @@ export default defineComponent({
       const nodeToExpand = this.getNodeToExpand();
       if (!MODULE_IRIS.includes(nodeToExpand.data)) {
         const parentsNodes = [] as TreeNode[];
-        const parents = await EntityService.getEntityParents(nodeToExpand.data);
+        const parents = await EntityService.getEntityParents(nodeToExpand.data, this.filters);
         parents.forEach((parent: EntityReferenceNode) => {
           parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, true));
         });
@@ -268,7 +330,7 @@ export default defineComponent({
     },
 
     async getFirstParent(node: TreeNode): Promise<void> {
-      const parentsReturn = await EntityService.getEntityParents(node.data);
+      const parentsReturn = await EntityService.getEntityParents(node.data, this.filters);
       this.parentLabel = parentsReturn[0] ? parentsReturn[0].name : "";
     },
 
@@ -283,6 +345,35 @@ export default defineComponent({
 
     toggleTreeLocked(value: boolean): void {
       this.$store.commit("updateTreeLocked", value);
+    },
+
+    setFilters(): void {
+      this.filters = {
+        types: [],
+        status: [],
+        schemes: this.hierarchySelectedFilters.map((scheme: Namespace) => scheme.iri)
+      };
+    },
+
+    async showPopup(event: any, iri: string): Promise<void> {
+      this.overlayLocation = event;
+      const x = this.$refs.hierarchyTreeOP as any;
+      x.show(event);
+      this.hoveredResult = await EntityService.getEntitySummary(iri);
+    },
+
+    hidePopup(event: any): void {
+      const x = this.$refs.hierarchyTreeOP as any;
+      x.hide(event);
+      this.overlayLocation = {} as any;
+    },
+
+    getConceptTypes(types: TTIriRef[]): string {
+      return types
+        .map((type: TTIriRef) => {
+          return type.name;
+        })
+        .join(", ");
     }
   }
 });
@@ -290,7 +381,7 @@ export default defineComponent({
 
 <style scoped>
 #hierarchy-tree-bar-container {
-  height: 100%;
+  height: calc(100% - 7.75rem);
 }
 
 .p-tree .p-tree-container .p-treenode .p-treenode-content {
@@ -321,5 +412,25 @@ export default defineComponent({
   justify-content: flex-start;
   align-items: flex-start;
   gap: 0.25rem;
+}
+
+#parent-button-bar {
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.toggle-buttons-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.tree-locked-button,
+.home-button,
+.next-parent-button {
+  width: fit-content !important;
 }
 </style>

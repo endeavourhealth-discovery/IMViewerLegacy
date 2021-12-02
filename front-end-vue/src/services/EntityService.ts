@@ -10,6 +10,7 @@ import { TermCode } from "@/models/terms/TermCode";
 import { DataModelProperty } from "@/models/properties/DataModelProperty";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { Namespace } from "@/models/Namespace";
+import { FiltersAsIris } from "@/models/FiltersAsIris";
 
 export default class EntityService {
   static api = process.env.VUE_APP_API;
@@ -131,20 +132,20 @@ export default class EntityService {
     }
   }
 
-  public static async getEntityParents(iri: string): Promise<EntityReferenceNode[]> {
+  public static async getEntityParents(iri: string, filters?: FiltersAsIris): Promise<EntityReferenceNode[]> {
     try {
       return await axios.get(this.api + "api/entity/parents", {
-        params: { iri: iri }
+        params: { iri: iri, schemeIris: filters?.schemes.join(",") }
       });
     } catch (error) {
       return [] as EntityReferenceNode[];
     }
   }
 
-  public static async getEntityChildren(iri: string, cancelToken?: CancelToken): Promise<EntityReferenceNode[]> {
+  public static async getEntityChildren(iri: string, filters?: FiltersAsIris, cancelToken?: CancelToken): Promise<EntityReferenceNode[]> {
     try {
       return await axios.get(this.api + "api/entity/children", {
-        params: { iri: iri },
+        params: { iri: iri, schemeIris: filters?.schemes.join(",") },
         cancelToken: cancelToken
       });
     } catch (error) {

@@ -376,12 +376,22 @@ describe("Members.vue", () => {
     expect(mockElement.style.width).not.toBe("10px");
   });
 
-  it("can setTableWidth ___ table fail", () => {
+  it("can setTableWidth ___ container fail", () => {
     LoggerService.error = jest.fn();
     docSpy.mockReturnValue(undefined);
     wrapper.vm.setTableWidth();
     expect(LoggerService.error).toHaveBeenCalledTimes(1);
     expect(LoggerService.error).toHaveBeenCalledWith(undefined, "Failed to set members table width. Required element(s) not found.");
+  });
+
+  it("can setTableWidth ___ table fail", () => {
+    const mockElement = document.createElement("div");
+    mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ width: 100 });
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([]);
+    mockElement.style.width = "10px";
+    docSpy.mockReturnValue(mockElement);
+    wrapper.vm.setTableWidth();
+    expect(mockElement.style.width).toBe("10px");
   });
 
   it("can toggle", () => {
