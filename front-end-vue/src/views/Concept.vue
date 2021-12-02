@@ -245,8 +245,6 @@ export default defineComponent({
         .filter((c: DefinitionConfig) => c.predicate !== "subtypes")
         .filter((c: DefinitionConfig) => c.predicate !== "inferred")
         .filter((c: DefinitionConfig) => c.predicate !== "termCodes")
-        .filter((c: DefinitionConfig) => c.predicate !== "None")
-        .filter((c: DefinitionConfig) => c.predicate !== "@id")
         .map((c: DefinitionConfig) => c.predicate);
 
       this.concept = await EntityService.getPartialEntity(iri, predicates);

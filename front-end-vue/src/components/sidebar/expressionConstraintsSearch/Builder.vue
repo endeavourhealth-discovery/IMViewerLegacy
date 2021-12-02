@@ -146,7 +146,7 @@ export default defineComponent({
           }
         })
         .join(" ")
-        .replaceAll("\n ", "\n");
+        .replace(/\n +/g, "\n");
     },
 
     deleteItem(data: ComponentDetails): void {
@@ -154,6 +154,9 @@ export default defineComponent({
       this.queryBuild.splice(index, 1);
       if (data.position === 0) {
         this.queryBuild.unshift(this.setStartBuild()[0]);
+      }
+      if (this.queryBuild[index].type === ECLType.ADD_NEXT) {
+        this.queryBuild[index] = this.getNextOptions(index - 1, this.queryBuild[index - 1].type, undefined);
       }
       if (this.queryBuild[this.queryBuild.length - 1].type !== ECLType.ADD_NEXT) {
         this.queryBuild.push(this.getNextOptions(this.queryBuild.length - 1, this.queryBuild[this.queryBuild.length - 1].type, undefined));

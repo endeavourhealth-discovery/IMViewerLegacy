@@ -10,7 +10,6 @@ import { TermCode } from "@/models/terms/TermCode";
 import { DataModelProperty } from "@/models/properties/DataModelProperty";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { Namespace } from "@/models/Namespace";
-// import {isObjectHasKeys} from '@/helpers/DataTypeCheckers';
 
 export default class EntityService {
   static api = process.env.VUE_APP_API;
@@ -101,27 +100,7 @@ export default class EntityService {
     }
   }
 
-  public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<any> {
-    try {
-      const req = {
-        q: request.termFilter
-      };
-
-      console.log(JSON.stringify(req));
-
-      return axios.post("http://3.10.169.133/indexes/concepts/search", req, {
-        cancelToken: cancelToken,
-        headers: {
-          "X-Meili-API-Key": "45cd170be2755d9e1e858b07b4c5df732185d9883ea9af82cdc368ab07dde2eb",
-          "Content-Type": "application/json"
-        }
-      });
-    } catch (error) {
-      return {} as SearchResponse;
-    }
-  }
-
-  /*  public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<SearchResponse> {
+  public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<SearchResponse> {
     try {
       return await axios.post(this.api + "api/entity/search", request, {
         cancelToken: cancelToken
@@ -129,7 +108,7 @@ export default class EntityService {
     } catch (error) {
       return {} as SearchResponse;
     }
-  }*/
+  }
 
   //obsolete, to be deleted on editor branch merge
   public static async getEntity(iri: string): Promise<any> {
@@ -260,12 +239,15 @@ export default class EntityService {
     }
   }
 
-
   public static async ECLSearch(searchString: string, includeLegacy: boolean, limit: number, cancelToken: CancelToken): Promise<SearchResponse> {
-    return axios.create().post(this.api + "api/set/eclSearch", searchString, {
-      headers: { "Content-Type": "text/plain" },
-      params: { includeLegacy: includeLegacy, limit: limit },
-      cancelToken: cancelToken
-    });
+    try {
+      return await axios.post(this.api + "api/set/eclSearch", searchString, {
+        headers: { "Content-Type": "text/plain" },
+        params: { includeLegacy: includeLegacy, limit: limit },
+        cancelToken: cancelToken
+      });
+    } catch (error) {
+      return {} as SearchResponse;
+    }
   }
 }

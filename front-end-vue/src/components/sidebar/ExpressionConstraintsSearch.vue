@@ -94,32 +94,20 @@ export default defineComponent({
     async search(): Promise<void> {
       if (this.queryString) {
         this.loading = true;
-        EntityService.ECLSearch(this.queryString, false, 1000)
-            .then(result => {
-              if (isObjectHasKeys(result, ["entities", "count", "page"])) {
-                this.searchResults = result.entities;
-                this.totalCount = result.count;
-              } else {
-                this.eclError = true;
-              }
-            })
-            .catch(error => {
-              if (error.response!.status === 400) {
-                this.$toast.add({
-                  severity: "error",
-                  summary: "Invalid ECL",
-                  detail: "Search query string is in unrecognised ECL format.",
-                  life: 4000
-                });
-              } else {
-                this.$toast.add({
-                  severity: "error",
-                  summary: "Request error",
-                  detail: "Request for " + error.config.url.substring(error.config.url.lastIndexOf("/") + 1) + " was unsuccessful. " + error.message + ".",
-                  life: 4000
-                });
-              }
-            });
+        if (isObjectHasKeys(this.request, ["cancel", "msg"])) {
+          await this.request.cancel({ status: 499, message: "Search cancelled by user" });
+        }
+        const axiosSource = axios.CancelToken.source();
+        this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
+        const result = await EntityService.ECLSearch(this.queryString, false, 1000, axiosSource.token);
+        if (isObjectHasKeys(result, ["entities", "count", "page"])) {
+          this.searchResults = result.entities;
+          this.totalCount = result.count;
+        } else {
+          this.eclError = true;
+          this.searchResults = [];
+          this.totalCount = 0;
+        }
         this.loading = false;
       }
     },
