@@ -77,7 +77,7 @@
               <vue-json-pretty id="json-viewer" :path="'res'" :data="display.inputDisplayJson"> </vue-json-pretty>
             </TabPanel>
             <TabPanel header="Data model">
-              <vue-json-pretty id="json-viewer" :path="'res'" :data="display.inputDisplayJson"> </vue-json-pretty>
+              <vue-json-pretty id="json-viewer" :path="'res'" :data="display.dataModel"> </vue-json-pretty>
             </TabPanel>
           </TabView>
         </div>
@@ -183,11 +183,13 @@ export default defineComponent({
       event.files.forEach(async (input: File) => {
         const fileString = await (input as Blob).text();
         const json = input.type !== "application/json" ? await TransformService.getTransformInputUploadFromFile(fileString) : JSON.parse(fileString);
+        const dataModel = await TransformService.getDataModel(json);
         this.inputs.push({
           id: input.name + input.lastModified,
           inputFile: input,
           inputJson: json,
-          inputDisplayJson: isArrayHasLength(json) ? json.slice(0, 10) : json
+          inputDisplayJson: isArrayHasLength(json) ? json.slice(0, 10) : json,
+          dataModel: dataModel
         });
       });
       this.resetInputs();

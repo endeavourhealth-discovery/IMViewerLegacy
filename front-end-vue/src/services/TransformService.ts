@@ -28,6 +28,14 @@ export default class TransformService {
     }
   }
 
+  public static async getDataModel(input: TransformInputUpload): Promise<any> {
+    try {
+      return await axios.post(this.api + "api/transform/datamodel", input);
+    } catch (error) {
+      return {} as TransformInputUpload;
+    }
+  }
+
   public static async getJpaths(input: TransformInputUpload) {
     try {
       return await axios.post(this.api + "api/transform/jpathsFromInput", input);
