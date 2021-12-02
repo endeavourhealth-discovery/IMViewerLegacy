@@ -34,7 +34,13 @@
       class="tree-root"
     >
       <template #default="slotProps">
-        <div class="tree-row" @mouseover="showPopup($event, slotProps.node.data)" @mouseleave="hidePopup($event)">
+        <div
+          class="tree-row"
+          @mouseover="showPopup($event, slotProps.node.data)"
+          @mouseleave="hidePopup($event)"
+          @click="navigate($event, slotProps.node.data)"
+          v-tooltip.top="'CTRL+click to navigate'"
+        >
           <span v-if="!slotProps.node.loading">
             <i :class="'fas fa-fw' + slotProps.node.typeIcon" :style="'color:' + slotProps.node.color" aria-hidden="true" />
           </span>
@@ -303,6 +309,10 @@ export default defineComponent({
           return type.name;
         })
         .join(", ");
+    },
+
+    navigate(event: any, iri: string): void {
+      if (event.metaKey || event.ctrlKey) this.$router.push({ name: this.$route.name || undefined, params: { selectedIri: iri } });
     }
   }
 });
