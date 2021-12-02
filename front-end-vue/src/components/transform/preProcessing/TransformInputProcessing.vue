@@ -147,6 +147,9 @@ export default defineComponent({
       const foundInputIndex = this.inputs.findIndex(input => input.id === newInput.id);
       if (foundInputIndex !== -1) this.inputs.splice(foundInputIndex, 1);
       this.inputs.push(newInput);
+      this.selectedInputs = [];
+      this.selectedInputs.push(newInput);
+      this.display = newInput;
     },
 
     toggle(event: any) {
