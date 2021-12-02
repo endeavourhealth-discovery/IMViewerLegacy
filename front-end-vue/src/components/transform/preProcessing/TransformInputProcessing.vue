@@ -61,7 +61,7 @@
               </Column>
               <Column field="preview-save-delete">
                 <template #body="slotProps">
-                  <Button icon="pi pi-download" class="p-button-rounded p-button-info p-mr-2" @click="preview(slotProps.data)" />
+                  <Button icon="pi pi-download" class="p-button-rounded p-button-info p-mr-2" @click="download(slotProps.data)" />
                   <Button icon="pi pi-cog" class="p-button-rounded p-button-info p-mr-2" @click="toggleJpathDialog(slotProps.data)" />
                   <Button icon="pi pi-eye" class="p-button-rounded p-button-info p-mr-2" @click="preview(slotProps.data)" />
                   <Button icon="pi pi-trash" class="p-button-rounded p-button-danger" @click="removeInput(slotProps.data)" />
@@ -141,6 +141,15 @@ export default defineComponent({
     getDateFromMillis(millis: number) {
       const date = new Date(millis);
       return date.toLocaleString();
+    },
+
+    download(input: TransformInputUpload) {
+      const url = window.URL.createObjectURL(new Blob([JSON.stringify(input.inputJson)]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", input.inputFile.name);
+      document.body.appendChild(link);
+      link.click();
     },
 
     updateInput(newInput: TransformInputUpload) {
