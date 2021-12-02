@@ -51,7 +51,7 @@ import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "JoinInstructionsDialog",
-  emits: ["updateJoinInstructions", "closeJoinDialog"],
+  emits: ["updateInputFromJoinInstructions", "closeJoinDialog"],
   props: {
     selectedInputs: {
       type: Object as PropType<TransformInputUpload[]>,
@@ -85,7 +85,7 @@ export default defineComponent({
     },
     async joinInput() {
       const response = await TransformService.join(this.selectedInputs, this.joinInstructions);
-      this.$emit("updateJoinInstructions", response);
+      this.$emit("updateInputFromJoinInstructions", response[0]);
       this.$emit("closeJoinDialog", {});
     },
 

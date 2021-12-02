@@ -3,15 +3,15 @@
     <template #content>
       <JsonPathSelectionDialog
         :input="display"
-        :jsonSelectDialog="jpathDialog"
-        @jsonSelect="jsonSelect($event)"
-        @closeJsonSelectDialog="toggleJpathDialog($event)"
+        :jpathDialog="jpathDialog"
+        @updateInputFromJpath="updateInput($event)"
+        @closeJpathDialog="toggleJpathDialog($event)"
       />
 
       <JoinInstructionsDialog
         :selectedInputs="selectedInputs"
         :joinDialog="joinDialog"
-        @updateJoinInstructions="updateJoinInstructions($event)"
+        @updateInputFromJoinInstructions="updateInput($event)"
         @closeJoinDialog="toggleJoinDialog($event)"
       />
       <div class="p-fluid p-formgrid p-grid">
@@ -143,8 +143,10 @@ export default defineComponent({
       return date.toLocaleString();
     },
 
-    updateJoinInstructions(newInput: TransformInputUpload[]) {
-      this.inputs.push(newInput[0]);
+    updateInput(newInput: TransformInputUpload) {
+      const foundInputIndex = this.inputs.findIndex(input => input.id === newInput.id);
+      if (foundInputIndex !== -1) this.inputs.splice(foundInputIndex, 1);
+      this.inputs.push(newInput);
     },
 
     toggle(event: any) {
@@ -152,7 +154,8 @@ export default defineComponent({
       x.toggle(event);
     },
 
-    toggleJpathDialog() {
+    toggleJpathDialog(input: TransformInputUpload) {
+      this.display = input;
       this.jpathDialog = !this.jpathDialog;
     },
 

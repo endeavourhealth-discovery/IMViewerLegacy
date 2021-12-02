@@ -20,7 +20,7 @@ export default class TransformService {
     }
   }
 
-  public static async getInputFromJpath(input: TransformInputUpload, jpath: string) {
+  public static async getInputFromJpath(input: TransformInputUpload, jpath: string): Promise<TransformInputUpload> {
     try {
       return await axios.post(this.api + "api/transform/inputFromJpath", { input, jpath });
     } catch (error) {

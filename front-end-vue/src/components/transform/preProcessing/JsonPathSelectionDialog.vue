@@ -1,5 +1,5 @@
 <template>
-  <Dialog header="Join on properties" :visible="jsonSelectDialog" :breakpoints="{ '960px': '75vw' }" :style="{ width: '75vw' }">
+  <Dialog header="Join on properties" :visible="jpathDialog" :breakpoints="{ '960px': '75vw' }" :style="{ width: '75vw' }">
     <!-- {{ jsonPathOptions }} -->
     <!-- <TreeSelect v-model="selectedNodeKey" :options="nodes" placeholder="Select Item" /> -->
     <div class="p-fluid p-formgrid p-grid">
@@ -26,8 +26,8 @@
       </div>
     </div>
     <template #footer>
-      <Button label="Cancel" class="p-button-text" icon="pi pi-times" @click="closeJsonSelectDialog" />
-      <Button label="Update" icon="pi pi-check" @click="jsonSelect" />
+      <Button label="Cancel" class="p-button-text" icon="pi pi-times" @click="closeJpathDialog" />
+      <Button label="Update" icon="pi pi-check" @click="updateInput" />
     </template>
   </Dialog>
 </template>
@@ -43,13 +43,13 @@ export default defineComponent({
   components: {
     VueJsonPretty
   },
-  emits: ["jsonSelect", "closeJsonSelectDialog"],
+  emits: ["updateInputFromJpath", "closeJpathDialog"],
   props: {
     input: {
       type: Object as PropType<TransformInputUpload>,
       required: true
     },
-    jsonSelectDialog: {
+    jpathDialog: {
       type: Boolean,
       required: true
     }
@@ -65,7 +65,7 @@ export default defineComponent({
       loading: false,
       pathSelected: [] as any[],
       jsonpath: "",
-      inputAfter: [] as any,
+      inputAfter: {} as TransformInputUpload,
       jsonPathOptions: {} as any
     };
   },
@@ -73,14 +73,15 @@ export default defineComponent({
     async getInputFromJpath() {
       this.loading = true;
       this.inputAfter = await TransformService.getInputFromJpath(this.input, this.jsonpath);
+      this.inputAfter.inputFile = this.input.inputFile;
       this.loading = false;
     },
-    closeJsonSelectDialog() {
-      this.$emit("closeJsonSelectDialog", {});
+    closeJpathDialog() {
+      this.$emit("closeJpathDialog", {});
     },
-    jsonSelect() {
-      this.$emit("jsonSelect", this.pathSelected);
-      this.$emit("closeJsonSelectDialog", {});
+    updateInput() {
+      this.$emit("updateInputFromJpath", this.inputAfter);
+      this.$emit("closeJpathDialog", {});
     }
   }
 });
