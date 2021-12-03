@@ -5,6 +5,13 @@ import store from "@/store/index";
 import { flushPromises, shallowMount } from "@vue/test-utils";
 
 describe("router", () => {
+  beforeEach(() => {
+    console.log = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
   describe("router ___ no snomed", () => {
     let wrapper;
 

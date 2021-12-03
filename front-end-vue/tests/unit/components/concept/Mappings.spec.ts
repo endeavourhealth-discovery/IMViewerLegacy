@@ -91,7 +91,7 @@ describe("Mappings.vue", () => {
 
     EntityService.getNamespaces = jest.fn().mockResolvedValue(NAMESPACES);
 
-    EntityService.getMatchedFrom = jest
+    EntityService.getSimpleMaps = jest
       .fn()
       .mockResolvedValue([
         { "@id": "http://endhealth.info/emis#Nyu55", name: "Scoliosis deformity of spine", scheme: "EMIS (inc. Read2 like) namespace", code: "Nyu55" }
@@ -151,7 +151,7 @@ describe("Mappings.vue", () => {
     expect(wrapper.vm.simpleMaps).toStrictEqual([
       { "@id": "http://endhealth.info/emis#Nyu55", code: "Nyu55", name: "Scoliosis deformity of spine", scheme: "EMIS (inc. Read2 like) namespace" }
     ]);
-    expect(EntityService.getMatchedFrom).toHaveBeenCalledTimes(1);
+    expect(EntityService.getSimpleMaps).toHaveBeenCalledTimes(1);
   });
 
   it("can create chartTableNode", () => {

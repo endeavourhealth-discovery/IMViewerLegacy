@@ -5,6 +5,7 @@ import Tree from "primevue/tree";
 import ProgressSpinner from "primevue/progressspinner";
 import OverlayPanel from "primevue/overlaypanel";
 import EntityService from "@/services/EntityService";
+import Tooltip from "primevue/tooltip";
 
 describe("SecondaryTree.vue", () => {
   let wrapper: any;
@@ -88,7 +89,8 @@ describe("SecondaryTree.vue", () => {
       global: {
         components: { Button, Tree, ProgressSpinner, OverlayPanel },
         mocks: { $toast: mockToast },
-        stubs: { OverlayPanel: mockRef }
+        stubs: { OverlayPanel: mockRef },
+        directives: { Tooltip: Tooltip }
       },
       props: { conceptIri: "http://snomed.info/sct#298382003" }
     });
