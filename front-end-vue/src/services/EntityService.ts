@@ -15,9 +15,9 @@ import { FiltersAsIris } from "@/models/FiltersAsIris";
 export default class EntityService {
   static api = process.env.VUE_APP_API;
 
-  public static async getMatchedFrom(iri: string): Promise<any[]> {
+  public static async getSimpleMaps(iri: string): Promise<any[]> {
     try {
-      return await axios.get(this.api + "api/entity/matchedFrom", {
+      return await axios.get(this.api + "api/entity/simpleMaps", {
         params: {
           iri: iri
         }
