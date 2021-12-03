@@ -108,13 +108,13 @@ export default class EntityService {
 
       console.log(JSON.stringify(req));
 
-      return axios.get("https://search.endeavourhealth.net/dev-test2/_search", {
+      return axios.get(process.env.VUE_APP_OPENSEARCH_URL || "", {
         params: {
           q: request.termFilter
         },
         cancelToken: cancelToken,
         headers: {
-          Authorization: "Basic ZW5kZWF2b3VyOj1XNEBpR3Ji"
+          Authorization: "Basic " + process.env.VUE_APP_OPENSEARCH_AUTH
         }
       });
     } catch (error) {
