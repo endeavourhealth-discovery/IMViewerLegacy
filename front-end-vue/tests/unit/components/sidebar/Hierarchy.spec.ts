@@ -850,6 +850,19 @@ describe("Hierarchy.vue ___ Concept", () => {
     expect(wrapper.vm.updateHistory).toHaveBeenCalledTimes(1);
   });
 
+  it("handles hierarchySelectedFilters changes", async () => {
+    wrapper.vm.getConceptAggregate = jest.fn();
+    wrapper.vm.refreshTree = jest.fn();
+    wrapper.vm.updateHistory = jest.fn();
+    wrapper.vm.$options.watch.hierarchySelectedFilters.handler.call(wrapper.vm, true);
+    await flushPromises();
+    expect(wrapper.vm.getConceptAggregate).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.getConceptAggregate).toHaveBeenCalledWith("http://snomed.info/sct#298382003");
+    expect(wrapper.vm.selectedKey).toStrictEqual({});
+    expect(wrapper.vm.refreshTree).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.updateHistory).toHaveBeenCalledTimes(1);
+  });
+
   it("handles focusTree changes ___ true", async () => {
     wrapper.vm.refreshTree = jest.fn();
     wrapper.vm.getConceptAggregate = jest.fn();
