@@ -120,7 +120,7 @@ export default defineComponent({
 
       this.simpleMaps = (await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO]))[IM.MATCHED_TO] || [];
       if (!this.simpleMaps.length) {
-        this.simpleMaps = await EntityService.getMatchedFrom(this.conceptIri);
+        this.simpleMaps = await EntityService.getSimpleMaps(this.conceptIri);
       }
     },
 

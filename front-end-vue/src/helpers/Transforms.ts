@@ -1,6 +1,7 @@
 import { TTBundle, TTIriRef } from "@/models/TripleTree";
 import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
 
+// min 2 characters
 const indentSize = "  ";
 
 export function bundleToText(bundle: TTBundle, defaultPredicatenames: any, indent: number, blockedUrlIris?: string[]): string {
@@ -70,7 +71,7 @@ export function ttNodeToString(node: any, previousType: string, indent: number, 
       nodeIndent = indent + 1;
       prefix = indentSize;
       if (first) {
-        prefix = "( ";
+        prefix = indentSize.substring(0, indentSize.length - 2) + "( ";
         first = false;
       }
       if (last) {
@@ -104,13 +105,13 @@ function processNode(key: string, value: any, result: string, indent: number, ir
       result += getObjectName(key, iriMap, pad, prefix);
       result += "\n";
       result += ttValueToString(value, "object", indent + 1, iriMap, blockedUrlIris);
-      result += suffix;
+      // result += suffix;
     }
   } else {
     result += getObjectName(key, iriMap, pad, prefix);
     result += "\n";
-    result += ttValueToString(value, "object", indent + 1, iriMap, blockedUrlIris);
-    result += suffix;
+    result += ttValueToString(value, "object", indent, iriMap, blockedUrlIris);
+    // result += suffix;
   }
   return result;
 }

@@ -160,10 +160,10 @@ describe("EntityService.ts ___ axios success", () => {
     expect(result).toBe("axios post return");
   });
 
-  it("can getMatchedFrom", async () => {
-    const result = await EntityService.getMatchedFrom("testString");
+  it("can getSimpleMaps", async () => {
+    const result = await EntityService.getSimpleMaps("testString");
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "api/entity/matchedFrom", { params: { iri: "testString" } });
+    expect(axios.get).toHaveBeenCalledWith(api + "api/entity/simpleMaps", { params: { iri: "testString" } });
     expect(result).toBe("axios get return");
   });
 });
@@ -326,10 +326,10 @@ describe("EntityService.ts ___ axios fail", () => {
     expect(result).toStrictEqual({});
   });
 
-  it("can getMatchedFrom", async () => {
-    const result = await EntityService.getMatchedFrom("testString");
+  it("can getSimpleMaps", async () => {
+    const result = await EntityService.getSimpleMaps("testString");
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "api/entity/matchedFrom", { params: { iri: "testString" } });
+    expect(axios.get).toHaveBeenCalledWith(api + "api/entity/simpleMaps", { params: { iri: "testString" } });
     expect(result).toStrictEqual([]);
   });
 });

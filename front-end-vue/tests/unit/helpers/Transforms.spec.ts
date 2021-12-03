@@ -154,7 +154,7 @@ describe("bundleToText", () => {
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2381745001">Structure of eye proper</a>\n' +
     '      Occurrence : <a href="' +
     url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n\n\n';
+    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n';
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -326,7 +326,7 @@ describe("ttNodeToString", () => {
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2381745001">Structure of eye proper</a>\n' +
     '      Occurrence : <a href="' +
     url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n\n\n';
+    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n';
 
   const PREDICATES = {
     "http://endhealth.info/im#roleGroup": "Where",
