@@ -100,15 +100,37 @@ export default class EntityService {
     }
   }
 
-  public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<SearchResponse> {
+  public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<any> {
     try {
-      return await axios.post(this.api + "api/entity/search", request, {
-        cancelToken: cancelToken
+      const req = {
+        q: request.termFilter
+      };
+
+      console.log(JSON.stringify(req));
+
+      return axios.get("https://search.endeavourhealth.net/dev-test2/_search", {
+        params: {
+          q: request.termFilter
+        },
+        cancelToken: cancelToken,
+        headers: {
+          Authorization: "Basic ZW5kZWF2b3VyOj1XNEBpR3Ji"
+        }
       });
     } catch (error) {
       return {} as SearchResponse;
     }
   }
+
+  // public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<SearchResponse> {
+  //   try {
+  //     return await axios.post(this.api + "api/entity/search", request, {
+  //       cancelToken: cancelToken
+  //     });
+  //   } catch (error) {
+  //     return {} as SearchResponse;
+  //   }
+  // }
 
   //obsolete, to be deleted on editor branch merge
   public static async getEntity(iri: string): Promise<any> {

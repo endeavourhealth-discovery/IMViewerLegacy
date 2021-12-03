@@ -245,6 +245,9 @@ export default defineComponent({
         .filter((c: DefinitionConfig) => c.predicate !== "subtypes")
         .filter((c: DefinitionConfig) => c.predicate !== "inferred")
         .filter((c: DefinitionConfig) => c.predicate !== "termCodes")
+        .filter((c: DefinitionConfig) => c.predicate !== "@id")
+        .filter((c: DefinitionConfig) => c.predicate !== "None")
+        .filter((c: DefinitionConfig) => c.predicate !== undefined)
         .map((c: DefinitionConfig) => c.predicate);
 
       this.concept = await EntityService.getPartialEntity(iri, predicates);
@@ -257,6 +260,9 @@ export default defineComponent({
     async getInferred(iri: string): Promise<void> {
       const result = await EntityService.getDefinitionBundle(iri);
       if (isObjectHasKeys(result, ["entity"]) && isObjectHasKeys(result.entity, [RDFS.SUBCLASS_OF, IM.ROLE_GROUP])) {
+        if (result.entity[RDFS.SUBCLASS_OF] instanceof Object) {
+          result.entity[RDFS.SUBCLASS_OF] = [result.entity[RDFS.SUBCLASS_OF]];
+        }
         this.concept["inferred"] = {
           entity: { "http://www.w3.org/2000/01/rdf-schema#subClassOf": result.entity[RDFS.SUBCLASS_OF] },
           predicates: result.predicates
