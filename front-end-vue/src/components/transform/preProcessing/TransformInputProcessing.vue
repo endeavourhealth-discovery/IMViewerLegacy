@@ -226,18 +226,6 @@ export default defineComponent({
   border: 1px solid #dee2e6;
 }
 
-.join-instruction {
-  margin: 1.5rem;
-  padding: 1.5rem;
-  border: 1px solid #dee2e6;
-}
-
-#remove-join {
-  position: relative;
-  top: -20px;
-  right: -99%;
-}
-
 #json-viewer {
   height: calc(100vh - 30rem);
   width: 100%;
