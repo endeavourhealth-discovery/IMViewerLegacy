@@ -105,13 +105,11 @@ function processNode(key: string, value: any, result: string, indent: number, ir
       result += getObjectName(key, iriMap, pad, prefix);
       result += "\n";
       result += ttValueToString(value, "object", indent + 1, iriMap, blockedUrlIris);
-      // result += suffix;
     }
   } else {
     result += getObjectName(key, iriMap, pad, prefix);
     result += "\n";
     result += ttValueToString(value, "object", indent, iriMap, blockedUrlIris);
-    // result += suffix;
   }
   return result;
 }

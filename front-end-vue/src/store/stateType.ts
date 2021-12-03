@@ -1,6 +1,5 @@
 import { HistoryItem } from "../models/HistoryItem";
 import { User } from "../models/user/User";
-import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { Namespace } from "@/models/Namespace";
 
 export interface State {

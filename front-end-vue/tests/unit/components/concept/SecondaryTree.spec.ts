@@ -10,6 +10,8 @@ import Tooltip from "primevue/tooltip";
 describe("SecondaryTree.vue", () => {
   let wrapper: any;
   let mockToast: any;
+  let mockRoute: any;
+  let mockRouter: any;
   let mockRef: any;
 
   const CONCEPT = {
@@ -79,6 +81,8 @@ describe("SecondaryTree.vue", () => {
       add: jest.fn()
     };
     mockRef = { render: () => {}, methods: { show: jest.fn(), hide: jest.fn() } };
+    mockRoute = { name: "Concept" };
+    mockRouter = { push: jest.fn() };
 
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
     EntityService.getEntityParents = jest.fn().mockResolvedValue(PARENTS);
@@ -88,7 +92,7 @@ describe("SecondaryTree.vue", () => {
     wrapper = shallowMount(SecondaryTree, {
       global: {
         components: { Button, Tree, ProgressSpinner, OverlayPanel },
-        mocks: { $toast: mockToast },
+        mocks: { $toast: mockToast, $route: mockRoute, $router: mockRouter },
         stubs: { OverlayPanel: mockRef },
         directives: { Tooltip: Tooltip }
       },
@@ -1201,5 +1205,22 @@ describe("SecondaryTree.vue", () => {
     expect(mockRef.methods.hide).toHaveBeenCalledTimes(1);
     expect(mockRef.methods.hide).toHaveBeenCalledWith("testEvent");
     expect(wrapper.vm.overlayLocation).toStrictEqual({});
+  });
+
+  it("can navigate ___ metaKey", () => {
+    wrapper.vm.navigate({ metaKey: true }, "testIri");
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Concept", params: { selectedIri: "testIri" } });
+  });
+
+  it("can navigate ___ ctrlKey", () => {
+    wrapper.vm.navigate({ ctrlKey: true }, "testIri");
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Concept", params: { selectedIri: "testIri" } });
+  });
+
+  it("can navigate ___ other", () => {
+    wrapper.vm.navigate({ shiftKey: true }, "testIri");
+    expect(mockRouter.push).not.toHaveBeenCalled();
   });
 });
