@@ -85,7 +85,7 @@
     </template>
     <template #footer>
       <div class="button-bar p-d-flex p-flex-row p-jc-end" id="button-bar">
-        <Button label="Next" @click="nextPage" />
+        <Button label="Next" @click="nextPage" :disabled="selectedInputs.length !== 1" />
       </div>
     </template>
   </Card>
@@ -206,7 +206,8 @@ export default defineComponent({
         formData: {
           input: this.selectedInputs[0].inputFile,
           inputJson: this.selectedInputs[0].inputJson,
-          inputDisplayJson: this.selectedInputs[0].inputDisplayJson
+          inputDisplayJson: this.selectedInputs[0].inputDisplayJson,
+          dataModelJson: this.selectedInputs[0].dataModel
         },
         pageIndex: this.pageIndex
       });

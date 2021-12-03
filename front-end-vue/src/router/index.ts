@@ -6,6 +6,7 @@ import Workflow from "../views/Workflow.vue";
 import Catalogue from "../views/Catalogue.vue";
 import Transform from "../views/Transform.vue";
 import TransformUpload from "../components/transform/TransformUpload.vue";
+import TransformDataModel from "../components/transform/TransformDataModel.vue";
 import TransformMapping from "../components/transform/TransformMapping.vue";
 import TransformInputProcessing from "../components/transform/preProcessing/TransformInputProcessing.vue";
 import UPRN from "../views/Uprn.vue";
@@ -189,6 +190,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "",
         name: "TransformInputProcessing",
         component: TransformInputProcessing
+      },
+      {
+        path: "datamodel",
+        name: "TransformDataModel",
+        component: TransformDataModel
       },
       {
         path: "mapping",

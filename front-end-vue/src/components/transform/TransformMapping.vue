@@ -115,7 +115,7 @@ export default defineComponent({
   },
   data() {
     return {
-      pageIndex: 1,
+      pageIndex: 2,
       propertyOptions: [] as string[],
       transformTypeOptions: [] as string[],
       mappings: [{}] as TransformMappingObject[],

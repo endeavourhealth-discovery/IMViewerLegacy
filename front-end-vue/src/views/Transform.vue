@@ -33,6 +33,10 @@ export default defineComponent({
           to: "/transform"
         },
         {
+          label: "Data model",
+          to: "/transform/datamodel"
+        },
+        {
           label: "Mapping",
           to: "/transform/mapping"
         },
