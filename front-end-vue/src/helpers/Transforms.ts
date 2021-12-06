@@ -106,14 +106,14 @@ function processNode(key: string, value: any, result: string, indent: number, ir
       result += "\n";
       result += ttValueToString(value, "object", indent + 1, iriMap, blockedUrlIris);
     }
-  } else if (typeof value === "string" || typeof value === "number") {
+  } else if (isObjectHasKeys(value)) {
     result += getObjectName(key, iriMap, pad, prefix);
-    result += ttValueToString(value, "object", indent, iriMap, blockedUrlIris);
     result += "\n";
+    result += ttValueToString(value, "object", indent, iriMap, blockedUrlIris);
   } else {
     result += getObjectName(key, iriMap, pad, prefix);
-    result += "\n";
     result += ttValueToString(value, "object", indent, iriMap, blockedUrlIris);
+    result += "\n";
   }
   return result;
 }
