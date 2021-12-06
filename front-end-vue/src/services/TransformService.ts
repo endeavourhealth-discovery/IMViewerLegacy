@@ -2,6 +2,14 @@ import { TransformInputUpload, JoinInstruction } from "@/models/transform/Transf
 import axios from "axios";
 
 export default class TransformService {
+  public static async getDataModelInstanceDisplay(dataModelJson: any): Promise<any[]> {
+    try {
+      return await axios.post(this.api + "api/transform/datamodel/instance", dataModelJson);
+    } catch (error) {
+      return [] as any[];
+    }
+  }
+
   static api = "http://127.0.0.1:3000/";
 
   public static async join(inputs: TransformInputUpload[], instructions: JoinInstruction[]): Promise<TransformInputUpload[]> {

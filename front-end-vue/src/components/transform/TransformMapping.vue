@@ -94,7 +94,8 @@ import { defineComponent, PropType } from "vue";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
 import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
-import { getDataModelInstances, getPathMap, transform } from "../../helpers/TransformHelper";
+import { getPathMap, transform } from "../../helpers/TransformHelper";
+import TransformService from "@/services/TransformService";
 
 export default defineComponent({
   name: "TransformMapping",
@@ -126,11 +127,11 @@ export default defineComponent({
       checkPointFormObject: {} as TransformFormObject
     };
   },
-  mounted() {
+  async mounted() {
     this.checkPointFormObject = this.formObject;
     this.propertyOptions = this.getPropertyOptions(this.formObject.inputDisplayJson);
     this.transformTypeOptions = this.getTransformTypeOptions();
-    this.previewDisplay = getDataModelInstances(this.formObject.dataModelJson);
+    this.previewDisplay = await TransformService.getDataModelInstanceDisplay(this.formObject.dataModelJson);
     this.pathMap = getPathMap(this.previewDisplay);
     this.mappings = this.getMappings(this.formObject.inputDisplayJson);
     this.fnPropOptions = [

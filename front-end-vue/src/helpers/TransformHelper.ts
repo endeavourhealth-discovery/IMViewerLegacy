@@ -19,26 +19,6 @@ export function transform(dataModel: any, input: any, instruction: TransformMapp
   }
 }
 
-export function getDataModelInstances(ttdocument: any): any[] {
-  const instances = [] as any[];
-  ttdocument.entities.forEach((entity: any) => {
-    const instance = {
-      "@id": null,
-      "rdf:type": entity["rdfs:label"],
-      "rdfs:label": null
-    };
-    if (isObjectHasKeys(entity, ["sh:property"])) {
-      entity["sh:property"].forEach((property: any) => {
-        const propertyName: string = property["sh:path"]?.name || property["sh:path"]["@id"];
-        const value = "sh:node" in property ? { "@id": null } : null;
-        (instance as any)[propertyName] = value;
-      });
-    }
-    instances.push(instance);
-  });
-  return instances;
-}
-
 export function getPathMap(instances: any[]): Map<string, string> {
   const pathMap = new Map<string, string>();
   const paths: string[] = rKeys(instances)
@@ -58,6 +38,7 @@ function rKeys(o: any, path = ""): any {
   if (!o || typeof o !== "object") return path;
   return Object.keys(o).map(key => rKeys(o[key], path ? [path, key].join(".") : key));
 }
+
 function getValueFromFunctions(dataModel: any, input: any, instruction: TransformMappingObject): string {
   const value = input[0][instruction.property as string];
   const transformations: string[] = [];
