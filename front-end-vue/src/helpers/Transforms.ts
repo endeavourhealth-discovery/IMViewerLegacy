@@ -78,7 +78,7 @@ export function ttNodeToString(node: any, previousType: string, indent: number, 
         suffix = " )\n";
       }
     }
-    result = processNode(key, value, result, nodeIndent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group }, blockedUrlIris);
+    result = processNode(key, value, result, nodeIndent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group, last: last }, blockedUrlIris);
     count++;
   }
   return result;
@@ -105,11 +105,13 @@ function processNode(key: string, value: any, result: string, indent: number, ir
       result += getObjectName(key, iriMap, pad, prefix);
       result += "\n";
       result += ttValueToString(value, "object", indent + 1, iriMap, blockedUrlIris);
+      if (stringAdditions.group && stringAdditions.last) result = result.slice(0, result.length - 1) + " )" + result.slice(result.length);
     }
   } else if (isObjectHasKeys(value)) {
     result += getObjectName(key, iriMap, pad, prefix);
     result += "\n";
     result += ttValueToString(value, "object", indent, iriMap, blockedUrlIris);
+    if (stringAdditions.group && stringAdditions.last) result = result.slice(0, result.length - 1) + " )" + result.slice(result.length);
   } else {
     result += getObjectName(key, iriMap, pad, prefix);
     result += ttValueToString(value, "object", indent, iriMap, blockedUrlIris);

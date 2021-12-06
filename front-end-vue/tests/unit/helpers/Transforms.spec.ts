@@ -207,7 +207,7 @@ describe("ttIriToString", () => {
   });
 });
 
-describe("ttNodeToString", () => {
+describe("ttNodeToString ___ isa rolegroup", () => {
   const NODE = {
     "http://endhealth.info/im#isA": [
       { "@id": "http://snomed.info/sct#82354003", name: "Multiple system malformation syndrome" },
