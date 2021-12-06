@@ -33,7 +33,7 @@
       </template>
       <Column field="entity.name" header="Name">
         <template #body="slotProps">
-          <div class="name-container">{{ slotProps.data.entity.name }}</div>
+          <div v-html="slotProps.data.entity.name" class="name-container"></div>
         </template>
       </Column>
       <template #groupheader="slotProps">
