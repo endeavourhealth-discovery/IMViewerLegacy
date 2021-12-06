@@ -106,6 +106,10 @@ function processNode(key: string, value: any, result: string, indent: number, ir
       result += "\n";
       result += ttValueToString(value, "object", indent + 1, iriMap, blockedUrlIris);
     }
+  } else if (typeof value === "string" || typeof value === "number") {
+    result += getObjectName(key, iriMap, pad, prefix);
+    result += ttValueToString(value, "object", indent, iriMap, blockedUrlIris);
+    result += "\n";
   } else {
     result += getObjectName(key, iriMap, pad, prefix);
     result += "\n";
