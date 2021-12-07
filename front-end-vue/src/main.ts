@@ -155,7 +155,7 @@ axios.interceptors.response.use(
       vm.$toast.add({
         severity: "warn",
         summary: "Warning",
-        detail: error.response.data.message,
+        detail: "Request for " + error.config.url.substring(error.config.url.lastIndexOf("/") + 1) + " was unsuccessful. " + error.response.data.message + ".",
         life: 4000
       });
     } else {
