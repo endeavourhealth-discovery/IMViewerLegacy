@@ -79,6 +79,11 @@
                 <Members :conceptIri="conceptIri" />
               </div>
             </TabPanel>
+            <TabPanel header="ECL" v-if="isSet && isObjectHasKeysWrapper(concept.inferred)">
+              <div class="concept-panel-content" id="ecl-container" :style="contentHeight">
+                <EclDefinition :definition="concept.inferred" />
+              </div>
+            </TabPanel>
             <TabPanel header="Graph">
               <div class="concept-panel-content" id="graph-container" :style="contentHeight">
                 <Graph :conceptIri="conceptIri" />
@@ -106,6 +111,7 @@ import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
 import Mappings from "../components/concept/Mappings.vue";
+import EclDefinition from "@/components/concept/EclDefinition.vue";
 import { isOfTypes, isValueSet, isProperty } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
@@ -137,7 +143,8 @@ export default defineComponent({
     DownloadDialog,
     SecondaryTree,
     Mappings,
-    Properties
+    Properties,
+    EclDefinition
   },
   computed: {
     isSet(): boolean {
