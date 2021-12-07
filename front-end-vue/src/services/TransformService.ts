@@ -2,6 +2,16 @@ import { TransformInputUpload, JoinInstruction } from "@/models/transform/Transf
 import axios from "axios";
 
 export default class TransformService {
+  static api = "http://127.0.0.1:3000/";
+
+  public static async getTransformTypes(): Promise<string[]> {
+    try {
+      return await axios.get(this.api + "api/transform/types");
+    } catch (error) {
+      return [] as string[];
+    }
+  }
+
   public static async getDataModelInstanceDisplay(dataModelJson: any): Promise<any[]> {
     try {
       return await axios.post(this.api + "api/transform/datamodel/instance", dataModelJson);
@@ -9,8 +19,6 @@ export default class TransformService {
       return [] as any[];
     }
   }
-
-  static api = "http://127.0.0.1:3000/";
 
   public static async join(inputs: TransformInputUpload[], instructions: JoinInstruction[]): Promise<TransformInputUpload[]> {
     try {
@@ -44,11 +52,19 @@ export default class TransformService {
     }
   }
 
-  public static async getJpaths(input: TransformInputUpload) {
+  public static async getJpaths(input: any): Promise<string[]> {
     try {
       return await axios.post(this.api + "api/transform/jpathsFromInput", input);
     } catch (error) {
-      return {} as TransformInputUpload;
+      return [] as string[];
+    }
+  }
+
+  public static async getJpathTreeOptions(input: any): Promise<string[]> {
+    try {
+      return await axios.post(this.api + "api/transform/jpathTreeOptions", input);
+    } catch (error) {
+      return [] as string[];
     }
   }
 }

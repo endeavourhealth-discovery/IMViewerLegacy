@@ -28,7 +28,8 @@
             <div v-for="mapping in mappings" :key="mapping">
               <div class="p-fluid p-formgrid p-grid">
                 <div class="p-field p-col-3">
-                  <Dropdown :options="pathOptions" v-model="mapping.destinationPath" placeholder="Choose destination path" @change="transformValue(mapping)" />
+                  <TreeSelect v-model="mapping.destinationPath" :options="jpaths" placeholder="Choose destination path" @change="transformValue(mapping)" />
+                  <!-- <Dropdown :options="jpaths" v-model="mapping.destinationPath" placeholder="Choose destination path" @change="transformValue(mapping)" /> -->
                 </div>
                 <div class="p-field p-col-2">
                   <Dropdown
@@ -94,7 +95,6 @@ import { defineComponent, PropType } from "vue";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
 import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
-import { getPathMap, transform } from "../../helpers/TransformHelper";
 import TransformService from "@/services/TransformService";
 
 export default defineComponent({
@@ -109,11 +109,6 @@ export default defineComponent({
       required: true
     }
   },
-  computed: {
-    pathOptions(): string[] {
-      return Array.from(this.pathMap.keys());
-    }
-  },
   data() {
     return {
       pageIndex: 2,
@@ -123,17 +118,18 @@ export default defineComponent({
       previewDisplay: [] as any[],
       functionOptions: ["generateIri", "toLowerCase", "toUpperCase", "removeSpaces", "toLowerCamelCase", "toUpperCamelCase"],
       fnPropOptions: [] as { label: string; items: string[] }[],
-      pathMap: new Map<string, string>(),
+      jpaths: [] as string[],
       checkPointFormObject: {} as TransformFormObject
     };
   },
   async mounted() {
     this.checkPointFormObject = this.formObject;
-    this.propertyOptions = this.getPropertyOptions(this.formObject.inputDisplayJson);
-    this.transformTypeOptions = this.getTransformTypeOptions();
+    this.propertyOptions = await TransformService.getJpaths(this.formObject.inputDisplayJson[0]);
+    await TransformService.getJpathTreeOptions(this.formObject.inputDisplayJson[0]);
+    this.transformTypeOptions = await TransformService.getTransformTypes();
     this.previewDisplay = await TransformService.getDataModelInstanceDisplay(this.formObject.dataModelJson);
-    this.pathMap = getPathMap(this.previewDisplay);
-    this.mappings = this.getMappings(this.formObject.inputDisplayJson);
+    this.jpaths = await TransformService.getJpathTreeOptions(this.previewDisplay);
+    this.mappings = this.populateMappings(this.formObject.inputDisplayJson);
     this.fnPropOptions = [
       {
         label: "Functions",
@@ -147,49 +143,11 @@ export default defineComponent({
   },
   methods: {
     transformValue(mapping: TransformMappingObject) {
-      if (isArrayHasLength(mapping.transformValue)) {
-        (mapping.transformValue as []).forEach(transformValue => {
-          if (this.propertyOptions.indexOf(transformValue) !== -1) {
-            mapping.property = transformValue;
-          }
-        });
-      }
-
-      const transformed = transform(this.formObject.dataModelJson, this.formObject.inputDisplayJson, mapping);
-      if (mapping.transformType === "function") {
-        mapping.example = this.formObject.inputDisplayJson[0][mapping.property as string];
-        mapping.exampleTransformed = transformed;
-      } else {
-        mapping.example = transformed;
-      }
-
-      this.assignValue(transformed, mapping);
+      //
     },
-
-    assignValue(vale: string, mapping: TransformMappingObject) {
-      const path = this.pathMap.get(mapping.destinationPath)?.split(".") || ([] as string[]);
-      if (path[0] && path[1]) {
-        this.previewDisplay[+path[0]][path[1]] = vale;
-      }
-    },
-
-    getMappings(object: any) {
-      const mappings = [] as TransformMappingObject[];
-      this.pathMap.forEach((value, key) => {
-        mappings.push({ destinationPath: key } as TransformMappingObject);
-      });
-      return mappings;
-    },
-    getPropertyOptions(object: any) {
-      const options = [] as string[];
-      if (isArrayHasLength(object)) {
-        Object.keys(object[0]).forEach(key => options.push(key));
-      }
-
-      return options;
-    },
-    getTransformTypeOptions() {
-      return Object.values(TransformTypeEnum);
+    populateMappings(instance: any) {
+      //
+      return [{}] as TransformMappingObject[];
     },
     addMapping() {
       this.mappings.push({} as TransformMappingObject);

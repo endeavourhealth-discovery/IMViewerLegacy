@@ -1,7 +1,5 @@
 <template>
-  <Dialog header="Join on properties" :visible="jpathDialog" :breakpoints="{ '960px': '75vw' }" :style="{ width: '75vw' }">
-    <!-- {{ jsonPathOptions }} -->
-    <!-- <TreeSelect v-model="selectedNodeKey" :options="nodes" placeholder="Select Item" /> -->
+  <Dialog header="Select with JSON path" :visible="jpathDialog" :breakpoints="{ '960px': '75vw' }" :style="{ width: '75vw' }">
     <div class="p-fluid p-formgrid p-grid">
       <div class="p-col">
         <span class="p-float-label">
