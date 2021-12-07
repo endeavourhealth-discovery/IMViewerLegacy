@@ -102,16 +102,36 @@ export default class EntityService {
 
   public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<any> {
     try {
-      const req = {
-        q: request.termFilter
+      const req: any = {
+        size: request.size,
+        query: {
+          bool: {
+            must: [
+              {
+                match: {
+                  name: request.termFilter
+                }
+              }
+            ]
+          }
+        }
       };
+
+      if (request.schemeFilter && request.schemeFilter.length > 0) {
+        req.query.bool.must.push(this.getFilter("scheme.@id", request.schemeFilter));
+      }
+
+      if (request.statusFilter && request.statusFilter.length > 0) {
+        req.query.bool.must.push(this.getFilter("status.@id", request.statusFilter));
+      }
+
+      if (request.typeFilter && request.typeFilter.length > 0) {
+        req.query.bool.must.push(this.getFilter("entityType.@id", request.typeFilter));
+      }
 
       console.log(JSON.stringify(req));
 
-      return axios.get(process.env.VUE_APP_OPENSEARCH_URL || "", {
-        params: {
-          q: request.termFilter
-        },
+      return axios.post(process.env.VUE_APP_OPENSEARCH_URL || "", req, {
         cancelToken: cancelToken,
         headers: {
           Authorization: "Basic " + process.env.VUE_APP_OPENSEARCH_AUTH
@@ -120,6 +140,26 @@ export default class EntityService {
     } catch (error) {
       return {} as SearchResponse;
     }
+  }
+
+  private static getFilter(field: string, data: string[]): any {
+    const types: any[] = [];
+    for (const type of data) {
+      const fieldValue: any = {};
+      fieldValue[field] = type;
+      types.push(
+        {
+          match_phrase: fieldValue
+        }
+      );
+    }
+
+    return {
+      bool: {
+        should: types,
+        minimum_should_match: 1
+      }
+    };
   }
 
   // public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<SearchResponse> {
