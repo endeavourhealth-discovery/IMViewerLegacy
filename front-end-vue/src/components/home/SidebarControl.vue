@@ -19,7 +19,13 @@
           <i class="fas fa-sitemap icon-header" aria-hidden="true" />
           <span>Hierarchy</span>
         </template>
-        <Hierarchy @showTree="active = 0" :active="active" />
+        <div v-if="filtersLoaded" class="p-fluid hierarchy-filter-container">
+          <Hierarchy @showTree="active = 0" :active="active" />
+          <HierarchyFilter />
+        </div>
+        <div v-else class="loading-container">
+          <ProgressSpinner />
+        </div>
       </TabPanel>
       <TabPanel>
         <template #header>
@@ -27,9 +33,12 @@
           <span>Search results</span>
         </template>
 
-        <div class="p-fluid results-filter-container">
+        <div v-if="filtersLoaded" class="p-fluid results-filter-container">
           <SearchResults :searchResults="searchResults" :loading="loading" />
           <Filters :search="search" />
+        </div>
+        <div v-else class="loading-container">
+          <ProgressSpinner />
         </div>
       </TabPanel>
       <TabPanel>
@@ -57,6 +66,7 @@ import History from "@/components/sidebar/History.vue";
 import SearchResults from "@/components/sidebar/SearchResults.vue";
 import Filters from "@/components/sidebar/Filters.vue";
 import ExpressionConstraintsSearch from "@/components/sidebar/ExpressionConstraintsSearch.vue";
+import HierarchyFilter from "@/components/sidebar/HierarchyFilter.vue";
 import { SearchRequest } from "@/models/search/SearchRequest";
 import { SortBy } from "@/models/search/SortBy";
 import axios from "axios";
@@ -66,6 +76,10 @@ import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { Namespace } from "@/models/Namespace";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
+import EntityService from "@/services/EntityService";
+import { IM } from "@/vocabulary/IM";
+import { FilterDefaultsConfig } from "@/models/configs/FilterDefaultsConfig";
+import ConfigService from "@/services/ConfigService";
 
 export default defineComponent({
   name: "SidebarControl",
@@ -74,7 +88,8 @@ export default defineComponent({
     History,
     SearchResults,
     Filters,
-    ExpressionConstraintsSearch
+    ExpressionConstraintsSearch,
+    HierarchyFilter
   },
   computed: mapState(["filterOptions", "selectedFilters", "searchResults", "focusHierarchy", "sidebarControlActivePanel"]),
   watch: {
@@ -94,23 +109,63 @@ export default defineComponent({
       active: 0,
       debounce: 0,
       request: {} as { cancel: any; msg: string },
-      sideMenuHeight: ""
+      sideMenuHeight: "",
+      configs: {} as FilterDefaultsConfig,
+      filtersLoaded: false
     };
   },
-  mounted() {
+  async mounted() {
     window.addEventListener("resize", this.onResize);
-
-    this.setContainerHeights();
+    await this.init();
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
   },
   methods: {
+    async init() {
+      await this.getConfigs();
+      await this.setFilterOptions();
+      this.setFilterDefaults();
+      this.filtersLoaded = true;
+      this.setContainerHeights();
+    },
+
     tabChange(event: any): void {
       this.$store.commit("updateSidebarControlActivePanel", event.index);
     },
+
     onResize(): void {
       this.setContainerHeights();
+    },
+
+    async getConfigs(): Promise<void> {
+      this.configs = await ConfigService.getFilterDefaults();
+      this.$store.commit("updateFilterDefaults", this.configs);
+    },
+
+    async setFilterOptions(): Promise<void> {
+      const schemeOptions = await EntityService.getNamespaces();
+      const statusOptions = await EntityService.getEntityChildren(IM.STATUS);
+      const typeOptions = await EntityService.getEntityChildren(IM.MODELLING_ENTITY_TYPE);
+
+      this.$store.commit("updateFilterOptions", {
+        status: statusOptions,
+        schemes: schemeOptions,
+        types: typeOptions
+      });
+    },
+
+    setFilterDefaults() {
+      const selectedStatus = this.filterOptions.status.filter((item: EntityReferenceNode) => this.configs.statusOptions.includes(item["@id"]));
+      const selectedSchemes = this.filterOptions.schemes.filter((item: Namespace) => this.configs.schemeOptions.includes(item.iri));
+      const selectedTypes = this.filterOptions.types.filter((item: EntityReferenceNode) => this.configs.typeOptions.includes(item["@id"]));
+
+      this.$store.commit("updateSelectedFilters", {
+        status: selectedStatus,
+        schemes: selectedSchemes,
+        types: selectedTypes
+      });
+      this.$store.commit("updateHierarchySelectedFilters", selectedSchemes);
     },
 
     async search(): Promise<void> {
@@ -194,6 +249,13 @@ export default defineComponent({
   height: 100%;
 }
 
+.hierarchy-filter-container {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
 .search-bar {
   width: 100%;
 }
@@ -208,5 +270,13 @@ export default defineComponent({
 
 .p-tabview-panel {
   overflow-x: hidden;
+}
+
+.loading-container {
+  height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
 }
 </style>

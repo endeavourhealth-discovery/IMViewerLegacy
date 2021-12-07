@@ -11,6 +11,8 @@ describe("ResizablePieChart.vue", () => {
   let docSpyId: any;
   let docSpyClass: any;
   let windowSpy: any;
+  let mockEvent: any;
+
   let inputData = [
     { "http://www.w3.org/2002/07/owl#hasValue": 1030354, "http://www.w3.org/2000/01/rdf-schema#label": "Class" },
     { "http://www.w3.org/2002/07/owl#hasValue": 93282, "http://www.w3.org/2000/01/rdf-schema#label": "Legacy concept" },
@@ -62,6 +64,12 @@ describe("ResizablePieChart.vue", () => {
     wrapper.unmount();
     expect(spy).toHaveBeenCalled();
     spy.mockReset();
+  });
+
+  it("can watch inputData", () => {
+    wrapper.vm.setChartData = jest.fn();
+    wrapper.vm.$options.watch.inputData.handler.call(wrapper.vm, []);
+    expect(wrapper.vm.setChartData).toHaveBeenCalledTimes(1);
   });
 
   it("can setChartData", async () => {
@@ -287,6 +295,18 @@ describe("ResizablePieChart.vue", () => {
       ],
       labels: []
     });
+  });
+
+  it("can handle legend cursors ___ onHover", () => {
+    mockEvent = { native: { target: { style: { cursor: "default" } } } };
+    wrapper.vm.chartOptions.plugins.legend.onHover(mockEvent);
+    expect(mockEvent.native.target.style.cursor).toBe("pointer");
+  });
+
+  it("can handle legend cursors ___ onLeave", () => {
+    mockEvent = { native: { target: { style: { cursor: "pointer" } } } };
+    wrapper.vm.chartOptions.plugins.legend.onLeave(mockEvent);
+    expect(mockEvent.native.target.style.cursor).toBe("default");
   });
 
   it("setsLegendOptions ___ width > 1750", async () => {

@@ -3,11 +3,13 @@
     <div id="alternate-parents-container" class="p-d-flex p-flex-column p-jc-start p-ai-start">
       <Button
         v-for="altParent in alternateParents"
-        :key="altParent['@id']"
+        :key="altParent.iri"
         :label="altParent.name"
         :disabled="altParent.name === ''"
         icon="pi pi-chevron-up"
         @click="expandParents(altParent.listPosition)"
+        @mouseenter="showPopup($event, altParent.iri)"
+        @mouseleave="hidePopup($event)"
         class="p-button-text p-button-plain"
       />
     </div>
@@ -17,6 +19,8 @@
         :disabled="!currentParent"
         icon="pi pi-chevron-up"
         @click="expandParents(parentPosition)"
+        @mouseenter="showPopup($event, currentParent?.iri)"
+        @mouseleave="hidePopup($event)"
         class="p-button-text p-button-plain"
       />
     </div>
@@ -30,7 +34,13 @@
       class="tree-root"
     >
       <template #default="slotProps">
-        <div class="tree-row" @mouseover="showPopup($event, slotProps.node)" @mouseleave="hidePopup($event)">
+        <div
+          class="tree-row"
+          @mouseover="showPopup($event, slotProps.node.data)"
+          @mouseleave="hidePopup($event)"
+          @click="navigate($event, slotProps.node.data)"
+          v-tooltip.top="'CTRL+click to navigate'"
+        >
           <span v-if="!slotProps.node.loading">
             <i :class="'fas fa-fw' + slotProps.node.typeIcon" :style="'color:' + slotProps.node.color" aria-hidden="true" />
           </span>
@@ -280,11 +290,11 @@ export default defineComponent({
       this.selectedKey[this.conceptAggregate.concept[RDFS.LABEL]] = true;
     },
 
-    async showPopup(event: any, data: TreeNode): Promise<void> {
+    async showPopup(event: any, iri: string): Promise<void> {
       this.overlayLocation = event;
       const x = this.$refs.altTreeOP as any;
       x.show(event);
-      this.hoveredResult = await EntityService.getEntitySummary(data.data);
+      this.hoveredResult = await EntityService.getEntitySummary(iri);
     },
 
     hidePopup(event: any): void {
@@ -299,6 +309,10 @@ export default defineComponent({
           return type.name;
         })
         .join(", ");
+    },
+
+    navigate(event: any, iri: string): void {
+      if (event.metaKey || event.ctrlKey) this.$router.push({ name: this.$route.name || undefined, params: { selectedIri: iri } });
     }
   }
 });

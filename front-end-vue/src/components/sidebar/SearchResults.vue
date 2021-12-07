@@ -52,12 +52,13 @@
                 v-tooltip.right="'Copy concept summary to clipboard \n (right click to copy individual properties)'"
                 @contextmenu="onCopyRightClick"
               />
-              <ContextMenu ref="copyMenu" :model="copyMenuItems" />
             </div>
           </div>
         </template>
       </Column>
     </DataTable>
+
+    <ContextMenu ref="copyMenu" :model="copyMenuItems" />
 
     <OverlayPanel ref="op" id="overlay-panel" style="width: 25vw" :dismissable="true">
       <div class="result-overlay">
@@ -131,7 +132,7 @@ export default defineComponent({
   },
   computed: mapState(["blockedIris"]),
   async mounted() {
-    this.defaultPredicates = await ConfigService.getDefaultPredicatenames();
+    this.defaultPredicates = await ConfigService.getDefaultPredicateNames();
   },
   data() {
     return {

@@ -1,5 +1,6 @@
 import { HistoryItem } from "../models/HistoryItem";
 import { User } from "../models/user/User";
+import { Namespace } from "@/models/Namespace";
 
 export interface State {
   loading: Map<string, boolean>;
@@ -23,4 +24,5 @@ export interface State {
   term: string;
   instanceIri: string;
   sidebarControlActivePanel: number;
+  hierarchySelectedFilters: Namespace[];
 }

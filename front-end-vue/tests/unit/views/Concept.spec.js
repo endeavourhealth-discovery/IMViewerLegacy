@@ -24,7 +24,7 @@ Object.assign(navigator, {
   }
 });
 
-describe("Concept.vue", () => {
+describe("Concept.vue ___ not moduleIri", () => {
   const CONFIG = [
     { label: "Name", predicate: "http://www.w3.org/2000/01/rdf-schema#label", type: "TextWithLabel", size: "50%", order: 0 },
     { label: "Iri", predicate: "@id", type: "TextWithLabel", size: "50%", order: 1 },
@@ -101,6 +101,7 @@ describe("Concept.vue", () => {
   let mockStore;
   let mockRouter;
   let mockToast;
+  let mockRef;
   let clipboardSpy;
   let docSpy;
   let windowSpy;
@@ -129,6 +130,7 @@ describe("Concept.vue", () => {
     mockToast = {
       add: jest.fn()
     };
+    mockRef = { render: () => {}, methods: { show: jest.fn(), hide: jest.fn() } };
 
     windowSpy = jest.spyOn(window, "getComputedStyle");
     windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue("16px") });
@@ -155,7 +157,8 @@ describe("Concept.vue", () => {
           ProgressSpinner
         },
         mocks: { $store: mockStore, $router: mockRouter, $toast: mockToast },
-        directives: { tooltip: jest.fn(), clipboard: { copy: jest.fn(), success: jest.fn(), error: jest.fn() } }
+        directives: { tooltip: jest.fn(), clipboard: { copy: jest.fn(), success: jest.fn(), error: jest.fn() } },
+        stubs: { Panel: Panel, ContextMenu: mockRef }
       }
     });
 
@@ -293,14 +296,22 @@ describe("Concept.vue", () => {
     expect(
       Concept.computed.showMappings.call({
         types: [
-          { name: "Concept", "@id": "http://endhealth.info/im#Concept" },
+          { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" },
           { name: "NodeShape", "@id": "http://www.w3.org/ns/shacl#NodeShape" }
         ]
       })
     ).toBe(false);
   });
 
-  it("can check showMappings ___ true", async () => {
+  it("can check showMappings ___ true ___ class", async () => {
+    expect(
+      Concept.computed.showMappings.call({
+        types: [{ name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }]
+      })
+    ).toBe(true);
+  });
+
+  it("can check showMappings ___ true ___ concept", async () => {
     expect(
       Concept.computed.showMappings.call({
         types: [{ name: "Concept", "@id": "http://endhealth.info/im#Concept" }]
@@ -1082,10 +1093,122 @@ describe("Concept.vue", () => {
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Export failed from server"));
   });
 
-  // it("can onCopyRightClick", async () => {
-  //   wrapper.vm.onCopyRightClick("testEvent");
-  //   await flushPromises();
-  //   expect(mockRef.methods.show).toHaveBeenCalledTimes(1);
-  //   expect(mockRef.methods.show).toHaveBeenCalledWith("testEvent");
-  // });
+  it("can onCopyRightClick", async () => {
+    wrapper.vm.onCopyRightClick("testEvent");
+    await flushPromises();
+    expect(mockRef.methods.show).toHaveBeenCalledTimes(1);
+    expect(mockRef.methods.show).toHaveBeenCalledWith("testEvent");
+  });
+
+  it("can wrapper isObjectHasKeys", () => {
+    expect(wrapper.vm.isObjectHasKeysWrapper({ key1: "test" }, ["key1"])).toBe(true);
+  });
+});
+
+describe("Concept.vue ___ moduleIri", () => {
+  const CONFIG = [
+    { label: "Name", predicate: "http://www.w3.org/2000/01/rdf-schema#label", type: "TextWithLabel", size: "50%", order: 0 },
+    { label: "Iri", predicate: "@id", type: "TextWithLabel", size: "50%", order: 1 },
+    { label: "Status", predicate: "http://endhealth.info/im#status", type: "ObjectNameWithLabel", size: "50%", order: 2 },
+    { label: "Types", predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", type: "ArrayObjectNamesToStringWithLabel", size: "50%", order: 3 },
+    { label: "Description", predicate: "http://www.w3.org/2000/01/rdf-schema#comment", type: "TextHTMLWithLabel", size: "100%", order: 4 },
+    { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 5 },
+    { label: "Inferred", predicate: "inferred", type: "TextDefinition", size: "50%", order: 6 },
+    { label: "Has sub types", predicate: "subtypes", type: "ArrayObjectNameListboxWithLabel", size: "50%", order: 7 },
+    { label: "Divider", predicate: "None", type: "Divider", size: "100%", order: 8 }
+  ];
+  const TYPES = [
+    { "@id": "http://endhealth.info/im#RecordType", name: "Record type" },
+    { "@id": "http://www.w3.org/ns/shacl#NodeShape", name: "Node shape" },
+    { "@id": "http://endhealth.info/im#Concept", name: "Concept" }
+  ];
+  const CONCEPT = {
+    "@id": "http://endhealth.info/im#DiscoveryOntology",
+    "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": TYPES,
+    "http://www.w3.org/2000/01/rdf-schema#label": "Discovery Ontology"
+  };
+
+  let wrapper;
+  let mockStore;
+  let mockRouter;
+  let mockToast;
+  let mockRef;
+  let clipboardSpy;
+  let docSpy;
+  let windowSpy;
+
+  beforeEach(async () => {
+    jest.resetAllMocks();
+    clipboardSpy = jest.spyOn(navigator.clipboard, "writeText");
+    EntityService.getDefinitionBundle = jest.fn().mockResolvedValue({});
+    EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
+    EntityService.getEntityChildren = jest.fn().mockResolvedValue([]);
+    EntityService.getEntityTermCodes = jest.fn().mockResolvedValue([]);
+    ConfigService.getComponentLayout = jest.fn().mockResolvedValue(CONFIG);
+    mockStore = {
+      state: {
+        conceptIri: "http://endhealth.info/im#DiscoveryOntology",
+        selectedEntityType: "Class",
+        activeModule: "default",
+        conceptActivePanel: 6
+      },
+      commit: jest.fn(),
+      dispatch: jest.fn()
+    };
+    mockRouter = {
+      push: jest.fn()
+    };
+    mockToast = {
+      add: jest.fn()
+    };
+    mockRef = { render: () => {}, methods: { show: jest.fn(), hide: jest.fn() } };
+
+    windowSpy = jest.spyOn(window, "getComputedStyle");
+    windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue("16px") });
+
+    docSpy = jest.spyOn(document, "getElementById");
+    docSpy.mockReturnValue(undefined);
+
+    wrapper = shallowMount(Concept, {
+      global: {
+        components: {
+          Definition,
+          Mappings,
+          ContextMenu,
+          Button,
+          TabPanel,
+          TabView,
+          SecondaryTree,
+          UsedIn,
+          Members,
+          EntityChart,
+          PanelHeader,
+          Panel,
+          DownloadDialog,
+          ProgressSpinner
+        },
+        mocks: { $store: mockStore, $router: mockRouter, $toast: mockToast },
+        directives: { tooltip: jest.fn(), clipboard: { copy: jest.fn(), success: jest.fn(), error: jest.fn() } },
+        stubs: { Panel: Panel, ContextMenu: mockRef }
+      }
+    });
+
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.resetAllMocks();
+    jest.clearAllMocks();
+  });
+
+  it("can setStoreType ___ concept", async () => {
+    wrapper.vm.types = [{ "@id": "http://endhealth.info/im#Concept", name: "Concept" }];
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setStoreType();
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateSelectedEntityType", "Ontology");
+  });
 });

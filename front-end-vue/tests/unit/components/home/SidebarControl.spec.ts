@@ -3,10 +3,9 @@ import SidebarControl from "@/components/home/SidebarControl.vue";
 import InputText from "primevue/inputtext";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
-import Hierarchy from "@/components/sidebar/Hierarchy.vue";
-import History from "@/components/sidebar/History.vue";
-import SearchResults from "@/components/sidebar/SearchResults.vue";
-import Filters from "@/components/sidebar/Filters.vue";
+import ProgressSpinner from "primevue/progressspinner";
+import EntityService from "@/services/EntityService";
+import ConfigService from "@/services/ConfigService";
 
 describe("SidebarControl.vue", () => {
   let wrapper: any;
@@ -14,7 +13,153 @@ describe("SidebarControl.vue", () => {
   let mockToast: any;
   jest.useFakeTimers();
 
-  beforeEach(() => {
+  const CONFIG = {
+    schemeOptions: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+    statusOptions: ["http://endhealth.info/im#Active", "http://endhealth.info/im#Draft"],
+    typeOptions: [
+      "http://endhealth.info/im#Concept",
+      "http://endhealth.info/im#ConceptSet",
+      "http://endhealth.info/im#ConceptSetGroup",
+      "http://endhealth.info/im#Folder",
+      "http://www.w3.org/ns/shacl#NodeShape",
+      "http://www.w3.org/2002/07/owl#ObjectProperty",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property",
+      "http://endhealth.info/im#QueryTemplate",
+      "http://endhealth.info/im#ValueSet"
+    ]
+  };
+
+  const NAMESPACES = [
+    { iri: "http://endhealth.info/bc#", prefix: "bc", name: "Barts Cerner namespace" },
+    { iri: "http://endhealth.info/ceg16#", prefix: "ceg13", name: "CEG ethnicity 16+ category" },
+    { iri: "http://endhealth.info/im#", prefix: "im", name: "Discovery namespace" },
+    { iri: "http://endhealth.info/emis#", prefix: "emis", name: "EMIS (inc. Read2 like) namespace" },
+    { iri: "http://endhealth.info/icd10#", prefix: "icd10", name: "ICD10 namespace" },
+    { iri: "http://endhealth.info/reports#", prefix: "reports", name: "IM internal reports" },
+    { iri: "http://endhealth.info/kchapex#", prefix: "kchapex", name: "KCH Apex codes" },
+    { iri: "http://endhealth.info/kchwinpath#", prefix: "kchwinpath", name: "KCH Winpath codes" },
+    { iri: "http://endhealth.info/nhsethnic2001#", prefix: "nhse2001", name: "NHS Ethnicitity categories 2001 census" },
+    { iri: "http://endhealth.info/ods#", prefix: "ods", name: "ODS code scheme" },
+    { iri: "http://endhealth.info/opcs4#", prefix: "opcs4", name: "OPCS4 namespace" },
+    { iri: "https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1#", prefix: "orole", name: "OPS roles namespace" },
+    { iri: "http://www.w3.org/2002/07/owl#", prefix: "owl", name: "OWL2 namespace" },
+    { iri: "http://www.w3.org/ns/prov#", prefix: "prov", name: "PROV namespace" },
+    { iri: "http://endhealth.info/prsb#", prefix: "prsb", name: "PRSB namespace" },
+    { iri: "http://www.w3.org/1999/02/22-rdf-syntax-ns#", prefix: "rdf", name: "RDF namespace" },
+    { iri: "http://www.w3.org/2000/01/rdf-schema#", prefix: "rdfs", name: "RDFS namespace" },
+    { iri: "http://www.w3.org/ns/shacl#", prefix: "sh", name: "SHACL namespace" },
+    { iri: "http://snomed.info/sct#", prefix: "sn", name: "Snomed-CT namespace" },
+    { iri: "http://endhealth.info/tpp#", prefix: "tpp", name: "TPP (inc.CTV3) namespace" },
+    { iri: "http://endhealth.info/vision#", prefix: "vis", name: "Vision (incl. Read2) namespace" },
+    { iri: "http://www.w3.org/2001/XMLSchema#", prefix: "xsd", name: "xsd namespace" }
+  ];
+
+  const STATUS = [
+    {
+      name: "Active",
+      hasChildren: false,
+      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      "@id": "http://endhealth.info/im#Active"
+    },
+    {
+      name: "Draft",
+      hasChildren: false,
+      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      "@id": "http://endhealth.info/im#Draft"
+    },
+    {
+      name: "Inactive",
+      hasChildren: false,
+      type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      "@id": "http://endhealth.info/im#Inactive"
+    }
+  ];
+
+  const TYPES = [
+    {
+      name: "Concept",
+      hasChildren: true,
+      type: [
+        { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+        { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+      ],
+      "@id": "http://endhealth.info/im#Concept"
+    },
+    {
+      name: "Concept Set",
+      hasChildren: false,
+      type: [
+        { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+        { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+      ],
+      "@id": "http://endhealth.info/im#ConceptSet"
+    },
+    {
+      name: "Concept set group",
+      hasChildren: false,
+      type: [
+        { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+        { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+      ],
+      "@id": "http://endhealth.info/im#ConceptSetGroup"
+    },
+    {
+      name: "Folder",
+      hasChildren: false,
+      type: [
+        { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+        { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
+      ],
+      "@id": "http://endhealth.info/im#Folder"
+    },
+    {
+      name: "Node shape",
+      hasChildren: false,
+      type: [
+        { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+        { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+      ],
+      "@id": "http://www.w3.org/ns/shacl#NodeShape"
+    },
+    {
+      name: "ObjectProperty",
+      hasChildren: true,
+      type: [
+        { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+        { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+      ],
+      "@id": "http://www.w3.org/2002/07/owl#ObjectProperty"
+    },
+    {
+      name: "Property",
+      hasChildren: true,
+      type: [
+        { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+        { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+      ],
+      "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
+    },
+    {
+      name: "Query template",
+      hasChildren: false,
+      type: [
+        { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+        { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
+      ],
+      "@id": "http://endhealth.info/im#QueryTemplate"
+    },
+    {
+      name: "Value set",
+      hasChildren: false,
+      type: [
+        { name: "Concept", "@id": "http://endhealth.info/im#Concept" },
+        { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+      ],
+      "@id": "http://endhealth.info/im#ValueSet"
+    }
+  ];
+
+  beforeEach(async () => {
     jest.clearAllMocks();
     mockStore = {
       state: {
@@ -48,63 +193,13 @@ describe("SidebarControl.vue", () => {
           ]
         },
         filterOptions: {
-          status: [
-            {
-              name: "Active",
-              hasChildren: false,
-              type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-              "@id": "http://endhealth.info/im#Active"
-            },
-            {
-              name: "Draft",
-              hasChildren: false,
-              type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-              "@id": "http://endhealth.info/im#Draft"
-            },
-            {
-              name: "Inactive",
-              hasChildren: false,
-              type: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-              "@id": "http://endhealth.info/im#Inactive"
-            }
-          ],
-          scheme: [
-            { iri: "http://endhealth.info/bc#", prefix: "bc", name: "Barts Cerner namespace" },
-            { iri: "http://endhealth.info/ceg16#", prefix: "ceg13", name: "CEG ethnicity 16+ category" },
-            { iri: "http://endhealth.info/im#", prefix: "im", name: "Discovery namespace" },
-            { iri: "http://endhealth.info/emis#", prefix: "emis", name: "EMIS (inc. Read2 like) namespace" },
-            { iri: "http://endhealth.info/icd10#", prefix: "icd10", name: "ICD10 namespace" },
-            { iri: "http://endhealth.info/reports#", prefix: "reports", name: "IM internal reports" },
-            { iri: "http://endhealth.info/kchapex#", prefix: "kchapex", name: "KCH Apex codes" },
-            { iri: "http://endhealth.info/kchwinpath#", prefix: "kchwinpath", name: "KCH Winpath codes" },
-            { iri: "http://endhealth.info/nhsethnic2001#", prefix: "nhse2001", name: "NHS Ethnicitity categories 2001 census" },
-            { iri: "http://endhealth.info/ods#", prefix: "ods", name: "ODS code scheme" },
-            { iri: "http://endhealth.info/opcs4#", prefix: "opcs4", name: "OPCS4 namespace" },
-            { iri: "https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1#", prefix: "orole", name: "OPS roles namespace" },
-            { iri: "http://www.w3.org/2002/07/owl#", prefix: "owl", name: "OWL2 namespace" },
-            { iri: "http://www.w3.org/ns/prov#", prefix: "prov", name: "PROV namespace" },
-            { iri: "http://endhealth.info/prsb#", prefix: "prsb", name: "PRSB namespace" },
-            { iri: "http://www.w3.org/1999/02/22-rdf-syntax-ns#", prefix: "rdf", name: "RDF namespace" },
-            { iri: "http://www.w3.org/2000/01/rdf-schema#", prefix: "rdfs", name: "RDFS namespace" },
-            { iri: "http://www.w3.org/ns/shacl#", prefix: "sh", name: "SHACL namespace" },
-            { iri: "http://snomed.info/sct#", prefix: "sn", name: "Snomed-CT namespace" },
-            { iri: "http://endhealth.info/tpp#", prefix: "tpp", name: "TPP (inc.CTV3) namespace" },
-            { iri: "http://endhealth.info/vision#", prefix: "vis", name: "Vision (incl. Read2) namespace" },
-            { iri: "http://www.w3.org/2001/XMLSchema#", prefix: "xsd", name: "xsd namespace" }
-          ],
-          type: [
-            { "@id": "http://www.w3.org/2002/07/owl#Class", name: "Class" },
-            { "@id": "http://endhealth.info/im#Folder", name: "Folder" },
-            { "@id": "http://endhealth.info/im#LegacyEntity", name: "Legacy concept" },
-            { "@id": "http://www.w3.org/ns/shacl#NodeShape", name: "Node shape" },
-            { "@id": "http://www.w3.org/2002/07/owl#ObjectProperty", name: "ObjectProperty" },
-            { "@id": "http://endhealth.info/im#QueryTemplate", name: "Query template" },
-            { "@id": "http://endhealth.info/im#RecordType", name: "Record type" },
-            { "@id": "http://endhealth.info/im#ValueSet", name: "Value set" }
-          ]
+          status: STATUS,
+          schemes: NAMESPACES,
+          types: TYPES
         },
         focusHierarchy: false,
-        sidebarControlActivePanel: 0
+        sidebarControlActivePanel: 0,
+        searchResults: []
       },
       commit: jest.fn(),
       dispatch: jest.fn().mockResolvedValue("true")
@@ -112,17 +207,204 @@ describe("SidebarControl.vue", () => {
     mockToast = {
       add: jest.fn()
     };
+
+    ConfigService.getFilterDefaults = jest.fn().mockResolvedValue(CONFIG);
+
+    EntityService.getNamespaces = jest.fn().mockResolvedValue(NAMESPACES);
+
+    EntityService.getEntityChildren = jest
+      .fn()
+      .mockResolvedValueOnce(STATUS)
+      .mockResolvedValueOnce(TYPES);
+
     wrapper = shallowMount(SidebarControl, {
       global: {
-        components: { InputText, TabPanel, TabView, Hierarchy, History, SearchResults, Filters },
+        components: { InputText, TabPanel, TabView, ProgressSpinner },
         mocks: { $store: mockStore, $toast: mockToast }
       },
       props: { focusHierarchy: false }
     });
+
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    jest.clearAllMocks();
   });
 
   afterAll(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
+  });
+
+  it("can init", async () => {
+    wrapper.vm.filtersLoaded = false;
+    wrapper.vm.getConfigs = jest.fn();
+    wrapper.vm.setFilterOptions = jest.fn();
+    wrapper.vm.setContainerHeights = jest.fn();
+    wrapper.vm.init();
+    await flushPromises();
+    expect(wrapper.vm.getConfigs).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.setFilterOptions).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.setContainerHeights).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.filtersLoaded).toBe(true);
+  });
+
+  it("can getConfigs", async () => {
+    wrapper.vm.getConfigs();
+    await flushPromises();
+    expect(ConfigService.getFilterDefaults).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateFilterDefaults", CONFIG);
+  });
+
+  it("can setFilterOptions", async () => {
+    EntityService.getEntityChildren = jest
+      .fn()
+      .mockResolvedValueOnce(STATUS)
+      .mockResolvedValueOnce(TYPES);
+    wrapper.vm.setFilterOptions();
+    await flushPromises();
+    expect(EntityService.getNamespaces).toHaveBeenCalledTimes(1);
+    expect(EntityService.getEntityChildren).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith("updateFilterOptions", { status: STATUS, schemes: NAMESPACES, types: TYPES });
+  });
+
+  it("can setFilterDefaults", async () => {
+    wrapper.vm.setFilterDefaults();
+    await flushPromises();
+    expect(mockStore.commit).toHaveBeenCalledTimes(2);
+    expect(mockStore.commit).toHaveBeenNthCalledWith(1, "updateSelectedFilters", {
+      status: [
+        {
+          "@id": "http://endhealth.info/im#Active",
+          hasChildren: false,
+          name: "Active",
+          type: [
+            {
+              "@id": "http://www.w3.org/2002/07/owl#Class",
+              name: "Class"
+            }
+          ]
+        },
+        {
+          "@id": "http://endhealth.info/im#Draft",
+          hasChildren: false,
+          name: "Draft",
+          type: [
+            {
+              "@id": "http://www.w3.org/2002/07/owl#Class",
+              name: "Class"
+            }
+          ]
+        }
+      ],
+      schemes: [
+        {
+          iri: "http://endhealth.info/im#",
+          name: "Discovery namespace",
+          prefix: "im"
+        },
+        {
+          iri: "http://snomed.info/sct#",
+          name: "Snomed-CT namespace",
+          prefix: "sn"
+        }
+      ],
+      types: [
+        {
+          name: "Concept",
+          hasChildren: true,
+          type: [
+            { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+            { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+          ],
+          "@id": "http://endhealth.info/im#Concept"
+        },
+        {
+          name: "Concept Set",
+          hasChildren: false,
+          type: [
+            { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+            { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+          ],
+          "@id": "http://endhealth.info/im#ConceptSet"
+        },
+        {
+          name: "Concept set group",
+          hasChildren: false,
+          type: [
+            { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+            { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+          ],
+          "@id": "http://endhealth.info/im#ConceptSetGroup"
+        },
+        {
+          name: "Folder",
+          hasChildren: false,
+          type: [
+            { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+            { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
+          ],
+          "@id": "http://endhealth.info/im#Folder"
+        },
+        {
+          name: "Node shape",
+          hasChildren: false,
+          type: [
+            { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+            { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+          ],
+          "@id": "http://www.w3.org/ns/shacl#NodeShape"
+        },
+        {
+          name: "ObjectProperty",
+          hasChildren: true,
+          type: [
+            { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+            { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+          ],
+          "@id": "http://www.w3.org/2002/07/owl#ObjectProperty"
+        },
+        {
+          name: "Property",
+          hasChildren: true,
+          type: [
+            { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" },
+            { name: "Class", "@id": "http://www.w3.org/2000/01/rdf-schema#Class" }
+          ],
+          "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
+        },
+        {
+          name: "Query template",
+          hasChildren: false,
+          type: [
+            { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
+            { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
+          ],
+          "@id": "http://endhealth.info/im#QueryTemplate"
+        },
+        {
+          name: "Value set",
+          hasChildren: false,
+          type: [
+            { name: "Concept", "@id": "http://endhealth.info/im#Concept" },
+            { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+          ],
+          "@id": "http://endhealth.info/im#ValueSet"
+        }
+      ]
+    });
+    expect(mockStore.commit).toHaveBeenNthCalledWith(2, "updateHierarchySelectedFilters", [
+      {
+        iri: "http://endhealth.info/im#",
+        name: "Discovery namespace",
+        prefix: "im"
+      },
+      {
+        iri: "http://snomed.info/sct#",
+        name: "Snomed-CT namespace",
+        prefix: "sn"
+      }
+    ]);
   });
 
   it("adds event listener to setsContainerHeights on resize", async () => {

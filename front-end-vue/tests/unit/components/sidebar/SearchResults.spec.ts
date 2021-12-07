@@ -22,10 +22,81 @@ describe("SearchResults.vue", () => {
   let mockStore: any;
   let mockRouter: any;
   let mockToast: any;
+  let mockRef: any;
   let clipboardSpy: any;
   let docSpy: any;
 
-  beforeEach(() => {
+  const BLOCKED_IRIS = [
+    "http://www.w3.org/2001/XMLSchema#string",
+    "http://www.w3.org/2001/XMLSchema#boolean",
+    "http://www.w3.org/2001/XMLSchema#float",
+    "http://www.w3.org/2001/XMLSchema#double",
+    "http://www.w3.org/2001/XMLSchema#decimal",
+    "http://www.w3.org/2001/XMLSchema#dateTime",
+    "http://www.w3.org/2001/XMLSchema#duration",
+    "http://www.w3.org/2001/XMLSchema#hexBinary",
+    "http://www.w3.org/2001/XMLSchema#base64Binary",
+    "http://www.w3.org/2001/XMLSchema#anyURI",
+    "http://www.w3.org/2001/XMLSchema#ID",
+    "http://www.w3.org/2001/XMLSchema#IDREF",
+    "http://www.w3.org/2001/XMLSchema#ENTITY",
+    "http://www.w3.org/2001/XMLSchema#NOTATION",
+    "http://www.w3.org/2001/XMLSchema#normalizedString",
+    "http://www.w3.org/2001/XMLSchema#token",
+    "http://www.w3.org/2001/XMLSchema#language",
+    "http://www.w3.org/2001/XMLSchema#IDREFS",
+    "http://www.w3.org/2001/XMLSchema#ENTITIES",
+    "http://www.w3.org/2001/XMLSchema#NMTOKEN",
+    "http://www.w3.org/2001/XMLSchema#NMTOKENS",
+    "http://www.w3.org/2001/XMLSchema#Name",
+    "http://www.w3.org/2001/XMLSchema#QName",
+    "http://www.w3.org/2001/XMLSchema#NCName",
+    "http://www.w3.org/2001/XMLSchema#integer",
+    "http://www.w3.org/2001/XMLSchema#nonNegativeInteger",
+    "http://www.w3.org/2001/XMLSchema#positiveInteger",
+    "http://www.w3.org/2001/XMLSchema#nonPositiveInteger",
+    "http://www.w3.org/2001/XMLSchema#negativeInteger",
+    "http://www.w3.org/2001/XMLSchema#byte",
+    "http://www.w3.org/2001/XMLSchema#int",
+    "http://www.w3.org/2001/XMLSchema#long",
+    "http://www.w3.org/2001/XMLSchema#short",
+    "http://www.w3.org/2001/XMLSchema#unsignedByte",
+    "http://www.w3.org/2001/XMLSchema#unsignedInt",
+    "http://www.w3.org/2001/XMLSchema#unsignedLong",
+    "http://www.w3.org/2001/XMLSchema#unsignedShort",
+    "http://www.w3.org/2001/XMLSchema#date",
+    "http://www.w3.org/2001/XMLSchema#time",
+    "http://www.w3.org/2001/XMLSchema#gYearMonth",
+    "http://www.w3.org/2001/XMLSchema#gYear",
+    "http://www.w3.org/2001/XMLSchema#gMonthDay",
+    "http://www.w3.org/2001/XMLSchema#gDay",
+    "http://www.w3.org/2001/XMLSchema#gMonth"
+  ];
+
+  const SEARCH_RESULTS = [
+    {
+      name: "Scoliosis deformity of spine (disorder)",
+      iri: "http://snomed.info/sct#298382003",
+      code: "298382003",
+      status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
+      scheme: { name: "Snomed-CT code", "@id": "http://endhealth.info/im#SnomedCodeScheme" },
+      entityType: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
+      isDescendentOf: [],
+      weighting: 0,
+      match: "Scoliosis"
+    }
+  ];
+
+  const DEFAULT_PREDICATES = {
+    "http://endhealth.info/im#roleGroup": "Where",
+    "http://www.w3.org/2002/07/owl#onProperty": "On property",
+    "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
+    "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
+    "http://www.w3.org/2002/07/owl#equivalentClass": "Is equivalent to",
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": "Is subclass of"
+  };
+
+  beforeEach(async () => {
     jest.resetAllMocks();
     clipboardSpy = jest.spyOn(navigator.clipboard, "writeText");
     mockRouter = {
@@ -33,57 +104,44 @@ describe("SearchResults.vue", () => {
     };
     mockStore = {
       state: {
-        loading: {
-          get: jest.fn().mockReturnValue(false)
-        },
-        searchResults: [
-          {
-            name: "Scoliosis deformity of spine (disorder)",
-            iri: "http://snomed.info/sct#298382003",
-            code: "298382003",
-            status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
-            scheme: { name: "Snomed-CT code", "@id": "http://endhealth.info/im#SnomedCodeScheme" },
-            entityType: [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }],
-            isDescendentOf: [],
-            weighting: 0,
-            match: "Scoliosis"
-          }
-        ]
+        blockedIris: BLOCKED_IRIS
       }
     };
     mockToast = {
       add: jest.fn()
     };
+    mockRef = { render: () => {}, methods: { show: jest.fn(), hide: jest.fn() } };
     docSpy = jest.spyOn(document, "getElementById");
     docSpy.mockReturnValue(undefined);
 
-    ConfigService.getDefaultPredicatenames = jest.fn().mockResolvedValue({
-      "http://endhealth.info/im#roleGroup": "Where",
-      "http://www.w3.org/2002/07/owl#onProperty": "On property",
-      "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
-      "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
-      "http://www.w3.org/2002/07/owl#equivalentClass": "Is equivalent to",
-      "http://www.w3.org/2000/01/rdf-schema#subClassOf": "Is subclass of"
-    });
+    ConfigService.getDefaultPredicateNames = jest.fn().mockResolvedValue(DEFAULT_PREDICATES);
 
     wrapper = shallowMount(SearchResults, {
       global: {
         components: { DataTable, ProgressSpinner, Column, OverlayPanel, ContextMenu, Button },
         mocks: { $store: mockStore, $router: mockRouter, $toast: mockToast },
-        directives: { tooltip: Tooltip, clipboard: VueClipboard }
+        directives: { tooltip: Tooltip, clipboard: VueClipboard },
+        stubs: { OverlayPanel: mockRef, ContextMenu: mockRef }
       },
-      props: { searchResults: [], loading: false }
+      props: { searchResults: SEARCH_RESULTS, loading: false }
     });
+
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    jest.clearAllMocks();
   });
 
   afterAll(() => {
     jest.clearAllMocks();
   });
 
-  it("starts empty", () => {
+  it("mounts", () => {
     expect(wrapper.vm.results).toEqual({});
     expect(wrapper.vm.selectedResult).toStrictEqual({});
     expect(wrapper.vm.hoveredResult).toStrictEqual({});
+    expect(wrapper.vm.searchResults).toStrictEqual(SEARCH_RESULTS);
+    expect(wrapper.vm.loading).toBe(false);
+    expect(wrapper.vm.defaultPredicates).toStrictEqual(DEFAULT_PREDICATES);
   });
 
   it("can get perspective by concept type", () => {
@@ -375,5 +433,40 @@ describe("SearchResults.vue", () => {
     expect(wrapper.vm.copyConceptToClipboardVueWrapper(testData)).toStrictEqual(
       "name: Scoliosis deformity of spine,\niri: http://snomed.info/sct#298382003,\ncode: 298382003,\ndescription: Scoliosis deformity of spine (disorder),\nstatus: Active,\nscheme: Snomed-CT namespace,\nentityType: [\n\tAddress (record type),\n\tConcept\n]"
     );
+  });
+
+  it("can hideOverlay", () => {
+    wrapper.vm.hideOverlay();
+    expect(mockRef.methods.hide).toHaveBeenCalledTimes(1);
+  });
+
+  it("can showOverlay", () => {
+    const DATA = {
+      name: "Acquired scoliosis",
+      iri: "http://snomed.info/sct#111266001",
+      code: "111266001",
+      description: "Acquired scoliosis (disorder)",
+      status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
+      scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+      entityType: [
+        { name: "Ontological Concept", "@id": "http://endhealth.info/im#Concept" },
+        { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+      ],
+      isDescendentOf: [],
+      weighting: 11,
+      match: "Acquired scoliosis"
+    };
+    wrapper.vm.setCopyMenuItems = jest.fn();
+    wrapper.vm.showOverlay({ target: "testTarget" }, DATA);
+    expect(wrapper.vm.hoveredResult).toStrictEqual(DATA);
+    expect(wrapper.vm.setCopyMenuItems).toHaveBeenCalledTimes(1);
+    expect(mockRef.methods.show).toHaveBeenCalledTimes(1);
+    expect(mockRef.methods.show).toHaveBeenCalledWith({ target: "testTarget" }, "testTarget");
+  });
+
+  it("can show onCopyRightClick", () => {
+    wrapper.vm.onCopyRightClick("testEvent");
+    expect(mockRef.methods.show).toHaveBeenCalledTimes(1);
+    expect(mockRef.methods.show).toHaveBeenCalledWith("testEvent");
   });
 });

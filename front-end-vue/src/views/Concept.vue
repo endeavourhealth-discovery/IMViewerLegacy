@@ -188,7 +188,12 @@ export default defineComponent({
     },
 
     types() {
-      if (this.isFolder) this.active = 0;
+      if (this.isFolder) {
+        if ("activeElement" in document) {
+          (document.activeElement as HTMLElement).blur();
+        }
+        this.active = 0;
+      }
     }
   },
   async mounted() {

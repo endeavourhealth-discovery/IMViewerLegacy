@@ -30,7 +30,7 @@ describe("ConfigService.ts ___ axios success", () => {
   });
 
   it("can get default predicate names", async () => {
-    const result = await ConfigService.getDefaultPredicatenames();
+    const result = await ConfigService.getDefaultPredicateNames();
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "api/config/defaultPredicateNames");
     expect(result).toStrictEqual(["test config"]);
@@ -73,7 +73,7 @@ describe("ConfigService.ts ___ axios fail", () => {
   });
 
   it("can get defaultPredicateNames", async () => {
-    const result = await ConfigService.getDefaultPredicatenames();
+    const result = await ConfigService.getDefaultPredicateNames();
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "api/config/defaultPredicateNames");
     expect(result).toStrictEqual({});

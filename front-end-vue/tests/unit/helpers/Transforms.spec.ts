@@ -154,7 +154,7 @@ describe("bundleToText", () => {
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2381745001">Structure of eye proper</a>\n' +
     '      Occurrence : <a href="' +
     url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n\n\n';
+    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n';
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -181,7 +181,7 @@ describe("ttValueToString", () => {
   });
 
   it("handles undefined", async () => {
-    expect(ttValueToString(undefined, "object", 0)).toBe("");
+    expect(ttValueToString(undefined, "object", 0)).toBe("undefined");
   });
 });
 
@@ -207,7 +207,7 @@ describe("ttIriToString", () => {
   });
 });
 
-describe("ttNodeToString", () => {
+describe("ttNodeToString ___ isa rolegroup", () => {
   const NODE = {
     "http://endhealth.info/im#isA": [
       { "@id": "http://snomed.info/sct#82354003", name: "Multiple system malformation syndrome" },
@@ -326,7 +326,7 @@ describe("ttNodeToString", () => {
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2381745001">Structure of eye proper</a>\n' +
     '      Occurrence : <a href="' +
     url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n\n\n';
+    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n';
 
   const PREDICATES = {
     "http://endhealth.info/im#roleGroup": "Where",

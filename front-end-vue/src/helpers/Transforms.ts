@@ -1,6 +1,7 @@
 import { TTBundle, TTIriRef } from "@/models/TripleTree";
 import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
 
+// min 2 characters
 const indentSize = "  ";
 
 export function bundleToText(bundle: TTBundle, defaultPredicatenames: any, indent: number, blockedUrlIris?: string[]): string {
@@ -29,7 +30,7 @@ export function ttValueToString(node: any, previousType: string, indent: number,
   } else if (isArrayHasLength(node)) {
     return ttArrayToString(node, indent, iriMap, blockedUrlIris);
   } else {
-    return "";
+    return String(node);
   }
 }
 
@@ -70,14 +71,14 @@ export function ttNodeToString(node: any, previousType: string, indent: number, 
       nodeIndent = indent + 1;
       prefix = indentSize;
       if (first) {
-        prefix = "( ";
+        prefix = indentSize.substring(0, indentSize.length - 2) + "( ";
         first = false;
       }
       if (last) {
         suffix = " )\n";
       }
     }
-    result = processNode(key, value, result, nodeIndent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group }, blockedUrlIris);
+    result = processNode(key, value, result, nodeIndent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group, last: last }, blockedUrlIris);
     count++;
   }
   return result;
@@ -96,17 +97,29 @@ function processNode(key: string, value: any, result: string, indent: number, ir
       result += getObjectName(key, iriMap, pad, prefix);
       result += ttIriToString(value[0] as TTIriRef, "object", indent, true, blockedUrlIris);
       result += suffix;
+    } else if ((value.length === 1 && typeof value[0] === "string") || typeof value[0] === "number") {
+      result += getObjectName(key, iriMap, pad, prefix);
+      result += String(value[0]);
+      result += suffix;
     } else {
       result += getObjectName(key, iriMap, pad, prefix);
       result += "\n";
       result += ttValueToString(value, "object", indent + 1, iriMap, blockedUrlIris);
-      result += suffix;
+      if (stringAdditions.group && stringAdditions.last && result.endsWith("\n"))
+        result = result.substring(0, result.length - 1) + " )" + result.substring(result.length);
+      else if (stringAdditions.group && stringAdditions.last) result += " )\n";
     }
-  } else {
+  } else if (isObjectHasKeys(value)) {
     result += getObjectName(key, iriMap, pad, prefix);
     result += "\n";
-    result += ttValueToString(value, "object", indent + 1, iriMap, blockedUrlIris);
-    result += suffix;
+    result += ttValueToString(value, "object", indent, iriMap, blockedUrlIris);
+    if (stringAdditions.group && stringAdditions.last && result.endsWith("\n"))
+      result = result.substring(0, result.length - 1) + " )" + result.substring(result.length);
+    else if (stringAdditions.group && stringAdditions.last) result += " )\n";
+  } else {
+    result += getObjectName(key, iriMap, pad, prefix);
+    result += ttValueToString(value, "object", indent, iriMap, blockedUrlIris);
+    result += "\n";
   }
   return result;
 }
