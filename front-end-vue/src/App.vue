@@ -125,4 +125,17 @@ body {
 .swal2-container .swal2-popup .swal2-actions {
   justify-content: flex-end;
 }
+
+.p-toast-message-text {
+  width: calc(100% - 4rem);
+}
+
+.p-toast-message-content {
+  width: 100%;
+}
+
+.p-toast-detail {
+  width: 100%;
+  word-wrap: break-word;
+}
 </style>
