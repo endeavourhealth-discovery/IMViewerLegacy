@@ -113,21 +113,22 @@ export default class EntityService {
                   name: request.termFilter
                 }
               }
-            ]
+            ],
+            filter: []
           }
         }
       };
 
       if (request.schemeFilter && request.schemeFilter.length > 0) {
-        req.query.bool.must.push(this.getFilter("scheme.@id", request.schemeFilter));
+        req.query.bool.filter.push(this.getFilter("scheme.@id", request.schemeFilter));
       }
 
       if (request.statusFilter && request.statusFilter.length > 0) {
-        req.query.bool.must.push(this.getFilter("status.@id", request.statusFilter));
+        req.query.bool.filter.push(this.getFilter("status.@id", request.statusFilter));
       }
 
       if (request.typeFilter && request.typeFilter.length > 0) {
-        req.query.bool.must.push(this.getFilter("entityType.@id", request.typeFilter));
+        req.query.bool.filter.push(this.getFilter("entityType.@id", request.typeFilter));
       }
 
       console.log(JSON.stringify(req));
