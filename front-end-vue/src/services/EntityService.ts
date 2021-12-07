@@ -4,7 +4,7 @@ import GraphData from "@/models/GraphData";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { PartialBundle, SearchResponse } from "@/models/entityServiceTypes/EntityServiceTypes";
 import { EntityDefinitionDto } from "@/models/EntityDefinitionDto";
-import { TTIriRef } from "@/models/TripleTree";
+import { TTBundle, TTIriRef } from "@/models/TripleTree";
 import { ExportValueSet } from "@/models/members/ExportValueSet";
 import { TermCode } from "@/models/terms/TermCode";
 import { DataModelProperty } from "@/models/properties/DataModelProperty";
@@ -249,6 +249,14 @@ export default class EntityService {
       });
     } catch (error) {
       return {} as SearchResponse;
+    }
+  }
+
+  public static async getEcl(bundle: TTBundle): Promise<string> {
+    try {
+      return await axios.post(this.api + "api/entity/ecl", bundle);
+    } catch (error) {
+      return "";
     }
   }
 }

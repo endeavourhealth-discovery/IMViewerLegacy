@@ -112,7 +112,7 @@ function processNode(key: string, value: any, result: string, indent: number, ir
   } else if (isObjectHasKeys(value)) {
     result += getObjectName(key, iriMap, pad, prefix);
     result += "\n";
-    result += ttValueToString(value, "object", indent, iriMap, blockedUrlIris);
+    result += ttValueToString(value, "object", indent + 1, iriMap, blockedUrlIris);
     if (stringAdditions.group && stringAdditions.last && result.endsWith("\n"))
       result = result.substring(0, result.length - 1) + " )" + result.substring(result.length);
     else if (stringAdditions.group && stringAdditions.last) result += " )\n";
