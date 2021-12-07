@@ -155,7 +155,7 @@ axios.interceptors.response.use(
       vm.$toast.add({
         severity: "warn",
         summary: "Warning",
-        detail: error.response.data,
+        detail: error.response.data.message,
         life: 4000
       });
     } else {
