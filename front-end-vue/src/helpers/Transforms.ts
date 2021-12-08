@@ -115,7 +115,7 @@ function processNode(key: string, value: any, result: string, indent: number, ir
       result += "\n";
       result += ttValueToString(value, "object", indent + 1, withHyperlinks, iriMap, blockedUrlIris);
       if (stringAdditions.group && stringAdditions.last && result.endsWith("\n"))
-        result = result.substring(0, result.length - 1) + " )" + result.substring(result.length);
+        result = result.substring(0, result.length - 1) + " )" + result.substring(result.length - 1);
       else if (stringAdditions.group && stringAdditions.last) result += " )\n";
     }
   } else if (isObjectHasKeys(value)) {
@@ -123,7 +123,7 @@ function processNode(key: string, value: any, result: string, indent: number, ir
     result += "\n";
     result += ttValueToString(value, "object", indent + 1, withHyperlinks, iriMap, blockedUrlIris);
     if (stringAdditions.group && stringAdditions.last && result.endsWith("\n"))
-      result = result.substring(0, result.length - 1) + " )" + result.substring(result.length);
+      result = result.substring(0, result.length - 1) + " )" + result.substring(result.length - 1);
     else if (stringAdditions.group && stringAdditions.last) result += " )\n";
   } else {
     result += getObjectName(key, iriMap, pad, prefix);
