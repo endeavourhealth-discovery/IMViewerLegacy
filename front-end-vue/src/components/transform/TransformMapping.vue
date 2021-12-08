@@ -43,7 +43,7 @@
                     @change="transformValue(mapping)"
                   />
                 </div>
-                <div v-if="mapping.transformType === 'FUNCTION'" class="p-field p-col-2">
+                <div v-if="mapping.transformType === 'function'" class="p-field p-col-2">
                   <MultiSelect
                     v-model="mapping.transformFunctions"
                     :options="functionOptions"
@@ -51,7 +51,7 @@
                     @change="transformValue(mapping)"
                   />
                 </div>
-                <div v-if="mapping.transformType === 'FUNCTION' || mapping.transformType === 'REFERENCE'" class="p-field p-col">
+                <div v-if="mapping.transformType === 'function' || mapping.transformType === 'reference'" class="p-field p-col">
                   <TreeSelect
                     v-model="mapping.transformValue"
                     :options="sourceProperties"
@@ -116,7 +116,7 @@ export default defineComponent({
   },
   computed: {
     showFunctionHeader() {
-      return !!this.mappings.find(mapping => mapping.transformType === "FUNCTION");
+      return !!this.mappings.find(mapping => mapping.transformType === "function");
     }
   },
   data() {
