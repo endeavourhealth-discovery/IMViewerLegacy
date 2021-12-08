@@ -1,7 +1,8 @@
-export default interface TransformMappingObject {
+export default interface TransformInstruction {
   destinationPath: string;
   transformType: string;
-  transformValue: string | string[];
+  transformValue: string;
+  transformFunction: string[];
   property: string | undefined;
   example: string | undefined;
   exampleTransformed: string | undefined;

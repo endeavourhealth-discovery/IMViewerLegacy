@@ -6,19 +6,22 @@
         <div class="p-col">
           <div id="mapping-header-container">
             <div class="p-fluid p-formgrid p-grid">
-              <div class="p-field p-col-3">
+              <div class="p-field p-col">
                 <label>Destination Path</label>
               </div>
-              <div class="p-field p-col-2">
+              <div class="p-field p-col">
                 <label>Transform Type</label>
               </div>
-              <div class="p-field p-col-3">
+              <div class="p-field p-col-2" v-if="showFunctionHeader">
+                Transform Function
+              </div>
+              <div class="p-field p-col">
                 <label>Transform Value</label>
               </div>
-              <div class="p-field p-col ">
+              <div class="p-field p-col">
                 <label>Example</label>
               </div>
-              <div class="p-field p-col ">
+              <div class="p-field p-col">
                 <label>Transformed</label>
               </div>
               <Button id="placeholder-header-button" icon="pi pi-times" class="p-button-rounded" disabled />
@@ -27,11 +30,15 @@
           <div id="mapping-container">
             <div v-for="mapping in mappings" :key="mapping">
               <div class="p-fluid p-formgrid p-grid">
-                <div class="p-field p-col-3">
-                  <TreeSelect v-model="mapping.destinationPath" :options="jpaths" placeholder="Choose destination path" @change="transformValue(mapping)" />
-                  <!-- <Dropdown :options="jpaths" v-model="mapping.destinationPath" placeholder="Choose destination path" @change="transformValue(mapping)" /> -->
+                <div class="p-field p-col">
+                  <TreeSelect
+                    v-model="mapping.destinationPath"
+                    :options="destinationPaths"
+                    placeholder="Choose destination path"
+                    @change="transformValue(mapping)"
+                  />
                 </div>
-                <div class="p-field p-col-2">
+                <div class="p-field p-col">
                   <Dropdown
                     :options="transformTypeOptions"
                     v-model="mapping.transformType"
@@ -39,21 +46,23 @@
                     @change="transformValue(mapping)"
                   />
                 </div>
-                <div v-if="mapping.transformType === 'function'" class="p-field p-col-3">
+                <div v-if="mapping.transformType === 'FUNCTION'" class="p-field p-col-2">
                   <MultiSelect
-                    v-model="mapping.transformValue"
-                    :options="fnPropOptions"
-                    placeholder="Select function and property"
-                    display="chip"
-                    optionGroupLabel="label"
-                    optionGroupChildren="items"
+                    v-model="mapping.transformFunctions"
+                    :options="functionOptions"
+                    placeholder="Choose transform functions"
                     @change="transformValue(mapping)"
                   />
                 </div>
-                <div v-else-if="mapping.transformType === 'reference'" class="p-field p-col-3">
-                  <Dropdown :options="propertyOptions" v-model="mapping.transformValue" placeholder="Choose input property" @change="transformValue(mapping)" />
+                <div v-if="mapping.transformType === 'FUNCTION' || mapping.transformType === 'REFERENCE'" class="p-field p-col">
+                  <TreeSelect
+                    v-model="mapping.transformValue"
+                    :options="sourceProperties"
+                    placeholder="Choose input property"
+                    @change="transformValue(mapping)"
+                  />
                 </div>
-                <div v-else class="p-field p-col-3">
+                <div v-else class="p-field p-col">
                   <InputText type="text" v-model="mapping.transformValue" @change="transformValue(mapping)" />
                 </div>
                 <div class="p-field p-col">
@@ -89,12 +98,10 @@
 
 <script lang="ts">
 import TransformFormObject from "../../models/transform/TransformFormObject";
-import TransformMappingObject from "../../models/transform/TransformMappingObject";
-import { TransformTypeEnum } from "../../models/transform/TransformTypeEnum";
+import TransformMappingObject from "../../models/transform/TransformInstruction";
 import { defineComponent, PropType } from "vue";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
-import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
 import TransformService from "@/services/TransformService";
 
 export default defineComponent({
@@ -109,37 +116,31 @@ export default defineComponent({
       required: true
     }
   },
+  computed: {
+    showFunctionHeader() {
+      return !!this.mappings.find(mapping => mapping.transformType === "FUNCTION");
+    }
+  },
   data() {
     return {
       pageIndex: 2,
-      propertyOptions: [] as string[],
+      sourceProperties: [] as string[],
       transformTypeOptions: [] as string[],
       mappings: [{}] as TransformMappingObject[],
       previewDisplay: [] as any[],
-      functionOptions: ["generateIri", "toLowerCase", "toUpperCase", "removeSpaces", "toLowerCamelCase", "toUpperCamelCase"],
-      fnPropOptions: [] as { label: string; items: string[] }[],
-      jpaths: [] as string[],
-      checkPointFormObject: {} as TransformFormObject
+      destinationPaths: [] as string[],
+      checkPointFormObject: {} as TransformFormObject,
+      functionOptions: [] as string[]
     };
   },
   async mounted() {
     this.checkPointFormObject = this.formObject;
-    this.propertyOptions = await TransformService.getJpaths(this.formObject.inputDisplayJson[0]);
-    await TransformService.getJpathTreeOptions(this.formObject.inputDisplayJson[0]);
+    this.functionOptions = await TransformService.getFunctions();
+    this.sourceProperties = await TransformService.getJpathTreeOptions(this.formObject.inputDisplayJson[0]);
     this.transformTypeOptions = await TransformService.getTransformTypes();
     this.previewDisplay = await TransformService.getDataModelInstanceDisplay(this.formObject.dataModelJson);
-    this.jpaths = await TransformService.getJpathTreeOptions(this.previewDisplay);
+    this.destinationPaths = await TransformService.getJpathTreeOptions(this.previewDisplay);
     this.mappings = this.populateMappings(this.formObject.inputDisplayJson);
-    this.fnPropOptions = [
-      {
-        label: "Functions",
-        items: this.functionOptions
-      },
-      {
-        label: "Properties",
-        items: this.propertyOptions
-      }
-    ];
   },
   methods: {
     transformValue(mapping: TransformMappingObject) {

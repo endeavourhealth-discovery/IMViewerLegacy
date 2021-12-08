@@ -12,6 +12,14 @@ export default class TransformService {
     }
   }
 
+  public static async getFunctions(): Promise<string[]> {
+    try {
+      return await axios.get(this.api + "api/transform/functions");
+    } catch (error) {
+      return [] as string[];
+    }
+  }
+
   public static async getDataModelInstanceDisplay(dataModelJson: any): Promise<any[]> {
     try {
       return await axios.post(this.api + "api/transform/datamodel/instance", dataModelJson);
