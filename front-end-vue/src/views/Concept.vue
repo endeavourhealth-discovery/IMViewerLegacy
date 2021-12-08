@@ -10,13 +10,10 @@
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
-              v-clipboard:copy="conceptAsString"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
+              @click="toggle($event, 'copyMenu')"
               v-tooltip="'Copy concept to clipboard \n (right click to copy individual properties)'"
-              @contextmenu="onCopyRightClick"
             />
-            <ContextMenu ref="copyMenu" :model="copyMenuItems" />
+            <Menu id="copy-options" ref="copyMenu" :model="copyMenuItems" :popup="true" />
           </div>
           <button class="p-panel-header-icon p-link p-mr-2" @click="openDownloadDialog" v-tooltip.bottom="'Download concept'">
             <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
@@ -361,19 +358,6 @@ export default defineComponent({
       this.showDownloadDialog = false;
     },
 
-    onCopy(): void {
-      this.$toast.add(LoggerService.success("Value copied to clipboard"));
-    },
-
-    onCopyError(): void {
-      this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
-    },
-
-    onCopyRightClick(event: any): void {
-      const x = this.$refs.copyMenu as any;
-      x.show(event);
-    },
-
     async setCopyMenuItems(): Promise<void> {
       this.copyMenuItems = [
         {
@@ -434,6 +418,11 @@ export default defineComponent({
       } else {
         this.$toast.add(LoggerService.success("Export will begin shortly"));
       }
+    },
+
+    toggle(event: any, refId: string) {
+      const x = this.$refs[refId] as any;
+      x.toggle(event);
     }
   }
 });
