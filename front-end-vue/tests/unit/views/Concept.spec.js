@@ -1,6 +1,6 @@
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import Concept from "@/views/Concept.vue";
-import ContextMenu from "primevue/contextmenu";
+import Menu from "primevue/menu";
 import Button from "primevue/button";
 import LoggerService from "@/services/LoggerService";
 import PanelHeader from "@/components/concept/PanelHeader.vue";
@@ -130,7 +130,7 @@ describe("Concept.vue ___ not moduleIri", () => {
     mockToast = {
       add: jest.fn()
     };
-    mockRef = { render: () => {}, methods: { show: jest.fn(), hide: jest.fn() } };
+    mockRef = { render: () => {}, methods: { toggle: jest.fn(), show: jest.fn(), hide: jest.fn() } };
 
     windowSpy = jest.spyOn(window, "getComputedStyle");
     windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue("16px") });
@@ -143,7 +143,7 @@ describe("Concept.vue ___ not moduleIri", () => {
         components: {
           Definition,
           Mappings,
-          ContextMenu,
+          Menu,
           Button,
           TabPanel,
           TabView,
@@ -157,8 +157,8 @@ describe("Concept.vue ___ not moduleIri", () => {
           ProgressSpinner
         },
         mocks: { $store: mockStore, $router: mockRouter, $toast: mockToast },
-        directives: { tooltip: jest.fn(), clipboard: { copy: jest.fn(), success: jest.fn(), error: jest.fn() } },
-        stubs: { Panel: Panel, ContextMenu: mockRef }
+        directives: { tooltip: jest.fn() },
+        stubs: { Panel: Panel, Menu: mockRef }
       }
     });
 
@@ -813,18 +813,6 @@ describe("Concept.vue ___ not moduleIri", () => {
     expect(wrapper.vm.showDownloadDialog).toBe(false);
   });
 
-  it("toasts onCopy", () => {
-    wrapper.vm.onCopy();
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Value copied to clipboard"));
-  });
-
-  it("toasts onCopyError", () => {
-    wrapper.vm.onCopyError();
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to copy value to clipboard"));
-  });
-
   it("can set copy menu items", async () => {
     wrapper.vm.copyMenuItems = [];
     wrapper.vm.concept = {
@@ -1093,13 +1081,6 @@ describe("Concept.vue ___ not moduleIri", () => {
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Export failed from server"));
   });
 
-  it("can onCopyRightClick", async () => {
-    wrapper.vm.onCopyRightClick("testEvent");
-    await flushPromises();
-    expect(mockRef.methods.show).toHaveBeenCalledTimes(1);
-    expect(mockRef.methods.show).toHaveBeenCalledWith("testEvent");
-  });
-
   it("can wrapper isObjectHasKeys", () => {
     expect(wrapper.vm.isObjectHasKeysWrapper({ key1: "test" }, ["key1"])).toBe(true);
   });
@@ -1162,7 +1143,7 @@ describe("Concept.vue ___ moduleIri", () => {
     mockToast = {
       add: jest.fn()
     };
-    mockRef = { render: () => {}, methods: { show: jest.fn(), hide: jest.fn() } };
+    mockRef = { render: () => {}, methods: { toggle: jest.fn(), show: jest.fn(), hide: jest.fn() } };
 
     windowSpy = jest.spyOn(window, "getComputedStyle");
     windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue("16px") });
@@ -1175,7 +1156,7 @@ describe("Concept.vue ___ moduleIri", () => {
         components: {
           Definition,
           Mappings,
-          ContextMenu,
+          Menu,
           Button,
           TabPanel,
           TabView,
@@ -1189,8 +1170,8 @@ describe("Concept.vue ___ moduleIri", () => {
           ProgressSpinner
         },
         mocks: { $store: mockStore, $router: mockRouter, $toast: mockToast },
-        directives: { tooltip: jest.fn(), clipboard: { copy: jest.fn(), success: jest.fn(), error: jest.fn() } },
-        stubs: { Panel: Panel, ContextMenu: mockRef }
+        directives: { tooltip: jest.fn() },
+        stubs: { Panel: Panel, Menu: mockRef }
       }
     });
 
