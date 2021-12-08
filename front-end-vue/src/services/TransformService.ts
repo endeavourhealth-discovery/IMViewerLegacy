@@ -1,4 +1,5 @@
 import { TransformInputUpload, JoinInstruction } from "@/models/transform/TransformInputUpload";
+import { TransformInstructionDto } from "@/models/transform/TransformInstruction";
 import axios from "axios";
 
 export default class TransformService {
@@ -73,6 +74,18 @@ export default class TransformService {
       return await axios.post(this.api + "api/transform/jpathTreeOptions", input);
     } catch (error) {
       return [] as string[];
+    }
+  }
+
+  public static async transformByInstruction(
+    instruction: TransformInstructionDto,
+    instances: any[],
+    input: any
+  ): Promise<{ instruction: TransformInstructionDto; instances: any }> {
+    try {
+      return await axios.post(this.api + "api/transform/rowTransformation", { instruction, instances, input });
+    } catch (error) {
+      return {} as { instruction: TransformInstructionDto; instances: any };
     }
   }
 }

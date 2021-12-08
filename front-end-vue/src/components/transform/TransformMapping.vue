@@ -21,9 +21,6 @@
               <div class="p-field p-col">
                 <label>Example</label>
               </div>
-              <div class="p-field p-col">
-                <label>Transformed</label>
-              </div>
               <Button id="placeholder-header-button" icon="pi pi-times" class="p-button-rounded" disabled />
             </div>
           </div>
@@ -66,10 +63,11 @@
                   <InputText type="text" v-model="mapping.transformValue" @change="transformValue(mapping)" />
                 </div>
                 <div class="p-field p-col">
-                  <InputText type="text" v-model="mapping.example" disabled> </InputText>
-                </div>
-                <div class="p-field p-col">
-                  <InputText type="text" v-model="mapping.exampleTransformed" disabled> </InputText>
+                  <div class="p-fluid p-formgrid p-grid nested-grid" style="margin:0.5em;">
+                    <div class="p-col">{{ mapping.example }}</div>
+                    <div class="p-col"><i class="pi pi-arrow-right"></i></div>
+                    <div class="p-col">{{ mapping.exampleTransformed }}</div>
+                  </div>
                 </div>
                 <Button icon="pi pi-times" class="p-button-danger p-button-sm p-button-raised p-button-rounded" @click="removeMapping(mapping)" />
               </div>
@@ -77,7 +75,7 @@
           </div>
 
           <div class="p-field p-col">
-            <Button id="add-button" label="Add property" @click="addMapping()" class="p-button-success"> </Button>
+            <Button id="add-button" label="Add instruction" @click="addMapping()" class="p-button-success"> </Button>
           </div>
         </div>
 
@@ -98,7 +96,7 @@
 
 <script lang="ts">
 import TransformFormObject from "../../models/transform/TransformFormObject";
-import TransformMappingObject from "../../models/transform/TransformInstruction";
+import { TransformInstruction, TransformInstructionDto } from "../../models/transform/TransformInstruction";
 import { defineComponent, PropType } from "vue";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
@@ -126,7 +124,8 @@ export default defineComponent({
       pageIndex: 2,
       sourceProperties: [] as string[],
       transformTypeOptions: [] as string[],
-      mappings: [{}] as TransformMappingObject[],
+      mappings: [{}] as TransformInstruction[],
+      selectedDestinationPath: {},
       previewDisplay: [] as any[],
       destinationPaths: [] as string[],
       checkPointFormObject: {} as TransformFormObject,
@@ -140,20 +139,31 @@ export default defineComponent({
     this.transformTypeOptions = await TransformService.getTransformTypes();
     this.previewDisplay = await TransformService.getDataModelInstanceDisplay(this.formObject.dataModelJson);
     this.destinationPaths = await TransformService.getJpathTreeOptions(this.previewDisplay);
-    this.mappings = this.populateMappings(this.formObject.inputDisplayJson);
   },
   methods: {
-    transformValue(mapping: TransformMappingObject) {
-      //
+    async transformValue(mapping: TransformInstruction) {
+      if (mapping.destinationPath && mapping.transformType && mapping.transformValue) {
+        const dto = this.getInstructionDto(mapping);
+        const { instruction, instances } = await TransformService.transformByInstruction(dto, this.previewDisplay, this.formObject.inputDisplayJson);
+        mapping.example = instruction.example;
+        mapping.exampleTransformed = instruction.exampleTransformed;
+        this.previewDisplay = instances;
+      }
     },
-    populateMappings(instance: any) {
-      //
-      return [{}] as TransformMappingObject[];
+    getInstructionDto(mapping: TransformInstruction): TransformInstructionDto {
+      return {
+        destinationPath: Object.keys(mapping.destinationPath)[0],
+        transformType: mapping.transformType,
+        transformValue: Object.keys(mapping.transformValue)[0],
+        transformFunctions: mapping.transformFunctions,
+        example: mapping.example,
+        exampleTransformed: mapping.exampleTransformed
+      } as TransformInstructionDto;
     },
     addMapping() {
-      this.mappings.push({} as TransformMappingObject);
+      this.mappings.push({} as TransformInstruction);
     },
-    removeMapping(mapping: TransformMappingObject) {
+    removeMapping(mapping: TransformInstruction) {
       this.mappings = this.mappings.filter(included => {
         return included.destinationPath != mapping.destinationPath;
       });
