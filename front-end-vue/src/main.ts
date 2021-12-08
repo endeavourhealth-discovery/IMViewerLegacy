@@ -151,20 +151,52 @@ axios.interceptors.response.use(
     return isObjectHasKeys(response, ["data"]) ? response.data : undefined;
   },
   error => {
-    if (error.response.status === 400) {
+    if (error.response.status.toString().charAt(0) === "4") {
       vm.$toast.add({
         severity: "warn",
         summary: "Warning",
         detail: "Request for " + error.config.url.substring(error.config.url.lastIndexOf("/") + 1) + " was unsuccessful. " + error.response.data.message + ".",
         life: 4000
       });
+      console.warn(
+        error.config.url +
+          " :" +
+          "\n\t" +
+          "Status: " +
+          error.response.data.status +
+          "\n\t" +
+          "Code: " +
+          error.response.data.code +
+          "\n\t" +
+          "Timestamp: " +
+          error.response.data.timestamp +
+          "\n\t" +
+          "Message: " +
+          error.response.data.message
+      );
     } else {
       vm.$toast.add({
         severity: "error",
         summary: "Request error",
-        detail: "Request for " + error.config.url.substring(error.config.url.lastIndexOf("/") + 1) + " was unsuccessful. " + error.message + ".",
+        detail: "Request for " + error.config.url.substring(error.config.url.lastIndexOf("/") + 1) + " was unsuccessful. " + error.response.data.message + ".",
         life: 4000
       });
+      console.error(
+        error.config.url +
+          " :" +
+          "\n\t" +
+          "Status: " +
+          error.response.data.status +
+          "\n\t" +
+          "Code: " +
+          error.response.data.code +
+          "\n\t" +
+          "Timestamp: " +
+          error.response.data.timestamp +
+          "\n\t" +
+          "Message: " +
+          error.response.data.message
+      );
     }
   }
 );
