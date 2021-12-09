@@ -33,6 +33,8 @@
                     :options="destinationPaths"
                     placeholder="Choose destination path"
                     @change="transformValue(mapping)"
+                    display="chip"
+                    selectionMode="checkbox"
                   />
                 </div>
                 <div class="p-field p-col">
@@ -149,8 +151,15 @@ export default defineComponent({
     },
     getInstructionDto(mapping: TransformInstruction): TransformInstructionDto {
       const transformValue = isObjectHasKeys(mapping.transformValue) ? Object.keys(mapping.transformValue)[0] : mapping.transformValue;
+      const destinationPaths = [] as string[];
+      const pathSelections = Object.keys(mapping.destinationPath);
+      pathSelections.forEach(selectedPath => {
+        if (mapping.destinationPath[selectedPath]["checked"] === true) {
+          destinationPaths.push(selectedPath);
+        }
+      });
       return {
-        destinationPath: Object.keys(mapping.destinationPath)[0],
+        destinationPaths: destinationPaths,
         transformType: mapping.transformType,
         transformValue: transformValue,
         transformFunctions: mapping.transformFunctions,

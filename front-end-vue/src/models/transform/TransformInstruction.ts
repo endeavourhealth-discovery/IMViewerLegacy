@@ -1,5 +1,5 @@
 export interface TransformInstruction {
-  destinationPath: object;
+  destinationPath: any;
   transformType: string;
   transformValue: object;
   transformFunctions: string[];
@@ -8,7 +8,7 @@ export interface TransformInstruction {
 }
 
 export interface TransformInstructionDto {
-  destinationPath: string;
+  destinationPaths: string[];
   transformType: string;
   transformValue: string;
   transformFunctions: string[];
