@@ -63,11 +63,7 @@
                   <InputText type="text" v-model="mapping.transformValue" @change="transformValue(mapping)" />
                 </div>
                 <div class="p-field p-col">
-                  <div class="p-fluid p-formgrid p-grid nested-grid" style="margin:0.5em;">
-                    <div class="p-col">{{ mapping.example }}</div>
-                    <div class="p-col"><i class="pi pi-arrow-right"></i></div>
-                    <div class="p-col">{{ mapping.exampleTransformed }}</div>
-                  </div>
+                  <InputText type="text" v-model="mapping.exampleTransformed" disabled />
                 </div>
                 <Button icon="pi pi-times" class="p-button-danger p-button-sm p-button-raised p-button-rounded" @click="removeMapping(mapping)" />
               </div>
@@ -101,6 +97,7 @@ import { defineComponent, PropType } from "vue";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
 import TransformService from "@/services/TransformService";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "TransformMapping",
@@ -151,10 +148,11 @@ export default defineComponent({
       }
     },
     getInstructionDto(mapping: TransformInstruction): TransformInstructionDto {
+      const transformValue = isObjectHasKeys(mapping.transformValue) ? Object.keys(mapping.transformValue)[0] : mapping.transformValue;
       return {
         destinationPath: Object.keys(mapping.destinationPath)[0],
         transformType: mapping.transformType,
-        transformValue: Object.keys(mapping.transformValue)[0],
+        transformValue: transformValue,
         transformFunctions: mapping.transformFunctions,
         example: mapping.example,
         exampleTransformed: mapping.exampleTransformed
