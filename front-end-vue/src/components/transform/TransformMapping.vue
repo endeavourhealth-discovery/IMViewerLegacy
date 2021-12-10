@@ -6,17 +6,17 @@
         <div class="p-col">
           <div id="mapping-header-container">
             <div class="p-fluid p-formgrid p-grid">
-              <div class="p-field p-col">
+              <div class="p-field p-col-2">
                 <label>Destination Path</label>
               </div>
-              <div class="p-field p-col">
+              <div class="p-field p-col-2">
                 <label>Transform Type</label>
               </div>
-              <div class="p-field p-col-2" v-if="showFunctionHeader">
-                Transform Function
-              </div>
-              <div class="p-field p-col">
+              <div class="p-field p-col-2">
                 <label>Transform Value</label>
+              </div>
+              <div class="p-field p-col-3">
+                Transform Function
               </div>
               <div class="p-field p-col">
                 <label>Example</label>
@@ -27,7 +27,7 @@
           <div id="mapping-container">
             <div v-for="mapping in mappings" :key="mapping">
               <div class="p-fluid p-formgrid p-grid">
-                <div class="p-field p-col">
+                <div class="p-field p-col-2">
                   <TreeSelect
                     v-model="mapping.destinationPath"
                     :options="destinationPaths"
@@ -37,7 +37,7 @@
                     selectionMode="checkbox"
                   />
                 </div>
-                <div class="p-field p-col">
+                <div class="p-field p-col-2">
                   <Dropdown
                     :options="transformTypeOptions"
                     v-model="mapping.transformType"
@@ -45,15 +45,7 @@
                     @change="transformValue(mapping)"
                   />
                 </div>
-                <div v-if="mapping.transformType === 'function'" class="p-field p-col-2">
-                  <MultiSelect
-                    v-model="mapping.transformFunctions"
-                    :options="functionOptions"
-                    placeholder="Choose transform functions"
-                    @change="transformValue(mapping)"
-                  />
-                </div>
-                <div v-if="mapping.transformType === 'function' || mapping.transformType === 'reference'" class="p-field p-col">
+                <div v-if="mapping.transformType === 'reference'" class="p-field p-col-2">
                   <TreeSelect
                     v-model="mapping.transformValue"
                     :options="sourceProperties"
@@ -61,8 +53,16 @@
                     @change="transformValue(mapping)"
                   />
                 </div>
-                <div v-else class="p-field p-col">
+                <div v-else class="p-field p-col-2">
                   <InputText type="text" v-model="mapping.transformValue" @change="transformValue(mapping)" />
+                </div>
+                <div class="p-field p-col-3">
+                  <MultiSelect
+                    v-model="mapping.transformFunctions"
+                    :options="functionOptions"
+                    placeholder="Choose transform functions"
+                    @change="transformValue(mapping)"
+                  />
                 </div>
                 <div class="p-field p-col">
                   <InputText type="text" v-model="mapping.exampleTransformed" disabled />
