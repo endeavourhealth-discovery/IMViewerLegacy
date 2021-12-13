@@ -1067,7 +1067,7 @@ describe("Concept.vue ___ not moduleIri", () => {
     window.open = jest.fn().mockReturnValue(true);
     wrapper.vm.exportConcept();
     expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith("/test/api/entity/exportConcept?iri=http:%2F%2Fendhealth.info%2Fim%23CriticalCareEncounter");
+    expect(window.open).toHaveBeenCalledWith("/test/api/entity/exportConcept?iri=http:%2F%2Fendhealth.info%2Fim%23CriticalCareEncounter&format=undefined");
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Export will begin shortly"));
   });
@@ -1076,7 +1076,7 @@ describe("Concept.vue ___ not moduleIri", () => {
     window.open = jest.fn().mockReturnValue(false);
     wrapper.vm.exportConcept();
     expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith("/test/api/entity/exportConcept?iri=http:%2F%2Fendhealth.info%2Fim%23CriticalCareEncounter");
+    expect(window.open).toHaveBeenCalledWith("/test/api/entity/exportConcept?iri=http:%2F%2Fendhealth.info%2Fim%23CriticalCareEncounter&format=undefined");
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Export failed from server"));
   });

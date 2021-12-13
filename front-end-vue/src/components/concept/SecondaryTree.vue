@@ -42,7 +42,9 @@
           v-tooltip.top="'CTRL+click to navigate'"
         >
           <span v-if="!slotProps.node.loading">
-            <i :class="'fas fa-fw' + slotProps.node.typeIcon" :style="'color:' + slotProps.node.color" aria-hidden="true" />
+            <div class="result-icon-container" :style="'color:' + slotProps.node.color">
+              <font-awesome-icon :icon="slotProps.node.typeIcon" class="result-icon fa-fw" />
+            </div>
           </span>
           <ProgressSpinner v-if="slotProps.node.loading" />
           <span>{{ slotProps.node.label }}</span>
@@ -86,19 +88,19 @@
 </template>
 
 <script lang="ts">
-import { getIconFromType, getColourFromType } from "@/helpers/ConceptTypeMethods";
-import { TreeNode } from "@/models/TreeNode";
+import {getColourFromType, getFAIconFromType} from "@/helpers/ConceptTypeMethods";
+import {TreeNode} from "@/models/TreeNode";
 import EntityService from "@/services/EntityService";
-import { IM } from "@/vocabulary/IM";
-import { RDF } from "@/vocabulary/RDF";
-import { RDFS } from "@/vocabulary/RDFS";
-import { defineComponent } from "vue";
-import { ConceptSummary } from "@/models/search/ConceptSummary";
-import { TreeParent } from "@/models/secondaryTree/TreeParent";
-import { EntityReferenceNode } from "@/models/EntityReferenceNode";
-import { TTIriRef } from "@/models/TripleTree";
-import { ConceptAggregate } from "@/models/ConceptAggregate";
-import { isArrayHasLength, isObject, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import {IM} from "@/vocabulary/IM";
+import {RDF} from "@/vocabulary/RDF";
+import {RDFS} from "@/vocabulary/RDFS";
+import {defineComponent} from "vue";
+import {ConceptSummary} from "@/models/search/ConceptSummary";
+import {TreeParent} from "@/models/secondaryTree/TreeParent";
+import {EntityReferenceNode} from "@/models/EntityReferenceNode";
+import {TTIriRef} from "@/models/TripleTree";
+import {ConceptAggregate} from "@/models/ConceptAggregate";
+import {isArrayHasLength, isObject, isObjectHasKeys} from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "SecondaryTree",
@@ -109,7 +111,7 @@ export default defineComponent({
       this.alternateParents = [];
       this.expandedKeys = {};
       await this.getConceptAggregate(newValue);
-      this.createTree(this.conceptAggregate.concept, this.conceptAggregate.parents, this.conceptAggregate.children, this.parentPosition);
+      await this.createTree(this.conceptAggregate.concept, this.conceptAggregate.parents, this.conceptAggregate.children, this.parentPosition);
     }
   },
   data() {
@@ -190,17 +192,16 @@ export default defineComponent({
     },
 
     createTreeNode(conceptName: string, conceptIri: string, conceptTypes: TTIriRef[], hasChildren: boolean): TreeNode {
-      const node: TreeNode = {
+      return {
         key: conceptName,
         label: conceptName,
-        typeIcon: getIconFromType(conceptTypes),
+        typeIcon: getFAIconFromType(conceptTypes),
         color: getColourFromType(conceptTypes),
         data: conceptIri,
         leaf: !hasChildren,
         loading: false,
         children: [] as TreeNode[]
       };
-      return node;
     },
 
     async expandChildren(node: TreeNode): Promise<void> {
@@ -218,10 +219,8 @@ export default defineComponent({
     },
 
     containsChild(nodeChildren: TreeNode[], child: EntityReferenceNode): boolean {
-      if (nodeChildren.some(nodeChild => nodeChild.data === child["@id"])) {
-        return true;
-      }
-      return false;
+      return nodeChildren.some(nodeChild => nodeChild.data === child["@id"]);
+
     },
 
     async expandParents(parentPosition: number): Promise<void> {

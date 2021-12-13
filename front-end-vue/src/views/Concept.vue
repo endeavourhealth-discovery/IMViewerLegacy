@@ -315,7 +315,7 @@ export default defineComponent({
       await this.getInferred(this.conceptIri);
       this.types = isObjectHasKeys(this.concept, [RDF.TYPE]) ? this.concept[RDF.TYPE] : ([] as TTIriRef[]);
       this.header = this.concept[RDFS.LABEL];
-      this.setCopyMenuItems();
+      await this.setCopyMenuItems();
       this.setStoreType();
       this.conceptAsString = copyConceptToClipboard(this.concept, this.configs, undefined, this.blockedIris);
       this.loading = false;
@@ -437,7 +437,7 @@ export default defineComponent({
       if (!popup) {
         this.$toast.add(LoggerService.error("Export failed from server"));
       } else {
-        this.$toast.add(LoggerService.success("Export will began shortly"));
+        this.$toast.add(LoggerService.success("Export will begin shortly"));
       }
     },
 
