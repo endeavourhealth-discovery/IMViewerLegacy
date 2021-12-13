@@ -149,11 +149,7 @@ export default class EntityService {
     for (const type of data) {
       const fieldValue: any = {};
       fieldValue[field] = type;
-      types.push(
-        {
-          match_phrase: fieldValue
-        }
-      );
+      types.push({ match_phrase: fieldValue });
     }
 
     return {

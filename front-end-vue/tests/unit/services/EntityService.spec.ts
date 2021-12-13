@@ -4,6 +4,8 @@ import axios from "axios";
 
 describe("EntityService.ts ___ axios success", () => {
   const api = process.env.VUE_APP_API;
+  const osapi = process.env.VUE_APP_OPENSEARCH_URL
+  const osauth = process.env.VUE_APP_OPENSEARCH_AUTH
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -20,10 +22,24 @@ describe("EntityService.ts ___ axios success", () => {
 
   it("can post advancedSearch", async () => {
     const request = new SearchRequest();
+    const osRequest = {
+      "query": {
+        "bool": {
+          "filter": [],
+          "must": [
+            {
+              "match": {
+                "name": undefined
+              }
+            }
+          ]
+        }
+      }
+    };
     const cancelToken = axios.CancelToken.source().token;
     const result = await EntityService.advancedSearch(request, cancelToken);
     expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(axios.post).toHaveBeenCalledWith(api + "api/entity/search", request, { cancelToken: cancelToken });
+    expect(axios.post).toHaveBeenCalledWith(osapi, osRequest, { cancelToken: cancelToken });
     expect(result).toBe("axios post return");
   });
 

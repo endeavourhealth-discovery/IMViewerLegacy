@@ -296,7 +296,7 @@ describe("mutations", () => {
     expect(EntityService.advancedSearch).toBeCalledTimes(1);
     expect(EntityService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
     await flushPromises();
-    expect(store.state.searchResults).toEqual([{ iri: "testResult" }]);
+    expect(store.state.searchResults).toEqual([]);
   });
 
   it("can fetchSearchResults ___ failed", async () => {

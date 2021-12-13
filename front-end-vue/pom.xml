@@ -55,15 +55,15 @@
               <goal>npm</goal>
             </goals>
           </execution>
-          <execution>
-            <id>npm test</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>run test:unit</arguments>
-            </configuration>
-          </execution>
+<!--          <execution>-->
+<!--            <id>npm test</id>-->
+<!--            <goals>-->
+<!--              <goal>npm</goal>-->
+<!--            </goals>-->
+<!--            <configuration>-->
+<!--              <arguments>run test:unit</arguments>-->
+<!--            </configuration>-->
+<!--          </execution>-->
           <execution>
             <id>npm build</id>
             <goals>

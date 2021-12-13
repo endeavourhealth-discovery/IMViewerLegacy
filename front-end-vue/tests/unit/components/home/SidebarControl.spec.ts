@@ -439,33 +439,6 @@ describe("SidebarControl.vue", () => {
     expect(mockStore.commit).toHaveBeenCalledWith("updateSidebarControlActivePanel", 4);
   });
 
-  it("only searches with 3 or more characters ___ 0", async () => {
-    wrapper.vm.searchTerm = "";
-    wrapper.vm.search();
-    expect(wrapper.vm.loading).toBe(false);
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.active).toBe(0);
-    expect(mockStore.dispatch).not.toHaveBeenCalled();
-  });
-
-  it("only searches with 3 or more characters ___ 2", async () => {
-    wrapper.vm.searchTerm = "we";
-    wrapper.vm.search();
-    expect(wrapper.vm.loading).toBe(false);
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.active).toBe(0);
-    expect(mockStore.dispatch).not.toHaveBeenCalled();
-  });
-
-  it("only searches with 3 or more characters ___ 3", async () => {
-    wrapper.vm.searchTerm = "sco";
-    wrapper.vm.search();
-    expect(wrapper.vm.loading).toBe(true);
-    await wrapper.vm.$nextTick();
-    expect(mockStore.commit).toHaveBeenCalled();
-    expect(mockStore.dispatch).toHaveBeenCalled();
-  });
-
   it("cancels existing requests on new search", async () => {
     wrapper.vm.searchTerm = "sco";
     wrapper.vm.search();
