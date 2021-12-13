@@ -42,8 +42,8 @@
           v-tooltip.top="'CTRL+click to navigate'"
         >
           <span v-if="!slotProps.node.loading">
-            <div class="result-icon-container" :style="'color:' + slotProps.node.color">
-              <font-awesome-icon :icon="slotProps.node.typeIcon" class="result-icon fa-fw" />
+            <div :style="'color:' + slotProps.node.color">
+              <font-awesome-icon :icon="slotProps.node.typeIcon" class="fa-fw" />
             </div>
           </span>
           <ProgressSpinner v-if="slotProps.node.loading" />
@@ -88,19 +88,19 @@
 </template>
 
 <script lang="ts">
-import {getColourFromType, getFAIconFromType} from "@/helpers/ConceptTypeMethods";
-import {TreeNode} from "@/models/TreeNode";
+import { getColourFromType, getFAIconFromType } from "@/helpers/ConceptTypeMethods";
+import { TreeNode } from "@/models/TreeNode";
 import EntityService from "@/services/EntityService";
-import {IM} from "@/vocabulary/IM";
-import {RDF} from "@/vocabulary/RDF";
-import {RDFS} from "@/vocabulary/RDFS";
-import {defineComponent} from "vue";
-import {ConceptSummary} from "@/models/search/ConceptSummary";
-import {TreeParent} from "@/models/secondaryTree/TreeParent";
-import {EntityReferenceNode} from "@/models/EntityReferenceNode";
-import {TTIriRef} from "@/models/TripleTree";
-import {ConceptAggregate} from "@/models/ConceptAggregate";
-import {isArrayHasLength, isObject, isObjectHasKeys} from "@/helpers/DataTypeCheckers";
+import { IM } from "@/vocabulary/IM";
+import { RDF } from "@/vocabulary/RDF";
+import { RDFS } from "@/vocabulary/RDFS";
+import { defineComponent } from "vue";
+import { ConceptSummary } from "@/models/search/ConceptSummary";
+import { TreeParent } from "@/models/secondaryTree/TreeParent";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
+import { TTIriRef } from "@/models/TripleTree";
+import { ConceptAggregate } from "@/models/ConceptAggregate";
+import { isArrayHasLength, isObject, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "SecondaryTree",
@@ -220,7 +220,6 @@ export default defineComponent({
 
     containsChild(nodeChildren: TreeNode[], child: EntityReferenceNode): boolean {
       return nodeChildren.some(nodeChild => nodeChild.data === child["@id"]);
-
     },
 
     async expandParents(parentPosition: number): Promise<void> {

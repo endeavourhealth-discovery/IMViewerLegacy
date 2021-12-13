@@ -43,8 +43,8 @@
       <template #default="slotProps">
         <div class="tree-row" @mouseover="showPopup($event, slotProps.node.data)" @mouseleave="hidePopup($event)">
           <span v-if="!slotProps.node.loading">
-            <div class="result-icon-container" :style="'color:' + slotProps.node.color">
-              <font-awesome-icon :icon="slotProps.node.typeIcon" class="result-icon fa-fw" />
+            <div :style="'color:' + slotProps.node.color">
+              <font-awesome-icon :icon="slotProps.node.typeIcon" class="fa-fw"></font-awesome-icon>
             </div>
           </span>
           <ProgressSpinner v-if="slotProps.node.loading" />
