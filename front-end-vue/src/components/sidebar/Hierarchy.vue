@@ -96,7 +96,7 @@ import EntityService from "@/services/EntityService";
 import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";
 import { IM } from "@/vocabulary/IM";
-import {getColourFromType, getFAIconFromType} from "@/helpers/ConceptTypeMethods";
+import { getColourFromType, getFAIconFromType } from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
 import { ConceptAggregate } from "@/models/ConceptAggregate";
@@ -244,11 +244,11 @@ export default defineComponent({
 
     async onNodeSelect(node: TreeNode): Promise<void> {
       if (MODULE_IRIS.includes(node.data)) {
-        await this.$router.push({name: "Dashboard"});
+        await this.$router.push({ name: "Dashboard" });
       } else {
         await this.$router.push({
           name: "Concept",
-          params: {selectedIri: node.data}
+          params: { selectedIri: node.data }
         });
         await this.getFirstParent(node);
       }
@@ -342,7 +342,7 @@ export default defineComponent({
       this.$store.commit("updateConceptIri", this.sideNavHierarchyFocus.iri);
       await this.getConceptAggregate(this.conceptIri);
       this.refreshTree();
-      await this.$router.push({name: "Dashboard"});
+      await this.$router.push({ name: "Dashboard" });
     },
 
     toggleTreeLocked(value: boolean): void {

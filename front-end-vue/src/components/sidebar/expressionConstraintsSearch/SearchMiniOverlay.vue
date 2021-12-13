@@ -84,7 +84,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "@vue/runtime-core";
-import {getColourFromType, getFAIconFromType} from "@/helpers/ConceptTypeMethods";
+import { getColourFromType, getFAIconFromType } from "@/helpers/ConceptTypeMethods";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { TTIriRef } from "@/models/TripleTree";
 

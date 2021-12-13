@@ -108,7 +108,7 @@ import { SearchResponse } from "@/models/search/SearchResponse";
 import { TTIriRef } from "@/models/TripleTree";
 import LoggerService from "@/services/LoggerService";
 import { defineComponent, PropType } from "vue";
-import {getColourFromType, getFAIconFromType} from "@/helpers/ConceptTypeMethods";
+import { getColourFromType, getFAIconFromType } from "@/helpers/ConceptTypeMethods";
 import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
 import ConfigService from "@/services/ConfigService";
 import { mapState } from "vuex";

@@ -16,20 +16,16 @@
             <Menu id="copy-options" ref="copyMenu" :model="copyMenuItems" :popup="true" />
           </div>
           <Button
-              type="button"
-              class="p-panel-header-icon p-link p-mr-2"
-              @click="toggle"
-              v-tooltip.bottom="'Download concept'"
-              aria-haspopup="true"
-              aria-controls="overlay_menu">
+            type="button"
+            class="p-panel-header-icon p-link p-mr-2"
+            @click="toggle($event, 'downloadMenu')"
+            v-tooltip.bottom="'Download concept'"
+            aria-haspopup="true"
+            aria-controls="overlay_menu"
+          >
             <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
           </Button>
-          <Menu
-              id="overlay_menu"
-              ref="menu"
-              :model="items"
-              :popup="true"
-          />
+          <Menu id="overlay_menu" ref="downloadMenu" :model="items" :popup="true" />
           <!--<button
             class="p-panel-header-icon p-link p-mr-2"
             @click="directToCreateRoute"
@@ -236,15 +232,23 @@ export default defineComponent({
       configs: [] as DefinitionConfig[],
       conceptAsString: "",
       items: [
-        {label: "JSON Format", command: () => {
-          this.downloadOption("json")
-          }},
-        {label: "Turtle Format", command: () => {
-            this.downloadOption("turtle")
-          }},
-        // {label: "Custom Format", command: () => {
-        //     this.downloadOption("custom")
-        //   }}
+        {
+          label: "JSON Format",
+          command: () => {
+            this.downloadOption("json");
+          }
+        },
+        {
+          label: "Turtle Format",
+          command: () => {
+            this.downloadOption("turtle");
+          }
+        }
+        // {label: "Custom Format",
+        // command: () => {
+        //     this.downloadOption("custom");
+        //   }
+        // }
       ] as any,
       selectedOption: {} as any
     };
@@ -440,16 +444,11 @@ export default defineComponent({
         this.$toast.add(LoggerService.success("Export will begin shortly"));
       }
     },
-
-    toggle(event: any) {
-      const x = this.$refs.menu as any;
-      x.show(event);
-    },
     downloadOption(format: any) {
-      if(format === "custom"){
+      if (format === "custom") {
         this.openDownloadDialog();
-      }else{
-        this.exportConcept(format)
+      } else {
+        this.exportConcept(format);
       }
     },
 
@@ -457,7 +456,6 @@ export default defineComponent({
       const x = this.$refs[refId] as any;
       x.toggle(event);
     }
-
   }
 });
 </script>
