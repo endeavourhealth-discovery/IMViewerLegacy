@@ -39,7 +39,7 @@
               />
             </div>
             <div class="result-text-container">
-              {{ slotProps.data.match }}<br />
+              {{ slotProps.data.name }}<br />
               <small style="color:lightgrey">{{ slotProps.data.name }}</small>
             </div>
             <div class="button-container">
