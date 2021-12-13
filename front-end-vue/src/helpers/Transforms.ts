@@ -4,12 +4,12 @@ import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
 // min 2 characters
 const indentSize = "  ";
 
-export function bundleToText(bundle: TTBundle, defaultPredicatenames: any, indent: number, blockedUrlIris?: string[]): string {
+export function bundleToText(bundle: TTBundle, defaultPredicatenames: any, indent: number, withHyperlinks: boolean, blockedUrlIris?: string[]): string {
   let predicates = bundle.predicates;
   predicates = addDefaultPredicates(predicates, defaultPredicatenames);
   delete bundle.entity["@id"];
   let result = "";
-  result += ttValueToString(bundle.entity, "object", indent, predicates, blockedUrlIris);
+  result += ttValueToString(bundle.entity, "object", indent, withHyperlinks, predicates, blockedUrlIris);
   return result;
 }
 
@@ -22,36 +22,36 @@ function addDefaultPredicates(predicates?: any, defaults?: any) {
   return predicates;
 }
 
-export function ttValueToString(node: any, previousType: string, indent: number, iriMap?: any, blockedUrlIris?: string[]): string {
+export function ttValueToString(node: any, previousType: string, indent: number, withHyperlinks: boolean, iriMap?: any, blockedUrlIris?: string[]): string {
   if (isObjectHasKeys(node, ["@id"])) {
-    return ttIriToString(node, previousType, indent, false, blockedUrlIris);
+    return ttIriToString(node, previousType, indent, withHyperlinks, false, blockedUrlIris);
   } else if (isObjectHasKeys(node)) {
-    return ttNodeToString(node, previousType, indent, iriMap, blockedUrlIris);
+    return ttNodeToString(node, previousType, indent, withHyperlinks, iriMap, blockedUrlIris);
   } else if (isArrayHasLength(node)) {
-    return ttArrayToString(node, indent, iriMap, blockedUrlIris);
+    return ttArrayToString(node, indent, withHyperlinks, iriMap, blockedUrlIris);
   } else {
     return String(node);
   }
 }
 
-export function ttIriToString(iri: TTIriRef, previous: string, indent: number, inline: boolean, blockedUrlIris?: string[]): string {
+export function ttIriToString(iri: TTIriRef, previous: string, indent: number, withHyperlinks: boolean, inline: boolean, blockedUrlIris?: string[]): string {
   const pad = indentSize.repeat(indent);
   let result = "";
   if (!inline) result += pad;
-  if (!blockedUrlIris || !blockedUrlIris.includes(iri["@id"])) {
+  if (withHyperlinks && (!blockedUrlIris || !blockedUrlIris.includes(iri["@id"]))) {
     const escapedUrl = iri["@id"].replace(/\//gi, "%2F").replace(/#/gi, "%23");
     result += `<a href="${window.location.origin}/#/concept/${escapedUrl}">`;
   }
   if (iri.name) result += removeEndBrackets(iri.name);
   else result += iri["@id"];
-  if (!blockedUrlIris || !blockedUrlIris.includes(iri["@id"])) {
+  if (withHyperlinks && (!blockedUrlIris || !blockedUrlIris.includes(iri["@id"]))) {
     result += "</a>";
   }
   if (previous === "array") result += "\n";
   return result;
 }
 
-export function ttNodeToString(node: any, previousType: string, indent: number, iriMap?: any, blockedUrlIris?: string[]): string {
+export function ttNodeToString(node: any, previousType: string, indent: number, withHyperlinks: boolean, iriMap?: any, blockedUrlIris?: string[]): string {
   const pad = indentSize.repeat(indent);
   let result = "";
   let first = true;
@@ -78,7 +78,15 @@ export function ttNodeToString(node: any, previousType: string, indent: number, 
         suffix = " )\n";
       }
     }
-    result = processNode(key, value, result, nodeIndent, iriMap, { pad: pad, prefix: prefix, suffix: suffix, group: group, last: last }, blockedUrlIris);
+    result = processNode(
+      key,
+      value,
+      result,
+      nodeIndent,
+      iriMap,
+      { pad: pad, prefix: prefix, suffix: suffix, group: group, last: last, withHyperlinks: withHyperlinks },
+      blockedUrlIris
+    );
     count++;
   }
   return result;
@@ -88,14 +96,15 @@ function processNode(key: string, value: any, result: string, indent: number, ir
   const pad = stringAdditions.pad;
   const prefix = stringAdditions.prefix;
   const suffix = stringAdditions.suffix;
+  const withHyperlinks = stringAdditions.withHyperlinks;
   if (isObjectHasKeys(value, ["@id"])) {
     result += getObjectName(key, iriMap, pad, prefix);
-    result += ttIriToString(value as TTIriRef, "object", indent, true, blockedUrlIris);
+    result += ttIriToString(value as TTIriRef, "object", indent, withHyperlinks, true, blockedUrlIris);
     result += suffix;
   } else if (isArrayHasLength(value)) {
     if (value.length === 1 && isObjectHasKeys(value[0], ["@id"])) {
       result += getObjectName(key, iriMap, pad, prefix);
-      result += ttIriToString(value[0] as TTIriRef, "object", indent, true, blockedUrlIris);
+      result += ttIriToString(value[0] as TTIriRef, "object", indent, withHyperlinks, true, blockedUrlIris);
       result += suffix;
     } else if ((value.length === 1 && typeof value[0] === "string") || typeof value[0] === "number") {
       result += getObjectName(key, iriMap, pad, prefix);
@@ -104,21 +113,21 @@ function processNode(key: string, value: any, result: string, indent: number, ir
     } else {
       result += getObjectName(key, iriMap, pad, prefix);
       result += "\n";
-      result += ttValueToString(value, "object", indent + 1, iriMap, blockedUrlIris);
+      result += ttValueToString(value, "object", indent + 1, withHyperlinks, iriMap, blockedUrlIris);
       if (stringAdditions.group && stringAdditions.last && result.endsWith("\n"))
-        result = result.substring(0, result.length - 1) + " )" + result.substring(result.length);
+        result = result.substring(0, result.length - 1) + " )" + result.substring(result.length - 1);
       else if (stringAdditions.group && stringAdditions.last) result += " )\n";
     }
   } else if (isObjectHasKeys(value)) {
     result += getObjectName(key, iriMap, pad, prefix);
     result += "\n";
-    result += ttValueToString(value, "object", indent + 1, iriMap, blockedUrlIris);
+    result += ttValueToString(value, "object", indent + 1, withHyperlinks, iriMap, blockedUrlIris);
     if (stringAdditions.group && stringAdditions.last && result.endsWith("\n"))
-      result = result.substring(0, result.length - 1) + " )" + result.substring(result.length);
+      result = result.substring(0, result.length - 1) + " )" + result.substring(result.length - 1);
     else if (stringAdditions.group && stringAdditions.last) result += " )\n";
   } else {
     result += getObjectName(key, iriMap, pad, prefix);
-    result += ttValueToString(value, "object", indent, iriMap, blockedUrlIris);
+    result += ttValueToString(value, "object", indent, withHyperlinks, iriMap, blockedUrlIris);
     result += "\n";
   }
   return result;
@@ -129,10 +138,10 @@ function getObjectName(key: string, iriMap: any, pad: string, prefix: string) {
   else return pad + prefix + removeEndBrackets(key) + " : ";
 }
 
-export function ttArrayToString(arr: any[], indent: number, iriMap?: any, blockedUrlIris?: string[]): string {
+export function ttArrayToString(arr: any[], indent: number, withHyperlinks: boolean, iriMap?: any, blockedUrlIris?: string[]): string {
   let result = "";
   for (const item of arr) {
-    result += ttValueToString(item, "array", indent, iriMap, blockedUrlIris);
+    result += ttValueToString(item, "array", indent, withHyperlinks, iriMap, blockedUrlIris);
   }
   return result;
 }
