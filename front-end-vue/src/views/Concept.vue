@@ -286,6 +286,7 @@ export default defineComponent({
 
       this.concept = await EntityService.getPartialEntity(iri, predicates);
 
+      this.concept['@id'] = iri;
       this.concept["subtypes"] = await EntityService.getEntityChildren(iri);
 
       this.concept["termCodes"] = await EntityService.getEntityTermCodes(iri);
