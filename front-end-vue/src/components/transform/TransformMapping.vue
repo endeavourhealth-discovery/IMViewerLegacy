@@ -182,7 +182,8 @@ export default defineComponent({
           inputJson: this.checkPointFormObject.inputJson,
           inputDisplayJson: this.checkPointFormObject.inputDisplayJson,
           dataModel: this.checkPointFormObject.dataModel,
-          dataModelJson: this.checkPointFormObject.dataModelJson
+          dataModelJson: this.checkPointFormObject.dataModelJson,
+          instructions: this.mappings.map(mapping => this.getInstructionDto(mapping))
         },
         pageIndex: this.pageIndex
       });

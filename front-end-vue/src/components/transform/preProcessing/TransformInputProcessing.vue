@@ -74,10 +74,10 @@
         <div class="p-col-6 p-md-6">
           <TabView>
             <TabPanel header="File display">
-              <vue-json-pretty id="json-viewer" :path="'res'" :data="display.inputDisplayJson"> </vue-json-pretty>
+              <vue-json-pretty class="json-viewer" :path="'res'" :data="display.inputDisplayJson"> </vue-json-pretty>
             </TabPanel>
             <TabPanel header="Data model">
-              <vue-json-pretty id="json-viewer" :path="'res'" :data="display.dataModel"> </vue-json-pretty>
+              <vue-json-pretty class="json-viewer" :path="'res'" :data="display.dataModel"> </vue-json-pretty>
             </TabPanel>
           </TabView>
         </div>
@@ -226,7 +226,7 @@ export default defineComponent({
   border: 1px solid #dee2e6;
 }
 
-#json-viewer {
+.json-viewer {
   height: calc(100vh - 30rem);
   width: 100%;
   overflow-y: auto;

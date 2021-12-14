@@ -5,6 +5,14 @@ import axios from "axios";
 export default class TransformService {
   static api = "http://127.0.0.1:3000/";
 
+  public static async getTransformed(inputJson: any[], dataModelJson: any, instructions: TransformInstructionDto[]): Promise<any[]> {
+    try {
+      return await axios.post(this.api + "api/transform/transformed", { inputJson, dataModelJson, instructions });
+    } catch (error) {
+      return [] as any[];
+    }
+  }
+
   public static async getTransformTypes(): Promise<string[]> {
     try {
       return await axios.get(this.api + "api/transform/types");

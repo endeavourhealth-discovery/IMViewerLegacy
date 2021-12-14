@@ -40,17 +40,17 @@ export default defineComponent({
           label: "Mapping",
           to: "/transform/mapping"
         },
-        {
-          label: "Document validation",
-          to: "/mapping/wizard/validation/document"
-        },
-        {
-          label: "Predicate validation",
-          to: "/mapping/wizard/validation/predicate"
-        },
+        // {
+        //   label: "Document validation",
+        //   to: "/mapping/wizard/validation/document"
+        // },
+        // {
+        //   label: "Predicate validation",
+        //   to: "/mapping/wizard/validation/predicate"
+        // },
         {
           label: "Confirmation",
-          to: "/mapping/wizard/confirmation"
+          to: "/transform/confirmation"
         }
       ],
       formObject: {} as TransformFormObject

@@ -8,6 +8,7 @@ import Transform from "../views/Transform.vue";
 import TransformUpload from "../components/transform/TransformUpload.vue";
 import TransformDataModel from "../components/transform/TransformDataModel.vue";
 import TransformMapping from "../components/transform/TransformMapping.vue";
+import Confirmation from "../components/transform/Confirmation.vue";
 import TransformInputProcessing from "../components/transform/preProcessing/TransformInputProcessing.vue";
 import UPRN from "../views/Uprn.vue";
 import User from "../views/User.vue";
@@ -200,7 +201,7 @@ const routes: Array<RouteRecordRaw> = [
         path: "mapping",
         name: "TransformMapping",
         component: TransformMapping
-      }
+      },
       // {
       //   path: "validation/document",
       //   name: "DocumentValidation",
@@ -211,11 +212,11 @@ const routes: Array<RouteRecordRaw> = [
       //   name: "PredicateValidation",
       //   component: PredicateValidation
       // },
-      // {
-      //   path: "confirmation",
-      //   name: "Confirmation",
-      //   component: Confirmation
-      // }
+      {
+        path: "confirmation",
+        name: "Confirmation",
+        component: Confirmation
+      }
     ]
   },
 
