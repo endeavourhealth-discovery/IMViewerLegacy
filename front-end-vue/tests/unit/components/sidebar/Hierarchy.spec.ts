@@ -542,7 +542,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Acquired scoliosis (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -552,7 +552,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Acrodysplasia scoliosis (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -562,7 +562,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Congenital scoliosis due to bony malformation (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -572,7 +572,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Distal arthrogryposis type 4 (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -582,7 +582,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Duane anomaly, myopathy, scoliosis syndrome (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -592,7 +592,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Horizontal gaze palsy with progressive scoliosis (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -602,7 +602,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Idiopathic scoliosis (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -612,7 +612,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Idiopathic scoliosis AND/OR kyphoscoliosis (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -622,7 +622,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Kyphoscoliosis and scoliosis (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -632,7 +632,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Kyphoscoliosis deformity of spine (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -642,7 +642,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Lordoscoliosis (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -652,7 +652,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Neuromuscular scoliosis (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -662,7 +662,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Postural scoliosis (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -672,7 +672,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Radioulnar synostosis with microcephaly and scoliosis syndrome (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -682,7 +682,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Scoliosis in connective tissue anomalies (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -692,7 +692,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Scoliosis in neurofibromatosis (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -702,7 +702,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Scoliosis in skeletal dysplasia (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -712,7 +712,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Scoliosis of cervical spine (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -722,7 +722,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Scoliosis of lumbar spine (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -732,7 +732,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           label: "Scoliosis of thoracic spine (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         }
       ],
       color: "#e39a3688",
@@ -741,7 +741,7 @@ describe("Hierarchy.vue ___ Concept", () => {
       label: "Scoliosis deformity of spine (disorder)",
       leaf: true,
       loading: false,
-      typeIcon: "far fa-fw fa-lightbulb"
+      typeIcon: ["far", "lightbulb"]
     }
   ];
 
@@ -1014,7 +1014,7 @@ describe("Hierarchy.vue ___ Concept", () => {
       label: "Acquired scoliosis (disorder)",
       leaf: false,
       loading: false,
-      typeIcon: "far fa-fw fa-lightbulb"
+      typeIcon: ["far", "lightbulb"]
     });
   });
 

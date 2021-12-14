@@ -1,4 +1,4 @@
-import { isOfTypes, isValueSet, isProperty, getIconFromType, getColourFromType } from "@/helpers/ConceptTypeMethods";
+import {isOfTypes, isValueSet, isProperty, getColourFromType, getFAIconFromType} from "@/helpers/ConceptTypeMethods";
 import { IM } from "@/vocabulary/IM";
 
 describe("ConceptTypeMethods", () => {
@@ -42,29 +42,29 @@ describe("ConceptTypeMethods", () => {
     });
   });
 
-  describe("getIconFromType", () => {
+  describe("getFAIconFromType", () => {
     it("returns icon for nodeshape", () => {
-      expect(getIconFromType(testDataModelType)).toBe("fas fa-fw fa-project-diagram");
+      expect(getFAIconFromType(testDataModelType)).toStrictEqual(["fas", "project-diagram"]);
     });
 
     it("returns icon for property", () => {
-      expect(getIconFromType(testPropertyType)).toBe("far fa-fw fa-edit");
+      expect(getFAIconFromType(testPropertyType)).toStrictEqual(["far", "edit"]);
     });
 
     it("returns icon for valueset", () => {
-      expect(getIconFromType(testSetType)).toBe("fas fa-fw fa-tasks");
+      expect(getFAIconFromType(testSetType)).toStrictEqual(["fas", "tasks"]);
     });
 
     it("returns icon for folder", () => {
-      expect(getIconFromType(testFolder)).toBe("fas fa-fw fa-folder");
+      expect(getFAIconFromType(testFolder)).toStrictEqual(["fas", "folder"]);
     });
 
     it("returns icon for query", () => {
-      expect(getIconFromType(testQueryType)).toBe("fas fa-fw fa-search");
+      expect(getFAIconFromType(testQueryType)).toStrictEqual(["fas", "search"]);
     });
 
     it("returns default icon, type not found", () => {
-      expect(getIconFromType([])).toBe("far fa-fw fa-lightbulb");
+      expect(getFAIconFromType([])).toStrictEqual(["far", "lightbulb"]);
     });
   });
 

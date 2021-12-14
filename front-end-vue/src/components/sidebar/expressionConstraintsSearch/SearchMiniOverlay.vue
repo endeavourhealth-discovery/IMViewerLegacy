@@ -23,13 +23,8 @@
       <Column field="name" header="Results">
         <template #body="slotProps">
           <div class="result-container" @mouseenter="showDetailsOverlay($event, slotProps.data)" @mouseleave="hideDetailsOverlay()">
-            <div class="result-icon-container">
-              <i
-                :class="getPerspectiveByConceptType(slotProps.data.entityType)"
-                class="result-icon"
-                :style="getColorByConceptType(slotProps.data.entityType)"
-                aria-hidden="true"
-              />
+            <div class="result-icon-container" :style="getColorByConceptType(slotProps.data.entityType)">
+              <font-awesome-icon :icon="getPerspectiveByConceptType(slotProps.data.entityType)" class="result-icon fa-fw" />
             </div>
             <div class="result-text-container">
               {{ slotProps.data.match }}<br />
@@ -89,7 +84,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "@vue/runtime-core";
-import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
+import { getColourFromType, getFAIconFromType } from "@/helpers/ConceptTypeMethods";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
 import { TTIriRef } from "@/models/TripleTree";
 
@@ -108,8 +103,8 @@ export default defineComponent({
     };
   },
   methods: {
-    getPerspectiveByConceptType(conceptType: TTIriRef[]): string {
-      return getIconFromType(conceptType);
+    getPerspectiveByConceptType(conceptType: TTIriRef[]): string[] {
+      return getFAIconFromType(conceptType);
     },
 
     getColorByConceptType(conceptType: TTIriRef[]): string {

@@ -43,7 +43,9 @@
       <template #default="slotProps">
         <div class="tree-row" @mouseover="showPopup($event, slotProps.node.data)" @mouseleave="hidePopup($event)">
           <span v-if="!slotProps.node.loading">
-            <i :class="'fas fa-fw ' + slotProps.node.typeIcon" :style="'color:' + slotProps.node.color" aria-hidden="true" />
+            <div :style="'color:' + slotProps.node.color">
+              <font-awesome-icon :icon="slotProps.node.typeIcon" class="fa-fw"></font-awesome-icon>
+            </div>
           </span>
           <ProgressSpinner v-if="slotProps.node.loading" />
           <span>{{ slotProps.node.label }}</span>
@@ -94,7 +96,7 @@ import EntityService from "@/services/EntityService";
 import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";
 import { IM } from "@/vocabulary/IM";
-import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
+import { getColourFromType, getFAIconFromType } from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
 import { MODULE_IRIS } from "@/helpers/ModuleIris";
 import { ConceptAggregate } from "@/models/ConceptAggregate";
@@ -231,7 +233,7 @@ export default defineComponent({
       return {
         key: conceptName,
         label: conceptName,
-        typeIcon: getIconFromType(conceptTypes),
+        typeIcon: getFAIconFromType(conceptTypes),
         color: getColourFromType(conceptTypes),
         data: conceptIri,
         leaf: !hasChildren,
@@ -242,9 +244,9 @@ export default defineComponent({
 
     async onNodeSelect(node: TreeNode): Promise<void> {
       if (MODULE_IRIS.includes(node.data)) {
-        this.$router.push({ name: "Dashboard" });
+        await this.$router.push({ name: "Dashboard" });
       } else {
-        this.$router.push({
+        await this.$router.push({
           name: "Concept",
           params: { selectedIri: node.data }
         });
@@ -340,7 +342,7 @@ export default defineComponent({
       this.$store.commit("updateConceptIri", this.sideNavHierarchyFocus.iri);
       await this.getConceptAggregate(this.conceptIri);
       this.refreshTree();
-      this.$router.push({ name: "Dashboard" });
+      await this.$router.push({ name: "Dashboard" });
     },
 
     toggleTreeLocked(value: boolean): void {

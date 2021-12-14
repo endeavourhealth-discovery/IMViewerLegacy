@@ -14,14 +14,14 @@ describe("PanelHeader.vue", () => {
     wrapper.vm.$options.watch.types.call(wrapper.vm, [{"name":"Class","@id":"http://www.w3.org/2002/07/owl#Class"}]);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.color).toBe("color: #e39a3688");
-    expect(wrapper.vm.icon).toBe("far fa-fw fa-lightbulb");
+    expect(wrapper.vm.icon).toStrictEqual(["far", "lightbulb"]);
   });
 
   it("can watch types ___ 0 length", async() => {
     wrapper.vm.$options.watch.types.call(wrapper.vm, []);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.color).toBe("");
-    expect(wrapper.vm.icon).toBe("");
+    expect(wrapper.vm.icon).toStrictEqual([]);
   });
 
   it("renders header text", () => {

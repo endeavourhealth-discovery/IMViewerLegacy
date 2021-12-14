@@ -146,7 +146,7 @@ describe("SearchResults.vue", () => {
 
   it("can get perspective by concept type", () => {
     const testConceptType = [{ name: "Class", "@id": "http://www.w3.org/2002/07/owl#Class" }];
-    expect(wrapper.vm.getPerspectiveByConceptType(testConceptType)).toBe("far fa-fw fa-lightbulb");
+    expect(wrapper.vm.getPerspectiveByConceptType(testConceptType)).toStrictEqual(["far", "lightbulb"]);
   });
 
   it("can get colour by concept type", () => {

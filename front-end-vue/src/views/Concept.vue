@@ -15,12 +15,17 @@
             />
             <Menu id="copy-options" ref="copyMenu" :model="copyMenuItems" :popup="true" />
           </div>
-          <button class="p-panel-header-icon p-link p-mr-2" @click="openDownloadDialog" v-tooltip.bottom="'Download concept'">
+          <Button
+            type="button"
+            class="p-panel-header-icon p-link p-mr-2"
+            @click="toggle($event, 'downloadMenu')"
+            v-tooltip.bottom="'Download concept'"
+            aria-haspopup="true"
+            aria-controls="overlay_menu"
+          >
             <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
-          </button>
-          <button class="p-panel-header-icon p-link p-mr-2" v-tooltip="'Export concept'" @click="exportConcept">
-            <i class="fas fa-file-export" aria-hidden="true"></i>
-          </button>
+          </Button>
+          <Menu id="overlay_menu" ref="downloadMenu" :model="items" :popup="true" />
           <!--<button
             class="p-panel-header-icon p-link p-mr-2"
             @click="directToCreateRoute"
@@ -225,7 +230,27 @@ export default defineComponent({
       contentHeightValue: 0,
       copyMenuItems: [] as any,
       configs: [] as DefinitionConfig[],
-      conceptAsString: ""
+      conceptAsString: "",
+      items: [
+        {
+          label: "JSON Format",
+          command: () => {
+            this.downloadOption("json");
+          }
+        },
+        {
+          label: "Turtle Format",
+          command: () => {
+            this.downloadOption("turtle");
+          }
+        }
+        // {label: "Custom Format",
+        // command: () => {
+        //     this.downloadOption("custom");
+        //   }
+        // }
+      ] as any,
+      selectedOption: {} as any
     };
   },
   methods: {
@@ -300,7 +325,7 @@ export default defineComponent({
       await this.getInferred(this.conceptIri);
       this.types = isObjectHasKeys(this.concept, [RDF.TYPE]) ? this.concept[RDF.TYPE] : ([] as TTIriRef[]);
       this.header = this.concept[RDFS.LABEL];
-      this.setCopyMenuItems();
+      await this.setCopyMenuItems();
       this.setStoreType();
       this.conceptAsString = copyConceptToClipboard(this.concept, this.configs, undefined, this.blockedIris);
       this.loading = false;
@@ -415,14 +440,21 @@ export default defineComponent({
       return isObjectHasKeys(object, keys);
     },
 
-    async exportConcept() {
+    async exportConcept(format: any) {
       const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
-      const url = process.env.VUE_APP_API + "api/entity/exportConcept?iri=" + modIri;
+      const url = process.env.VUE_APP_API + "api/entity/exportConcept?iri=" + modIri + "&format=" + format;
       const popup = window.open(url);
       if (!popup) {
         this.$toast.add(LoggerService.error("Export failed from server"));
       } else {
         this.$toast.add(LoggerService.success("Export will begin shortly"));
+      }
+    },
+    downloadOption(format: any) {
+      if (format === "custom") {
+        this.openDownloadDialog();
+      } else {
+        this.exportConcept(format);
       }
     },
 
