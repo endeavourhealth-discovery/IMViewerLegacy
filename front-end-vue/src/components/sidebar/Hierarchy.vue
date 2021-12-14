@@ -431,6 +431,7 @@ export default defineComponent({
 }
 
 .tree-locked-button,
+.tree-lock-button,
 .home-button,
 .next-parent-button {
   width: fit-content !important;
