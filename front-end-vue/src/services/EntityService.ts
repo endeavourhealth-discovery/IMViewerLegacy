@@ -131,8 +131,6 @@ export default class EntityService {
         req.query.bool.filter.push(this.getFilter("entityType.@id", request.typeFilter));
       }
 
-      console.log(JSON.stringify(req));
-
       return axios.post(process.env.VUE_APP_OPENSEARCH_URL || "", req, {
         cancelToken: cancelToken,
         headers: {
