@@ -18,10 +18,10 @@ export function translateFromEntityBundle(bundle: PartialBundle): TTGraphData {
 
 function getPropertyIri(nested: any): string {
   if (isObjectHasKeys(nested, [SHACL.CLASS])) {
-    return nested[SHACL.CLASS]["@id"];
+    return nested[SHACL.CLASS][0]["@id"];
   }
   if (isObjectHasKeys(nested, [SHACL.DATATYPE])) {
-    return nested[SHACL.DATATYPE]["@id"];
+    return nested[SHACL.DATATYPE][0]["@id"];
   }
 
   return "undefined";
@@ -29,11 +29,11 @@ function getPropertyIri(nested: any): string {
 
 function getPropertyName(nested: any): string {
   if (isObjectHasKeys(nested, [SHACL.CLASS])) {
-    return nested[SHACL.CLASS].name || getNameFromIri(nested[SHACL.CLASS]["@id"]);
+    return nested[SHACL.CLASS][0].name || getNameFromIri(nested[SHACL.CLASS][0]["@id"]);
   }
 
   if (isObjectHasKeys(nested, [SHACL.DATATYPE])) {
-    return nested[SHACL.DATATYPE].name || getNameFromIri(nested[SHACL.DATATYPE]["@id"]);
+    return nested[SHACL.DATATYPE][0].name || getNameFromIri(nested[SHACL.DATATYPE][0]["@id"]);
   }
 
   return "undefined";
