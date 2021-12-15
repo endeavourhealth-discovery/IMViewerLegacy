@@ -51,7 +51,25 @@ function getNameFromIri(iri: string): string {
 function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicates: any): void {
   if (isObjectHasKeys(entity)) {
     keys.forEach(key => {
-      if (isArrayHasLength(entity[key]) && key === SHACL.PROPERTY) {
+      if (isArrayHasLength(entity[key]) && key === IM.HAS_MAP) {
+        entity[key].forEach((nested: any) => {
+          Object.keys(nested).forEach(predicate => {
+            nested[predicate].forEach((element: any) => {
+              if (isObjectHasKeys(element, [IM.MAPPED_TO])) {
+                element[IM.MAPPED_TO].forEach((mappedTo: any) => {
+                  firstNode.children.push({
+                    name: mappedTo.name,
+                    iri: mappedTo["@id"],
+                    relToParent: "mapped to",
+                    children: [],
+                    _children: []
+                  });
+                });
+              }
+            });
+          });
+        });
+      } else if (isArrayHasLength(entity[key]) && key === SHACL.PROPERTY) {
         entity[key].forEach((nested: any) => {
           firstNode.children.push({
             name: getPropertyName(nested),
