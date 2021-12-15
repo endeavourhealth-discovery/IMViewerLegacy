@@ -61,10 +61,26 @@ function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicate
             _children: []
           });
         });
+      } else if (isArrayHasLength(entity[key]) && key === IM.ROLE_GROUP) {
+        entity[key].forEach((nested: any) => {
+          Object.keys(nested).forEach(predicate => {
+            if (predicate !== "http://endhealth.info/im#groupNumber" && isArrayHasLength(nested[predicate])) {
+              nested[predicate].forEach((role: any) => {
+                firstNode.children.push({
+                  name: role.name,
+                  iri: role["@id"],
+                  relToParent: predicates[predicate] || predicate,
+                  children: [],
+                  _children: []
+                });
+              });
+            }
+          });
+        });
       } else if (isArrayHasLength(entity[key])) {
         entity[key].forEach((nested: any) => {
           if (isObjectHasKeys(nested)) {
-            firstNode.children.push({ name: nested.name, iri: nested["@id"], relToParent: predicates[key], children: [], _children: [] });
+            firstNode.children.push({ name: nested[RDFS.LABEL] || nested.name, iri: nested["@id"], relToParent: predicates[key], children: [], _children: [] });
           } else {
             firstNode.children.push({ name: nested, iri: "", relToParent: getNameFromIri(key), children: [], _children: [] });
           }
