@@ -74,7 +74,7 @@ function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicate
           firstNode.children.push({
             name: getPropertyName(nested),
             iri: getPropertyIri(nested),
-            relToParent: nested[SHACL.PATH].name,
+            relToParent: nested[SHACL.PATH][0].name,
             children: [],
             _children: []
           });
