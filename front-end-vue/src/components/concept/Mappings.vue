@@ -177,10 +177,10 @@ export default defineComponent({
         const mappedList = [] as MapItem[];
         mapObject.forEach((item: any) => {
           mappedList.push({
-            name: item[IM.MAPPED_TO].name,
-            iri: item[IM.MAPPED_TO]["@id"],
+            name: item[IM.MAPPED_TO][0].name ,
+            iri: item[IM.MAPPED_TO][0]["@id"],
             priority: item[IM.MAP_PRIORITY],
-            assuranceLevel: item[IM.ASSURANCE_LEVEL].name
+            assuranceLevel: item[IM.ASSURANCE_LEVEL][0].name
           });
         });
         mappedList.sort(this.byPriority);
