@@ -40,11 +40,11 @@ function getPropertyName(nested: any): string {
 }
 
 function getNameFromIri(iri: string): string {
-  // http://www.w3.org/2001/XMLSchema#
   if (!iri) return iri;
   if (iri.startsWith("http://www.w3.org/2001/XMLSchema#") || iri.startsWith("http://snomed.info/sct#")) return iri.split("#")[1];
   if (iri.startsWith("http://endhealth.info/im#im:")) return iri.substring("http://endhealth.info/im#im:".length);
   if (iri.startsWith("http://endhealth.info/im#")) return iri.substring("http://endhealth.info/im#".length);
+  if (iri.startsWith("http://www.w3.org/2000/01/rdf-schema#")) return iri.substring("http://www.w3.org/2000/01/rdf-schema#".length);
   return "undefined";
 }
 
@@ -98,7 +98,13 @@ function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicate
       } else if (isArrayHasLength(entity[key])) {
         entity[key].forEach((nested: any) => {
           if (isObjectHasKeys(nested)) {
-            firstNode.children.push({ name: nested[RDFS.LABEL] || nested.name, iri: nested["@id"], relToParent: predicates[key], children: [], _children: [] });
+            firstNode.children.push({
+              name: nested[RDFS.LABEL] || nested.name || getNameFromIri(nested["@id"]),
+              iri: nested["@id"],
+              relToParent: predicates[key],
+              children: [],
+              _children: []
+            });
           } else {
             firstNode.children.push({ name: nested, iri: "", relToParent: getNameFromIri(key), children: [], _children: [] });
           }
