@@ -10,4 +10,7 @@ target
 *.project
 *.classpath
 coverage
+
+# Ignore Gradle build output directory
+build
 .env
