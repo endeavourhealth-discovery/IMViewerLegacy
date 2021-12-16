@@ -41,9 +41,6 @@ export default defineComponent({
       const bundle = await EntityService.getPartialEntityBundle(iri, []);
       this.data = translateFromEntityBundle(bundle);
       this.loading = false;
-
-      // For TTDocument graph visualisation
-      // this.data = translateFromTTDocument();
     }
   }
 });
