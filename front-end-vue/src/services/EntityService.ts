@@ -107,17 +107,16 @@ export default class EntityService {
         size: request.size,
         query: {
           bool: {
-            must: [
-              {
-                match: {
-                  name: request.termFilter
-                }
-              }
-            ],
+            must: [],
             filter: []
           }
         }
       };
+
+      for(const term of request.termFilter.split(" ")) {
+        if (term)
+          req.query.bool.must.push({ match_phrase_prefix : { name: term}});
+      }
 
       if (request.schemeFilter && request.schemeFilter.length > 0) {
         req.query.bool.filter.push(this.getFilter("scheme.@id", request.schemeFilter));
