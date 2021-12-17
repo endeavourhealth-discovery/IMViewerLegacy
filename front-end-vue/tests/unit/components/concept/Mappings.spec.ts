@@ -13,41 +13,45 @@ describe("Mappings.vue", () => {
   let mockToast: any;
   let mockRef: any;
 
-  const HAS_MAPS = {
-    "http://endhealth.info/im#hasMap": [
-      {
-        "http://endhealth.info/im#combinationOf": [
-          {
-            "http://endhealth.info/im#oneOf": [
-              {
-                "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#X109", name: "Unspecified amputation of foot" },
-                "http://endhealth.info/im#mapAdvice": "ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE",
-                "http://endhealth.info/im#mapPriority": 1,
-                "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-              }
-            ]
-          },
-          {
-            "http://endhealth.info/im#oneOf": [
-              {
-                "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#Z942", name: "Right sided operation" },
-                "http://endhealth.info/im#mapAdvice": "ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE",
-                "http://endhealth.info/im#mapPriority": 1,
-                "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  } as any;
-  const MATCHED_TOS = {
-    "@id": "http://snomed.info/sct#298382003",
-    "http://endhealth.info/im#matchedTo": [
-      { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" },
-      { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" }
-    ]
-  } as any;
+  const HAS_MAPS = [
+    {
+      "http://endhealth.info/im#hasMap": [
+        {
+          "http://endhealth.info/im#combinationOf": [
+            {
+              "http://endhealth.info/im#oneOf": [
+                {
+                  "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#X109", name: "Unspecified amputation of foot" },
+                  "http://endhealth.info/im#mapAdvice": "ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE",
+                  "http://endhealth.info/im#mapPriority": 1,
+                  "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
+                }
+              ]
+            },
+            {
+              "http://endhealth.info/im#oneOf": [
+                {
+                  "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#Z942", name: "Right sided operation" },
+                  "http://endhealth.info/im#mapAdvice": "ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE",
+                  "http://endhealth.info/im#mapPriority": 1,
+                  "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ] as any;
+  const MATCHED_TOS = [
+    {
+      "@id": "http://snomed.info/sct#298382003",
+      "http://endhealth.info/im#matchedTo": [
+        { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" },
+        { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" }
+      ]
+    }
+  ] as any;
   const NAMESPACES = [
     { iri: "http://endhealth.info/bc#", prefix: "bc", name: "Barts Cerner namespace" },
     { iri: "http://endhealth.info/ceg16#", prefix: "ceg13", name: "CEG ethnicity 16+ category" },
@@ -448,7 +452,7 @@ describe("Mappings.vue", () => {
       key: "location_1",
       type: "simpleMapsList"
     });
-    expect(wrapper.vm.generateSimpleMapsNodes(MATCHED_TOS[IM.MATCHED_TO], "location", 1)).toStrictEqual([
+    expect(wrapper.vm.generateSimpleMapsNodes(MATCHED_TOS[0][IM.MATCHED_TO], "location", 1)).toStrictEqual([
       {
         data: {
           mapItems: [
