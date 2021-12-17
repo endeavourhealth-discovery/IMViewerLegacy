@@ -2,9 +2,32 @@ import Graph from "@/components/concept/graph/Graph.vue";
 import EntityService from "@/services/EntityService";
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import ProgressSpinner from "primevue/progressspinner";
+import * as GraphTranslator from "@/helpers/GraphTranslator";
 
 describe("Graph.vue", () => {
   let wrapper: any;
+  let translatorSpy: any;
+  const TRANSLATED = {
+    name: "Scoliosis deformity of spine",
+    iri: "http://snomed.info/sct#298382003",
+    relToParent: "",
+    children: [
+      {
+        name: "Necessary and sufficient",
+        iri: "http://endhealth.info/im#1251000252106",
+        relToParent: "",
+        children: [],
+        _children: []
+      },
+      { name: "Curvature of spine", iri: "http://snomed.info/sct#64217002", relToParent: "subClassOf", children: [], _children: [] },
+      { name: "Disorder of musculoskeletal system", iri: "http://snomed.info/sct#928000", relToParent: "subClassOf", children: [], _children: [] },
+      { name: "Disorder of vertebral column", iri: "http://snomed.info/sct#699699005", relToParent: "subClassOf", children: [], _children: [] },
+      { name: "298382003", iri: "", relToParent: "code", children: [], _children: [] },
+      { name: "", iri: "", relToParent: "role group", children: [], _children: [] },
+      { name: "", iri: "", relToParent: "has map", children: [], _children: [] }
+    ],
+    _children: []
+  };
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -140,6 +163,8 @@ describe("Graph.vue", () => {
       }
     });
 
+    translatorSpy = jest.spyOn(GraphTranslator, "translateFromEntityBundle").mockReturnValue(TRANSLATED);
+
     wrapper = shallowMount(Graph, {
       global: { components: { ProgressSpinner } },
       props: { conceptIri: "http://snomed.info/sct#298382003" }
@@ -152,63 +177,25 @@ describe("Graph.vue", () => {
 
   it("mounts", () => {
     expect(wrapper.vm.loading).toBe(false);
-    expect(wrapper.vm.data).toStrictEqual({
-      name: "Scoliosis deformity of spine",
-      iri: "http://snomed.info/sct#298382003",
-      relToParent: "",
-      children: [
-        {
-          name: "Necessary and sufficient",
-          iri: "http://endhealth.info/im#1251000252106",
-          relToParent: undefined,
-          children: [],
-          _children: []
-        },
-        { name: "Curvature of spine", iri: "http://snomed.info/sct#64217002", relToParent: "subClassOf", children: [], _children: [] },
-        { name: "Disorder of musculoskeletal system", iri: "http://snomed.info/sct#928000", relToParent: "subClassOf", children: [], _children: [] },
-        { name: "Disorder of vertebral column", iri: "http://snomed.info/sct#699699005", relToParent: "subClassOf", children: [], _children: [] },
-        { name: "298382003", iri: undefined, relToParent: "code", children: [], _children: [] },
-        { name: undefined, iri: undefined, relToParent: "role group", children: [], _children: [] },
-        { name: undefined, iri: undefined, relToParent: "has map", children: [], _children: [] }
-      ],
-      _children: []
-    });
+    expect(wrapper.vm.data).toStrictEqual(TRANSLATED);
   });
 
-  it("watches conceptIri", () => {
+  it("watches conceptIri", async () => {
     wrapper.vm.getEntityBundle = jest.fn();
     wrapper.vm.$options.watch.conceptIri.call(wrapper.vm, "http://snomed.info/sct#203639008");
+    await flushPromises();
     expect(wrapper.vm.getEntityBundle).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.getEntityBundle).toHaveBeenCalledWith("http://snomed.info/sct#203639008");
   });
 
   it("can getEntityBundle", async () => {
+    jest.clearAllMocks();
     wrapper.vm.getEntityBundle("http://snomed.info/sct#203639008");
     expect(wrapper.vm.loading).toBe(true);
     expect(EntityService.getPartialEntityBundle).toHaveBeenCalledTimes(1);
     expect(EntityService.getPartialEntityBundle).toHaveBeenCalledWith("http://snomed.info/sct#203639008", []);
     await flushPromises();
-    expect(wrapper.vm.data).toStrictEqual({
-      name: "Scoliosis deformity of spine",
-      iri: "http://snomed.info/sct#298382003",
-      relToParent: "",
-      children: [
-        {
-          name: "Necessary and sufficient",
-          iri: "http://endhealth.info/im#1251000252106",
-          relToParent: undefined,
-          children: [],
-          _children: []
-        },
-        { name: "Curvature of spine", iri: "http://snomed.info/sct#64217002", relToParent: "subClassOf", children: [], _children: [] },
-        { name: "Disorder of musculoskeletal system", iri: "http://snomed.info/sct#928000", relToParent: "subClassOf", children: [], _children: [] },
-        { name: "Disorder of vertebral column", iri: "http://snomed.info/sct#699699005", relToParent: "subClassOf", children: [], _children: [] },
-        { name: "298382003", iri: undefined, relToParent: "code", children: [], _children: [] },
-        { name: undefined, iri: undefined, relToParent: "role group", children: [], _children: [] },
-        { name: undefined, iri: undefined, relToParent: "has map", children: [], _children: [] }
-      ],
-      _children: []
-    });
+    expect(wrapper.vm.data).toStrictEqual(TRANSLATED);
     expect(wrapper.vm.loading).toBe(false);
   });
 });

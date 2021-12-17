@@ -117,11 +117,7 @@ export default defineComponent({
       this.data = {};
 
       this.namespaces = await EntityService.getNamespaces();
-
-      this.simpleMaps = (await EntityService.getPartialEntity(this.conceptIri, [IM.MATCHED_TO]))[IM.MATCHED_TO] || [];
-      if (!this.simpleMaps.length) {
-        this.simpleMaps = await EntityService.getSimpleMaps(this.conceptIri);
-      }
+      this.simpleMaps = await EntityService.getSimpleMaps(this.conceptIri);
     },
 
     createChartTableNode(
@@ -177,7 +173,7 @@ export default defineComponent({
         const mappedList = [] as MapItem[];
         mapObject.forEach((item: any) => {
           mappedList.push({
-            name: item[IM.MAPPED_TO][0].name ,
+            name: item[IM.MAPPED_TO][0].name,
             iri: item[IM.MAPPED_TO][0]["@id"],
             priority: item[IM.MAP_PRIORITY],
             assuranceLevel: item[IM.ASSURANCE_LEVEL][0].name
@@ -208,10 +204,10 @@ export default defineComponent({
         data: { label: "Has map" },
         children: [] as ChartMapNode[] | ChartTableNode[]
       };
-      if ((!isArrayHasLength(mappingObject) || !isArrayHasLength(Object.keys(mappingObject))) && !isArrayHasLength(this.simpleMaps)) {
+      if (!(isArrayHasLength(mappingObject) || isObjectHasKeys(mappingObject)) && !isArrayHasLength(this.simpleMaps)) {
         return [];
       }
-      if (isArrayHasLength(mappingObject) || isArrayHasLength(Object.keys(mappingObject))) {
+      if (isArrayHasLength(mappingObject) || isObjectHasKeys(mappingObject)) {
         parentNode.children = this.generateChildNodes(mappingObject, "0", 0);
       }
       if (isArrayHasLength(this.simpleMaps)) {
