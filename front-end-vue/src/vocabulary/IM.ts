@@ -15,6 +15,7 @@ export class IM {
   public static INHERITED_FROM = IM.NAMESPACE + "inheritedFrom";
   public static IS_CHILD_OF = IM.NAMESPACE + "isChildOf";
   public static HAS_CHILDREN = IM.NAMESPACE + "hasChildren";
+  public static DEFINITION = IM.NAMESPACE + "definition";
 
   // mapping
   public static HAS_MAP = IM.NAMESPACE + "hasMap";
