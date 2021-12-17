@@ -6,7 +6,7 @@ import { RDFS } from "@/vocabulary/RDFS";
 import { SHACL } from "@/vocabulary/SHACL";
 import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
 
-const excludedPredicates = [IM.MATCHED_TO, IM.HAS_STATUS, IM.STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL, IM.DEFINITION];
+const excludedPredicates = [IM.MATCHED_TO, IM.HAS_STATUS, IM.STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL, IM.DEFINITION, IM.USAGE_STATS];
 
 export function translateFromEntityBundle(bundle: PartialBundle): TTGraphData {
   const { entity, predicates } = bundle;
@@ -110,9 +110,21 @@ function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicate
           }
         });
       } else if (isObjectHasKeys(entity[key])) {
-        firstNode.children.push({ name: entity[key].name, iri: entity[key]["@id"], relToParent: predicates[key], children: [], _children: [] });
+        firstNode.children.push({
+          name: entity[key].name,
+          iri: entity[key]["@id"],
+          relToParent: predicates[key] || getNameFromIri(key),
+          children: [],
+          _children: []
+        });
       } else {
-        firstNode.children.push({ name: entity[key], iri: entity[key]["@id"], relToParent: predicates[key], children: [], _children: [] });
+        firstNode.children.push({
+          name: entity[key],
+          iri: entity[key]["@id"],
+          relToParent: predicates[key] || getNameFromIri(key),
+          children: [],
+          _children: []
+        });
       }
     });
   }
