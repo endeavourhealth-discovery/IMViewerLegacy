@@ -93,7 +93,7 @@ describe("SecondaryTree.vue", () => {
       global: {
         components: { Button, Tree, ProgressSpinner, OverlayPanel },
         mocks: { $toast: mockToast, $route: mockRoute, $router: mockRouter },
-        stubs: { OverlayPanel: mockRef },
+        stubs: { OverlayPanel: mockRef, FontAwesomeIcon: true },
         directives: { Tooltip: Tooltip }
       },
       props: { conceptIri: "http://snomed.info/sct#298382003" }

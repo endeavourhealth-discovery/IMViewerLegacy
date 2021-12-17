@@ -64,7 +64,7 @@ describe("SearchMiniOverlay.vue", () => {
     docSpy.mockReturnValue(undefined);
 
     wrapper = shallowMount(SearchMiniOverlay, {
-      global: { components: { DataTable, Column, OverlayPanel }, stubs: { OverlayPanel: mockRef } },
+      global: { components: { DataTable, Column, OverlayPanel }, stubs: { OverlayPanel: mockRef, FontAwesomeIcon: true } },
       props: { searchTerm: "product", searchResults: SEARCH_RESULTS, loading: false }
     });
 
