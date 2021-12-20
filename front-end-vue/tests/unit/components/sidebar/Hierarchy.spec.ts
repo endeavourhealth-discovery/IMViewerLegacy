@@ -113,7 +113,7 @@ describe("Hierarchy.vue ___ DiscoveryOntology", () => {
           $toast: mockToast
         },
         directives: { tooltip: Tooltip },
-        stubs: { OverlayPanel: mockRef }
+        stubs: { OverlayPanel: mockRef, FontAwesomeIcon: true }
       }
     });
 
@@ -810,7 +810,7 @@ describe("Hierarchy.vue ___ Concept", () => {
           $toast: mockToast
         },
         directives: { tooltip: Tooltip },
-        stubs: { OverlayPanel: mockRef }
+        stubs: { OverlayPanel: mockRef, FontAwesomeIcon: true }
       }
     });
 

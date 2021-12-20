@@ -3,6 +3,7 @@ import { flushPromises, shallowMount } from "@vue/test-utils";
 import Button from "primevue/button";
 import StyleClass from "primevue/styleclass";
 import ConfigService from "@/services/ConfigService";
+import ProgressSpinner from "primevue/progressspinner";
 
 describe("TextDefinition.vue ___ data", () => {
   let wrapper;
@@ -110,7 +111,7 @@ describe("TextDefinition.vue ___ data", () => {
     docSpy.mockReturnValue(mockButton);
 
     wrapper = shallowMount(TextDefinition, {
-      global: { components: { Button }, mocks: { $store: mockStore }, directives: { styleclass: StyleClass } },
+      global: { components: { Button, ProgressSpinner }, mocks: { $store: mockStore }, directives: { styleclass: StyleClass } },
       props: {
         data: BUNDLE,
         label: "Definition",
@@ -187,7 +188,7 @@ describe("TextDefinition.vue ___ data", () => {
   });
 });
 
-describe("TextDefinition.vue ___ data", () => {
+describe("TextDefinition.vue ___ no data", () => {
   let wrapper;
   let mockStore;
   let docSpy;
@@ -206,7 +207,7 @@ describe("TextDefinition.vue ___ data", () => {
     docSpy.mockReturnValue(mockButton);
 
     wrapper = shallowMount(TextDefinition, {
-      global: { components: { Button }, mocks: { $store: mockStore }, directives: { styleclass: StyleClass } },
+      global: { components: { Button, ProgressSpinner }, mocks: { $store: mockStore }, directives: { styleclass: StyleClass } },
       props: {
         label: "Bundle",
         show: true,

@@ -1,4 +1,6 @@
 import { TTBundle, TTIriRef } from "@/models/TripleTree";
+import { IM } from "@/vocabulary/IM";
+import { RDFS } from "@/vocabulary/RDFS";
 import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
 
 // min 2 characters
@@ -25,6 +27,8 @@ function addDefaultPredicates(predicates?: any, defaults?: any) {
 export function ttValueToString(node: any, previousType: string, indent: number, withHyperlinks: boolean, iriMap?: any, blockedUrlIris?: string[]): string {
   if (isObjectHasKeys(node, ["@id"])) {
     return ttIriToString(node, previousType, indent, withHyperlinks, false, blockedUrlIris);
+  } else if (isObjectHasKeys(node, [RDFS.LABEL, IM.CODE])) {
+    return termToString(node, indent);
   } else if (isObjectHasKeys(node)) {
     return ttNodeToString(node, previousType, indent, withHyperlinks, iriMap, blockedUrlIris);
   } else if (isArrayHasLength(node)) {
@@ -32,6 +36,10 @@ export function ttValueToString(node: any, previousType: string, indent: number,
   } else {
     return String(node);
   }
+}
+
+export function termToString(node: any, indent: number): string {
+  return indentSize.repeat(indent) + node[IM.CODE] + "\n";
 }
 
 export function ttIriToString(iri: TTIriRef, previous: string, indent: number, withHyperlinks: boolean, inline: boolean, blockedUrlIris?: string[]): string {
@@ -128,7 +136,7 @@ function processNode(key: string, value: any, result: string, indent: number, ir
   } else {
     result += getObjectName(key, iriMap, pad, prefix);
     result += ttValueToString(value, "object", indent, withHyperlinks, iriMap, blockedUrlIris);
-    result += "\n";
+    result += stringAdditions.suffix;
   }
   return result;
 }

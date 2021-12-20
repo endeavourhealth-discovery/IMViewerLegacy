@@ -6,7 +6,7 @@ import { RDFS } from "@/vocabulary/RDFS";
 import { SHACL } from "@/vocabulary/SHACL";
 import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
 
-const excludedPredicates = [IM.MATCHED_TO, IM.HAS_STATUS, IM.STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL];
+const excludedPredicates = [IM.MATCHED_TO, IM.HAS_STATUS, IM.STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL, IM.DEFINITION, IM.USAGE_STATS];
 
 export function translateFromEntityBundle(bundle: PartialBundle): TTGraphData {
   const { entity, predicates } = bundle;
@@ -110,59 +110,23 @@ function addNodes(entity: any, keys: string[], firstNode: TTGraphData, predicate
           }
         });
       } else if (isObjectHasKeys(entity[key])) {
-        firstNode.children.push({ name: entity[key].name, iri: entity[key]["@id"], relToParent: predicates[key], children: [], _children: [] });
+        firstNode.children.push({
+          name: entity[key].name,
+          iri: entity[key]["@id"],
+          relToParent: predicates[key] || getNameFromIri(key),
+          children: [],
+          _children: []
+        });
       } else {
-        firstNode.children.push({ name: entity[key], iri: entity[key]["@id"], relToParent: predicates[key], children: [], _children: [] });
-      }
-    });
-  }
-}
-
-export function translateFromTTDocument(ttdocument: any): TTGraphData {
-  const firstNode = {
-    name: ttdocument.entities[0]["rdfs:label"],
-    iri: ttdocument.entities[0]["@id"],
-    relToParent: "",
-    children: [],
-    _children: []
-  } as TTGraphData;
-  const predicateSet = new Set<string>();
-  ttdocument.entities.forEach((entity: any) => {
-    const keys = Object.keys(entity);
-    addAllPredicates(entity, keys, predicateSet, ttdocument);
-  });
-  addAllNodes(firstNode, ttdocument.entities[0], predicateSet, ttdocument);
-  return firstNode;
-}
-
-function addAllNodes(node: TTGraphData, entity: any, predicateSet: Set<string>, ttdocument: any) {
-  if (isObjectHasKeys(entity)) {
-    for (const key in entity) {
-      if (key === "sh:property") {
-        entity[key].forEach((property: any) => {
-          if (!Object.keys(property).includes("sh:node")) {
-            node.children.push({
-              name: property["sh:path"].name,
-              iri: property["sh:path"]["@id"],
-              relToParent: property["sh:path"]["@id"],
-              children: [],
-              _children: []
-            });
-          } else {
-            const nodeEntity = findEntityByIri(ttdocument.entities as [], property["sh:node"]["@id"]) as any;
-            const child = {
-              name: nodeEntity["rdfs:label"],
-              iri: nodeEntity["@id"],
-              relToParent: property["sh:path"].name || property["sh:path"]["@id"],
-              children: [],
-              _children: []
-            } as TTGraphData;
-            addAllNodes(child, nodeEntity, predicateSet, ttdocument);
-            node.children.push(child);
-          }
+        firstNode.children.push({
+          name: entity[key],
+          iri: entity[key]["@id"],
+          relToParent: predicates[key] || getNameFromIri(key),
+          children: [],
+          _children: []
         });
       }
-    }
+    });
   }
 }
 
@@ -200,45 +164,4 @@ export function toggleNodeByName(data: TTGraphData, name: string): void {
       toggleNodeByName(child, name);
     });
   }
-}
-
-function findEntityByIri(entities: [], iri: string) {
-  let entity = {};
-  let i = 0;
-  let found = false;
-  while (!found && i < entities.length) {
-    if (entities[i]["@id"] === iri) {
-      entity = entities[i];
-      found = true;
-    }
-    i++;
-  }
-  return entity;
-}
-
-function addAllPredicates(entity: any, keys: string[], predicateSet: Set<string>, ttdocument: any) {
-  if (isObjectHasKeys(entity)) {
-    keys.forEach(key => {
-      const fullKey = getFullKeyIri(key, ttdocument);
-      if (fullKey != "@id" && !excludedPredicates.includes(fullKey)) {
-        predicateSet.add(fullKey);
-      }
-      if (isArrayHasLength(entity[key])) {
-        entity[key].forEach((nestedEntity: any) => {
-          addAllPredicates(nestedEntity, keys, predicateSet, ttdocument);
-        });
-      }
-      if (isObjectHasKeys(entity[key])) {
-        addAllPredicates(entity[key], keys, predicateSet, ttdocument);
-      }
-    });
-  }
-}
-
-function getFullKeyIri(shortcutKey: string, ttdocument: any) {
-  if (!shortcutKey.includes(":")) {
-    return shortcutKey;
-  }
-  const parts = shortcutKey.split(":");
-  return ttdocument["@context"][parts[0]] + parts[1];
 }
