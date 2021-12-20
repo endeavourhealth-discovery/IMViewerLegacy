@@ -121,7 +121,7 @@ describe("SearchResults.vue", () => {
         components: { DataTable, ProgressSpinner, Column, OverlayPanel, ContextMenu, Button },
         mocks: { $store: mockStore, $router: mockRouter, $toast: mockToast },
         directives: { tooltip: Tooltip, clipboard: VueClipboard },
-        stubs: { OverlayPanel: mockRef, ContextMenu: mockRef }
+        stubs: { OverlayPanel: mockRef, ContextMenu: mockRef, FontAwesomeIcon: true }
       },
       props: { searchResults: SEARCH_RESULTS, loading: false }
     });

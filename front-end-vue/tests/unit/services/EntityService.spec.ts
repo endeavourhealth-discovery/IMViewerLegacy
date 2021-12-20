@@ -2,11 +2,103 @@ import { SearchRequest } from "@/models/search/SearchRequest";
 import EntityService from "@/services/EntityService";
 import axios from "axios";
 
-describe("EntityService.ts ___ axios success", () => {
-  const api = process.env.VUE_APP_API;
-  const osapi = process.env.VUE_APP_OPENSEARCH_URL
-  const osauth = process.env.VUE_APP_OPENSEARCH_AUTH
+const api = process.env.VUE_APP_API;
+const osapi = process.env.VUE_APP_OPENSEARCH_URL;
+const osauth = process.env.VUE_APP_OPENSEARCH_AUTH;
+const SEARCH_PAYLOAD = {
+  size: 100,
+  query: {
+    bool: {
+      must: [
+        {
+          match_phrase_prefix: {
+            name: "scolios"
+          }
+        }
+      ],
+      filter: [
+        {
+          bool: {
+            should: [
+              {
+                match_phrase: {
+                  "scheme.@id": "http://snomed.info/sct#"
+                }
+              },
+              {
+                match_phrase: {
+                  "scheme.@id": "http://endhealth.info/im#"
+                }
+              }
+            ],
+            minimum_should_match: 1
+          }
+        },
+        {
+          bool: {
+            should: [
+              {
+                match_phrase: {
+                  "status.@id": "http://endhealth.info/im#Active"
+                }
+              },
+              {
+                match_phrase: {
+                  "status.@id": "http://endhealth.info/im#Draft"
+                }
+              }
+            ],
+            minimum_should_match: 1
+          }
+        },
+        {
+          bool: {
+            should: [
+              {
+                match_phrase: {
+                  "entityType.@id": "http://www.w3.org/ns/shacl#NodeShape"
+                }
+              },
+              {
+                match_phrase: {
+                  "entityType.@id": "http://endhealth.info/im#Concept"
+                }
+              },
+              {
+                match_phrase: {
+                  "entityType.@id": "http://endhealth.info/im#ConceptSet"
+                }
+              },
+              {
+                match_phrase: {
+                  "entityType.@id": "http://endhealth.info/im#Folder"
+                }
+              },
+              {
+                match_phrase: {
+                  "entityType.@id": "http://endhealth.info/im#ConceptSetGroup"
+                }
+              },
+              {
+                match_phrase: {
+                  "entityType.@id": "http://endhealth.info/im#QueryTemplate"
+                }
+              },
+              {
+                match_phrase: {
+                  "entityType.@id": "http://endhealth.info/im#ValueSet"
+                }
+              }
+            ],
+            minimum_should_match: 1
+          }
+        }
+      ]
+    }
+  }
+};
 
+describe("EntityService.ts ___ axios success", () => {
   beforeEach(() => {
     jest.resetAllMocks();
     axios.get = jest.fn().mockResolvedValue("axios get return");
@@ -22,24 +114,25 @@ describe("EntityService.ts ___ axios success", () => {
 
   it("can post advancedSearch", async () => {
     const request = new SearchRequest();
-    const osRequest = {
-      "query": {
-        "bool": {
-          "filter": [],
-          "must": [
-            {
-              "match": {
-                "name": undefined
-              }
-            }
-          ]
-        }
-      }
-    };
+    request.page = 1;
+    request.schemeFilter = ["http://snomed.info/sct#", "http://endhealth.info/im#"];
+    request.size = 100;
+    request.sortBy = 0;
+    request.statusFilter = ["http://endhealth.info/im#Active", "http://endhealth.info/im#Draft"];
+    request.termFilter = "scolios";
+    request.typeFilter = [
+      "http://www.w3.org/ns/shacl#NodeShape",
+      "http://endhealth.info/im#Concept",
+      "http://endhealth.info/im#ConceptSet",
+      "http://endhealth.info/im#Folder",
+      "http://endhealth.info/im#ConceptSetGroup",
+      "http://endhealth.info/im#QueryTemplate",
+      "http://endhealth.info/im#ValueSet"
+    ];
     const cancelToken = axios.CancelToken.source().token;
     const result = await EntityService.advancedSearch(request, cancelToken);
     expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(axios.post).toHaveBeenCalledWith(osapi, osRequest, { cancelToken: cancelToken });
+    expect(axios.post).toHaveBeenCalledWith(osapi, SEARCH_PAYLOAD, { cancelToken: cancelToken, headers: { Authorization: "Basic " + osauth } });
     expect(result).toBe("axios post return");
   });
 
@@ -202,10 +295,25 @@ describe("EntityService.ts ___ axios fail", () => {
 
   it("can post advancedSearch", async () => {
     const request = new SearchRequest();
+    request.page = 1;
+    request.schemeFilter = ["http://snomed.info/sct#", "http://endhealth.info/im#"];
+    request.size = 100;
+    request.sortBy = 0;
+    request.statusFilter = ["http://endhealth.info/im#Active", "http://endhealth.info/im#Draft"];
+    request.termFilter = "scolios";
+    request.typeFilter = [
+      "http://www.w3.org/ns/shacl#NodeShape",
+      "http://endhealth.info/im#Concept",
+      "http://endhealth.info/im#ConceptSet",
+      "http://endhealth.info/im#Folder",
+      "http://endhealth.info/im#ConceptSetGroup",
+      "http://endhealth.info/im#QueryTemplate",
+      "http://endhealth.info/im#ValueSet"
+    ];
     const cancelToken = axios.CancelToken.source().token;
     const result = await EntityService.advancedSearch(request, cancelToken);
     expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(axios.post).toHaveBeenCalledWith(api + "api/entity/search", request, { cancelToken: cancelToken });
+    expect(axios.post).toHaveBeenCalledWith(osapi, SEARCH_PAYLOAD, { cancelToken: cancelToken, headers: { Authorization: "Basic " + osauth } });
     expect(result).toStrictEqual({});
   });
 

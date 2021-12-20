@@ -113,9 +113,8 @@ export default class EntityService {
         }
       };
 
-      for(const term of request.termFilter.split(" ")) {
-        if (term)
-          req.query.bool.must.push({ match_phrase_prefix : { name: term}});
+      for (const term of request.termFilter.split(" ")) {
+        if (term) req.query.bool.must.push({ match_phrase_prefix: { name: term } });
       }
 
       if (request.schemeFilter && request.schemeFilter.length > 0) {
@@ -130,7 +129,7 @@ export default class EntityService {
         req.query.bool.filter.push(this.getFilter("entityType.@id", request.typeFilter));
       }
 
-      return axios.post(process.env.VUE_APP_OPENSEARCH_URL || "", req, {
+      return await axios.post(process.env.VUE_APP_OPENSEARCH_URL || "", req, {
         cancelToken: cancelToken,
         headers: {
           Authorization: "Basic " + process.env.VUE_APP_OPENSEARCH_AUTH

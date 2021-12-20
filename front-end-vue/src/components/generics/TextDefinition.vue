@@ -18,6 +18,9 @@
       />
     </div>
     <div v-html="definition" :class="'p-d-none text-definition tgl-' + label"></div>
+    <div class="loading-container" v-if="loading">
+      <ProgressSpinner />
+    </div>
   </div>
 </template>
 
