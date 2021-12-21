@@ -146,6 +146,13 @@ const app = createApp(App)
 
 const vm = app.mount("#app");
 
+axios.interceptors.request.use(async request => {
+  if (store.state.isLoggedIn && process.env.VUE_APP_API && request.url?.startsWith(process.env.VUE_APP_API)) {
+    request.headers.Authorization = "Bearer " + (await Auth.currentSession()).getIdToken().getJwtToken();
+  }
+  return request;
+});
+
 axios.interceptors.response.use(
   response => {
     return isObjectHasKeys(response, ["data"]) ? response.data : undefined;
