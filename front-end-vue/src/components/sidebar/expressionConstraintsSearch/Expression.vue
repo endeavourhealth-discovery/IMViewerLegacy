@@ -6,8 +6,8 @@
         ref="miniSearchInput"
         type="text"
         v-model="searchTerm"
-        @input="debounceForSearch"
-        @keydown="checkKey($event)"
+        @input="search"
+        @keyup.enter="search"
         @focus="showOverlay"
         @blur="hideOverlay"
         @change="showOverlay"
@@ -37,6 +37,8 @@ import { TTIriRef } from "@/models/TripleTree";
 import { mapState } from "vuex";
 import { ComponentDetails } from "@/models/ecl/ComponentDetails";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { Namespace } from "@/models/Namespace";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 
 export default defineComponent({
   name: "Expression",
@@ -77,25 +79,25 @@ export default defineComponent({
     };
   },
   methods: {
-    debounceForSearch(): void {
-      clearTimeout(this.debounce);
-      this.debounce = window.setTimeout(() => {
-        this.search();
-      }, 600);
-    },
+    // debounceForSearch(): void {
+    //   clearTimeout(this.debounce);
+    //   this.debounce = window.setTimeout(() => {
+    //     this.search();
+    //   }, 600);
+    // },
 
-    checkKey(event: any) {
-      if (event.code === "Enter") {
-        this.search();
-      }
-    },
+    // checkKey(event: any) {
+    //   if (event.code === "Enter") {
+    //     this.search();
+    //   }
+    // },
 
     async search(): Promise<void> {
       if (this.searchTerm.toUpperCase() === "ANY" || this.searchTerm === "*") {
         this.searchResults = [{ ...this.anyModel }];
         return;
       }
-      if (this.searchTerm.length > 2) {
+      if (this.searchTerm.length > 0) {
         this.searchResults = [];
         this.loading = true;
         const searchRequest = new SearchRequest();
@@ -103,15 +105,15 @@ export default defineComponent({
         searchRequest.sortBy = SortBy.Usage;
         searchRequest.page = 1;
         searchRequest.size = 100;
-        searchRequest.schemeFilter = this.selectedFilters.schemes.map((scheme: any) => scheme.iri);
+        searchRequest.schemeFilter = this.selectedFilters.schemes.map((scheme: Namespace) => scheme.iri);
 
         searchRequest.statusFilter = [];
-        this.selectedFilters.status.forEach((status: any) => {
+        this.selectedFilters.status.forEach((status: EntityReferenceNode) => {
           searchRequest.statusFilter.push(status["@id"]);
         });
 
         searchRequest.typeFilter = [];
-        this.selectedFilters.types.forEach((type: any) => {
+        this.selectedFilters.types.forEach((type: TTIriRef) => {
           searchRequest.typeFilter.push(type["@id"]);
         });
         if (isObjectHasKeys(this.request, ["cancel", "msg"])) {
@@ -125,7 +127,12 @@ export default defineComponent({
     },
 
     async fetchSearchResults(searchRequest: SearchRequest, cancelToken: any) {
-      this.searchResults = (await EntityService.advancedSearch(searchRequest, cancelToken)).entities;
+      const result = await EntityService.advancedSearch(searchRequest, cancelToken);
+      if (result && isObjectHasKeys(result, ["hits"])) {
+        this.searchResults = result.hits.hits.map((h: { _source: any }) => h._source);
+      } else {
+        this.searchResults = [];
+      }
     },
 
     hideOverlay(): void {

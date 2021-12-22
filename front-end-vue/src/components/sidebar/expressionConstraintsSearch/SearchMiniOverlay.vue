@@ -27,7 +27,7 @@
               <font-awesome-icon :icon="getPerspectiveByConceptType(slotProps.data.entityType)" class="result-icon fa-fw" />
             </div>
             <div class="result-text-container">
-              {{ slotProps.data.match }}<br />
+              {{ slotProps.data.name }}<br />
               <small style="color:lightgrey">{{ slotProps.data.name }}</small>
             </div>
           </div>
