@@ -159,28 +159,48 @@ axios.interceptors.response.use(
   },
   error => {
     if (error.response.status.toString().charAt(0) === "4") {
-      vm.$toast.add({
-        severity: "warn",
-        summary: "Warning",
-        detail: "Request for " + error.config.url.substring(error.config.url.lastIndexOf("/") + 1) + " was unsuccessful. " + error.response.data.message + ".",
-        life: 4000
-      });
-      console.warn(
-        error.config.url +
-          " :" +
-          "\n\t" +
-          "Status: " +
-          error.response.data.status +
-          "\n\t" +
-          "Code: " +
-          error.response.data.code +
-          "\n\t" +
-          "Timestamp: " +
-          error.response.data.timestamp +
-          "\n\t" +
-          "Message: " +
-          error.response.data.message
-      );
+      if (error.response.status === 403) {
+        vm.$toast.add({
+          severity: "error",
+          summary: "Access denied",
+          detail: "Login required for " + error.config.url.substring(error.config.url.lastIndexOf("/") + 1) + "."
+        });
+        vm.$router.push({ name: "Login" });
+      } else if (error.response.status === 401) {
+        vm.$toast.add({
+          severity: "error",
+          summary: "Access denied",
+          detail:
+            "Insufficient clearance to access " +
+            error.config.url.substring(error.config.url.lastIndexOf("/") + 1) +
+            ". Please contact an admin to change your account security clearance if you require access to this resource."
+        });
+        vm.$router.push({ name: "Login" });
+      } else {
+        vm.$toast.add({
+          severity: "warn",
+          summary: "Warning",
+          detail:
+            "Request for " + error.config.url.substring(error.config.url.lastIndexOf("/") + 1) + " was unsuccessful. " + error.response.data.message + ".",
+          life: 4000
+        });
+        console.warn(
+          error.config.url +
+            " :" +
+            "\n\t" +
+            "Status: " +
+            error.response.data.status +
+            "\n\t" +
+            "Code: " +
+            error.response.data.code +
+            "\n\t" +
+            "Timestamp: " +
+            error.response.data.timestamp +
+            "\n\t" +
+            "Message: " +
+            error.response.data.message
+        );
+      }
     } else {
       vm.$toast.add({
         severity: "error",
