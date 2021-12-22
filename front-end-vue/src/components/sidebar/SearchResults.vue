@@ -112,6 +112,7 @@ import { getColourFromType, getFAIconFromType } from "@/helpers/ConceptTypeMetho
 import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
 import ConfigService from "@/services/ConfigService";
 import { mapState } from "vuex";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "SearchResults",
@@ -175,11 +176,15 @@ export default defineComponent({
     },
 
     getConceptTypes(concept: ConceptSummary): string {
-      return concept.entityType
-        .map(function(type: any) {
-          return type.name;
-        })
-        .join(", ");
+      if (isObjectHasKeys(concept, ["entityType"])) {
+        return concept.entityType
+          .map(function(type: any) {
+            return type.name;
+          })
+          .join(", ");
+      } else {
+        return "None";
+      }
     },
 
     onCopy(): void {
