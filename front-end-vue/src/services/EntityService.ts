@@ -17,7 +17,7 @@ export default class EntityService {
 
   public static async getSimpleMaps(iri: string): Promise<any[]> {
     try {
-      return await axios.get(this.api + "api/entity/simpleMaps", {
+      return await axios.get(this.api + "api/entity/public/simpleMaps", {
         params: {
           iri: iri
         }
@@ -29,7 +29,7 @@ export default class EntityService {
 
   public static async getPartialEntity(iri: string, predicates: string[]): Promise<any> {
     try {
-      return await axios.get(this.api + "api/entity/partial", {
+      return await axios.get(this.api + "api/entity/public/partial", {
         params: {
           iri: iri,
           predicate: predicates.join(",")
@@ -42,7 +42,7 @@ export default class EntityService {
 
   public static async getPartialEntityBundle(iri: string, predicates: string[]): Promise<PartialBundle> {
     try {
-      return await axios.get(this.api + "api/entity/partialBundle", {
+      return await axios.get(this.api + "api/entity/public/partialBundle", {
         params: {
           iri: iri,
           predicate: predicates.join(",")
@@ -55,7 +55,7 @@ export default class EntityService {
 
   public static async getDefinitionBundle(iri: string): Promise<PartialBundle> {
     try {
-      return await axios.get(this.api + "api/entity/inferredBundle", {
+      return await axios.get(this.api + "api/entity/public/inferredBundle", {
         params: {
           iri: iri
         }
@@ -67,31 +67,7 @@ export default class EntityService {
 
   public static async getInferredAsString(iri: string): Promise<string> {
     try {
-      return await axios.get(this.api + "api/entity/inferredAsString", {
-        params: {
-          iri: iri
-        }
-      });
-    } catch (error) {
-      return "";
-    }
-  }
-
-  public static async getAxiomBundle(iri: string): Promise<PartialBundle> {
-    try {
-      return await axios.get(this.api + "api/entity/axiomBundle", {
-        params: {
-          iri: iri
-        }
-      });
-    } catch (error) {
-      return {} as PartialBundle;
-    }
-  }
-
-  public static async getAxiomAsString(iri: string): Promise<string> {
-    try {
-      return await axios.get(this.api + "api/entity/axiomAsString", {
+      return await axios.get(this.api + "api/entity/public/inferredAsString", {
         params: {
           iri: iri
         }
@@ -156,20 +132,10 @@ export default class EntityService {
     };
   }
 
-  // public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<SearchResponse> {
-  //   try {
-  //     return await axios.post(this.api + "api/entity/search", request, {
-  //       cancelToken: cancelToken
-  //     });
-  //   } catch (error) {
-  //     return {} as SearchResponse;
-  //   }
-  // }
-
   //obsolete, to be deleted on editor branch merge
   public static async getEntity(iri: string): Promise<any> {
     try {
-      return await axios.get(this.api + "api/entity", {
+      return await axios.get(this.api + "api/public/entity", {
         params: { iri: iri }
       });
     } catch (error) {
@@ -179,7 +145,7 @@ export default class EntityService {
 
   public static async getEntityDefinitionDto(iri: string): Promise<EntityDefinitionDto> {
     try {
-      return await axios.get(this.api + "api/entity/definition", {
+      return await axios.get(this.api + "api/entity/public/definition", {
         params: { iri: iri }
       });
     } catch (error) {
@@ -189,7 +155,7 @@ export default class EntityService {
 
   public static async getEntityParents(iri: string, filters?: FiltersAsIris): Promise<EntityReferenceNode[]> {
     try {
-      return await axios.get(this.api + "api/entity/parents", {
+      return await axios.get(this.api + "api/entity/public/parents", {
         params: { iri: iri, schemeIris: filters?.schemes.join(",") }
       });
     } catch (error) {
@@ -199,7 +165,7 @@ export default class EntityService {
 
   public static async getEntityChildren(iri: string, filters?: FiltersAsIris, cancelToken?: CancelToken): Promise<EntityReferenceNode[]> {
     try {
-      return await axios.get(this.api + "api/entity/children", {
+      return await axios.get(this.api + "api/entity/public/children", {
         params: { iri: iri, schemeIris: filters?.schemes.join(",") },
         cancelToken: cancelToken
       });
@@ -210,7 +176,7 @@ export default class EntityService {
 
   public static async getEntityUsages(iri: string, pageIndex: number, pageSize: number): Promise<TTIriRef[]> {
     try {
-      return await axios.get(this.api + "api/entity/usages", {
+      return await axios.get(this.api + "api/entity/public/usages", {
         params: {
           iri: iri,
           page: pageIndex,
@@ -224,7 +190,7 @@ export default class EntityService {
 
   public static async getUsagesTotalRecords(iri: string): Promise<number> {
     try {
-      return await axios.get(this.api + "api/entity/usagesTotalRecords", {
+      return await axios.get(this.api + "api/entity/public/usagesTotalRecords", {
         params: {
           iri: iri
         }
@@ -236,7 +202,7 @@ export default class EntityService {
 
   public static async getEntityMembers(iri: string, expandMembers?: boolean, expandSubsets?: boolean, limit?: number): Promise<ExportValueSet> {
     try {
-      return await axios.get(this.api + "api/entity/members", {
+      return await axios.get(this.api + "api/entity/public/members", {
         params: {
           iri: iri,
           expandMembers: expandMembers,
@@ -251,7 +217,7 @@ export default class EntityService {
 
   public static async getEntityGraph(iri: string): Promise<GraphData> {
     try {
-      return await axios.get(this.api + "api/entity/graph", { params: { iri: iri } });
+      return await axios.get(this.api + "api/entity/public/graph", { params: { iri: iri } });
     } catch (error) {
       return {} as GraphData;
     }
@@ -259,7 +225,7 @@ export default class EntityService {
 
   public static async getEntityTermCodes(iri: string): Promise<TermCode[]> {
     try {
-      return await axios.get(this.api + "api/entity/termCode", {
+      return await axios.get(this.api + "api/entity/public/termCode", {
         params: { iri: iri }
       });
     } catch (error) {
@@ -269,7 +235,7 @@ export default class EntityService {
 
   public static async getDataModelProperties(iri: string): Promise<DataModelProperty[]> {
     try {
-      return await axios.get(this.api + "api/entity/dataModelProperties", {
+      return await axios.get(this.api + "api/entity/public/dataModelProperties", {
         params: { iri: iri }
       });
     } catch (error) {
@@ -279,7 +245,7 @@ export default class EntityService {
 
   public static async getEntitySummary(iri: string): Promise<ConceptSummary> {
     try {
-      return await axios.get(this.api + "api/entity/summary", {
+      return await axios.get(this.api + "api/entity/public/summary", {
         params: { iri: iri }
       });
     } catch (error) {
@@ -289,7 +255,7 @@ export default class EntityService {
 
   public static async getNamespaces(): Promise<Namespace[]> {
     try {
-      return await axios.get(this.api + "api/entity/namespaces");
+      return await axios.get(this.api + "api/entity/public/namespaces");
     } catch (error) {
       return [] as Namespace[];
     }
@@ -297,7 +263,7 @@ export default class EntityService {
 
   public static async ECLSearch(searchString: string, includeLegacy: boolean, limit: number, cancelToken: CancelToken): Promise<SearchResponse> {
     try {
-      return await axios.post(this.api + "api/set/eclSearch", searchString, {
+      return await axios.post(this.api + "api/set/public/eclSearch", searchString, {
         headers: { "Content-Type": "text/plain" },
         params: { includeLegacy: includeLegacy, limit: limit },
         cancelToken: cancelToken
@@ -309,7 +275,7 @@ export default class EntityService {
 
   public static async getEcl(bundle: TTBundle): Promise<string> {
     try {
-      return await axios.post(this.api + "api/entity/ecl", bundle);
+      return await axios.post(this.api + "api/entity/public/ecl", bundle);
     } catch (error) {
       return "";
     }
