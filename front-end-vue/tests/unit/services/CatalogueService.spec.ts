@@ -13,7 +13,7 @@ describe("CatalogueService.ts ___ axios success", () => {
     const cancelToken = axios.CancelToken.source().token;
     const result = await CatalogueService.getSearchResult("testTerm", ["testType"], cancelToken);
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "instance/search", {
+    expect(axios.get).toHaveBeenCalledWith(api + "instance/public/search", {
       params: { request: "testTerm", typesIris: ["testType"].join(",") },
       cancelToken: cancelToken
     });
@@ -23,7 +23,7 @@ describe("CatalogueService.ts ___ axios success", () => {
   it("can get partial instance", async () => {
     const result = await CatalogueService.getPartialInstance("testIri", ["testPredicate"]);
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "instance/partial", {
+    expect(axios.get).toHaveBeenCalledWith(api + "instance/public/partial", {
       params: { iri: "testIri", predicate: ["testPredicate"] }
     });
     expect(result).toBe("axios get return");
@@ -32,7 +32,7 @@ describe("CatalogueService.ts ___ axios success", () => {
   it("can get types and counts", async () => {
     const result = await CatalogueService.getTypesCount();
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "instance/typesCount");
+    expect(axios.get).toHaveBeenCalledWith(api + "instance/public/typesCount");
     expect(result).toBe("axios get return");
   });
 });
@@ -49,7 +49,7 @@ describe("CatalogueService.ts ___ axios fail", () => {
     const cancelToken = axios.CancelToken.source().token;
     const result = await CatalogueService.getSearchResult("testTerm", ["testType"], cancelToken);
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "instance/search", {
+    expect(axios.get).toHaveBeenCalledWith(api + "instance/public/search", {
       params: { request: "testTerm", typesIris: ["testType"].join(",") },
       cancelToken: cancelToken
     });
@@ -59,7 +59,7 @@ describe("CatalogueService.ts ___ axios fail", () => {
   it("can get partial instance", async () => {
     const result = await CatalogueService.getPartialInstance("testIri", ["testPredicate"]);
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "instance/partial", {
+    expect(axios.get).toHaveBeenCalledWith(api + "instance/public/partial", {
       params: { iri: "testIri", predicate: ["testPredicate"] }
     });
     expect(result).toStrictEqual({});
@@ -68,7 +68,7 @@ describe("CatalogueService.ts ___ axios fail", () => {
   it("can get types and counts", async () => {
     const result = await CatalogueService.getTypesCount();
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith(api + "instance/typesCount");
+    expect(axios.get).toHaveBeenCalledWith(api + "instance/public/typesCount");
     expect(result).toStrictEqual([]);
   });
 });
