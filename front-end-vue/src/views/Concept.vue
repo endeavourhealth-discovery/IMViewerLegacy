@@ -11,7 +11,7 @@
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
               @click="toggle($event, 'copyMenu')"
-              v-tooltip="'Copy concept to clipboard \n (right click to copy individual properties)'"
+              v-tooltip="'Copy concept to clipboard'"
             />
             <Menu id="copy-options" ref="copyMenu" :model="copyMenuItems" :popup="true" />
           </div>
