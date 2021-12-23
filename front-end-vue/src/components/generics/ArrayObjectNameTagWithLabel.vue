@@ -44,7 +44,7 @@ export default defineComponent({
   },
   computed: {
     isArrayObject(): boolean {
-      if (isArrayHasLength(this.data)) {
+      if (this.data && isArrayHasLength(this.data) && isObjectHasKeys(this.data[0], ["@id"])) {
         return true;
       } else {
         return false;
