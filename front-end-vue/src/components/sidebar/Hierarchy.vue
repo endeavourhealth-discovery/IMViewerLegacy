@@ -2,8 +2,8 @@
   <div class="p-d-flex p-flex-column p-jc-start" id="hierarchy-tree-bar-container">
     <div id="parent-button-bar">
       <Button
+        v-if="parentLabel !== '' && parentLabel !== 'Information Model'"
         :label="parentLabel"
-        :disabled="parentLabel === ''"
         icon="pi pi-chevron-up"
         @click="expandParents"
         class="p-button-text p-button-plain next-parent-button"
