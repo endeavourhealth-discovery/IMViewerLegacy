@@ -95,7 +95,7 @@ export default defineComponent({
       expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"],
       downloadMenu: [
         { label: "Definition", command: () => this.download(false) },
-        { label: "Expanded (v2)", command: () => this.download(true) },
+        { label: "Expanded (v2)", command: () => this.downloadFullExportSet(true) },
         { label: "Expanded (v1)", command: () => this.download(true, true) }
       ]
     };
@@ -135,6 +135,15 @@ export default defineComponent({
           }
         }
       });
+    },
+
+    downloadFullExportSet(): void {
+      const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
+      const filePath = process.env.VUE_APP_API + "api/entity/public/setExport?iri=" + modIri;
+      const link = document.createElement("a");
+      link.href = filePath;
+      link.download = filePath.substr(filePath.lastIndexOf("/") + 1);
+      link.click();
     },
 
     download(expanded: boolean, v1 = false): void {
