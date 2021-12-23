@@ -157,10 +157,11 @@ describe("Members.vue", () => {
 
   it("can run downloadMenu commands", () => {
     wrapper.vm.download = jest.fn();
+    wrapper.vm.downloadFullExportSet = jest.fn();
     wrapper.vm.downloadMenu[0].command();
     expect(wrapper.vm.download).toHaveBeenLastCalledWith(false);
     wrapper.vm.downloadMenu[1].command();
-    expect(wrapper.vm.download).toHaveBeenLastCalledWith(true);
+    expect(wrapper.vm.downloadFullExportSet).toHaveBeenLastCalledWith(true);
     wrapper.vm.downloadMenu[2].command();
     expect(wrapper.vm.download).toHaveBeenLastCalledWith(true, true);
   });
