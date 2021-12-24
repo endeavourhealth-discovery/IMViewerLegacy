@@ -20,7 +20,7 @@
       <template #header>
         <div class="table-header-bar">
           <div class="checkboxes-container">
-            <Button type="button" label="Download..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
+            <Button type="button" label="Download..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" :loading="downloading" />
             <Menu id="overlay_menu" ref="menu" :model="downloadMenu" :popup="true" />
           </div>
         </div>
@@ -88,6 +88,7 @@ export default defineComponent({
   data() {
     return {
       loading: false,
+      downloading: false,
       members: {} as ExportValueSet,
       combinedMembers: [] as ValueSetMember[],
       selected: {} as ValueSetMember,
@@ -95,7 +96,7 @@ export default defineComponent({
       expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"],
       downloadMenu: [
         { label: "Definition", command: () => this.download(false) },
-        { label: "Expanded (v2)", command: () => this.download(true) },
+        { label: "Expanded (v2)", command: () => this.downloadFullExportSet(true) },
         { label: "Expanded (v1)", command: () => this.download(true, true) }
       ]
     };
@@ -135,6 +136,17 @@ export default defineComponent({
           }
         }
       });
+    },
+
+    async downloadFullExportSet() {
+      this.downloading = true;
+      const result = await EntityService.getFullExportSet(this.conceptIri);
+      this.downloading = false;
+      const url = window.URL.createObjectURL(new Blob([result], { type: "application" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "setExport.xlsx";
+      link.click();
     },
 
     download(expanded: boolean, v1 = false): void {
