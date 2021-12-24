@@ -1062,24 +1062,6 @@ describe("Concept.vue ___ not moduleIri", () => {
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy Has sub types to clipboard"));
   });
 
-  it("can exportConcept ___ success", () => {
-    window.open = jest.fn().mockReturnValue(true);
-    wrapper.vm.exportConcept();
-    expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith("/test/api/entity/exportConcept?iri=http:%2F%2Fendhealth.info%2Fim%23CriticalCareEncounter&format=undefined");
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Export will begin shortly"));
-  });
-
-  it("can exportConcept ___ fail", () => {
-    window.open = jest.fn().mockReturnValue(false);
-    wrapper.vm.exportConcept();
-    expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith("/test/api/entity/exportConcept?iri=http:%2F%2Fendhealth.info%2Fim%23CriticalCareEncounter&format=undefined");
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Export failed from server"));
-  });
-
   it("can wrapper isObjectHasKeys", () => {
     expect(wrapper.vm.isObjectHasKeysWrapper({ key1: "test" }, ["key1"])).toBe(true);
   });
