@@ -15,6 +15,23 @@ import { FiltersAsIris } from "@/models/FiltersAsIris";
 export default class EntityService {
   static api = process.env.VUE_APP_API;
 
+  public static async getFullExportSet(iri: string): Promise<any> {
+    const client = axios.create({
+      baseURL: process.env.VUE_APP_API,
+      timeout: 0
+    });
+    try {
+      return client.get("api/entity/public/setExport", {
+        params: {
+          iri: iri
+        },
+        responseType: "blob"
+      });
+    } catch (error) {
+      return {} as any;
+    }
+  }
+
   public static async getSimpleMaps(iri: string): Promise<any[]> {
     try {
       return await axios.get(this.api + "api/entity/public/simpleMaps", {

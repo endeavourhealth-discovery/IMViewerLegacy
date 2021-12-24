@@ -20,7 +20,7 @@
       <template #header>
         <div class="table-header-bar">
           <div class="checkboxes-container">
-            <Button type="button" label="Download..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
+            <Button type="button" label="Download..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" :loading="downloading" />
             <Menu id="overlay_menu" ref="menu" :model="downloadMenu" :popup="true" />
           </div>
         </div>
@@ -88,6 +88,7 @@ export default defineComponent({
   data() {
     return {
       loading: false,
+      downloading: false,
       members: {} as ExportValueSet,
       combinedMembers: [] as ValueSetMember[],
       selected: {} as ValueSetMember,
@@ -137,12 +138,14 @@ export default defineComponent({
       });
     },
 
-    downloadFullExportSet(): void {
-      const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
-      const filePath = process.env.VUE_APP_API + "api/entity/public/setExport?iri=" + modIri;
+    async downloadFullExportSet() {
+      this.downloading = true;
+      const result = await EntityService.getFullExportSet(this.conceptIri);
+      this.downloading = false;
+      const url = window.URL.createObjectURL(new Blob([result], { type: "application" }));
       const link = document.createElement("a");
-      link.href = filePath;
-      link.download = filePath.substr(filePath.lastIndexOf("/") + 1);
+      link.href = url;
+      link.download = "setExport.xlsx";
       link.click();
     },
 
