@@ -6,7 +6,7 @@ import { RDFS } from "@/vocabulary/RDFS";
 import { SHACL } from "@/vocabulary/SHACL";
 import { isArrayHasLength, isObjectHasKeys } from "./DataTypeCheckers";
 
-const excludedPredicates = [IM.MATCHED_TO, IM.HAS_STATUS, IM.STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL, IM.DEFINITION, IM.USAGE_STATS];
+const excludedPredicates = [IM.MATCHED_TO, IM.HAS_STATUS, IM.STATUS, RDFS.COMMENT, RDF.TYPE, RDFS.LABEL, IM.DEFINITION, IM.USAGE_STATS, IM.IS_A];
 
 export function translateFromEntityBundle(bundle: PartialBundle): TTGraphData {
   const { entity, predicates } = bundle;
