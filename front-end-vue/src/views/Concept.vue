@@ -436,14 +436,15 @@ export default defineComponent({
     },
 
     async exportConcept(format: any) {
-      const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
-      const url = process.env.VUE_APP_API + "api/entity/exportConcept?iri=" + modIri + "&format=" + format;
-      const popup = window.open(url);
-      if (!popup) {
-        this.$toast.add(LoggerService.error("Export failed from server"));
-      } else {
-        this.$toast.add(LoggerService.success("Export will begin shortly"));
-      }
+      this.loading = true;
+      const result = await EntityService.downloadConcept(this.conceptIri, format);
+      this.loading = false;
+      const url = window.URL.createObjectURL(new Blob([result], { type: format === "turtle" ? "text/plain" : "application/javascript" }));
+      const link = document.createElement("a");
+      link.href = url;
+      const ending = format === "turtle" ? ".txt" : ".json";
+      link.download = "Concept" + ending;
+      link.click();
     },
     downloadOption(format: any) {
       if (format === "custom") {

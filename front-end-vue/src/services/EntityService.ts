@@ -15,6 +15,20 @@ import { FiltersAsIris } from "@/models/FiltersAsIris";
 export default class EntityService {
   static api = process.env.VUE_APP_API;
 
+  public static async downloadConcept(iri: string, format: string): Promise<any> {
+    try {
+      return await axios.get(this.api + "api/entity/public/exportConcept", {
+        params: {
+          iri: iri,
+          format: format
+        },
+        responseType: "blob"
+      });
+    } catch (error) {
+      return {} as any;
+    }
+  }
+
   public static async getFullExportSet(iri: string): Promise<any> {
     const client = axios.create({
       baseURL: process.env.VUE_APP_API,
