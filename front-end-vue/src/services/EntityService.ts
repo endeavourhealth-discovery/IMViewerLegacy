@@ -29,21 +29,30 @@ export default class EntityService {
     }
   }
 
+  public static async download(conceptIri: string, expanded: boolean, v1: boolean) {
+    return await axios.get(this.api + "api/set/public/download", {
+      params: {
+        iri: conceptIri,
+        expandMembers: expanded,
+        v1: expanded && v1,
+        format: "excel"
+      },
+      responseType: "blob"
+    });
+  }
+
   public static async getFullExportSet(iri: string): Promise<any> {
     const client = axios.create({
       baseURL: process.env.VUE_APP_API,
       timeout: 0
     });
-    try {
-      return client.get("api/entity/public/setExport", {
-        params: {
-          iri: iri
-        },
-        responseType: "blob"
-      });
-    } catch (error) {
-      return {} as any;
-    }
+
+    return client.get("api/entity/public/setExport", {
+      params: {
+        iri: iri
+      },
+      responseType: "blob"
+    });
   }
 
   public static async getSimpleMaps(iri: string): Promise<any[]> {
