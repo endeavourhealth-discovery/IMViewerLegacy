@@ -161,7 +161,7 @@ describe("Members.vue", () => {
     wrapper.vm.downloadMenu[0].command();
     expect(wrapper.vm.download).toHaveBeenLastCalledWith(false);
     wrapper.vm.downloadMenu[1].command();
-    expect(wrapper.vm.downloadFullExportSet).toHaveBeenLastCalledWith(true);
+    expect(wrapper.vm.downloadFullExportSet).toHaveBeenCalled();
     wrapper.vm.downloadMenu[2].command();
     expect(wrapper.vm.download).toHaveBeenLastCalledWith(true, true);
   });
