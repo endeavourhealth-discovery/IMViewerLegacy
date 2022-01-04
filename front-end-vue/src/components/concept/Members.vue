@@ -96,7 +96,7 @@ export default defineComponent({
       expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"],
       downloadMenu: [
         { label: "Definition", command: () => this.download(false) },
-        { label: "Expanded (v2)", command: () => this.downloadFullExportSet(true) },
+        { label: "Expanded (v2)", command: () => this.downloadFullExportSet() },
         { label: "Expanded (v1)", command: () => this.download(true, true) }
       ]
     };
@@ -142,7 +142,7 @@ export default defineComponent({
       this.downloading = true;
       const result = await EntityService.getFullExportSet(this.conceptIri);
       this.downloading = false;
-      const url = window.URL.createObjectURL(new Blob([result], { type: "application" }));
+      const url = window.URL.createObjectURL(new Blob([result.data], { type: "application" }));
       const link = document.createElement("a");
       link.href = url;
       link.download = "setExport.xlsx";
