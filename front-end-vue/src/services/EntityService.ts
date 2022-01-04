@@ -110,38 +110,42 @@ export default class EntityService {
 
   public static async advancedSearch(request: SearchRequest, cancelToken: CancelToken): Promise<any> {
     try {
-      const req: any = {
-        size: request.size,
-        query: {
-          bool: {
-            must: [],
-            filter: []
-          }
-        }
-      };
+      // const req: any = {
+      //   size: request.size,
+      //   query: {
+      //     bool: {
+      //       must: [],
+      //       filter: []
+      //     }
+      //   }
+      // };
 
-      for (const term of request.termFilter.split(" ")) {
-        if (term) req.query.bool.must.push({ match_phrase_prefix: { name: term } });
-      }
+      // for (const term of request.termFilter.split(" ")) {
+      //   if (term) req.query.bool.must.push({ match_phrase_prefix: { name: term } });
+      // }
 
-      if (request.schemeFilter && request.schemeFilter.length > 0) {
-        req.query.bool.filter.push(this.getFilter("scheme.@id", request.schemeFilter));
-      }
+      // if (request.schemeFilter && request.schemeFilter.length > 0) {
+      //   req.query.bool.filter.push(this.getFilter("scheme.@id", request.schemeFilter));
+      // }
 
-      if (request.statusFilter && request.statusFilter.length > 0) {
-        req.query.bool.filter.push(this.getFilter("status.@id", request.statusFilter));
-      }
+      // if (request.statusFilter && request.statusFilter.length > 0) {
+      //   req.query.bool.filter.push(this.getFilter("status.@id", request.statusFilter));
+      // }
 
-      if (request.typeFilter && request.typeFilter.length > 0) {
-        req.query.bool.filter.push(this.getFilter("entityType.@id", request.typeFilter));
-      }
+      // if (request.typeFilter && request.typeFilter.length > 0) {
+      //   req.query.bool.filter.push(this.getFilter("entityType.@id", request.typeFilter));
+      // }
 
-      return await axios.post(process.env.VUE_APP_OPENSEARCH_URL || "", req, {
-        cancelToken: cancelToken,
-        headers: {
-          Authorization: "Basic " + process.env.VUE_APP_OPENSEARCH_AUTH
-        }
+      return await axios.post(this.api + "api/entity/public/search", request, {
+        cancelToken: cancelToken
       });
+
+      // return await axios.post(process.env.VUE_APP_OPENSEARCH_URL || "", req, {
+      //   cancelToken: cancelToken,
+      //   headers: {
+      //     Authorization: "Basic " + process.env.VUE_APP_OPENSEARCH_AUTH
+      //   }
+      // });
     } catch (error) {
       return {} as SearchResponse;
     }
