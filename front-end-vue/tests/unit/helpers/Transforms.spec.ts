@@ -15,42 +15,40 @@ describe("bundleToText", () => {
         { "@id": "http://snomed.info/sct#363235000", name: "Hereditary disorder of nervous system (disorder)" },
         { "@id": "http://snomed.info/sct#363343008", name: "Hereditary disorder of the visual system (disorder)" },
         { "@id": "http://snomed.info/sct#257277002", name: "Combined disorder of muscle AND peripheral nerve (disorder)" },
-        { "@id": "http://snomed.info/sct#363070008", name: "Developmental hereditary disorder (disorder)" },
+        { "@id": "http://snomed.info/sct#363070008", name: "Developmental hereditary disorder (disorder)" }
+      ],
+      "http://endhealth.info/im#roleGroup": [
         {
-          "http://endhealth.info/im#roleGroup": [
-            {
-              "http://snomed.info/sct#370135005": { "@id": "http://snomed.info/sct#308490002", name: "Pathological developmental process (qualifier value)" },
-              "http://snomed.info/sct#116676008": {
-                "@id": "http://snomed.info/sct#49755003",
-                name: "Morphologically abnormal structure (morphologic abnormality)"
-              },
-              "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#80622005", name: "Abducens nerve structure (body structure)" },
-              "http://snomed.info/sct#246454002": { "@id": "http://snomed.info/sct#255399007", name: "Congenital (qualifier value)" }
-            },
-            {
-              "http://snomed.info/sct#370135005": { "@id": "http://snomed.info/sct#308490002", name: "Pathological developmental process (qualifier value)" },
-              "http://snomed.info/sct#116676008": { "@id": "http://snomed.info/sct#31739005", name: "Lateral abnormal curvature (morphologic abnormality)" },
-              "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#289959001", name: "Musculoskeletal structure of spine (body structure)" }
-            },
-            {
-              "http://snomed.info/sct#370135005": { "@id": "http://snomed.info/sct#308490002", name: "Pathological developmental process (qualifier value)" },
-              "http://snomed.info/sct#116676008": {
-                "@id": "http://snomed.info/sct#49755003",
-                name: "Morphologically abnormal structure (morphologic abnormality)"
-              },
-              "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#127954009", name: "Skeletal muscle structure (body structure)" },
-              "http://snomed.info/sct#246454002": { "@id": "http://snomed.info/sct#255399007", name: "Congenital (qualifier value)" }
-            },
-            {
-              "http://snomed.info/sct#370135005": { "@id": "http://snomed.info/sct#308490002", name: "Pathological developmental process (qualifier value)" },
-              "http://snomed.info/sct#116676008": {
-                "@id": "http://snomed.info/sct#49755003",
-                name: "Morphologically abnormal structure (morphologic abnormality)"
-              },
-              "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#81745001", name: "Structure of eye proper (body structure)" },
-              "http://snomed.info/sct#246454002": { "@id": "http://snomed.info/sct#255399007", name: "Congenital (qualifier value)" }
-            }
-          ]
+          "http://snomed.info/sct#370135005": { "@id": "http://snomed.info/sct#308490002", name: "Pathological developmental process (qualifier value)" },
+          "http://snomed.info/sct#116676008": {
+            "@id": "http://snomed.info/sct#49755003",
+            name: "Morphologically abnormal structure (morphologic abnormality)"
+          },
+          "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#80622005", name: "Abducens nerve structure (body structure)" },
+          "http://snomed.info/sct#246454002": { "@id": "http://snomed.info/sct#255399007", name: "Congenital (qualifier value)" }
+        },
+        {
+          "http://snomed.info/sct#370135005": { "@id": "http://snomed.info/sct#308490002", name: "Pathological developmental process (qualifier value)" },
+          "http://snomed.info/sct#116676008": { "@id": "http://snomed.info/sct#31739005", name: "Lateral abnormal curvature (morphologic abnormality)" },
+          "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#289959001", name: "Musculoskeletal structure of spine (body structure)" }
+        },
+        {
+          "http://snomed.info/sct#370135005": { "@id": "http://snomed.info/sct#308490002", name: "Pathological developmental process (qualifier value)" },
+          "http://snomed.info/sct#116676008": {
+            "@id": "http://snomed.info/sct#49755003",
+            name: "Morphologically abnormal structure (morphologic abnormality)"
+          },
+          "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#127954009", name: "Skeletal muscle structure (body structure)" },
+          "http://snomed.info/sct#246454002": { "@id": "http://snomed.info/sct#255399007", name: "Congenital (qualifier value)" }
+        },
+        {
+          "http://snomed.info/sct#370135005": { "@id": "http://snomed.info/sct#308490002", name: "Pathological developmental process (qualifier value)" },
+          "http://snomed.info/sct#116676008": {
+            "@id": "http://snomed.info/sct#49755003",
+            name: "Morphologically abnormal structure (morphologic abnormality)"
+          },
+          "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#81745001", name: "Structure of eye proper (body structure)" },
+          "http://snomed.info/sct#246454002": { "@id": "http://snomed.info/sct#255399007", name: "Congenital (qualifier value)" }
         }
       ]
     },
@@ -78,81 +76,50 @@ describe("bundleToText", () => {
   };
 
   const expected =
-    "Is a : \n" +
-    '  <a href="' +
-    url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2382354003">Multiple system malformation syndrome</a>\n' +
-    '  <a href="' +
-    url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2385995004">Autosomal recessive hereditary disorder</a>\n' +
-    '  <a href="' +
-    url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2389886004">Congenital anomaly of skeletal muscle</a>\n' +
-    '  <a href="' +
-    url +
-    "/#/concept/http:%2F%2Fsnomed.info%2Fsct%23128084001\">Duane's syndrome, type 3</a>\n" +
-    '  <a href="' +
-    url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23298382003">Scoliosis deformity of spine</a>\n' +
-    '  <a href="' +
-    url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23363212003">Hereditary disorder of musculoskeletal system</a>\n' +
-    '  <a href="' +
-    url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23363235000">Hereditary disorder of nervous system</a>\n' +
-    '  <a href="' +
-    url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23363343008">Hereditary disorder of the visual system</a>\n' +
-    '  <a href="' +
-    url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23257277002">Combined disorder of muscle AND peripheral nerve</a>\n' +
-    '  <a href="' +
-    url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23363070008">Developmental hereditary disorder</a>\n' +
-    "  Where : \n" +
-    '    ( Pathological process : <a href="' +
+    "Where : \n" +
+    '  ( Pathological process : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23308490002">Pathological developmental process</a>\n' +
-    '      Associated morphology : <a href="' +
+    '    Associated morphology : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2349755003">Morphologically abnormal structure</a>\n' +
-    '      Finding site : <a href="' +
+    '    Finding site : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2380622005">Abducens nerve structure</a>\n' +
-    '      Occurrence : <a href="' +
+    '    Occurrence : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n' +
-    '    ( Pathological process : <a href="' +
+    '  ( Pathological process : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23308490002">Pathological developmental process</a>\n' +
-    '      Associated morphology : <a href="' +
+    '    Associated morphology : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2331739005">Lateral abnormal curvature</a>\n' +
-    '      Finding site : <a href="' +
+    '    Finding site : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23289959001">Musculoskeletal structure of spine</a> )\n' +
-    '    ( Pathological process : <a href="' +
+    '  ( Pathological process : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23308490002">Pathological developmental process</a>\n' +
-    '      Associated morphology : <a href="' +
+    '    Associated morphology : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2349755003">Morphologically abnormal structure</a>\n' +
-    '      Finding site : <a href="' +
+    '    Finding site : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23127954009">Skeletal muscle structure</a>\n' +
-    '      Occurrence : <a href="' +
+    '    Occurrence : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n' +
-    '    ( Pathological process : <a href="' +
+    '  ( Pathological process : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23308490002">Pathological developmental process</a>\n' +
-    '      Associated morphology : <a href="' +
+    '    Associated morphology : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2349755003">Morphologically abnormal structure</a>\n' +
-    '      Finding site : <a href="' +
+    '    Finding site : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2381745001">Structure of eye proper</a>\n' +
-    '      Occurrence : <a href="' +
+    '    Occurrence : <a href="' +
     url +
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n';
 
