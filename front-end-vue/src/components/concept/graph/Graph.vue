@@ -1,8 +1,10 @@
 <template>
+  <div class="p-fluid">
+    <MultiSelect v-model="selectedPredicates" :options="predicates" placeholder="Select predicates" />
+  </div>
   <div class="loading-container" v-if="loading">
     <ProgressSpinner />
   </div>
-
   <GraphComponent v-else :data="data" />
 </template>
 
@@ -29,7 +31,9 @@ export default defineComponent({
   data() {
     return {
       loading: false,
-      data: {} as TTGraphData
+      data: {} as TTGraphData,
+      selectedPredicates: [] as string[],
+      predicates: [] as string[]
     };
   },
   async mounted() {
@@ -39,6 +43,7 @@ export default defineComponent({
     async getEntityBundle(iri: string) {
       this.loading = true;
       const bundle = await EntityService.getPartialEntityBundle(iri, []);
+      this.predicates = Object.keys(bundle.predicates);
       this.data = translateFromEntityBundle(bundle);
       this.loading = false;
     }

@@ -308,7 +308,7 @@ export default defineComponent({
 
 <style>
 #force-layout-svg {
-  height: calc(100vh - 14rem);
+  height: calc(100vh - 16.3rem);
   width: 100%;
 }
 
