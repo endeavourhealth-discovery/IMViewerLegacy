@@ -1,20 +1,20 @@
 <template>
-  <div id="h-filter-container" class="p-fluid">
-    <div class="reset-button-container">
-      <Button label="Reset filters" @click="resetFilters" />
+  <div class="p-grid">
+    <div id="h-filter-container">
+      Select scheme:
     </div>
-    <div class="p-field">
-      <span class="p-float-label">
-        <MultiSelect
-          id="scheme"
-          v-model="selectedSchemes"
-          @change="updateStoreSelectedFilters"
-          :options="filterOptions.schemes"
-          optionLabel="name"
-          display="chip"
-        />
-        <label for="scheme">Select scheme:</label>
-      </span>
+    <div class="p-col-10">
+      <MultiSelect
+        id="scheme"
+        v-model="selectedSchemes"
+        @change="updateStoreSelectedFilters"
+        :options="filterOptions.schemes"
+        optionLabel="name"
+        display="chip"
+      />
+    </div>
+    <div class="p-col-1">
+      <Button icon="pi pi-undo" @click="resetFilters" class="p-button-rounded p-button-text p-button-plain" v-tooltip="'Reset filters'" />
     </div>
   </div>
 </template>
@@ -69,19 +69,6 @@ export default defineComponent({
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
-}
-
-.reset-button-container {
-  width: fit-content;
-  margin: 0.5rem 0 0.5rem 0;
-}
-
-label {
-  font-size: 1rem !important;
-}
-
-.p-field {
-  margin-top: 1rem;
-  width: 100%;
+  margin-left: 1rem;
 }
 </style>
