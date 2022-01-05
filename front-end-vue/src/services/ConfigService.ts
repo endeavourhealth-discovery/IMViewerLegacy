@@ -8,7 +8,7 @@ export default class ConfigService {
 
   public static async getComponentLayout(name: string): Promise<DefinitionConfig[]> {
     try {
-      return await axios.get(this.api + "api/config/componentLayout", {
+      return await axios.get(this.api + "api/config/public/componentLayout", {
         params: {
           name: name
         }
@@ -20,7 +20,7 @@ export default class ConfigService {
 
   public static async getFilterDefaults(): Promise<FilterDefaultsConfig> {
     try {
-      return await axios.get(this.api + "api/config/filterDefaults");
+      return await axios.get(this.api + "api/config/public/filterDefaults");
     } catch (error) {
       return {} as FilterDefaultsConfig;
     }
@@ -28,7 +28,7 @@ export default class ConfigService {
 
   public static async getDashboardLayout(name: string): Promise<DashboardLayout[]> {
     try {
-      return await axios.get(this.api + "api/config/dashboardLayout", {
+      return await axios.get(this.api + "api/config/public/dashboardLayout", {
         params: {
           name: name
         }
@@ -40,7 +40,7 @@ export default class ConfigService {
 
   public static async getDefaultPredicateNames(): Promise<any> {
     try {
-      return await axios.get(this.api + "api/config/defaultPredicateNames");
+      return await axios.get(this.api + "api/config/public/defaultPredicateNames");
     } catch (error) {
       return {} as any;
     }
@@ -48,7 +48,7 @@ export default class ConfigService {
 
   public static async getXmlSchemaDataTypes(): Promise<any> {
     try {
-      return await axios.get(this.api + "api/config/xmlSchemaDataTypes");
+      return await axios.get(this.api + "api/config/public/xmlSchemaDataTypes");
     } catch (error) {
       return [] as string[];
     }

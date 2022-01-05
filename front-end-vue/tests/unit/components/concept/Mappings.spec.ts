@@ -20,32 +20,25 @@ describe("Mappings.vue", () => {
           {
             "http://endhealth.info/im#oneOf": [
               {
-                "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#X109", name: "Unspecified amputation of foot" },
+                "http://endhealth.info/im#mappedTo": [{ "@id": "http://endhealth.info/OPCS4#X109", name: "Unspecified amputation of foot" }],
                 "http://endhealth.info/im#mapAdvice": "ALWAYS X10.9 | ADDITIONAL CODE POSSIBLE",
                 "http://endhealth.info/im#mapPriority": 1,
-                "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
+                "http://endhealth.info/im#assuranceLevel": [{ "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }]
               }
             ]
           },
           {
             "http://endhealth.info/im#oneOf": [
               {
-                "http://endhealth.info/im#mappedTo": { "@id": "http://endhealth.info/OPCS4#Z942", name: "Right sided operation" },
+                "http://endhealth.info/im#mappedTo": [{ "@id": "http://endhealth.info/OPCS4#Z942", name: "Right sided operation" }],
                 "http://endhealth.info/im#mapAdvice": "ALWAYS Z94.2 | ADDITIONAL CODE POSSIBLE",
                 "http://endhealth.info/im#mapPriority": 1,
-                "http://endhealth.info/im#assuranceLevel": { "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }
+                "http://endhealth.info/im#assuranceLevel": [{ "@id": "http://endhealth.info/im#NationallyAssuredUK", name: "Nationally assured UK level" }]
               }
             ]
           }
         ]
       }
-    ]
-  } as any;
-  const MATCHED_TOS = {
-    "@id": "http://snomed.info/sct#298382003",
-    "http://endhealth.info/im#matchedTo": [
-      { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" },
-      { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" }
     ]
   } as any;
   const NAMESPACES = [
@@ -72,6 +65,10 @@ describe("Mappings.vue", () => {
     { iri: "http://endhealth.info/vision#", prefix: "vis", name: "Vision (incl. Read2) namespace" },
     { iri: "http://www.w3.org/2001/XMLSchema#", prefix: "xsd", name: "xsd namespace" }
   ];
+  const SIMPLE_MAPS = [
+    { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" },
+    { "@id": "http://endhealth.info/emis#^ESCTAM784250", name: "Amputation of right foot", scheme: "EMIS (inc. Read2 like) namespace" }
+  ];
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -84,18 +81,11 @@ describe("Mappings.vue", () => {
 
     mockRef = { render: () => {}, methods: { toggle: jest.fn() } };
 
-    EntityService.getPartialEntity = jest
-      .fn()
-      .mockResolvedValueOnce(HAS_MAPS)
-      .mockResolvedValueOnce(MATCHED_TOS);
+    EntityService.getPartialEntity = jest.fn().mockResolvedValue(HAS_MAPS);
 
     EntityService.getNamespaces = jest.fn().mockResolvedValue(NAMESPACES);
 
-    EntityService.getMatchedFrom = jest
-      .fn()
-      .mockResolvedValue([
-        { "@id": "http://endhealth.info/emis#Nyu55", name: "Scoliosis deformity of spine", scheme: "EMIS (inc. Read2 like) namespace", code: "Nyu55" }
-      ]);
+    EntityService.getSimpleMaps = jest.fn().mockResolvedValue(SIMPLE_MAPS);
 
     wrapper = shallowMount(Mappings, {
       global: {
@@ -120,17 +110,16 @@ describe("Mappings.vue", () => {
   });
 
   it("can get mappings ___ success", async () => {
-    EntityService.getPartialEntity = jest
-      .fn()
-      .mockResolvedValueOnce(HAS_MAPS)
-      .mockResolvedValueOnce(MATCHED_TOS);
     wrapper.vm.getMappings();
     await flushPromises();
-    expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(2);
-    expect(EntityService.getPartialEntity).toHaveBeenNthCalledWith(1, "http://snomed.info/sct#723312009", ["http://endhealth.info/im#hasMap"]);
-    expect(EntityService.getPartialEntity).toHaveBeenLastCalledWith("http://snomed.info/sct#723312009", ["http://endhealth.info/im#matchedTo"]);
+    expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
+    expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#723312009", ["http://endhealth.info/im#hasMap"]);
+    expect(EntityService.getSimpleMaps).toHaveBeenCalledTimes(1);
+    expect(EntityService.getSimpleMaps).toHaveBeenCalledWith("http://snomed.info/sct#723312009");
+    expect(EntityService.getNamespaces).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.mappings).toStrictEqual(HAS_MAPS[IM.HAS_MAP]);
-    expect(wrapper.vm.simpleMaps).toStrictEqual(MATCHED_TOS[IM.MATCHED_TO]);
+    expect(wrapper.vm.namespaces).toStrictEqual(NAMESPACES);
+    expect(wrapper.vm.simpleMaps).toStrictEqual(SIMPLE_MAPS);
   });
 
   it("can get mappings ___ fail no hasMap", async () => {
@@ -145,13 +134,8 @@ describe("Mappings.vue", () => {
     EntityService.getPartialEntity = jest.fn().mockResolvedValue({});
     wrapper.vm.getMappings();
     await flushPromises();
-    await flushPromises();
-    await flushPromises();
-    await flushPromises();
-    expect(wrapper.vm.simpleMaps).toStrictEqual([
-      { "@id": "http://endhealth.info/emis#Nyu55", code: "Nyu55", name: "Scoliosis deformity of spine", scheme: "EMIS (inc. Read2 like) namespace" }
-    ]);
-    expect(EntityService.getMatchedFrom).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.simpleMaps).toStrictEqual(SIMPLE_MAPS);
+    expect(EntityService.getSimpleMaps).toHaveBeenCalledTimes(1);
   });
 
   it("can create chartTableNode", () => {
@@ -250,139 +234,36 @@ describe("Mappings.vue", () => {
   });
 
   it("can createChartStructure", () => {
+    wrapper.vm.generateChildNodes = jest.fn().mockReturnValue([]);
+    wrapper.vm.generateSimpleMapsNodes = jest.fn().mockReturnValue([]);
     expect(wrapper.vm.createChartStructure(HAS_MAPS[IM.HAS_MAP])).toStrictEqual({
       key: "0",
       type: "hasMap",
       data: { label: "Has map" },
       children: [
         {
-          key: "0_0",
-          type: "comboOf",
-          data: { label: "Combination of" },
-          children: [
-            {
-              key: "0_0_0",
-              type: "oneOf",
-              data: { label: "One of" },
-              children: [
-                {
-                  key: "0_0_0_0",
-                  type: "childList",
-                  data: {
-                    mapItems: [
-                      {
-                        name: "Unspecified amputation of foot",
-                        iri: "http://endhealth.info/OPCS4#X109",
-                        priority: 1,
-                        assuranceLevel: "Nationally assured UK level"
-                      }
-                    ]
-                  }
-                }
-              ]
-            },
-            {
-              key: "0_0_1",
-              type: "oneOf",
-              data: { label: "One of" },
-              children: [
-                {
-                  key: "0_0_1_0",
-                  type: "childList",
-                  data: {
-                    mapItems: [
-                      { name: "Right sided operation", iri: "http://endhealth.info/OPCS4#Z942", priority: 1, assuranceLevel: "Nationally assured UK level" }
-                    ]
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          key: "0_1",
+          key: "0_" + 0,
           type: "simpleMaps",
           data: { label: "Simple maps" },
-          children: [
-            {
-              key: "0_1_0",
-              type: "simpleMapsList",
-              data: {
-                mapItems: [
-                  {
-                    name: "Amputation of right foot",
-                    iri: "http://endhealth.info/emis#^ESCTAM784250",
-                    scheme: "EMIS (inc. Read2 like) namespace",
-                    code: "^ESCTAM784250"
-                  },
-                  {
-                    name: "Amputation of right foot",
-                    iri: "http://endhealth.info/emis#^ESCTAM784250",
-                    scheme: "EMIS (inc. Read2 like) namespace",
-                    code: "^ESCTAM784250"
-                  }
-                ]
-              }
-            }
-          ]
+          children: []
         }
       ]
     });
+    expect(wrapper.vm.generateChildNodes).toHaveBeenCalledTimes(1);
   });
 
   it("can createChartStructure ___ complex only", () => {
+    wrapper.vm.generateChildNodes = jest.fn().mockReturnValue([]);
+    wrapper.vm.generateSimpleMapsNodes = jest.fn().mockReturnValue([]);
     wrapper.vm.simpleMaps = [];
     expect(wrapper.vm.createChartStructure(HAS_MAPS[IM.HAS_MAP])).toStrictEqual({
       key: "0",
       type: "hasMap",
       data: { label: "Has map" },
-      children: [
-        {
-          key: "0_0",
-          type: "comboOf",
-          data: { label: "Combination of" },
-          children: [
-            {
-              key: "0_0_0",
-              type: "oneOf",
-              data: { label: "One of" },
-              children: [
-                {
-                  key: "0_0_0_0",
-                  type: "childList",
-                  data: {
-                    mapItems: [
-                      {
-                        name: "Unspecified amputation of foot",
-                        iri: "http://endhealth.info/OPCS4#X109",
-                        priority: 1,
-                        assuranceLevel: "Nationally assured UK level"
-                      }
-                    ]
-                  }
-                }
-              ]
-            },
-            {
-              key: "0_0_1",
-              type: "oneOf",
-              data: { label: "One of" },
-              children: [
-                {
-                  key: "0_0_1_0",
-                  type: "childList",
-                  data: {
-                    mapItems: [
-                      { name: "Right sided operation", iri: "http://endhealth.info/OPCS4#Z942", priority: 1, assuranceLevel: "Nationally assured UK level" }
-                    ]
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      children: []
     });
+    expect(wrapper.vm.generateChildNodes).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.generateSimpleMapsNodes).not.toHaveBeenCalled();
   });
 
   it("can create chart structure ___ empty mappingObject", () => {
@@ -448,7 +329,7 @@ describe("Mappings.vue", () => {
       key: "location_1",
       type: "simpleMapsList"
     });
-    expect(wrapper.vm.generateSimpleMapsNodes(MATCHED_TOS[IM.MATCHED_TO], "location", 1)).toStrictEqual([
+    expect(wrapper.vm.generateSimpleMapsNodes(SIMPLE_MAPS, "location", 1)).toStrictEqual([
       {
         data: {
           mapItems: [

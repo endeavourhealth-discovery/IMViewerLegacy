@@ -12,6 +12,8 @@ import { IM } from "@/vocabulary/IM";
 import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import ConfigService from "@/services/ConfigService";
+import { FilterDefaultsConfig } from "@/models/configs/FilterDefaultsConfig";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default createStore({
   // update stateType.ts when adding new state!
@@ -58,7 +60,9 @@ export default createStore({
     focusHierarchy: false,
     instanceIri: "",
     sidebarControlActivePanel: 0,
-    catalogueSearchResults: [] as string[]
+    catalogueSearchResults: [] as string[],
+    hierarchySelectedFilters: [] as Namespace[],
+    filterDefaults: {} as FilterDefaultsConfig
   },
   mutations: {
     updateBlockedIris(state, blockedIris) {
@@ -136,6 +140,12 @@ export default createStore({
     },
     updateSidebarControlActivePanel(state, number) {
       state.sidebarControlActivePanel = number;
+    },
+    updateHierarchySelectedFilters(state, filters) {
+      state.hierarchySelectedFilters = filters;
+    },
+    updateFilterDefaults(state, defaults) {
+      state.filterDefaults = defaults;
     }
   },
   actions: {
@@ -146,8 +156,8 @@ export default createStore({
     async fetchSearchResults({ commit }, data: { searchRequest: SearchRequest; cancelToken: any }) {
       let searchResults: any;
       const result = await EntityService.advancedSearch(data.searchRequest, data.cancelToken);
-      if (result && Object.prototype.hasOwnProperty.call(result, "entities")) {
-        searchResults = result.entities;
+      if (result && isObjectHasKeys(result, ["hits"])) {
+        searchResults = result.hits.hits.map((h: { _source: any }) => h._source);
         commit("updateSearchResults", searchResults);
       } else {
         commit("updateSearchResults", []);

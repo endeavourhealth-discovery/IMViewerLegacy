@@ -10,20 +10,22 @@
             <Button
               icon="far fa-copy"
               class="p-button-rounded p-button-text p-button-secondary"
-              v-clipboard:copy="conceptAsString"
-              v-clipboard:success="onCopy"
-              v-clipboard:error="onCopyError"
-              v-tooltip="'Copy concept to clipboard \n (right click to copy individual properties)'"
-              @contextmenu="onCopyRightClick"
+              @click="toggle($event, 'copyMenu')"
+              v-tooltip="'Copy concept to clipboard'"
             />
-            <ContextMenu ref="copyMenu" :model="copyMenuItems" />
+            <Menu id="copy-options" ref="copyMenu" :model="copyMenuItems" :popup="true" />
           </div>
-          <button class="p-panel-header-icon p-link p-mr-2" @click="openDownloadDialog" v-tooltip.bottom="'Download concept'">
+          <Button
+            type="button"
+            class="p-panel-header-icon p-link p-mr-2"
+            @click="toggle($event, 'downloadMenu')"
+            v-tooltip.bottom="'Download concept'"
+            aria-haspopup="true"
+            aria-controls="overlay_menu"
+          >
             <i class="fas fa-cloud-download-alt" aria-hidden="true"></i>
-          </button>
-          <button class="p-panel-header-icon p-link p-mr-2" v-tooltip="'Export concept'" @click="exportConcept">
-            <i class="fas fa-file-export" aria-hidden="true"></i>
-          </button>
+          </Button>
+          <Menu id="overlay_menu" ref="downloadMenu" :model="items" :popup="true" />
           <!--<button
             class="p-panel-header-icon p-link p-mr-2"
             @click="directToCreateRoute"
@@ -79,6 +81,11 @@
                 <Members :conceptIri="conceptIri" />
               </div>
             </TabPanel>
+            <TabPanel header="ECL" v-if="isSet && isObjectHasKeysWrapper(concept.inferred)">
+              <div class="concept-panel-content" id="ecl-container" :style="contentHeight">
+                <EclDefinition :definition="concept.inferred" />
+              </div>
+            </TabPanel>
             <TabPanel header="Graph">
               <div class="concept-panel-content" id="graph-container" :style="contentHeight">
                 <Graph :conceptIri="conceptIri" />
@@ -106,6 +113,7 @@ import UsedIn from "../components/concept/UsedIn.vue";
 import Members from "../components/concept/Members.vue";
 import PanelHeader from "../components/concept/PanelHeader.vue";
 import Mappings from "../components/concept/Mappings.vue";
+import EclDefinition from "@/components/concept/EclDefinition.vue";
 import { isOfTypes, isValueSet, isProperty } from "@/helpers/ConceptTypeMethods";
 import { mapState } from "vuex";
 import DownloadDialog from "@/components/concept/DownloadDialog.vue";
@@ -137,7 +145,8 @@ export default defineComponent({
     DownloadDialog,
     SecondaryTree,
     Mappings,
-    Properties
+    Properties,
+    EclDefinition
   },
   computed: {
     isSet(): boolean {
@@ -188,7 +197,12 @@ export default defineComponent({
     },
 
     types() {
-      if (this.isFolder) this.active = 0;
+      if (this.isFolder) {
+        if ("activeElement" in document) {
+          (document.activeElement as HTMLElement).blur();
+        }
+        this.active = 0;
+      }
     }
   },
   async mounted() {
@@ -216,7 +230,27 @@ export default defineComponent({
       contentHeightValue: 0,
       copyMenuItems: [] as any,
       configs: [] as DefinitionConfig[],
-      conceptAsString: ""
+      conceptAsString: "",
+      items: [
+        {
+          label: "JSON Format",
+          command: () => {
+            this.downloadOption("json");
+          }
+        },
+        {
+          label: "Turtle Format",
+          command: () => {
+            this.downloadOption("turtle");
+          }
+        }
+        // {label: "Custom Format",
+        // command: () => {
+        //     this.downloadOption("custom");
+        //   }
+        // }
+      ] as any,
+      selectedOption: {} as any
     };
   },
   methods: {
@@ -245,10 +279,14 @@ export default defineComponent({
         .filter((c: DefinitionConfig) => c.predicate !== "subtypes")
         .filter((c: DefinitionConfig) => c.predicate !== "inferred")
         .filter((c: DefinitionConfig) => c.predicate !== "termCodes")
+        .filter((c: DefinitionConfig) => c.predicate !== "@id")
+        .filter((c: DefinitionConfig) => c.predicate !== "None")
+        .filter((c: DefinitionConfig) => c.predicate !== undefined)
         .map((c: DefinitionConfig) => c.predicate);
 
       this.concept = await EntityService.getPartialEntity(iri, predicates);
 
+      this.concept["@id"] = iri;
       this.concept["subtypes"] = await EntityService.getEntityChildren(iri);
 
       this.concept["termCodes"] = await EntityService.getEntityTermCodes(iri);
@@ -257,14 +295,11 @@ export default defineComponent({
     async getInferred(iri: string): Promise<void> {
       const result = await EntityService.getDefinitionBundle(iri);
       if (isObjectHasKeys(result, ["entity"]) && isObjectHasKeys(result.entity, [RDFS.SUBCLASS_OF, IM.ROLE_GROUP])) {
-        this.concept["inferred"] = {
-          entity: { "http://www.w3.org/2000/01/rdf-schema#subClassOf": result.entity[RDFS.SUBCLASS_OF] },
-          predicates: result.predicates
-        };
-        this.concept["inferred"].entity[RDFS.SUBCLASS_OF].push({ "http://endhealth.info/im#roleGroup": result.entity[IM.ROLE_GROUP] });
-      } else {
-        this.concept["inferred"] = result;
+        const roleGroup = result.entity[IM.ROLE_GROUP];
+        delete result.entity[IM.ROLE_GROUP];
+        result.entity[RDFS.SUBCLASS_OF].push({ "http://endhealth.info/im#roleGroup": roleGroup });
       }
+      this.concept["inferred"] = result;
     },
 
     async getConfig(name: string): Promise<void> {
@@ -285,7 +320,7 @@ export default defineComponent({
       await this.getInferred(this.conceptIri);
       this.types = isObjectHasKeys(this.concept, [RDF.TYPE]) ? this.concept[RDF.TYPE] : ([] as TTIriRef[]);
       this.header = this.concept[RDFS.LABEL];
-      this.setCopyMenuItems();
+      await this.setCopyMenuItems();
       this.setStoreType();
       this.conceptAsString = copyConceptToClipboard(this.concept, this.configs, undefined, this.blockedIris);
       this.loading = false;
@@ -349,19 +384,6 @@ export default defineComponent({
       this.showDownloadDialog = false;
     },
 
-    onCopy(): void {
-      this.$toast.add(LoggerService.success("Value copied to clipboard"));
-    },
-
-    onCopyError(): void {
-      this.$toast.add(LoggerService.error("Failed to copy value to clipboard"));
-    },
-
-    onCopyRightClick(event: any): void {
-      const x = this.$refs.copyMenu as any;
-      x.show(event);
-    },
-
     async setCopyMenuItems(): Promise<void> {
       this.copyMenuItems = [
         {
@@ -413,15 +435,28 @@ export default defineComponent({
       return isObjectHasKeys(object, keys);
     },
 
-    async exportConcept() {
-      const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
-      const url = process.env.VUE_APP_API + "api/entity/exportConcept?iri=" + modIri;
-      const popup = window.open(url);
-      if (!popup) {
-        this.$toast.add(LoggerService.error("Export failed from server"));
+    async exportConcept(format: any) {
+      this.loading = true;
+      const result = await EntityService.downloadConcept(this.conceptIri, format);
+      this.loading = false;
+      const url = window.URL.createObjectURL(new Blob([result], { type: format === "turtle" ? "text/plain" : "application/javascript" }));
+      const link = document.createElement("a");
+      link.href = url;
+      const ending = format === "turtle" ? ".txt" : ".json";
+      link.download = "Concept" + ending;
+      link.click();
+    },
+    downloadOption(format: any) {
+      if (format === "custom") {
+        this.openDownloadDialog();
       } else {
-        this.$toast.add(LoggerService.success("Export will begin shortly"));
+        this.exportConcept(format);
       }
+    },
+
+    toggle(event: any, refId: string) {
+      const x = this.$refs[refId] as any;
+      x.toggle(event);
     }
   }
 });

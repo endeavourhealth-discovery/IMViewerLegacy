@@ -3,11 +3,13 @@
     <div id="alternate-parents-container" class="p-d-flex p-flex-column p-jc-start p-ai-start">
       <Button
         v-for="altParent in alternateParents"
-        :key="altParent['@id']"
+        :key="altParent.iri"
         :label="altParent.name"
         :disabled="altParent.name === ''"
         icon="pi pi-chevron-up"
         @click="expandParents(altParent.listPosition)"
+        @mouseenter="showPopup($event, altParent.iri)"
+        @mouseleave="hidePopup($event)"
         class="p-button-text p-button-plain"
       />
     </div>
@@ -17,6 +19,8 @@
         :disabled="!currentParent"
         icon="pi pi-chevron-up"
         @click="expandParents(parentPosition)"
+        @mouseenter="showPopup($event, currentParent?.iri)"
+        @mouseleave="hidePopup($event)"
         class="p-button-text p-button-plain"
       />
     </div>
@@ -30,9 +34,17 @@
       class="tree-root"
     >
       <template #default="slotProps">
-        <div class="tree-row" @mouseover="showPopup($event, slotProps.node)" @mouseleave="hidePopup($event)">
+        <div
+          class="tree-row"
+          @mouseover="showPopup($event, slotProps.node.data)"
+          @mouseleave="hidePopup($event)"
+          @click="navigate($event, slotProps.node.data)"
+          v-tooltip.top="'CTRL+click to navigate'"
+        >
           <span v-if="!slotProps.node.loading">
-            <i :class="'fas fa-fw' + slotProps.node.typeIcon" :style="'color:' + slotProps.node.color" aria-hidden="true" />
+            <div :style="'color:' + slotProps.node.color">
+              <font-awesome-icon :icon="slotProps.node.typeIcon" class="fa-fw" />
+            </div>
           </span>
           <ProgressSpinner v-if="slotProps.node.loading" />
           <span>{{ slotProps.node.label }}</span>
@@ -76,7 +88,7 @@
 </template>
 
 <script lang="ts">
-import { getIconFromType, getColourFromType } from "@/helpers/ConceptTypeMethods";
+import { getColourFromType, getFAIconFromType } from "@/helpers/ConceptTypeMethods";
 import { TreeNode } from "@/models/TreeNode";
 import EntityService from "@/services/EntityService";
 import { IM } from "@/vocabulary/IM";
@@ -99,7 +111,7 @@ export default defineComponent({
       this.alternateParents = [];
       this.expandedKeys = {};
       await this.getConceptAggregate(newValue);
-      this.createTree(this.conceptAggregate.concept, this.conceptAggregate.parents, this.conceptAggregate.children, this.parentPosition);
+      await this.createTree(this.conceptAggregate.concept, this.conceptAggregate.parents, this.conceptAggregate.children, this.parentPosition);
     }
   },
   data() {
@@ -180,17 +192,16 @@ export default defineComponent({
     },
 
     createTreeNode(conceptName: string, conceptIri: string, conceptTypes: TTIriRef[], hasChildren: boolean): TreeNode {
-      const node: TreeNode = {
+      return {
         key: conceptName,
         label: conceptName,
-        typeIcon: getIconFromType(conceptTypes),
+        typeIcon: getFAIconFromType(conceptTypes),
         color: getColourFromType(conceptTypes),
         data: conceptIri,
         leaf: !hasChildren,
         loading: false,
         children: [] as TreeNode[]
       };
-      return node;
     },
 
     async expandChildren(node: TreeNode): Promise<void> {
@@ -208,10 +219,7 @@ export default defineComponent({
     },
 
     containsChild(nodeChildren: TreeNode[], child: EntityReferenceNode): boolean {
-      if (nodeChildren.some(nodeChild => nodeChild.data === child["@id"])) {
-        return true;
-      }
-      return false;
+      return nodeChildren.some(nodeChild => nodeChild.data === child["@id"]);
     },
 
     async expandParents(parentPosition: number): Promise<void> {
@@ -280,11 +288,11 @@ export default defineComponent({
       this.selectedKey[this.conceptAggregate.concept[RDFS.LABEL]] = true;
     },
 
-    async showPopup(event: any, data: TreeNode): Promise<void> {
+    async showPopup(event: any, iri: string): Promise<void> {
       this.overlayLocation = event;
       const x = this.$refs.altTreeOP as any;
       x.show(event);
-      this.hoveredResult = await EntityService.getEntitySummary(data.data);
+      this.hoveredResult = await EntityService.getEntitySummary(iri);
     },
 
     hidePopup(event: any): void {
@@ -299,6 +307,10 @@ export default defineComponent({
           return type.name;
         })
         .join(", ");
+    },
+
+    navigate(event: any, iri: string): void {
+      if (event.metaKey || event.ctrlKey) this.$router.push({ name: this.$route.name || undefined, params: { selectedIri: iri } });
     }
   }
 });

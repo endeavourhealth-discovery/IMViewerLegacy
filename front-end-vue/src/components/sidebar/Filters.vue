@@ -7,42 +7,38 @@
   </div>
   <div class="p-field">
     <span class="p-float-label">
-      <MultiSelect id="status" v-model="selectedStatus" @change="checkForSearch" :options="statusOptions" optionLabel="name" display="chip" />
+      <MultiSelect id="status" v-model="selectedStatus" @change="checkForSearch" :options="filterOptions.status" optionLabel="name" display="chip" />
       <label for="status">Select status:</label>
     </span>
   </div>
 
   <div class="p-field">
     <span class="p-float-label">
-      <MultiSelect id="scheme" v-model="selectedSchemes" @change="checkForSearch" :options="schemeOptions" optionLabel="name" display="chip" />
+      <MultiSelect id="scheme" v-model="selectedSchemes" @change="checkForSearch" :options="filterOptions.schemes" optionLabel="name" display="chip" />
       <label for="scheme">Select scheme:</label>
     </span>
   </div>
 
   <div class="p-field">
     <span class="p-float-label">
-      <MultiSelect id="conceptType" v-model="selectedTypes" @change="checkForSearch" :options="typeOptions" optionLabel="name" display="chip" />
+      <MultiSelect id="conceptType" v-model="selectedTypes" @change="checkForSearch" :options="filterOptions.types" optionLabel="name" display="chip" />
       <label for="scheme">Select concept type:</label>
     </span>
   </div>
 </template>
 
 <script lang="ts">
-import ConfigService from "@/services/ConfigService";
-import EntityService from "@/services/EntityService";
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
 import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
-import { FilterDefaultsConfig } from "@/models/configs/FilterDefaultsConfig";
 import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
-import { IM } from "@/vocabulary/IM";
 import { NAMESPACES } from "@/vocabulary/NAMESPACES";
 
 export default defineComponent({
   name: "Filters",
   props: { search: { type: Function, required: true } },
-  computed: mapState(["filterOptions", "selectedFilters", "quickFiltersStatus"]),
+  computed: mapState(["filterOptions", "selectedFilters", "quickFiltersStatus", "filterDefaults"]),
   watch: {
     includeLegacy(newValue) {
       this.setLegacy(newValue);
@@ -57,42 +53,32 @@ export default defineComponent({
       this.updateStoreSelectedFilters();
     }
   },
-  async mounted() {
-    await this.getFilterOptions();
-    this.setFilters();
-    this.setDefaults();
+  mounted() {
+    this.init();
   },
   data() {
     return {
-      statusOptions: [] as EntityReferenceNode[],
-      schemeOptions: [] as Namespace[],
-      typeOptions: [] as EntityReferenceNode[],
       selectedStatus: [] as EntityReferenceNode[],
       selectedSchemes: [] as Namespace[],
       selectedTypes: [] as EntityReferenceNode[],
-      configs: {} as FilterDefaultsConfig,
       includeLegacy: false
     };
   },
   methods: {
+    init() {
+      this.setDefaults();
+    },
+
     checkForSearch(): void {
       this.updateStoreSelectedFilters();
       this.search();
     },
 
-    setFilters(): void {
-      this.$store.commit("updateFilterOptions", {
-        status: this.statusOptions,
-        scheme: this.schemeOptions,
-        type: this.typeOptions
-      });
-    },
-
     setDefaults(): void {
       if (!isArrayHasLength(this.selectedFilters.status) && !isArrayHasLength(this.selectedFilters.schemes) && !isArrayHasLength(this.selectedFilters.types)) {
-        this.selectedStatus = this.statusOptions.filter(item => this.configs.statusOptions.includes(item["@id"]));
-        this.selectedSchemes = this.schemeOptions.filter(item => this.configs.schemeOptions.includes(item.iri));
-        this.selectedTypes = this.typeOptions.filter(item => this.configs.typeOptions.includes(item["@id"]));
+        this.selectedStatus = this.filterOptions.status.filter((item: EntityReferenceNode) => this.filterDefaults.statusOptions.includes(item["@id"]));
+        this.selectedSchemes = this.filterOptions.schemes.filter((item: Namespace) => this.filterDefaults.schemeOptions.includes(item.iri));
+        this.selectedTypes = this.filterOptions.types.filter((item: EntityReferenceNode) => this.filterDefaults.typeOptions.includes(item["@id"]));
         this.updateStoreSelectedFilters();
       } else {
         this.selectedStatus = this.selectedFilters.status;
@@ -113,21 +99,11 @@ export default defineComponent({
       });
     },
 
-    async getFilterOptions(): Promise<void> {
-      this.configs = await ConfigService.getFilterDefaults();
-
-      this.schemeOptions = await EntityService.getNamespaces();
-
-      this.statusOptions = await EntityService.getEntityChildren(IM.STATUS);
-
-      this.typeOptions = await EntityService.getEntityChildren(IM.MODELLING_ENTITY_TYPE);
-    },
-
     setLegacy(include: boolean): void {
       const emisScheme = this.selectedSchemes.findIndex(scheme => scheme.iri === NAMESPACES.EMIS);
       if (include) {
         if (emisScheme === -1) {
-          const found = this.schemeOptions.find(scheme => scheme.iri === NAMESPACES.EMIS);
+          const found = this.filterOptions.schemes.find((scheme: Namespace) => scheme.iri === NAMESPACES.EMIS);
           if (found) this.selectedSchemes.push(found);
         }
       } else {

@@ -262,10 +262,6 @@ describe("Members.vue", () => {
     const openStore = window.open;
     window.open = jest.fn().mockReturnValue(true);
     wrapper.vm.download(true);
-    expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith(
-      "/test/api/set/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&expandMembers=true&v1=false&format=excel"
-    );
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Download will begin shortly"));
     window.open = openStore;
@@ -275,10 +271,6 @@ describe("Members.vue", () => {
     const openStore = window.open;
     window.open = jest.fn().mockReturnValue(true);
     wrapper.vm.download(true, true);
-    expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith(
-      "/test/api/set/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&expandMembers=true&v1=true&format=excel"
-    );
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Download will begin shortly"));
     window.open = openStore;
@@ -286,13 +278,12 @@ describe("Members.vue", () => {
 
   it("can download ___ fail", () => {
     const openStore = window.open;
-    window.open = jest.fn().mockReturnValue(false);
-    wrapper.vm.download(true);
-    expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith(
-      "/test/api/set/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&expandMembers=true&v1=false&format=excel"
-    );
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    EntityService.download = jest.fn().mockImplementation(() => {
+      throw new Error();
+    });
+    wrapper.vm.download();
+
+    expect(mockToast.add).toHaveBeenCalledTimes(2);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Download failed from server"));
     window.open = openStore;
   });
@@ -376,12 +367,22 @@ describe("Members.vue", () => {
     expect(mockElement.style.width).not.toBe("10px");
   });
 
-  it("can setTableWidth ___ table fail", () => {
+  it("can setTableWidth ___ container fail", () => {
     LoggerService.error = jest.fn();
     docSpy.mockReturnValue(undefined);
     wrapper.vm.setTableWidth();
     expect(LoggerService.error).toHaveBeenCalledTimes(1);
     expect(LoggerService.error).toHaveBeenCalledWith(undefined, "Failed to set members table width. Required element(s) not found.");
+  });
+
+  it("can setTableWidth ___ table fail", () => {
+    const mockElement = document.createElement("div");
+    mockElement.getBoundingClientRect = jest.fn().mockReturnValue({ width: 100 });
+    mockElement.getElementsByClassName = jest.fn().mockReturnValue([]);
+    mockElement.style.width = "10px";
+    docSpy.mockReturnValue(mockElement);
+    wrapper.vm.setTableWidth();
+    expect(mockElement.style.width).toBe("10px");
   });
 
   it("can toggle", () => {

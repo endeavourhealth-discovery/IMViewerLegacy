@@ -18,6 +18,9 @@
       />
     </div>
     <div v-html="definition" :class="'p-d-none text-definition tgl-' + label"></div>
+    <div class="loading-container" v-if="loading">
+      <ProgressSpinner />
+    </div>
   </div>
 </template>
 
@@ -27,7 +30,7 @@ import { bundleToText } from "@/helpers/Transforms";
 import { TTBundle } from "@/models/TripleTree";
 import { mapState } from "vuex";
 import { PartialEntity } from "@/models/PartialEntity";
-import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import ConfigService from "@/services/ConfigService";
 
 export default defineComponent({
@@ -81,13 +84,17 @@ export default defineComponent({
     async getDefinition(): Promise<void> {
       if (!this.hasData) return;
       const defaults = await ConfigService.getDefaultPredicateNames();
-      this.definition = bundleToText(this.data as TTBundle, defaults, 0, this.blockedIris);
+      this.definition = bundleToText(this.data as TTBundle, defaults, 0, true, this.blockedIris);
     },
 
     getCount(): number {
       let count = 0;
       Object.keys(this.data.entity).forEach(key => {
-        count += (this.data.entity as any)[key].length;
+        if (isArrayHasLength((this.data.entity as any)[key])) {
+          count += (this.data.entity as any)[key].length;
+        } else {
+          count++;
+        }
       });
       return count;
     }

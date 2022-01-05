@@ -1,24 +1,26 @@
 <template>
   <div id="entity-panel-header-text" :key="icon">
-    <i :class="icon" :style="color" aria-hidden="true" />
+    <span :style="color" class="p-mx-1">
+      <font-awesome-icon v-if="types.length" :icon="icon" />
+    </span>
     {{ header }}
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from "@vue/runtime-core";
-import { getColourFromType, getIconFromType } from "@/helpers/ConceptTypeMethods";
+import { getColourFromType, getFAIconFromType } from "@/helpers/ConceptTypeMethods";
 import { TTIriRef } from "@/models/TripleTree";
 
 export default defineComponent({
   name: "PanelHeader",
   props: {
-    types: { type: Array as PropType<Array<TTIriRef>> },
-    header: { type: String }
+    types: { type: Array as PropType<Array<TTIriRef>>, required: true },
+    header: { type: String, required: true }
   },
   data() {
     return {
-      icon: "",
+      icon: [] as any,
       color: ""
     };
   },
@@ -26,7 +28,7 @@ export default defineComponent({
     types(newValue): void {
       if (newValue.length > 0) {
         this.color = "color: " + getColourFromType(newValue);
-        this.icon = getIconFromType(newValue);
+        this.icon = getFAIconFromType(newValue);
       }
     }
   }

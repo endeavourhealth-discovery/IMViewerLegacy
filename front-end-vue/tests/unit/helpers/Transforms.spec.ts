@@ -154,60 +154,62 @@ describe("bundleToText", () => {
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2381745001">Structure of eye proper</a>\n' +
     '      Occurrence : <a href="' +
     url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n\n\n';
+    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n';
 
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   it("can convert a bundle to text", async () => {
-    expect(bundleToText(testBundle, PREDICATES, 0)).toBe(expected);
+    expect(bundleToText(testBundle, PREDICATES, 0, true)).toBe(expected);
   });
 });
 
 describe("ttValueToString", () => {
   it("handles ttIri", async () => {
-    expect(ttValueToString({ "@id": "testIri", name: "testName" }, "object", 0)).toBe('<a href="http://localhost/#/concept/testIri">testName</a>');
+    expect(ttValueToString({ "@id": "testIri", name: "testName" }, "object", 0, true)).toBe('<a href="http://localhost/#/concept/testIri">testName</a>');
   });
 
   it("handles array", async () => {
-    expect(ttValueToString([{ "@id": "testIri" }], "object", 0)).toBe('<a href="http://localhost/#/concept/testIri">testIri</a>\n');
+    expect(ttValueToString([{ "@id": "testIri" }], "object", 0, true)).toBe('<a href="http://localhost/#/concept/testIri">testIri</a>\n');
   });
 
   it("handles ttNode", async () => {
-    expect(ttValueToString({ nodeIri: { "@id": "testIri" } }, "object", 0)).toStrictEqual(
+    expect(ttValueToString({ nodeIri: { "@id": "testIri" } }, "object", 0, true)).toStrictEqual(
       'nodeIri : <a href="http://localhost/#/concept/testIri">testIri</a>\n'
     );
   });
 
   it("handles undefined", async () => {
-    expect(ttValueToString(undefined, "object", 0)).toBe("undefined");
+    expect(ttValueToString(undefined, "object", 0, true)).toBe("undefined");
   });
 });
 
 describe("ttIriToString", () => {
   it("handles iri with name", () => {
-    expect(ttIriToString({ "@id": "testIri", name: "testName" }, "object", 0, false)).toBe('<a href="http://localhost/#/concept/testIri">testName</a>');
+    expect(ttIriToString({ "@id": "testIri", name: "testName" }, "object", 0, true, false)).toBe('<a href="http://localhost/#/concept/testIri">testName</a>');
   });
 
   it("handles iri no name", () => {
-    expect(ttIriToString({ "@id": "testIri", name: "" }, "object", 0, false)).toBe('<a href="http://localhost/#/concept/testIri">testIri</a>');
+    expect(ttIriToString({ "@id": "testIri", name: "" }, "object", 0, true, false)).toBe('<a href="http://localhost/#/concept/testIri">testIri</a>');
   });
 
   it("handles not inline", () => {
-    expect(ttIriToString({ "@id": "testIri", name: "testName" }, "object", 2, false)).toBe('    <a href="http://localhost/#/concept/testIri">testName</a>');
+    expect(ttIriToString({ "@id": "testIri", name: "testName" }, "object", 2, true, false)).toBe(
+      '    <a href="http://localhost/#/concept/testIri">testName</a>'
+    );
   });
 
   it("handles inline", () => {
-    expect(ttIriToString({ "@id": "testIri", name: "testName" }, "object", 2, true)).toBe('<a href="http://localhost/#/concept/testIri">testName</a>');
+    expect(ttIriToString({ "@id": "testIri", name: "testName" }, "object", 2, true, true)).toBe('<a href="http://localhost/#/concept/testIri">testName</a>');
   });
 
   it("handles previous array", () => {
-    expect(ttIriToString({ "@id": "testIri", name: "testName" }, "array", 2, true)).toBe('<a href="http://localhost/#/concept/testIri">testName</a>\n');
+    expect(ttIriToString({ "@id": "testIri", name: "testName" }, "array", 2, true, true)).toBe('<a href="http://localhost/#/concept/testIri">testName</a>\n');
   });
 });
 
-describe("ttNodeToString", () => {
+describe("ttNodeToString ___ isa rolegroup", () => {
   const NODE = {
     "http://endhealth.info/im#isA": [
       { "@id": "http://snomed.info/sct#82354003", name: "Multiple system malformation syndrome" },
@@ -326,7 +328,7 @@ describe("ttNodeToString", () => {
     '/#/concept/http:%2F%2Fsnomed.info%2Fsct%2381745001">Structure of eye proper</a>\n' +
     '      Occurrence : <a href="' +
     url +
-    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n\n\n';
+    '/#/concept/http:%2F%2Fsnomed.info%2Fsct%23255399007">Congenital</a> )\n';
 
   const PREDICATES = {
     "http://endhealth.info/im#roleGroup": "Where",
@@ -351,6 +353,6 @@ describe("ttNodeToString", () => {
   });
 
   it("handles node ___ missing iriMap", async () => {
-    expect(ttNodeToString(NODE, "object", 0, PREDICATES)).toBe(EXPECTED);
+    expect(ttNodeToString(NODE, "object", 0, true, PREDICATES)).toBe(EXPECTED);
   });
 });

@@ -18,7 +18,7 @@
         <template #default="slotProps"> {{ slotProps.node.label }} {{ slotProps.node.data }} </template>
         <template #address="slotProps">
           <span>{{ slotProps.node.label }}</span>
-          <a href="javascript:void(0)" @click="navigate(slotProps.node.data)">{{ slotProps.node.data["@id"] }}</a>
+          <a href="javascript:void(0)" @click="navigate(slotProps.node.data['@id'])">{{ slotProps.node.data["@id"] }}</a>
         </template>
       </Tree>
     </Panel>
@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
-import { TTBundle } from "@/models/TripleTree";
+import { TTBundle, TTIriRef } from "@/models/TripleTree";
 import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 import { defineComponent, PropType } from "@vue/runtime-core";
@@ -102,16 +102,16 @@ export default defineComponent({
       });
     },
 
-    navigate(instance: any): void {
+    navigate(iri: string): void {
       this.$router.push({
         name: "Individual",
-        params: { selectedIri: instance["@id"] }
+        params: { selectedIri: iri }
       });
     },
 
     getPredicateName(iri: string): string {
       let name = "";
-      this.instance.predicates.forEach((pre: any) => {
+      this.instance.predicates.forEach((pre: TTIriRef) => {
         if (pre["@id"] === iri) {
           name = pre.name ? pre.name : pre["@id"];
         }

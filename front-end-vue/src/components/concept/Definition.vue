@@ -30,6 +30,7 @@ import ObjectNameTagWithLabel from "@/components/generics/ObjectNameTagWithLabel
 import NumberWithLabel from "@/components/generics/NumberWithLabel.vue";
 import { DefinitionConfig } from "@/models/configs/DefinitionConfig";
 import { isArrayHasLength, isObject, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import ArrayObjectNameTagWithLabel from "@/components/generics/ArrayObjectNameTagWithLabel.vue";
 
 export default defineComponent({
   name: "Definition",
@@ -38,6 +39,7 @@ export default defineComponent({
     TextHTMLWithLabel,
     TextWithLabel,
     ObjectNameWithLabel,
+    ArrayObjectNameTagWithLabel,
     ArrayObjectNameListboxWithLabel,
     TermsTable,
     TextSectionHeader,

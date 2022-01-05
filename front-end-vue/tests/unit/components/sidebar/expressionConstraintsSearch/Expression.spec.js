@@ -270,38 +270,83 @@ describe("Expression.vue ___ value", () => {
     jest.useFakeTimers();
 
     EntityService.advancedSearch = jest.fn().mockResolvedValue({
-      entities: [
-        {
-          name: "Scoliosis deformity of spine",
-          iri: "http://snomed.info/sct#298382003",
-          code: "298382003",
-          description: "Scoliosis deformity of spine (disorder)",
-          status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
-          scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-          entityType: [
-            { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
-            { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
-          ],
-          isDescendentOf: [],
-          weighting: 2,
-          match: "Scoliosis"
+      took: 10,
+      timed_out: false,
+      _shards: {
+        total: 5,
+        successful: 5,
+        skipped: 0,
+        failed: 0
+      },
+      hits: {
+        total: {
+          value: 51,
+          relation: "eq"
         },
-        {
-          name: "Acquired scoliosis",
-          iri: "http://snomed.info/sct#111266001",
-          code: "111266001",
-          description: "Acquired scoliosis (disorder)",
-          status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
-          scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-          entityType: [
-            { name: "Concept", "@id": "http://endhealth.info/im#Concept" },
-            { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
-          ],
-          isDescendentOf: [],
-          weighting: 11,
-          match: "Acquired scoliosis"
-        }
-      ]
+        max_score: 17.552622,
+        hits: [
+          {
+            _index: "dev-test2",
+            _type: "_doc",
+            _id: "64898",
+            _score: 17.552622,
+            _source: {
+              id: 64898,
+              iri: "http://snomed.info/sct#29741004",
+              name: "Treponema scoliodontum",
+              code: "29741004",
+              scheme: {
+                name: "Snomed-CT",
+                "@id": "http://snomed.info/sct#"
+              },
+              entityType: [
+                {
+                  name: "Address (record type)",
+                  "@id": "http://endhealth.info/im#Address"
+                },
+                {
+                  name: "Ontological Concept",
+                  "@id": "http://endhealth.info/im#Concept"
+                }
+              ],
+              status: {
+                name: "Active",
+                "@id": "http://endhealth.info/im#Active"
+              }
+            }
+          },
+          {
+            _index: "dev-test2",
+            _type: "_doc",
+            _id: "95735",
+            _score: 17.54488,
+            _source: {
+              id: 95735,
+              iri: "http://snomed.info/sct#54914001",
+              name: "Scoliotic pelvis",
+              code: "54914001",
+              scheme: {
+                name: "Snomed-CT",
+                "@id": "http://snomed.info/sct#"
+              },
+              entityType: [
+                {
+                  name: "Ontological Concept",
+                  "@id": "http://endhealth.info/im#Concept"
+                },
+                {
+                  name: "Organisation  (record type)",
+                  "@id": "http://endhealth.info/im#Organisation"
+                }
+              ],
+              status: {
+                name: "Active",
+                "@id": "http://endhealth.info/im#Active"
+              }
+            }
+          }
+        ]
+      }
     });
 
     mockStore = { commit: jest.fn(), state: { filterOptions: FILTER_OPTIONS, selectedFilters: SELECTED_FILTERS } };
@@ -346,27 +391,27 @@ describe("Expression.vue ___ value", () => {
     expect(wrapper.vm.searchResults).toStrictEqual([]);
   });
 
-  it("debounces for search", async () => {
-    const spy = jest.spyOn(wrapper.vm, "search");
-    wrapper.vm.debounceForSearch();
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.debounce).toBeGreaterThan(0);
-    expect(spy).not.toHaveBeenCalled();
-    jest.runAllTimers();
-    expect(spy).toHaveBeenCalledTimes(1);
-  });
+  // it("debounces for search", async () => {
+  //   const spy = jest.spyOn(wrapper.vm, "search");
+  //   wrapper.vm.debounceForSearch();
+  //   await wrapper.vm.$nextTick();
+  //   expect(wrapper.vm.debounce).toBeGreaterThan(0);
+  //   expect(spy).not.toHaveBeenCalled();
+  //   jest.runAllTimers();
+  //   expect(spy).toHaveBeenCalledTimes(1);
+  // });
 
-  it("can checkKey ___ enter", () => {
-    wrapper.vm.search = jest.fn();
-    wrapper.vm.checkKey({ code: "Enter" });
-    expect(wrapper.vm.search).toHaveBeenCalled();
-  });
+  // it("can checkKey ___ enter", () => {
+  //   wrapper.vm.search = jest.fn();
+  //   wrapper.vm.checkKey({ code: "Enter" });
+  //   expect(wrapper.vm.search).toHaveBeenCalled();
+  // });
 
-  it("can checkKey ___ other", () => {
-    wrapper.vm.search = jest.fn();
-    wrapper.vm.checkKey({ code: "Space" });
-    expect(wrapper.vm.search).not.toHaveBeenCalled();
-  });
+  // it("can checkKey ___ other", () => {
+  //   wrapper.vm.search = jest.fn();
+  //   wrapper.vm.checkKey({ code: "Space" });
+  //   expect(wrapper.vm.search).not.toHaveBeenCalled();
+  // });
 
   it("can search ___ ANY", () => {
     wrapper.vm.fetchSearchResults = jest.fn();
@@ -393,7 +438,7 @@ describe("Expression.vue ___ value", () => {
     expect(wrapper.vm.fetchSearchResults).not.toHaveBeenCalled();
   });
 
-  it("only searches with 3 or more characters ___ 0", async () => {
+  it("searches when not empty ___ 0", async () => {
     wrapper.vm.fetchSearchResults = jest.fn();
     wrapper.vm.searchTerm = "";
     wrapper.vm.search();
@@ -402,16 +447,7 @@ describe("Expression.vue ___ value", () => {
     expect(wrapper.vm.fetchSearchResults).not.toHaveBeenCalled();
   });
 
-  it("only searches with 3 or more characters ___ 2", async () => {
-    wrapper.vm.fetchSearchResults = jest.fn();
-    wrapper.vm.searchTerm = "we";
-    wrapper.vm.search();
-    expect(wrapper.vm.loading).toBe(false);
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.fetchSearchResults).not.toHaveBeenCalled();
-  });
-
-  it("only searches with 3 or more characters ___ 3", async () => {
+  it("searches when not empty ___ 3", async () => {
     const axiosSource = axios.CancelToken.source();
     wrapper.vm.fetchSearchResults = jest.fn();
     wrapper.vm.searchTerm = "sco";
@@ -483,34 +519,52 @@ describe("Expression.vue ___ value", () => {
     await flushPromises();
     expect(wrapper.vm.searchResults).toStrictEqual([
       {
-        name: "Scoliosis deformity of spine",
-        iri: "http://snomed.info/sct#298382003",
-        code: "298382003",
-        description: "Scoliosis deformity of spine (disorder)",
-        status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
-        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+        id: 64898,
+        iri: "http://snomed.info/sct#29741004",
+        name: "Treponema scoliodontum",
+        code: "29741004",
+        scheme: {
+          name: "Snomed-CT",
+          "@id": "http://snomed.info/sct#"
+        },
         entityType: [
-          { name: "Address (record type)", "@id": "http://endhealth.info/im#Address" },
-          { name: "Concept", "@id": "http://endhealth.info/im#Concept" }
+          {
+            name: "Address (record type)",
+            "@id": "http://endhealth.info/im#Address"
+          },
+          {
+            name: "Ontological Concept",
+            "@id": "http://endhealth.info/im#Concept"
+          }
         ],
-        isDescendentOf: [],
-        weighting: 2,
-        match: "Scoliosis"
+        status: {
+          name: "Active",
+          "@id": "http://endhealth.info/im#Active"
+        }
       },
       {
-        name: "Acquired scoliosis",
-        iri: "http://snomed.info/sct#111266001",
-        code: "111266001",
-        description: "Acquired scoliosis (disorder)",
-        status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
-        scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+        id: 95735,
+        iri: "http://snomed.info/sct#54914001",
+        name: "Scoliotic pelvis",
+        code: "54914001",
+        scheme: {
+          name: "Snomed-CT",
+          "@id": "http://snomed.info/sct#"
+        },
         entityType: [
-          { name: "Concept", "@id": "http://endhealth.info/im#Concept" },
-          { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+          {
+            name: "Ontological Concept",
+            "@id": "http://endhealth.info/im#Concept"
+          },
+          {
+            name: "Organisation  (record type)",
+            "@id": "http://endhealth.info/im#Organisation"
+          }
         ],
-        isDescendentOf: [],
-        weighting: 11,
-        match: "Acquired scoliosis"
+        status: {
+          name: "Active",
+          "@id": "http://endhealth.info/im#Active"
+        }
       }
     ]);
   });

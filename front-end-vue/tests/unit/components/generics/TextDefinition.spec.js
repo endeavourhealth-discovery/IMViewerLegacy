@@ -3,6 +3,7 @@ import { flushPromises, shallowMount } from "@vue/test-utils";
 import Button from "primevue/button";
 import StyleClass from "primevue/styleclass";
 import ConfigService from "@/services/ConfigService";
+import ProgressSpinner from "primevue/progressspinner";
 
 describe("TextDefinition.vue ___ data", () => {
   let wrapper;
@@ -110,7 +111,7 @@ describe("TextDefinition.vue ___ data", () => {
     docSpy.mockReturnValue(mockButton);
 
     wrapper = shallowMount(TextDefinition, {
-      global: { components: { Button }, mocks: { $store: mockStore }, directives: { styleclass: StyleClass } },
+      global: { components: { Button, ProgressSpinner }, mocks: { $store: mockStore }, directives: { styleclass: StyleClass } },
       props: {
         data: BUNDLE,
         label: "Definition",
@@ -132,7 +133,7 @@ describe("TextDefinition.vue ___ data", () => {
     expect(wrapper.vm.buttonExpanded).toBe(false);
     expect(wrapper.vm.count).toBe(0);
     expect(wrapper.vm.definition).toBe(
-      'Is subclass of : \n  <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%2364217002">Curvature of spine</a>\n  <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%23928000">Disorder of musculoskeletal system</a>\n  <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%23699699005">Disorder of vertebral column</a>\n  Where : \n    ( Associated morphology : <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%2331739005">Lateral abnormal curvature</a>\n      Finding site : <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%23289959001">Musculoskeletal structure of spine</a> )\n\n\n'
+      'Is subclass of : \n  <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%2364217002">Curvature of spine</a>\n  <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%23928000">Disorder of musculoskeletal system</a>\n  <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%23699699005">Disorder of vertebral column</a>\n  Where : \n    ( Associated morphology : <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%2331739005">Lateral abnormal curvature</a>\n      Finding site : <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%23289959001">Musculoskeletal structure of spine</a> )\n'
     );
     expect(wrapper.vm.loading).toBe(false);
   });
@@ -178,7 +179,7 @@ describe("TextDefinition.vue ___ data", () => {
     await flushPromises();
     expect(ConfigService.getDefaultPredicateNames).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.definition).toBe(
-      'Is subclass of : \n  <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%2364217002">Curvature of spine</a>\n  <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%23928000">Disorder of musculoskeletal system</a>\n  <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%23699699005">Disorder of vertebral column</a>\n  Where : \n    ( Associated morphology : <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%2331739005">Lateral abnormal curvature</a>\n      Finding site : <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%23289959001">Musculoskeletal structure of spine</a> )\n\n\n'
+      'Is subclass of : \n  <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%2364217002">Curvature of spine</a>\n  <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%23928000">Disorder of musculoskeletal system</a>\n  <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%23699699005">Disorder of vertebral column</a>\n  Where : \n    ( Associated morphology : <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%2331739005">Lateral abnormal curvature</a>\n      Finding site : <a href="http://localhost/#/concept/http:%2F%2Fsnomed.info%2Fsct%23289959001">Musculoskeletal structure of spine</a> )\n'
     );
   });
 
@@ -187,7 +188,7 @@ describe("TextDefinition.vue ___ data", () => {
   });
 });
 
-describe("TextDefinition.vue ___ data", () => {
+describe("TextDefinition.vue ___ no data", () => {
   let wrapper;
   let mockStore;
   let docSpy;
@@ -206,7 +207,7 @@ describe("TextDefinition.vue ___ data", () => {
     docSpy.mockReturnValue(mockButton);
 
     wrapper = shallowMount(TextDefinition, {
-      global: { components: { Button }, mocks: { $store: mockStore }, directives: { styleclass: StyleClass } },
+      global: { components: { Button, ProgressSpinner }, mocks: { $store: mockStore }, directives: { styleclass: StyleClass } },
       props: {
         label: "Bundle",
         show: true,

@@ -44,7 +44,9 @@ describe("state", () => {
       "focusHierarchy",
       "instanceIri",
       "sidebarControlActivePanel",
-      "catalogueSearchResults"
+      "catalogueSearchResults",
+      "hierarchySelectedFilters",
+      "filterDefaults"
     ]);
     expect(store.state.conceptIri).toBe("http://endhealth.info/im#DiscoveryOntology");
     expect(store.state.history).toEqual([]);
@@ -86,6 +88,8 @@ describe("state", () => {
     expect(store.state.focusHierarchy).toBe(false);
     expect(store.state.catalogueSearchResults).toStrictEqual([]);
     expect(store.state.instanceIri).toBe("");
+    expect(store.state.hierarchySelectedFilters).toStrictEqual([]);
+    expect(store.state.filterDefaults).toStrictEqual({});
   });
 });
 
@@ -264,6 +268,16 @@ describe("mutations", () => {
     expect(store.state.sidebarControlActivePanel).toBe(4);
   });
 
+  it("can update hierarchySelectedFilters", () => {
+    store.commit("updateHierarchySelectedFilters", ["testIri"]);
+    expect(store.state.hierarchySelectedFilters).toStrictEqual(["testIri"]);
+  });
+
+  it("can updateFilterDefaults", () => {
+    store.commit("updateFilterDefaults", { schemeOptions: ["testScheme"], statusOptions: ["testStatus"], typeOptions: ["testType"] });
+    expect(store.state.filterDefaults).toStrictEqual({ schemeOptions: ["testScheme"], statusOptions: ["testStatus"], typeOptions: ["testType"] });
+  });
+
   it("can fetchBlockedIris", async () => {
     const iris = ["http://www.w3.org/2001/XMLSchema#string", "http://www.w3.org/2001/XMLSchema#boolean"];
     ConfigService.getXmlSchemaDataTypes = jest.fn().mockResolvedValue(iris);
@@ -282,7 +296,7 @@ describe("mutations", () => {
     expect(EntityService.advancedSearch).toBeCalledTimes(1);
     expect(EntityService.advancedSearch).toBeCalledWith(testInput.searchRequest, testInput.cancelToken);
     await flushPromises();
-    expect(store.state.searchResults).toEqual([{ iri: "testResult" }]);
+    expect(store.state.searchResults).toEqual([]);
   });
 
   it("can fetchSearchResults ___ failed", async () => {

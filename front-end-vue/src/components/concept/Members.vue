@@ -20,7 +20,7 @@
       <template #header>
         <div class="table-header-bar">
           <div class="checkboxes-container">
-            <Button type="button" label="Download..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
+            <Button type="button" label="Download..." @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" :loading="downloading" />
             <Menu id="overlay_menu" ref="menu" :model="downloadMenu" :popup="true" />
           </div>
         </div>
@@ -33,7 +33,7 @@
       </template>
       <Column field="entity.name" header="Name">
         <template #body="slotProps">
-          <div class="name-container">{{ slotProps.data.entity.name }}</div>
+          <div v-html="slotProps.data.entity.name" class="name-container"></div>
         </template>
       </Column>
       <template #groupheader="slotProps">
@@ -88,6 +88,7 @@ export default defineComponent({
   data() {
     return {
       loading: false,
+      downloading: false,
       members: {} as ExportValueSet,
       combinedMembers: [] as ValueSetMember[],
       selected: {} as ValueSetMember,
@@ -137,16 +138,25 @@ export default defineComponent({
       });
     },
 
-    download(expanded: boolean, v1 = false): void {
-      const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
-      const popup = window.open(
-        process.env.VUE_APP_API + "api/set/download?iri=" + modIri + "&expandMembers=" + expanded + "&v1=" + (expanded && v1) + "&format=excel"
-      );
-      if (!popup) {
-        this.$toast.add(LoggerService.error("Download failed from server"));
-      } else {
+    async download(expanded: boolean, v1 = false): Promise<void> {
+      this.downloading = true;
+      try {
         this.$toast.add(LoggerService.success("Download will begin shortly"));
+        const result = expanded ? (await EntityService.getFullExportSet(this.conceptIri)).data : await EntityService.download(this.conceptIri, expanded, v1);
+        this.downloadFile(result);
+      } catch (error) {
+        this.$toast.add(LoggerService.error("Download failed from server"));
+      } finally {
+        this.downloading = false;
       }
+    },
+
+    downloadFile(data: any) {
+      const url = window.URL.createObjectURL(new Blob([data], { type: "application" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "export.xlsx";
+      link.click();
     },
 
     sortMembers(): void {

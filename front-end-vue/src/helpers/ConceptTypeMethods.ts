@@ -31,28 +31,27 @@ export function isProperty(conceptTypes: TTIriRef[]): boolean {
   return isOfTypes(conceptTypes, RDF.PROPERTY);
 }
 
-export function getIconFromType(conceptTypes: TTIriRef[]): string {
+export function getFAIconFromType(conceptTypes: TTIriRef[]): string[] {
   if (isOfTypes(conceptTypes, SHACL.NODESHAPE)) {
-    return "fas fa-fw fa-project-diagram";
+    return ["fas", "project-diagram"];
   }
 
   if (isProperty(conceptTypes)) {
-    return "far fa-fw fa-edit";
+    return ["far", "edit"];
   }
 
   if (isValueSet(conceptTypes)) {
-    return "fas fa-fw fa-tasks";
+    return ["fas", "tasks"];
   }
 
   if (isOfTypes(conceptTypes, IM.FOLDER)) {
-    return "fas fa-fw fa-folder";
+    return ["fas", "folder"];
   }
 
   if (isOfTypes(conceptTypes, IM.QUERY_TEMPLATE)) {
-    return "fas fa-fw fa-search";
+    return ["fas", "search"];
   }
-
-  return "far fa-fw fa-lightbulb";
+  return ["far", "lightbulb"];
 }
 
 const palette = require("../../node_modules/google-palette");

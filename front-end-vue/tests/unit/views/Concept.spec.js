@@ -1,6 +1,6 @@
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import Concept from "@/views/Concept.vue";
-import ContextMenu from "primevue/contextmenu";
+import Menu from "primevue/menu";
 import Button from "primevue/button";
 import LoggerService from "@/services/LoggerService";
 import PanelHeader from "@/components/concept/PanelHeader.vue";
@@ -72,7 +72,6 @@ describe("Concept.vue ___ not moduleIri", () => {
   const TERMS = [{ name: "Critical care encounter (record type)" }];
   const INFERRED = {
     entity: {
-      "@id": "http://snomed.info/sct#298382003",
       "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
         { "@id": "http://snomed.info/sct#928000", name: "Disorder of musculoskeletal system" },
         { "@id": "http://snomed.info/sct#699699005", name: "Disorder of vertebral column" },
@@ -82,6 +81,33 @@ describe("Concept.vue ___ not moduleIri", () => {
         {
           "http://snomed.info/sct#116676008": { "@id": "http://snomed.info/sct#31739005", name: "Lateral abnormal curvature" },
           "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#289959001", name: "Musculoskeletal structure of spine" }
+        }
+      ]
+    },
+    predicates: {
+      "http://endhealth.info/im#roleGroup": "Where",
+      "http://snomed.info/sct#116676008": "Associated morphology",
+      "http://snomed.info/sct#363698007": "Finding site",
+      "http://www.w3.org/2000/01/rdf-schema#subClassOf": "Subclass of",
+      "http://www.w3.org/2002/07/owl#onProperty": "On property",
+      "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
+      "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
+      "http://www.w3.org/2002/07/owl#equivalentClass": "Is equivalent to"
+    }
+  };
+  const INFERRED_NESTED_ROLEGROUP = {
+    entity: {
+      "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+        { "@id": "http://snomed.info/sct#928000", name: "Disorder of musculoskeletal system" },
+        { "@id": "http://snomed.info/sct#699699005", name: "Disorder of vertebral column" },
+        { "@id": "http://snomed.info/sct#64217002", name: "Curvature of spine" },
+        {
+          "http://endhealth.info/im#roleGroup": [
+            {
+              "http://snomed.info/sct#116676008": { "@id": "http://snomed.info/sct#31739005", name: "Lateral abnormal curvature" },
+              "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#289959001", name: "Musculoskeletal structure of spine" }
+            }
+          ]
         }
       ]
     },
@@ -130,7 +156,7 @@ describe("Concept.vue ___ not moduleIri", () => {
     mockToast = {
       add: jest.fn()
     };
-    mockRef = { render: () => {}, methods: { show: jest.fn(), hide: jest.fn() } };
+    mockRef = { render: () => {}, methods: { toggle: jest.fn(), show: jest.fn(), hide: jest.fn() } };
 
     windowSpy = jest.spyOn(window, "getComputedStyle");
     windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue("16px") });
@@ -143,7 +169,7 @@ describe("Concept.vue ___ not moduleIri", () => {
         components: {
           Definition,
           Mappings,
-          ContextMenu,
+          Menu,
           Button,
           TabPanel,
           TabView,
@@ -157,8 +183,8 @@ describe("Concept.vue ___ not moduleIri", () => {
           ProgressSpinner
         },
         mocks: { $store: mockStore, $router: mockRouter, $toast: mockToast },
-        directives: { tooltip: jest.fn(), clipboard: { copy: jest.fn(), success: jest.fn(), error: jest.fn() } },
-        stubs: { Panel: Panel, ContextMenu: mockRef }
+        directives: { tooltip: jest.fn() },
+        stubs: { Panel: Panel, Menu: mockRef, FontAwesomeIcon: true }
       }
     });
 
@@ -178,33 +204,7 @@ describe("Concept.vue ___ not moduleIri", () => {
     expect(wrapper.vm.configs).toStrictEqual(CONFIG);
     expect(wrapper.vm.concept).toStrictEqual({
       "@id": "http://endhealth.info/im#CriticalCareEncounter",
-      inferred: {
-        entity: {
-          "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
-            { "@id": "http://snomed.info/sct#928000", name: "Disorder of musculoskeletal system" },
-            { "@id": "http://snomed.info/sct#699699005", name: "Disorder of vertebral column" },
-            { "@id": "http://snomed.info/sct#64217002", name: "Curvature of spine" },
-            {
-              "http://endhealth.info/im#roleGroup": [
-                {
-                  "http://snomed.info/sct#116676008": { "@id": "http://snomed.info/sct#31739005", name: "Lateral abnormal curvature" },
-                  "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#289959001", name: "Musculoskeletal structure of spine" }
-                }
-              ]
-            }
-          ]
-        },
-        predicates: {
-          "http://endhealth.info/im#roleGroup": "Where",
-          "http://snomed.info/sct#116676008": "Associated morphology",
-          "http://snomed.info/sct#363698007": "Finding site",
-          "http://www.w3.org/2000/01/rdf-schema#subClassOf": "Subclass of",
-          "http://www.w3.org/2002/07/owl#onProperty": "On property",
-          "http://www.w3.org/2002/07/owl#intersectionOf": "Combination of",
-          "http://www.w3.org/2002/07/owl#someValuesFrom": "With a value",
-          "http://www.w3.org/2002/07/owl#equivalentClass": "Is equivalent to"
-        }
-      },
+      inferred: INFERRED_NESTED_ROLEGROUP,
       "http://endhealth.info/im#status": { "@id": "http://endhealth.info/im#Active", name: "Active" },
       "http://www.w3.org/2000/01/rdf-schema#comment":
         "An entry recording information about a criticial care encounter.<p>common data model attributes for Critical care encounter",
@@ -410,7 +410,6 @@ describe("Concept.vue ___ not moduleIri", () => {
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
     expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", [
       "http://www.w3.org/2000/01/rdf-schema#label",
-      "@id",
       "http://endhealth.info/im#status",
       "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
       "http://www.w3.org/2000/01/rdf-schema#comment"
@@ -480,7 +479,6 @@ describe("Concept.vue ___ not moduleIri", () => {
     expect(EntityService.getPartialEntity).toHaveBeenCalledTimes(1);
     expect(EntityService.getPartialEntity).toHaveBeenCalledWith("http://snomed.info/sct#298382003", [
       "http://www.w3.org/2000/01/rdf-schema#label",
-      "@id",
       "http://endhealth.info/im#status",
       "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
       "http://www.w3.org/2000/01/rdf-schema#comment"
@@ -521,16 +519,17 @@ describe("Concept.vue ___ not moduleIri", () => {
   it("can getInferred ___ pass", async () => {
     EntityService.getDefinitionBundle.mockResolvedValue({
       entity: {
-        "@id": "http://snomed.info/sct#298382003",
         "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
           { "@id": "http://snomed.info/sct#928000", name: "Disorder of musculoskeletal system" },
           { "@id": "http://snomed.info/sct#699699005", name: "Disorder of vertebral column" },
-          { "@id": "http://snomed.info/sct#64217002", name: "Curvature of spine" }
-        ],
-        "http://endhealth.info/im#roleGroup": [
+          { "@id": "http://snomed.info/sct#64217002", name: "Curvature of spine" },
           {
-            "http://snomed.info/sct#116676008": { "@id": "http://snomed.info/sct#31739005", name: "Lateral abnormal curvature" },
-            "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#289959001", name: "Musculoskeletal structure of spine" }
+            "http://endhealth.info/im#roleGroup": [
+              {
+                "http://snomed.info/sct#116676008": { "@id": "http://snomed.info/sct#31739005", name: "Lateral abnormal curvature" },
+                "http://snomed.info/sct#363698007": { "@id": "http://snomed.info/sct#289959001", name: "Musculoskeletal structure of spine" }
+              }
+            ]
           }
         ]
       },
@@ -813,18 +812,6 @@ describe("Concept.vue ___ not moduleIri", () => {
     expect(wrapper.vm.showDownloadDialog).toBe(false);
   });
 
-  it("toasts onCopy", () => {
-    wrapper.vm.onCopy();
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Value copied to clipboard"));
-  });
-
-  it("toasts onCopyError", () => {
-    wrapper.vm.onCopyError();
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Failed to copy value to clipboard"));
-  });
-
   it("can set copy menu items", async () => {
     wrapper.vm.copyMenuItems = [];
     wrapper.vm.concept = {
@@ -1075,31 +1062,6 @@ describe("Concept.vue ___ not moduleIri", () => {
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Failed to copy Has sub types to clipboard"));
   });
 
-  it("can exportConcept ___ success", () => {
-    window.open = jest.fn().mockReturnValue(true);
-    wrapper.vm.exportConcept();
-    expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith("/test/api/entity/exportConcept?iri=http:%2F%2Fendhealth.info%2Fim%23CriticalCareEncounter");
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Export will begin shortly"));
-  });
-
-  it("can exportConcept ___ fail", () => {
-    window.open = jest.fn().mockReturnValue(false);
-    wrapper.vm.exportConcept();
-    expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith("/test/api/entity/exportConcept?iri=http:%2F%2Fendhealth.info%2Fim%23CriticalCareEncounter");
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Export failed from server"));
-  });
-
-  it("can onCopyRightClick", async () => {
-    wrapper.vm.onCopyRightClick("testEvent");
-    await flushPromises();
-    expect(mockRef.methods.show).toHaveBeenCalledTimes(1);
-    expect(mockRef.methods.show).toHaveBeenCalledWith("testEvent");
-  });
-
   it("can wrapper isObjectHasKeys", () => {
     expect(wrapper.vm.isObjectHasKeysWrapper({ key1: "test" }, ["key1"])).toBe(true);
   });
@@ -1162,7 +1124,7 @@ describe("Concept.vue ___ moduleIri", () => {
     mockToast = {
       add: jest.fn()
     };
-    mockRef = { render: () => {}, methods: { show: jest.fn(), hide: jest.fn() } };
+    mockRef = { render: () => {}, methods: { toggle: jest.fn(), show: jest.fn(), hide: jest.fn() } };
 
     windowSpy = jest.spyOn(window, "getComputedStyle");
     windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue("16px") });
@@ -1175,7 +1137,7 @@ describe("Concept.vue ___ moduleIri", () => {
         components: {
           Definition,
           Mappings,
-          ContextMenu,
+          Menu,
           Button,
           TabPanel,
           TabView,
@@ -1189,8 +1151,8 @@ describe("Concept.vue ___ moduleIri", () => {
           ProgressSpinner
         },
         mocks: { $store: mockStore, $router: mockRouter, $toast: mockToast },
-        directives: { tooltip: jest.fn(), clipboard: { copy: jest.fn(), success: jest.fn(), error: jest.fn() } },
-        stubs: { Panel: Panel, ContextMenu: mockRef }
+        directives: { tooltip: jest.fn() },
+        stubs: { Panel: Panel, Menu: mockRef }
       }
     });
 

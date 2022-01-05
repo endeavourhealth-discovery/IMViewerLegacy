@@ -7,7 +7,7 @@ export default class CatalogueService {
 
   public static async getSearchResult(request: string, typesIris: string[], cancelToken: CancelToken): Promise<any[]> {
     try {
-      return await axios.get(this.api + "instance/search", {
+      return await axios.get(this.api + "instance/public/search", {
         params: { request: request, typesIris: typesIris.join(",") },
         cancelToken: cancelToken
       });
@@ -18,7 +18,7 @@ export default class CatalogueService {
 
   public static async getPartialInstance(iri: string, predicates?: string[]): Promise<TTBundle> {
     try {
-      return await axios.get(this.api + "instance/partial", {
+      return await axios.get(this.api + "instance/public/partial", {
         params: { iri: iri, predicate: predicates }
       });
     } catch (error) {
@@ -28,7 +28,7 @@ export default class CatalogueService {
 
   public static async getTypesCount(): Promise<SimpleCount[]> {
     try {
-      return await axios.get(this.api + "instance/typesCount");
+      return await axios.get(this.api + "instance/public/typesCount");
     } catch (error) {
       return [] as SimpleCount[];
     }

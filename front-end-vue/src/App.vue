@@ -1,7 +1,10 @@
 <template>
   <div class="layout-wrapper layout-static">
     <Toast />
-    <router-view />
+    <div v-if="loading" class="p-d-flex p-flex-row p-jc-center p-ai-center loading-container">
+      <ProgressSpinner />
+    </div>
+    <router-view v-else />
   </div>
 </template>
 
@@ -12,9 +15,16 @@ export default defineComponent({
   name: "App",
   async mounted() {
     // check for user and log them in if found or logout if not
+    this.loading = true;
     await this.$store.dispatch("authenticateCurrentUser");
     this.$store.commit("updateHistoryCount", window.history.length);
     await this.$store.dispatch("fetchBlockedIris");
+    this.loading = false;
+  },
+  data() {
+    return {
+      loading: false
+    };
   }
 });
 </script>
@@ -22,6 +32,11 @@ export default defineComponent({
 <style>
 body {
   overflow: hidden;
+}
+
+.loading-container {
+  width: 100vw;
+  height: 100vh;
 }
 
 #popup-user {
@@ -124,5 +139,18 @@ body {
 
 .swal2-container .swal2-popup .swal2-actions {
   justify-content: flex-end;
+}
+
+.p-toast-message-text {
+  width: calc(100% - 4rem);
+}
+
+.p-toast-message-content {
+  width: 100%;
+}
+
+.p-toast-detail {
+  width: 100%;
+  word-wrap: break-word;
 }
 </style>

@@ -5,10 +5,13 @@ import Tree from "primevue/tree";
 import ProgressSpinner from "primevue/progressspinner";
 import OverlayPanel from "primevue/overlaypanel";
 import EntityService from "@/services/EntityService";
+import Tooltip from "primevue/tooltip";
 
 describe("SecondaryTree.vue", () => {
   let wrapper: any;
   let mockToast: any;
+  let mockRoute: any;
+  let mockRouter: any;
   let mockRef: any;
 
   const CONCEPT = {
@@ -57,36 +60,41 @@ describe("SecondaryTree.vue", () => {
     }
   ];
 
+  const SUMMARY = {
+    name: "Acquired scoliosis",
+    iri: "http://snomed.info/sct#111266001",
+    code: "111266001",
+    description: "Acquired scoliosis (disorder)",
+    status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
+    scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+    entityType: [
+      { name: "Ontological Concept", "@id": "http://endhealth.info/im#Concept" },
+      { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
+    ],
+    isDescendentOf: [],
+    match: "629792015"
+  };
+
   beforeEach(async () => {
     jest.resetAllMocks();
     mockToast = {
       add: jest.fn()
     };
     mockRef = { render: () => {}, methods: { show: jest.fn(), hide: jest.fn() } };
+    mockRoute = { name: "Concept" };
+    mockRouter = { push: jest.fn() };
 
     EntityService.getPartialEntity = jest.fn().mockResolvedValue(CONCEPT);
     EntityService.getEntityParents = jest.fn().mockResolvedValue(PARENTS);
     EntityService.getEntityChildren = jest.fn().mockResolvedValue(CHILDREN);
-    EntityService.getEntitySummary = jest.fn().mockResolvedValue({
-      name: "Acquired scoliosis",
-      iri: "http://snomed.info/sct#111266001",
-      code: "111266001",
-      description: "Acquired scoliosis (disorder)",
-      status: { name: "Active", "@id": "http://endhealth.info/im#Active" },
-      scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
-      entityType: [
-        { name: "Ontological Concept", "@id": "http://endhealth.info/im#Concept" },
-        { name: "Organisation  (record type)", "@id": "http://endhealth.info/im#Organisation" }
-      ],
-      isDescendentOf: [],
-      match: "629792015"
-    });
+    EntityService.getEntitySummary = jest.fn().mockResolvedValue(SUMMARY);
 
     wrapper = shallowMount(SecondaryTree, {
       global: {
         components: { Button, Tree, ProgressSpinner, OverlayPanel },
-        mocks: { $toast: mockToast },
-        stubs: { OverlayPanel: mockRef }
+        mocks: { $toast: mockToast, $route: mockRoute, $router: mockRouter },
+        stubs: { OverlayPanel: mockRef, FontAwesomeIcon: true },
+        directives: { Tooltip: Tooltip }
       },
       props: { conceptIri: "http://snomed.info/sct#298382003" }
     });
@@ -114,7 +122,7 @@ describe("SecondaryTree.vue", () => {
             label: "Acquired scoliosis (disorder)",
             leaf: false,
             loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
+            typeIcon: ["far", "lightbulb"]
           },
           {
             children: [],
@@ -124,7 +132,7 @@ describe("SecondaryTree.vue", () => {
             label: "Acrodysplasia scoliosis (disorder)",
             leaf: true,
             loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
+            typeIcon: ["far", "lightbulb"]
           },
           {
             children: [],
@@ -134,7 +142,7 @@ describe("SecondaryTree.vue", () => {
             label: "Congenital scoliosis due to bony malformation (disorder)",
             leaf: true,
             loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
+            typeIcon: ["far", "lightbulb"]
           }
         ],
         color: "#e39a3688",
@@ -143,7 +151,7 @@ describe("SecondaryTree.vue", () => {
         label: "Scoliosis deformity of spine (disorder)",
         leaf: true,
         loading: false,
-        typeIcon: "far fa-fw fa-lightbulb"
+        typeIcon: ["far", "lightbulb"]
       }
     ]);
     expect(wrapper.vm.expandedKeys).toStrictEqual({ "Scoliosis deformity of spine (disorder)": true });
@@ -223,7 +231,7 @@ describe("SecondaryTree.vue", () => {
             label: "Acquired scoliosis (disorder)",
             leaf: false,
             loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
+            typeIcon: ["far", "lightbulb"]
           },
           {
             children: [],
@@ -233,7 +241,7 @@ describe("SecondaryTree.vue", () => {
             label: "Acrodysplasia scoliosis (disorder)",
             leaf: true,
             loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
+            typeIcon: ["far", "lightbulb"]
           },
           {
             children: [],
@@ -243,7 +251,7 @@ describe("SecondaryTree.vue", () => {
             label: "Congenital scoliosis due to bony malformation (disorder)",
             leaf: true,
             loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
+            typeIcon: ["far", "lightbulb"]
           }
         ],
         color: "#e39a3688",
@@ -252,7 +260,7 @@ describe("SecondaryTree.vue", () => {
         label: "Scoliosis deformity of spine (disorder)",
         leaf: true,
         loading: false,
-        typeIcon: "far fa-fw fa-lightbulb"
+        typeIcon: ["far", "lightbulb"]
       }
     ]);
     expect(wrapper.vm.setParents).toHaveBeenCalledTimes(1);
@@ -277,7 +285,7 @@ describe("SecondaryTree.vue", () => {
             label: "Acquired scoliosis (disorder)",
             leaf: false,
             loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
+            typeIcon: ["far", "lightbulb"]
           },
           {
             children: [],
@@ -287,7 +295,7 @@ describe("SecondaryTree.vue", () => {
             label: "Acrodysplasia scoliosis (disorder)",
             leaf: true,
             loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
+            typeIcon: ["far", "lightbulb"]
           },
           {
             children: [],
@@ -297,7 +305,7 @@ describe("SecondaryTree.vue", () => {
             label: "Congenital scoliosis due to bony malformation (disorder)",
             leaf: true,
             loading: false,
-            typeIcon: "far fa-fw fa-lightbulb"
+            typeIcon: ["far", "lightbulb"]
           }
         ],
         color: "#e39a3688",
@@ -306,7 +314,7 @@ describe("SecondaryTree.vue", () => {
         label: "Scoliosis deformity of spine (disorder)",
         leaf: true,
         loading: false,
-        typeIcon: "far fa-fw fa-lightbulb"
+        typeIcon: ["far", "lightbulb"]
       }
     ]);
     expect(wrapper.vm.setParents).toHaveBeenCalledTimes(1);
@@ -393,7 +401,7 @@ describe("SecondaryTree.vue", () => {
       label: "Scoliosis deformity of spine (disorder)",
       leaf: true,
       loading: false,
-      typeIcon: "far fa-fw fa-lightbulb"
+      typeIcon: ["far", "lightbulb"]
     });
   });
 
@@ -448,7 +456,7 @@ describe("SecondaryTree.vue", () => {
     const testNode = {
       key: "Acquired scoliosis (disorder)",
       label: "Acquired scoliosis (disorder)",
-      typeIcon: "far fa-fw fa-lightbulb",
+      typeIcon: ["far", "lightbulb"],
       color: "#e39a3688",
       data: "http://snomed.info/sct#111266001",
       leaf: false,
@@ -470,7 +478,7 @@ describe("SecondaryTree.vue", () => {
           label: "Acquired kyphoscoliosis (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -480,7 +488,7 @@ describe("SecondaryTree.vue", () => {
           label: "Adolescent idiopathic scoliosis (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -490,7 +498,7 @@ describe("SecondaryTree.vue", () => {
           label: "Infantile idiopathic scoliosis of cervical spine (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -500,7 +508,7 @@ describe("SecondaryTree.vue", () => {
           label: "Post-surgical scoliosis (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -510,7 +518,7 @@ describe("SecondaryTree.vue", () => {
           label: "Scoliosis caused by radiation (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -520,7 +528,7 @@ describe("SecondaryTree.vue", () => {
           label: "Thoracogenic scoliosis (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         }
       ],
       color: "#e39a3688",
@@ -529,7 +537,7 @@ describe("SecondaryTree.vue", () => {
       label: "Acquired scoliosis (disorder)",
       leaf: false,
       loading: false,
-      typeIcon: "far fa-fw fa-lightbulb"
+      typeIcon: ["far", "lightbulb"]
     });
     expect(testNode.loading).toBe(false);
   });
@@ -577,7 +585,7 @@ describe("SecondaryTree.vue", () => {
     const testNode = {
       key: "Acquired scoliosis (disorder)",
       label: "Acquired scoliosis (disorder)",
-      typeIcon: "far fa-fw fa-lightbulb",
+      typeIcon: ["far", "lightbulb"],
       color: "#e39a3688",
       data: "http://snomed.info/sct#111266001",
       leaf: false,
@@ -591,7 +599,7 @@ describe("SecondaryTree.vue", () => {
           label: "Acquired kyphoscoliosis (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         }
       ]
     };
@@ -610,7 +618,7 @@ describe("SecondaryTree.vue", () => {
           label: "Acquired kyphoscoliosis (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -620,7 +628,7 @@ describe("SecondaryTree.vue", () => {
           label: "Adolescent idiopathic scoliosis (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -630,7 +638,7 @@ describe("SecondaryTree.vue", () => {
           label: "Infantile idiopathic scoliosis of cervical spine (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -640,7 +648,7 @@ describe("SecondaryTree.vue", () => {
           label: "Post-surgical scoliosis (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -650,7 +658,7 @@ describe("SecondaryTree.vue", () => {
           label: "Scoliosis caused by radiation (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         },
         {
           children: [],
@@ -660,7 +668,7 @@ describe("SecondaryTree.vue", () => {
           label: "Thoracogenic scoliosis (disorder)",
           leaf: false,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         }
       ],
       color: "#e39a3688",
@@ -669,7 +677,7 @@ describe("SecondaryTree.vue", () => {
       label: "Acquired scoliosis (disorder)",
       leaf: false,
       loading: false,
-      typeIcon: "far fa-fw fa-lightbulb"
+      typeIcon: ["far", "lightbulb"]
     });
     expect(testNode.loading).toBe(false);
   });
@@ -952,7 +960,7 @@ describe("SecondaryTree.vue", () => {
               label: "Acquired scoliosis (disorder)",
               leaf: false,
               loading: false,
-              typeIcon: "far fa-fw fa-lightbulb"
+              typeIcon: ["far", "lightbulb"]
             },
             {
               children: [],
@@ -962,7 +970,7 @@ describe("SecondaryTree.vue", () => {
               label: "Acrodysplasia scoliosis (disorder)",
               leaf: true,
               loading: false,
-              typeIcon: "far fa-fw fa-lightbulb"
+              typeIcon: ["far", "lightbulb"]
             },
             {
               children: [],
@@ -972,7 +980,7 @@ describe("SecondaryTree.vue", () => {
               label: "Congenital scoliosis due to bony malformation (disorder)",
               leaf: true,
               loading: false,
-              typeIcon: "far fa-fw fa-lightbulb"
+              typeIcon: ["far", "lightbulb"]
             }
           ],
           color: "#e39a3688",
@@ -981,7 +989,7 @@ describe("SecondaryTree.vue", () => {
           label: "Scoliosis deformity of spine (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         }
       ],
       color: "#e39a3688",
@@ -990,7 +998,7 @@ describe("SecondaryTree.vue", () => {
       label: "Acquired curvature of spine (disorder)",
       leaf: false,
       loading: false,
-      typeIcon: "far fa-fw fa-lightbulb"
+      typeIcon: ["far", "lightbulb"]
     });
     expect(wrapper.vm.expandedKeys).toStrictEqual({ "Acquired curvature of spine (disorder)": true, "Scoliosis deformity of spine (disorder)": true });
   });
@@ -1027,7 +1035,7 @@ describe("SecondaryTree.vue", () => {
               label: "Acquired scoliosis (disorder)",
               leaf: false,
               loading: false,
-              typeIcon: "far fa-fw fa-lightbulb"
+              typeIcon: ["far", "lightbulb"]
             },
             {
               children: [],
@@ -1037,7 +1045,7 @@ describe("SecondaryTree.vue", () => {
               label: "Acrodysplasia scoliosis (disorder)",
               leaf: true,
               loading: false,
-              typeIcon: "far fa-fw fa-lightbulb"
+              typeIcon: ["far", "lightbulb"]
             },
             {
               children: [],
@@ -1047,7 +1055,7 @@ describe("SecondaryTree.vue", () => {
               label: "Congenital scoliosis due to bony malformation (disorder)",
               leaf: true,
               loading: false,
-              typeIcon: "far fa-fw fa-lightbulb"
+              typeIcon: ["far", "lightbulb"]
             }
           ],
           color: "#e39a3688",
@@ -1056,7 +1064,7 @@ describe("SecondaryTree.vue", () => {
           label: "Scoliosis deformity of spine (disorder)",
           leaf: true,
           loading: false,
-          typeIcon: "far fa-fw fa-lightbulb"
+          typeIcon: ["far", "lightbulb"]
         }
       ],
       color: "#e39a3688",
@@ -1065,7 +1073,7 @@ describe("SecondaryTree.vue", () => {
       label: "Acquired curvature of spine (disorder)",
       leaf: false,
       loading: false,
-      typeIcon: "far fa-fw fa-lightbulb"
+      typeIcon: ["far", "lightbulb"]
     });
     expect(wrapper.vm.expandedKeys).toStrictEqual({ "Acquired curvature of spine (disorder)": true, "Scoliosis deformity of spine (disorder)": true });
   });
@@ -1169,16 +1177,7 @@ describe("SecondaryTree.vue", () => {
   });
 
   it("can showPopup", async () => {
-    wrapper.vm.showPopup("testEvent", {
-      children: [],
-      color: "#e39a3688",
-      data: "http://snomed.info/sct#111266001",
-      key: "Acquired scoliosis (disorder)",
-      label: "Acquired scoliosis (disorder)",
-      leaf: false,
-      loading: false,
-      typeIcon: "far fa-fw fa-lightbulb"
-    });
+    wrapper.vm.showPopup("testEvent", "http://snomed.info/sct#111266001");
     await flushPromises();
     expect(mockRef.methods.show).toHaveBeenCalledTimes(1);
     expect(mockRef.methods.show).toHaveBeenCalledWith("testEvent");
@@ -1206,5 +1205,22 @@ describe("SecondaryTree.vue", () => {
     expect(mockRef.methods.hide).toHaveBeenCalledTimes(1);
     expect(mockRef.methods.hide).toHaveBeenCalledWith("testEvent");
     expect(wrapper.vm.overlayLocation).toStrictEqual({});
+  });
+
+  it("can navigate ___ metaKey", () => {
+    wrapper.vm.navigate({ metaKey: true }, "testIri");
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Concept", params: { selectedIri: "testIri" } });
+  });
+
+  it("can navigate ___ ctrlKey", () => {
+    wrapper.vm.navigate({ ctrlKey: true }, "testIri");
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith({ name: "Concept", params: { selectedIri: "testIri" } });
+  });
+
+  it("can navigate ___ other", () => {
+    wrapper.vm.navigate({ shiftKey: true }, "testIri");
+    expect(mockRouter.push).not.toHaveBeenCalled();
   });
 });
