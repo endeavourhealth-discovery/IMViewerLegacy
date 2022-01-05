@@ -36,7 +36,7 @@ import { IM } from "@/vocabulary/IM";
 import { TTIriRef } from "@/models/TripleTree";
 import { mapState } from "vuex";
 import { ComponentDetails } from "@/models/ecl/ComponentDetails";
-import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 
@@ -128,8 +128,8 @@ export default defineComponent({
 
     async fetchSearchResults(searchRequest: SearchRequest, cancelToken: any) {
       const result = await EntityService.advancedSearch(searchRequest, cancelToken);
-      if (result && isObjectHasKeys(result, ["hits"])) {
-        this.searchResults = result.hits.hits.map((h: { _source: any }) => h._source);
+      if (result && isArrayHasLength(result)) {
+        this.searchResults = result;
       } else {
         this.searchResults = [];
       }
