@@ -63,7 +63,7 @@ export default defineComponent({
     },
 
     async getCardsData(): Promise<void> {
-      this.configs.forEach(async config => {
+      for (const config of this.configs) {
         const result = await EntityService.getPartialEntity(config.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
         if (!isObjectHasKeys(result)) return;
         const cardData = {
@@ -73,7 +73,7 @@ export default defineComponent({
           component: config.type
         };
         this.cardsData.push(cardData);
-      });
+      }
     }
   }
 });

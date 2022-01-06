@@ -157,11 +157,10 @@ describe("Members.vue", () => {
 
   it("can run downloadMenu commands", () => {
     wrapper.vm.download = jest.fn();
-    wrapper.vm.downloadFullExportSet = jest.fn();
     wrapper.vm.downloadMenu[0].command();
     expect(wrapper.vm.download).toHaveBeenLastCalledWith(false);
     wrapper.vm.downloadMenu[1].command();
-    expect(wrapper.vm.downloadFullExportSet).toHaveBeenLastCalledWith(true);
+    expect(wrapper.vm.download).toHaveBeenLastCalledWith(true);
     wrapper.vm.downloadMenu[2].command();
     expect(wrapper.vm.download).toHaveBeenLastCalledWith(true, true);
   });
@@ -263,10 +262,6 @@ describe("Members.vue", () => {
     const openStore = window.open;
     window.open = jest.fn().mockReturnValue(true);
     wrapper.vm.download(true);
-    expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith(
-      "/test/api/set/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&expandMembers=true&v1=false&format=excel"
-    );
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Download will begin shortly"));
     window.open = openStore;
@@ -276,10 +271,6 @@ describe("Members.vue", () => {
     const openStore = window.open;
     window.open = jest.fn().mockReturnValue(true);
     wrapper.vm.download(true, true);
-    expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith(
-      "/test/api/set/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&expandMembers=true&v1=true&format=excel"
-    );
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Download will begin shortly"));
     window.open = openStore;
@@ -287,13 +278,12 @@ describe("Members.vue", () => {
 
   it("can download ___ fail", () => {
     const openStore = window.open;
-    window.open = jest.fn().mockReturnValue(false);
-    wrapper.vm.download(true);
-    expect(window.open).toHaveBeenCalledTimes(1);
-    expect(window.open).toHaveBeenCalledWith(
-      "/test/api/set/download?iri=http:%2F%2Fendhealth.info%2Fim%23VSET_EthnicCategoryCEG16&expandMembers=true&v1=false&format=excel"
-    );
-    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    EntityService.download = jest.fn().mockImplementation(() => {
+      throw new Error();
+    });
+    wrapper.vm.download();
+
+    expect(mockToast.add).toHaveBeenCalledTimes(2);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Download failed from server"));
     window.open = openStore;
   });

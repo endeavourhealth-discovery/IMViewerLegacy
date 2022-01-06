@@ -39,6 +39,7 @@
       @node-select="onNodeSelect"
       @node-expand="expandChildren"
       class="tree-root"
+      :loading="loading"
     >
       <template #default="slotProps">
         <div class="tree-row" @mouseover="showPopup($event, slotProps.node.data)" @mouseleave="hidePopup($event)">
@@ -178,7 +179,8 @@ export default defineComponent({
       parentLabel: "",
       filters: {} as FiltersAsIris,
       hoveredResult: {} as ConceptSummary | any,
-      overlayLocation: {} as any
+      overlayLocation: {} as any,
+      loading: false
     };
   },
   async mounted() {
@@ -202,15 +204,18 @@ export default defineComponent({
       }
     },
     async getConceptAggregate(iri: string): Promise<void> {
+      this.loading = true;
       this.conceptAggregate.concept = await EntityService.getPartialEntity(iri, [RDFS.LABEL, RDFS.COMMENT, RDF.TYPE]);
 
       this.setFilters();
       this.conceptAggregate.parents = await EntityService.getEntityParents(iri, this.filters);
 
       this.conceptAggregate.children = await EntityService.getEntityChildren(iri, this.filters);
+      this.loading = false;
     },
 
     refreshTree(): void {
+      this.loading = true;
       const concept = this.conceptAggregate.concept;
       const parentHierarchy = this.conceptAggregate.parents;
       const children = this.conceptAggregate.children;
@@ -227,6 +232,7 @@ export default defineComponent({
       this.root.push(selectedConcept);
       this.expandedKeys[selectedConcept.key] = true;
       this.selectedKey[selectedConcept.key] = true;
+      this.loading = false;
     },
 
     createTreeNode(conceptName: string, conceptIri: string, conceptTypes: TTIriRef[], hasChildren: boolean): TreeNode {
