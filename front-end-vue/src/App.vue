@@ -10,9 +10,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import ProgressSpinner from "primevue/progressspinner";
 
 export default defineComponent({
   name: "App",
+  components: { ProgressSpinner: ProgressSpinner },
   async mounted() {
     // check for user and log them in if found or logout if not
     this.loading = true;

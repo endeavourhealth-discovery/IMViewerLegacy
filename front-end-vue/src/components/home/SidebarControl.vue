@@ -170,34 +170,34 @@ export default defineComponent({
 
     async search(): Promise<void> {
       // if (this.searchTerm.length > 2) {
-        this.loading = true;
-        this.$store.commit("updateSidebarControlActivePanel", 1);
-        const searchRequest = new SearchRequest();
-        searchRequest.termFilter = this.searchTerm;
-        searchRequest.sortBy = SortBy.Usage;
-        searchRequest.page = 1;
-        searchRequest.size = 100;
-        searchRequest.schemeFilter = this.selectedFilters.schemes.map((scheme: Namespace) => scheme.iri);
+      this.loading = true;
+      this.$store.commit("updateSidebarControlActivePanel", 1);
+      const searchRequest = new SearchRequest();
+      searchRequest.termFilter = this.searchTerm;
+      searchRequest.sortBy = SortBy.Usage;
+      searchRequest.page = 1;
+      searchRequest.size = 100;
+      searchRequest.schemeFilter = this.selectedFilters.schemes.map((scheme: Namespace) => scheme.iri);
 
-        searchRequest.statusFilter = [];
-        this.selectedFilters.status.forEach((status: EntityReferenceNode) => {
-          searchRequest.statusFilter.push(status["@id"]);
-        });
+      searchRequest.statusFilter = [];
+      this.selectedFilters.status.forEach((status: EntityReferenceNode) => {
+        searchRequest.statusFilter.push(status["@id"]);
+      });
 
-        searchRequest.typeFilter = [];
-        this.selectedFilters.types.forEach((type: TTIriRef) => {
-          searchRequest.typeFilter.push(type["@id"]);
-        });
-        if (isObjectHasKeys(this.request, ["cancel", "msg"])) {
-          await this.request.cancel({ status: 499, message: "Search cancelled by user" });
-        }
-        const axiosSource = axios.CancelToken.source();
-        this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
-        await this.$store.dispatch("fetchSearchResults", {
-          searchRequest: searchRequest,
-          cancelToken: axiosSource.token
-        });
-        this.loading = false;
+      searchRequest.typeFilter = [];
+      this.selectedFilters.types.forEach((type: TTIriRef) => {
+        searchRequest.typeFilter.push(type["@id"]);
+      });
+      if (isObjectHasKeys(this.request, ["cancel", "msg"])) {
+        await this.request.cancel({ status: 499, message: "Search cancelled by user" });
+      }
+      const axiosSource = axios.CancelToken.source();
+      this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
+      await this.$store.dispatch("fetchSearchResults", {
+        searchRequest: searchRequest,
+        cancelToken: axiosSource.token
+      });
+      this.loading = false;
       // }
     },
 
@@ -274,6 +274,7 @@ export default defineComponent({
 
 .loading-container {
   height: 100%;
+  width: 100%;
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
