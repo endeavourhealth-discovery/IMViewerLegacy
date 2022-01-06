@@ -4,18 +4,24 @@ chmod +x ./gradlew
 
 mkdir badges
 
+# Artifact
+artifact='IMViewer'
+
+# Version
+version='1.0.0'
+
 # Update badges pre-build
 echo "https://img.shields.io/badge/Build-In_progress-orange.svg"
 curl -s "https://img.shields.io/badge/Build-In_progress-orange.svg" > badges/build.svg
 
-echo "https://img.shields.io/badge/Version-1.0.0-orange.svg"
-curl -s "https://img.shields.io/badge/Version-1.0.0-orange.svg" > badges/version.svg
+echo "https://img.shields.io/badge/Version-$version-orange.svg"
+curl -s "https://img.shields.io/badge/Version-$version-orange.svg" > badges/version.svg
 
 echo "https://img.shields.io/badge/Unit_Tests-Pending-orange.svg"
 curl -s "https://img.shields.io/badge/Unit_Tests-Pending-orange.svg" > badges/unit-test.svg
 
 # Sync with S3
-aws s3 cp badges s3://endeavour-codebuild-output/badges/IMViewer/ --recursive --acl public-read
+aws s3 cp badges s3://endeavour-codebuild-output/badges/${artifact}/ --recursive --acl public-read --region eu-west-2
 
 # Build
 { #try
@@ -41,7 +47,7 @@ curl -s "https://img.shields.io/badge/Version-$version-$badge_colour.svg" > badg
 
 # Unit tests
 { #try
-    gradle check &&
+    ./gradlew check &&
     testresult=0
 } || { #catch
     testresult=1
@@ -59,6 +65,6 @@ echo "Generating badge 'https://img.shields.io/badge/Unit_Tests-$badge_status-$b
 curl -s "https://img.shields.io/badge/Unit_Tests-$badge_status-$badge_colour.svg" > badges/unit-test.svg
 
 # Sync with S3
-aws s3 cp badges s3://endeavour-codebuild-output/badges/IMViewer/ --recursive --acl public-read
+aws s3 cp badges s3://endeavour-codebuild-output/badges/${artifact}/ --recursive --acl public-read --region eu-west-2
 
 exit ${buildresult}
