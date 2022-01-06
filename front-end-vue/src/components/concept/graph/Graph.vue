@@ -1,6 +1,6 @@
 <template>
   <div class="p-fluid">
-    <MultiSelect v-model="selectedPredicates" :options="predicates" placeholder="Select predicates" />
+    <MultiSelect v-model="selectedPredicates" @change="updatePredicates" :options="predicateOptions" placeholder="Select predicates" />
   </div>
   <div class="loading-container" v-if="loading">
     <ProgressSpinner />
@@ -14,6 +14,7 @@ import { translateFromEntityBundle } from "../../../helpers/GraphTranslator";
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
 import GraphComponent from "./GraphComponent.vue";
+import { PartialBundle } from "@/models/entityServiceTypes/EntityServiceTypes";
 
 export default defineComponent({
   name: "Graph",
@@ -33,18 +34,37 @@ export default defineComponent({
       loading: false,
       data: {} as TTGraphData,
       selectedPredicates: [] as string[],
-      predicates: [] as string[]
+      predicateOptions: [] as string[],
+      bundle: {} as PartialBundle,
+      defaultPredicates: [] as string[]
     };
   },
   async mounted() {
+    await this.getDefaultPredicates();
     await this.getEntityBundle(this.conceptIri);
   },
   methods: {
+    async updatePredicates() {
+      this.data = translateFromEntityBundle(this.bundle, this.selectedPredicates);
+    },
+    async getDefaultPredicates() {
+      this.defaultPredicates = [
+        "http://endhealth.info/im#isContainedIn",
+        "http://www.w3.org/ns/shacl#property",
+        "http://endhealth.info/im#code",
+        "http://endhealth.info/im#groupNumber",
+        "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+        "http://endhealth.info/im#hasTermCode",
+        "http://endhealth.info/im#hasMap",
+        "http://endhealth.info/im#roleGroup"
+      ];
+    },
     async getEntityBundle(iri: string) {
       this.loading = true;
-      const bundle = await EntityService.getPartialEntityBundle(iri, []);
-      this.predicates = Object.keys(bundle.predicates);
-      this.data = translateFromEntityBundle(bundle);
+      this.bundle = await EntityService.getPartialEntityBundle(iri, []);
+      this.predicateOptions = Object.keys(this.bundle.entity).filter(value => value !== "@id");
+      this.selectedPredicates = this.defaultPredicates.filter(value => this.predicateOptions.includes(value));
+      this.data = translateFromEntityBundle(this.bundle, this.selectedPredicates);
       this.loading = false;
     }
   }

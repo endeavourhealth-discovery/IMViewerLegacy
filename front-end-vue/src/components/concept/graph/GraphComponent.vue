@@ -255,7 +255,7 @@ export default defineComponent({
       } else {
         if (node.iri) {
           const bundle = await EntityService.getPartialEntityBundle(node.iri, []);
-          const data = translateFromEntityBundle(bundle);
+          const data = translateFromEntityBundle(bundle, []);
           if (isArrayHasLength(data.children)) {
             data.children.forEach(child => {
               node._children.push(child);
