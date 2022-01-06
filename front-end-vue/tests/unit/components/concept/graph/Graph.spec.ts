@@ -2,7 +2,9 @@ import Graph from "@/components/concept/graph/Graph.vue";
 import EntityService from "@/services/EntityService";
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import ProgressSpinner from "primevue/progressspinner";
+import MultiSelect from "primevue/multiselect";
 import * as GraphTranslator from "@/helpers/GraphTranslator";
+import ConfigService from "@/services/ConfigService";
 
 describe("Graph.vue", () => {
   let wrapper: any;
@@ -31,6 +33,22 @@ describe("Graph.vue", () => {
 
   beforeEach(async () => {
     jest.resetAllMocks();
+
+    ConfigService.getGraphExcludePredicates = jest
+      .fn()
+      .mockResolvedValue([
+        "http://endhealth.info/im#matchedTo",
+        "http://www.w3.org/2000/01/rdf-schema#label",
+        "http://endhealth.info/im#status",
+        "http://endhealth.info/im#Status",
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        "http://www.w3.org/2000/01/rdf-schema#comment",
+        "http://endhealth.info/im#isChildOf",
+        "http://endhealth.info/im#hasChildren",
+        "http://endhealth.info/im#definition",
+        "http://endhealth.info/im#usageStats",
+        "http://endhealth.info/im#isA"
+      ]);
 
     EntityService.getPartialEntityBundle = jest.fn().mockResolvedValue({
       entity: {
@@ -166,7 +184,7 @@ describe("Graph.vue", () => {
     translatorSpy = jest.spyOn(GraphTranslator, "translateFromEntityBundle").mockReturnValue(TRANSLATED);
 
     wrapper = shallowMount(Graph, {
-      global: { components: { ProgressSpinner } },
+      global: { components: { ProgressSpinner, MultiSelect } },
       props: { conceptIri: "http://snomed.info/sct#298382003" }
     });
 
