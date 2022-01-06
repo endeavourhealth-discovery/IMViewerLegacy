@@ -13,7 +13,7 @@ phases:
   build:
     commands:
       - chmod +x aws_scripts/build.sh
-      - aws_scripts/build.sh
+      - aws_scripts/build.sh ./gradlew assemble
   post_build:
     commands:
       - IP=$(curl http://checkip.amazonaws.com)/32
