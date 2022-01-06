@@ -183,10 +183,15 @@ describe("Graph.vue", () => {
 
     translatorSpy = jest.spyOn(GraphTranslator, "translateFromEntityBundle").mockReturnValue(TRANSLATED);
 
+    const warn = console.warn;
+    console.warn = jest.fn();
+
     wrapper = shallowMount(Graph, {
       global: { components: { ProgressSpinner, MultiSelect } },
       props: { conceptIri: "http://snomed.info/sct#298382003" }
     });
+
+    console.warn = warn;
 
     await flushPromises();
     await wrapper.vm.$nextTick();
