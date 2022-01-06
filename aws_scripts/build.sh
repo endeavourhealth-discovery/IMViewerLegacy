@@ -1,5 +1,7 @@
 #!/bin/bash
 
+chmod +x ./gradlew
+
 mkdir badges
 
 # Update badges pre-build
@@ -39,7 +41,7 @@ curl -s "https://img.shields.io/badge/Version-$version-$badge_colour.svg" > badg
 
 # Unit tests
 { #try
-    gradle check
+    gradle check &&
     testresult=0
 } || { #catch
     testresult=1
