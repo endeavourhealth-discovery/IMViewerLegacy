@@ -3,7 +3,6 @@ out
 .metadata
 .gradle
 .vscode
-gradle
 target
 *.iml
 *.settings

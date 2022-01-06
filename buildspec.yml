@@ -10,12 +10,10 @@ phases:
     commands:
       - IP=$(curl http://checkip.amazonaws.com)/32
       - echo $IP of CodeBuild Instance
-      - wget https://services.gradle.org/distributions/gradle-6.7.1-bin.zip -P /tmp
-      - unzip -d /opt/gradle /tmp/gradle-6.7.1-bin.zip
-      - ln -s /opt/gradle/gradle-${VERSION}/bin/gradle /usr/bin/gradle
   build:
     commands:
       - chmod +x aws_scripts/build.sh
+      - chmod +x ./gradlew
       - aws_scripts/build.sh assemble
   post_build:
     commands:
