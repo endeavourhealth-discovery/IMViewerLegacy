@@ -15,6 +15,7 @@ import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
 import GraphComponent from "./GraphComponent.vue";
 import { PartialBundle } from "@/models/entityServiceTypes/EntityServiceTypes";
+import ConfigService from "@/services/ConfigService";
 
 export default defineComponent({
   name: "Graph",
@@ -36,7 +37,7 @@ export default defineComponent({
       selectedPredicates: [] as string[],
       predicateOptions: [] as string[],
       bundle: {} as PartialBundle,
-      defaultPredicates: [] as string[]
+      graphExcludePredicates: [] as string[]
     };
   },
   async mounted() {
@@ -48,22 +49,13 @@ export default defineComponent({
       this.data = translateFromEntityBundle(this.bundle, this.selectedPredicates);
     },
     async getDefaultPredicates() {
-      this.defaultPredicates = [
-        "http://endhealth.info/im#isContainedIn",
-        "http://www.w3.org/ns/shacl#property",
-        "http://endhealth.info/im#code",
-        "http://endhealth.info/im#groupNumber",
-        "http://www.w3.org/2000/01/rdf-schema#subClassOf",
-        "http://endhealth.info/im#hasTermCode",
-        "http://endhealth.info/im#hasMap",
-        "http://endhealth.info/im#roleGroup"
-      ];
+      this.graphExcludePredicates = await ConfigService.getGraphExcludePredicates();
     },
     async getEntityBundle(iri: string) {
       this.loading = true;
       this.bundle = await EntityService.getPartialEntityBundle(iri, []);
       this.predicateOptions = Object.keys(this.bundle.entity).filter(value => value !== "@id");
-      this.selectedPredicates = this.defaultPredicates.filter(value => this.predicateOptions.includes(value));
+      this.selectedPredicates = this.predicateOptions.filter(value => !this.graphExcludePredicates.includes(value));
       this.data = translateFromEntityBundle(this.bundle, this.selectedPredicates);
       this.loading = false;
     }
