@@ -17,7 +17,8 @@ aws s3 cp badges s3://endeavour-codebuild-output/badges/IMViewer/ --recursive --
 
 # Build
 { #try
-    gradle $* &&
+    gradle --status
+    gradle --stacktrace $* &&
     buildresult=0
 } || { #catch
     buildresult=1
@@ -39,7 +40,7 @@ curl -s "https://img.shields.io/badge/Version-$version-$badge_colour.svg" > badg
 
 # Unit tests
 { #try
-    ./gradlew check
+    gradle check
     testresult=0
 } || { #catch
     testresult=1
