@@ -17,7 +17,7 @@ aws s3 cp badges s3://endeavour-codebuild-output/badges/IMViewer/ --recursive --
 
 # Build
 { #try
-    ./gradlew $* &&
+    ./gradlew assemble
     buildresult=0
 } || { #catch
     buildresult=1
