@@ -2,6 +2,8 @@ import { flushPromises, shallowMount } from "@vue/test-utils";
 import Filters from "@/components/sidebar/Filters.vue";
 import MultiSelect from "primevue/multiselect";
 import InputSwitch from "primevue/inputswitch";
+import Tooltip from "primevue/tooltip";
+import Button from "primevue/button";
 
 describe("Filters.vue ___ empty store", () => {
   let wrapper: any;
@@ -182,7 +184,8 @@ describe("Filters.vue ___ empty store", () => {
     wrapper = shallowMount(Filters, {
       props: { search: jest.fn() },
       global: {
-        components: { MultiSelect, InputSwitch },
+        components: { MultiSelect, InputSwitch, Button },
+        directives: { Tooltip: Tooltip },
         mocks: { $store: mockStore, $toast: mockToast }
       }
     });
@@ -848,7 +851,8 @@ describe("Filters.vue ___ full store", () => {
     wrapper = shallowMount(Filters, {
       props: { search: jest.fn() },
       global: {
-        components: { MultiSelect, InputSwitch },
+        components: { MultiSelect, InputSwitch, Button },
+        directives: { Tooltip: Tooltip },
         mocks: { $store: mockStore, $toast: mockToast }
       }
     });
@@ -1044,7 +1048,8 @@ describe("Filters.vue ___ no emis in options", () => {
     wrapper = shallowMount(Filters, {
       props: { search: jest.fn() },
       global: {
-        components: { MultiSelect, InputSwitch },
+        components: { MultiSelect, InputSwitch, Button },
+        directives: { Tooltip: Tooltip },
         mocks: { $store: mockStore, $toast: mockToast }
       }
     });

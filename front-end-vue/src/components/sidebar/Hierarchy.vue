@@ -389,7 +389,7 @@ export default defineComponent({
 
 <style scoped>
 #hierarchy-tree-bar-container {
-  height: calc(100% - 7.75rem);
+  height: calc(100% - 5.25rem);
 }
 
 .p-tree .p-tree-container .p-treenode .p-treenode-content {
