@@ -1,6 +1,7 @@
 import HierarchyFilter from "@/components/sidebar/HierarchyFilter.vue";
 import Button from "primevue/button";
 import MultiSelect from "primevue/multiselect";
+import Tooltip from "primevue/tooltip";
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import EntityService from "@/services/EntityService";
 import ConfigService from "@/services/ConfigService";
@@ -46,7 +47,7 @@ describe("HierarchyFilter.vue ___ empty store", () => {
     const warn = console.warn;
     console.warn = jest.fn();
 
-    wrapper = shallowMount(HierarchyFilter, { global: { components: { Button, MultiSelect }, mocks: { $store: mockStore } } });
+    wrapper = shallowMount(HierarchyFilter, { global: { components: { Button, MultiSelect }, directives: { Tooltip: Tooltip }, mocks: { $store: mockStore } } });
 
     console.warn = warn;
     await flushPromises();
@@ -121,8 +122,8 @@ describe("HierarchyFilter.vue ___ full store", () => {
     const warn = console.warn;
     console.warn = jest.fn();
 
-    wrapper = shallowMount(HierarchyFilter, { global: { components: { Button, MultiSelect }, mocks: { $store: mockStore } } });
-
+    wrapper = shallowMount(HierarchyFilter, { global: { components: { Button, MultiSelect }, directives: { Tooltip: Tooltip }, mocks: { $store: mockStore } } });
+    
     console.warn = warn;
     await flushPromises();
     await wrapper.vm.$nextTick();
