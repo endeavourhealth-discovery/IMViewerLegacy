@@ -10,11 +10,11 @@ import LoggerService from "@/services/LoggerService";
 import Menu from "primevue/menu";
 
 describe("Members.vue", () => {
-  let wrapper: any;
-  let mockRouter: any;
-  let mockToast: any;
-  let mockRef: any;
-  let docSpy: any;
+  let wrapper;
+  let mockRouter;
+  let mockToast;
+  let mockRef;
+  let docSpy;
   let testMembers = {
     valueSet: {
       name: "CEG 16+1 Ethnic category (concept set)",
@@ -112,6 +112,8 @@ describe("Members.vue", () => {
     jest.resetAllMocks();
 
     EntityService.getEntityMembers = jest.fn().mockResolvedValue(testMembers);
+    EntityService.getFullExportSet = jest.fn().mockResolvedValue({ data: true });
+    EntityService.download = jest.fn().mockResolvedValue(true);
     mockRouter = { push: jest.fn() };
     mockToast = { add: jest.fn() };
     mockRef = { render: () => {}, methods: { toggle: jest.fn() } };
@@ -258,34 +260,46 @@ describe("Members.vue", () => {
     expect(wrapper.vm.subsets).toStrictEqual(['Subset - "other Black, African or Caribbean background"', "Subset - African"]);
   });
 
-  it("can download ___ success", () => {
-    const openStore = window.open;
-    window.open = jest.fn().mockReturnValue(true);
+  it("can download ___ success ___ expanded", async () => {
+    wrapper.vm.downloadFile = jest.fn();
     wrapper.vm.download(true);
+    expect(wrapper.vm.downloading).toBe(true);
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Download will begin shortly"));
-    window.open = openStore;
+    await flushPromises();
+    expect(EntityService.getFullExportSet).toHaveBeenCalledTimes(1);
+    expect(EntityService.getFullExportSet).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16");
+    expect(wrapper.vm.downloadFile).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.downloadFile).toHaveBeenCalledWith(true);
+    expect(wrapper.vm.downloading).toBe(false);
   });
 
-  it("can download ___ success ___ v1", () => {
-    const openStore = window.open;
-    window.open = jest.fn().mockReturnValue(true);
-    wrapper.vm.download(true, true);
+  it("can download ___ success ___ not expanded", async () => {
+    wrapper.vm.downloadFile = jest.fn();
+    wrapper.vm.download(false, true);
+    expect(wrapper.vm.downloading).toBe(true);
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Download will begin shortly"));
-    window.open = openStore;
+    await flushPromises();
+    expect(EntityService.download).toHaveBeenCalledTimes(1);
+    expect(EntityService.download).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16", false, true);
+    expect(wrapper.vm.downloadFile).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.downloadFile).toHaveBeenCalledWith(true);
+    expect(wrapper.vm.downloading).toBe(false);
   });
 
-  it("can download ___ fail", () => {
-    const openStore = window.open;
-    EntityService.download = jest.fn().mockImplementation(() => {
-      throw new Error();
-    });
-    wrapper.vm.download();
-
-    expect(mockToast.add).toHaveBeenCalledTimes(2);
-    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.error("Download failed from server"));
-    window.open = openStore;
+  it("can download ___ fail", async () => {
+    wrapper.vm.downloadFile = jest.fn();
+    EntityService.download = jest.fn().mockRejectedValue(false);
+    wrapper.vm.download(false);
+    expect(wrapper.vm.downloading).toBe(true);
+    expect(mockToast.add).toHaveBeenCalledTimes(1);
+    expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Download will begin shortly"));
+    await flushPromises();
+    expect(EntityService.download).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.downloadFile).not.toHaveBeenCalled();
+    expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Download failed from server"));
+    expect(wrapper.vm.downloading).toBe(false);
   });
 
   it("can sort members ___ correct data", () => {
@@ -391,3 +405,132 @@ describe("Members.vue", () => {
     expect(mockRef.methods.toggle).toHaveBeenCalledWith("testEvent");
   });
 });
+
+// describe("Members.vue", () => {
+//   let wrapper;
+//   let mockRouter;
+//   let mockToast;
+//   let mockRef;
+//   let docSpy;
+//   let mockElement;
+//   let createSpy;
+//   let testMembers = {
+//     valueSet: {
+//       name: "CEG 16+1 Ethnic category (concept set)",
+//       "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16"
+//     },
+//     members: [
+//       {
+//         entity: { name: "African American (ethnic group)", "@id": "http://snomed.info/sct#15086000" },
+//         code: "15086000",
+//         scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+//         label: 'Subset - "other Black, African or Caribbean background"',
+//         type: "SUBSET",
+//         directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
+//       },
+//       {
+//         entity: { name: "African race (racial group)", "@id": "http://snomed.info/sct#413464008" },
+//         code: "413464008",
+//         scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+//         label: 'Subset - "other Black, African or Caribbean background"',
+//         type: "SUBSET",
+//         directParent: { name: '"other Black, African or Caribbean background"', "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_P" }
+//       },
+//       {
+//         entity: { name: "Abyssinians (Amharas) (ethnic group)", "@id": "http://snomed.info/sct#88790004" },
+//         code: "88790004",
+//         scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+//         label: "Subset - African",
+//         type: "SUBSET",
+//         directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+//       },
+//       {
+//         entity: { name: "African - ethnic category 2001 census (finding)", "@id": "http://snomed.info/sct#92491000000104" },
+//         code: "92491000000104",
+//         scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+//         label: "Subset - African",
+//         type: "SUBSET",
+//         directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+//       },
+//       {
+//         entity: { name: "African origin (finding)", "@id": "http://snomed.info/sct#160514004" },
+//         code: "160514004",
+//         scheme: { name: "Snomed-CT namespace", "@id": "http://snomed.info/sct#" },
+//         label: "Subset - African",
+//         type: "SUBSET",
+//         directParent: { name: "African", "@id": "http://endhealth.info/im#VSET_EthnicCategoryCEG16_N" }
+//       }
+//     ],
+//     limited: false
+//   };
+
+//   beforeEach(async () => {
+//     jest.resetAllMocks();
+
+//     EntityService.getEntityMembers = jest.fn().mockResolvedValue(testMembers);
+//     EntityService.getFullExportSet = jest.fn().mockResolvedValue({ data: true });
+//     EntityService.download = jest.fn().mockResolvedValue(true);
+//     mockRouter = { push: jest.fn() };
+//     mockToast = { add: jest.fn() };
+//     mockRef = { render: () => {}, methods: { toggle: jest.fn() } };
+
+//     docSpy = jest.spyOn(document, "getElementById");
+//     docSpy.mockReturnValue(undefined);
+
+//     // const warn = console.warn;
+//     // console.warn = jest.fn();
+
+//     // const error = console.error;
+//     // console.error = jest.fn();
+
+//     wrapper = shallowMount(Members, {
+//       global: {
+//         components: { DataTable, InputText, Checkbox, Column, Button, Menu },
+//         mocks: { $router: mockRouter, $toast: mockToast },
+//         stubs: { DataTable: DataTable, Menu: mockRef }
+//       },
+//       props: { conceptIri: "http://endhealth.info/im#VSET_EthnicCategoryCEG16" }
+//     });
+
+//     await flushPromises();
+//     await wrapper.vm.$nextTick();
+//     jest.clearAllMocks();
+
+//     // console.warn = warn;
+//     // console.error = error;
+//   });
+
+//   it("can downloadFile", async () => {
+//     window.URL.createObjectURL = jest.fn();
+//     class Link {
+//       name = "";
+//       _download = "";
+//       _href = "";
+//       constructor(name) {
+//         this.name = name;
+//       }
+//       get href() {
+//         return this._href;
+//       }
+//       set href(url) {
+//         this._href = url;
+//       }
+//       get download() {
+//         return this._download;
+//       }
+//       set download(type) {
+//         return this._download;
+//       }
+//       click() {
+//         return jest.fn();
+//       }
+//     }
+//     const link = new Link("mockLink");
+//     jest.spyOn(document, "createElement").mockReturnValueOnce(link);
+//     wrapper.vm.downloadFile("testData");
+//     await wrapper.vm.$nextTick();
+//     await flushPromises();
+//     expect(link.download).toBe("export.xlsx");
+//     expect(link.click()).toHaveBeenCalledTimes(1);
+//   });
+// });
