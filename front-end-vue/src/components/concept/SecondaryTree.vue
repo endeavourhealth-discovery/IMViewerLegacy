@@ -102,6 +102,7 @@ import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { TTIriRef } from "@/models/TripleTree";
 import { ConceptAggregate } from "@/models/ConceptAggregate";
 import { isArrayHasLength, isObject, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { byLabel, byName } from "@/helpers/Sorters";
 
 export default defineComponent({
   name: "SecondaryTree",
@@ -159,7 +160,7 @@ export default defineComponent({
       children.forEach((child: EntityReferenceNode) => {
         selectedConcept.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
       });
-      selectedConcept.children.sort(this.treeNodeAlphabetically);
+      selectedConcept.children.sort(byLabel);
       this.root = [] as TreeNode[];
       this.setParents(parentHierarchy, parentPosition);
       this.root.push(selectedConcept);
@@ -168,22 +169,6 @@ export default defineComponent({
       }
       this.selectedKey[selectedConcept.key] = true;
       this.loading = false;
-    },
-
-    treeNodeAlphabetically(a: TreeNode, b: TreeNode): number {
-      if (a.label < b.label) {
-        return -1;
-      } else if (a.label > b.label) {
-        return 1;
-      } else {
-        return 0;
-      }
-    },
-
-    entityReferenceNodeAlphabetically(a: EntityReferenceNode, b: EntityReferenceNode): number {
-      if (a.name < b.name) return -1;
-      else if (a.name > b.name) return 1;
-      else return 0;
     },
 
     setParents(parentHierarchy: EntityReferenceNode[], parentPosition: number): void {
@@ -242,7 +227,7 @@ export default defineComponent({
           node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
         }
       });
-      node.children.sort(this.treeNodeAlphabetically);
+      node.children.sort(byLabel);
       node.loading = false;
     },
 
@@ -278,7 +263,7 @@ export default defineComponent({
           }
         }
       }
-      parentNode.children.sort(this.treeNodeAlphabetically);
+      parentNode.children.sort(byLabel);
       return parentNode;
     },
 
@@ -287,7 +272,7 @@ export default defineComponent({
       this.currentParent = null;
       this.alternateParents = [] as TreeParent[];
       if (!isArrayHasLength(result)) return;
-      result.sort(this.entityReferenceNodeAlphabetically);
+      result.sort(byName);
       if (result.length === 1) {
         this.parentPosition = 0;
         this.currentParent = {

@@ -25,6 +25,7 @@ import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponen
 import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
 import { ComponentDetails } from "@/models/ecl/ComponentDetails";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { byPosition } from "@/helpers/Sorters";
 
 export default defineComponent({
   name: "Refinement",
@@ -48,7 +49,7 @@ export default defineComponent({
   watch: {
     refinementBuild: {
       handler(): void {
-        this.refinementBuild.sort((a: ComponentDetails, b: ComponentDetails) => a.position - b.position);
+        this.refinementBuild.sort(byPosition);
         this.$emit("updateClicked", this.createRefinement());
       },
       deep: true
