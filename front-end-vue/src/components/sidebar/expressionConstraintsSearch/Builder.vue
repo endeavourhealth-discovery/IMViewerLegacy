@@ -65,6 +65,7 @@ import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponen
 import LoggerService from "@/services/LoggerService";
 import { ComponentDetails } from "@/models/ecl/ComponentDetails";
 import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
+import { byPosition } from "@/helpers/Sorters";
 
 export default defineComponent({
   name: "Builder",
@@ -82,7 +83,7 @@ export default defineComponent({
   watch: {
     queryBuild: {
       handler() {
-        this.queryBuild.sort((a: ComponentDetails, b: ComponentDetails) => a.position - b.position);
+        this.queryBuild.sort(byPosition);
         this.generateQueryString();
       },
       deep: true

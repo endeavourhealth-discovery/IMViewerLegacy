@@ -107,6 +107,7 @@ import { isArrayHasLength, isObject } from "@/helpers/DataTypeCheckers";
 import { Namespace } from "@/models/Namespace";
 import { FiltersAsIris } from "@/models/FiltersAsIris";
 import { ConceptSummary } from "@/models/search/ConceptSummary";
+import { byLabel, byName } from "@/helpers/Sorters";
 
 export default defineComponent({
   name: "Hierarchy",
@@ -225,6 +226,8 @@ export default defineComponent({
       children.forEach((child: EntityReferenceNode) => {
         selectedConcept.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
       });
+      selectedConcept.children.sort(byLabel);
+      parentHierarchy.sort(byName);
       this.root = [] as TreeNode[];
 
       this.parentLabel = isArrayHasLength(parentHierarchy) ? parentHierarchy[0].name : "";
@@ -270,6 +273,7 @@ export default defineComponent({
       children.forEach((child: EntityReferenceNode) => {
         node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
       });
+      node.children.sort(byLabel);
       node.loading = false;
     },
 
@@ -324,6 +328,8 @@ export default defineComponent({
           parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, true));
         });
 
+        parentsNodes.sort(byLabel);
+
         if (selected.key !== nodeToExpand.key && !this.nodeIsChildOf(selected, nodeToExpand)) {
           nodeToExpand.children.push(selected);
         }
@@ -339,6 +345,7 @@ export default defineComponent({
 
     async getFirstParent(node: TreeNode): Promise<void> {
       const parentsReturn = await EntityService.getEntityParents(node.data, this.filters);
+      parentsReturn.sort(byName);
       this.parentLabel = parentsReturn[0] ? parentsReturn[0].name : "";
     },
 

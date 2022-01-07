@@ -5,7 +5,7 @@
         v-for="altParent in alternateParents"
         :key="altParent.iri"
         :label="altParent.name"
-        :disabled="altParent.name === ''"
+        :disabled="loading || altParent.name === ''"
         icon="pi pi-chevron-up"
         @click="expandParents(altParent.listPosition)"
         @mouseenter="showPopup($event, altParent.iri)"
@@ -16,7 +16,7 @@
     <div class="p-d-flex p-flex-row p-jc-start" id="secondary-tree-parents-bar">
       <Button
         :label="currentParent?.name"
-        :disabled="!currentParent"
+        :disabled="loading || !currentParent"
         icon="pi pi-chevron-up"
         @click="expandParents(parentPosition)"
         @mouseenter="showPopup($event, currentParent?.iri)"
@@ -32,6 +32,7 @@
       @node-select="onNodeSelect"
       @node-expand="expandChildren"
       class="tree-root"
+      :loading="loading"
     >
       <template #default="slotProps">
         <div
@@ -101,6 +102,7 @@ import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { TTIriRef } from "@/models/TripleTree";
 import { ConceptAggregate } from "@/models/ConceptAggregate";
 import { isArrayHasLength, isObject, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { byLabel, byName } from "@/helpers/Sorters";
 
 export default defineComponent({
   name: "SecondaryTree",
@@ -112,6 +114,10 @@ export default defineComponent({
       this.expandedKeys = {};
       await this.getConceptAggregate(newValue);
       await this.createTree(this.conceptAggregate.concept, this.conceptAggregate.parents, this.conceptAggregate.children, this.parentPosition);
+    },
+
+    loading(newValue) {
+      if (newValue) this.hidePopup(this.overlayLocation);
     }
   },
   data() {
@@ -124,7 +130,8 @@ export default defineComponent({
       alternateParents: [] as TreeParent[],
       parentPosition: 0,
       hoveredResult: {} as ConceptSummary | any,
-      overlayLocation: {} as any
+      overlayLocation: {} as any,
+      loading: false
     };
   },
   async mounted() {
@@ -138,18 +145,22 @@ export default defineComponent({
   },
   methods: {
     async getConceptAggregate(iri: string): Promise<void> {
+      this.loading = true;
       this.conceptAggregate.concept = await EntityService.getPartialEntity(iri, [RDF.TYPE, RDFS.LABEL]);
 
       this.conceptAggregate.parents = await EntityService.getEntityParents(iri);
 
       this.conceptAggregate.children = await EntityService.getEntityChildren(iri);
+      this.loading = false;
     },
 
     async createTree(concept: any, parentHierarchy: EntityReferenceNode[], children: EntityReferenceNode[], parentPosition: number): Promise<void> {
+      this.loading = true;
       const selectedConcept = this.createTreeNode(concept[RDFS.LABEL], concept[IM.IRI], concept[RDF.TYPE], concept.hasChildren);
       children.forEach((child: EntityReferenceNode) => {
         selectedConcept.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
       });
+      selectedConcept.children.sort(byLabel);
       this.root = [] as TreeNode[];
       this.setParents(parentHierarchy, parentPosition);
       this.root.push(selectedConcept);
@@ -157,6 +168,7 @@ export default defineComponent({
         this.expandedKeys[selectedConcept.key] = true;
       }
       this.selectedKey[selectedConcept.key] = true;
+      this.loading = false;
     },
 
     setParents(parentHierarchy: EntityReferenceNode[], parentPosition: number): void {
@@ -215,6 +227,7 @@ export default defineComponent({
           node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
         }
       });
+      node.children.sort(byLabel);
       node.loading = false;
     },
 
@@ -223,6 +236,7 @@ export default defineComponent({
     },
 
     async expandParents(parentPosition: number): Promise<void> {
+      this.loading = true;
       if (!isArrayHasLength(this.root)) return;
       if (!isObjectHasKeys(this.expandedKeys, [this.root[0].key])) {
         this.expandedKeys[this.root[0].key] = true;
@@ -235,6 +249,7 @@ export default defineComponent({
       await this.setExpandedParentParents();
       // this refreshes the keys so they start open if children and parents were both expanded
       this.expandedKeys = { ...this.expandedKeys };
+      this.loading = false;
     },
 
     createExpandedParentTree(parents: any, parentPosition: number): TreeNode {
@@ -248,6 +263,7 @@ export default defineComponent({
           }
         }
       }
+      parentNode.children.sort(byLabel);
       return parentNode;
     },
 
@@ -256,6 +272,7 @@ export default defineComponent({
       this.currentParent = null;
       this.alternateParents = [] as TreeParent[];
       if (!isArrayHasLength(result)) return;
+      result.sort(byName);
       if (result.length === 1) {
         this.parentPosition = 0;
         this.currentParent = {

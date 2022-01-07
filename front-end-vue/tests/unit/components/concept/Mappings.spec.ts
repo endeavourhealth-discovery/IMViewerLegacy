@@ -452,30 +452,6 @@ describe("Mappings.vue", () => {
     ]);
   });
 
-  it("can get bypriority ___ 1", () => {
-    expect(wrapper.vm.byPriority({ priority: 9 }, { priority: 7 })).toBe(1);
-  });
-
-  it("can get bypriority ___ -1", () => {
-    expect(wrapper.vm.byPriority({ priority: 7 }, { priority: 10 })).toBe(-1);
-  });
-
-  it("can get bypriority ___ 0", () => {
-    expect(wrapper.vm.byPriority({ priority: 2 }, { priority: 2 })).toBe(0);
-  });
-
-  it("can get byScheme ___ 1", () => {
-    expect(wrapper.vm.byScheme({ scheme: 9 }, { scheme: 7 })).toBe(1);
-  });
-
-  it("can get byScheme ___ -1", () => {
-    expect(wrapper.vm.byScheme({ scheme: 7 }, { scheme: 10 })).toBe(-1);
-  });
-
-  it("can get byScheme ___ 0", () => {
-    expect(wrapper.vm.byScheme({ scheme: 2 }, { scheme: 2 })).toBe(0);
-  });
-
   it("can toggle", () => {
     wrapper.vm.toggle(
       "testEvent",

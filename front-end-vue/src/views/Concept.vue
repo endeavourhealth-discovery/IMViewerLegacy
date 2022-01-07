@@ -132,6 +132,7 @@ import { TTIriRef } from "@/models/TripleTree";
 import { copyConceptToClipboard, conceptObjectToCopyString } from "@/helpers/CopyConceptToClipboard";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
+import { byOrder } from "@/helpers/Sorters";
 
 export default defineComponent({
   name: "Concept",
@@ -305,9 +306,7 @@ export default defineComponent({
     async getConfig(name: string): Promise<void> {
       this.configs = await ConfigService.getComponentLayout(name);
       if (this.configs.every(config => isObjectHasKeys(config, ["order"]))) {
-        this.configs.sort((a: DefinitionConfig, b: DefinitionConfig) => {
-          return a.order - b.order;
-        });
+        this.configs.sort(byOrder);
       } else {
         LoggerService.error(undefined, "Failed to sort config for definition component layout. One or more config items are missing 'order' property.");
       }
