@@ -225,6 +225,8 @@ export default defineComponent({
       children.forEach((child: EntityReferenceNode) => {
         selectedConcept.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
       });
+      selectedConcept.children.sort(this.treeNodeAlphabetically);
+      parentHierarchy.sort(this.entityReferenceNodeAlphabetically);
       this.root = [] as TreeNode[];
 
       this.parentLabel = isArrayHasLength(parentHierarchy) ? parentHierarchy[0].name : "";
@@ -270,7 +272,24 @@ export default defineComponent({
       children.forEach((child: EntityReferenceNode) => {
         node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
       });
+      node.children.sort(this.treeNodeAlphabetically);
       node.loading = false;
+    },
+
+    treeNodeAlphabetically(a: TreeNode, b: TreeNode): number {
+      if (a.label < b.label) {
+        return -1;
+      } else if (a.label > b.label) {
+        return 1;
+      } else {
+        return 0;
+      }
+    },
+
+    entityReferenceNodeAlphabetically(a: EntityReferenceNode, b: EntityReferenceNode): number {
+      if (a.name < b.name) return -1;
+      else if (a.name > b.name) return 1;
+      else return 0;
     },
 
     resetExpandedKeys(nodes: TreeNode[]) {
@@ -324,6 +343,8 @@ export default defineComponent({
           parentsNodes.push(this.createTreeNode(parent.name, parent["@id"], parent.type, true));
         });
 
+        parentsNodes.sort(this.treeNodeAlphabetically);
+
         if (selected.key !== nodeToExpand.key && !this.nodeIsChildOf(selected, nodeToExpand)) {
           nodeToExpand.children.push(selected);
         }
@@ -339,6 +360,7 @@ export default defineComponent({
 
     async getFirstParent(node: TreeNode): Promise<void> {
       const parentsReturn = await EntityService.getEntityParents(node.data, this.filters);
+      parentsReturn.sort(this.entityReferenceNodeAlphabetically);
       this.parentLabel = parentsReturn[0] ? parentsReturn[0].name : "";
     },
 
