@@ -6,6 +6,7 @@ import Checkbox from "primevue/checkbox";
 import Column from "primevue/column";
 import Button from "primevue/button";
 import EntityService from "@/services/EntityService";
+import SetService from "@/services/SetService";
 import LoggerService from "@/services/LoggerService";
 import Menu from "primevue/menu";
 
@@ -113,7 +114,7 @@ describe("Members.vue", () => {
 
     EntityService.getEntityMembers = jest.fn().mockResolvedValue(testMembers);
     EntityService.getFullExportSet = jest.fn().mockResolvedValue({ data: true });
-    EntityService.download = jest.fn().mockResolvedValue(true);
+    SetService.download = jest.fn().mockResolvedValue(true);
     mockRouter = { push: jest.fn() };
     mockToast = { add: jest.fn() };
     mockRef = { render: () => {}, methods: { toggle: jest.fn() } };
@@ -281,8 +282,8 @@ describe("Members.vue", () => {
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Download will begin shortly"));
     await flushPromises();
-    expect(EntityService.download).toHaveBeenCalledTimes(1);
-    expect(EntityService.download).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16", false, true);
+    expect(SetService.download).toHaveBeenCalledTimes(1);
+    expect(SetService.download).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16", false, true);
     expect(wrapper.vm.downloadFile).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.downloadFile).toHaveBeenCalledWith(true);
     expect(wrapper.vm.downloading).toBe(false);
@@ -290,13 +291,13 @@ describe("Members.vue", () => {
 
   it("can download ___ fail", async () => {
     wrapper.vm.downloadFile = jest.fn();
-    EntityService.download = jest.fn().mockRejectedValue(false);
+    SetService.download = jest.fn().mockRejectedValue(false);
     wrapper.vm.download(false);
     expect(wrapper.vm.downloading).toBe(true);
     expect(mockToast.add).toHaveBeenCalledTimes(1);
     expect(mockToast.add).toHaveBeenCalledWith(LoggerService.success("Download will begin shortly"));
     await flushPromises();
-    expect(EntityService.download).toHaveBeenCalledTimes(1);
+    expect(SetService.download).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.downloadFile).not.toHaveBeenCalled();
     expect(mockToast.add).toHaveBeenLastCalledWith(LoggerService.error("Download failed from server"));
     expect(wrapper.vm.downloading).toBe(false);
@@ -469,7 +470,7 @@ describe("Members.vue", () => {
 
 //     EntityService.getEntityMembers = jest.fn().mockResolvedValue(testMembers);
 //     EntityService.getFullExportSet = jest.fn().mockResolvedValue({ data: true });
-//     EntityService.download = jest.fn().mockResolvedValue(true);
+//     SetService.download = jest.fn().mockResolvedValue(true);
 //     mockRouter = { push: jest.fn() };
 //     mockToast = { add: jest.fn() };
 //     mockRef = { render: () => {}, methods: { toggle: jest.fn() } };

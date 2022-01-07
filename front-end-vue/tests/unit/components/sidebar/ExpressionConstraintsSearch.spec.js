@@ -2,7 +2,7 @@ import ExpressionConstraintsSearch from "@/components/sidebar/ExpressionConstrai
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import Textarea from "primevue/textarea";
 import Button from "primevue/button";
-import EntityService from "@/services/EntityService";
+import SetService from "@/services/SetService";
 import axios from "axios";
 
 describe("ExpressionConstraintsSearch.vue", () => {
@@ -91,7 +91,7 @@ describe("ExpressionConstraintsSearch.vue", () => {
     mockStore = { state: { sidebarControlActivePanel: 0 } };
     mockToast = { add: jest.fn() };
 
-    EntityService.ECLSearch = jest.fn().mockResolvedValue(SEARCH_RESULTS);
+    SetService.ECLSearch = jest.fn().mockResolvedValue(SEARCH_RESULTS);
 
     windowSpy = jest.spyOn(window, "getComputedStyle");
     windowSpy.mockReturnValue({ getPropertyValue: jest.fn().mockReturnValue("16px") });
@@ -176,7 +176,7 @@ describe("ExpressionConstraintsSearch.vue", () => {
   it("can search ___ no querystring", async () => {
     wrapper.vm.search();
     await flushPromises();
-    expect(EntityService.ECLSearch).not.toHaveBeenCalled();
+    expect(SetService.ECLSearch).not.toHaveBeenCalled();
   });
 
   it("can search ___ querystring ___ success", async () => {
@@ -185,8 +185,8 @@ describe("ExpressionConstraintsSearch.vue", () => {
     wrapper.vm.search();
     expect(wrapper.vm.loading).toBe(true);
     await flushPromises();
-    expect(EntityService.ECLSearch).toHaveBeenCalledTimes(1);
-    expect(EntityService.ECLSearch).toHaveBeenCalledWith("<< 10363601000001109 |UK product| ", false, 1000, token);
+    expect(SetService.ECLSearch).toHaveBeenCalledTimes(1);
+    expect(SetService.ECLSearch).toHaveBeenCalledWith("<< 10363601000001109 |UK product| ", false, 1000, token);
     expect(wrapper.vm.loading).toBe(false);
     expect(wrapper.vm.searchResults).toStrictEqual(SEARCH_RESULTS.entities);
     expect(wrapper.vm.totalCount).toBe(3);
@@ -207,7 +207,7 @@ describe("ExpressionConstraintsSearch.vue", () => {
 
   it("can search ___ empty result", async () => {
     wrapper.vm.queryString = "sco";
-    EntityService.ECLSearch = jest.fn().mockResolvedValue({});
+    SetService.ECLSearch = jest.fn().mockResolvedValue({});
     wrapper.vm.search();
     await flushPromises();
     expect(wrapper.vm.eclError).toBe(true);
