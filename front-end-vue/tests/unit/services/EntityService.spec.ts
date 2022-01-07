@@ -105,6 +105,23 @@ describe("EntityService.ts ___ axios success", () => {
     axios.post = jest.fn().mockResolvedValue("axios post return");
   });
 
+  it("can downloadConcept", async () => {
+    const result = await EntityService.downloadConcept("testIri", "testFormat");
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(api + "api/entity/public/exportConcept", { params: { iri: "testIri", format: "testFormat" }, responseType: "blob" });
+    expect(result).toBe("axios get return");
+  });
+
+  it("can download", async () => {
+    const result = await EntityService.download("testIri", false, false);
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(api + "api/set/public/download", {
+      params: { iri: "testIri", expandMembers: false, v1: false, format: "excel" },
+      responseType: "blob"
+    });
+    expect(result).toBe("axios get return");
+  });
+
   it("can get partial entity", async () => {
     const result = await EntityService.getPartialEntity("testIri", ["pred_1", "pred_2", "pred_3"]);
     expect(axios.get).toHaveBeenCalledTimes(1);
@@ -238,7 +255,7 @@ describe("EntityService.ts ___ axios success", () => {
     expect(result).toBe("axios get return");
   });
 
-  it("can get get namespaces", async () => {
+  it("can get namespaces", async () => {
     const result = await EntityService.getNamespaces();
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(api + "api/entity/public/namespaces");
@@ -257,6 +274,14 @@ describe("EntityService.ts ___ axios success", () => {
     expect(result).toBe("axios post return");
   });
 
+  it("can getEcl", async () => {
+    const testBundle = { entity: "testEntity", predicates: "testPredicates" };
+    const result = await EntityService.getEcl(testBundle);
+    expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(axios.post).toHaveBeenCalledWith(api + "api/entity/public/ecl", testBundle);
+    expect(result).toBe("axios post return");
+  });
+
   it("can getSimpleMaps", async () => {
     const result = await EntityService.getSimpleMaps("testString");
     expect(axios.get).toHaveBeenCalledTimes(1);
@@ -272,6 +297,13 @@ describe("EntityService.ts ___ axios fail", () => {
     jest.resetAllMocks();
     axios.get = jest.fn().mockRejectedValue(false);
     axios.post = jest.fn().mockRejectedValue(false);
+  });
+
+  it("can downloadConcept", async () => {
+    const result = await EntityService.downloadConcept("testIri", "testFormat");
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(api + "api/entity/public/exportConcept", { params: { iri: "testIri", format: "testFormat" }, responseType: "blob" });
+    expect(result).toStrictEqual({});
   });
 
   it("can get partial entity", async () => {
@@ -424,6 +456,14 @@ describe("EntityService.ts ___ axios fail", () => {
       cancelToken: cancelToken
     });
     expect(result).toStrictEqual({});
+  });
+
+  it("can getEcl", async () => {
+    const testBundle = { entity: "testEntity", predicates: "testPredicates" };
+    const result = await EntityService.getEcl(testBundle);
+    expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(axios.post).toHaveBeenCalledWith(api + "api/entity/public/ecl", testBundle);
+    expect(result).toBe("");
   });
 
   it("can getSimpleMaps", async () => {

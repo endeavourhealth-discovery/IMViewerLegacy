@@ -491,7 +491,7 @@ describe("Expression.vue ___ value", () => {
     expect(wrapper.vm.request.cancel).toHaveBeenCalledWith({ status: 499, message: "Search cancelled by user" });
   });
 
-  it("can fetchSearchResults", async () => {
+  it("can fetchSearchResults ___ success", async () => {
     const axiosSource = axios.CancelToken.source();
     wrapper.vm.fetchSearchResults(
       {
@@ -567,6 +567,36 @@ describe("Expression.vue ___ value", () => {
         }
       }
     ]);
+  });
+
+  it("can fetchSearchResults ___ success", async () => {
+    EntityService.advancedSearch = jest.fn().mockResolvedValue({});
+    const axiosSource = axios.CancelToken.source();
+    wrapper.vm.fetchSearchResults(
+      {
+        descendentFilter: undefined,
+        markIfDescendentOf: undefined,
+        page: 1,
+        schemeFilter: ["http://endhealth.info/im#", "http://snomed.info/sct#"],
+        size: 100,
+        sortBy: 0,
+        statusFilter: ["http://endhealth.info/im#Active", "http://endhealth.info/im#Draft"],
+        termFilter: "sco",
+        typeFilter: [
+          "http://endhealth.info/im#Concept",
+          "http://endhealth.info/im#ConceptSet",
+          "http://endhealth.info/im#Folder",
+          "http://www.w3.org/ns/shacl#NodeShape",
+          "http://www.w3.org/2002/07/owl#ObjectProperty",
+          "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property",
+          "http://endhealth.info/im#QueryTemplate",
+          "http://endhealth.info/im#ValueSet"
+        ]
+      },
+      axiosSource.token
+    );
+    await flushPromises();
+    expect(wrapper.vm.searchResults).toStrictEqual([]);
   });
 
   it("can hideOverlay", () => {
