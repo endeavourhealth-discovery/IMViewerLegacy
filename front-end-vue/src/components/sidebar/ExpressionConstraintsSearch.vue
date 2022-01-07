@@ -41,6 +41,7 @@ import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
 import { mapState } from "vuex";
 import axios from "axios";
+import SetService from "@/services/SetService";
 
 export default defineComponent({
   name: "ExpressionConstraintsSearch",
@@ -99,7 +100,7 @@ export default defineComponent({
         }
         const axiosSource = axios.CancelToken.source();
         this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
-        const result = await EntityService.ECLSearch(this.queryString, false, 1000, axiosSource.token);
+        const result = await SetService.ECLSearch(this.queryString, false, 1000, axiosSource.token);
         if (isObjectHasKeys(result, ["entities", "count", "page"])) {
           this.searchResults = result.entities;
           this.totalCount = result.count;

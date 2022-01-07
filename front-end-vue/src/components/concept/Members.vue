@@ -62,6 +62,7 @@
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
+import SetService from "@/services/SetService";
 import LoggerService from "@/services/LoggerService";
 import { ValueSetMember } from "@/models/members/ValueSetMember";
 import { ExportValueSet } from "@/models/members/ExportValueSet";
@@ -142,7 +143,7 @@ export default defineComponent({
       this.downloading = true;
       try {
         this.$toast.add(LoggerService.success("Download will begin shortly"));
-        const result = expanded ? (await EntityService.getFullExportSet(this.conceptIri)).data : await EntityService.download(this.conceptIri, expanded, v1);
+        const result = expanded ? (await EntityService.getFullExportSet(this.conceptIri)).data : await SetService.download(this.conceptIri, expanded, v1);
         this.downloadFile(result);
       } catch (error) {
         this.$toast.add(LoggerService.error("Download failed from server"));
