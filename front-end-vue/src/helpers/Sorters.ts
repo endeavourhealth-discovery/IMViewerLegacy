@@ -1,5 +1,3 @@
-import { MapItem } from "@/models/mappings/MapItem";
-import { SimpleMapIri } from "@/models/mappings/SimpleMapIri";
 import { isObjectHasKeys } from "./DataTypeCheckers";
 
 export function byPriority(a: any, b: any): number {
