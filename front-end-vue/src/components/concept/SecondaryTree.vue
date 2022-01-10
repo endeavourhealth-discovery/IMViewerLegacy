@@ -160,7 +160,6 @@ export default defineComponent({
       children.forEach((child: EntityReferenceNode) => {
         selectedConcept.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
       });
-      selectedConcept.children.sort(byLabel);
       this.root = [] as TreeNode[];
       this.setParents(parentHierarchy, parentPosition);
       this.root.push(selectedConcept);
@@ -227,7 +226,6 @@ export default defineComponent({
           node.children.push(this.createTreeNode(child.name, child["@id"], child.type, child.hasChildren));
         }
       });
-      node.children.sort(byLabel);
       node.loading = false;
     },
 
@@ -263,7 +261,6 @@ export default defineComponent({
           }
         }
       }
-      parentNode.children.sort(byLabel);
       return parentNode;
     },
 
@@ -272,7 +269,6 @@ export default defineComponent({
       this.currentParent = null;
       this.alternateParents = [] as TreeParent[];
       if (!isArrayHasLength(result)) return;
-      result.sort(byName);
       if (result.length === 1) {
         this.parentPosition = 0;
         this.currentParent = {
