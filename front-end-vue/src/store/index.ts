@@ -13,7 +13,7 @@ import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import ConfigService from "@/services/ConfigService";
 import { FilterDefaultsConfig } from "@/models/configs/FilterDefaultsConfig";
-import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default createStore({
   // update stateType.ts when adding new state!
@@ -154,11 +154,9 @@ export default createStore({
       commit("updateBlockedIris", blockedIris);
     },
     async fetchSearchResults({ commit }, data: { searchRequest: SearchRequest; cancelToken: any }) {
-      let searchResults: any;
       const result = await EntityService.advancedSearch(data.searchRequest, data.cancelToken);
-      if (result && isObjectHasKeys(result, ["hits"])) {
-        searchResults = result.hits.hits.map((h: { _source: any }) => h._source);
-        commit("updateSearchResults", searchResults);
+      if (result && isArrayHasLength(result)) {
+        commit("updateSearchResults", result);
       } else {
         commit("updateSearchResults", []);
       }

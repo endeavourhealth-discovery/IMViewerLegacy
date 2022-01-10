@@ -4,8 +4,6 @@ import SetService from "@/services/SetService";
 import axios from "axios";
 
 const api = process.env.VUE_APP_API;
-const osapi = process.env.VUE_APP_OPENSEARCH_URL;
-const osauth = process.env.VUE_APP_OPENSEARCH_AUTH;
 const SEARCH_PAYLOAD = {
   size: 100,
   query: {
@@ -140,7 +138,7 @@ describe("EntityService.ts ___ axios success", () => {
     const cancelToken = axios.CancelToken.source().token;
     const result = await EntityService.advancedSearch(request, cancelToken);
     expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(axios.post).toHaveBeenCalledWith(osapi, SEARCH_PAYLOAD, { cancelToken: cancelToken, headers: { Authorization: "Basic " + osauth } });
+    expect(axios.post).toHaveBeenCalledWith(api + "api/entity/public/search", request, { cancelToken: cancelToken });
     expect(result).toBe("axios post return");
   });
 
@@ -312,8 +310,8 @@ describe("EntityService.ts ___ axios fail", () => {
     const cancelToken = axios.CancelToken.source().token;
     const result = await EntityService.advancedSearch(request, cancelToken);
     expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(axios.post).toHaveBeenCalledWith(osapi, SEARCH_PAYLOAD, { cancelToken: cancelToken, headers: { Authorization: "Basic " + osauth } });
-    expect(result).toStrictEqual({});
+    expect(axios.post).toHaveBeenCalledWith(api + "api/entity/public/search", request, { cancelToken: cancelToken });
+    expect(result).toStrictEqual([]);
   });
 
   it("can get entity definition dto", async () => {
