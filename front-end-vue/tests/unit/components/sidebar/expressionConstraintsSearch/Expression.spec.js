@@ -269,85 +269,54 @@ describe("Expression.vue ___ value", () => {
     jest.resetAllMocks();
     jest.useFakeTimers();
 
-    EntityService.advancedSearch = jest.fn().mockResolvedValue({
-      took: 10,
-      timed_out: false,
-      _shards: {
-        total: 5,
-        successful: 5,
-        skipped: 0,
-        failed: 0
-      },
-      hits: {
-        total: {
-          value: 51,
-          relation: "eq"
+    EntityService.advancedSearch = jest.fn().mockResolvedValue([
+      {
+        iri: "http://snomed.info/sct#29741004",
+        name: "Treponema scoliodontum",
+        code: "29741004",
+        scheme: {
+          name: "Snomed-CT",
+          "@id": "http://snomed.info/sct#"
         },
-        max_score: 17.552622,
-        hits: [
+        entityType: [
           {
-            _index: "dev-test2",
-            _type: "_doc",
-            _id: "64898",
-            _score: 17.552622,
-            _source: {
-              id: 64898,
-              iri: "http://snomed.info/sct#29741004",
-              name: "Treponema scoliodontum",
-              code: "29741004",
-              scheme: {
-                name: "Snomed-CT",
-                "@id": "http://snomed.info/sct#"
-              },
-              entityType: [
-                {
-                  name: "Address (record type)",
-                  "@id": "http://endhealth.info/im#Address"
-                },
-                {
-                  name: "Ontological Concept",
-                  "@id": "http://endhealth.info/im#Concept"
-                }
-              ],
-              status: {
-                name: "Active",
-                "@id": "http://endhealth.info/im#Active"
-              }
-            }
+            name: "Address (record type)",
+            "@id": "http://endhealth.info/im#Address"
           },
           {
-            _index: "dev-test2",
-            _type: "_doc",
-            _id: "95735",
-            _score: 17.54488,
-            _source: {
-              id: 95735,
-              iri: "http://snomed.info/sct#54914001",
-              name: "Scoliotic pelvis",
-              code: "54914001",
-              scheme: {
-                name: "Snomed-CT",
-                "@id": "http://snomed.info/sct#"
-              },
-              entityType: [
-                {
-                  name: "Ontological Concept",
-                  "@id": "http://endhealth.info/im#Concept"
-                },
-                {
-                  name: "Organisation  (record type)",
-                  "@id": "http://endhealth.info/im#Organisation"
-                }
-              ],
-              status: {
-                name: "Active",
-                "@id": "http://endhealth.info/im#Active"
-              }
-            }
+            name: "Ontological Concept",
+            "@id": "http://endhealth.info/im#Concept"
           }
-        ]
+        ],
+        status: {
+          name: "Active",
+          "@id": "http://endhealth.info/im#Active"
+        }
+      },
+      {
+        iri: "http://snomed.info/sct#54914001",
+        name: "Scoliotic pelvis",
+        code: "54914001",
+        scheme: {
+          name: "Snomed-CT",
+          "@id": "http://snomed.info/sct#"
+        },
+        entityType: [
+          {
+            name: "Ontological Concept",
+            "@id": "http://endhealth.info/im#Concept"
+          },
+          {
+            name: "Organisation  (record type)",
+            "@id": "http://endhealth.info/im#Organisation"
+          }
+        ],
+        status: {
+          name: "Active",
+          "@id": "http://endhealth.info/im#Active"
+        }
       }
-    });
+    ]);
 
     mockStore = { commit: jest.fn(), state: { filterOptions: FILTER_OPTIONS, selectedFilters: SELECTED_FILTERS } };
 
@@ -519,7 +488,6 @@ describe("Expression.vue ___ value", () => {
     await flushPromises();
     expect(wrapper.vm.searchResults).toStrictEqual([
       {
-        id: 64898,
         iri: "http://snomed.info/sct#29741004",
         name: "Treponema scoliodontum",
         code: "29741004",
@@ -543,7 +511,6 @@ describe("Expression.vue ___ value", () => {
         }
       },
       {
-        id: 95735,
         iri: "http://snomed.info/sct#54914001",
         name: "Scoliotic pelvis",
         code: "54914001",
