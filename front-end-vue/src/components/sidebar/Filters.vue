@@ -5,25 +5,35 @@
       <InputSwitch v-model="includeLegacy" />
     </div>
   </div>
+
   <div class="p-field">
-    <span class="p-float-label">
-      <MultiSelect id="status" v-model="selectedStatus" @change="checkForSearch" :options="filterOptions.status" optionLabel="name" display="chip" />
-      <label for="status">Select status:</label>
-    </span>
+    <div class="p-inputgroup">
+      <span class="p-float-label">
+        <MultiSelect id="status" v-model="selectedStatus" @change="checkForSearch" :options="filterOptions.status" optionLabel="name" display="chip" />
+        <label for="status">Select status:</label>
+        <Button icon="pi pi-undo" class="p-button-secondary" @click="resetStatus" v-tooltip="'Reset status filters'" />
+      </span>
+    </div>
   </div>
 
   <div class="p-field">
-    <span class="p-float-label">
-      <MultiSelect id="scheme" v-model="selectedSchemes" @change="checkForSearch" :options="filterOptions.schemes" optionLabel="name" display="chip" />
-      <label for="scheme">Select scheme:</label>
-    </span>
+    <div class="p-inputgroup">
+      <span class="p-float-label">
+        <MultiSelect id="scheme" v-model="selectedSchemes" @change="checkForSearch" :options="filterOptions.schemes" optionLabel="name" display="chip" />
+        <label for="scheme">Select scheme:</label>
+        <Button icon="pi pi-undo" class="p-button-secondary" @click="resetSchemes" v-tooltip="'Reset scheme filters'" />
+      </span>
+    </div>
   </div>
 
   <div class="p-field">
-    <span class="p-float-label">
-      <MultiSelect id="conceptType" v-model="selectedTypes" @change="checkForSearch" :options="filterOptions.types" optionLabel="name" display="chip" />
-      <label for="scheme">Select concept type:</label>
-    </span>
+    <div class="p-inputgroup">
+      <span class="p-float-label">
+        <MultiSelect id="conceptType" v-model="selectedTypes" @change="checkForSearch" :options="filterOptions.types" optionLabel="name" display="chip" />
+        <label for="scheme">Select concept type:</label>
+        <Button icon="pi pi-undo" class="p-button-secondary" @click="resetTypes" v-tooltip="'Reset type filters'" />
+      </span>
+    </div>
   </div>
 </template>
 
@@ -68,7 +78,15 @@ export default defineComponent({
     init() {
       this.setDefaults();
     },
-
+    resetStatus() {
+      this.selectedStatus = this.filterOptions.status.filter((item: EntityReferenceNode) => this.filterDefaults.statusOptions.includes(item["@id"]));
+    },
+    resetSchemes() {
+      this.selectedSchemes = this.filterOptions.schemes.filter((item: Namespace) => this.filterDefaults.schemeOptions.includes(item.iri));
+    },
+    resetTypes() {
+      this.selectedTypes = this.filterOptions.types.filter((item: EntityReferenceNode) => this.filterDefaults.typeOptions.includes(item["@id"]));
+    },
     checkForSearch(): void {
       this.updateStoreSelectedFilters();
       this.search();

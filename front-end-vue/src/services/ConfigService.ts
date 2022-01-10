@@ -46,6 +46,14 @@ export default class ConfigService {
     }
   }
 
+  public static async getGraphExcludePredicates(): Promise<any> {
+    try {
+      return await axios.get(this.api + "api/config/public/graphExcludePredicates");
+    } catch (error) {
+      return [] as string[];
+    }
+  }
+
   public static async getXmlSchemaDataTypes(): Promise<any> {
     try {
       return await axios.get(this.api + "api/config/public/xmlSchemaDataTypes");

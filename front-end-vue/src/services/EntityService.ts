@@ -34,16 +34,13 @@ export default class EntityService {
       baseURL: process.env.VUE_APP_API,
       timeout: 0
     });
-    try {
-      return client.get("api/entity/public/setExport", {
-        params: {
-          iri: iri
-        },
-        responseType: "blob"
-      });
-    } catch (error) {
-      return {} as any;
-    }
+
+    return client.get("api/entity/public/setExport", {
+      params: {
+        iri: iri
+      },
+      responseType: "blob"
+    });
   }
 
   public static async getSimpleMaps(iri: string): Promise<any[]> {
@@ -293,18 +290,6 @@ export default class EntityService {
       return await axios.get(this.api + "api/entity/public/namespaces");
     } catch (error) {
       return [] as Namespace[];
-    }
-  }
-
-  public static async ECLSearch(searchString: string, includeLegacy: boolean, limit: number, cancelToken: CancelToken): Promise<SearchResponse> {
-    try {
-      return await axios.post(this.api + "api/set/public/eclSearch", searchString, {
-        headers: { "Content-Type": "text/plain" },
-        params: { includeLegacy: includeLegacy, limit: limit },
-        cancelToken: cancelToken
-      });
-    } catch (error) {
-      return {} as SearchResponse;
     }
   }
 

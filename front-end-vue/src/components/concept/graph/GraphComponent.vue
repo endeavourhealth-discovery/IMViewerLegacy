@@ -255,7 +255,7 @@ export default defineComponent({
       } else {
         if (node.iri) {
           const bundle = await EntityService.getPartialEntityBundle(node.iri, []);
-          const data = translateFromEntityBundle(bundle);
+          const data = translateFromEntityBundle(bundle, []);
           if (isArrayHasLength(data.children)) {
             data.children.forEach(child => {
               node._children.push(child);
@@ -308,7 +308,7 @@ export default defineComponent({
 
 <style>
 #force-layout-svg {
-  height: calc(100vh - 14rem);
+  height: calc(100vh - 16.3rem);
   width: 100%;
 }
 

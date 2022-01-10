@@ -194,6 +194,11 @@ describe("SearchResults.vue", () => {
     expect(wrapper.vm.getConceptTypes(testConcept)).toBe("Class, Instance");
   });
 
+  it("can get concept types from concept ___ fail", () => {
+    const testConcept = {};
+    expect(wrapper.vm.getConceptTypes(testConcept)).toBe("None");
+  });
+
   it("updates results on store update", async () => {
     const testResult = {
       name: "Acquired scoliosis (disorder)",

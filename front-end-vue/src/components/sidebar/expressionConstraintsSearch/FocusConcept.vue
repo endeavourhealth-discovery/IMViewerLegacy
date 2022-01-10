@@ -22,6 +22,7 @@ import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponen
 import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
 import { ComponentDetails } from "@/models/ecl/ComponentDetails";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { byPosition } from "@/helpers/Sorters";
 
 export default defineComponent({
   name: "FocusConcept",
@@ -45,7 +46,7 @@ export default defineComponent({
   watch: {
     focusConceptBuild: {
       handler() {
-        this.focusConceptBuild.sort((a: ComponentDetails, b: ComponentDetails) => a.position - b.position);
+        this.focusConceptBuild.sort(byPosition);
         this.$emit("updateClicked", this.createFocusConcept());
       },
       deep: true

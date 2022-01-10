@@ -81,6 +81,7 @@ import { SimpleMapIri } from "@/models/mappings/SimpleMapIri";
 import { MapItem } from "@/models/mappings/MapItem";
 import { ChartTableNode, ChartMapNode } from "@/models/mappings/MapChartTypes";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { byPriority, byScheme } from "@/helpers/Sorters";
 
 export default defineComponent({
   name: "Mappings",
@@ -179,7 +180,7 @@ export default defineComponent({
             assuranceLevel: item[IM.ASSURANCE_LEVEL][0].name
           });
         });
-        mappedList.sort(this.byPriority);
+        mappedList.sort(byPriority);
         return [this.createChartTableNode(mappedList, location, positionInLevel, "childList")];
       } else {
         // is array
@@ -235,7 +236,7 @@ export default defineComponent({
           code: mapItem.code
         });
       });
-      simpleMapsList.sort(this.byScheme);
+      simpleMapsList.sort(byScheme);
       return [this.createChartTableNode(simpleMapsList, location, positionInLevel, "simpleMapsList")];
     },
 
@@ -250,26 +251,6 @@ export default defineComponent({
           }
           mapItem.code = mapItem["@id"].split("#")[1];
         });
-      }
-    },
-
-    byPriority(a: MapItem, b: MapItem): number {
-      if (a.priority < b.priority) {
-        return -1;
-      } else if (a.priority > b.priority) {
-        return 1;
-      } else {
-        return 0;
-      }
-    },
-
-    byScheme(a: SimpleMapIri, b: SimpleMapIri): number {
-      if (a.scheme < b.scheme) {
-        return -1;
-      } else if (a.scheme > b.scheme) {
-        return 1;
-      } else {
-        return 0;
       }
     },
 

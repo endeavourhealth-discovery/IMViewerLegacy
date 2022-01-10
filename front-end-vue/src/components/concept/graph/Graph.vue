@@ -1,8 +1,10 @@
 <template>
+  <div class="p-fluid">
+    <MultiSelect v-model="selectedPredicates" @change="updatePredicates" :options="predicateOptions" placeholder="Select predicates" />
+  </div>
   <div class="loading-container" v-if="loading">
     <ProgressSpinner />
   </div>
-
   <GraphComponent v-else :data="data" />
 </template>
 
@@ -12,6 +14,8 @@ import { translateFromEntityBundle } from "../../../helpers/GraphTranslator";
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
 import GraphComponent from "./GraphComponent.vue";
+import { PartialBundle } from "@/models/entityServiceTypes/EntityServiceTypes";
+import ConfigService from "@/services/ConfigService";
 
 export default defineComponent({
   name: "Graph",
@@ -29,17 +33,30 @@ export default defineComponent({
   data() {
     return {
       loading: false,
-      data: {} as TTGraphData
+      data: {} as TTGraphData,
+      selectedPredicates: [] as string[],
+      predicateOptions: [] as string[],
+      bundle: {} as PartialBundle,
+      graphExcludePredicates: [] as string[]
     };
   },
   async mounted() {
+    await this.getDefaultPredicates();
     await this.getEntityBundle(this.conceptIri);
   },
   methods: {
+    async updatePredicates() {
+      this.data = translateFromEntityBundle(this.bundle, this.selectedPredicates);
+    },
+    async getDefaultPredicates() {
+      this.graphExcludePredicates = await ConfigService.getGraphExcludePredicates();
+    },
     async getEntityBundle(iri: string) {
       this.loading = true;
-      const bundle = await EntityService.getPartialEntityBundle(iri, []);
-      this.data = translateFromEntityBundle(bundle);
+      this.bundle = await EntityService.getPartialEntityBundle(iri, []);
+      this.predicateOptions = Object.keys(this.bundle.entity).filter(value => value !== "@id");
+      this.selectedPredicates = this.predicateOptions.filter(value => !this.graphExcludePredicates.includes(value));
+      this.data = translateFromEntityBundle(this.bundle, this.selectedPredicates);
       this.loading = false;
     }
   }

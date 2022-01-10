@@ -40,6 +40,7 @@ import { ECLComponent } from "@/models/expressionConstraintsLanguage/ECLComponen
 import { NextComponentSummary } from "@/models/ecl/NextComponentSummary";
 import { ComponentDetails } from "@/models/ecl/ComponentDetails";
 import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
+import { byPosition } from "@/helpers/Sorters";
 
 export default defineComponent({
   name: "RefinementGroup",
@@ -65,7 +66,7 @@ export default defineComponent({
   watch: {
     refinementGroupBuild: {
       handler(): void {
-        this.refinementGroupBuild.sort((a: any, b: any) => a.position - b.position);
+        this.refinementGroupBuild.sort(byPosition);
         this.$emit("updateClicked", this.createRefinementGroup());
       },
       deep: true

@@ -3,11 +3,13 @@ out
 .metadata
 .gradle
 .vscode
-gradle
 target
 *.iml
 *.settings
 *.project
 *.classpath
 coverage
+
+# Ignore Gradle build output directory
+build
 .env

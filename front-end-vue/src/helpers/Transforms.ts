@@ -10,6 +10,7 @@ export function bundleToText(bundle: TTBundle, defaultPredicatenames: any, inden
   let predicates = bundle.predicates;
   predicates = addDefaultPredicates(predicates, defaultPredicatenames);
   delete bundle.entity["@id"];
+  delete bundle.entity[IM.IS_A];
   let result = "";
   result += ttValueToString(bundle.entity, "object", indent, withHyperlinks, predicates, blockedUrlIris);
   return result;

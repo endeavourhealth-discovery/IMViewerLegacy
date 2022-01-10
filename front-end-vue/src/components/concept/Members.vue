@@ -62,6 +62,7 @@
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
 import EntityService from "@/services/EntityService";
+import SetService from "@/services/SetService";
 import LoggerService from "@/services/LoggerService";
 import { ValueSetMember } from "@/models/members/ValueSetMember";
 import { ExportValueSet } from "@/models/members/ExportValueSet";
@@ -96,7 +97,7 @@ export default defineComponent({
       expandedRowGroups: ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"],
       downloadMenu: [
         { label: "Definition", command: () => this.download(false) },
-        { label: "Expanded (v2)", command: () => this.downloadFullExportSet(true) },
+        { label: "Expanded (v2)", command: () => this.download(true) },
         { label: "Expanded (v1)", command: () => this.download(true, true) }
       ]
     };
@@ -138,27 +139,25 @@ export default defineComponent({
       });
     },
 
-    async downloadFullExportSet() {
+    async download(expanded: boolean, v1 = false): Promise<void> {
       this.downloading = true;
-      const result = await EntityService.getFullExportSet(this.conceptIri);
-      this.downloading = false;
-      const url = window.URL.createObjectURL(new Blob([result], { type: "application" }));
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "setExport.xlsx";
-      link.click();
+      try {
+        this.$toast.add(LoggerService.success("Download will begin shortly"));
+        const result = expanded ? (await EntityService.getFullExportSet(this.conceptIri)).data : await SetService.download(this.conceptIri, expanded, v1);
+        this.downloadFile(result);
+      } catch (error) {
+        this.$toast.add(LoggerService.error("Download failed from server"));
+      } finally {
+        this.downloading = false;
+      }
     },
 
-    download(expanded: boolean, v1 = false): void {
-      const modIri = this.conceptIri.replace(/\//gi, "%2F").replace(/#/gi, "%23");
-      const popup = window.open(
-        process.env.VUE_APP_API + "api/set/download?iri=" + modIri + "&expandMembers=" + expanded + "&v1=" + (expanded && v1) + "&format=excel"
-      );
-      if (!popup) {
-        this.$toast.add(LoggerService.error("Download failed from server"));
-      } else {
-        this.$toast.add(LoggerService.success("Download will begin shortly"));
-      }
+    downloadFile(data: any) {
+      const url = window.URL.createObjectURL(new Blob([data], { type: "application" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "export.xlsx";
+      link.click();
     },
 
     sortMembers(): void {

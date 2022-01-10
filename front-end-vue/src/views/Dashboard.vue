@@ -28,6 +28,7 @@ import EntityService from "@/services/EntityService";
 import { RDFS } from "@/vocabulary/RDFS";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { IriCount } from "@/models/IriCount";
+import { byOrder } from "@/helpers/Sorters";
 
 export default defineComponent({
   name: "Dashboard",
@@ -56,14 +57,12 @@ export default defineComponent({
     async getConfigs(): Promise<void> {
       this.configs = await ConfigService.getDashboardLayout("conceptDashboard");
       if (isArrayHasLength(this.configs)) {
-        this.configs.sort((a: DashboardLayout, b: DashboardLayout) => {
-          return a.order - b.order;
-        });
+        this.configs.sort(byOrder);
       }
     },
 
     async getCardsData(): Promise<void> {
-      this.configs.forEach(async config => {
+      for (const config of this.configs) {
         const result = await EntityService.getPartialEntity(config.iri, [RDFS.LABEL, RDFS.COMMENT, IM.STATS_REPORT_ENTRY]);
         if (!isObjectHasKeys(result)) return;
         const cardData = {
@@ -73,7 +72,7 @@ export default defineComponent({
           component: config.type
         };
         this.cardsData.push(cardData);
-      });
+      }
     }
   }
 });
