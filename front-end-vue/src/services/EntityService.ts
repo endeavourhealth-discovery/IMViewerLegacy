@@ -199,14 +199,23 @@ export default class EntityService {
     }
   }
 
-  public static async getEntityMembers(iri: string, expandMembers?: boolean, expandSubsets?: boolean, limit?: number): Promise<ExportValueSet> {
+  public static async getEntityMembers(
+    iri: string,
+    expandMembers?: boolean,
+    expandSubsets?: boolean,
+    limit?: number,
+    asString?: boolean,
+    withHyperlinks?: boolean
+  ): Promise<ExportValueSet> {
     try {
       return await axios.get(this.api + "api/entity/public/members", {
         params: {
           iri: iri,
           expandMembers: expandMembers,
           expandSubsets: expandSubsets,
-          limit: limit
+          limit: limit,
+          asString: asString,
+          withHyperlinks: withHyperlinks
         }
       });
     } catch (error) {

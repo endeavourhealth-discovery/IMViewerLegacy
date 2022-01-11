@@ -121,7 +121,7 @@ export default defineComponent({
       this.expandedRowGroups = ["a_MemberIncluded", "b_MemberExcluded", "z_ComplexMember"];
       this.selected = {} as ValueSetMember;
       this.subsets = [];
-      this.members = await EntityService.getEntityMembers(this.conceptIri, false, false, 2000);
+      this.members = await EntityService.getEntityMembers(this.conceptIri, false, false, 2000, true, true);
       this.sortMembers();
       this.combinedMembers = this.members.members;
       this.setSubsets();
