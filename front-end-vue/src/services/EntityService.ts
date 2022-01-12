@@ -204,7 +204,6 @@ export default class EntityService {
     expandMembers?: boolean,
     expandSubsets?: boolean,
     limit?: number,
-    asString?: boolean,
     withHyperlinks?: boolean
   ): Promise<ExportValueSet> {
     try {
@@ -214,7 +213,6 @@ export default class EntityService {
           expandMembers: expandMembers,
           expandSubsets: expandSubsets,
           limit: limit,
-          asString: asString,
           withHyperlinks: withHyperlinks
         }
       });
