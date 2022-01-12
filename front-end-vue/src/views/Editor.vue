@@ -43,6 +43,7 @@ import EntityService from "@/services/EntityService";
 import ConfirmDialog from "primevue/confirmdialog";
 import MemberEditor from "@/components/edit/MemberEditor.vue";
 import { IM } from "@/vocabulary/IM";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Editor",
@@ -68,7 +69,7 @@ export default defineComponent({
   },
   computed: {
     hasMembers(): any {
-      return IM.HAS_MEMBERS in this.concept ? true : false;
+      return isObjectHasKeys(this.membersOriginal);
     }
   },
   data() {
@@ -97,8 +98,8 @@ export default defineComponent({
   methods: {
     async fetchConceptData(): Promise<void> {
       if (this.iri) {
-        const entityReturn = await EntityService.getEntity(this.iri);
-        if (entityReturn) this.concept = entityReturn;
+        // const entityReturn = await EntityService.getEntity(this.iri);
+        // if (entityReturn) this.concept = entityReturn;
 
         const dtoReturn = await EntityService.getEntityDefinitionDto(this.iri);
         if (dtoReturn) {
@@ -106,13 +107,13 @@ export default defineComponent({
           this.conceptUpdated = JSON.parse(JSON.stringify(dtoReturn));
         }
 
-        if (this.hasMembers) {
-          const membersReturn = await EntityService.getEntityMembers(this.iri, false, false);
-          if (membersReturn) {
-            this.membersOriginal = membersReturn;
-            this.membersUpdated = JSON.parse(JSON.stringify(membersReturn));
-          }
+        // if (this.hasMembers) {
+        const membersReturn = await EntityService.getEntityMembers(this.iri, false, false);
+        if (membersReturn) {
+          this.membersOriginal = membersReturn;
+          this.membersUpdated = JSON.parse(JSON.stringify(membersReturn));
         }
+        // }
       }
     },
 
