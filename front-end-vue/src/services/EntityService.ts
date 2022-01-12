@@ -221,6 +221,21 @@ export default class EntityService {
     }
   }
 
+  public static async getEntityMembersAsNode(iri: string, expandMembers?: boolean, expandSubsets?: boolean, limit?: number): Promise<any> {
+    try {
+      return await axios.get(this.api + "api/entity/public/membersAsNode", {
+        params: {
+          iri: iri,
+          expandMembers: expandMembers,
+          expandSubsets: expandSubsets,
+          limit: limit
+        }
+      });
+    } catch (error) {
+      return {} as any;
+    }
+  }
+
   public static async getEntityGraph(iri: string): Promise<GraphData> {
     try {
       return await axios.get(this.api + "api/entity/public/graph", { params: { iri: iri } });

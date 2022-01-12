@@ -108,7 +108,7 @@ export default defineComponent({
         }
 
         // if (this.hasMembers) {
-        const membersReturn = await EntityService.getEntityMembers(this.iri, false, false);
+        const membersReturn = await EntityService.getEntityMembersAsNode(this.iri, false, false);
         if (membersReturn) {
           this.membersOriginal = membersReturn;
           this.membersUpdated = JSON.parse(JSON.stringify(membersReturn));
