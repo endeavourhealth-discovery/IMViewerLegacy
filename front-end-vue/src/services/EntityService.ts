@@ -2,7 +2,7 @@ import { SearchRequest } from "@/models/search/SearchRequest";
 import axios, { CancelToken } from "axios";
 import GraphData from "@/models/GraphData";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
-import { PartialBundle, SearchResponse } from "@/models/entityServiceTypes/EntityServiceTypes";
+import { PartialBundle } from "@/models/entityServiceTypes/EntityServiceTypes";
 import { EntityDefinitionDto } from "@/models/EntityDefinitionDto";
 import { TTBundle, TTIriRef } from "@/models/TripleTree";
 import { ExportValueSet } from "@/models/members/ExportValueSet";
@@ -68,6 +68,18 @@ export default class EntityService {
     }
   }
 
+  public static async getFullEntity(iri: string): Promise<any> {
+    try {
+      return await axios.get(this.api + "api/entity/fullEntity", {
+        params: {
+          iri: iri
+        }
+      });
+    } catch (error) {
+      return {} as any;
+    }
+  }
+
   public static async getPartialEntityBundle(iri: string, predicates: string[]): Promise<PartialBundle> {
     try {
       return await axios.get(this.api + "api/entity/public/partialBundle", {
@@ -112,33 +124,6 @@ export default class EntityService {
       });
     } catch (error) {
       return [] as ConceptSummary[];
-    }
-  }
-
-  private static getFilter(field: string, data: string[]): any {
-    const types: any[] = [];
-    for (const type of data) {
-      const fieldValue: any = {};
-      fieldValue[field] = type;
-      types.push({ match_phrase: fieldValue });
-    }
-
-    return {
-      bool: {
-        should: types,
-        minimum_should_match: 1
-      }
-    };
-  }
-
-  //obsolete, to be deleted on editor branch merge
-  public static async getEntity(iri: string): Promise<any> {
-    try {
-      return await axios.get(this.api + "api/public/entity", {
-        params: { iri: iri }
-      });
-    } catch (error) {
-      return {} as any;
     }
   }
 

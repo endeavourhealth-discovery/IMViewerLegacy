@@ -2,22 +2,25 @@
   <SideNav />
   <ConfirmDialog></ConfirmDialog>
   <div id="editor-main-container">
-    <Panel header="Editor">
+    <div class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center" v-if="loading">
+      <ProgressSpinner />
+    </div>
+    <Panel v-else header="Editor">
       <TabView v-model:activeIndex="active">
         <TabPanel header="Form">
           <div class="panel-content" id="form-editor-container" :style="contentHeight">
             <FormEditor
-              v-if="active === 0 && Object.keys(conceptUpdated).length > 0"
+              v-if="active === 0 && isObjectHasKeysWrapper(conceptUpdated)"
               :iri="iri"
               :updatedConcept="conceptUpdated"
               @concept-updated="updateConcept"
             />
           </div>
         </TabPanel>
-        <TabPanel v-if="hasMembers" header="Members">
+        <TabPanel v-if="isValueSet" header="Members">
           <div class="panel-content" id="member-editor-container" :style="contentHeight">
             <MemberEditor
-              v-if="active === 2 && Object.keys(membersUpdated).length > 0"
+              v-if="active === 1 && isObjectHasKeysWrapper(membersUpdated)"
               :iri="iri"
               :contentHeight="contentHeight"
               :updatedMembers="membersUpdated"
@@ -42,8 +45,10 @@ import FormEditor from "@/components/edit/FormEditor.vue";
 import EntityService from "@/services/EntityService";
 import ConfirmDialog from "primevue/confirmdialog";
 import MemberEditor from "@/components/edit/MemberEditor.vue";
-import { IM } from "@/vocabulary/IM";
+import { isValueSet } from "@/helpers/ConceptTypeMethods";
+import { RDF } from "@/vocabulary/RDF";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
 
 export default defineComponent({
   name: "Editor",
@@ -68,53 +73,52 @@ export default defineComponent({
     }
   },
   computed: {
-    hasMembers(): any {
-      return isObjectHasKeys(this.membersOriginal);
+    isValueSet(): any {
+      return isValueSet(this.conceptOriginal[RDF.TYPE]);
     }
   },
   data() {
     return {
       iri: this.$route.params.iri?.toString(),
-      concept: {} as any,
       conceptOriginal: {} as any,
       conceptUpdated: {} as any,
       membersOriginal: {} as any,
       membersUpdated: {} as any,
       active: 0,
-      contentHeight: ""
+      contentHeight: "",
+      loading: false
     };
   },
-  async mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.setContentHeight);
-    });
+  mounted() {
+    window.addEventListener("resize", this.onResize);
     this.fetchConceptData();
-
-    this.setContentHeight();
+    this.onResize();
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.setContentHeight);
+    window.removeEventListener("resize", this.onResize);
   },
   methods: {
-    async fetchConceptData(): Promise<void> {
-      if (this.iri) {
-        // const entityReturn = await EntityService.getEntity(this.iri);
-        // if (entityReturn) this.concept = entityReturn;
+    onResize(): void {
+      this.setContentHeight();
+      this.removeBorders();
+    },
 
-        const dtoReturn = await EntityService.getEntityDefinitionDto(this.iri);
-        if (dtoReturn) {
-          this.conceptOriginal = dtoReturn;
-          this.conceptUpdated = JSON.parse(JSON.stringify(dtoReturn));
+    async fetchConceptData(): Promise<void> {
+      this.loading = true;
+      if (this.iri) {
+        const fullEntity = await EntityService.getFullEntity(this.iri);
+        if (fullEntity) {
+          this.conceptOriginal = fullEntity;
+          this.conceptUpdated = JSON.parse(JSON.stringify(fullEntity));
         }
 
-        // if (this.hasMembers) {
         const membersReturn = await EntityService.getEntityMembersAsNode(this.iri, false, false);
         if (membersReturn) {
           this.membersOriginal = membersReturn;
           this.membersUpdated = JSON.parse(JSON.stringify(membersReturn));
         }
-        // }
       }
+      this.loading = false;
     },
 
     submit(): void {
@@ -145,26 +149,25 @@ export default defineComponent({
       this.membersUpdated = {};
     },
 
+    isObjectHasKeysWrapper(object: any): boolean {
+      return isObjectHasKeys(object);
+    },
+
     setContentHeight(): void {
+      this.contentHeight =
+        "height: " +
+        getContainerElementOptimalHeight("editor-main-container", ["p-panel-header", "p-tabview-nav", "button-bar", "p-panel-content"], true, 3, 2);
+    },
+
+    removeBorders(): void {
       const container = document.getElementById("editor-main-container") as HTMLElement;
       const header = container.getElementsByClassName("p-panel-header")[0] as HTMLElement;
-      const nav = container.getElementsByClassName("p-tabview-nav")[0] as HTMLElement;
-      const buttonBar = container.getElementsByClassName("button-bar")[0] as HTMLElement;
       const content = container.getElementsByClassName("p-panel-content")[0] as HTMLElement;
-      const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));
-      if (container && header && nav && currentFontSize && buttonBar && content) {
+      if (header && content) {
         header.style.border = "none";
         header.style.borderBottom = "1px solid #dee2e6";
         content.style.border = "none";
         content.style.paddingBottom = "0";
-        const height =
-          container.getBoundingClientRect().height -
-          header.getBoundingClientRect().height -
-          nav.getBoundingClientRect().height -
-          buttonBar.getBoundingClientRect().height -
-          currentFontSize * 3 -
-          2;
-        this.contentHeight = "height: " + height + "px;";
       }
     }
   }

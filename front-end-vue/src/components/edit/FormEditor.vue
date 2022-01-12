@@ -2,7 +2,7 @@
   <div class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center" v-if="loading">
     <ProgressSpinner />
   </div>
-  <Card v-if="!loading">
+  <Card v-else>
     <template #content>
       <div class="p-fluid editor-grid">
         <div class="p-field float-label-container iri">
@@ -37,13 +37,13 @@
         </div>
         <div class="p-field float-label-container status">
           <span class="p-float-label">
-            <Dropdown class="p-inputtext-lg" v-model="conceptDto.status" :options="statusOptions" />
+            <Dropdown class="p-inputtext-lg" v-model="conceptDto.status" :options="filterOptions.status" optionLabel="name" />
             <label>Status</label>
           </span>
         </div>
         <div class="p-field float-label-container scheme">
           <span class="p-float-label">
-            <Dropdown class="p-inputtext-lg" v-model="conceptDto.scheme" optionValue="name" :options="schemeOptions" optionLabel="name" />
+            <Dropdown class="p-inputtext-lg" v-model="conceptDto.scheme" :options="filterOptions.schemes" optionLabel="name" />
             <label>Scheme</label>
           </span>
         </div>
@@ -58,13 +58,15 @@ import { defineComponent } from "@vue/runtime-core";
 import Dropdown from "primevue/dropdown";
 import Card from "primevue/card";
 import { IM } from "@/vocabulary/IM";
-import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { mapState } from "vuex";
 
 export default defineComponent({
   name: "FormEditor",
   components: { Dropdown, Card },
-  props: ["iri", "updatedConcept"],
+  props: { iri: { type: String, required: true }, updatedConcept: { required: true } },
   emits: { "concept-updated": (payload: any) => isObjectHasKeys(payload) },
+  computed: mapState(["filterOptions"]),
   watch: {
     conceptDto: {
       handler(newValue) {
@@ -76,15 +78,28 @@ export default defineComponent({
   data() {
     return {
       conceptDto: JSON.parse(JSON.stringify(this.updatedConcept)),
-      schemeOptions: [] as any[],
-      statusOptions: [] as any[],
       loading: false
     };
   },
   async mounted() {
-    this.schemeOptions = await EntityService.getNamespaces();
+    this.loading = true;
+    await this.getFilterOptions();
+    this.loading = false;
+  },
+  methods: {
+    async getFilterOptions(): Promise<void> {
+      if (!(isObjectHasKeys(this.filterOptions) && isArrayHasLength(this.filterOptions.schemes))) {
+        const schemeOptions = await EntityService.getNamespaces();
+        const typeOptions = await EntityService.getEntityChildren(IM.MODELLING_ENTITY_TYPE);
+        const statusOptions = await EntityService.getEntityChildren(IM.STATUS);
 
-    this.statusOptions = await EntityService.getEntityChildren(IM.STATUS);
+        this.$store.commit("updateFilterOptions", {
+          status: statusOptions,
+          schemes: schemeOptions,
+          types: typeOptions
+        });
+      }
+    }
   }
 });
 </script>
