@@ -51,7 +51,7 @@ curl -s "https://img.shields.io/badge/Version-$version-$badge_colour.svg" > badg
 cat front-end-vue/testResult.txt
 
 # Unit tests
-$testresult=$( grep 'FAIL' front-end-vue/testResult.txt )
+$testresult=$(grep FAIL front-end-vue/testResult.txt)
 
 if [[ "$testresult" -gt "0" ]] ; then
         badge_status=failing

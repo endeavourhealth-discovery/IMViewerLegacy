@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve --port 8081",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "test:unit:ci": "vue-cli-service test:unit | tee testResult.txt",
+    "test:unit:ci": "vue-cli-service test:unit > testResult.txt 2>&1",
     "test:e2e": "cross-env VUE_APP_API=http://localhost:8080/ vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
     "test:e2e:ci": "vue-cli-service test:e2e"
