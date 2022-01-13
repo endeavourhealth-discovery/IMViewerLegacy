@@ -7,44 +7,50 @@
       <div class="p-fluid editor-grid">
         <div class="p-field float-label-container iri">
           <span class="p-float-label">
-            <InputText class="p-inputtext-lg" v-model="conceptDto.iri" type="text" />
+            <InputText class="p-inputtext-lg" v-model="iri" type="text" />
             <label for="Iri">Iri</label>
           </span>
         </div>
         <div class="p-field float-label-container name">
           <span class="p-float-label">
-            <InputText class="p-inputtext-lg" v-model="conceptDto.name" type="text" />
+            <InputText class="p-inputtext-lg" v-model="name" type="text" />
             <label for="Name">Name</label>
           </span>
         </div>
         <div class="p-field float-label-container code">
           <span class="p-float-label">
-            <InputText class="p-inputtext-lg" v-model="conceptDto.code" type="text" />
+            <InputText class="p-inputtext-lg" v-model="code" type="text" />
             <label for="Code">Code</label>
           </span>
         </div>
         <div class="p-field float-label-container description">
           <span class="p-float-label">
-            <Textarea class="p-inputtext-lg" v-model="conceptDto.description" rows="4" />
+            <Textarea class="p-inputtext-lg" v-model="description" rows="4" />
             <label for="address">Description</label>
           </span>
         </div>
         <div class="p-field float-label-container version">
           <span class="p-float-label">
-            <InputText class="p-inputtext-lg" v-model="conceptDto.version" type="text" />
+            <InputText class="p-inputtext-lg" v-model="version" type="text" />
             <label for="Version">Version</label>
           </span>
         </div>
         <div class="p-field float-label-container status">
           <span class="p-float-label">
-            <Dropdown class="p-inputtext-lg" v-model="conceptDto.status" :options="filterOptions.status" optionLabel="name" />
+            <Dropdown class="p-inputtext-lg" v-model="status" :options="filterOptions.status" optionLabel="name" />
             <label>Status</label>
           </span>
         </div>
         <div class="p-field float-label-container scheme">
           <span class="p-float-label">
-            <Dropdown class="p-inputtext-lg" v-model="conceptDto.scheme" :options="filterOptions.schemes" optionLabel="name" />
+            <Dropdown class="p-inputtext-lg" v-model="scheme" :options="filterOptions.schemes" optionLabel="name" />
             <label>Scheme</label>
+          </span>
+        </div>
+        <div class="p-field float-label-container type">
+          <span class="p-float-label">
+            <MultiSelect class="p-inputtext-lg" v-model="types" :options="filterOptions.types" optionLabel="name" />
+            <label>Types</label>
           </span>
         </div>
       </div>
@@ -60,11 +66,13 @@ import Card from "primevue/card";
 import { IM } from "@/vocabulary/IM";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { mapState } from "vuex";
+import { RDF } from "@/vocabulary/RDF";
+import { RDFS } from "@/vocabulary/RDFS";
 
 export default defineComponent({
   name: "FormEditor",
   components: { Dropdown, Card },
-  props: { iri: { type: String, required: true }, updatedConcept: { required: true } },
+  props: { updatedConcept: { type: Object, required: true } },
   emits: { "concept-updated": (payload: any) => isObjectHasKeys(payload) },
   computed: mapState(["filterOptions"]),
   watch: {
@@ -77,13 +85,21 @@ export default defineComponent({
   },
   data() {
     return {
-      conceptDto: JSON.parse(JSON.stringify(this.updatedConcept)),
+      iri: "",
+      name: "",
+      code: "",
+      scheme: {} as any,
+      status: {} as any,
+      types: [] as any[],
+      version: "",
+      description: "",
       loading: false
     };
   },
   async mounted() {
     this.loading = true;
     await this.getFilterOptions();
+    this.processEntity();
     this.loading = false;
   },
   methods: {
@@ -99,6 +115,26 @@ export default defineComponent({
           types: typeOptions
         });
       }
+    },
+
+    processEntity() {
+      if (!this.updatedConcept) return;
+      if (isObjectHasKeys(this.updatedConcept, ["@id"])) this.iri = this.updatedConcept["@id"];
+      if (isObjectHasKeys(this.updatedConcept, [RDFS.LABEL])) this.name = this.updatedConcept[RDFS.LABEL];
+      if (isObjectHasKeys(this.updatedConcept, [IM.HAS_STATUS])) {
+        const found = this.filterOptions.status.find((item: any) => item["@id"] === this.updatedConcept[IM.HAS_STATUS][0]["@id"]);
+        this.status = found ? found : "";
+      }
+      if (isObjectHasKeys(this.updatedConcept, [RDF.TYPE])) {
+        this.updatedConcept[RDF.TYPE].forEach((type: any) => {
+          const found = this.filterOptions.types.find((option: any) => option["@id"] === type["@id"]);
+          if (found) this.types.push(found);
+        });
+      }
+      const found = this.filterOptions.schemes.find((scheme: any) => scheme.iri === this.iri.substring(0, this.iri.indexOf("#") + 1));
+      this.scheme = found ? found : "";
+      this.code = this.iri.substring(this.iri.indexOf("#") + 1);
+      if (isObjectHasKeys(this.updatedConcept, [RDFS.COMMENT])) this.description = this.updatedConcept[RDFS.COMMENT];
     }
   }
 });
