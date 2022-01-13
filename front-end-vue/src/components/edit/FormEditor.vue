@@ -2,67 +2,78 @@
   <div class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center" v-if="loading">
     <ProgressSpinner />
   </div>
-  <Card v-else>
-    <template #content>
-      <div class="p-fluid editor-grid">
-        <div class="p-field float-label-container iri">
-          <span class="p-float-label">
-            <InputText class="p-inputtext-lg" v-model="iri" type="text" />
-            <label for="Iri">Iri</label>
-          </span>
-        </div>
-        <div class="p-field float-label-container name">
-          <span class="p-float-label">
-            <InputText class="p-inputtext-lg" v-model="name" type="text" />
-            <label for="Name">Name</label>
-          </span>
-        </div>
-        <div class="p-field float-label-container code">
-          <span class="p-float-label">
-            <InputText class="p-inputtext-lg" v-model="code" type="text" />
-            <label for="Code">Code</label>
-          </span>
-        </div>
-        <div class="p-field float-label-container description">
-          <span class="p-float-label">
-            <Textarea class="p-inputtext-lg" v-model="description" rows="4" />
-            <label for="address">Description</label>
-          </span>
-        </div>
-        <div class="p-field float-label-container version">
-          <span class="p-float-label">
-            <InputText class="p-inputtext-lg" v-model="version" type="text" />
-            <label for="Version">Version</label>
-          </span>
-        </div>
-        <div class="p-field float-label-container status">
-          <span class="p-float-label">
-            <Dropdown class="p-inputtext-lg" v-model="status" :options="filterOptions.status" optionLabel="name" />
-            <label>Status</label>
-          </span>
-        </div>
-        <div class="p-field float-label-container scheme">
-          <span class="p-float-label">
-            <Dropdown class="p-inputtext-lg" v-model="scheme" :options="filterOptions.schemes" optionLabel="name" />
-            <label>Scheme</label>
-          </span>
-        </div>
-        <div class="p-field float-label-container type">
-          <span class="p-float-label">
-            <MultiSelect class="p-inputtext-lg" v-model="types" :options="filterOptions.types" optionLabel="name" />
-            <label>Types</label>
-          </span>
-        </div>
-      </div>
-    </template>
-  </Card>
+  <div class="p-fluid editor-grid">
+    <div class="p-field float-label-container iri">
+      <span class="p-float-label">
+        <InputText class="p-inputtext-lg" v-model="updateIri" type="text" @input="updateEntity({ '@id': iri })" disabled />
+        <label for="Iri">Iri</label>
+      </span>
+    </div>
+    <div class="p-field float-label-container name">
+      <span class="p-float-label">
+        <InputText class="p-inputtext-lg" v-model="name" type="text" @input="updateEntity({ 'http://www.w3.org/2000/01/rdf-schema#label': name })" />
+        <label for="Name">Name</label>
+      </span>
+    </div>
+    <div class="p-field float-label-container code">
+      <span class="p-float-label">
+        <InputText class="p-inputtext-lg" v-model="code" type="text" @input="updateEntity({ '@id': updateIri, 'http://endhealth.info/im#code': code })" />
+        <label for="Code">Code</label>
+      </span>
+    </div>
+    <div class="p-field float-label-container description">
+      <span class="p-float-label">
+        <Textarea
+          class="p-inputtext-lg"
+          v-model="description"
+          rows="4"
+          @input="updateEntity({ 'http://www.w3.org/2000/01/rdf-schema#comment': description })"
+        />
+        <label for="address">Description</label>
+      </span>
+    </div>
+    <div class="p-field float-label-container version">
+      <span class="p-float-label">
+        <InputText class="p-inputtext-lg" v-model="version" type="text" @input="updateEntity" disabled />
+        <label for="Version">Version</label>
+      </span>
+    </div>
+    <div class="p-field float-label-container status">
+      <span class="p-float-label">
+        <Dropdown
+          class="p-inputtext-lg"
+          v-model="status"
+          :options="filterOptions.status"
+          optionLabel="name"
+          @change="updateEntity({ 'http://endhealth.info/im#status': [status] })"
+        />
+        <label>Status</label>
+      </span>
+    </div>
+    <div class="p-field float-label-container scheme">
+      <span class="p-float-label">
+        <Dropdown class="p-inputtext-lg" v-model="scheme" :options="filterOptions.schemes" optionLabel="name" @change="updateEntity({ '@id': updateIri })" />
+        <label>Scheme</label>
+      </span>
+    </div>
+    <div class="p-field float-label-container type">
+      <span class="p-float-label">
+        <MultiSelect
+          class="p-inputtext-lg"
+          v-model="types"
+          :options="filterOptions.types"
+          optionLabel="name"
+          @change="updateEntity({ 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': types })"
+        />
+        <label>Types</label>
+      </span>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import EntityService from "@/services/EntityService";
 import { defineComponent } from "@vue/runtime-core";
-import Dropdown from "primevue/dropdown";
-import Card from "primevue/card";
 import { IM } from "@/vocabulary/IM";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { mapState } from "vuex";
@@ -71,16 +82,12 @@ import { RDFS } from "@/vocabulary/RDFS";
 
 export default defineComponent({
   name: "FormEditor",
-  components: { Dropdown, Card },
-  props: { updatedConcept: { type: Object, required: true } },
+  props: { updatedConcept: { type: Object, required: true }, contentHeight: { type: String, required: true } },
   emits: { "concept-updated": (payload: any) => isObjectHasKeys(payload) },
-  computed: mapState(["filterOptions"]),
-  watch: {
-    conceptDto: {
-      handler(newValue) {
-        this.$emit("concept-updated", newValue);
-      },
-      deep: true
+  computed: {
+    ...mapState(["filterOptions"]),
+    updateIri() {
+      return this.scheme.iri + this.code;
     }
   },
   data() {
@@ -135,6 +142,10 @@ export default defineComponent({
       this.scheme = found ? found : "";
       this.code = this.iri.substring(this.iri.indexOf("#") + 1);
       if (isObjectHasKeys(this.updatedConcept, [RDFS.COMMENT])) this.description = this.updatedConcept[RDFS.COMMENT];
+    },
+
+    updateEntity(data: any) {
+      this.$emit("concept-updated", data);
     }
   }
 });
@@ -165,6 +176,7 @@ export default defineComponent({
     "imlang imlang imlang";
   column-gap: 7px;
   height: 100%;
+  align-content: start;
 }
 
 .iri {

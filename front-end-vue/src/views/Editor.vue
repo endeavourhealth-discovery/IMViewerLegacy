@@ -5,35 +5,45 @@
     <div class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center" v-if="loading">
       <ProgressSpinner />
     </div>
-    <Panel v-else header="Editor">
-      <TabView v-model:activeIndex="active">
-        <TabPanel header="Form">
-          <div class="panel-content" id="form-editor-container" :style="contentHeight">
-            <FormEditor
-              v-if="active === 0 && isObjectHasKeysWrapper(conceptUpdated)"
-              :iri="iri"
-              :updatedConcept="conceptUpdated"
-              @concept-updated="updateConcept"
-            />
+    <div v-else class="panel-buttons-container">
+      <Panel header="Editor">
+        <div class="content-json-container">
+          <div class="content">
+            <TabView v-model:activeIndex="active">
+              <TabPanel header="Form">
+                <div class="panel-content" id="form-editor-container" :style="contentHeight">
+                  <FormEditor
+                    v-if="active === 0 && isObjectHasKeysWrapper(conceptUpdated)"
+                    :contentHeight="contentHeight"
+                    :updatedConcept="conceptUpdated"
+                    @concept-updated="updateConcept"
+                  />
+                </div>
+              </TabPanel>
+              <TabPanel v-if="isValueSet" header="Members">
+                <div class="panel-content" id="member-editor-container" :style="contentHeight">
+                  <MemberEditor
+                    v-if="active === 1 && isObjectHasKeysWrapper(membersUpdated)"
+                    :iri="iri"
+                    :contentHeight="contentHeight"
+                    :updatedMembers="membersUpdated"
+                    @members-updated="updateMembers"
+                  />
+                </div>
+              </TabPanel>
+            </TabView>
           </div>
-        </TabPanel>
-        <TabPanel v-if="isValueSet" header="Members">
-          <div class="panel-content" id="member-editor-container" :style="contentHeight">
-            <MemberEditor
-              v-if="active === 1 && isObjectHasKeysWrapper(membersUpdated)"
-              :iri="iri"
-              :contentHeight="contentHeight"
-              :updatedMembers="membersUpdated"
-              @members-updated="updateMembers"
-            />
+          <div class="json-container">
+            <span>JSON viewer</span>
+            <VueJsonPretty v-if="isObjectHasKeysWrapper(conceptUpdated)" class="json" :path="'res'" :data="conceptUpdated" @click="handleClick" />
           </div>
-        </TabPanel>
-      </TabView>
-    </Panel>
-    <div class="button-bar p-d-flex p-flex-row p-jc-end" id="editor-button-bar">
-      <Button icon="pi pi-times" label="Cancel" class="p-button-secondary" @click="$router.go(-1)" />
-      <Button icon="pi pi-refresh" label="Reset" class="p-button-warning" @click="refreshEditor" />
-      <Button icon="pi pi-check" label="Save" class="save-button" @click="submit" />
+        </div>
+      </Panel>
+      <div class="button-bar p-d-flex p-flex-row p-jc-end" id="editor-button-bar">
+        <Button icon="pi pi-times" label="Cancel" class="p-button-secondary" @click="$router.go(-1)" />
+        <Button icon="pi pi-refresh" label="Reset" class="p-button-warning" @click="refreshEditor" />
+        <Button icon="pi pi-check" label="Save" class="save-button" @click="submit" />
+      </div>
     </div>
   </div>
 </template>
@@ -49,6 +59,8 @@ import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import { RDF } from "@/vocabulary/RDF";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { getContainerElementOptimalHeight } from "@/helpers/GetContainerElementOptimalHeight";
+import VueJsonPretty from "vue-json-pretty";
+import "vue-json-pretty/lib/styles.css";
 
 export default defineComponent({
   name: "Editor",
@@ -56,7 +68,8 @@ export default defineComponent({
     SideNav,
     ConfirmDialog,
     FormEditor,
-    MemberEditor
+    MemberEditor,
+    VueJsonPretty
   },
   beforeRouteLeave(to, from, next) {
     if (this.checkForChanges()) {
@@ -99,8 +112,9 @@ export default defineComponent({
   },
   methods: {
     onResize(): void {
+      this.loading = true;
       this.setContentHeight();
-      this.removeBorders();
+      this.loading = false;
     },
 
     async fetchConceptData(): Promise<void> {
@@ -130,7 +144,11 @@ export default defineComponent({
     },
 
     updateConcept(data: any) {
-      this.conceptUpdated = data;
+      console.log("update");
+      console.log(data);
+      for (const [key, value] of Object.entries(data)) {
+        this.conceptUpdated[key] = value;
+      }
     },
 
     checkForChanges() {
@@ -145,8 +163,8 @@ export default defineComponent({
     },
 
     refreshEditor(): void {
-      this.conceptUpdated = {};
-      this.membersUpdated = {};
+      this.conceptUpdated = { ...this.conceptOriginal };
+      this.membersUpdated = { ...this.membersOriginal };
     },
 
     isObjectHasKeysWrapper(object: any): boolean {
@@ -155,41 +173,88 @@ export default defineComponent({
 
     setContentHeight(): void {
       this.contentHeight =
-        "height: " +
-        getContainerElementOptimalHeight("editor-main-container", ["p-panel-header", "p-tabview-nav", "button-bar", "p-panel-content"], true, 3, 2);
+        "height: " + getContainerElementOptimalHeight("editor-main-container", ["p-panel-header", "p-tabview-nav", "button-bar"], true, 4, 4);
     },
 
-    removeBorders(): void {
-      const container = document.getElementById("editor-main-container") as HTMLElement;
-      const header = container.getElementsByClassName("p-panel-header")[0] as HTMLElement;
-      const content = container.getElementsByClassName("p-panel-content")[0] as HTMLElement;
-      if (header && content) {
-        header.style.border = "none";
-        header.style.borderBottom = "1px solid #dee2e6";
-        content.style.border = "none";
-        content.style.paddingBottom = "0";
-      }
+    handleClick(data: any) {
+      console.log("click");
+      console.log(data);
     }
   }
 });
 </script>
 
 <style scoped>
+@media screen and (max-width: 1439px) {
+  #editor-main-container {
+    width: 92vw;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  #editor-main-container {
+    width: calc(100vw - 115px);
+  }
+}
+
 #editor-main-container {
   margin: 1rem;
   height: calc(100vh - 2rem);
-  width: 100%;
   overflow-y: auto;
-  background-color: #ffffff;
-  border: 1px solid #dee2e6;
+}
+
+.panel-buttons-container {
+  height: 100%;
+  width: 100%;
+}
+
+.loading-container {
+  width: 100%;
+  height: 100%;
+}
+
+.content-json-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+.json-container {
+  width: 50%;
+  height: 100%;
+}
+
+.content {
+  width: 50%;
+  height: 100%;
+}
+
+.json {
+  height: 100%;
+  width: 100%;
+  border: 1px #dee2e6 solid;
+  border-radius: 3px;
 }
 
 .placeholder {
   height: 100%;
 }
 
+.panel-content {
+  overflow-y: auto;
+}
+
 #editor-button-bar {
-  padding: 0 2rem 1rem 0;
+  padding: 1rem 1rem 1rem 0;
   gap: 0.5rem;
+  width: 100%;
+  border-bottom: 1px solid #dee2e6;
+  border-left: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+  border-radius: 3px;
+  background-color: #ffffff;
 }
 </style>

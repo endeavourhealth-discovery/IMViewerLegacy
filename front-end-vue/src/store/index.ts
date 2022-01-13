@@ -81,6 +81,14 @@ export default createStore({
       state.searchResults = searchResults;
     },
     updateFilterOptions(state, filters) {
+      filters.types.forEach((type: any) => {
+        delete type.hasChildren;
+        delete type.type;
+      });
+      filters.status.forEach((item: any) => {
+        delete item.hasChildren;
+        delete item.type;
+      });
       state.filterOptions = filters;
     },
     updateSelectedFilters(state, filters) {
