@@ -114,6 +114,7 @@ describe("Members.vue", () => {
 
     EntityService.getEntityMembers = jest.fn().mockResolvedValue(testMembers);
     EntityService.getFullExportSet = jest.fn().mockResolvedValue({ data: true });
+    EntityService.getPartialEntity = jest.fn().mockResolvedValue({ "http://www.w3.org/2000/01/rdf-schema#label": "Test Set" });
     SetService.download = jest.fn().mockResolvedValue(true);
     mockRouter = { push: jest.fn() };
     mockToast = { add: jest.fn() };
@@ -271,7 +272,7 @@ describe("Members.vue", () => {
     expect(EntityService.getFullExportSet).toHaveBeenCalledTimes(1);
     expect(EntityService.getFullExportSet).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16");
     expect(wrapper.vm.downloadFile).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.downloadFile).toHaveBeenCalledWith(true);
+    expect(wrapper.vm.downloadFile).toHaveBeenCalledWith(true, wrapper.vm.getFileName("Test Set"));
     expect(wrapper.vm.downloading).toBe(false);
   });
 
@@ -285,7 +286,7 @@ describe("Members.vue", () => {
     expect(SetService.download).toHaveBeenCalledTimes(1);
     expect(SetService.download).toHaveBeenCalledWith("http://endhealth.info/im#VSET_EthnicCategoryCEG16", false, true);
     expect(wrapper.vm.downloadFile).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.downloadFile).toHaveBeenCalledWith(true);
+    expect(wrapper.vm.downloadFile).toHaveBeenCalledWith(true, wrapper.vm.getFileName("Test Set"));
     expect(wrapper.vm.downloading).toBe(false);
   });
 
