@@ -12,7 +12,7 @@
             <TabView v-model:activeIndex="active">
               <TabPanel header="Form">
                 <div class="panel-content" id="form-editor-container" :style="contentHeight">
-                  <FormEditor
+                  <SummaryEditor
                     v-if="active === 0 && isObjectHasKeysWrapper(conceptUpdated)"
                     :contentHeight="contentHeight"
                     :updatedConcept="conceptUpdated"
@@ -51,7 +51,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import SideNav from "@/components/home/SideNav.vue";
-import FormEditor from "@/components/edit/FormEditor.vue";
+import SummaryEditor from "@/components/edit/SummaryEditor.vue";
 import EntityService from "@/services/EntityService";
 import ConfirmDialog from "primevue/confirmdialog";
 import MemberEditor from "@/components/edit/MemberEditor.vue";
@@ -67,7 +67,7 @@ export default defineComponent({
   components: {
     SideNav,
     ConfirmDialog,
-    FormEditor,
+    SummaryEditor,
     MemberEditor,
     VueJsonPretty
   },
@@ -87,7 +87,7 @@ export default defineComponent({
   },
   computed: {
     isValueSet(): any {
-      return isValueSet(this.conceptOriginal[RDF.TYPE]);
+      return isValueSet(this.conceptUpdated[RDF.TYPE]);
     }
   },
   data() {
@@ -103,22 +103,21 @@ export default defineComponent({
     };
   },
   mounted() {
+    this.loading = true;
     window.addEventListener("resize", this.onResize);
     this.fetchConceptData();
     this.onResize();
+    this.loading = false;
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onResize);
   },
   methods: {
     onResize(): void {
-      this.loading = true;
       this.setContentHeight();
-      this.loading = false;
     },
 
     async fetchConceptData(): Promise<void> {
-      this.loading = true;
       if (this.iri) {
         const fullEntity = await EntityService.getFullEntity(this.iri);
         if (fullEntity) {
@@ -132,7 +131,6 @@ export default defineComponent({
           this.membersUpdated = JSON.parse(JSON.stringify(membersReturn));
         }
       }
-      this.loading = false;
     },
 
     submit(): void {

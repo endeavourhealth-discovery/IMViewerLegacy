@@ -81,9 +81,17 @@ import { RDF } from "@/vocabulary/RDF";
 import { RDFS } from "@/vocabulary/RDFS";
 
 export default defineComponent({
-  name: "FormEditor",
+  name: "SummaryEditor",
   props: { updatedConcept: { type: Object, required: true }, contentHeight: { type: String, required: true } },
   emits: { "concept-updated": (payload: any) => isObjectHasKeys(payload) },
+  watch: {
+    updatedConcept: {
+      handler() {
+        this.processEntity();
+      },
+      deep: true
+    }
+  },
   computed: {
     ...mapState(["filterOptions"]),
     updateIri() {
@@ -135,7 +143,7 @@ export default defineComponent({
       if (isObjectHasKeys(this.updatedConcept, [RDF.TYPE])) {
         this.updatedConcept[RDF.TYPE].forEach((type: any) => {
           const found = this.filterOptions.types.find((option: any) => option["@id"] === type["@id"]);
-          if (found) this.types.push(found);
+          if (found && !this.types.includes(found)) this.types.push(found);
         });
       }
       const found = this.filterOptions.schemes.find((scheme: any) => scheme.iri === this.iri.substring(0, this.iri.indexOf("#") + 1));
@@ -163,6 +171,11 @@ export default defineComponent({
 .p-card {
   box-shadow: unset;
   height: 100%;
+}
+
+.loading-container {
+  height: 100%;
+  width: 100%;
 }
 
 .editor-grid {
