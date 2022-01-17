@@ -67,6 +67,7 @@ import LoggerService from "@/services/LoggerService";
 import { ValueSetMember } from "@/models/members/ValueSetMember";
 import { ExportValueSet } from "@/models/members/ExportValueSet";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { RDFS } from "@/vocabulary/RDFS";
 
 export default defineComponent({
   name: "Members",
@@ -144,7 +145,8 @@ export default defineComponent({
       try {
         this.$toast.add(LoggerService.success("Download will begin shortly"));
         const result = expanded ? (await EntityService.getFullExportSet(this.conceptIri)).data : await SetService.download(this.conceptIri, expanded, v1);
-        this.downloadFile(result);
+        const label: string = ((await EntityService.getPartialEntity(this.conceptIri, [RDFS.LABEL])) as any)[RDFS.LABEL];
+        this.downloadFile(result, this.getFileName(label));
       } catch (error) {
         this.$toast.add(LoggerService.error("Download failed from server"));
       } finally {
@@ -152,11 +154,23 @@ export default defineComponent({
       }
     },
 
-    downloadFile(data: any) {
+    getFileName(label: string) {
+      return (
+        label +
+        " - " +
+        new Date()
+          .toJSON()
+          .slice(0, 10)
+          .replace(/-/g, "/") +
+        ".xlsx"
+      );
+    },
+
+    downloadFile(data: any, fileName: string) {
       const url = window.URL.createObjectURL(new Blob([data], { type: "application" }));
       const link = document.createElement("a");
       link.href = url;
-      link.download = "export.xlsx";
+      link.download = fileName;
       link.click();
     },
 
