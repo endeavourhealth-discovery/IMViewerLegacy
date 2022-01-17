@@ -2,7 +2,7 @@
   <div class="loading-container p-d-flex p-flex-row p-jc-center p-ai-center" v-if="loading">
     <ProgressSpinner />
   </div>
-  <div class="p-fluid editor-grid">
+  <div v-else class="p-fluid editor-grid">
     <div class="p-field float-label-container iri">
       <span class="p-float-label">
         <InputText class="p-inputtext-lg" v-model="updateIri" type="text" @input="updateEntity({ '@id': iri })" disabled />
@@ -82,7 +82,7 @@ import { RDFS } from "@/vocabulary/RDFS";
 
 export default defineComponent({
   name: "SummaryEditor",
-  props: { updatedConcept: { type: Object, required: true }, contentHeight: { type: String, required: true } },
+  props: { updatedConcept: { type: Object, required: true } },
   emits: { "concept-updated": (payload: any) => isObjectHasKeys(payload) },
   watch: {
     updatedConcept: {

@@ -9,4 +9,7 @@ export class SHACL {
   public static MINCOUNT = SHACL.NAMESPACE + "minCount";
   public static MAXCOUNT = SHACL.NAMESPACE + "maxCount";
   public static NODESHAPE = SHACL.NAMESPACE + "NodeShape";
+  public static OR = SHACL.NAMESPACE + "or";
+  public static AND = SHACL.NAMESPACE + "and";
+  public static NOT = SHACL.NAMESPACE + "not";
 }

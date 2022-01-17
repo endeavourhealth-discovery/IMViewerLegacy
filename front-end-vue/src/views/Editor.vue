@@ -6,15 +6,14 @@
       <ProgressSpinner />
     </div>
     <div v-else class="panel-buttons-container">
-      <Panel header="Editor">
+      <Panel :header="'Editor: ' + iri">
         <div class="content-json-container">
           <div class="content">
             <TabView v-model:activeIndex="active">
-              <TabPanel header="Form">
+              <TabPanel header="Summary">
                 <div class="panel-content" id="form-editor-container" :style="contentHeight">
                   <SummaryEditor
                     v-if="active === 0 && isObjectHasKeysWrapper(conceptUpdated)"
-                    :contentHeight="contentHeight"
                     :updatedConcept="conceptUpdated"
                     @concept-updated="updateConcept"
                   />
@@ -24,8 +23,6 @@
                 <div class="panel-content" id="member-editor-container" :style="contentHeight">
                   <MemberEditor
                     v-if="active === 1 && isObjectHasKeysWrapper(membersUpdated)"
-                    :iri="iri"
-                    :contentHeight="contentHeight"
                     :updatedMembers="membersUpdated"
                     @members-updated="updateMembers"
                   />
