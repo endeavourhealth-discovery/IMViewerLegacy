@@ -27,6 +27,7 @@ import { SHACL } from "@/vocabulary/SHACL";
 import { defineComponent, PropType } from "@vue/runtime-core";
 import { DefinitionType } from "@/models/definition/DefinitionType";
 import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
+import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import EntityService from "@/services/EntityService";
 import { RDF } from "@/vocabulary/RDF";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
@@ -43,7 +44,8 @@ export default defineComponent({
   },
   data() {
     return {
-      membersBuild: [] as any[]
+      membersBuild: [] as any[],
+      membersAsNode: {} as any
     };
   },
   methods: {
@@ -57,6 +59,11 @@ export default defineComponent({
         this.membersBuild.push(this.processAny(item, position));
         position++;
       });
+    },
+
+    generateMembersAsNode(): void {
+      // TODO
+      return;
     },
 
     processAny(item: any, position: number): any {
@@ -74,7 +81,7 @@ export default defineComponent({
     processObject(item: any, position: number): any {
       for (const [key, value] of Object.entries(item)) {
         if (key === SHACL.AND || key === SHACL.OR) {
-          return this.generateNewComponent(DefinitionType.LOGIC, position, key);
+          return this.generateNewComponent(DefinitionType.LOGIC, position, { key: key, value: value });
         } else {
           console.log("unexpected key in processObject: " + key);
         }
@@ -82,9 +89,12 @@ export default defineComponent({
     },
 
     processArray(items: any[], position: number): any {
-      let arrayPosition = 0;
+      let arrayPosition = position;
       const result = [] as any[];
-      items.forEach((item: any) => result.push(this.processAny(item, arrayPosition)));
+      items.forEach((item: any) => {
+        result.push(this.processAny(item, arrayPosition));
+        arrayPosition++;
+      });
       return result;
     },
 
@@ -127,18 +137,51 @@ export default defineComponent({
       return result;
     },
 
-    genNextOptions(position: number, previous: DefinitionType) {
+    deleteItem(data: ComponentDetails): void {
+      const index = this.membersBuild.findIndex(item => item.position === data.position);
+      this.membersBuild.splice(index, 1);
+      if (data.position === 0) {
+        this.membersBuild.unshift(this.genNextOptions(0, DefinitionType.BUILDER, DefinitionType.BUILDER));
+      }
+    },
+
+    updateItem(data: ComponentDetails) {
+      const index = this.membersBuild.findIndex(item => item.position === data.position);
+      this.membersBuild[index] = data;
+    },
+
+    async addNextOptions(data: any): Promise<void> {
+      const nextOptionsComponent = this.genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
+      if (this.membersBuild[data.previousPosition + 1].type === DefinitionType.ADD_NEXT) {
+        this.membersBuild[data.previousPosition + 1] = nextOptionsComponent;
+      } else {
+        this.membersBuild.splice(data.previousPosition + 1, 0, nextOptionsComponent);
+      }
+      this.updatePositions();
+      await this.$nextTick();
+      const itemToScrollTo = document.getElementById(nextOptionsComponent.id);
+      itemToScrollTo?.scrollIntoView();
+    },
+
+    genNextOptions(position: number, previous: DefinitionType, group: DefinitionType) {
       return {
         id: "addNext_" + (position + 1),
         value: {
           previousPosition: position,
-          previousType: previous
+          previousType: previous,
+          parentGroup: group
         },
         position: position + 1,
         type: DefinitionType.ADD_NEXT,
         JSON: {},
         component: DefinitionComponent.ADD_NEXT
       };
+    },
+
+    updatePositions(): void {
+      this.membersBuild.forEach((item: ComponentDetails, index: number) => {
+        item.position = index;
+      });
     }
   }
 });

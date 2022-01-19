@@ -1,0 +1,90 @@
+<template>
+  <div class="add-next-container">
+    <template v-for="option in options" :key="option">
+      <Button icon="fas fa-plus" :label="option" class="p-button-rounded p-button-outlined p-button-danger add-next-button" @click="addItem(option)"> </Button>
+    </template>
+    <Button v-if="!last" icon="fas fa-minus" class="p-button-rounded p-button-outlined p-button-danger add-next-delete-button" @click="deleteClicked" />
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, PropType } from "@vue/runtime-core";
+import { ComponentDetails } from "@/models/definition/ComponentDetails";
+import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
+import { DefinitionType } from "@/models/definition/DefinitionType";
+import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
+
+export default defineComponent({
+  name: "AddNext",
+  props: {
+    id: { type: String, required: true },
+    position: { type: Number, required: true },
+    last: Boolean,
+    value: {
+      type: Object as PropType<NextComponentSummary>,
+      required: true
+    }
+  },
+  emits: {
+    addClicked: (payload: { selectedType: DefinitionType; position: number }) => true,
+    deleteClicked: (payload: ComponentDetails) => true
+  },
+  mounted() {
+    this.generateOptions(this.value);
+  },
+  data() {
+    return {
+      options: [] as DefinitionType[]
+    };
+  },
+  methods: {
+    addItem(selectedOption: DefinitionType) {
+      this.$emit("addClicked", {
+        selectedType: selectedOption,
+        position: this.value.previousPosition + 1
+      });
+    },
+
+    deleteClicked() {
+      this.$emit("deleteClicked", {
+        id: this.id,
+        position: this.position,
+        value: null,
+        type: DefinitionType.ADD_NEXT,
+        component: DefinitionComponent.ADD_NEXT,
+        JSON: null
+      });
+    },
+
+    generateOptions(value: NextComponentSummary) {
+      switch (value.previousComponentType) {
+        case DefinitionType.MEMBER:
+          this.options = [DefinitionType.LOGIC, DefinitionType.MEMBER];
+          break;
+        case DefinitionType.LOGIC:
+          if (value.parentGroup === DefinitionType.BUILDER) {
+            this.options = [DefinitionType.MEMBER];
+          } else {
+            this.options = [DefinitionType.LOGIC];
+          }
+          break;
+        default:
+          break;
+      }
+    }
+  }
+});
+</script>
+
+<style scoped>
+.add-next-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-next-button {
+  border-style: dashed !important;
+}
+</style>
