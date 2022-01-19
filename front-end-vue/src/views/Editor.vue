@@ -24,13 +24,13 @@
                   <MemberEditor
                     v-if="active === 1 && isObjectHasKeysWrapper(membersUpdated)"
                     :updatedMembers="membersUpdated"
-                    @members-updated="updateMembers"
+                    @concept-updated="updateConcept"
                   />
                 </div>
               </TabPanel>
             </TabView>
           </div>
-          <div class="json-container">
+          <div v-if="contentHeight" class="json-container" :style="contentHeight">
             <span>JSON viewer</span>
             <VueJsonPretty v-if="isObjectHasKeysWrapper(conceptUpdated)" class="json" :path="'res'" :data="conceptUpdated" @click="handleClick" />
           </div>
@@ -168,7 +168,7 @@ export default defineComponent({
 
     setContentHeight(): void {
       this.contentHeight =
-        "height: " + getContainerElementOptimalHeight("editor-main-container", ["p-panel-header", "p-tabview-nav", "button-bar"], true, 4, 4);
+        "height: " + getContainerElementOptimalHeight("editor-main-container", ["p-panel-header", "p-tabview-nav", "button-bar"], true, 4, 4) + ";";
     },
 
     handleClick(data: any) {
@@ -219,7 +219,7 @@ export default defineComponent({
 
 .json-container {
   width: 50%;
-  height: 100%;
+  /* height: 100%; */
 }
 
 .content {
@@ -228,8 +228,9 @@ export default defineComponent({
 }
 
 .json {
-  height: 100%;
+  height: calc(100% - 1rem);
   width: 100%;
+  overflow: auto;
   border: 1px #dee2e6 solid;
   border-radius: 3px;
 }

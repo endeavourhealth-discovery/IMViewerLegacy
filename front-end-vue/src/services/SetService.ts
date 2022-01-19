@@ -1,5 +1,6 @@
 import axios, { CancelToken } from "axios";
 import { SearchResponse } from "@/models/entityServiceTypes/EntityServiceTypes";
+import { SimpleMapIri } from "@/models/mappings/SimpleMapIri";
 
 export default class SetService {
   static api = process.env.VUE_APP_API;
@@ -25,6 +26,14 @@ export default class SetService {
       });
     } catch (error) {
       return {} as SearchResponse;
+    }
+  }
+
+  public static async evaluateEcl(ecl: string, cancelToken: CancelToken): Promise<SimpleMapIri[]> {
+    try {
+      return await axios.post(this.api + "api/set/public/evaluateEcl", ecl, { headers: { "Content-Type": "text/plain" }, cancelToken: cancelToken });
+    } catch (error) {
+      return [] as SimpleMapIri[];
     }
   }
 }

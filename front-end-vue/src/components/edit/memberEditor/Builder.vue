@@ -31,11 +31,14 @@ import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import EntityService from "@/services/EntityService";
 import { RDF } from "@/vocabulary/RDF";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
+import AddDeleteButtons from "@/components/edit/memberEditor/AddDeleteButtons.vue";
+import AddNext from "@/components/edit/memberEditor/AddNext.vue";
+import Logic from "@/components/edit/memberEditor/Logic.vue";
 
 export default defineComponent({
   name: "Builder",
   props: { included: { type: Array as PropType<Array<any>>, required: true } },
-  components: {},
+  components: { AddDeleteButtons, AddNext, Logic },
   emits: {
     definitionUpdated: (payload: any) => true
   },

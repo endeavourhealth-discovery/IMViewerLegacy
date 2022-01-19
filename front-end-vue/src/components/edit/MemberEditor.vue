@@ -3,17 +3,26 @@
     <ProgressSpinner />
   </div>
   <div v-else class="member-editor">
-    <p>member-editor</p>
+    <div class="options-buttons-container">
+      <SelectButton v-model="editorType" :options="editorOptions" />
+    </div>
+    <div class="editor-container">
+      <Builder v-if="editorType === 'Builder'" :included="included" />
+      <EclInput v-if="editorType === 'Ecl'" @concept-updated="eclMembersUpdated" />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import Builder from "@/components/edit/memberEditor/Builder.vue";
+import EclInput from "@/components/edit/memberEditor/EclInput.vue";
 
 export default defineComponent({
   name: "MemberEditor",
   props: { updatedMembers: { type: Object, required: true } },
-  emits: { "members-updated": (payload: any) => true },
+  components: { Builder, EclInput },
+  emits: { "concept-updated": (payload: any) => true },
   watch: {
     updatedMembers: {
       handler() {
@@ -29,7 +38,10 @@ export default defineComponent({
     return {
       members: {} as any,
       included: [] as any[],
-      loading: false
+      loading: false,
+      ecl: {} as any,
+      editorType: "Builder",
+      editorOptions: ["Builder", "Ecl"]
     };
   },
   methods: {
@@ -40,9 +52,14 @@ export default defineComponent({
       this.loading = false;
     },
 
-    membersUpdated(): void {
-      this.$emit("members-updated", {
-        included: this.included
+    eclMembersUpdated(data: any) {
+      this.$emit("concept-updated", data);
+    },
+
+    membersUpdated(data: any): void {
+      console.log(data);
+      this.$emit("concept-updated", {
+        "http://endhealth.info/im#definition": this.included
       });
     }
   }
@@ -56,5 +73,26 @@ export default defineComponent({
 
 .loading-container {
   height: 100%;
+}
+
+.member-editor {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+}
+
+.editor-container {
+  flex-grow: 100;
+}
+
+.options-buttons-container {
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  margin-top: 0.5rem;
 }
 </style>
