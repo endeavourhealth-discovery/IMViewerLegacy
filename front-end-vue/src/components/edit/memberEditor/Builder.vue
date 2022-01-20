@@ -34,6 +34,7 @@ import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import AddDeleteButtons from "@/components/edit/memberEditor/AddDeleteButtons.vue";
 import AddNext from "@/components/edit/memberEditor/AddNext.vue";
 import Logic from "@/components/edit/memberEditor/Logic.vue";
+import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 
 export default defineComponent({
   name: "Builder",
@@ -52,16 +53,31 @@ export default defineComponent({
     };
   },
   methods: {
-    createBuild() {
+    async createBuild() {
       this.membersBuild = [];
       if (!isArrayHasLength(this.included)) {
         return;
       }
       let position = 0;
-      this.included.forEach((item: any) => {
-        this.membersBuild.push(this.processAny(item, position));
+      for (const item of this.included) {
+        this.membersBuild.push(await this.processAny(item, position));
         position++;
-      });
+      }
+      if (isArrayHasLength(this.membersBuild)) {
+        const last = this.membersBuild.length - 1;
+        await this.addNextOptions({
+          previousComponentType: this.membersBuild[last].type,
+          previousPosition: this.membersBuild[last].position,
+          parentGroup: this.membersBuild[last].type
+        });
+      } else {
+        await this.createDefaultBuild();
+      }
+    },
+
+    async createDefaultBuild() {
+      this.membersBuild.push(this.generateNewComponent(DefinitionType.LOGIC, 0, DefinitionType.BUILDER));
+      await this.addNextOptions({ previousComponentType: DefinitionType.LOGIC, previousPosition: 0, parentGroup: DefinitionType.LOGIC });
     },
 
     generateMembersAsNode(): void {
@@ -69,8 +85,8 @@ export default defineComponent({
       return;
     },
 
-    processAny(item: any, position: number): any {
-      if (isObjectHasKeys(item, ["@id"])) return this.processIri(item, position);
+    async processAny(item: any, position: number): Promise<any> {
+      if (isObjectHasKeys(item, ["@id"])) return await this.processIri(item, position);
       else if (isArrayHasLength(item)) return this.processArray(item, position);
       else return this.processObject(item, position);
     },
@@ -84,20 +100,20 @@ export default defineComponent({
     processObject(item: any, position: number): any {
       for (const [key, value] of Object.entries(item)) {
         if (key === SHACL.AND || key === SHACL.OR) {
-          return this.generateNewComponent(DefinitionType.LOGIC, position, { key: key, value: value });
+          return this.generateNewComponent(DefinitionType.LOGIC, position, { iri: key, children: value });
         } else {
           console.log("unexpected key in processObject: " + key);
         }
       }
     },
 
-    processArray(items: any[], position: number): any {
+    async processArray(items: any[], position: number): Promise<any> {
       let arrayPosition = position;
       const result = [] as any[];
-      items.forEach((item: any) => {
-        result.push(this.processAny(item, arrayPosition));
+      for (const item in items) {
+        result.push(await this.processAny(item, arrayPosition));
         arrayPosition++;
-      });
+      }
       return result;
     },
 
@@ -153,9 +169,9 @@ export default defineComponent({
       this.membersBuild[index] = data;
     },
 
-    async addNextOptions(data: any): Promise<void> {
+    async addNextOptions(data: NextComponentSummary): Promise<void> {
       const nextOptionsComponent = this.genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
-      if (this.membersBuild[data.previousPosition + 1].type === DefinitionType.ADD_NEXT) {
+      if (data.previousPosition !== this.membersBuild.length - 1 && this.membersBuild[data.previousPosition + 1].type === DefinitionType.ADD_NEXT) {
         this.membersBuild[data.previousPosition + 1] = nextOptionsComponent;
       } else {
         this.membersBuild.splice(data.previousPosition + 1, 0, nextOptionsComponent);
@@ -166,12 +182,22 @@ export default defineComponent({
       itemToScrollTo?.scrollIntoView();
     },
 
-    genNextOptions(position: number, previous: DefinitionType, group: DefinitionType) {
+    addItem(data: { selectedType: DefinitionType; position: number; value: any }): void {
+      const newComponent = this.generateNewComponent(data.selectedType, data.position, data.value);
+      if (!newComponent) return;
+      this.membersBuild[data.position] = newComponent;
+      if (this.membersBuild[this.membersBuild.length - 1].type !== DefinitionType.ADD_NEXT) {
+        this.membersBuild.push(this.genNextOptions(this.membersBuild.length - 1, this.membersBuild[this.membersBuild.length - 1].type, DefinitionType.BUILDER));
+      }
+      this.updatePositions();
+    },
+
+    genNextOptions(position: number, previous: DefinitionType, group?: DefinitionType) {
       return {
         id: "addNext_" + (position + 1),
         value: {
           previousPosition: position,
-          previousType: previous,
+          previousComponentType: previous,
           parentGroup: group
         },
         position: position + 1,

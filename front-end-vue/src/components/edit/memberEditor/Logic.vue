@@ -2,7 +2,7 @@
   <div class="logic-container" :id="id">
     <div class="label-container">
       <span class="float-text">Logic</span>
-      <Dropdown v-model="selected" :options="options" placeholder="Select logic" />
+      <Dropdown v-model="selected" :options="options" optionLabel="name" placeholder="Select logic" />
     </div>
     <AddDeleteButtons :last="last" :position="position" @deleteClicked="deleteClicked" @addNextClicked="addNextClicked" />
   </div>
@@ -16,13 +16,14 @@ import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import { DefinitionType } from "@/models/definition/DefinitionType";
 import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
 import { SHACL } from "@/vocabulary/SHACL";
+import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "Logic",
   props: {
     id: { type: String, required: true },
     position: { type: Number, required: true },
-    value: { type: Object as PropType<{ iri: string; name: string }>, required: false },
+    value: { type: Object as PropType<{ iri: string; children: PropType<Array<any>> | undefined }>, required: false },
     last: { type: Boolean, required: true }
   },
   components: { AddDeleteButtons },
@@ -37,10 +38,11 @@ export default defineComponent({
     }
   },
   mounted() {
-    if (this.value) {
-      this.selected = this.value;
+    if (this.value && isObjectHasKeys(this.value, ["iri", "children"])) {
+      const found = this.options.find(option => option.iri === this.value?.iri);
+      this.selected = found ? found : this.options[1];
     } else {
-      this.selected = this.options[0];
+      this.selected = this.options[1];
     }
   },
   data() {
@@ -57,7 +59,7 @@ export default defineComponent({
     onConfirm(): void {
       this.$emit("updateClicked", {
         id: this.id,
-        value: this.selected,
+        value: { iri: this.selected.iri, children: this.value?.children },
         position: this.position,
         type: DefinitionType.LOGIC,
         component: DefinitionComponent.LOGIC,
@@ -79,7 +81,8 @@ export default defineComponent({
     addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
         previousComponentType: DefinitionType.LOGIC,
-        previousPosition: this.position
+        previousPosition: this.position,
+        parentGroup: DefinitionType.LOGIC
       });
     }
   }

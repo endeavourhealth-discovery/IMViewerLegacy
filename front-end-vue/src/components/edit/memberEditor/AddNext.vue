@@ -62,6 +62,7 @@ export default defineComponent({
           this.options = [DefinitionType.LOGIC, DefinitionType.MEMBER];
           break;
         case DefinitionType.LOGIC:
+          console.log("here");
           if (value.parentGroup === DefinitionType.BUILDER) {
             this.options = [DefinitionType.MEMBER];
           } else {
@@ -69,6 +70,8 @@ export default defineComponent({
           }
           break;
         default:
+          console.log("fell through switch statement");
+          console.log(value);
           break;
       }
     }

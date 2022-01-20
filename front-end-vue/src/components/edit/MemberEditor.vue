@@ -38,7 +38,7 @@ export default defineComponent({
     return {
       members: {} as any,
       included: [] as any[],
-      loading: false,
+      loading: true,
       ecl: {} as any,
       editorType: "Builder",
       editorOptions: ["Builder", "Ecl"]

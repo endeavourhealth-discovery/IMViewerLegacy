@@ -99,10 +99,10 @@ export default defineComponent({
       loading: false
     };
   },
-  mounted() {
+  async mounted() {
     this.loading = true;
     window.addEventListener("resize", this.onResize);
-    this.fetchConceptData();
+    await this.fetchConceptData();
     this.onResize();
     this.loading = false;
   },
