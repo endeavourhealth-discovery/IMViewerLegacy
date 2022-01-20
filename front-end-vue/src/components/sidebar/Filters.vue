@@ -80,12 +80,15 @@ export default defineComponent({
     },
     resetStatus() {
       this.selectedStatus = this.filterOptions.status.filter((item: EntityReferenceNode) => this.filterDefaults.statusOptions.includes(item["@id"]));
+      this.checkForSearch();
     },
     resetSchemes() {
       this.selectedSchemes = this.filterOptions.schemes.filter((item: Namespace) => this.filterDefaults.schemeOptions.includes(item.iri));
+      this.checkForSearch();
     },
     resetTypes() {
       this.selectedTypes = this.filterOptions.types.filter((item: EntityReferenceNode) => this.filterDefaults.typeOptions.includes(item["@id"]));
+      this.checkForSearch();
     },
     checkForSearch(): void {
       this.updateStoreSelectedFilters();
