@@ -62,16 +62,14 @@ export default defineComponent({
           this.options = [DefinitionType.LOGIC, DefinitionType.MEMBER];
           break;
         case DefinitionType.LOGIC:
-          console.log("here");
           if (value.parentGroup === DefinitionType.BUILDER) {
-            this.options = [DefinitionType.MEMBER];
+            this.options = [DefinitionType.MEMBER, DefinitionType.LOGIC];
           } else {
             this.options = [DefinitionType.LOGIC];
           }
           break;
         default:
-          console.log("fell through switch statement");
-          console.log(value);
+          console.error("Unhandled component type within member editor AddNext generateOptions switch");
           break;
       }
     }

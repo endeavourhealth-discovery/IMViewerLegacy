@@ -34,12 +34,13 @@ import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import AddDeleteButtons from "@/components/edit/memberEditor/AddDeleteButtons.vue";
 import AddNext from "@/components/edit/memberEditor/AddNext.vue";
 import Logic from "@/components/edit/memberEditor/Logic.vue";
+import Member from "@/components/edit/memberEditor/Member.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 
 export default defineComponent({
   name: "Builder",
   props: { included: { type: Array as PropType<Array<any>>, required: true } },
-  components: { AddDeleteButtons, AddNext, Logic },
+  components: { AddDeleteButtons, AddNext, Logic, Member },
   emits: {
     definitionUpdated: (payload: any) => true
   },
@@ -65,11 +66,7 @@ export default defineComponent({
       }
       if (isArrayHasLength(this.membersBuild)) {
         const last = this.membersBuild.length - 1;
-        await this.addNextOptions({
-          previousComponentType: this.membersBuild[last].type,
-          previousPosition: this.membersBuild[last].position,
-          parentGroup: this.membersBuild[last].type
-        });
+        this.membersBuild.push(this.genNextOptions(last, this.membersBuild[last].type, DefinitionType.BUILDER));
       } else {
         await this.createDefaultBuild();
       }
@@ -77,7 +74,7 @@ export default defineComponent({
 
     async createDefaultBuild() {
       this.membersBuild.push(this.generateNewComponent(DefinitionType.LOGIC, 0, DefinitionType.BUILDER));
-      await this.addNextOptions({ previousComponentType: DefinitionType.LOGIC, previousPosition: 0, parentGroup: DefinitionType.LOGIC });
+      this.membersBuild.push(this.genNextOptions(1, DefinitionType.LOGIC));
     },
 
     generateMembersAsNode(): void {
@@ -159,9 +156,19 @@ export default defineComponent({
     deleteItem(data: ComponentDetails): void {
       const index = this.membersBuild.findIndex(item => item.position === data.position);
       this.membersBuild.splice(index, 1);
+      const length = this.membersBuild.length;
       if (data.position === 0) {
         this.membersBuild.unshift(this.genNextOptions(0, DefinitionType.BUILDER, DefinitionType.BUILDER));
       }
+      if (index < length - 1 && this.membersBuild[index].type === DefinitionType.ADD_NEXT) {
+        this.membersBuild[index] = this.genNextOptions(index - 1, this.membersBuild[index - 1].type, DefinitionType.BUILDER);
+      }
+      if (this.membersBuild[length - 1].type !== DefinitionType.ADD_NEXT) {
+        this.membersBuild.push(this.genNextOptions(length - 1, this.membersBuild[length - 1].type, DefinitionType.BUILDER));
+      } else {
+        this.membersBuild[length - 1] = this.genNextOptions(length - 2, this.membersBuild[length - 2].type, DefinitionType.BUILDER);
+      }
+      this.updatePositions();
     },
 
     updateItem(data: ComponentDetails) {
