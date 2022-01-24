@@ -12,6 +12,7 @@ export function getContainerElementOptimalHeight(
   for (const subClass of siblingClasses) {
     const classElement = container.getElementsByClassName(subClass)[0] as HTMLElement;
     if (classElement) height -= classElement.getBoundingClientRect().height;
+    // console.log(classElement);
   }
   if (includeRemPadding && remPaddingQuantity) {
     const currentFontSize = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue("font-size"));

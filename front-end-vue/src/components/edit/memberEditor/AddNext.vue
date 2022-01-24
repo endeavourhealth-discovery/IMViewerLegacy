@@ -63,7 +63,7 @@ export default defineComponent({
           break;
         case DefinitionType.LOGIC:
           if (value.parentGroup === DefinitionType.BUILDER) {
-            this.options = [DefinitionType.MEMBER, DefinitionType.LOGIC];
+            this.options = [DefinitionType.MEMBER, DefinitionType.SET, DefinitionType.LOGIC];
           } else {
             this.options = [DefinitionType.LOGIC];
           }

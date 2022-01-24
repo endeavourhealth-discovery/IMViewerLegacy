@@ -96,15 +96,16 @@ export default defineComponent({
       membersUpdated: {} as any,
       active: 0,
       contentHeight: "",
-      loading: false
+      loading: true
     };
   },
   async mounted() {
     this.loading = true;
     window.addEventListener("resize", this.onResize);
     await this.fetchConceptData();
-    this.onResize();
     this.loading = false;
+    await this.$nextTick();
+    this.onResize();
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onResize);

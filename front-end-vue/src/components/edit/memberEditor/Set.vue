@@ -1,7 +1,7 @@
 <template>
-  <div class="member-item-container" :id="id">
+  <div class="set-item-container" :id="id">
     <div class="label-container">
-      <span class="float-text">Member</span>
+      <span class="float-text">Set</span>
       <InputText
         ref="miniSearchInput"
         type="text"
@@ -44,7 +44,7 @@ import AddDeleteButtons from "@/components/edit/memberEditor/AddDeleteButtons.vu
 import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
-  name: "Member",
+  name: "Set",
   props: {
     id: { type: String, required: true },
     position: { type: Number, required: true },
@@ -106,8 +106,11 @@ export default defineComponent({
         this.filterOptions.status.forEach((status: EntityReferenceNode) => {
           searchRequest.statusFilter.push(status["@id"]);
         });
+
         searchRequest.typeFilter = [];
-        searchRequest.typeFilter.push(IM.CONCEPT);
+        searchRequest.typeFilter.push(IM.VALUE_SET);
+        searchRequest.typeFilter.push(IM.CONCEPT_SET);
+        searchRequest.typeFilter.push(IM.CONCEPT_SET_GROUP);
         if (isObjectHasKeys(this.request, ["cancel", "msg"])) {
           await this.request.cancel({ status: 499, message: "Search cancelled by user" });
         }
@@ -150,7 +153,7 @@ export default defineComponent({
         this.selectedResult = { "@id": data.iri, name: data.name };
       }
       this.searchTerm = data.name;
-      this.$emit("updateClicked", this.createMember());
+      this.$emit("updateClicked", this.createSet());
       this.hideOverlay();
     },
 
@@ -158,14 +161,14 @@ export default defineComponent({
       this.showOverlay(event);
     },
 
-    createMember(): ComponentDetails {
+    createSet(): ComponentDetails {
       return {
         value: this.selectedResult,
         id: this.id,
         position: this.position,
-        type: DefinitionType.MEMBER,
+        type: DefinitionType.SET,
         JSON: this.selectedResult,
-        component: DefinitionComponent.MEMBER
+        component: DefinitionComponent.SET
       };
     },
 
@@ -174,17 +177,17 @@ export default defineComponent({
         id: this.id,
         value: this.selectedResult,
         position: this.position,
-        type: DefinitionType.MEMBER,
-        component: DefinitionComponent.MEMBER,
+        type: DefinitionType.SET,
+        component: DefinitionComponent.SET,
         JSON: this.selectedResult
       });
     },
 
     addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
-        previousComponentType: DefinitionType.MEMBER,
+        previousComponentType: DefinitionType.SET,
         previousPosition: this.position,
-        parentGroup: DefinitionType.MEMBER
+        parentGroup: DefinitionType.SET
       });
     }
   }
@@ -192,7 +195,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.member-item-container {
+.set-item-container {
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;

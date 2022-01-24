@@ -68,11 +68,11 @@ export default defineComponent({
         const last = this.membersBuild.length - 1;
         this.membersBuild.push(this.genNextOptions(last, this.membersBuild[last].type, DefinitionType.BUILDER));
       } else {
-        await this.createDefaultBuild();
+        this.createDefaultBuild();
       }
     },
 
-    async createDefaultBuild() {
+    createDefaultBuild() {
       this.membersBuild.push(this.generateNewComponent(DefinitionType.LOGIC, 0, DefinitionType.BUILDER));
       this.membersBuild.push(this.genNextOptions(1, DefinitionType.LOGIC));
     },

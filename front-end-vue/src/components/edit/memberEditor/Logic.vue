@@ -4,6 +4,22 @@
       <span class="float-text">Logic</span>
       <Dropdown v-model="selected" :options="options" optionLabel="name" placeholder="Select logic" />
     </div>
+    <div class="children-container">
+      <template v-for="item in logicBuild" :key="item.id">
+        <component
+          :is="item.component"
+          :value="item.value"
+          :id="item.id"
+          :position="item.position"
+          :last="logicBuild.length - 2 <= item.position ? true : false"
+          @deleteClicked="deleteItem"
+          @addClicked="addItem"
+          @updateClicked="updateItem"
+          @addNextOptionsClicked="addNextOptions"
+        >
+        </component>
+      </template>
+    </div>
     <AddDeleteButtons :last="last" :position="position" @deleteClicked="deleteClicked" @addNextClicked="addNextClicked" />
   </div>
 </template>
@@ -11,12 +27,18 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import AddDeleteButtons from "@/components/edit/memberEditor/AddDeleteButtons.vue";
+import Member from "@/components/edit/memberEditor/Member.vue";
+import Set from "@/components/edit/memberEditor/Set.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import { DefinitionType } from "@/models/definition/DefinitionType";
 import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
 import { SHACL } from "@/vocabulary/SHACL";
-import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
+import { TTIriRef } from "@/models/TripleTree";
+import EntityService from "@/services/EntityService";
+import { RDF } from "@/vocabulary/RDF";
+import { isValueSet } from "@/helpers/ConceptTypeMethods";
 
 export default defineComponent({
   name: "Logic",
@@ -26,7 +48,7 @@ export default defineComponent({
     value: { type: Object as PropType<{ iri: string; children: PropType<Array<any>> | undefined }>, required: false },
     last: { type: Boolean, required: true }
   },
-  components: { AddDeleteButtons },
+  components: { AddDeleteButtons, Member, Set },
   emits: {
     addNextOptionsClicked: (payload: NextComponentSummary) => true,
     deleteClicked: (payload: ComponentDetails) => true,
@@ -37,10 +59,11 @@ export default defineComponent({
       this.onConfirm();
     }
   },
-  mounted() {
+  async mounted() {
     if (this.value && isObjectHasKeys(this.value, ["iri", "children"])) {
       const found = this.options.find(option => option.iri === this.value?.iri);
       this.selected = found ? found : this.options[1];
+      await this.createBuild();
     } else {
       this.selected = this.options[1];
     }
@@ -52,10 +75,76 @@ export default defineComponent({
         { iri: SHACL.OR, name: "OR" },
         { iri: SHACL.NOT, name: "NOT" }
       ] as { iri: string; name: string }[],
-      selected: {} as { iri: string; name: string }
+      selected: {} as { iri: string; name: string },
+      logicBuild: [] as any[]
     };
   },
   methods: {
+    async createBuild() {
+      this.logicBuild = [];
+      if (!this.hasChildren(this.value)) return;
+      let position = 0;
+      for (const child of this.value.children) {
+        this.logicBuild.push(await this.processChild(child, position));
+        position++;
+      }
+      if (isArrayHasLength(this.logicBuild)) {
+        const last = this.logicBuild.length - 1;
+        this.logicBuild.push(this.genNextOptions(last, this.logicBuild[last].type, DefinitionType.LOGIC));
+      } else {
+        this.createDefaultBuild();
+      }
+    },
+
+    createDefaultBuild() {
+      this.logicBuild.push(this.genNextOptions(0, DefinitionType.LOGIC));
+    },
+
+    async processChild(child: any, position: number) {
+      if (isObjectHasKeys(child, ["@id"])) return await this.processIri(child, position);
+      else return this.processLogic(child, position);
+    },
+
+    processLogic(child: any, position: number) {
+      for (const [key, value] of Object.entries(child)) {
+        if (key === SHACL.AND || key === SHACL.OR || key === SHACL.NOT)
+          return this.generateNewComponent(DefinitionType.LOGIC, position, { iri: key, children: value });
+        else console.log("unexpected key in processLogic: " + key);
+      }
+    },
+
+    async processIri(iri: TTIriRef, position: number) {
+      const types = (await EntityService.getPartialEntity(iri["@id"], [RDF.TYPE]))[RDF.TYPE];
+      if (isValueSet(types)) return this.generateNewComponent(DefinitionType.SET, position, iri);
+      else return this.generateNewComponent(DefinitionType.MEMBER, position, iri);
+    },
+
+    genNextOptions(position: number, previous: DefinitionType, group?: DefinitionType) {
+      return {
+        id: "addNext_" + (position + 1),
+        value: {
+          previousPosition: position,
+          previousComponentType: previous,
+          parentGroup: group
+        },
+        position: position + 1,
+        type: DefinitionType.ADD_NEXT,
+        JSON: {},
+        component: DefinitionComponent.ADD_NEXT
+      };
+    },
+
+    updatePositions(): void {
+      this.logicBuild.forEach((item: ComponentDetails, index: number) => {
+        item.position = index;
+      });
+    },
+
+    hasChildren(data: any): data is { iri: string; children: any[] } {
+      if (isArrayHasLength((data as { iri: string; children: any[] }).children)) return true;
+      return false;
+    },
+
     onConfirm(): void {
       this.$emit("updateClicked", {
         id: this.id,
@@ -65,6 +154,91 @@ export default defineComponent({
         component: DefinitionComponent.LOGIC,
         JSON: this.selected.iri
       });
+    },
+
+    updateItem(data: ComponentDetails) {
+      const index = this.logicBuild.findIndex(item => item.position === data.position);
+      this.logicBuild[index] = data;
+    },
+
+    addItem(data: { selectedType: DefinitionType; position: number; value: any }): void {
+      const newComponent = this.generateNewComponent(data.selectedType, data.position, data.value);
+      if (!newComponent) return;
+      this.logicBuild[data.position] = newComponent;
+      if (this.logicBuild[this.logicBuild.length - 1].type !== DefinitionType.ADD_NEXT) {
+        this.logicBuild.push(this.genNextOptions(this.logicBuild.length - 1, this.logicBuild[this.logicBuild.length - 1].type, DefinitionType.LOGIC));
+      }
+      this.updatePositions();
+    },
+
+    async addNextOptions(data: NextComponentSummary): Promise<void> {
+      const nextOptionsComponent = this.genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
+      if (data.previousPosition !== this.logicBuild.length - 1 && this.logicBuild[data.previousPosition + 1].type === DefinitionType.ADD_NEXT) {
+        this.logicBuild[data.previousPosition + 1] = nextOptionsComponent;
+      } else {
+        this.logicBuild.splice(data.previousPosition + 1, 0, nextOptionsComponent);
+      }
+      this.updatePositions();
+      await this.$nextTick();
+      const itemToScrollTo = document.getElementById(nextOptionsComponent.id);
+      itemToScrollTo?.scrollIntoView();
+    },
+
+    generateNewComponent(type: DefinitionType, position: number, data: any) {
+      let result;
+      switch (type) {
+        case DefinitionType.LOGIC:
+          result = {
+            id: DefinitionType.LOGIC + "_" + position,
+            value: data,
+            position: position,
+            type: DefinitionType.LOGIC,
+            json: {},
+            component: DefinitionComponent.LOGIC
+          };
+          break;
+        case DefinitionType.MEMBER:
+          result = {
+            id: DefinitionType.MEMBER + "_" + position,
+            value: data,
+            position: position,
+            type: DefinitionType.MEMBER,
+            json: {},
+            component: DefinitionComponent.MEMBER
+          };
+          break;
+        case DefinitionType.SET:
+          result = {
+            id: DefinitionType.SET + "_" + position,
+            value: data,
+            position: position,
+            type: DefinitionType.SET,
+            json: {},
+            component: DefinitionComponent.SET
+          };
+          break;
+        default:
+          break;
+      }
+      return result;
+    },
+
+    deleteItem(data: ComponentDetails): void {
+      const index = this.logicBuild.findIndex(item => item.position === data.position);
+      this.logicBuild.splice(index, 1);
+      const length = this.logicBuild.length;
+      if (data.position === 0) {
+        this.logicBuild.unshift(this.genNextOptions(0, DefinitionType.LOGIC, DefinitionType.LOGIC));
+      }
+      if (index < length - 1 && this.logicBuild[index].type === DefinitionType.ADD_NEXT) {
+        this.logicBuild[index] = this.genNextOptions(index - 1, this.logicBuild[index - 1].type, DefinitionType.LOGIC);
+      }
+      if (this.logicBuild[length - 1].type !== DefinitionType.ADD_NEXT) {
+        this.logicBuild.push(this.genNextOptions(length - 1, this.logicBuild[length - 1].type, DefinitionType.LOGIC));
+      } else {
+        this.logicBuild[length - 1] = this.genNextOptions(length - 2, this.logicBuild[length - 2].type, DefinitionType.LOGIC);
+      }
+      this.updatePositions();
     },
 
     deleteClicked(): void {
@@ -94,7 +268,12 @@ export default defineComponent({
   display: flex;
   flex-flow: row;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  margin: 0 1rem 0 0;
+  padding: 1rem;
+  border: 1px solid #34314c;
+  border-radius: 3px;
+  position: relative;
 }
 
 .p-button-label {
@@ -111,9 +290,14 @@ export default defineComponent({
 .label-container {
   margin: 0 1rem 0 0;
   padding: 1rem;
-  border: 1px solid #34314c;
-  border-radius: 3px;
   position: relative;
+}
+
+.children-container {
+  margin: 0 1rem 0 0;
+  padding: 1rem;
+  /* border: 1px solid #34314c;
+  border-radius: 3px; */
 }
 
 .p-dropdown {
