@@ -35,13 +35,14 @@ import AddDeleteButtons from "@/components/edit/memberEditor/AddDeleteButtons.vu
 import AddNext from "@/components/edit/memberEditor/AddNext.vue";
 import Logic from "@/components/edit/memberEditor/Logic.vue";
 import Member from "@/components/edit/memberEditor/Member.vue";
+import Set from "@/components/edit/memberEditor/Set.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import Refinement from "@/components/edit/memberEditor/Refinement.vue";
 
 export default defineComponent({
   name: "Builder",
   props: { included: { type: Array as PropType<Array<any>>, required: true } },
-  components: { AddDeleteButtons, AddNext, Logic, Member, Refinement },
+  components: { AddDeleteButtons, AddNext, Logic, Member, Set, Refinement },
   emits: {
     definitionUpdated: (payload: any) => true
   },

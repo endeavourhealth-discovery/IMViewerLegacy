@@ -84,13 +84,13 @@ export default defineComponent({
     createDefaultBuild() {
       this.refinementBuild = [];
       const property = this.generateNewComponent(DefinitionType.PROPERTY, 0, undefined);
-      if (property) this.refinementBuild.push();
+      if (property) this.refinementBuild.push(property);
       const quantifier = this.generateNewComponent(DefinitionType.QUANTIFIER, 1, undefined);
-      if (quantifier) this.refinementBuild.push();
+      if (quantifier) this.refinementBuild.push(quantifier);
     },
 
     hasData(data: any): data is { propertyIri: string; children: any[] } {
-      if ((data as { propertyIri: string; children: any[] }).propertyIri) return true;
+      if (data && (data as { propertyIri: string; children: any[] }).propertyIri) return true;
       return false;
     },
 

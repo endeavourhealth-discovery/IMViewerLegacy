@@ -29,6 +29,14 @@ export default defineComponent({
     addClicked: (payload: { selectedType: DefinitionType; position: number }) => true,
     deleteClicked: (payload: ComponentDetails) => true
   },
+  watch: {
+    options: {
+      handler() {
+        this.options.sort();
+      },
+      deep: true
+    }
+  },
   mounted() {
     this.generateOptions(this.value);
   },
@@ -62,11 +70,8 @@ export default defineComponent({
           this.options = [DefinitionType.LOGIC, DefinitionType.MEMBER, DefinitionType.SET, DefinitionType.REFINEMENT];
           break;
         case DefinitionType.LOGIC:
-          if (value.parentGroup === DefinitionType.BUILDER) {
-            this.options = [DefinitionType.MEMBER, DefinitionType.SET, DefinitionType.LOGIC, DefinitionType.REFINEMENT];
-          } else {
-            this.options = [DefinitionType.LOGIC];
-          }
+          this.options = [DefinitionType.MEMBER, DefinitionType.SET, DefinitionType.LOGIC, DefinitionType.REFINEMENT];
+
           break;
         case DefinitionType.SET:
           this.options = [DefinitionType.LOGIC, DefinitionType.MEMBER, DefinitionType.SET, DefinitionType.REFINEMENT];
