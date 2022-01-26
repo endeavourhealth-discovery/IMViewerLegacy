@@ -2,7 +2,7 @@
   <div class="p-d-flex p-flex-column p-jc-start" id="secondary-tree-bar-container">
     <div id="alternate-parents-container" class="p-d-flex p-flex-column p-jc-start p-ai-start">
       <Button
-        v-for="altParent in alternateParents"
+        v-for="altParent of alternateParents"
         :key="altParent.iri"
         :label="altParent.name"
         :disabled="loading || altParent.name === ''"

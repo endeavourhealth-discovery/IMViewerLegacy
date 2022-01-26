@@ -2,7 +2,7 @@
   <div id="members-builder-container">
     <h3>Members builder</h3>
     <div id="members-build">
-      <template v-for="item in membersBuild" :key="item.id">
+      <template v-for="item of membersBuild" :key="item.id">
         <component
           :is="item.component"
           :value="item.value"
@@ -108,7 +108,7 @@ export default defineComponent({
     async processArray(items: any[], position: number): Promise<any> {
       let arrayPosition = position;
       const result = [] as any[];
-      for (const item in items) {
+      for (const item of items) {
         result.push(await this.processAny(item, arrayPosition));
         arrayPosition++;
       }

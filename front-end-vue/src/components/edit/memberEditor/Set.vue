@@ -59,9 +59,10 @@ export default defineComponent({
   },
   components: { SearchMiniOverlay, AddDeleteButtons },
   computed: mapState(["filterOptions", "selectedFilters"]),
-  mounted() {
+  async mounted() {
     if (this.value && isObjectHasKeys(this.value, ["name", "@id"])) {
       this.updateSelectedResult(this.value);
+      await this.search();
     } else {
       this.selectedResult = {} as TTIriRef;
       this.searchTerm = "";

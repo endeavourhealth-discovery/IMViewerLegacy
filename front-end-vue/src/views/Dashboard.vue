@@ -3,7 +3,7 @@
     <ProgressSpinner />
   </div>
   <div v-if="!loading" class="dashboard-container">
-    <template v-for="(cardData, index) in cardsData" :key="index">
+    <template v-for="(cardData, index) of cardsData" :key="index">
       <component
         :is="cardData.component"
         :inputData="cardData.inputData"

@@ -1,6 +1,6 @@
 <template>
   <div class="add-next-container">
-    <template v-for="option in options" :key="option">
+    <template v-for="option of options" :key="option">
       <Button icon="fas fa-plus" :label="option" class="p-button-rounded p-button-outlined p-button-danger add-next-button" @click="addItem(option)"> </Button>
     </template>
     <Button v-if="!last" icon="fas fa-minus" class="p-button-rounded p-button-outlined p-button-danger add-next-delete-button" @click="deleteClicked" />

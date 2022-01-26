@@ -10,7 +10,7 @@
     <div class="refinement-group-children-next-container">
       <span class="float-text">Refinement group</span>
       <div class="refinement-group-children-container">
-        <template v-for="item in refinementGroupBuild" :key="item.id">
+        <template v-for="item of refinementGroupBuild" :key="item.id">
           <component
             :is="item.component"
             :value="item.value"

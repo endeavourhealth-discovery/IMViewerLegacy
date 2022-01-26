@@ -6,7 +6,7 @@
     <div class="refinement-children-next-container">
       <span class="float-text">Refinement</span>
       <div v-if="refinementBuild && refinementBuild.length" class="refinement-children-container">
-        <template v-for="child in refinementBuild" :key="child.id">
+        <template v-for="child of refinementBuild" :key="child.id">
           <component :is="child.component" :value="child.value" :id="child.id" :position="child.position" @updateClicked="updateChild"> </component>
         </template>
       </div>

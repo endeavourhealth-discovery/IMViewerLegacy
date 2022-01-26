@@ -5,7 +5,7 @@
       <Dropdown v-model="selected" :options="options" optionLabel="name" placeholder="Select logic" />
     </div>
     <div class="children-container">
-      <template v-for="item in logicBuild" :key="item.id">
+      <template v-for="item of logicBuild" :key="item.id">
         <component
           :is="item.component"
           :value="item.value"

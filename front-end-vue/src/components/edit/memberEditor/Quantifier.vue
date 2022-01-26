@@ -57,9 +57,10 @@ export default defineComponent({
   },
   components: { SearchMiniOverlay },
   computed: mapState(["filterOptions", "selectedFilters"]),
-  mounted() {
+  async mounted() {
     if (this.value && this.hasData(this.value)) {
       this.updateSelectedResult(this.value.quantifier);
+      await this.search();
     } else {
       this.selectedResult = {} as TTIriRef;
       this.searchTerm = "";

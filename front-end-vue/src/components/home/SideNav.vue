@@ -8,7 +8,7 @@
 
         <div id="center-icons" style="color: grey">
           <div
-            v-for="item in menuItems"
+            v-for="item of menuItems"
             :key="item.route"
             class="center-icon-container"
             v-bind:class="{ active: isActive(item.name) }"

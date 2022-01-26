@@ -18,7 +18,7 @@
     </template>
     <div id="query-builder-container">
       <div id="query-build">
-        <template v-for="item in queryBuild" :key="item.id">
+        <template v-for="item of queryBuild" :key="item.id">
           <component
             :is="item.component"
             :value="item.value"

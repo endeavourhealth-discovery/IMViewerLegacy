@@ -4,7 +4,7 @@
     <div class="focus-concept-children-next-container">
       <span class="float-text">Focus concept</span>
       <div v-if="focusConceptBuild && focusConceptBuild.length" class="focus-concept-children-container">
-        <template v-for="child in focusConceptBuild" :key="child.id">
+        <template v-for="child of focusConceptBuild" :key="child.id">
           <component :is="child.component" :value="child.value" :id="child.id" :position="child.position" @updateClicked="updateChild"> </component>
         </template>
       </div>

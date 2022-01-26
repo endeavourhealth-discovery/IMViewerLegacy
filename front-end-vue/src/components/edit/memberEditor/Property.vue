@@ -64,6 +64,7 @@ export default defineComponent({
   async mounted() {
     if (this.value) {
       await this.updateSelectedResult(this.value);
+      await this.search();
     } else {
       this.selectedResult = {} as TTIriRef;
       this.searchTerm = "";
