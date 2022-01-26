@@ -29,6 +29,7 @@ import { defineComponent, PropType } from "vue";
 import AddDeleteButtons from "@/components/edit/memberEditor/AddDeleteButtons.vue";
 import Member from "@/components/edit/memberEditor/Member.vue";
 import Set from "@/components/edit/memberEditor/Set.vue";
+import AddNext from "@/components/edit/memberEditor/AddNext.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import { DefinitionType } from "@/models/definition/DefinitionType";
@@ -39,6 +40,7 @@ import { TTIriRef } from "@/models/TripleTree";
 import EntityService from "@/services/EntityService";
 import { RDF } from "@/vocabulary/RDF";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
+import Refinement from "@/components/edit/memberEditor/Refinement.vue";
 
 export default defineComponent({
   name: "Logic",
@@ -48,7 +50,7 @@ export default defineComponent({
     value: { type: Object as PropType<{ iri: string; children: PropType<Array<any>> | undefined }>, required: false },
     last: { type: Boolean, required: true }
   },
-  components: { AddDeleteButtons, Member, Set },
+  components: { AddDeleteButtons, AddNext, Member, Set, Refinement },
   emits: {
     addNextOptionsClicked: (payload: NextComponentSummary) => true,
     deleteClicked: (payload: ComponentDetails) => true,
@@ -102,14 +104,14 @@ export default defineComponent({
 
     async processChild(child: any, position: number) {
       if (isObjectHasKeys(child, ["@id"])) return await this.processIri(child, position);
-      else return this.processLogic(child, position);
+      else if (isObjectHasKeys(child, [SHACL.AND]) || isObjectHasKeys(child, [SHACL.OR]) || isObjectHasKeys(child, [SHACL.NOT]))
+        return this.processLogic(child, position);
+      else return this.processRefinement(child, position);
     },
 
     processLogic(child: any, position: number) {
       for (const [key, value] of Object.entries(child)) {
-        if (key === SHACL.AND || key === SHACL.OR || key === SHACL.NOT)
-          return this.generateNewComponent(DefinitionType.LOGIC, position, { iri: key, children: value });
-        else console.log("unexpected key in processLogic: " + key);
+        return this.generateNewComponent(DefinitionType.LOGIC, position, { iri: key, children: value });
       }
     },
 
@@ -117,6 +119,12 @@ export default defineComponent({
       const types = (await EntityService.getPartialEntity(iri["@id"], [RDF.TYPE]))[RDF.TYPE];
       if (isValueSet(types)) return this.generateNewComponent(DefinitionType.SET, position, iri);
       else return this.generateNewComponent(DefinitionType.MEMBER, position, iri);
+    },
+
+    processRefinement(child: any, position: number) {
+      for (const [key, value] of Object.entries(child)) {
+        return this.generateNewComponent(DefinitionType.REFINEMENT, position, { propertyIri: key, children: value });
+      }
     },
 
     genNextOptions(position: number, previous: DefinitionType, group?: DefinitionType) {
@@ -129,7 +137,7 @@ export default defineComponent({
         },
         position: position + 1,
         type: DefinitionType.ADD_NEXT,
-        JSON: {},
+        json: {},
         component: DefinitionComponent.ADD_NEXT
       };
     },
@@ -152,7 +160,7 @@ export default defineComponent({
         position: this.position,
         type: DefinitionType.LOGIC,
         component: DefinitionComponent.LOGIC,
-        JSON: this.selected.iri
+        json: this.selected.iri
       });
     },
 
@@ -217,6 +225,16 @@ export default defineComponent({
             component: DefinitionComponent.SET
           };
           break;
+        case DefinitionType.REFINEMENT:
+          result = {
+            id: DefinitionType.REFINEMENT + "_" + position,
+            value: data,
+            position: position,
+            type: DefinitionType.REFINEMENT,
+            json: {},
+            component: DefinitionComponent.REFINEMENT
+          };
+          break;
         default:
           break;
       }
@@ -248,7 +266,7 @@ export default defineComponent({
         position: this.position,
         type: DefinitionType.LOGIC,
         component: DefinitionComponent.LOGIC,
-        JSON: this.selected.iri
+        json: this.selected.iri
       });
     },
 

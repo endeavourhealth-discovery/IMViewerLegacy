@@ -6,6 +6,6 @@ export interface ComponentDetails {
   value: any;
   position: number;
   type: DefinitionType;
-  JSON: any;
+  json: any;
   component: DefinitionComponent;
 }

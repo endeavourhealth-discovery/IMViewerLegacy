@@ -1,7 +1,7 @@
 <template>
-  <div class="set-item-container" :id="id">
+  <div class="property-item-container" :id="id">
     <div class="label-container">
-      <span class="float-text">Set</span>
+      <span class="float-text">Property</span>
       <InputText
         ref="miniSearchInput"
         type="text"
@@ -42,13 +42,15 @@ import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import AddDeleteButtons from "@/components/edit/memberEditor/AddDeleteButtons.vue";
 import { IM } from "@/vocabulary/IM";
+import { RDFS } from "@/vocabulary/RDFS";
+import { RDF } from "@/vocabulary/RDF";
 
 export default defineComponent({
-  name: "Set",
+  name: "Property",
   props: {
     id: { type: String, required: true },
     position: { type: Number, required: true },
-    value: { type: Object as PropType<TTIriRef>, required: false },
+    value: { type: String, required: false },
     last: { type: Boolean, required: true }
   },
   emits: {
@@ -59,9 +61,9 @@ export default defineComponent({
   },
   components: { SearchMiniOverlay, AddDeleteButtons },
   computed: mapState(["filterOptions", "selectedFilters"]),
-  mounted() {
-    if (this.value && isObjectHasKeys(this.value, ["name", "@id"])) {
-      this.updateSelectedResult(this.value);
+  async mounted() {
+    if (this.value) {
+      await this.updateSelectedResult(this.value);
     } else {
       this.selectedResult = {} as TTIriRef;
       this.searchTerm = "";
@@ -85,11 +87,11 @@ export default defineComponent({
     //   }, 600);
     // },
 
-    // checkKey(event: any) {
-    //   if (event.code === "Enter") {
-    //     this.search();
-    //   }
-    // },
+    checkKey(event: any) {
+      if (event.code === "Enter") {
+        this.search();
+      }
+    },
 
     async search(): Promise<void> {
       if (this.searchTerm.length > 0) {
@@ -108,9 +110,7 @@ export default defineComponent({
         });
 
         searchRequest.typeFilter = [];
-        searchRequest.typeFilter.push(IM.VALUE_SET);
-        searchRequest.typeFilter.push(IM.CONCEPT_SET);
-        searchRequest.typeFilter.push(IM.CONCEPT_SET_GROUP);
+        searchRequest.typeFilter.push(RDF.PROPERTY);
         if (isObjectHasKeys(this.request, ["cancel", "msg"])) {
           await this.request.cancel({ status: 499, message: "Search cancelled by user" });
         }
@@ -145,15 +145,12 @@ export default defineComponent({
       return false;
     },
 
-    updateSelectedResult(data: ConceptSummary | TTIriRef) {
-      if (!isObjectHasKeys(data)) return;
-      if (this.isTTIriRef(data)) {
-        this.selectedResult = data;
-      } else {
-        this.selectedResult = { "@id": data.iri, name: data.name };
-      }
-      this.searchTerm = data.name;
-      this.$emit("updateClicked", this.createSet());
+    async updateSelectedResult(iri: string) {
+      if (!iri) return;
+      const name = (await EntityService.getPartialEntity(iri, [RDFS.LABEL]))[RDFS.LABEL];
+      this.selectedResult = { "@id": iri, name: name ? name : iri };
+      this.searchTerm = name;
+      this.$emit("updateClicked", this.createProperty());
       this.hideOverlay();
     },
 
@@ -161,25 +158,25 @@ export default defineComponent({
       this.showOverlay(event);
     },
 
-    createSet(): ComponentDetails {
+    createProperty(): ComponentDetails {
       return {
-        value: this.selectedResult,
+        value: this.selectedResult["@id"],
         id: this.id,
         position: this.position,
-        type: DefinitionType.SET,
-        json: this.selectedResult,
-        component: DefinitionComponent.SET
+        type: DefinitionType.PROPERTY,
+        json: this.selectedResult["@id"],
+        component: DefinitionComponent.PROPERTY
       };
     },
 
     deleteClicked(): void {
       this.$emit("deleteClicked", {
         id: this.id,
-        value: this.selectedResult,
+        value: this.selectedResult["@id"],
         position: this.position,
-        type: DefinitionType.SET,
-        component: DefinitionComponent.SET,
-        json: this.selectedResult
+        type: DefinitionType.PROPERTY,
+        component: DefinitionComponent.PROPERTY,
+        json: this.selectedResult["@id"]
       });
     },
 
@@ -195,7 +192,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.set-item-container {
+.property-item-container {
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;

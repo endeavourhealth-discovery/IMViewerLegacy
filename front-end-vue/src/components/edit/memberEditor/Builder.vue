@@ -36,11 +36,12 @@ import AddNext from "@/components/edit/memberEditor/AddNext.vue";
 import Logic from "@/components/edit/memberEditor/Logic.vue";
 import Member from "@/components/edit/memberEditor/Member.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
+import Refinement from "@/components/edit/memberEditor/Refinement.vue";
 
 export default defineComponent({
   name: "Builder",
   props: { included: { type: Array as PropType<Array<any>>, required: true } },
-  components: { AddDeleteButtons, AddNext, Logic, Member },
+  components: { AddDeleteButtons, AddNext, Logic, Member, Refinement },
   emits: {
     definitionUpdated: (payload: any) => true
   },
@@ -73,8 +74,8 @@ export default defineComponent({
     },
 
     createDefaultBuild() {
-      this.membersBuild.push(this.generateNewComponent(DefinitionType.LOGIC, 0, DefinitionType.BUILDER));
-      this.membersBuild.push(this.genNextOptions(1, DefinitionType.LOGIC));
+      this.membersBuild.push(this.generateNewComponent(DefinitionType.LOGIC, 0, undefined));
+      this.membersBuild.push(this.genNextOptions(1, DefinitionType.LOGIC, DefinitionType.BUILDER));
     },
 
     generateMembersAsNode(): void {
@@ -99,7 +100,7 @@ export default defineComponent({
         if (key === SHACL.AND || key === SHACL.OR) {
           return this.generateNewComponent(DefinitionType.LOGIC, position, { iri: key, children: value });
         } else {
-          console.log("unexpected key in processObject: " + key);
+          return this.generateNewComponent(DefinitionType.REFINEMENT, position, { propertyIri: key, children: value });
         }
       }
     },
@@ -145,6 +146,16 @@ export default defineComponent({
             type: DefinitionType.SET,
             json: {},
             component: DefinitionComponent.SET
+          };
+          break;
+        case DefinitionType.REFINEMENT:
+          result = {
+            id: DefinitionType.REFINEMENT + "_" + position,
+            value: data,
+            position: position,
+            type: DefinitionType.REFINEMENT,
+            json: {},
+            component: DefinitionComponent.REFINEMENT
           };
           break;
         default:
@@ -209,7 +220,7 @@ export default defineComponent({
         },
         position: position + 1,
         type: DefinitionType.ADD_NEXT,
-        JSON: {},
+        json: {},
         component: DefinitionComponent.ADD_NEXT
       };
     },
@@ -223,4 +234,15 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+#members-builder-container {
+  height: 100%;
+  width: 100%;
+}
+
+#members-build {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+</style>

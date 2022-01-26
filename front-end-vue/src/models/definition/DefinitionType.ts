@@ -3,5 +3,8 @@ export enum DefinitionType {
   MEMBER = "member",
   SET = "set",
   ADD_NEXT = "addNext",
-  BUILDER = "builder"
+  BUILDER = "builder",
+  REFINEMENT = "refinement",
+  PROPERTY = "property",
+  QUANTIFIER = "quantifier"
 }

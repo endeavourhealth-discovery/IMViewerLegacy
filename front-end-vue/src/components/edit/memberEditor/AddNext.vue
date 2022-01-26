@@ -52,21 +52,27 @@ export default defineComponent({
         value: null,
         type: DefinitionType.ADD_NEXT,
         component: DefinitionComponent.ADD_NEXT,
-        JSON: null
+        json: null
       });
     },
 
     generateOptions(value: NextComponentSummary) {
       switch (value.previousComponentType) {
         case DefinitionType.MEMBER:
-          this.options = [DefinitionType.LOGIC, DefinitionType.MEMBER];
+          this.options = [DefinitionType.LOGIC, DefinitionType.MEMBER, DefinitionType.SET, DefinitionType.REFINEMENT];
           break;
         case DefinitionType.LOGIC:
           if (value.parentGroup === DefinitionType.BUILDER) {
-            this.options = [DefinitionType.MEMBER, DefinitionType.SET, DefinitionType.LOGIC];
+            this.options = [DefinitionType.MEMBER, DefinitionType.SET, DefinitionType.LOGIC, DefinitionType.REFINEMENT];
           } else {
             this.options = [DefinitionType.LOGIC];
           }
+          break;
+        case DefinitionType.SET:
+          this.options = [DefinitionType.LOGIC, DefinitionType.MEMBER, DefinitionType.SET, DefinitionType.REFINEMENT];
+          break;
+        case DefinitionType.REFINEMENT:
+          this.options = [DefinitionType.MEMBER, DefinitionType.SET, DefinitionType.LOGIC, DefinitionType.REFINEMENT];
           break;
         default:
           console.error("Unhandled component type within member editor AddNext generateOptions switch");

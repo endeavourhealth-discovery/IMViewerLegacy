@@ -1,7 +1,7 @@
 <template>
-  <div class="set-item-container" :id="id">
+  <div class="quantifier-item-container" :id="id">
     <div class="label-container">
-      <span class="float-text">Set</span>
+      <span class="float-text">Quantifier</span>
       <InputText
         ref="miniSearchInput"
         type="text"
@@ -16,7 +16,6 @@
         autoWidth="true"
       />
     </div>
-    <AddDeleteButtons :last="last" :position="position" @deleteClicked="deleteClicked" @addNextClicked="addNextClicked" />
   </div>
   <OverlayPanel class="search-op" ref="miniSearchOP">
     <SearchMiniOverlay :searchTerm="searchTerm" :searchResults="searchResults" :loading="loading" @searchResultSelected="updateSelectedResult" />
@@ -40,15 +39,14 @@ import EntityService from "@/services/EntityService";
 import { DefinitionType } from "@/models/definition/DefinitionType";
 import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
-import AddDeleteButtons from "@/components/edit/memberEditor/AddDeleteButtons.vue";
 import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
-  name: "Set",
+  name: "Quantifier",
   props: {
     id: { type: String, required: true },
     position: { type: Number, required: true },
-    value: { type: Object as PropType<TTIriRef>, required: false },
+    value: { type: Object as PropType<{ propertyIri: string; quantifier: TTIriRef }>, required: false },
     last: { type: Boolean, required: true }
   },
   emits: {
@@ -57,11 +55,11 @@ export default defineComponent({
     deleteClicked: (payload: ComponentDetails) => true,
     addClicked: (payload: any) => true
   },
-  components: { SearchMiniOverlay, AddDeleteButtons },
+  components: { SearchMiniOverlay },
   computed: mapState(["filterOptions", "selectedFilters"]),
   mounted() {
-    if (this.value && isObjectHasKeys(this.value, ["name", "@id"])) {
-      this.updateSelectedResult(this.value);
+    if (this.value && this.hasData(this.value)) {
+      this.updateSelectedResult(this.value.quantifier);
     } else {
       this.selectedResult = {} as TTIriRef;
       this.searchTerm = "";
@@ -78,6 +76,10 @@ export default defineComponent({
     };
   },
   methods: {
+    hasData(data: any): data is { propertyIri: string; quantifier: TTIriRef } {
+      if ((data as { propertyIri: string; quantifier: TTIriRef }).propertyIri) return true;
+      return false;
+    },
     // debounceForSearch(): void {
     //   clearTimeout(this.debounce);
     //   this.debounce = window.setTimeout(() => {
@@ -85,11 +87,11 @@ export default defineComponent({
     //   }, 600);
     // },
 
-    // checkKey(event: any) {
-    //   if (event.code === "Enter") {
-    //     this.search();
-    //   }
-    // },
+    checkKey(event: any) {
+      if (event.code === "Enter") {
+        this.search();
+      }
+    },
 
     async search(): Promise<void> {
       if (this.searchTerm.length > 0) {
@@ -108,9 +110,7 @@ export default defineComponent({
         });
 
         searchRequest.typeFilter = [];
-        searchRequest.typeFilter.push(IM.VALUE_SET);
-        searchRequest.typeFilter.push(IM.CONCEPT_SET);
-        searchRequest.typeFilter.push(IM.CONCEPT_SET_GROUP);
+        searchRequest.typeFilter.push(IM.CONCEPT);
         if (isObjectHasKeys(this.request, ["cancel", "msg"])) {
           await this.request.cancel({ status: 499, message: "Search cancelled by user" });
         }
@@ -141,19 +141,16 @@ export default defineComponent({
     },
 
     isTTIriRef(data: any): data is TTIriRef {
-      if ((data as TTIriRef)["@id"]) return true;
+      console.log(data);
+      if (data && (data as TTIriRef)["@id"]) return true;
       return false;
     },
 
-    updateSelectedResult(data: ConceptSummary | TTIriRef) {
-      if (!isObjectHasKeys(data)) return;
-      if (this.isTTIriRef(data)) {
-        this.selectedResult = data;
-      } else {
-        this.selectedResult = { "@id": data.iri, name: data.name };
-      }
-      this.searchTerm = data.name;
-      this.$emit("updateClicked", this.createSet());
+    updateSelectedResult(quantifier: TTIriRef) {
+      if (!this.isTTIriRef(quantifier)) return;
+      this.selectedResult = quantifier;
+      this.searchTerm = quantifier.name;
+      this.$emit("updateClicked", this.createQuantifier());
       this.hideOverlay();
     },
 
@@ -161,41 +158,22 @@ export default defineComponent({
       this.showOverlay(event);
     },
 
-    createSet(): ComponentDetails {
+    createQuantifier(): ComponentDetails {
       return {
         value: this.selectedResult,
         id: this.id,
         position: this.position,
-        type: DefinitionType.SET,
+        type: DefinitionType.QUANTIFIER,
         json: this.selectedResult,
-        component: DefinitionComponent.SET
+        component: DefinitionComponent.QUANTIFIER
       };
-    },
-
-    deleteClicked(): void {
-      this.$emit("deleteClicked", {
-        id: this.id,
-        value: this.selectedResult,
-        position: this.position,
-        type: DefinitionType.SET,
-        component: DefinitionComponent.SET,
-        json: this.selectedResult
-      });
-    },
-
-    addNextClicked(): void {
-      this.$emit("addNextOptionsClicked", {
-        previousComponentType: DefinitionType.SET,
-        previousPosition: this.position,
-        parentGroup: DefinitionType.SET
-      });
     }
   }
 });
 </script>
 
 <style scoped>
-.set-item-container {
+.quantifier-item-container {
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;

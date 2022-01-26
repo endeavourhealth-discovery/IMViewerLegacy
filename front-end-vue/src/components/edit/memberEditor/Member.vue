@@ -164,7 +164,7 @@ export default defineComponent({
         id: this.id,
         position: this.position,
         type: DefinitionType.MEMBER,
-        JSON: this.selectedResult,
+        json: this.selectedResult,
         component: DefinitionComponent.MEMBER
       };
     },
@@ -176,7 +176,7 @@ export default defineComponent({
         position: this.position,
         type: DefinitionType.MEMBER,
         component: DefinitionComponent.MEMBER,
-        JSON: this.selectedResult
+        json: this.selectedResult
       });
     },
 
