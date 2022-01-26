@@ -238,11 +238,21 @@ export default defineComponent({
 #members-builder-container {
   height: 100%;
   width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
 }
 
 #members-build {
-  height: 100%;
+  flex-grow: 100;
   width: 100%;
   overflow: auto;
+  border: 1px solid black;
+  border-radius: 3px;
+  padding: 1rem;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
 }
 </style>

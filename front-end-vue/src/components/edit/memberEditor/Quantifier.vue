@@ -141,7 +141,6 @@ export default defineComponent({
     },
 
     isTTIriRef(data: any): data is TTIriRef {
-      console.log(data);
       if (data && (data as TTIriRef)["@id"]) return true;
       return false;
     },

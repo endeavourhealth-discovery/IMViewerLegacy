@@ -292,6 +292,7 @@ export default defineComponent({
   border: 1px solid #34314c;
   border-radius: 3px;
   position: relative;
+  width: fit-content;
 }
 
 .p-button-label {
