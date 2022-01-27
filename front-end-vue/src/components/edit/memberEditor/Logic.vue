@@ -1,5 +1,10 @@
 <template>
-  <div class="logic-container" :id="id">
+  <div v-if="loading" class="p-d-flex p-flex-row p-jc-center">
+    <div class="p-text-center">
+      <ProgressSpinner />
+    </div>
+  </div>
+  <div v-else class="logic-container" :id="id">
     <div class="label-container">
       <span class="float-text">Logic</span>
       <Dropdown v-model="selected" :options="options" optionLabel="name" placeholder="Select logic" />
@@ -68,6 +73,7 @@ export default defineComponent({
     }
   },
   async mounted() {
+    this.loading = true;
     if (this.value && isObjectHasKeys(this.value, ["iri", "children"])) {
       const found = this.options.find(option => option.iri === this.value?.iri);
       this.selected = found ? found : this.options[1];
@@ -75,6 +81,7 @@ export default defineComponent({
     } else {
       this.selected = this.options[1];
     }
+    this.loading = false;
   },
   data() {
     return {
@@ -84,7 +91,8 @@ export default defineComponent({
         { iri: SHACL.NOT, name: "NOT" }
       ] as { iri: string; name: string }[],
       selected: {} as { iri: string; name: string },
-      logicBuild: [] as any[]
+      logicBuild: [] as any[],
+      loading: true
     };
   },
   methods: {

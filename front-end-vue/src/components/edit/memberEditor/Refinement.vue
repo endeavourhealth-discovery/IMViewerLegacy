@@ -1,5 +1,10 @@
 <template>
-  <div class="refinement-button-container">
+  <div v-if="loading" class="p-d-flex p-flex-row p-jc-center">
+    <div class="p-text-center">
+      <ProgressSpinner />
+    </div>
+  </div>
+  <div v-else class="refinement-button-container">
     <span class="float-text">Refinement</span>
     <div v-if="refinementBuild && refinementBuild.length" class="refinement-children-container">
       <template v-for="child of refinementBuild" :key="child.id">
@@ -64,11 +69,13 @@ export default defineComponent({
   },
   data() {
     return {
-      refinementBuild: [] as ComponentDetails[]
+      refinementBuild: [] as ComponentDetails[],
+      loading: true
     };
   },
   methods: {
     async createBuild() {
+      this.loading = true;
       this.refinementBuild = [];
       if (!this.hasData(this.value)) this.createDefaultBuild();
       else {
@@ -87,6 +94,7 @@ export default defineComponent({
           }
         }
       }
+      this.loading = false;
     },
 
     createDefaultBuild() {

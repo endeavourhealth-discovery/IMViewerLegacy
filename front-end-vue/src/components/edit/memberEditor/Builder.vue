@@ -1,7 +1,12 @@
 <template>
   <div id="members-builder-container">
     <h3>Members builder</h3>
-    <div id="members-build">
+    <div v-if="loading" class="p-d-flex p-flex-row p-jc-center">
+      <div class="p-text-center">
+        <ProgressSpinner />
+      </div>
+    </div>
+    <div v-else id="members-build">
       <template v-for="item of membersBuild" :key="item.id">
         <component
           :is="item.component"
@@ -60,11 +65,13 @@ export default defineComponent({
   data() {
     return {
       membersBuild: [] as any[],
-      membersAsNode: {} as any
+      membersAsNode: {} as any,
+      loading: true
     };
   },
   methods: {
     async createBuild() {
+      this.loading = true;
       this.membersBuild = [];
       if (!isArrayHasLength(this.included)) {
         return;
@@ -80,6 +87,7 @@ export default defineComponent({
       } else {
         this.createDefaultBuild();
       }
+      this.loading = false;
     },
 
     createDefaultBuild() {
