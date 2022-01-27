@@ -22,8 +22,8 @@
               <TabPanel v-if="isValueSet" header="Members">
                 <div class="panel-content" id="member-editor-container" :style="contentHeight">
                   <MemberEditor
-                    v-if="active === 1 && isObjectHasKeysWrapper(membersUpdated)"
-                    :updatedMembers="membersUpdated"
+                    v-if="active === 1"
+                    :updatedMembers="conceptUpdated['http://endhealth.info/im#definition'] ? conceptUpdated['http://endhealth.info/im#definition'] : {}"
                     @concept-updated="updateConcept"
                   />
                 </div>
@@ -92,8 +92,6 @@ export default defineComponent({
       iri: this.$route.params.iri?.toString(),
       conceptOriginal: {} as any,
       conceptUpdated: {} as any,
-      membersOriginal: {} as any,
-      membersUpdated: {} as any,
       active: 0,
       contentHeight: "",
       loading: true
@@ -122,21 +120,11 @@ export default defineComponent({
           this.conceptOriginal = fullEntity;
           this.conceptUpdated = JSON.parse(JSON.stringify(fullEntity));
         }
-
-        const membersReturn = await EntityService.getEntityMembersAsNode(this.iri, false, false);
-        if (membersReturn) {
-          this.membersOriginal = membersReturn;
-          this.membersUpdated = JSON.parse(JSON.stringify(membersReturn));
-        }
       }
     },
 
     submit(): void {
       console.log("submit");
-    },
-
-    updateMembers(data: any) {
-      this.membersUpdated = data;
     },
 
     updateConcept(data: any) {
@@ -146,10 +134,7 @@ export default defineComponent({
     },
 
     checkForChanges() {
-      if (
-        JSON.stringify(this.membersUpdated) === JSON.stringify(this.membersOriginal) &&
-        JSON.stringify(this.conceptUpdated) === JSON.stringify(this.conceptOriginal)
-      ) {
+      if (JSON.stringify(this.conceptUpdated) === JSON.stringify(this.conceptOriginal)) {
         return false;
       } else {
         return true;
@@ -158,7 +143,6 @@ export default defineComponent({
 
     refreshEditor(): void {
       this.conceptUpdated = { ...this.conceptOriginal };
-      this.membersUpdated = { ...this.membersOriginal };
     },
 
     isObjectHasKeysWrapper(object: any): boolean {

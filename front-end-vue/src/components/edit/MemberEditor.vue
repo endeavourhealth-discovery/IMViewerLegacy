@@ -17,6 +17,7 @@
 import { defineComponent } from "vue";
 import Builder from "@/components/edit/memberEditor/Builder.vue";
 import EclInput from "@/components/edit/memberEditor/EclInput.vue";
+import { isArrayHasLength } from "@/helpers/DataTypeCheckers";
 
 export default defineComponent({
   name: "MemberEditor",
@@ -36,7 +37,6 @@ export default defineComponent({
   },
   data() {
     return {
-      members: {} as any,
       included: [] as any[],
       loading: true,
       ecl: {} as any,
@@ -47,8 +47,10 @@ export default defineComponent({
   methods: {
     processMembers(): void {
       this.loading = true;
-      this.members = JSON.parse(JSON.stringify(this.updatedMembers));
-      this.included = JSON.parse(JSON.stringify(this.updatedMembers.included));
+      if (isArrayHasLength(this.updatedMembers)) {
+        this.included = JSON.parse(JSON.stringify(this.updatedMembers));
+      }
+
       this.loading = false;
     },
 
