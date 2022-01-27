@@ -44,7 +44,15 @@ export default defineComponent({
   props: { included: { type: Array as PropType<Array<any>>, required: true } },
   components: { AddDeleteButtons, AddNext, Logic, Member, Set, Refinement },
   emits: {
-    definitionUpdated: (payload: any) => true
+    "concept-updated": (payload: any) => true
+  },
+  watch: {
+    membersBuild: {
+      handler() {
+        this.onConfirm();
+      },
+      deep: true
+    }
   },
   mounted() {
     this.createBuild();
@@ -79,9 +87,18 @@ export default defineComponent({
       this.membersBuild.push(this.genNextOptions(1, DefinitionType.LOGIC, DefinitionType.BUILDER));
     },
 
-    generateMembersAsNode(): void {
-      // TODO
-      return;
+    generateMembersAsNode() {
+      let json = [];
+      if (this.membersBuild.length) {
+        for (const item of this.membersBuild) {
+          if (item.type !== DefinitionType.ADD_NEXT) json.push(item.json);
+        }
+      }
+      return json;
+    },
+
+    onConfirm() {
+      this.$emit("concept-updated", { "http://endhealth.info/im#definition": this.generateMembersAsNode() });
     },
 
     async processAny(item: any, position: number): Promise<any> {

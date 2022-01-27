@@ -50,6 +50,14 @@ export default defineComponent({
     addClicked: (payload: any) => true
   },
   components: { AddDeleteButtons, Property, Quantifier, AddNext },
+  watch: {
+    refinementBuild: {
+      handler() {
+        this.onConfirm();
+      },
+      deep: true
+    }
+  },
   computed: mapState(["filterOptions", "selectedFilters"]),
   async mounted() {
     this.createBuild();
@@ -192,13 +200,24 @@ export default defineComponent({
       });
     },
 
+    onConfirm() {
+      this.$emit("updateClicked", {
+        id: this.id,
+        value: this.createAsValue(),
+        position: this.position,
+        type: DefinitionType.REFINEMENT,
+        component: DefinitionComponent.REFINEMENT,
+        json: this.createAsJson()
+      });
+    },
+
     deleteClicked(): void {
       this.$emit("deleteClicked", {
         id: this.id,
         value: this.createAsValue(),
         position: this.position,
-        type: DefinitionType.SET,
-        component: DefinitionComponent.SET,
+        type: DefinitionType.REFINEMENT,
+        component: DefinitionComponent.REFINEMENT,
         json: this.createAsJson()
       });
     },

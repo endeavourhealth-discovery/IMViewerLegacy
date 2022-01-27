@@ -59,6 +59,12 @@ export default defineComponent({
   watch: {
     selected(): void {
       this.onConfirm();
+    },
+    logicBuild: {
+      handler() {
+        this.onConfirm();
+      },
+      deep: true
     }
   },
   async mounted() {
@@ -160,8 +166,19 @@ export default defineComponent({
         position: this.position,
         type: DefinitionType.LOGIC,
         component: DefinitionComponent.LOGIC,
-        json: this.selected.iri
+        json: this.createLogicJson()
       });
+    },
+
+    createLogicJson() {
+      let json = {} as any;
+      if (this.selected.iri) json[this.selected.iri] = [];
+      if (this.logicBuild.length) {
+        for (const item of this.logicBuild) {
+          if (item.type !== DefinitionType.ADD_NEXT) json[this.selected.iri].push(item.json);
+        }
+      }
+      return json;
     },
 
     updateItem(data: ComponentDetails) {

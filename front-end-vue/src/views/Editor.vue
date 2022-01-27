@@ -140,8 +140,6 @@ export default defineComponent({
     },
 
     updateConcept(data: any) {
-      console.log("update");
-      console.log(data);
       for (const [key, value] of Object.entries(data)) {
         this.conceptUpdated[key] = value;
       }

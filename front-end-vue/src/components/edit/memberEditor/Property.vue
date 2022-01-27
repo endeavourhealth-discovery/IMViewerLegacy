@@ -146,9 +146,22 @@ export default defineComponent({
       return false;
     },
 
-    async updateSelectedResult(iri: string) {
-      if (!iri) return;
-      const name = (await EntityService.getPartialEntity(iri, [RDFS.LABEL]))[RDFS.LABEL];
+    isConceptSummary(data: any): data is ConceptSummary {
+      if ((data as ConceptSummary).iri) return true;
+      return false;
+    },
+
+    async updateSelectedResult(result: ConceptSummary | string) {
+      if (!result) return;
+      let name = "";
+      let iri = "";
+      if (this.isConceptSummary(result)) {
+        name = result.name;
+        iri = result.iri;
+      } else {
+        iri = result;
+        name = (await EntityService.getPartialEntity(result, [RDFS.LABEL]))[RDFS.LABEL];
+      }
       this.selectedResult = { "@id": iri, name: name ? name : iri };
       this.searchTerm = name;
       this.$emit("updateClicked", this.createProperty());

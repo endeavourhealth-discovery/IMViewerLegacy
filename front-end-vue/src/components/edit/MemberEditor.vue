@@ -7,7 +7,7 @@
       <SelectButton v-model="editorType" :options="editorOptions" />
     </div>
     <div class="editor-container">
-      <Builder v-if="editorType === 'Builder'" :included="included" />
+      <Builder v-if="editorType === 'Builder'" :included="included" @concept-updated="builderUpdated" />
       <EclInput v-if="editorType === 'Ecl'" @concept-updated="eclMembersUpdated" />
     </div>
   </div>
@@ -52,12 +52,15 @@ export default defineComponent({
       this.loading = false;
     },
 
+    builderUpdated(data: any) {
+      this.$emit("concept-updated", data);
+    },
+
     eclMembersUpdated(data: any) {
       this.$emit("concept-updated", data);
     },
 
     membersUpdated(data: any): void {
-      console.log(data);
       this.$emit("concept-updated", {
         "http://endhealth.info/im#definition": this.included
       });

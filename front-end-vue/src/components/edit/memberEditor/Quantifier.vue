@@ -146,9 +146,15 @@ export default defineComponent({
       return false;
     },
 
-    updateSelectedResult(quantifier: TTIriRef) {
-      if (!this.isTTIriRef(quantifier)) return;
-      this.selectedResult = quantifier;
+    isConceptSummary(data: any): data is ConceptSummary {
+      if ((data as ConceptSummary).iri) return true;
+      return false;
+    },
+
+    updateSelectedResult(quantifier: ConceptSummary | TTIriRef) {
+      if (!quantifier) return;
+      if (this.isConceptSummary(quantifier)) this.selectedResult = { "@id": quantifier.iri, name: quantifier.name };
+      else this.selectedResult = quantifier;
       this.searchTerm = quantifier.name;
       this.$emit("updateClicked", this.createQuantifier());
       this.hideOverlay();
