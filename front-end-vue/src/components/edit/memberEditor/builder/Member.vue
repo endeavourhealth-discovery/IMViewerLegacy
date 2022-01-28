@@ -1,7 +1,7 @@
 <template>
-  <div class="set-item-container" :id="id">
+  <div class="member-item-container" :id="id">
     <div class="label-container">
-      <span class="float-text">Set</span>
+      <span class="float-text">Member</span>
       <InputText
         ref="miniSearchInput"
         type="text"
@@ -40,11 +40,11 @@ import EntityService from "@/services/EntityService";
 import { DefinitionType } from "@/models/definition/DefinitionType";
 import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
-import AddDeleteButtons from "@/components/edit/memberEditor/AddDeleteButtons.vue";
+import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteButtons.vue";
 import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
-  name: "Set",
+  name: "Member",
   props: {
     id: { type: String, required: true },
     position: { type: Number, required: true },
@@ -107,11 +107,8 @@ export default defineComponent({
         this.filterOptions.status.forEach((status: EntityReferenceNode) => {
           searchRequest.statusFilter.push(status["@id"]);
         });
-
         searchRequest.typeFilter = [];
-        searchRequest.typeFilter.push(IM.VALUE_SET);
-        searchRequest.typeFilter.push(IM.CONCEPT_SET);
-        searchRequest.typeFilter.push(IM.CONCEPT_SET_GROUP);
+        searchRequest.typeFilter.push(IM.CONCEPT);
         if (isObjectHasKeys(this.request, ["cancel", "msg"])) {
           await this.request.cancel({ status: 499, message: "Search cancelled by user" });
         }
@@ -154,7 +151,7 @@ export default defineComponent({
         this.selectedResult = { "@id": data.iri, name: data.name };
       }
       this.searchTerm = data.name;
-      this.$emit("updateClicked", this.createSet());
+      this.$emit("updateClicked", this.createMember());
       this.hideOverlay();
     },
 
@@ -162,14 +159,14 @@ export default defineComponent({
       this.showOverlay(event);
     },
 
-    createSet(): ComponentDetails {
+    createMember(): ComponentDetails {
       return {
         value: this.selectedResult,
         id: this.id,
         position: this.position,
-        type: DefinitionType.SET,
+        type: DefinitionType.MEMBER,
         json: this.selectedResult,
-        component: DefinitionComponent.SET
+        component: DefinitionComponent.MEMBER
       };
     },
 
@@ -178,17 +175,17 @@ export default defineComponent({
         id: this.id,
         value: this.selectedResult,
         position: this.position,
-        type: DefinitionType.SET,
-        component: DefinitionComponent.SET,
+        type: DefinitionType.MEMBER,
+        component: DefinitionComponent.MEMBER,
         json: this.selectedResult
       });
     },
 
     addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
-        previousComponentType: DefinitionType.SET,
+        previousComponentType: DefinitionType.MEMBER,
         previousPosition: this.position,
-        parentGroup: DefinitionType.SET
+        parentGroup: DefinitionType.MEMBER
       });
     }
   }
@@ -196,7 +193,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.set-item-container {
+.member-item-container {
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;

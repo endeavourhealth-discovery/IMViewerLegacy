@@ -35,10 +35,10 @@ import { mapState } from "vuex";
 import { DefinitionType } from "@/models/definition/DefinitionType";
 import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
-import AddDeleteButtons from "@/components/edit/memberEditor/AddDeleteButtons.vue";
-import Property from "@/components/edit/memberEditor/Property.vue";
-import Quantifier from "@/components/edit/memberEditor/Quantifier.vue";
-import AddNext from "@/components/edit/memberEditor/AddNext.vue";
+import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteButtons.vue";
+import Property from "@/components/edit/memberEditor/builder/Property.vue";
+import Quantifier from "@/components/edit/memberEditor/builder/Quantifier.vue";
+import AddNext from "@/components/edit/memberEditor/builder/AddNext.vue";
 
 export default defineComponent({
   name: "Refinement",

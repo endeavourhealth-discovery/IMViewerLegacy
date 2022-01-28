@@ -50,9 +50,10 @@ export default defineComponent({
   emits: { updateClicked: (payload: ComponentDetails) => true },
   components: { SearchMiniOverlay },
   computed: mapState(["filterOptions", "selectedFilters"]),
-  mounted() {
+  async mounted() {
     if (this.value && isObjectHasKeys(this.value, ["name", "iri"])) {
       this.updateSelectedResult(this.value);
+      await this.search();
     } else {
       this.updateSelectedResult({ ...this.anyModel });
     }
@@ -161,7 +162,8 @@ export default defineComponent({
       if (this.selectedResult.name === "ANY") {
         label = "*";
       } else {
-        label = this.selectedResult.code + " |" + this.selectedResult.name + "|";
+        const code = this.selectedResult.code ? this.selectedResult.code : this.selectedResult.iri.split("#")[1];
+        label = code + " |" + this.selectedResult.name + "|";
       }
       return {
         value: this.selectedResult,

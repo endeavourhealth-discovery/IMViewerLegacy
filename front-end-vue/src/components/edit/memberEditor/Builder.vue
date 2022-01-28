@@ -36,13 +36,13 @@ import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import EntityService from "@/services/EntityService";
 import { RDF } from "@/vocabulary/RDF";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
-import AddDeleteButtons from "@/components/edit/memberEditor/AddDeleteButtons.vue";
-import AddNext from "@/components/edit/memberEditor/AddNext.vue";
-import Logic from "@/components/edit/memberEditor/Logic.vue";
-import Member from "@/components/edit/memberEditor/Member.vue";
-import Set from "@/components/edit/memberEditor/Set.vue";
+import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteButtons.vue";
+import AddNext from "@/components/edit/memberEditor/builder/AddNext.vue";
+import Logic from "@/components/edit/memberEditor/builder/Logic.vue";
+import Member from "@/components/edit/memberEditor/builder/Member.vue";
+import Set from "@/components/edit/memberEditor/builder/Set.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
-import Refinement from "@/components/edit/memberEditor/Refinement.vue";
+import Refinement from "@/components/edit/memberEditor/builder/Refinement.vue";
 
 export default defineComponent({
   name: "Builder",

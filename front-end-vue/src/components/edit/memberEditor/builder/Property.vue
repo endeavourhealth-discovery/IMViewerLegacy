@@ -40,7 +40,7 @@ import EntityService from "@/services/EntityService";
 import { DefinitionType } from "@/models/definition/DefinitionType";
 import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
-import AddDeleteButtons from "@/components/edit/memberEditor/AddDeleteButtons.vue";
+import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteButtons.vue";
 import { IM } from "@/vocabulary/IM";
 import { RDFS } from "@/vocabulary/RDFS";
 import { RDF } from "@/vocabulary/RDF";

@@ -31,10 +31,10 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import AddDeleteButtons from "@/components/edit/memberEditor/AddDeleteButtons.vue";
-import Member from "@/components/edit/memberEditor/Member.vue";
-import Set from "@/components/edit/memberEditor/Set.vue";
-import AddNext from "@/components/edit/memberEditor/AddNext.vue";
+import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteButtons.vue";
+import Member from "@/components/edit/memberEditor/builder/Member.vue";
+import Set from "@/components/edit/memberEditor/builder/Set.vue";
+import AddNext from "@/components/edit/memberEditor/builder/AddNext.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import { DefinitionType } from "@/models/definition/DefinitionType";
@@ -45,7 +45,7 @@ import { TTIriRef } from "@/models/TripleTree";
 import EntityService from "@/services/EntityService";
 import { RDF } from "@/vocabulary/RDF";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
-import Refinement from "@/components/edit/memberEditor/Refinement.vue";
+import Refinement from "@/components/edit/memberEditor/builder/Refinement.vue";
 
 export default defineComponent({
   name: "Logic",
