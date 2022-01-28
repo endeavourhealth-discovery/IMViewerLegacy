@@ -60,12 +60,6 @@ export default defineComponent({
 
     eclMembersUpdated(data: any) {
       this.$emit("concept-updated", data);
-    },
-
-    membersUpdated(data: any): void {
-      this.$emit("concept-updated", {
-        "http://endhealth.info/im#definition": this.included
-      });
     }
   }
 });

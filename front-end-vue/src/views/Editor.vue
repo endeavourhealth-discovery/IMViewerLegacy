@@ -11,9 +11,18 @@
           <div class="content">
             <TabView v-model:activeIndex="active">
               <TabPanel header="Summary">
-                <div class="panel-content" id="form-editor-container" :style="contentHeight">
+                <div class="panel-content" id="summary-editor-container" :style="contentHeight">
                   <SummaryEditor
                     v-if="active === 0 && isObjectHasKeysWrapper(conceptUpdated)"
+                    :updatedConcept="conceptUpdated"
+                    @concept-updated="updateConcept"
+                  />
+                </div>
+              </TabPanel>
+              <TabPanel header="Parents">
+                <div class="panel-content" id="parents-editor-container" :style="contentHeight">
+                  <ParentsEditor
+                    v-if="active === 1 && isObjectHasKeysWrapper(conceptUpdated)"
                     :updatedConcept="conceptUpdated"
                     @concept-updated="updateConcept"
                   />
@@ -22,7 +31,7 @@
               <TabPanel v-if="isValueSet" header="Members">
                 <div class="panel-content" id="member-editor-container" :style="contentHeight">
                   <MemberEditor
-                    v-if="active === 1"
+                    v-if="active === 2"
                     :updatedMembers="conceptUpdated['http://endhealth.info/im#definition'] ? conceptUpdated['http://endhealth.info/im#definition'] : {}"
                     @concept-updated="updateConcept"
                   />
@@ -52,6 +61,7 @@ import SummaryEditor from "@/components/edit/SummaryEditor.vue";
 import EntityService from "@/services/EntityService";
 import ConfirmDialog from "primevue/confirmdialog";
 import MemberEditor from "@/components/edit/MemberEditor.vue";
+import ParentsEditor from "@/components/edit/ParentsEditor.vue";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import { RDF } from "@/vocabulary/RDF";
 import { isObjectHasKeys } from "@/helpers/DataTypeCheckers";
@@ -66,7 +76,8 @@ export default defineComponent({
     ConfirmDialog,
     SummaryEditor,
     MemberEditor,
-    VueJsonPretty
+    VueJsonPretty,
+    ParentsEditor
   },
   beforeRouteLeave(to, from, next) {
     if (this.checkForChanges()) {
