@@ -17,10 +17,10 @@
           :id="item.id"
           :position="item.position"
           :last="logicBuild.length - 2 <= item.position ? true : false"
-          @deleteClicked="deleteItem"
-          @addClicked="addItem"
-          @updateClicked="updateItem"
-          @addNextOptionsClicked="addNextOptions"
+          @deleteClicked="deleteItemWrapper"
+          @addClicked="addItemWrapper"
+          @updateClicked="updateItemWrapper"
+          @addNextOptionsClicked="addNextOptionsWrapper"
         >
         </component>
       </template>
@@ -46,7 +46,16 @@ import EntityService from "@/services/EntityService";
 import { RDF } from "@/vocabulary/RDF";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import Refinement from "@/components/edit/memberEditor/builder/Refinement.vue";
-import { generateNewComponent, genNextOptions, updatePositions } from "@/helpers/EditorBuilderJsonMethods";
+import {
+  addItem,
+  addNextOptions,
+  deleteItem,
+  generateNewComponent,
+  genNextOptions,
+  scrollIntoView,
+  updateItem,
+  updatePositions
+} from "@/helpers/EditorBuilderJsonMethods";
 
 export default defineComponent({
   name: "Logic",
@@ -170,50 +179,22 @@ export default defineComponent({
       return json;
     },
 
-    updateItem(data: ComponentDetails) {
-      const index = this.logicBuild.findIndex(item => item.position === data.position);
-      this.logicBuild[index] = data;
+    updateItemWrapper(data: ComponentDetails) {
+      updateItem(data, this.logicBuild);
     },
 
-    addItem(data: { selectedType: DefinitionType; position: number; value: any }): void {
-      const newComponent = generateNewComponent(data.selectedType, data.position, data.value);
-      if (!newComponent) return;
-      this.logicBuild[data.position] = newComponent;
-      if (this.logicBuild[this.logicBuild.length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.logicBuild.push(genNextOptions(this.logicBuild.length - 1, this.logicBuild[this.logicBuild.length - 1].type, DefinitionType.LOGIC));
-      }
-      updatePositions(this.logicBuild);
+    addItemWrapper(data: { selectedType: DefinitionType; position: number; value: any }): void {
+      addItem(data, this.logicBuild, DefinitionType.LOGIC);
     },
 
-    async addNextOptions(data: NextComponentSummary): Promise<void> {
-      const nextOptionsComponent = genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
-      if (data.previousPosition !== this.logicBuild.length - 1 && this.logicBuild[data.previousPosition + 1].type === DefinitionType.ADD_NEXT) {
-        this.logicBuild[data.previousPosition + 1] = nextOptionsComponent;
-      } else {
-        this.logicBuild.splice(data.previousPosition + 1, 0, nextOptionsComponent);
-      }
-      updatePositions(this.logicBuild);
+    async addNextOptionsWrapper(data: NextComponentSummary): Promise<void> {
+      const nextOptionsComponent = addNextOptions(data, this.logicBuild);
       await this.$nextTick();
-      const itemToScrollTo = document.getElementById(nextOptionsComponent.id);
-      itemToScrollTo?.scrollIntoView();
+      scrollIntoView(nextOptionsComponent);
     },
 
-    deleteItem(data: ComponentDetails): void {
-      const index = this.logicBuild.findIndex(item => item.position === data.position);
-      this.logicBuild.splice(index, 1);
-      const length = this.logicBuild.length;
-      if (data.position === 0) {
-        this.logicBuild.unshift(genNextOptions(0, DefinitionType.LOGIC, DefinitionType.LOGIC));
-      }
-      if (index < length - 1 && this.logicBuild[index].type === DefinitionType.ADD_NEXT) {
-        this.logicBuild[index] = genNextOptions(index - 1, this.logicBuild[index - 1].type, DefinitionType.LOGIC);
-      }
-      if (this.logicBuild[length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.logicBuild.push(genNextOptions(length - 1, this.logicBuild[length - 1].type, DefinitionType.LOGIC));
-      } else {
-        this.logicBuild[length - 1] = genNextOptions(length - 2, this.logicBuild[length - 2].type, DefinitionType.LOGIC);
-      }
-      updatePositions(this.logicBuild);
+    deleteItemWrapper(data: ComponentDetails): void {
+      deleteItem(data, this.logicBuild, DefinitionType.LOGIC);
     },
 
     deleteClicked(): void {

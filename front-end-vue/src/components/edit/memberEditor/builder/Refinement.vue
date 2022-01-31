@@ -14,10 +14,10 @@
           :id="child.id"
           :position="child.position"
           :last="refinementBuild.length - 2 <= child.position ? true : false"
-          @deleteClicked="deleteItem"
-          @addClicked="addItem"
-          @updateClicked="updateItem"
-          @addNextOptionsClicked="addNextOptions"
+          @deleteClicked="deleteItemWrapper"
+          @addClicked="addItemWrapper"
+          @updateClicked="updateItemWrapper"
+          @addNextOptionsClicked="addNextOptionsWrapper"
         >
         </component>
       </template>
@@ -39,7 +39,16 @@ import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteBu
 import Property from "@/components/edit/memberEditor/builder/Property.vue";
 import Quantifier from "@/components/edit/memberEditor/builder/Quantifier.vue";
 import AddNext from "@/components/edit/memberEditor/builder/AddNext.vue";
-import { generateNewComponent, genNextOptions, updatePositions } from "@/helpers/EditorBuilderJsonMethods";
+import {
+  addItem,
+  addNextOptions,
+  deleteItem,
+  generateNewComponent,
+  genNextOptions,
+  scrollIntoView,
+  updateItem,
+  updatePositions
+} from "@/helpers/EditorBuilderJsonMethods";
 
 export default defineComponent({
   name: "Refinement",
@@ -111,52 +120,22 @@ export default defineComponent({
       return false;
     },
 
-    deleteItem(data: ComponentDetails): void {
-      const index = this.refinementBuild.findIndex(item => item.position === data.position);
-      this.refinementBuild.splice(index, 1);
-      const length = this.refinementBuild.length;
-      if (data.position === 0) {
-        this.refinementBuild.unshift(genNextOptions(0, DefinitionType.BUILDER, DefinitionType.BUILDER));
-      }
-      if (index < length - 1 && this.refinementBuild[index].type === DefinitionType.ADD_NEXT) {
-        this.refinementBuild[index] = genNextOptions(index - 1, this.refinementBuild[index - 1].type, DefinitionType.BUILDER);
-      }
-      if (this.refinementBuild[length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.refinementBuild.push(genNextOptions(length - 1, this.refinementBuild[length - 1].type, DefinitionType.BUILDER));
-      } else {
-        this.refinementBuild[length - 1] = genNextOptions(length - 2, this.refinementBuild[length - 2].type, DefinitionType.BUILDER);
-      }
-      updatePositions(this.refinementBuild);
+    deleteItemWrapper(data: ComponentDetails): void {
+      deleteItem(data, this.refinementBuild, DefinitionType.REFINEMENT);
     },
 
-    updateItem(data: ComponentDetails) {
-      const index = this.refinementBuild.findIndex(item => item.position === data.position);
-      this.refinementBuild[index] = data;
+    updateItemWrapper(data: ComponentDetails) {
+      updateItem(data, this.refinementBuild);
     },
 
-    async addNextOptions(data: NextComponentSummary): Promise<void> {
-      const nextOptionsComponent = genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
-      if (data.previousPosition !== this.refinementBuild.length - 1 && this.refinementBuild[data.previousPosition + 1].type === DefinitionType.ADD_NEXT) {
-        this.refinementBuild[data.previousPosition + 1] = nextOptionsComponent;
-      } else {
-        this.refinementBuild.splice(data.previousPosition + 1, 0, nextOptionsComponent);
-      }
-      updatePositions(this.refinementBuild);
+    async addNextOptionsWrapper(data: NextComponentSummary): Promise<void> {
+      const nextOptionsComponent = addNextOptions(data, this.refinementBuild);
       await this.$nextTick();
-      const itemToScrollTo = document.getElementById(nextOptionsComponent.id);
-      itemToScrollTo?.scrollIntoView();
+      scrollIntoView(nextOptionsComponent);
     },
 
-    addItem(data: { selectedType: DefinitionType; position: number; value: any }): void {
-      const newComponent = generateNewComponent(data.selectedType, data.position, data.value);
-      if (!newComponent) return;
-      this.refinementBuild[data.position] = newComponent;
-      if (this.refinementBuild[this.refinementBuild.length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.refinementBuild.push(
-          genNextOptions(this.refinementBuild.length - 1, this.refinementBuild[this.refinementBuild.length - 1].type, DefinitionType.REFINEMENT)
-        );
-      }
-      updatePositions(this.refinementBuild);
+    addItemWrapper(data: { selectedType: DefinitionType; position: number; value: any }): void {
+      addItem(data, this.refinementBuild, DefinitionType.REFINEMENT);
     },
 
     onConfirm() {
