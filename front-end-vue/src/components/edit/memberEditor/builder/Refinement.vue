@@ -39,6 +39,7 @@ import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteBu
 import Property from "@/components/edit/memberEditor/builder/Property.vue";
 import Quantifier from "@/components/edit/memberEditor/builder/Quantifier.vue";
 import AddNext from "@/components/edit/memberEditor/builder/AddNext.vue";
+import { generateNewComponent, genNextOptions } from "@/helpers/BuilderJsonMethods";
 
 export default defineComponent({
   name: "Refinement",
@@ -80,14 +81,14 @@ export default defineComponent({
       if (!this.hasData(this.value)) this.createDefaultBuild();
       else {
         let position = 0;
-        const property = this.generateNewComponent(DefinitionType.PROPERTY, position, this.value.propertyIri);
+        const property = generateNewComponent(DefinitionType.PROPERTY, position, this.value.propertyIri);
         if (property) {
           this.refinementBuild.push(property);
           position++;
         }
 
         for (const child of this.value.children) {
-          const quantifier = this.generateNewComponent(DefinitionType.QUANTIFIER, position, { propertyIri: this.value.propertyIri, quantifier: child });
+          const quantifier = generateNewComponent(DefinitionType.QUANTIFIER, position, { propertyIri: this.value.propertyIri, quantifier: child });
           if (quantifier) {
             this.refinementBuild.push(quantifier);
             position++;
@@ -99,9 +100,9 @@ export default defineComponent({
 
     createDefaultBuild() {
       this.refinementBuild = [];
-      const property = this.generateNewComponent(DefinitionType.PROPERTY, 0, undefined);
+      const property = generateNewComponent(DefinitionType.PROPERTY, 0, undefined);
       if (property) this.refinementBuild.push(property);
-      const quantifier = this.generateNewComponent(DefinitionType.QUANTIFIER, 1, undefined);
+      const quantifier = generateNewComponent(DefinitionType.QUANTIFIER, 1, undefined);
       if (quantifier) this.refinementBuild.push(quantifier);
     },
 
@@ -110,49 +111,20 @@ export default defineComponent({
       return false;
     },
 
-    generateNewComponent(type: DefinitionType, position: number, data: any) {
-      let result;
-      switch (type) {
-        case DefinitionType.PROPERTY:
-          result = {
-            id: DefinitionType.PROPERTY + "_" + position,
-            value: data,
-            position: position,
-            type: DefinitionType.PROPERTY,
-            json: {},
-            component: DefinitionComponent.PROPERTY
-          };
-          break;
-        case DefinitionType.QUANTIFIER:
-          result = {
-            id: DefinitionType.QUANTIFIER + "_" + position,
-            value: data,
-            position: position,
-            type: DefinitionType.QUANTIFIER,
-            json: {},
-            component: DefinitionComponent.QUANTIFIER
-          };
-          break;
-        default:
-          break;
-      }
-      return result;
-    },
-
     deleteItem(data: ComponentDetails): void {
       const index = this.refinementBuild.findIndex(item => item.position === data.position);
       this.refinementBuild.splice(index, 1);
       const length = this.refinementBuild.length;
       if (data.position === 0) {
-        this.refinementBuild.unshift(this.genNextOptions(0, DefinitionType.BUILDER, DefinitionType.BUILDER));
+        this.refinementBuild.unshift(genNextOptions(0, DefinitionType.BUILDER, DefinitionType.BUILDER));
       }
       if (index < length - 1 && this.refinementBuild[index].type === DefinitionType.ADD_NEXT) {
-        this.refinementBuild[index] = this.genNextOptions(index - 1, this.refinementBuild[index - 1].type, DefinitionType.BUILDER);
+        this.refinementBuild[index] = genNextOptions(index - 1, this.refinementBuild[index - 1].type, DefinitionType.BUILDER);
       }
       if (this.refinementBuild[length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.refinementBuild.push(this.genNextOptions(length - 1, this.refinementBuild[length - 1].type, DefinitionType.BUILDER));
+        this.refinementBuild.push(genNextOptions(length - 1, this.refinementBuild[length - 1].type, DefinitionType.BUILDER));
       } else {
-        this.refinementBuild[length - 1] = this.genNextOptions(length - 2, this.refinementBuild[length - 2].type, DefinitionType.BUILDER);
+        this.refinementBuild[length - 1] = genNextOptions(length - 2, this.refinementBuild[length - 2].type, DefinitionType.BUILDER);
       }
       this.updatePositions();
     },
@@ -163,7 +135,7 @@ export default defineComponent({
     },
 
     async addNextOptions(data: NextComponentSummary): Promise<void> {
-      const nextOptionsComponent = this.genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
+      const nextOptionsComponent = genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
       if (data.previousPosition !== this.refinementBuild.length - 1 && this.refinementBuild[data.previousPosition + 1].type === DefinitionType.ADD_NEXT) {
         this.refinementBuild[data.previousPosition + 1] = nextOptionsComponent;
       } else {
@@ -176,30 +148,15 @@ export default defineComponent({
     },
 
     addItem(data: { selectedType: DefinitionType; position: number; value: any }): void {
-      const newComponent = this.generateNewComponent(data.selectedType, data.position, data.value);
+      const newComponent = generateNewComponent(data.selectedType, data.position, data.value);
       if (!newComponent) return;
       this.refinementBuild[data.position] = newComponent;
       if (this.refinementBuild[this.refinementBuild.length - 1].type !== DefinitionType.ADD_NEXT) {
         this.refinementBuild.push(
-          this.genNextOptions(this.refinementBuild.length - 1, this.refinementBuild[this.refinementBuild.length - 1].type, DefinitionType.REFINEMENT)
+          genNextOptions(this.refinementBuild.length - 1, this.refinementBuild[this.refinementBuild.length - 1].type, DefinitionType.REFINEMENT)
         );
       }
       this.updatePositions();
-    },
-
-    genNextOptions(position: number, previous: DefinitionType, group?: DefinitionType) {
-      return {
-        id: "addNext_" + (position + 1),
-        value: {
-          previousPosition: position,
-          previousComponentType: previous,
-          parentGroup: group
-        },
-        position: position + 1,
-        type: DefinitionType.ADD_NEXT,
-        json: {},
-        component: DefinitionComponent.ADD_NEXT
-      };
     },
 
     updatePositions(): void {

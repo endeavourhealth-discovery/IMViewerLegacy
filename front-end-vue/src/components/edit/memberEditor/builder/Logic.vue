@@ -81,6 +81,7 @@ export default defineComponent({
       await this.createBuild();
     } else {
       this.selected = this.options[1];
+      this.logicBuild.push(genNextOptions(-1, DefinitionType.LOGIC, DefinitionType.LOGIC));
     }
     this.loading = false;
   },
