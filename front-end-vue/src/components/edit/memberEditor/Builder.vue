@@ -43,6 +43,7 @@ import Member from "@/components/edit/memberEditor/builder/Member.vue";
 import Set from "@/components/edit/memberEditor/builder/Set.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import Refinement from "@/components/edit/memberEditor/builder/Refinement.vue";
+import { generateNewComponent, genNextOptions } from "@/helpers/BuilderJsonMethods";
 
 export default defineComponent({
   name: "Builder",
@@ -83,7 +84,7 @@ export default defineComponent({
       }
       if (isArrayHasLength(this.membersBuild)) {
         const last = this.membersBuild.length - 1;
-        this.membersBuild.push(this.genNextOptions(last, this.membersBuild[last].type, DefinitionType.BUILDER));
+        this.membersBuild.push(genNextOptions(last, this.membersBuild[last].type, DefinitionType.BUILDER));
       } else {
         this.createDefaultBuild();
       }
@@ -91,8 +92,8 @@ export default defineComponent({
     },
 
     createDefaultBuild() {
-      this.membersBuild.push(this.generateNewComponent(DefinitionType.LOGIC, 0, undefined));
-      this.membersBuild.push(this.genNextOptions(1, DefinitionType.LOGIC, DefinitionType.BUILDER));
+      this.membersBuild.push(generateNewComponent(DefinitionType.LOGIC, 0, undefined));
+      this.membersBuild.push(genNextOptions(1, DefinitionType.LOGIC, DefinitionType.BUILDER));
     },
 
     generateMembersAsNode() {
@@ -117,16 +118,16 @@ export default defineComponent({
 
     async processIri(iri: TTIriRef, position: number): Promise<any> {
       const types = await EntityService.getPartialEntity(iri["@id"], [RDF.TYPE]);
-      if (isValueSet(types)) return this.generateNewComponent(DefinitionType.SET, position, iri);
-      else return this.generateNewComponent(DefinitionType.MEMBER, position, iri);
+      if (isValueSet(types)) return generateNewComponent(DefinitionType.SET, position, iri);
+      else return generateNewComponent(DefinitionType.MEMBER, position, iri);
     },
 
     processObject(item: any, position: number): any {
       for (const [key, value] of Object.entries(item)) {
         if (key === SHACL.AND || key === SHACL.OR) {
-          return this.generateNewComponent(DefinitionType.LOGIC, position, { iri: key, children: value });
+          return generateNewComponent(DefinitionType.LOGIC, position, { iri: key, children: value });
         } else {
-          return this.generateNewComponent(DefinitionType.REFINEMENT, position, { propertyIri: key, children: value });
+          return generateNewComponent(DefinitionType.REFINEMENT, position, { propertyIri: key, children: value });
         }
       }
     },
@@ -141,69 +142,20 @@ export default defineComponent({
       return result;
     },
 
-    generateNewComponent(type: DefinitionType, position: number, data: any) {
-      let result;
-      switch (type) {
-        case DefinitionType.LOGIC:
-          result = {
-            id: DefinitionType.LOGIC + "_" + position,
-            value: data,
-            position: position,
-            type: DefinitionType.LOGIC,
-            json: {},
-            component: DefinitionComponent.LOGIC
-          };
-          break;
-        case DefinitionType.MEMBER:
-          result = {
-            id: DefinitionType.MEMBER + "_" + position,
-            value: data,
-            position: position,
-            type: DefinitionType.MEMBER,
-            json: {},
-            component: DefinitionComponent.MEMBER
-          };
-          break;
-        case DefinitionType.SET:
-          result = {
-            id: DefinitionType.SET + "_" + position,
-            value: data,
-            position: position,
-            type: DefinitionType.SET,
-            json: {},
-            component: DefinitionComponent.SET
-          };
-          break;
-        case DefinitionType.REFINEMENT:
-          result = {
-            id: DefinitionType.REFINEMENT + "_" + position,
-            value: data,
-            position: position,
-            type: DefinitionType.REFINEMENT,
-            json: {},
-            component: DefinitionComponent.REFINEMENT
-          };
-          break;
-        default:
-          break;
-      }
-      return result;
-    },
-
     deleteItem(data: ComponentDetails): void {
       const index = this.membersBuild.findIndex(item => item.position === data.position);
       this.membersBuild.splice(index, 1);
       const length = this.membersBuild.length;
       if (data.position === 0) {
-        this.membersBuild.unshift(this.genNextOptions(0, DefinitionType.BUILDER, DefinitionType.BUILDER));
+        this.membersBuild.unshift(genNextOptions(0, DefinitionType.BUILDER, DefinitionType.BUILDER));
       }
       if (index < length - 1 && this.membersBuild[index].type === DefinitionType.ADD_NEXT) {
-        this.membersBuild[index] = this.genNextOptions(index - 1, this.membersBuild[index - 1].type, DefinitionType.BUILDER);
+        this.membersBuild[index] = genNextOptions(index - 1, this.membersBuild[index - 1].type, DefinitionType.BUILDER);
       }
       if (this.membersBuild[length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.membersBuild.push(this.genNextOptions(length - 1, this.membersBuild[length - 1].type, DefinitionType.BUILDER));
+        this.membersBuild.push(genNextOptions(length - 1, this.membersBuild[length - 1].type, DefinitionType.BUILDER));
       } else {
-        this.membersBuild[length - 1] = this.genNextOptions(length - 2, this.membersBuild[length - 2].type, DefinitionType.BUILDER);
+        this.membersBuild[length - 1] = genNextOptions(length - 2, this.membersBuild[length - 2].type, DefinitionType.BUILDER);
       }
       this.updatePositions();
     },
@@ -214,7 +166,7 @@ export default defineComponent({
     },
 
     async addNextOptions(data: NextComponentSummary): Promise<void> {
-      const nextOptionsComponent = this.genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
+      const nextOptionsComponent = genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
       if (data.previousPosition !== this.membersBuild.length - 1 && this.membersBuild[data.previousPosition + 1].type === DefinitionType.ADD_NEXT) {
         this.membersBuild[data.previousPosition + 1] = nextOptionsComponent;
       } else {
@@ -227,28 +179,13 @@ export default defineComponent({
     },
 
     addItem(data: { selectedType: DefinitionType; position: number; value: any }): void {
-      const newComponent = this.generateNewComponent(data.selectedType, data.position, data.value);
+      const newComponent = generateNewComponent(data.selectedType, data.position, data.value);
       if (!newComponent) return;
       this.membersBuild[data.position] = newComponent;
       if (this.membersBuild[this.membersBuild.length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.membersBuild.push(this.genNextOptions(this.membersBuild.length - 1, this.membersBuild[this.membersBuild.length - 1].type, DefinitionType.BUILDER));
+        this.membersBuild.push(genNextOptions(this.membersBuild.length - 1, this.membersBuild[this.membersBuild.length - 1].type, DefinitionType.BUILDER));
       }
       this.updatePositions();
-    },
-
-    genNextOptions(position: number, previous: DefinitionType, group?: DefinitionType) {
-      return {
-        id: "addNext_" + (position + 1),
-        value: {
-          previousPosition: position,
-          previousComponentType: previous,
-          parentGroup: group
-        },
-        position: position + 1,
-        type: DefinitionType.ADD_NEXT,
-        json: {},
-        component: DefinitionComponent.ADD_NEXT
-      };
     },
 
     updatePositions(): void {

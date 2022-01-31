@@ -28,17 +28,14 @@
 <script lang="ts">
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { TTIriRef } from "@/models/TripleTree";
-import { SHACL } from "@/vocabulary/SHACL";
 import { defineComponent, PropType } from "@vue/runtime-core";
 import { DefinitionType } from "@/models/definition/DefinitionType";
 import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
 import { ComponentDetails } from "@/models/definition/ComponentDetails";
-import EntityService from "@/services/EntityService";
-import { RDF } from "@/vocabulary/RDF";
-import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteButtons.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
-import Logic from "@/components/edit/parentsEditor/Logic.vue";
+import Logic from "@/components/edit/parentsEditor/builder/Logic.vue";
+import { generateNewComponent, genNextOptions } from "@/helpers/BuilderJsonMethods";
 
 export default defineComponent({
   name: "Builder",
@@ -79,7 +76,7 @@ export default defineComponent({
       }
       if (isArrayHasLength(this.parentsBuild)) {
         const last = this.parentsBuild.length - 1;
-        this.parentsBuild.push(this.genNextOptions(last, this.parentsBuild[last].type, DefinitionType.BUILDER));
+        this.parentsBuild.push(genNextOptions(last, this.parentsBuild[last].type, DefinitionType.BUILDER));
       } else {
         this.createDefaultBuild();
       }
@@ -87,8 +84,8 @@ export default defineComponent({
     },
 
     createDefaultBuild() {
-      this.parentsBuild.push(this.generateNewComponent(DefinitionType.LOGIC, 0, undefined));
-      this.parentsBuild.push(this.genNextOptions(1, DefinitionType.LOGIC, DefinitionType.BUILDER));
+      this.parentsBuild.push(generateNewComponent(DefinitionType.LOGIC, 0, undefined));
+      this.parentsBuild.push(genNextOptions(1, DefinitionType.LOGIC, DefinitionType.BUILDER));
     },
 
     generateParentsAsNode() {
@@ -106,26 +103,7 @@ export default defineComponent({
     },
 
     processObject(item: { key: string; value: TTIriRef[] }, position: number): any {
-      return this.generateNewComponent(DefinitionType.LOGIC, position, { iri: item.key, children: item.value });
-    },
-
-    generateNewComponent(type: DefinitionType, position: number, data: any) {
-      let result;
-      switch (type) {
-        case DefinitionType.LOGIC:
-          result = {
-            id: DefinitionType.LOGIC + "_" + position,
-            value: data,
-            position: position,
-            type: DefinitionType.LOGIC,
-            json: {},
-            component: DefinitionComponent.LOGIC
-          };
-          break;
-        default:
-          break;
-      }
-      return result;
+      return generateNewComponent(DefinitionType.LOGIC, position, { iri: item.key, children: item.value });
     },
 
     deleteItem(data: ComponentDetails): void {
@@ -133,15 +111,15 @@ export default defineComponent({
       this.parentsBuild.splice(index, 1);
       const length = this.parentsBuild.length;
       if (data.position === 0) {
-        this.parentsBuild.unshift(this.genNextOptions(0, DefinitionType.BUILDER, DefinitionType.BUILDER));
+        this.parentsBuild.unshift(genNextOptions(0, DefinitionType.BUILDER, DefinitionType.BUILDER));
       }
       if (index < length - 1 && this.parentsBuild[index].type === DefinitionType.ADD_NEXT) {
-        this.parentsBuild[index] = this.genNextOptions(index - 1, this.parentsBuild[index - 1].type, DefinitionType.BUILDER);
+        this.parentsBuild[index] = genNextOptions(index - 1, this.parentsBuild[index - 1].type, DefinitionType.BUILDER);
       }
       if (this.parentsBuild[length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.parentsBuild.push(this.genNextOptions(length - 1, this.parentsBuild[length - 1].type, DefinitionType.BUILDER));
+        this.parentsBuild.push(genNextOptions(length - 1, this.parentsBuild[length - 1].type, DefinitionType.BUILDER));
       } else {
-        this.parentsBuild[length - 1] = this.genNextOptions(length - 2, this.parentsBuild[length - 2].type, DefinitionType.BUILDER);
+        this.parentsBuild[length - 1] = genNextOptions(length - 2, this.parentsBuild[length - 2].type, DefinitionType.BUILDER);
       }
       this.updatePositions();
     },
@@ -152,7 +130,7 @@ export default defineComponent({
     },
 
     async addNextOptions(data: NextComponentSummary): Promise<void> {
-      const nextOptionsComponent = this.genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
+      const nextOptionsComponent = genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
       if (data.previousPosition !== this.parentsBuild.length - 1 && this.parentsBuild[data.previousPosition + 1].type === DefinitionType.ADD_NEXT) {
         this.parentsBuild[data.previousPosition + 1] = nextOptionsComponent;
       } else {
@@ -165,28 +143,13 @@ export default defineComponent({
     },
 
     addItem(data: { selectedType: DefinitionType; position: number; value: any }): void {
-      const newComponent = this.generateNewComponent(data.selectedType, data.position, data.value);
+      const newComponent = generateNewComponent(data.selectedType, data.position, data.value);
       if (!newComponent) return;
       this.parentsBuild[data.position] = newComponent;
       if (this.parentsBuild[this.parentsBuild.length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.parentsBuild.push(this.genNextOptions(this.parentsBuild.length - 1, this.parentsBuild[this.parentsBuild.length - 1].type, DefinitionType.BUILDER));
+        this.parentsBuild.push(genNextOptions(this.parentsBuild.length - 1, this.parentsBuild[this.parentsBuild.length - 1].type, DefinitionType.BUILDER));
       }
       this.updatePositions();
-    },
-
-    genNextOptions(position: number, previous: DefinitionType, group?: DefinitionType) {
-      return {
-        id: "addNext_" + (position + 1),
-        value: {
-          previousPosition: position,
-          previousComponentType: previous,
-          parentGroup: group
-        },
-        position: position + 1,
-        type: DefinitionType.ADD_NEXT,
-        json: {},
-        component: DefinitionComponent.ADD_NEXT
-      };
     },
 
     updatePositions(): void {

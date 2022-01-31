@@ -46,6 +46,7 @@ import EntityService from "@/services/EntityService";
 import { RDF } from "@/vocabulary/RDF";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import Refinement from "@/components/edit/memberEditor/builder/Refinement.vue";
+import { generateNewComponent, genNextOptions } from "@/helpers/BuilderJsonMethods";
 
 export default defineComponent({
   name: "Logic",
@@ -106,14 +107,14 @@ export default defineComponent({
       }
       if (isArrayHasLength(this.logicBuild)) {
         const last = this.logicBuild.length - 1;
-        this.logicBuild.push(this.genNextOptions(last, this.logicBuild[last].type, DefinitionType.LOGIC));
+        this.logicBuild.push(genNextOptions(last, this.logicBuild[last].type, DefinitionType.LOGIC));
       } else {
         this.createDefaultBuild();
       }
     },
 
     createDefaultBuild() {
-      this.logicBuild.push(this.genNextOptions(0, DefinitionType.LOGIC));
+      this.logicBuild.push(genNextOptions(0, DefinitionType.LOGIC));
     },
 
     async processChild(child: any, position: number) {
@@ -125,35 +126,20 @@ export default defineComponent({
 
     processLogic(child: any, position: number) {
       for (const [key, value] of Object.entries(child)) {
-        return this.generateNewComponent(DefinitionType.LOGIC, position, { iri: key, children: value });
+        return generateNewComponent(DefinitionType.LOGIC, position, { iri: key, children: value });
       }
     },
 
     async processIri(iri: TTIriRef, position: number) {
       const types = (await EntityService.getPartialEntity(iri["@id"], [RDF.TYPE]))[RDF.TYPE];
-      if (isValueSet(types)) return this.generateNewComponent(DefinitionType.SET, position, iri);
-      else return this.generateNewComponent(DefinitionType.MEMBER, position, iri);
+      if (isValueSet(types)) return generateNewComponent(DefinitionType.SET, position, iri);
+      else return generateNewComponent(DefinitionType.MEMBER, position, iri);
     },
 
     processRefinement(child: any, position: number) {
       for (const [key, value] of Object.entries(child)) {
-        return this.generateNewComponent(DefinitionType.REFINEMENT, position, { propertyIri: key, children: value });
+        return generateNewComponent(DefinitionType.REFINEMENT, position, { propertyIri: key, children: value });
       }
-    },
-
-    genNextOptions(position: number, previous: DefinitionType, group?: DefinitionType) {
-      return {
-        id: "addNext_" + (position + 1),
-        value: {
-          previousPosition: position,
-          previousComponentType: previous,
-          parentGroup: group
-        },
-        position: position + 1,
-        type: DefinitionType.ADD_NEXT,
-        json: {},
-        component: DefinitionComponent.ADD_NEXT
-      };
     },
 
     updatePositions(): void {
@@ -195,17 +181,17 @@ export default defineComponent({
     },
 
     addItem(data: { selectedType: DefinitionType; position: number; value: any }): void {
-      const newComponent = this.generateNewComponent(data.selectedType, data.position, data.value);
+      const newComponent = generateNewComponent(data.selectedType, data.position, data.value);
       if (!newComponent) return;
       this.logicBuild[data.position] = newComponent;
       if (this.logicBuild[this.logicBuild.length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.logicBuild.push(this.genNextOptions(this.logicBuild.length - 1, this.logicBuild[this.logicBuild.length - 1].type, DefinitionType.LOGIC));
+        this.logicBuild.push(genNextOptions(this.logicBuild.length - 1, this.logicBuild[this.logicBuild.length - 1].type, DefinitionType.LOGIC));
       }
       this.updatePositions();
     },
 
     async addNextOptions(data: NextComponentSummary): Promise<void> {
-      const nextOptionsComponent = this.genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
+      const nextOptionsComponent = genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
       if (data.previousPosition !== this.logicBuild.length - 1 && this.logicBuild[data.previousPosition + 1].type === DefinitionType.ADD_NEXT) {
         this.logicBuild[data.previousPosition + 1] = nextOptionsComponent;
       } else {
@@ -217,69 +203,20 @@ export default defineComponent({
       itemToScrollTo?.scrollIntoView();
     },
 
-    generateNewComponent(type: DefinitionType, position: number, data: any) {
-      let result;
-      switch (type) {
-        case DefinitionType.LOGIC:
-          result = {
-            id: DefinitionType.LOGIC + "_" + position,
-            value: data,
-            position: position,
-            type: DefinitionType.LOGIC,
-            json: {},
-            component: DefinitionComponent.LOGIC
-          };
-          break;
-        case DefinitionType.MEMBER:
-          result = {
-            id: DefinitionType.MEMBER + "_" + position,
-            value: data,
-            position: position,
-            type: DefinitionType.MEMBER,
-            json: {},
-            component: DefinitionComponent.MEMBER
-          };
-          break;
-        case DefinitionType.SET:
-          result = {
-            id: DefinitionType.SET + "_" + position,
-            value: data,
-            position: position,
-            type: DefinitionType.SET,
-            json: {},
-            component: DefinitionComponent.SET
-          };
-          break;
-        case DefinitionType.REFINEMENT:
-          result = {
-            id: DefinitionType.REFINEMENT + "_" + position,
-            value: data,
-            position: position,
-            type: DefinitionType.REFINEMENT,
-            json: {},
-            component: DefinitionComponent.REFINEMENT
-          };
-          break;
-        default:
-          break;
-      }
-      return result;
-    },
-
     deleteItem(data: ComponentDetails): void {
       const index = this.logicBuild.findIndex(item => item.position === data.position);
       this.logicBuild.splice(index, 1);
       const length = this.logicBuild.length;
       if (data.position === 0) {
-        this.logicBuild.unshift(this.genNextOptions(0, DefinitionType.LOGIC, DefinitionType.LOGIC));
+        this.logicBuild.unshift(genNextOptions(0, DefinitionType.LOGIC, DefinitionType.LOGIC));
       }
       if (index < length - 1 && this.logicBuild[index].type === DefinitionType.ADD_NEXT) {
-        this.logicBuild[index] = this.genNextOptions(index - 1, this.logicBuild[index - 1].type, DefinitionType.LOGIC);
+        this.logicBuild[index] = genNextOptions(index - 1, this.logicBuild[index - 1].type, DefinitionType.LOGIC);
       }
       if (this.logicBuild[length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.logicBuild.push(this.genNextOptions(length - 1, this.logicBuild[length - 1].type, DefinitionType.LOGIC));
+        this.logicBuild.push(genNextOptions(length - 1, this.logicBuild[length - 1].type, DefinitionType.LOGIC));
       } else {
-        this.logicBuild[length - 1] = this.genNextOptions(length - 2, this.logicBuild[length - 2].type, DefinitionType.LOGIC);
+        this.logicBuild[length - 1] = genNextOptions(length - 2, this.logicBuild[length - 2].type, DefinitionType.LOGIC);
       }
       this.updatePositions();
     },

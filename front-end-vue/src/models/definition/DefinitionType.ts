@@ -6,5 +6,6 @@ export enum DefinitionType {
   BUILDER = "builder",
   REFINEMENT = "refinement",
   PROPERTY = "property",
-  QUANTIFIER = "quantifier"
+  QUANTIFIER = "quantifier",
+  PARENT = "parent"
 }

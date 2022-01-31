@@ -5,5 +5,6 @@ export enum DefinitionComponent {
   ADD_NEXT = "AddNext",
   REFINEMENT = "Refinement",
   PROPERTY = "Property",
-  QUANTIFIER = "Quantifier"
+  QUANTIFIER = "Quantifier",
+  PARENT = "Parent"
 }
