@@ -14,10 +14,10 @@
           :id="item.id"
           :position="item.position"
           :last="membersBuild.length - 2 <= item.position ? true : false"
-          @deleteClicked="deleteItem"
-          @addClicked="addItem"
-          @updateClicked="updateItem"
-          @addNextOptionsClicked="addNextOptions"
+          @deleteClicked="deleteItemWrapper"
+          @addClicked="addItemWrapper"
+          @updateClicked="updateItemWrapper"
+          @addNextOptionsClicked="addNextOptionsWrapper"
         >
         </component>
       </template>
@@ -43,7 +43,16 @@ import Member from "@/components/edit/memberEditor/builder/Member.vue";
 import Set from "@/components/edit/memberEditor/builder/Set.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import Refinement from "@/components/edit/memberEditor/builder/Refinement.vue";
-import { generateNewComponent, genNextOptions } from "@/helpers/BuilderJsonMethods";
+import {
+  generateNewComponent,
+  genNextOptions,
+  updatePositions,
+  deleteItem,
+  updateItem,
+  addNextOptions,
+  scrollIntoView,
+  addItem
+} from "@/helpers/EditorBuilderJsonMethods";
 
 export default defineComponent({
   name: "Builder",
@@ -142,56 +151,22 @@ export default defineComponent({
       return result;
     },
 
-    deleteItem(data: ComponentDetails): void {
-      const index = this.membersBuild.findIndex(item => item.position === data.position);
-      this.membersBuild.splice(index, 1);
-      const length = this.membersBuild.length;
-      if (data.position === 0) {
-        this.membersBuild.unshift(genNextOptions(0, DefinitionType.BUILDER, DefinitionType.BUILDER));
-      }
-      if (index < length - 1 && this.membersBuild[index].type === DefinitionType.ADD_NEXT) {
-        this.membersBuild[index] = genNextOptions(index - 1, this.membersBuild[index - 1].type, DefinitionType.BUILDER);
-      }
-      if (this.membersBuild[length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.membersBuild.push(genNextOptions(length - 1, this.membersBuild[length - 1].type, DefinitionType.BUILDER));
-      } else {
-        this.membersBuild[length - 1] = genNextOptions(length - 2, this.membersBuild[length - 2].type, DefinitionType.BUILDER);
-      }
-      this.updatePositions();
+    deleteItemWrapper(data: ComponentDetails): void {
+      deleteItem(data, this.membersBuild, DefinitionType.BUILDER);
     },
 
-    updateItem(data: ComponentDetails) {
-      const index = this.membersBuild.findIndex(item => item.position === data.position);
-      this.membersBuild[index] = data;
+    updateItemWrapper(data: ComponentDetails) {
+      updateItem(data, this.membersBuild);
     },
 
-    async addNextOptions(data: NextComponentSummary): Promise<void> {
-      const nextOptionsComponent = genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
-      if (data.previousPosition !== this.membersBuild.length - 1 && this.membersBuild[data.previousPosition + 1].type === DefinitionType.ADD_NEXT) {
-        this.membersBuild[data.previousPosition + 1] = nextOptionsComponent;
-      } else {
-        this.membersBuild.splice(data.previousPosition + 1, 0, nextOptionsComponent);
-      }
-      this.updatePositions();
+    async addNextOptionsWrapper(data: NextComponentSummary): Promise<void> {
+      const nextOptionsComponent = addNextOptions(data, this.membersBuild);
       await this.$nextTick();
-      const itemToScrollTo = document.getElementById(nextOptionsComponent.id);
-      itemToScrollTo?.scrollIntoView();
+      scrollIntoView(nextOptionsComponent);
     },
 
-    addItem(data: { selectedType: DefinitionType; position: number; value: any }): void {
-      const newComponent = generateNewComponent(data.selectedType, data.position, data.value);
-      if (!newComponent) return;
-      this.membersBuild[data.position] = newComponent;
-      if (this.membersBuild[this.membersBuild.length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.membersBuild.push(genNextOptions(this.membersBuild.length - 1, this.membersBuild[this.membersBuild.length - 1].type, DefinitionType.BUILDER));
-      }
-      this.updatePositions();
-    },
-
-    updatePositions(): void {
-      this.membersBuild.forEach((item: ComponentDetails, index: number) => {
-        item.position = index;
-      });
+    addItemWrapper(data: { selectedType: DefinitionType; position: number; value: any }): void {
+      addItem(data, this.membersBuild, DefinitionType.BUILDER);
     }
   }
 });

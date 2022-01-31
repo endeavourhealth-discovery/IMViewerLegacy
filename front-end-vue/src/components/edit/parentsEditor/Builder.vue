@@ -35,7 +35,7 @@ import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteButtons.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import Logic from "@/components/edit/parentsEditor/builder/Logic.vue";
-import { generateNewComponent, genNextOptions } from "@/helpers/BuilderJsonMethods";
+import { generateNewComponent, genNextOptions, updatePositions } from "@/helpers/EditorBuilderJsonMethods";
 
 export default defineComponent({
   name: "Builder",
@@ -121,7 +121,7 @@ export default defineComponent({
       } else {
         this.parentsBuild[length - 1] = genNextOptions(length - 2, this.parentsBuild[length - 2].type, DefinitionType.BUILDER);
       }
-      this.updatePositions();
+      updatePositions(this.parentsBuild);
     },
 
     updateItem(data: ComponentDetails) {
@@ -136,7 +136,7 @@ export default defineComponent({
       } else {
         this.parentsBuild.splice(data.previousPosition + 1, 0, nextOptionsComponent);
       }
-      this.updatePositions();
+      updatePositions(this.parentsBuild);
       await this.$nextTick();
       const itemToScrollTo = document.getElementById(nextOptionsComponent.id);
       itemToScrollTo?.scrollIntoView();
@@ -149,13 +149,7 @@ export default defineComponent({
       if (this.parentsBuild[this.parentsBuild.length - 1].type !== DefinitionType.ADD_NEXT) {
         this.parentsBuild.push(genNextOptions(this.parentsBuild.length - 1, this.parentsBuild[this.parentsBuild.length - 1].type, DefinitionType.BUILDER));
       }
-      this.updatePositions();
-    },
-
-    updatePositions(): void {
-      this.parentsBuild.forEach((item: ComponentDetails, index: number) => {
-        item.position = index;
-      });
+      updatePositions(this.parentsBuild);
     }
   }
 });

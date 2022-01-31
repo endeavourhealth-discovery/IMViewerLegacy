@@ -46,7 +46,7 @@ import EntityService from "@/services/EntityService";
 import { RDF } from "@/vocabulary/RDF";
 import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import Refinement from "@/components/edit/memberEditor/builder/Refinement.vue";
-import { generateNewComponent, genNextOptions } from "@/helpers/BuilderJsonMethods";
+import { generateNewComponent, genNextOptions, updatePositions } from "@/helpers/EditorBuilderJsonMethods";
 
 export default defineComponent({
   name: "Logic",
@@ -143,12 +143,6 @@ export default defineComponent({
       }
     },
 
-    updatePositions(): void {
-      this.logicBuild.forEach((item: ComponentDetails, index: number) => {
-        item.position = index;
-      });
-    },
-
     hasChildren(data: any): data is { iri: string; children: any[] } {
       if (isArrayHasLength((data as { iri: string; children: any[] }).children)) return true;
       return false;
@@ -188,7 +182,7 @@ export default defineComponent({
       if (this.logicBuild[this.logicBuild.length - 1].type !== DefinitionType.ADD_NEXT) {
         this.logicBuild.push(genNextOptions(this.logicBuild.length - 1, this.logicBuild[this.logicBuild.length - 1].type, DefinitionType.LOGIC));
       }
-      this.updatePositions();
+      updatePositions(this.logicBuild);
     },
 
     async addNextOptions(data: NextComponentSummary): Promise<void> {
@@ -198,7 +192,7 @@ export default defineComponent({
       } else {
         this.logicBuild.splice(data.previousPosition + 1, 0, nextOptionsComponent);
       }
-      this.updatePositions();
+      updatePositions(this.logicBuild);
       await this.$nextTick();
       const itemToScrollTo = document.getElementById(nextOptionsComponent.id);
       itemToScrollTo?.scrollIntoView();
@@ -219,7 +213,7 @@ export default defineComponent({
       } else {
         this.logicBuild[length - 1] = genNextOptions(length - 2, this.logicBuild[length - 2].type, DefinitionType.LOGIC);
       }
-      this.updatePositions();
+      updatePositions(this.logicBuild);
     },
 
     deleteClicked(): void {

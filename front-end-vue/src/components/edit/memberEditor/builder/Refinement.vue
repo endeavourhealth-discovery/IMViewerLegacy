@@ -39,7 +39,7 @@ import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteBu
 import Property from "@/components/edit/memberEditor/builder/Property.vue";
 import Quantifier from "@/components/edit/memberEditor/builder/Quantifier.vue";
 import AddNext from "@/components/edit/memberEditor/builder/AddNext.vue";
-import { generateNewComponent, genNextOptions } from "@/helpers/BuilderJsonMethods";
+import { generateNewComponent, genNextOptions, updatePositions } from "@/helpers/EditorBuilderJsonMethods";
 
 export default defineComponent({
   name: "Refinement",
@@ -126,7 +126,7 @@ export default defineComponent({
       } else {
         this.refinementBuild[length - 1] = genNextOptions(length - 2, this.refinementBuild[length - 2].type, DefinitionType.BUILDER);
       }
-      this.updatePositions();
+      updatePositions(this.refinementBuild);
     },
 
     updateItem(data: ComponentDetails) {
@@ -141,7 +141,7 @@ export default defineComponent({
       } else {
         this.refinementBuild.splice(data.previousPosition + 1, 0, nextOptionsComponent);
       }
-      this.updatePositions();
+      updatePositions(this.refinementBuild);
       await this.$nextTick();
       const itemToScrollTo = document.getElementById(nextOptionsComponent.id);
       itemToScrollTo?.scrollIntoView();
@@ -156,13 +156,7 @@ export default defineComponent({
           genNextOptions(this.refinementBuild.length - 1, this.refinementBuild[this.refinementBuild.length - 1].type, DefinitionType.REFINEMENT)
         );
       }
-      this.updatePositions();
-    },
-
-    updatePositions(): void {
-      this.refinementBuild.forEach((item: ComponentDetails, index: number) => {
-        item.position = index;
-      });
+      updatePositions(this.refinementBuild);
     },
 
     onConfirm() {
