@@ -24,6 +24,7 @@
     "core-js": "^3.14.0",
     "d3": "^7.0.0",
     "google-palette": "^1.1.0",
+    "im-library": "https://github.com/endeavourhealth-discovery/IMViewer/blob/develop/im-library/im-library-1.0.0.tgz?raw=true",
     "monaco-editor": "^0.22.3",
     "monaco-editor-webpack-plugin": "^3.1.0",
     "node-sass": "^4.12.0",
