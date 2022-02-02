@@ -32,11 +32,10 @@
 import { defineComponent, PropType } from "@vue/runtime-core";
 import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import { mapState } from "vuex";
-import { DefinitionType } from "@/models/definition/DefinitionType";
-import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
+import { ComponentType } from "@/models/definition/ComponentType";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteButtons.vue";
-import Property from "@/components/edit/memberEditor/builder/Property.vue";
+import Entity from "@/components/edit/memberEditor/builder/Entity.vue";
 import Quantifier from "@/components/edit/memberEditor/builder/Quantifier.vue";
 import AddNext from "@/components/edit/memberEditor/builder/AddNext.vue";
 import {
@@ -49,6 +48,10 @@ import {
   updateItem,
   updatePositions
 } from "@/helpers/EditorBuilderJsonMethods";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
+import { RDF } from "@/vocabulary/RDF";
+import EntityService from "@/services/EntityService";
+import { RDFS } from "@/vocabulary/RDFS";
 
 export default defineComponent({
   name: "Refinement",
@@ -64,18 +67,18 @@ export default defineComponent({
     deleteClicked: (payload: ComponentDetails) => true,
     addClicked: (payload: any) => true
   },
-  components: { AddDeleteButtons, Property, Quantifier, AddNext },
+  components: { AddDeleteButtons, Entity, Quantifier, AddNext },
   watch: {
     refinementBuild: {
       handler() {
-        this.onConfirm();
+        if (this.refinementBuild.length > 1) this.onConfirm();
       },
       deep: true
     }
   },
   computed: mapState(["filterOptions", "selectedFilters"]),
   async mounted() {
-    this.createBuild();
+    await this.createBuild();
   },
   data() {
     return {
@@ -90,14 +93,22 @@ export default defineComponent({
       if (!this.hasData(this.value)) this.createDefaultBuild();
       else {
         let position = 0;
-        const property = generateNewComponent(DefinitionType.PROPERTY, position, this.value.propertyIri);
+        const typeOptions = [{ "@id": RDF.PROPERTY }];
+        const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
+        const propertyName = (await EntityService.getPartialEntity(this.value.propertyIri, [RDFS.LABEL]))[RDFS.LABEL];
+        console.log(propertyName);
+        const property = generateNewComponent(ComponentType.ENTITY, position, {
+          filterOptions: options,
+          entity: { "@id": this.value.propertyIri, name: propertyName },
+          type: ComponentType.ENTITY
+        });
         if (property) {
           this.refinementBuild.push(property);
           position++;
         }
 
         for (const child of this.value.children) {
-          const quantifier = generateNewComponent(DefinitionType.QUANTIFIER, position, { propertyIri: this.value.propertyIri, quantifier: child });
+          const quantifier = generateNewComponent(ComponentType.QUANTIFIER, position, { propertyIri: this.value.propertyIri, quantifier: child });
           if (quantifier) {
             this.refinementBuild.push(quantifier);
             position++;
@@ -109,9 +120,11 @@ export default defineComponent({
 
     createDefaultBuild() {
       this.refinementBuild = [];
-      const property = generateNewComponent(DefinitionType.PROPERTY, 0, undefined);
+      const propertyTypeOptions = this.filterOptions.types.filter((type: EntityReferenceNode) => type["@id"] === RDF.PROPERTY);
+      const propertyOptions = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: propertyTypeOptions };
+      const property = generateNewComponent(ComponentType.ENTITY, 0, { filterOptions: propertyOptions, entity: undefined, type: ComponentType.ENTITY });
       if (property) this.refinementBuild.push(property);
-      const quantifier = generateNewComponent(DefinitionType.QUANTIFIER, 1, undefined);
+      const quantifier = generateNewComponent(ComponentType.QUANTIFIER, 1, undefined);
       if (quantifier) this.refinementBuild.push(quantifier);
     },
 
@@ -121,7 +134,7 @@ export default defineComponent({
     },
 
     deleteItemWrapper(data: ComponentDetails): void {
-      deleteItem(data, this.refinementBuild, DefinitionType.REFINEMENT);
+      deleteItem(data, this.refinementBuild, ComponentType.REFINEMENT);
     },
 
     updateItemWrapper(data: ComponentDetails) {
@@ -134,8 +147,8 @@ export default defineComponent({
       scrollIntoView(nextOptionsComponent);
     },
 
-    addItemWrapper(data: { selectedType: DefinitionType; position: number; value: any }): void {
-      addItem(data, this.refinementBuild, DefinitionType.REFINEMENT);
+    addItemWrapper(data: { selectedType: ComponentType; position: number; value: any }): void {
+      addItem(data, this.refinementBuild, ComponentType.REFINEMENT);
     },
 
     onConfirm() {
@@ -143,8 +156,8 @@ export default defineComponent({
         id: this.id,
         value: this.createAsValue(),
         position: this.position,
-        type: DefinitionType.REFINEMENT,
-        component: DefinitionComponent.REFINEMENT,
+        type: ComponentType.REFINEMENT,
+        component: ComponentType.REFINEMENT,
         json: this.createAsJson()
       });
     },
@@ -154,8 +167,8 @@ export default defineComponent({
         id: this.id,
         value: this.createAsValue(),
         position: this.position,
-        type: DefinitionType.REFINEMENT,
-        component: DefinitionComponent.REFINEMENT,
+        type: ComponentType.REFINEMENT,
+        component: ComponentType.REFINEMENT,
         json: this.createAsJson()
       });
     },
@@ -164,9 +177,9 @@ export default defineComponent({
       let json = {} as any;
       let propertyIri = "";
       let children = [] as any[];
-      for (const item of this.refinementBuild) {
-        if (item.type === DefinitionType.PROPERTY) propertyIri = item.value;
-        if (item.type === DefinitionType.QUANTIFIER) children.push(item.json);
+      for (const [index, item] of this.refinementBuild.entries()) {
+        if (index === 0) propertyIri = item.value.entity["@id"];
+        else children.push(item.json);
       }
       json[propertyIri] = children;
       return json;
@@ -175,8 +188,8 @@ export default defineComponent({
     createAsValue() {
       const children = [];
       let propertyIri = "";
-      for (const child of this.refinementBuild) {
-        if (child.type === DefinitionType.PROPERTY) propertyIri = child.value;
+      for (const [index, child] of this.refinementBuild.entries()) {
+        if (index === 0) propertyIri = child.value.entity["@id"];
         else children.push(child.value);
       }
       return { propertyIri: propertyIri, children: children };
@@ -184,9 +197,9 @@ export default defineComponent({
 
     addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
-        previousComponentType: DefinitionType.REFINEMENT,
+        previousComponentType: ComponentType.REFINEMENT,
         previousPosition: this.position,
-        parentGroup: DefinitionType.REFINEMENT
+        parentGroup: ComponentType.REFINEMENT
       });
     }
   }

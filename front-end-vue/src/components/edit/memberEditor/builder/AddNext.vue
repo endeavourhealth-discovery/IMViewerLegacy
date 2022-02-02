@@ -11,8 +11,7 @@
 import { defineComponent, PropType } from "@vue/runtime-core";
 import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
-import { DefinitionType } from "@/models/definition/DefinitionType";
-import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
+import { ComponentType } from "@/models/definition/ComponentType";
 
 export default defineComponent({
   name: "AddNext",
@@ -26,7 +25,7 @@ export default defineComponent({
     }
   },
   emits: {
-    addClicked: (payload: { selectedType: DefinitionType; position: number }) => true,
+    addClicked: (payload: { selectedType: ComponentType; position: number }) => true,
     deleteClicked: (payload: ComponentDetails) => true
   },
   watch: {
@@ -42,11 +41,11 @@ export default defineComponent({
   },
   data() {
     return {
-      options: [] as DefinitionType[]
+      options: [] as ComponentType[]
     };
   },
   methods: {
-    addItem(selectedOption: DefinitionType) {
+    addItem(selectedOption: ComponentType) {
       this.$emit("addClicked", {
         selectedType: selectedOption,
         position: this.value.previousPosition + 1
@@ -58,26 +57,23 @@ export default defineComponent({
         id: this.id,
         position: this.position,
         value: null,
-        type: DefinitionType.ADD_NEXT,
-        component: DefinitionComponent.ADD_NEXT,
+        type: ComponentType.ADD_NEXT,
+        component: ComponentType.ADD_NEXT,
         json: null
       });
     },
 
     generateOptions(value: NextComponentSummary) {
       switch (value.previousComponentType) {
-        case DefinitionType.MEMBER:
-          this.options = [DefinitionType.LOGIC, DefinitionType.MEMBER, DefinitionType.SET, DefinitionType.REFINEMENT];
+        case ComponentType.ENTITY:
+          this.options = [ComponentType.LOGIC, ComponentType.ENTITY, ComponentType.REFINEMENT];
           break;
-        case DefinitionType.LOGIC:
-          this.options = [DefinitionType.MEMBER, DefinitionType.SET, DefinitionType.LOGIC, DefinitionType.REFINEMENT];
+        case ComponentType.LOGIC:
+          this.options = [ComponentType.ENTITY, ComponentType.LOGIC, ComponentType.REFINEMENT];
 
           break;
-        case DefinitionType.SET:
-          this.options = [DefinitionType.LOGIC, DefinitionType.MEMBER, DefinitionType.SET, DefinitionType.REFINEMENT];
-          break;
-        case DefinitionType.REFINEMENT:
-          this.options = [DefinitionType.MEMBER, DefinitionType.SET, DefinitionType.LOGIC, DefinitionType.REFINEMENT];
+        case ComponentType.REFINEMENT:
+          this.options = [ComponentType.ENTITY, ComponentType.LOGIC, ComponentType.REFINEMENT];
           break;
         default:
           console.error("Unhandled component type within member editor AddNext generateOptions switch");

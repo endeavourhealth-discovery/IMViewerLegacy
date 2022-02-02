@@ -1,11 +1,10 @@
-import { DefinitionComponent } from "./DefinitionComponent";
-import { DefinitionType } from "./DefinitionType";
+import { ComponentType } from "./ComponentType";
 
 export interface ComponentDetails {
   id: string;
   value: any;
   position: number;
-  type: DefinitionType;
+  type: ComponentType;
   json: any;
-  component: DefinitionComponent;
+  component: ComponentType;
 }

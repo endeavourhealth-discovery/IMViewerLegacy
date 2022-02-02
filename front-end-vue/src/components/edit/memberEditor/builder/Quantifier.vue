@@ -36,8 +36,7 @@ import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import axios from "axios";
 import EntityService from "@/services/EntityService";
-import { DefinitionType } from "@/models/definition/DefinitionType";
-import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
+import { ComponentType } from "@/models/definition/ComponentType";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import { IM } from "@/vocabulary/IM";
 
@@ -169,9 +168,9 @@ export default defineComponent({
         value: this.selectedResult,
         id: this.id,
         position: this.position,
-        type: DefinitionType.QUANTIFIER,
+        type: ComponentType.QUANTIFIER,
         json: this.selectedResult,
-        component: DefinitionComponent.QUANTIFIER
+        component: ComponentType.QUANTIFIER
       };
     }
   }

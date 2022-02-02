@@ -29,8 +29,7 @@
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { TTIriRef } from "@/models/TripleTree";
 import { defineComponent, PropType } from "@vue/runtime-core";
-import { DefinitionType } from "@/models/definition/DefinitionType";
-import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
+import { ComponentType } from "@/models/definition/ComponentType";
 import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteButtons.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
@@ -76,7 +75,7 @@ export default defineComponent({
       }
       if (isArrayHasLength(this.parentsBuild)) {
         const last = this.parentsBuild.length - 1;
-        this.parentsBuild.push(genNextOptions(last, this.parentsBuild[last].type, DefinitionType.BUILDER));
+        this.parentsBuild.push(genNextOptions(last, this.parentsBuild[last].type, ComponentType.BUILDER));
       } else {
         this.createDefaultBuild();
       }
@@ -84,15 +83,15 @@ export default defineComponent({
     },
 
     createDefaultBuild() {
-      this.parentsBuild.push(generateNewComponent(DefinitionType.LOGIC, 0, undefined));
-      this.parentsBuild.push(genNextOptions(1, DefinitionType.LOGIC, DefinitionType.BUILDER));
+      this.parentsBuild.push(generateNewComponent(ComponentType.LOGIC, 0, undefined));
+      this.parentsBuild.push(genNextOptions(1, ComponentType.LOGIC, ComponentType.BUILDER));
     },
 
     generateParentsAsNode() {
       let json = [];
       if (this.parentsBuild.length) {
         for (const item of this.parentsBuild) {
-          if (item.type !== DefinitionType.ADD_NEXT) json.push(item.json);
+          if (item.type !== ComponentType.ADD_NEXT) json.push(item.json);
         }
       }
       return json;
@@ -103,7 +102,7 @@ export default defineComponent({
     },
 
     processObject(item: { key: string; value: TTIriRef[] }, position: number): any {
-      return generateNewComponent(DefinitionType.LOGIC, position, { iri: item.key, children: item.value });
+      return generateNewComponent(ComponentType.LOGIC, position, { iri: item.key, children: item.value });
     },
 
     deleteItem(data: ComponentDetails): void {
@@ -111,15 +110,15 @@ export default defineComponent({
       this.parentsBuild.splice(index, 1);
       const length = this.parentsBuild.length;
       if (data.position === 0) {
-        this.parentsBuild.unshift(genNextOptions(0, DefinitionType.BUILDER, DefinitionType.BUILDER));
+        this.parentsBuild.unshift(genNextOptions(0, ComponentType.BUILDER, ComponentType.BUILDER));
       }
-      if (index < length - 1 && this.parentsBuild[index].type === DefinitionType.ADD_NEXT) {
-        this.parentsBuild[index] = genNextOptions(index - 1, this.parentsBuild[index - 1].type, DefinitionType.BUILDER);
+      if (index < length - 1 && this.parentsBuild[index].type === ComponentType.ADD_NEXT) {
+        this.parentsBuild[index] = genNextOptions(index - 1, this.parentsBuild[index - 1].type, ComponentType.BUILDER);
       }
-      if (this.parentsBuild[length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.parentsBuild.push(genNextOptions(length - 1, this.parentsBuild[length - 1].type, DefinitionType.BUILDER));
+      if (this.parentsBuild[length - 1].type !== ComponentType.ADD_NEXT) {
+        this.parentsBuild.push(genNextOptions(length - 1, this.parentsBuild[length - 1].type, ComponentType.BUILDER));
       } else {
-        this.parentsBuild[length - 1] = genNextOptions(length - 2, this.parentsBuild[length - 2].type, DefinitionType.BUILDER);
+        this.parentsBuild[length - 1] = genNextOptions(length - 2, this.parentsBuild[length - 2].type, ComponentType.BUILDER);
       }
       updatePositions(this.parentsBuild);
     },
@@ -131,7 +130,7 @@ export default defineComponent({
 
     async addNextOptions(data: NextComponentSummary): Promise<void> {
       const nextOptionsComponent = genNextOptions(data.previousPosition, data.previousComponentType, data.parentGroup);
-      if (data.previousPosition !== this.parentsBuild.length - 1 && this.parentsBuild[data.previousPosition + 1].type === DefinitionType.ADD_NEXT) {
+      if (data.previousPosition !== this.parentsBuild.length - 1 && this.parentsBuild[data.previousPosition + 1].type === ComponentType.ADD_NEXT) {
         this.parentsBuild[data.previousPosition + 1] = nextOptionsComponent;
       } else {
         this.parentsBuild.splice(data.previousPosition + 1, 0, nextOptionsComponent);
@@ -142,12 +141,12 @@ export default defineComponent({
       itemToScrollTo?.scrollIntoView();
     },
 
-    addItem(data: { selectedType: DefinitionType; position: number; value: any }): void {
+    addItem(data: { selectedType: ComponentType; position: number; value: any }): void {
       const newComponent = generateNewComponent(data.selectedType, data.position, data.value);
       if (!newComponent) return;
       this.parentsBuild[data.position] = newComponent;
-      if (this.parentsBuild[this.parentsBuild.length - 1].type !== DefinitionType.ADD_NEXT) {
-        this.parentsBuild.push(genNextOptions(this.parentsBuild.length - 1, this.parentsBuild[this.parentsBuild.length - 1].type, DefinitionType.BUILDER));
+      if (this.parentsBuild[this.parentsBuild.length - 1].type !== ComponentType.ADD_NEXT) {
+        this.parentsBuild.push(genNextOptions(this.parentsBuild.length - 1, this.parentsBuild[this.parentsBuild.length - 1].type, ComponentType.BUILDER));
       }
       updatePositions(this.parentsBuild);
     }

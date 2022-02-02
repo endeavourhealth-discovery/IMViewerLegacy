@@ -30,8 +30,7 @@ import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { TTIriRef } from "@/models/TripleTree";
 import { SHACL } from "@/vocabulary/SHACL";
 import { defineComponent, PropType } from "@vue/runtime-core";
-import { DefinitionType } from "@/models/definition/DefinitionType";
-import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
+import { ComponentType } from "@/models/definition/ComponentType";
 import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import EntityService from "@/services/EntityService";
 import { RDF } from "@/vocabulary/RDF";
@@ -39,8 +38,7 @@ import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteButtons.vue";
 import AddNext from "@/components/edit/memberEditor/builder/AddNext.vue";
 import Logic from "@/components/edit/memberEditor/builder/Logic.vue";
-import Member from "@/components/edit/memberEditor/builder/Member.vue";
-import Set from "@/components/edit/memberEditor/builder/Set.vue";
+import Entity from "@/components/edit/memberEditor/builder/Entity.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import Refinement from "@/components/edit/memberEditor/builder/Refinement.vue";
 import {
@@ -53,14 +51,18 @@ import {
   scrollIntoView,
   addItem
 } from "@/helpers/EditorBuilderJsonMethods";
+import { mapState } from "vuex";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
+import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
   name: "Builder",
   props: { included: { type: Array as PropType<Array<any>>, required: true } },
-  components: { AddDeleteButtons, AddNext, Logic, Member, Set, Refinement },
+  components: { AddDeleteButtons, AddNext, Logic, Entity, Refinement },
   emits: {
     "concept-updated": (payload: any) => true
   },
+  computed: mapState(["filterOptions"]),
   watch: {
     membersBuild: {
       handler() {
@@ -93,7 +95,7 @@ export default defineComponent({
       }
       if (isArrayHasLength(this.membersBuild)) {
         const last = this.membersBuild.length - 1;
-        this.membersBuild.push(genNextOptions(last, this.membersBuild[last].type, DefinitionType.BUILDER));
+        this.membersBuild.push(genNextOptions(last, this.membersBuild[last].type, ComponentType.BUILDER));
       } else {
         this.createDefaultBuild();
       }
@@ -101,15 +103,15 @@ export default defineComponent({
     },
 
     createDefaultBuild() {
-      this.membersBuild.push(generateNewComponent(DefinitionType.LOGIC, 0, undefined));
-      this.membersBuild.push(genNextOptions(1, DefinitionType.LOGIC, DefinitionType.BUILDER));
+      this.membersBuild.push(generateNewComponent(ComponentType.LOGIC, 0, undefined));
+      this.membersBuild.push(genNextOptions(1, ComponentType.LOGIC, ComponentType.BUILDER));
     },
 
     generateMembersAsNode() {
       let json = [];
       if (this.membersBuild.length) {
         for (const item of this.membersBuild) {
-          if (item.type !== DefinitionType.ADD_NEXT) json.push(item.json);
+          if (item.type !== ComponentType.ADD_NEXT) json.push(item.json);
         }
       }
       return json;
@@ -127,16 +129,25 @@ export default defineComponent({
 
     async processIri(iri: TTIriRef, position: number): Promise<any> {
       const types = await EntityService.getPartialEntity(iri["@id"], [RDF.TYPE]);
-      if (isValueSet(types)) return generateNewComponent(DefinitionType.SET, position, iri);
-      else return generateNewComponent(DefinitionType.MEMBER, position, iri);
+      if (isValueSet(types)) {
+        const typeOptions = this.filterOptions.types.filter(
+          (type: EntityReferenceNode) => type["@id"] === IM.VALUE_SET || type["@id"] === IM.CONCEPT_SET || type["@id"] === IM.CONCEPT_SET_GROUP
+        );
+        const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
+        return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY });
+      } else {
+        const typeOptions = this.filterOptions.types.filter((type: EntityReferenceNode) => type["@id"] === IM.CONCEPT);
+        const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
+        return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY });
+      }
     },
 
     processObject(item: any, position: number): any {
       for (const [key, value] of Object.entries(item)) {
         if (key === SHACL.AND || key === SHACL.OR) {
-          return generateNewComponent(DefinitionType.LOGIC, position, { iri: key, children: value });
+          return generateNewComponent(ComponentType.LOGIC, position, { iri: key, children: value });
         } else {
-          return generateNewComponent(DefinitionType.REFINEMENT, position, { propertyIri: key, children: value });
+          return generateNewComponent(ComponentType.REFINEMENT, position, { propertyIri: key, children: value });
         }
       }
     },
@@ -152,7 +163,7 @@ export default defineComponent({
     },
 
     deleteItemWrapper(data: ComponentDetails): void {
-      deleteItem(data, this.membersBuild, DefinitionType.BUILDER);
+      deleteItem(data, this.membersBuild, ComponentType.BUILDER);
     },
 
     updateItemWrapper(data: ComponentDetails) {
@@ -165,8 +176,8 @@ export default defineComponent({
       scrollIntoView(nextOptionsComponent);
     },
 
-    addItemWrapper(data: { selectedType: DefinitionType; position: number; value: any }): void {
-      addItem(data, this.membersBuild, DefinitionType.BUILDER);
+    addItemWrapper(data: { selectedType: ComponentType; position: number; value: any }): void {
+      addItem(data, this.membersBuild, ComponentType.BUILDER);
     }
   }
 });

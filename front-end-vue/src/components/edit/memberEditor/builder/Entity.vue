@@ -1,5 +1,5 @@
 <template>
-  <div class="member-item-container" :id="id">
+  <div class="entity-search-item-container" :id="id">
     <div class="label-container">
       <span class="float-text">Member</span>
       <InputText
@@ -37,18 +37,23 @@ import { Namespace } from "@/models/Namespace";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import axios from "axios";
 import EntityService from "@/services/EntityService";
-import { DefinitionType } from "@/models/definition/DefinitionType";
-import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
+import { ComponentType } from "@/models/definition/ComponentType";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteButtons.vue";
-import { IM } from "@/vocabulary/IM";
 
 export default defineComponent({
-  name: "Member",
+  name: "Entity",
   props: {
     id: { type: String, required: true },
     position: { type: Number, required: true },
-    value: { type: Object as PropType<TTIriRef>, required: false },
+    value: {
+      type: Object as PropType<{
+        filterOptions: { status: EntityReferenceNode[]; schemes: Namespace[]; types: EntityReferenceNode[] };
+        entity: TTIriRef;
+        type: ComponentType;
+      }>,
+      required: true
+    },
     last: { type: Boolean, required: true }
   },
   emits: {
@@ -60,8 +65,8 @@ export default defineComponent({
   components: { SearchMiniOverlay, AddDeleteButtons },
   computed: mapState(["filterOptions", "selectedFilters"]),
   async mounted() {
-    if (this.value && isObjectHasKeys(this.value, ["name", "@id"])) {
-      this.updateSelectedResult(this.value);
+    if (isObjectHasKeys(this.value.entity, ["name", "@id"])) {
+      this.updateSelectedResult(this.value.entity);
       await this.search();
     } else {
       this.selectedResult = {} as TTIriRef;
@@ -101,14 +106,15 @@ export default defineComponent({
         searchRequest.sortBy = SortBy.Usage;
         searchRequest.page = 1;
         searchRequest.size = 100;
-        searchRequest.schemeFilter = this.filterOptions.schemes.map((scheme: Namespace) => scheme.iri);
+        this.setFilters(searchRequest);
+        // searchRequest.schemeFilter = this.filterOptions.schemes.map((scheme: Namespace) => scheme.iri);
 
-        searchRequest.statusFilter = [];
-        this.filterOptions.status.forEach((status: EntityReferenceNode) => {
-          searchRequest.statusFilter.push(status["@id"]);
-        });
-        searchRequest.typeFilter = [];
-        searchRequest.typeFilter.push(IM.CONCEPT);
+        // searchRequest.statusFilter = [];
+        // this.filterOptions.status.forEach((status: EntityReferenceNode) => {
+        //   searchRequest.statusFilter.push(status["@id"]);
+        // });
+        // searchRequest.typeFilter = [];
+        // searchRequest.typeFilter.push(IM.CONCEPT);
         if (isObjectHasKeys(this.request, ["cancel", "msg"])) {
           await this.request.cancel({ status: 499, message: "Search cancelled by user" });
         }
@@ -116,6 +122,26 @@ export default defineComponent({
         this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
         await this.fetchSearchResults(searchRequest, axiosSource.token);
         this.loading = false;
+      }
+    },
+
+    setFilters(searchRequest: SearchRequest) {
+      let options = {} as { status: EntityReferenceNode[]; schemes: Namespace[]; types: EntityReferenceNode[] };
+      if (isObjectHasKeys(this.value.filterOptions)) {
+        options = this.value.filterOptions;
+      } else {
+        options = this.filterOptions;
+      }
+      searchRequest.schemeFilter = options.schemes.map((scheme: Namespace) => scheme.iri);
+
+      searchRequest.statusFilter = [];
+      for (const status of options.status) {
+        searchRequest.statusFilter.push(status["@id"]);
+      }
+
+      searchRequest.typeFilter = [];
+      for (const type of options.types) {
+        searchRequest.typeFilter.push(type["@id"]);
       }
     },
 
@@ -151,7 +177,7 @@ export default defineComponent({
         this.selectedResult = { "@id": data.iri, name: data.name };
       }
       this.searchTerm = data.name;
-      this.$emit("updateClicked", this.createMember());
+      this.$emit("updateClicked", this.createEntity());
       this.hideOverlay();
     },
 
@@ -159,14 +185,14 @@ export default defineComponent({
       this.showOverlay(event);
     },
 
-    createMember(): ComponentDetails {
+    createEntity(): ComponentDetails {
       return {
-        value: this.selectedResult,
+        value: { entity: this.selectedResult, filterOptions: this.value.filterOptions, type: this.value.type },
         id: this.id,
         position: this.position,
-        type: DefinitionType.MEMBER,
+        type: this.value.type,
         json: this.selectedResult,
-        component: DefinitionComponent.MEMBER
+        component: this.value.type
       };
     },
 
@@ -175,17 +201,17 @@ export default defineComponent({
         id: this.id,
         value: this.selectedResult,
         position: this.position,
-        type: DefinitionType.MEMBER,
-        component: DefinitionComponent.MEMBER,
+        type: this.value.type,
+        component: this.value.type,
         json: this.selectedResult
       });
     },
 
     addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
-        previousComponentType: DefinitionType.MEMBER,
+        previousComponentType: this.value.type,
         previousPosition: this.position,
-        parentGroup: DefinitionType.MEMBER
+        parentGroup: this.value.type
       });
     }
   }
@@ -193,7 +219,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.member-item-container {
+.entity-search-item-container {
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;

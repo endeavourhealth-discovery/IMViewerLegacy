@@ -32,13 +32,11 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteButtons.vue";
-import Member from "@/components/edit/memberEditor/builder/Member.vue";
-import Set from "@/components/edit/memberEditor/builder/Set.vue";
+import Entity from "@/components/edit/memberEditor/builder/Entity.vue";
 import AddNext from "@/components/edit/memberEditor/builder/AddNext.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import { ComponentDetails } from "@/models/definition/ComponentDetails";
-import { DefinitionType } from "@/models/definition/DefinitionType";
-import { DefinitionComponent } from "@/models/definition/DefinitionComponent";
+import { ComponentType } from "@/models/definition/ComponentType";
 import { SHACL } from "@/vocabulary/SHACL";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { TTIriRef } from "@/models/TripleTree";
@@ -56,6 +54,9 @@ import {
   updateItem,
   updatePositions
 } from "@/helpers/EditorBuilderJsonMethods";
+import { mapState } from "vuex";
+import { IM } from "@/vocabulary/IM";
+import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 
 export default defineComponent({
   name: "Logic",
@@ -65,12 +66,13 @@ export default defineComponent({
     value: { type: Object as PropType<{ iri: string; children: PropType<Array<any>> | undefined }>, required: false },
     last: { type: Boolean, required: true }
   },
-  components: { AddDeleteButtons, AddNext, Member, Set, Refinement },
+  components: { AddDeleteButtons, AddNext, Entity, Refinement },
   emits: {
     addNextOptionsClicked: (payload: NextComponentSummary) => true,
     deleteClicked: (payload: ComponentDetails) => true,
     updateClicked: (payload: ComponentDetails) => true
   },
+  computed: mapState(["filterOptions"]),
   watch: {
     selected(): void {
       this.onConfirm();
@@ -90,7 +92,7 @@ export default defineComponent({
       await this.createBuild();
     } else {
       this.selected = this.options[1];
-      this.logicBuild.push(genNextOptions(-1, DefinitionType.LOGIC, DefinitionType.LOGIC));
+      this.logicBuild.push(genNextOptions(-1, ComponentType.LOGIC, ComponentType.LOGIC));
     }
     this.loading = false;
   },
@@ -117,14 +119,14 @@ export default defineComponent({
       }
       if (isArrayHasLength(this.logicBuild)) {
         const last = this.logicBuild.length - 1;
-        this.logicBuild.push(genNextOptions(last, this.logicBuild[last].type, DefinitionType.LOGIC));
+        this.logicBuild.push(genNextOptions(last, this.logicBuild[last].type, ComponentType.LOGIC));
       } else {
         this.createDefaultBuild();
       }
     },
 
     createDefaultBuild() {
-      this.logicBuild.push(genNextOptions(0, DefinitionType.LOGIC));
+      this.logicBuild.push(genNextOptions(0, ComponentType.LOGIC));
     },
 
     async processChild(child: any, position: number) {
@@ -136,19 +138,28 @@ export default defineComponent({
 
     processLogic(child: any, position: number) {
       for (const [key, value] of Object.entries(child)) {
-        return generateNewComponent(DefinitionType.LOGIC, position, { iri: key, children: value });
+        return generateNewComponent(ComponentType.LOGIC, position, { iri: key, children: value });
       }
     },
 
     async processIri(iri: TTIriRef, position: number) {
       const types = (await EntityService.getPartialEntity(iri["@id"], [RDF.TYPE]))[RDF.TYPE];
-      if (isValueSet(types)) return generateNewComponent(DefinitionType.SET, position, iri);
-      else return generateNewComponent(DefinitionType.MEMBER, position, iri);
+      if (isValueSet(types)) {
+        const typeOptions = this.filterOptions.types.filter(
+          (type: EntityReferenceNode) => type["@id"] === IM.VALUE_SET || type["@id"] === IM.CONCEPT_SET || type["@id"] === IM.CONCEPT_SET_GROUP
+        );
+        const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
+        return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY });
+      } else {
+        const typeOptions = this.filterOptions.types.filter((type: EntityReferenceNode) => type["@id"] === IM.CONCEPT);
+        const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
+        return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY });
+      }
     },
 
     processRefinement(child: any, position: number) {
       for (const [key, value] of Object.entries(child)) {
-        return generateNewComponent(DefinitionType.REFINEMENT, position, { propertyIri: key, children: value });
+        return generateNewComponent(ComponentType.REFINEMENT, position, { propertyIri: key, children: value });
       }
     },
 
@@ -162,8 +173,8 @@ export default defineComponent({
         id: this.id,
         value: { iri: this.selected.iri, children: this.value?.children },
         position: this.position,
-        type: DefinitionType.LOGIC,
-        component: DefinitionComponent.LOGIC,
+        type: ComponentType.LOGIC,
+        component: ComponentType.LOGIC,
         json: this.createLogicJson()
       });
     },
@@ -173,7 +184,7 @@ export default defineComponent({
       if (this.selected.iri) json[this.selected.iri] = [];
       if (this.logicBuild.length) {
         for (const item of this.logicBuild) {
-          if (item.type !== DefinitionType.ADD_NEXT) json[this.selected.iri].push(item.json);
+          if (item.type !== ComponentType.ADD_NEXT) json[this.selected.iri].push(item.json);
         }
       }
       return json;
@@ -183,8 +194,8 @@ export default defineComponent({
       updateItem(data, this.logicBuild);
     },
 
-    addItemWrapper(data: { selectedType: DefinitionType; position: number; value: any }): void {
-      addItem(data, this.logicBuild, DefinitionType.LOGIC);
+    addItemWrapper(data: { selectedType: ComponentType; position: number; value: any }): void {
+      addItem(data, this.logicBuild, ComponentType.LOGIC);
     },
 
     async addNextOptionsWrapper(data: NextComponentSummary): Promise<void> {
@@ -194,7 +205,7 @@ export default defineComponent({
     },
 
     deleteItemWrapper(data: ComponentDetails): void {
-      deleteItem(data, this.logicBuild, DefinitionType.LOGIC);
+      deleteItem(data, this.logicBuild, ComponentType.LOGIC);
     },
 
     deleteClicked(): void {
@@ -202,17 +213,17 @@ export default defineComponent({
         id: this.id,
         value: this.selected,
         position: this.position,
-        type: DefinitionType.LOGIC,
-        component: DefinitionComponent.LOGIC,
+        type: ComponentType.LOGIC,
+        component: ComponentType.LOGIC,
         json: this.selected.iri
       });
     },
 
     addNextClicked(): void {
       this.$emit("addNextOptionsClicked", {
-        previousComponentType: DefinitionType.LOGIC,
+        previousComponentType: ComponentType.LOGIC,
         previousPosition: this.position,
-        parentGroup: DefinitionType.LOGIC
+        parentGroup: ComponentType.LOGIC
       });
     }
   }
