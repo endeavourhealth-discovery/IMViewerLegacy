@@ -1,7 +1,7 @@
 <template>
   <div class="entity-search-item-container" :id="id">
     <div class="label-container">
-      <span class="float-text">Member</span>
+      <span class="float-text">{{ label }}</span>
       <InputText
         ref="miniSearchInput"
         type="text"
@@ -49,8 +49,9 @@ export default defineComponent({
     value: {
       type: Object as PropType<{
         filterOptions: { status: EntityReferenceNode[]; schemes: Namespace[]; types: EntityReferenceNode[] };
-        entity: TTIriRef;
+        entity: TTIriRef | undefined;
         type: ComponentType;
+        label: string;
       }>,
       required: true
     },
@@ -65,13 +66,14 @@ export default defineComponent({
   components: { SearchMiniOverlay, AddDeleteButtons },
   computed: mapState(["filterOptions", "selectedFilters"]),
   async mounted() {
-    if (isObjectHasKeys(this.value.entity, ["name", "@id"])) {
+    if (this.value && this.value.entity && isObjectHasKeys(this.value.entity, ["name", "@id"])) {
       this.updateSelectedResult(this.value.entity);
       await this.search();
     } else {
       this.selectedResult = {} as TTIriRef;
       this.searchTerm = "";
     }
+    this.value?.label ? (this.label = this.value.label) : (this.label = "Entity");
   },
   data() {
     return {
@@ -80,7 +82,8 @@ export default defineComponent({
       request: {} as { cancel: any; msg: string },
       selectedResult: {} as TTIriRef,
       searchTerm: "",
-      searchResults: [] as ConceptSummary[]
+      searchResults: [] as ConceptSummary[],
+      label: ""
     };
   },
   methods: {
@@ -127,7 +130,7 @@ export default defineComponent({
 
     setFilters(searchRequest: SearchRequest) {
       let options = {} as { status: EntityReferenceNode[]; schemes: Namespace[]; types: EntityReferenceNode[] };
-      if (isObjectHasKeys(this.value.filterOptions)) {
+      if (this.value && isObjectHasKeys(this.value.filterOptions)) {
         options = this.value.filterOptions;
       } else {
         options = this.filterOptions;
@@ -186,33 +189,61 @@ export default defineComponent({
     },
 
     createEntity(): ComponentDetails {
-      return {
-        value: { entity: this.selectedResult, filterOptions: this.value.filterOptions, type: this.value.type },
-        id: this.id,
-        position: this.position,
-        type: this.value.type,
-        json: this.selectedResult,
-        component: this.value.type
-      };
+      if (this.value)
+        return {
+          value: { entity: this.selectedResult, filterOptions: this.value.filterOptions, type: this.value.type, label: this.value.label },
+          id: this.id,
+          position: this.position,
+          type: this.value.type,
+          json: this.selectedResult,
+          component: this.value.type
+        };
+      else {
+        return {
+          value: { entity: this.selectedResult, filterOptions: this.filterOptions, type: ComponentType.ENTITY, label: "Entity" },
+          id: this.id,
+          position: this.position,
+          type: ComponentType.ENTITY,
+          json: {},
+          component: ComponentType.ENTITY
+        };
+      }
     },
 
     deleteClicked(): void {
-      this.$emit("deleteClicked", {
-        id: this.id,
-        value: this.selectedResult,
-        position: this.position,
-        type: this.value.type,
-        component: this.value.type,
-        json: this.selectedResult
-      });
+      if (this.value)
+        this.$emit("deleteClicked", {
+          id: this.id,
+          value: this.selectedResult,
+          position: this.position,
+          type: this.value.type,
+          component: this.value.type,
+          json: this.selectedResult
+        });
+      else
+        this.$emit("deleteClicked", {
+          id: this.id,
+          value: this.selectedResult,
+          position: this.position,
+          type: ComponentType.ENTITY,
+          component: ComponentType.ENTITY,
+          json: this.selectedResult
+        });
     },
 
     addNextClicked(): void {
-      this.$emit("addNextOptionsClicked", {
-        previousComponentType: this.value.type,
-        previousPosition: this.position,
-        parentGroup: this.value.type
-      });
+      if (this.value)
+        this.$emit("addNextOptionsClicked", {
+          previousComponentType: this.value.type,
+          previousPosition: this.position,
+          parentGroup: this.value.type
+        });
+      else
+        this.$emit("addNextOptionsClicked", {
+          previousComponentType: ComponentType.ENTITY,
+          previousPosition: this.position,
+          parentGroup: ComponentType.ENTITY
+        });
     }
   }
 });

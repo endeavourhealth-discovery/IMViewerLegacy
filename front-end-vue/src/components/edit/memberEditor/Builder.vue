@@ -134,11 +134,11 @@ export default defineComponent({
           (type: EntityReferenceNode) => type["@id"] === IM.VALUE_SET || type["@id"] === IM.CONCEPT_SET || type["@id"] === IM.CONCEPT_SET_GROUP
         );
         const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
-        return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY });
+        return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY, label: "Set" });
       } else {
         const typeOptions = this.filterOptions.types.filter((type: EntityReferenceNode) => type["@id"] === IM.CONCEPT);
         const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
-        return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY });
+        return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY, label: "Member" });
       }
     },
 

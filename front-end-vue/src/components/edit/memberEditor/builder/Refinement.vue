@@ -100,7 +100,8 @@ export default defineComponent({
         const property = generateNewComponent(ComponentType.ENTITY, position, {
           filterOptions: options,
           entity: { "@id": this.value.propertyIri, name: propertyName },
-          type: ComponentType.ENTITY
+          type: ComponentType.ENTITY,
+          label: "Property"
         });
         if (property) {
           this.refinementBuild.push(property);

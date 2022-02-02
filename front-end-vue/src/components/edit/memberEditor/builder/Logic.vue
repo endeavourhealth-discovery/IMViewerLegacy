@@ -143,18 +143,12 @@ export default defineComponent({
     },
 
     async processIri(iri: TTIriRef, position: number) {
-      const types = (await EntityService.getPartialEntity(iri["@id"], [RDF.TYPE]))[RDF.TYPE];
-      if (isValueSet(types)) {
-        const typeOptions = this.filterOptions.types.filter(
-          (type: EntityReferenceNode) => type["@id"] === IM.VALUE_SET || type["@id"] === IM.CONCEPT_SET || type["@id"] === IM.CONCEPT_SET_GROUP
-        );
-        const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
-        return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY });
-      } else {
-        const typeOptions = this.filterOptions.types.filter((type: EntityReferenceNode) => type["@id"] === IM.CONCEPT);
-        const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
-        return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY });
-      }
+      const typeOptions = this.filterOptions.types.filter(
+        (type: EntityReferenceNode) =>
+          type["@id"] === IM.VALUE_SET || type["@id"] === IM.CONCEPT_SET || type["@id"] === IM.CONCEPT_SET_GROUP || type["@id"] === IM.CONCEPT
+      );
+      const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
+      return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY, label: "Member" });
     },
 
     processRefinement(child: any, position: number) {
@@ -195,6 +189,12 @@ export default defineComponent({
     },
 
     addItemWrapper(data: { selectedType: ComponentType; position: number; value: any }): void {
+      const typeOptions = this.filterOptions.types.filter(
+        (type: EntityReferenceNode) =>
+          type["@id"] === IM.VALUE_SET || type["@id"] === IM.CONCEPT_SET || type["@id"] === IM.CONCEPT_SET_GROUP || type["@id"] === IM.CONCEPT
+      );
+      const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
+      data.value = { filterOptions: options, entity: undefined, type: ComponentType.ENTITY, label: "Member" };
       addItem(data, this.logicBuild, ComponentType.LOGIC);
     },
 

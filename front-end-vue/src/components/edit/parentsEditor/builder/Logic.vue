@@ -126,7 +126,7 @@ export default defineComponent({
     processIri(iri: TTIriRef, position: number) {
       const typeOptions = this.filterOptions.types.filter((type: EntityReferenceNode) => type["@id"] === IM.CONCEPT || type["@id"] === IM.CONCEPT_SET);
       const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
-      return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY });
+      return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY, label: "Parent" });
     },
 
     hasChildren(data: any): data is { iri: string; children: any[] } {
@@ -161,6 +161,11 @@ export default defineComponent({
     },
 
     addItemWrapper(data: { selectedType: ComponentType; position: number; value: any }): void {
+      if (data.selectedType === ComponentType.ENTITY) {
+        const typeOptions = this.filterOptions.types.filter((type: EntityReferenceNode) => type["@id"] === IM.CONCEPT || type["@id"] === IM.CONCEPT_SET);
+        const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
+        data.value = { filterOptions: options, entity: undefined, type: ComponentType.ENTITY, label: "Parent" };
+      }
       addItem(data, this.logicBuild, ComponentType.LOGIC);
     },
 
@@ -177,11 +182,11 @@ export default defineComponent({
     deleteClicked(): void {
       this.$emit("deleteClicked", {
         id: this.id,
-        value: this.selected,
+        value: { iri: this.selected.iri, children: this.value?.children },
         position: this.position,
         type: ComponentType.LOGIC,
         component: ComponentType.LOGIC,
-        json: this.selected.iri
+        json: this.createLogicJson()
       });
     },
 
