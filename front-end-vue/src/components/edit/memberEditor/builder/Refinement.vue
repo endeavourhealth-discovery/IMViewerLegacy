@@ -9,11 +9,12 @@
     <div v-if="refinementBuild && refinementBuild.length" class="refinement-children-container">
       <template v-for="child of refinementBuild" :key="child.id">
         <component
-          :is="child.component"
+          :is="child.type"
           :value="child.value"
           :id="child.id"
           :position="child.position"
           :last="refinementBuild.length - 2 <= child.position ? true : false"
+          :builderType="child.builderType"
           @deleteClicked="deleteItemWrapper"
           @addClicked="addItemWrapper"
           @updateClicked="updateItemWrapper"
@@ -52,6 +53,7 @@ import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { RDF } from "@/vocabulary/RDF";
 import EntityService from "@/services/EntityService";
 import { RDFS } from "@/vocabulary/RDFS";
+import { BuilderType } from "@/models/definition/BuilderType";
 
 export default defineComponent({
   name: "Refinement",
@@ -59,7 +61,8 @@ export default defineComponent({
     id: { type: String, required: true },
     position: { type: Number, required: true },
     value: { type: Object as PropType<{ propertyIri: string; children: any[] }>, required: false },
-    last: { type: Boolean, required: true }
+    last: { type: Boolean, required: true },
+    builderType: { type: String as PropType<BuilderType>, required: true }
   },
   emits: {
     updateClicked: (payload: ComponentDetails) => true,
@@ -96,20 +99,29 @@ export default defineComponent({
         const typeOptions = [{ "@id": RDF.PROPERTY }];
         const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
         const propertyName = (await EntityService.getPartialEntity(this.value.propertyIri, [RDFS.LABEL]))[RDFS.LABEL];
-        console.log(propertyName);
-        const property = generateNewComponent(ComponentType.ENTITY, position, {
-          filterOptions: options,
-          entity: { "@id": this.value.propertyIri, name: propertyName },
-          type: ComponentType.ENTITY,
-          label: "Property"
-        });
+        const property = generateNewComponent(
+          ComponentType.ENTITY,
+          position,
+          {
+            filterOptions: options,
+            entity: { "@id": this.value.propertyIri, name: propertyName },
+            type: ComponentType.ENTITY,
+            label: "Property"
+          },
+          this.builderType
+        );
         if (property) {
           this.refinementBuild.push(property);
           position++;
         }
 
         for (const child of this.value.children) {
-          const quantifier = generateNewComponent(ComponentType.QUANTIFIER, position, { propertyIri: this.value.propertyIri, quantifier: child });
+          const quantifier = generateNewComponent(
+            ComponentType.QUANTIFIER,
+            position,
+            { propertyIri: this.value.propertyIri, quantifier: child },
+            this.builderType
+          );
           if (quantifier) {
             this.refinementBuild.push(quantifier);
             position++;
@@ -123,9 +135,14 @@ export default defineComponent({
       this.refinementBuild = [];
       const propertyTypeOptions = this.filterOptions.types.filter((type: EntityReferenceNode) => type["@id"] === RDF.PROPERTY);
       const propertyOptions = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: propertyTypeOptions };
-      const property = generateNewComponent(ComponentType.ENTITY, 0, { filterOptions: propertyOptions, entity: undefined, type: ComponentType.ENTITY });
+      const property = generateNewComponent(
+        ComponentType.ENTITY,
+        0,
+        { filterOptions: propertyOptions, entity: undefined, type: ComponentType.ENTITY },
+        this.builderType
+      );
       if (property) this.refinementBuild.push(property);
-      const quantifier = generateNewComponent(ComponentType.QUANTIFIER, 1, undefined);
+      const quantifier = generateNewComponent(ComponentType.QUANTIFIER, 1, undefined, this.builderType);
       if (quantifier) this.refinementBuild.push(quantifier);
     },
 
@@ -135,7 +152,7 @@ export default defineComponent({
     },
 
     deleteItemWrapper(data: ComponentDetails): void {
-      deleteItem(data, this.refinementBuild, ComponentType.REFINEMENT);
+      deleteItem(data, this.refinementBuild, ComponentType.REFINEMENT, this.builderType);
     },
 
     updateItemWrapper(data: ComponentDetails) {
@@ -154,7 +171,7 @@ export default defineComponent({
         const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
         data.value = { filterOptions: options, entity: undefined, type: ComponentType.ENTITY, label: "Property" };
       }
-      addItem(data, this.refinementBuild, ComponentType.REFINEMENT);
+      addItem(data, this.refinementBuild, ComponentType.REFINEMENT, this.builderType);
     },
 
     onConfirm() {
@@ -163,7 +180,7 @@ export default defineComponent({
         value: this.createAsValue(),
         position: this.position,
         type: ComponentType.REFINEMENT,
-        component: ComponentType.REFINEMENT,
+        builderType: this.builderType,
         json: this.createAsJson()
       });
     },
@@ -174,7 +191,7 @@ export default defineComponent({
         value: this.createAsValue(),
         position: this.position,
         type: ComponentType.REFINEMENT,
-        component: ComponentType.REFINEMENT,
+        builderType: this.builderType,
         json: this.createAsJson()
       });
     },

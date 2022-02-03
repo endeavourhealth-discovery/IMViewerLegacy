@@ -9,11 +9,12 @@
     <div v-else id="parents-build">
       <template v-for="item of parentsBuild" :key="item.id">
         <component
-          :is="item.component"
+          :is="item.type"
           :value="item.value"
           :id="item.id"
           :position="item.position"
           :last="parentsBuild.length - 2 <= item.position ? true : false"
+          :builderType="item.builderType"
           @deleteClicked="deleteItem"
           @addClicked="addItem"
           @updateClicked="updateItem"
@@ -35,6 +36,7 @@ import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteBu
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import Logic from "@/components/edit/parentsEditor/builder/Logic.vue";
 import { generateNewComponent, genNextOptions, updatePositions } from "@/helpers/EditorBuilderJsonMethods";
+import { BuilderType } from "@/models/definition/BuilderType";
 
 export default defineComponent({
   name: "Builder",
@@ -75,7 +77,7 @@ export default defineComponent({
       }
       if (isArrayHasLength(this.parentsBuild)) {
         const last = this.parentsBuild.length - 1;
-        this.parentsBuild.push(genNextOptions(last, this.parentsBuild[last].type, ComponentType.BUILDER));
+        this.parentsBuild.push(genNextOptions(last, this.parentsBuild[last].type, BuilderType.PARENT, ComponentType.BUILDER));
       } else {
         this.createDefaultBuild();
       }
@@ -83,8 +85,8 @@ export default defineComponent({
     },
 
     createDefaultBuild() {
-      this.parentsBuild.push(generateNewComponent(ComponentType.LOGIC, 0, undefined));
-      this.parentsBuild.push(genNextOptions(1, ComponentType.LOGIC, ComponentType.BUILDER));
+      this.parentsBuild.push(generateNewComponent(ComponentType.LOGIC, 0, undefined, BuilderType.PARENT));
+      this.parentsBuild.push(genNextOptions(1, ComponentType.LOGIC, BuilderType.PARENT, ComponentType.BUILDER));
     },
 
     generateParentsAsNode() {
@@ -102,7 +104,7 @@ export default defineComponent({
     },
 
     processObject(item: { key: string; value: TTIriRef[] }, position: number): any {
-      return generateNewComponent(ComponentType.LOGIC, position, { iri: item.key, children: item.value });
+      return generateNewComponent(ComponentType.LOGIC, position, { iri: item.key, children: item.value }, BuilderType.PARENT);
     },
 
     deleteItem(data: ComponentDetails): void {
@@ -110,15 +112,15 @@ export default defineComponent({
       this.parentsBuild.splice(index, 1);
       const length = this.parentsBuild.length;
       if (data.position === 0) {
-        this.parentsBuild.unshift(genNextOptions(0, ComponentType.BUILDER, ComponentType.BUILDER));
+        this.parentsBuild.unshift(genNextOptions(0, ComponentType.BUILDER, BuilderType.PARENT, ComponentType.BUILDER));
       }
       if (index < length - 1 && this.parentsBuild[index].type === ComponentType.ADD_NEXT) {
-        this.parentsBuild[index] = genNextOptions(index - 1, this.parentsBuild[index - 1].type, ComponentType.BUILDER);
+        this.parentsBuild[index] = genNextOptions(index - 1, this.parentsBuild[index - 1].type, BuilderType.PARENT, ComponentType.BUILDER);
       }
       if (this.parentsBuild[length - 1].type !== ComponentType.ADD_NEXT) {
-        this.parentsBuild.push(genNextOptions(length - 1, this.parentsBuild[length - 1].type, ComponentType.BUILDER));
+        this.parentsBuild.push(genNextOptions(length - 1, this.parentsBuild[length - 1].type, BuilderType.PARENT, ComponentType.BUILDER));
       } else {
-        this.parentsBuild[length - 1] = genNextOptions(length - 2, this.parentsBuild[length - 2].type, ComponentType.BUILDER);
+        this.parentsBuild[length - 1] = genNextOptions(length - 2, this.parentsBuild[length - 2].type, BuilderType.PARENT, ComponentType.BUILDER);
       }
       updatePositions(this.parentsBuild);
     },
@@ -142,11 +144,13 @@ export default defineComponent({
     },
 
     addItem(data: { selectedType: ComponentType; position: number; value: any }): void {
-      const newComponent = generateNewComponent(data.selectedType, data.position, data.value);
+      const newComponent = generateNewComponent(data.selectedType, data.position, data.value, BuilderType.PARENT);
       if (!newComponent) return;
       this.parentsBuild[data.position] = newComponent;
       if (this.parentsBuild[this.parentsBuild.length - 1].type !== ComponentType.ADD_NEXT) {
-        this.parentsBuild.push(genNextOptions(this.parentsBuild.length - 1, this.parentsBuild[this.parentsBuild.length - 1].type, ComponentType.BUILDER));
+        this.parentsBuild.push(
+          genNextOptions(this.parentsBuild.length - 1, this.parentsBuild[this.parentsBuild.length - 1].type, BuilderType.PARENT, ComponentType.BUILDER)
+        );
       }
       updatePositions(this.parentsBuild);
     }

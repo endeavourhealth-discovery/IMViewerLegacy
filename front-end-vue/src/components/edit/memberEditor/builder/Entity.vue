@@ -40,6 +40,7 @@ import EntityService from "@/services/EntityService";
 import { ComponentType } from "@/models/definition/ComponentType";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import AddDeleteButtons from "@/components/edit/memberEditor/builder/AddDeleteButtons.vue";
+import { BuilderType } from "@/models/definition/BuilderType";
 
 export default defineComponent({
   name: "Entity",
@@ -55,7 +56,8 @@ export default defineComponent({
       }>,
       required: true
     },
-    last: { type: Boolean, required: true }
+    last: { type: Boolean, required: true },
+    builderType: { type: String as PropType<BuilderType>, required: true }
   },
   emits: {
     updateClicked: (payload: ComponentDetails) => true,
@@ -196,7 +198,7 @@ export default defineComponent({
           position: this.position,
           type: this.value.type,
           json: this.selectedResult,
-          component: this.value.type
+          builderType: this.builderType
         };
       else {
         return {
@@ -205,7 +207,7 @@ export default defineComponent({
           position: this.position,
           type: ComponentType.ENTITY,
           json: {},
-          component: ComponentType.ENTITY
+          builderType: this.builderType
         };
       }
     },
@@ -217,7 +219,7 @@ export default defineComponent({
           value: this.selectedResult,
           position: this.position,
           type: this.value.type,
-          component: this.value.type,
+          builderType: this.builderType,
           json: this.selectedResult
         });
       else
@@ -226,7 +228,7 @@ export default defineComponent({
           value: this.selectedResult,
           position: this.position,
           type: ComponentType.ENTITY,
-          component: ComponentType.ENTITY,
+          builderType: this.builderType,
           json: this.selectedResult
         });
     },

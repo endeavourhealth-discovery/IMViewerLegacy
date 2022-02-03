@@ -7,16 +7,17 @@
   <div v-else class="logic-container" :id="id">
     <div class="label-container">
       <span class="float-text">Logic</span>
-      <Dropdown v-model="selected" :options="options" optionLabel="name" placeholder="Select logic" />
+      <Dropdown v-model="selected" :options="value.options" optionLabel="name" placeholder="Select logic" />
     </div>
     <div class="children-container">
       <template v-for="item of logicBuild" :key="item.id">
         <component
-          :is="item.component"
+          :is="item.type"
           :value="item.value"
           :id="item.id"
           :position="item.position"
           :last="logicBuild.length - 2 <= item.position ? true : false"
+          :builderType="item.builderType"
           @deleteClicked="deleteItemWrapper"
           @addClicked="addItemWrapper"
           @updateClicked="updateItemWrapper"
@@ -37,12 +38,10 @@ import AddNext from "@/components/edit/memberEditor/builder/AddNext.vue";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import { ComponentType } from "@/models/definition/ComponentType";
+import { BuilderType } from "@/models/definition/BuilderType";
 import { SHACL } from "@/vocabulary/SHACL";
 import { isArrayHasLength, isObjectHasKeys } from "@/helpers/DataTypeCheckers";
 import { TTIriRef } from "@/models/TripleTree";
-import EntityService from "@/services/EntityService";
-import { RDF } from "@/vocabulary/RDF";
-import { isValueSet } from "@/helpers/ConceptTypeMethods";
 import Refinement from "@/components/edit/memberEditor/builder/Refinement.vue";
 import {
   addItem,
@@ -63,8 +62,12 @@ export default defineComponent({
   props: {
     id: { type: String, required: true },
     position: { type: Number, required: true },
-    value: { type: Object as PropType<{ iri: string; children: PropType<Array<any>> | undefined }>, required: false },
-    last: { type: Boolean, required: true }
+    value: {
+      type: Object as PropType<{ iri: string; children: PropType<Array<any>> | undefined; options: { iri: string; name: string }[] }>,
+      required: true
+    },
+    last: { type: Boolean, required: true },
+    builderType: { type: String as PropType<BuilderType>, required: true }
   },
   components: { AddDeleteButtons, AddNext, Entity, Refinement },
   emits: {
@@ -86,23 +89,14 @@ export default defineComponent({
   },
   async mounted() {
     this.loading = true;
-    if (this.value && isObjectHasKeys(this.value, ["iri", "children"])) {
-      const found = this.options.find(option => option.iri === this.value?.iri);
-      this.selected = found ? found : this.options[1];
-      await this.createBuild();
-    } else {
-      this.selected = this.options[1];
-      this.logicBuild.push(genNextOptions(-1, ComponentType.LOGIC, ComponentType.LOGIC));
-    }
+    const found = this.value.options.find(option => option.iri === this.value.iri);
+    this.selected = found ? found : this.value.options[0];
+    await this.createBuild();
+
     this.loading = false;
   },
   data() {
     return {
-      options: [
-        { iri: SHACL.AND, name: "AND" },
-        { iri: SHACL.OR, name: "OR" },
-        { iri: SHACL.NOT, name: "NOT" }
-      ] as { iri: string; name: string }[],
       selected: {} as { iri: string; name: string },
       logicBuild: [] as any[],
       loading: true
@@ -111,7 +105,10 @@ export default defineComponent({
   methods: {
     async createBuild() {
       this.logicBuild = [];
-      if (!this.hasChildren(this.value)) return;
+      if (!this.hasChildren(this.value)) {
+        this.createDefaultBuild();
+        return;
+      }
       let position = 0;
       for (const child of this.value.children) {
         this.logicBuild.push(await this.processChild(child, position));
@@ -119,14 +116,15 @@ export default defineComponent({
       }
       if (isArrayHasLength(this.logicBuild)) {
         const last = this.logicBuild.length - 1;
-        this.logicBuild.push(genNextOptions(last, this.logicBuild[last].type, ComponentType.LOGIC));
+        this.logicBuild.push(genNextOptions(last, this.logicBuild[last].type, this.builderType, ComponentType.LOGIC));
       } else {
         this.createDefaultBuild();
       }
     },
 
     createDefaultBuild() {
-      this.logicBuild.push(genNextOptions(0, ComponentType.LOGIC));
+      this.selected = this.value.options[0];
+      this.logicBuild.push(genNextOptions(-1, ComponentType.LOGIC, this.builderType));
     },
 
     async processChild(child: any, position: number) {
@@ -138,7 +136,7 @@ export default defineComponent({
 
     processLogic(child: any, position: number) {
       for (const [key, value] of Object.entries(child)) {
-        return generateNewComponent(ComponentType.LOGIC, position, { iri: key, children: value });
+        return generateNewComponent(ComponentType.LOGIC, position, { iri: key, children: value }, this.builderType);
       }
     },
 
@@ -148,12 +146,17 @@ export default defineComponent({
           type["@id"] === IM.VALUE_SET || type["@id"] === IM.CONCEPT_SET || type["@id"] === IM.CONCEPT_SET_GROUP || type["@id"] === IM.CONCEPT
       );
       const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
-      return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY, label: "Member" });
+      return generateNewComponent(
+        ComponentType.ENTITY,
+        position,
+        { filterOptions: options, entity: iri, type: ComponentType.ENTITY, label: "Member" },
+        this.builderType
+      );
     },
 
     processRefinement(child: any, position: number) {
       for (const [key, value] of Object.entries(child)) {
-        return generateNewComponent(ComponentType.REFINEMENT, position, { propertyIri: key, children: value });
+        return generateNewComponent(ComponentType.REFINEMENT, position, { propertyIri: key, children: value }, this.builderType);
       }
     },
 
@@ -165,11 +168,11 @@ export default defineComponent({
     onConfirm(): void {
       this.$emit("updateClicked", {
         id: this.id,
-        value: { iri: this.selected.iri, children: this.value?.children },
+        value: { iri: this.selected.iri, children: this.value.children, options: this.value.options },
         position: this.position,
         type: ComponentType.LOGIC,
-        component: ComponentType.LOGIC,
-        json: this.createLogicJson()
+        json: this.createLogicJson(),
+        builderType: this.builderType
       });
     },
 
@@ -189,13 +192,18 @@ export default defineComponent({
     },
 
     addItemWrapper(data: { selectedType: ComponentType; position: number; value: any }): void {
-      const typeOptions = this.filterOptions.types.filter(
-        (type: EntityReferenceNode) =>
-          type["@id"] === IM.VALUE_SET || type["@id"] === IM.CONCEPT_SET || type["@id"] === IM.CONCEPT_SET_GROUP || type["@id"] === IM.CONCEPT
-      );
-      const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
-      data.value = { filterOptions: options, entity: undefined, type: ComponentType.ENTITY, label: "Member" };
-      addItem(data, this.logicBuild, ComponentType.LOGIC);
+      if (data.selectedType === ComponentType.ENTITY) {
+        const typeOptions = this.filterOptions.types.filter(
+          (type: EntityReferenceNode) =>
+            type["@id"] === IM.VALUE_SET || type["@id"] === IM.CONCEPT_SET || type["@id"] === IM.CONCEPT_SET_GROUP || type["@id"] === IM.CONCEPT
+        );
+        const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
+        data.value = { filterOptions: options, entity: undefined, type: ComponentType.ENTITY, label: "Member" };
+      }
+      if (data.selectedType === ComponentType.LOGIC) {
+        data.value = { options: this.value.options, iri: "", children: undefined };
+      }
+      addItem(data, this.logicBuild, ComponentType.LOGIC, this.builderType);
     },
 
     async addNextOptionsWrapper(data: NextComponentSummary): Promise<void> {
@@ -205,7 +213,7 @@ export default defineComponent({
     },
 
     deleteItemWrapper(data: ComponentDetails): void {
-      deleteItem(data, this.logicBuild, ComponentType.LOGIC);
+      deleteItem(data, this.logicBuild, ComponentType.LOGIC, this.builderType);
     },
 
     deleteClicked(): void {
@@ -214,7 +222,7 @@ export default defineComponent({
         value: this.selected,
         position: this.position,
         type: ComponentType.LOGIC,
-        component: ComponentType.LOGIC,
+        builderType: this.builderType,
         json: this.selected.iri
       });
     },

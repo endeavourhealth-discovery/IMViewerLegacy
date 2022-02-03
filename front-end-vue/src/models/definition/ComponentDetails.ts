@@ -1,3 +1,4 @@
+import { BuilderType } from "./BuilderType";
 import { ComponentType } from "./ComponentType";
 
 export interface ComponentDetails {
@@ -6,5 +7,5 @@ export interface ComponentDetails {
   position: number;
   type: ComponentType;
   json: any;
-  component: ComponentType;
+  builderType: BuilderType;
 }

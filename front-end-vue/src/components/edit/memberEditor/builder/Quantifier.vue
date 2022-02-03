@@ -39,6 +39,7 @@ import EntityService from "@/services/EntityService";
 import { ComponentType } from "@/models/definition/ComponentType";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import { IM } from "@/vocabulary/IM";
+import { BuilderType } from "@/models/definition/BuilderType";
 
 export default defineComponent({
   name: "Quantifier",
@@ -46,7 +47,8 @@ export default defineComponent({
     id: { type: String, required: true },
     position: { type: Number, required: true },
     value: { type: Object as PropType<{ propertyIri: string; quantifier: TTIriRef }>, required: false },
-    last: { type: Boolean, required: true }
+    last: { type: Boolean, required: true },
+    builderType: { type: String as PropType<BuilderType>, required: true }
   },
   emits: {
     updateClicked: (payload: ComponentDetails) => true,
@@ -170,7 +172,7 @@ export default defineComponent({
         position: this.position,
         type: ComponentType.QUANTIFIER,
         json: this.selectedResult,
-        component: ComponentType.QUANTIFIER
+        builderType: this.builderType
       };
     }
   }

@@ -9,11 +9,12 @@
     <div v-else id="members-build">
       <template v-for="item of membersBuild" :key="item.id">
         <component
-          :is="item.component"
+          :is="item.type"
           :value="item.value"
           :id="item.id"
           :position="item.position"
           :last="membersBuild.length - 2 <= item.position ? true : false"
+          :builderType="item.builderType"
           @deleteClicked="deleteItemWrapper"
           @addClicked="addItemWrapper"
           @updateClicked="updateItemWrapper"
@@ -54,6 +55,7 @@ import {
 import { mapState } from "vuex";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
 import { IM } from "@/vocabulary/IM";
+import { BuilderType } from "@/models/definition/BuilderType";
 
 export default defineComponent({
   name: "Builder",
@@ -78,7 +80,12 @@ export default defineComponent({
     return {
       membersBuild: [] as any[],
       membersAsNode: {} as any,
-      loading: true
+      loading: true,
+      logicOptions: [
+        { iri: SHACL.AND, name: "AND" },
+        { iri: SHACL.OR, name: "OR" },
+        { iri: SHACL.NOT, name: "NOT" }
+      ] as { iri: string; name: string }[]
     };
   },
   methods: {
@@ -95,7 +102,7 @@ export default defineComponent({
       }
       if (isArrayHasLength(this.membersBuild)) {
         const last = this.membersBuild.length - 1;
-        this.membersBuild.push(genNextOptions(last, this.membersBuild[last].type, ComponentType.BUILDER));
+        this.membersBuild.push(genNextOptions(last, this.membersBuild[last].type, BuilderType.MEMBER, ComponentType.BUILDER));
       } else {
         this.createDefaultBuild();
       }
@@ -103,8 +110,15 @@ export default defineComponent({
     },
 
     createDefaultBuild() {
-      this.membersBuild.push(generateNewComponent(ComponentType.LOGIC, 0, undefined));
-      this.membersBuild.push(genNextOptions(1, ComponentType.LOGIC, ComponentType.BUILDER));
+      this.membersBuild.push(
+        generateNewComponent(
+          ComponentType.LOGIC,
+          0,
+          { iri: "", children: undefined, builderType: BuilderType.MEMBER, options: this.logicOptions },
+          BuilderType.MEMBER
+        )
+      );
+      this.membersBuild.push(genNextOptions(1, ComponentType.LOGIC, BuilderType.MEMBER, ComponentType.BUILDER));
     },
 
     generateMembersAsNode() {
@@ -134,20 +148,40 @@ export default defineComponent({
           (type: EntityReferenceNode) => type["@id"] === IM.VALUE_SET || type["@id"] === IM.CONCEPT_SET || type["@id"] === IM.CONCEPT_SET_GROUP
         );
         const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
-        return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY, label: "Set" });
+        return generateNewComponent(
+          ComponentType.ENTITY,
+          position,
+          { filterOptions: options, entity: iri, type: ComponentType.ENTITY, label: "Set" },
+          BuilderType.MEMBER
+        );
       } else {
         const typeOptions = this.filterOptions.types.filter((type: EntityReferenceNode) => type["@id"] === IM.CONCEPT);
         const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
-        return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY, label: "Member" });
+        return generateNewComponent(
+          ComponentType.ENTITY,
+          position,
+          { filterOptions: options, entity: iri, type: ComponentType.ENTITY, label: "Member" },
+          BuilderType.MEMBER
+        );
       }
     },
 
     processObject(item: any, position: number): any {
       for (const [key, value] of Object.entries(item)) {
-        if (key === SHACL.AND || key === SHACL.OR) {
-          return generateNewComponent(ComponentType.LOGIC, position, { iri: key, children: value });
+        if (key === SHACL.AND || key === SHACL.OR || key === SHACL.NOT) {
+          return generateNewComponent(
+            ComponentType.LOGIC,
+            position,
+            {
+              iri: key,
+              children: value,
+              builderType: BuilderType.MEMBER,
+              options: this.logicOptions
+            },
+            BuilderType.MEMBER
+          );
         } else {
-          return generateNewComponent(ComponentType.REFINEMENT, position, { propertyIri: key, children: value });
+          return generateNewComponent(ComponentType.REFINEMENT, position, { propertyIri: key, children: value }, BuilderType.MEMBER);
         }
       }
     },
@@ -163,7 +197,7 @@ export default defineComponent({
     },
 
     deleteItemWrapper(data: ComponentDetails): void {
-      deleteItem(data, this.membersBuild, ComponentType.BUILDER);
+      deleteItem(data, this.membersBuild, ComponentType.BUILDER, BuilderType.MEMBER);
     },
 
     updateItemWrapper(data: ComponentDetails) {
@@ -177,13 +211,18 @@ export default defineComponent({
     },
 
     addItemWrapper(data: { selectedType: ComponentType; position: number; value: any }): void {
-      const typeOptions = this.filterOptions.types.filter(
-        (type: EntityReferenceNode) =>
-          type["@id"] === IM.VALUE_SET || type["@id"] === IM.CONCEPT_SET || type["@id"] === IM.CONCEPT_SET_GROUP || type["@id"] === IM.CONCEPT
-      );
-      const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
-      data.value = { filterOptions: options, entity: undefined, type: ComponentType.ENTITY, label: "Member" };
-      addItem(data, this.membersBuild, ComponentType.BUILDER);
+      if (data.selectedType === ComponentType.ENTITY) {
+        const typeOptions = this.filterOptions.types.filter(
+          (type: EntityReferenceNode) =>
+            type["@id"] === IM.VALUE_SET || type["@id"] === IM.CONCEPT_SET || type["@id"] === IM.CONCEPT_SET_GROUP || type["@id"] === IM.CONCEPT
+        );
+        const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
+        data.value = { filterOptions: options, entity: undefined, type: ComponentType.ENTITY, label: "Member" };
+      }
+      if (data.selectedType === ComponentType.LOGIC) {
+        data.value = { options: this.logicOptions, iri: "", children: undefined };
+      }
+      addItem(data, this.membersBuild, ComponentType.BUILDER, BuilderType.MEMBER);
     }
   }
 });

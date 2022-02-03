@@ -1,8 +1,9 @@
+import { BuilderType } from "@/models/definition/BuilderType";
 import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import { ComponentType } from "@/models/definition/ComponentType";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 
-export function generateNewComponent(type: ComponentType, position: number, data: any) {
+export function generateNewComponent(type: ComponentType, position: number, data: any, builderType: BuilderType) {
   let result;
   switch (type) {
     case ComponentType.LOGIC:
@@ -12,7 +13,7 @@ export function generateNewComponent(type: ComponentType, position: number, data
         position: position,
         type: ComponentType.LOGIC,
         json: {},
-        component: ComponentType.LOGIC
+        builderType: builderType
       };
       break;
     case ComponentType.ENTITY:
@@ -22,7 +23,7 @@ export function generateNewComponent(type: ComponentType, position: number, data
         position: position,
         type: ComponentType.ENTITY,
         json: {},
-        component: ComponentType.ENTITY
+        builderType: builderType
       };
       break;
     case ComponentType.QUANTIFIER:
@@ -32,7 +33,7 @@ export function generateNewComponent(type: ComponentType, position: number, data
         position: position,
         type: ComponentType.QUANTIFIER,
         json: {},
-        component: ComponentType.QUANTIFIER
+        builderType: builderType
       };
       break;
     case ComponentType.REFINEMENT:
@@ -42,7 +43,7 @@ export function generateNewComponent(type: ComponentType, position: number, data
         position: position,
         type: ComponentType.REFINEMENT,
         json: {},
-        component: ComponentType.REFINEMENT
+        builderType: builderType
       };
       break;
     default:
@@ -51,7 +52,7 @@ export function generateNewComponent(type: ComponentType, position: number, data
   return result;
 }
 
-export function genNextOptions(position: number, previous: ComponentType, group?: ComponentType): ComponentDetails {
+export function genNextOptions(position: number, previous: ComponentType, builderType: BuilderType, group?: ComponentType): ComponentDetails {
   return {
     id: "addNext_" + (position + 1),
     value: {
@@ -62,7 +63,7 @@ export function genNextOptions(position: number, previous: ComponentType, group?
     position: position + 1,
     type: ComponentType.ADD_NEXT,
     json: {},
-    component: ComponentType.ADD_NEXT
+    builderType: builderType
   };
 }
 
@@ -72,20 +73,20 @@ export function updatePositions(build: ComponentDetails[]) {
   });
 }
 
-export function deleteItem(itemToDelete: ComponentDetails, build: ComponentDetails[], parentGroup: ComponentType) {
+export function deleteItem(itemToDelete: ComponentDetails, build: ComponentDetails[], parentGroup: ComponentType, builderType: BuilderType) {
   const index = build.findIndex(buildItem => buildItem.position === itemToDelete.position);
   build.splice(index, 1);
   const length = build.length;
   if (itemToDelete.position === 0) {
-    build.unshift(genNextOptions(0, parentGroup, parentGroup));
+    build.unshift(genNextOptions(-1, parentGroup, builderType, parentGroup));
   }
   if (index < length - 1 && build[index].type === ComponentType.ADD_NEXT) {
-    build[index] = genNextOptions(index - 1, build[index - 1].type, parentGroup);
+    build[index] = genNextOptions(index - 1, build[index - 1].type, builderType, parentGroup);
   }
   if (build[length - 1].type !== ComponentType.ADD_NEXT) {
-    build.push(genNextOptions(length - 1, build[length - 1].type, parentGroup));
+    build.push(genNextOptions(length - 1, build[length - 1].type, builderType, parentGroup));
   } else {
-    build[length - 1] = genNextOptions(length - 2, build[length - 2].type, parentGroup);
+    build[length - 1] = genNextOptions(length - 2, build[length - 2].type, builderType, parentGroup);
   }
   updatePositions(build);
 }
@@ -111,12 +112,17 @@ export function scrollIntoView(component: ComponentDetails) {
   itemToScrollTo?.scrollIntoView();
 }
 
-export function addItem(itemToAdd: { selectedType: ComponentType; position: number; value: any }, build: ComponentDetails[], parentGroup: ComponentType) {
-  const newComponent = generateNewComponent(itemToAdd.selectedType, itemToAdd.position, itemToAdd.value);
+export function addItem(
+  itemToAdd: { selectedType: ComponentType; position: number; value: any },
+  build: ComponentDetails[],
+  parentGroup: ComponentType,
+  builderType: BuilderType
+) {
+  const newComponent = generateNewComponent(itemToAdd.selectedType, itemToAdd.position, itemToAdd.value, builderType);
   if (!newComponent) return;
   build[itemToAdd.position] = newComponent;
   if (build[build.length - 1].type !== ComponentType.ADD_NEXT) {
-    build.push(genNextOptions(build.length - 1, build[build.length - 1].type, parentGroup));
+    build.push(genNextOptions(build.length - 1, build[build.length - 1].type, builderType, parentGroup));
   }
   updatePositions(build);
 }

@@ -12,11 +12,12 @@
     <div class="children-container">
       <template v-for="item of logicBuild" :key="item.id">
         <component
-          :is="item.component"
+          :is="item.type"
           :value="item.value"
           :id="item.id"
           :position="item.position"
           :last="logicBuild.length - 2 <= item.position ? true : false"
+          :builderType="item.builderType"
           @deleteClicked="deleteItemWrapper"
           @addClicked="addItemWrapper"
           @updateClicked="updateItemWrapper"
@@ -52,6 +53,7 @@ import {
 } from "@/helpers/EditorBuilderJsonMethods";
 import { mapState } from "vuex";
 import { EntityReferenceNode } from "@/models/EntityReferenceNode";
+import { BuilderType } from "@/models/definition/BuilderType";
 
 export default defineComponent({
   name: "Logic",
@@ -59,7 +61,8 @@ export default defineComponent({
     id: { type: String, required: true },
     position: { type: Number, required: true },
     value: { type: Object as PropType<{ iri: string; children: PropType<Array<any>> | undefined }>, required: false },
-    last: { type: Boolean, required: true }
+    last: { type: Boolean, required: true },
+    builderType: { type: String as PropType<BuilderType>, required: true }
   },
   components: { AddDeleteButtons, AddNext, Entity },
   computed: mapState(["filterOptions"]),
@@ -87,6 +90,7 @@ export default defineComponent({
       await this.createBuild();
     } else {
       this.selected = this.options[0];
+      this.logicBuild.push(genNextOptions(-1, ComponentType.LOGIC, this.builderType, ComponentType.LOGIC));
     }
     this.loading = false;
   },
@@ -109,14 +113,14 @@ export default defineComponent({
       }
       if (isArrayHasLength(this.logicBuild)) {
         const last = this.logicBuild.length - 1;
-        this.logicBuild.push(genNextOptions(last, this.logicBuild[last].type, ComponentType.LOGIC));
+        this.logicBuild.push(genNextOptions(last, this.logicBuild[last].type, this.builderType, ComponentType.LOGIC));
       } else {
         this.createDefaultBuild();
       }
     },
 
     createDefaultBuild() {
-      this.logicBuild.push(genNextOptions(0, ComponentType.LOGIC));
+      this.logicBuild.push(genNextOptions(0, ComponentType.LOGIC, this.builderType));
     },
 
     async processChild(child: any, position: number) {
@@ -126,7 +130,12 @@ export default defineComponent({
     processIri(iri: TTIriRef, position: number) {
       const typeOptions = this.filterOptions.types.filter((type: EntityReferenceNode) => type["@id"] === IM.CONCEPT || type["@id"] === IM.CONCEPT_SET);
       const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
-      return generateNewComponent(ComponentType.ENTITY, position, { filterOptions: options, entity: iri, type: ComponentType.ENTITY, label: "Parent" });
+      return generateNewComponent(
+        ComponentType.ENTITY,
+        position,
+        { filterOptions: options, entity: iri, type: ComponentType.ENTITY, label: "Parent" },
+        this.builderType
+      );
     },
 
     hasChildren(data: any): data is { iri: string; children: any[] } {
@@ -140,7 +149,7 @@ export default defineComponent({
         value: { iri: this.selected.iri, children: this.value?.children },
         position: this.position,
         type: ComponentType.LOGIC,
-        component: ComponentType.LOGIC,
+        builderType: this.builderType,
         json: this.createLogicJson()
       });
     },
@@ -166,7 +175,7 @@ export default defineComponent({
         const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
         data.value = { filterOptions: options, entity: undefined, type: ComponentType.ENTITY, label: "Parent" };
       }
-      addItem(data, this.logicBuild, ComponentType.LOGIC);
+      addItem(data, this.logicBuild, ComponentType.LOGIC, this.builderType);
     },
 
     async addNextOptionsWrapper(data: NextComponentSummary): Promise<void> {
@@ -176,7 +185,7 @@ export default defineComponent({
     },
 
     deleteItemWrapper(data: ComponentDetails): void {
-      deleteItem(data, this.logicBuild, ComponentType.LOGIC);
+      deleteItem(data, this.logicBuild, ComponentType.LOGIC, this.builderType);
     },
 
     deleteClicked(): void {
@@ -185,7 +194,7 @@ export default defineComponent({
         value: { iri: this.selected.iri, children: this.value?.children },
         position: this.position,
         type: ComponentType.LOGIC,
-        component: ComponentType.LOGIC,
+        builderType: this.builderType,
         json: this.createLogicJson()
       });
     },

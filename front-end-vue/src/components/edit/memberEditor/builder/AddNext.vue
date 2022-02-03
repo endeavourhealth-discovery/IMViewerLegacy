@@ -12,6 +12,7 @@ import { defineComponent, PropType } from "@vue/runtime-core";
 import { ComponentDetails } from "@/models/definition/ComponentDetails";
 import { NextComponentSummary } from "@/models/definition/NextComponentSummary";
 import { ComponentType } from "@/models/definition/ComponentType";
+import { BuilderType } from "@/models/definition/BuilderType";
 
 export default defineComponent({
   name: "AddNext",
@@ -22,7 +23,8 @@ export default defineComponent({
     value: {
       type: Object as PropType<NextComponentSummary>,
       required: true
-    }
+    },
+    builderType: { type: String as PropType<BuilderType>, required: true }
   },
   emits: {
     addClicked: (payload: { selectedType: ComponentType; position: number }) => true,
@@ -58,7 +60,7 @@ export default defineComponent({
         position: this.position,
         value: null,
         type: ComponentType.ADD_NEXT,
-        component: ComponentType.ADD_NEXT,
+        builderType: this.builderType,
         json: null
       });
     },
