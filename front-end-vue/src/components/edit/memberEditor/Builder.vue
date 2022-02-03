@@ -177,6 +177,12 @@ export default defineComponent({
     },
 
     addItemWrapper(data: { selectedType: ComponentType; position: number; value: any }): void {
+      const typeOptions = this.filterOptions.types.filter(
+        (type: EntityReferenceNode) =>
+          type["@id"] === IM.VALUE_SET || type["@id"] === IM.CONCEPT_SET || type["@id"] === IM.CONCEPT_SET_GROUP || type["@id"] === IM.CONCEPT
+      );
+      const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
+      data.value = { filterOptions: options, entity: undefined, type: ComponentType.ENTITY, label: "Member" };
       addItem(data, this.membersBuild, ComponentType.BUILDER);
     }
   }
