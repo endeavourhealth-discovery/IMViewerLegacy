@@ -149,6 +149,11 @@ export default defineComponent({
     },
 
     addItemWrapper(data: { selectedType: ComponentType; position: number; value: any }): void {
+      if (data.selectedType === ComponentType.ENTITY) {
+        const typeOptions = this.filterOptions.types.filter((type: EntityReferenceNode) => type["@id"] === RDF.PROPERTY);
+        const options = { status: this.filterOptions.status, schemes: this.filterOptions.schemes, types: typeOptions };
+        data.value = { filterOptions: options, entity: undefined, type: ComponentType.ENTITY, label: "Property" };
+      }
       addItem(data, this.refinementBuild, ComponentType.REFINEMENT);
     },
 
