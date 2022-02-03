@@ -179,7 +179,7 @@ export default defineComponent({
       let propertyIri = "";
       let children = [] as any[];
       for (const [index, item] of this.refinementBuild.entries()) {
-        if (index === 0) propertyIri = item.value.entity["@id"];
+        if (index === 0) propertyIri = item.value.entity ? item.value.entity["@id"] : "";
         else children.push(item.json);
       }
       json[propertyIri] = children;
@@ -190,7 +190,7 @@ export default defineComponent({
       const children = [];
       let propertyIri = "";
       for (const [index, child] of this.refinementBuild.entries()) {
-        if (index === 0) propertyIri = child.value.entity["@id"];
+        if (index === 0) propertyIri = child.value.entity ? child.value.entity["@id"] : "";
         else children.push(child.value);
       }
       return { propertyIri: propertyIri, children: children };
