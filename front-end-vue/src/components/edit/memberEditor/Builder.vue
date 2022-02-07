@@ -125,7 +125,7 @@ export default defineComponent({
       let json = [];
       if (this.membersBuild.length) {
         for (const item of this.membersBuild) {
-          if (item.type !== ComponentType.ADD_NEXT) json.push(item.json);
+          if (item && item.type !== ComponentType.ADD_NEXT) json.push(item.json);
         }
       }
       return json;

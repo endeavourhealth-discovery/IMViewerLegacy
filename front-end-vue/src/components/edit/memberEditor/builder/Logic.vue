@@ -181,7 +181,7 @@ export default defineComponent({
       if (this.selected.iri) json[this.selected.iri] = [];
       if (this.logicBuild.length) {
         for (const item of this.logicBuild) {
-          if (item.type !== ComponentType.ADD_NEXT) json[this.selected.iri].push(item.json);
+          if (item && item.type !== ComponentType.ADD_NEXT) json[this.selected.iri].push(item.json);
         }
       }
       return json;

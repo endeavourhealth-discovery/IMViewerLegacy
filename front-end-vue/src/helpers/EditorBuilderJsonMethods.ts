@@ -75,20 +75,39 @@ export function updatePositions(build: ComponentDetails[]) {
 
 export function deleteItem(itemToDelete: ComponentDetails, build: ComponentDetails[], parentGroup: ComponentType, builderType: BuilderType) {
   const index = build.findIndex(buildItem => buildItem.position === itemToDelete.position);
-  build.splice(index, 1);
   const length = build.length;
   if (itemToDelete.position === 0) {
-    build.unshift(genNextOptions(-1, parentGroup, builderType, parentGroup));
-  }
-  if (index < length - 1 && build[index].type === ComponentType.ADD_NEXT) {
-    build[index] = genNextOptions(index - 1, build[index - 1].type, builderType, parentGroup);
-  }
-  if (build[length - 1].type !== ComponentType.ADD_NEXT) {
-    build.push(genNextOptions(length - 1, build[length - 1].type, builderType, parentGroup));
+    if (build.length > 1) {
+      build.shift();
+    } else {
+      build[0] = genNextOptions(-1, parentGroup, builderType, parentGroup);
+    }
   } else {
-    build[length - 1] = genNextOptions(length - 2, build[length - 2].type, builderType, parentGroup);
+    if (index === length - 1) {
+      build[index] = genNextOptions(index - 1, build[index - 1].type, builderType, parentGroup);
+    } else {
+      if (build[index - 1].type === ComponentType.ADD_NEXT) {
+        build.splice(index, 1);
+        if (build[index].type === ComponentType.ADD_NEXT) {
+          build.splice(index, 1);
+        }
+      } else {
+        build.splice(index, 1);
+      }
+    }
   }
   updatePositions(build);
+  // build.splice(index, 1);
+  // console.log("oops");
+  // if (index < length - 1 && build[index].type === ComponentType.ADD_NEXT) {
+  //   build[index] = genNextOptions(index - 1, build[index - 1].type, builderType, parentGroup);
+  // }
+  // if (build[length - 1].type !== ComponentType.ADD_NEXT) {
+  //   build.push(genNextOptions(length - 1, build[length - 1].type, builderType, parentGroup));
+  // } else {
+  //   build[length - 1] = genNextOptions(length - 2, build[length - 2].type, builderType, parentGroup);
+  // }
+  // updatePositions(build);
 }
 
 export function updateItem(itemToUpdate: ComponentDetails, build: ComponentDetails[]) {
