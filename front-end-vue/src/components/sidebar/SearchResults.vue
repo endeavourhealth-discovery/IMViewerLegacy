@@ -27,7 +27,18 @@
       <template #loading>
         Loading...
       </template>
-      <Column field="name" header="Results">
+      <Column field="name">
+        <template #header>
+          Results
+          <Button
+            :disabled="!searchResults.length"
+            class="p-button-sm p-button-text"
+            icon="pi pi-external-link"
+            @click="exportCSV()"
+            v-tooltip.right="'Download results table'"
+          />
+        </template>
+
         <template #body="slotProps">
           <div class="result-container" @mouseenter="showOverlay($event, slotProps.data)" @mouseleave="hideOverlay()">
             <div class="result-icon-container" :style="getColorByConceptType(slotProps.data.entityType)">
@@ -140,6 +151,22 @@ export default defineComponent({
     };
   },
   methods: {
+    downloadFile(data: any, fileName: string) {
+      const url = window.URL.createObjectURL(new Blob([data], { type: "application" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      link.click();
+    },
+
+    exportCSV(): void {
+      const heading = ["name", "iri"].join(",");
+      const body = this.searchResults?.map((row: any) => [row.name, row.iri].join(",")).join("\n");
+      const csv = [heading, body].join("\n");
+      console.log(csv);
+      this.downloadFile(csv, "results.csv");
+    },
+
     getPerspectiveByConceptType(conceptTypes: TTIriRef[]): string[] {
       return getFAIconFromType(conceptTypes);
     },
